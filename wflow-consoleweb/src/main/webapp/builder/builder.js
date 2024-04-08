@@ -2481,14 +2481,29 @@
                 }));
                 
                 //generate indicator
-                var height = $("#diffoutput table").outerHeight() + 75;
-                $("#diffoutput").append('<div id="diff-indicator" style="visibility:hidden;" ><canvas id="diff-indicator-canvas" width="10" height="'+(height + 3)+'"></div>');
-                var c = document.getElementById("diff-indicator-canvas");
-                var ctx = c.getContext("2d");
+                var totalRow = $("#diffoutput table tbody tr > td").length;
+                var count = 0;
+                var rowHeight = $("#diffoutput table tbody tr:first-child > td").outerHeight();
+                $("#diffoutput").append('<div id="diff-indicator" style="visibility:hidden;" ></div>');
+                
+                let c, ctx, yoffset;
+                
                 $("#diffoutput table tbody tr > td").each(function(index, td){
+                    //break indicator to render max 200 rows at a time
+                    if (count === 0) {
+                        var height = rowHeight * 200;
+                        if (index + 200 > totalRow) {
+                            height = rowHeight * (totalRow - index) + 55; //55 is bottom margin of the diff viewer body
+                        }
+                        $("#diff-indicator").append('<canvas id="diff-indicator-canvas" width="10" height="'+height+'">');
+                        c = document.getElementById("diff-indicator-canvas");
+                        ctx = c.getContext("2d");
+                        yoffset = index * rowHeight;
+                    }
+                    
                     if ($(td).is(".replace, .delete, .insert")) {
                         var cssClass = $(td).attr("class");
-                        var y = $(td).offset().top - 65;
+                        var y = $(td).offset().top - 65 - yoffset;
                         
                         var color = "#ff3349";
                         if (cssClass === "insert") {
@@ -2502,14 +2517,94 @@
                         ctx.fillStyle = color;
                         ctx.fill();
                     }
+                    count ++;
+                    
+                    if (count === 200 || index === totalRow -1 ) {
+                        var image = c.toDataURL("image/png");
+                        $("#diff-indicator").append('<div style="background-image : url('+image+'); height:'+(count/totalRow*100)+'%;"></div>');
+                        $("#diff-indicator canvas").remove();
+                        count = 0;
+                    }
                 });
-                var image = c.toDataURL("image/png");
-                $("#diff-indicator canvas").remove();
+                
                 $("#diff-indicator").css({
-                    "visibility" : "",
-                    "background-image" : "url("+image+")",
-                    "background-repeat" : "repeat-x",
-                    "background-size" : "contain"
+                    "visibility" : ""
+                });
+                
+                $(view).append('<div class="sticky-buttons"><button class="prev-btn btn button btn-secondary"><i class="las la-angle-up"></i></button> <button class="next-btn btn button btn-secondary"><i class="las la-angle-down"></i></button></div>');
+        
+                var findChange = function(isNext) {
+                    var tds = $("#diffoutput table tbody tr").find('> .replace, > .delete, > .insert');
+                    
+                    //find current change
+                    var index = -1;
+                    if ($("#diffoutput table tbody tr .current").length > 0) {
+                        index = $(tds).index($("#diffoutput table tbody tr .current"));
+                    }
+                    
+                    var row;
+                    var continueFind = false;
+                    
+                    do {
+                        var currentIndex = index;
+                        
+                        //find next or prev index
+                        if (isNext) {
+                            index++;
+                        } else {
+                            index--;
+                        }
+
+                        //check boundary
+                        if (index >= tds.length) {
+                            index = 0;
+                        }
+                        if (index < 0) {
+                            index = tds.length - 1;
+                        }
+
+                        row = $(tds).eq(index);
+                        
+                        if (isNext) {
+                            continueFind = $(tds).eq(currentIndex).closest("tr").next().find("td").is(row);
+                        } else {
+                            continueFind = $(tds).eq(currentIndex).closest("tr").prev().find("td").is(row);
+                        }
+                    } while (continueFind);
+                    
+                    //if it is prev, find the first row of current change block
+                    if (!isNext) {
+                        var preRow;
+                        continueFind = false;
+                        do {
+                            preRow = $(row).closest("tr").prev().find("td");
+                            
+                            if ($(preRow).length > 0) {
+                                continueFind = $(preRow).attr("class") === $(row).attr("class");
+
+                                if (continueFind) {
+                                    row = preRow;
+                                }
+                            } else {
+                                break;
+                            }
+                        } while (continueFind);
+                    }
+                    
+                    $("#diffoutput table tbody tr .current").removeClass("current");
+                    $(row).addClass("current");
+                    
+                    $(view).animate({
+                        scrollTop: $(row).offset().top + $(view).scrollTop() - 150
+                    }, 500);
+                };
+        
+                $(view).find("button.next-btn").off("click").on("click", function() {
+                    findChange(true);
+                });
+
+                $(view).find("button.prev-btn").off("click").on("click", function() {
+                    findChange(false);
                 });
             }
         });
