@@ -8855,7 +8855,7 @@ PropertyEditor.Type.CodeMirror.prototype = {
         return data;
     },
     renderField: function() {
-        return '<div id="' + this.id + '" name="' + this.id + '" class="code-editor"></div>';
+        return '<div style="border:1px solid silver;" id="' + this.id + '" name="' + this.id + '" class="code-editor"></div>';
     },
     initScripting: function() {
         var thisObj = this;
@@ -8927,7 +8927,7 @@ PropertyEditor.Type.CodeMirror.prototype = {
 
             //Increase fontsize o code and help message
             if ($("#panel-"+thisObj.id).length > 0){
-                var helpMessage = $("#panel-"+thisObj.id + " span").get(0);
+                var helpMessage = $("#panel-"+thisObj.id + " div").get(0);
                 helpMessage.style.fontSize = newSize + 'px';
             }
             wrapper.style.fontSize = newSize + 'px';
@@ -8975,7 +8975,7 @@ PropertyEditor.Type.CodeMirror.prototype = {
 
         function makePanel(where) {
             var node = document.createElement("div");
-            var label, msg, fontSize;
+            var label, div, msg, fontSize;
 
             node.id = "panel-" + thisObj.id;
             node.className = "panel " + where;
@@ -8983,22 +8983,26 @@ PropertyEditor.Type.CodeMirror.prototype = {
             var wrapper = thisObj.codemirror.getWrapperElement();
             var fontSize = parseFloat(window.getComputedStyle(wrapper, null).getPropertyValue('font-size')) + "px";
 
+            div = $("<div>")
             msg = get_peditor_msg('peditor.codemirror.helpMessage')
-            label = $("<span>").text(msg).appendTo(node);
+            msg.split(" | ").forEach(el =>{
+                div.append($("<span>").text(el))
+            })
 
-            if ($('body').attr('builder-theme') === "dark"){
-                label.css({
-                    "color": "white",
-                    "background-color": "grey",
-                    "font-size": fontSize
-                })
-            }else{
-                label.css({
-                    "color": "black",
-                    "background-color": "yellow",
-                    "font-size": fontSize
-                })
-            }
+            label = div.appendTo(node);
+
+            label.css({
+                "color": "black",
+                "font-size": fontSize,
+                "padding": "5px 10px",
+                "font-weight":"bold",
+                "display": "flex",
+                "flex-direction": "column"
+            })
+
+            $(node).css({
+                "background-color":"rgb(255, 250, 143)"
+            })
 
             return node;
         }
@@ -9017,8 +9021,9 @@ PropertyEditor.Type.CodeMirror.prototype = {
         
         this.codemirror.setValue(this.value);
 
-        //Initialize panel
-        addPanel("top")
+        var tooltip = $("<span>").attr('title', 'Press F1 to show help panel').append(" <i class=\"zmdi zmdi-info-outline\"></i>");
+        
+        $("#"+thisObj.id).parent().parent().find(".property-label").append(tooltip);
 
         resetHeight();
     },
