@@ -91,15 +91,18 @@ public class AjaxUniversalTheme extends UniversalTheme implements SupportBuilder
             if (showHomeBanner()) {
                 data.put("body_classes", data.get("body_classes").toString() + " has_home_banner");
             }
-            if ("true".equals(getPropertyString("darkMode"))) {
+            if ("true".equals(getPropertyString("darkMode")) || "true".equals(getPropertyString("compactTheme"))) {
                 data.put("body_inner_before", 
                                 "<script>" + 
                                 "const theme = localStorage.getItem(\"theme\");\n" +
+                                "const density = localStorage.getItem(\"density\");\n" +
                                 "if (theme === \"auto\"){\n"+
                                         "$(\"body\").addClass((window.matchMedia(\"(prefers-color-scheme: dark)\").matches ? \"dark\" : \"light\") + \"-mode\");\n" +                                        
                                         "}else{\n"+
                                 "$(\"body\").addClass(theme + \"-mode\");\n" +
+                                
                                         "};\n"+
+                                "$(\"body\").addClass(density + \"-mode\");\n" +
                                 "</script>\n" +                             
                      "<div class=\"page-loader\"><div class=\"spinner\"></div></div>");
             }else {
@@ -199,6 +202,11 @@ public class AjaxUniversalTheme extends UniversalTheme implements SupportBuilder
             if ("true".equals(getPropertyString("darkMode"))) {
                 jsCssLink += "<script src=\"" + data.get("context_path") + "/wro/darkTheme.js\" defer></script>\n";
                 jsCssLink += "<link rel=\"stylesheet\" href=\"" + data.get("context_path") + "/wro/darkTheme.css\"></link>\n";
+            }
+            
+            if ("true".equals(getPropertyString("compactTheme"))) {
+                jsCssLink += "<script src=\"" + data.get("context_path") + "/wro/compactTheme.js\" defer></script>\n";
+                jsCssLink += "<link rel=\"stylesheet\" href=\"" + data.get("context_path") + "/wro/compactTheme.css\"></link>\n";
             }
             
             if (MobileUtil.isIE()) {
@@ -557,6 +565,9 @@ public class AjaxUniversalTheme extends UniversalTheme implements SupportBuilder
         if ("true".equals(getPropertyString("darkMode"))) {
             html += getThemeSwitch(data);
         }
+        if ("true".equals(getPropertyString("compactTheme"))) {
+            html += getCompactThemeSwitch(data);
+        }
         html += getUserMenu(data);
         html += "</ul></div>\n";
         return html;
@@ -575,4 +586,19 @@ public class AjaxUniversalTheme extends UniversalTheme implements SupportBuilder
                 + "    </ul>\n"
                 + "<li>";
     }
+    
+    protected String getCompactThemeSwitch(Map<String, Object> data) {
+        return "<li class=\"density-selection dropdown\">\n"
+                + "    <a data-toggle=\"dropdown\" href=\"javascript:;\" class=\"btn dropdown-toggle\">\n"
+                + "	 <i class=\"fas fa-compress\"></i>\n"
+                + "    </a>\n"
+                + "    <ul id=\"density-selector\" class=\"dropdown-menu themes\">\n"
+                + "        <div id=\"dropdown-title\"><span class=\"header\"></span>Theme</div>\n"
+                + "        <li data-value=\"normal\"><span class=\"header\"></span>Normal</li>\n"
+                + "        <li data-value=\"compact\"><span class=\"header\"></span>Compact</li>\n"
+                + "    </ul>\n"
+                + "<li>";
+    }
+    
+    
 }
