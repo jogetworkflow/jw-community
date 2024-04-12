@@ -2482,28 +2482,27 @@
                 
                 //generate indicator
                 var totalRow = $("#diffoutput table tbody tr > td").length;
+                var totalHeight = $("#diffoutput table").outerHeight() + 20 + 55; //padding top & padding bottom
                 var count = 0;
                 var rowHeight = $("#diffoutput table tbody tr:first-child > td").outerHeight();
                 $("#diffoutput").append('<div id="diff-indicator" style="visibility:hidden;" ></div>');
                 
                 let c, ctx, yoffset;
+                let curTotalHeight = 20, curHeight = 20;
                 
                 $("#diffoutput table tbody tr > td").each(function(index, td){
                     //break indicator to render max 200 rows at a time
                     if (count === 0) {
-                        var height = rowHeight * 200;
-                        if (index + 200 > totalRow) {
-                            height = rowHeight * (totalRow - index) + 55; //55 is bottom margin of the diff viewer body
-                        }
-                        $("#diff-indicator").append('<canvas id="diff-indicator-canvas" width="10" height="'+height+'">');
-                        c = document.getElementById("diff-indicator-canvas");
+                        c = document.createElement('canvas');
+                        c.width = 10;
+                        c.height = rowHeight * 200 * 3; //buffer triple the height to cater multiline row
                         ctx = c.getContext("2d");
-                        yoffset = index * rowHeight;
+                        yoffset = curTotalHeight;
                     }
-                    
+                    var cellHeight = $(td).outerHeight();
                     if ($(td).is(".replace, .delete, .insert")) {
                         var cssClass = $(td).attr("class");
-                        var y = $(td).offset().top - 65 - yoffset;
+                        var y = $(td).offset().top - 85 - yoffset;
                         
                         var color = "#ff3349";
                         if (cssClass === "insert") {
@@ -2513,17 +2512,32 @@
                         }
                         
                         ctx.beginPath();
-                        ctx.rect(0, y, 10, $(td).outerHeight());
+                        ctx.rect(0, y, 10, cellHeight);
                         ctx.fillStyle = color;
                         ctx.fill();
                     }
                     count ++;
+                    curTotalHeight += cellHeight;
+                    curHeight += cellHeight;
                     
                     if (count === 200 || index === totalRow -1 ) {
-                        var image = c.toDataURL("image/png");
-                        $("#diff-indicator").append('<div style="background-image : url('+image+'); height:'+(count/totalRow*100)+'%;"></div>');
+                        if (index === totalRow -1) {
+                            curHeight += 55; //55 is bottom margin of the diff viewer body
+                        }
+                        //save current data and resize
+                        let imageData = ctx.getImageData(0, 0, ctx.canvas.width, ctx.canvas.height);
+                        let newCanvas = document.createElement('canvas');
+                        newCanvas.width = 10;
+                        newCanvas.height = curHeight;
+                        let newCtx = newCanvas.getContext('2d');
+                        newCtx.putImageData(imageData, 0, 0);
+                        
+                        //render the indicator
+                        var image = newCanvas.toDataURL("image/png");
+                        $("#diff-indicator").append('<div style="background-image : url('+image+'); height:'+(curHeight/totalHeight*100)+'%;"></div>');
                         $("#diff-indicator canvas").remove();
                         count = 0;
+                        curHeight = 0;
                     }
                 });
                 

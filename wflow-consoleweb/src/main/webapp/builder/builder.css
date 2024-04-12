@@ -2297,7 +2297,7 @@ table.diff tbody th{
 }
 #diff-indicator {
     position: fixed;
-    height: calc(100% - 157px);
+    height: calc(100% - 145px);
     right: 6px;
     top: 86px;
     width: 20px;
