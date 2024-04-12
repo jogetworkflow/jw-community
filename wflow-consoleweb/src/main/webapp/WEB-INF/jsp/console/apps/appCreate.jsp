@@ -231,6 +231,17 @@
                 $("#createApp").submit();
             }
         }
+        function blockUi() {
+            $.blockUI({ css: { 
+                border: 'none', 
+                padding: '15px', 
+                backgroundColor: '#000', 
+                '-webkit-border-radius': '10px', 
+                '-moz-border-radius': '10px', 
+                opacity: .3, 
+                color: '#fff' 
+            }, message : "<i class='icon-spinner icon-spin icon-2x fas fa-spinner fa-spin fa-2x'></i>" }); 
+        }
         function populatePluginProperties(className, element) {
             if ($("#pluginConfig > .pluginConfigEditor").data("classname") === className) {
                 return;
@@ -334,6 +345,7 @@
                 if ($("#templateConfigRows").attr("data-id") === id && $("#templateConfigRows").attr("data-type") === type) {
                     showDiv($("#templateConfig"));
                 } else {
+                    blockUi();
                     $("#templateConfigRows").attr("data-id", "");
                     $("#templateConfigRows").attr("data-type", "");
                     $("#templateConfigRows").html("");
@@ -346,12 +358,13 @@
                             }
                         }
                         $("#templateConfigRows").append('<h5 class="form-row main-body-content-subheader"><ui:msgEscJS key="console.app.create.tableNameReplace"/></h5>');
+                        $("#templateConfigRows").append('<div class="alert alert-warning"><ui:msgEscJS key="console.app.create.tablePrefix.warning"/></div>');
+                        createField("tablePrefix", 0, '<ui:msgEscJS key="console.app.create.tablePrefix"/>', '<c:out value="${tablePrefix}"/>', '<ui:msgEscJS key="console.app.create.tablePrefix.eg"/>');
                         if (data.tables !== undefined && data.tables.length > 0) {
                             for (var i=0; i<data.tables.length; i++) {
                                 createField("tables", i, data.tables[i]);
                             }
                         }
-                        createField("tablePrefix", 0, '<ui:msgEscJS key="console.app.create.tablePrefix"/>', '<c:out value="${tablePrefix}"/>', '<ui:msgEscJS key="console.app.create.tablePrefix.eg"/>');
                         if (data.labels !== undefined && data.labels.length > 0) {
                             $("#templateConfigRows").append('<h5 class="form-row main-body-content-subheader"><ui:msgEscJS key="console.app.create.labelReplace"/></h5>');
                             for (var i=0; i<data.labels.length; i++) {
@@ -361,6 +374,7 @@
                         $("#templateConfigRows").attr("data-id", id);
                         $("#templateConfigRows").attr("data-type", type);
                         showDiv($("#templateConfig"));
+                        $.unblockUI();
                     });
                 }
             });
@@ -371,8 +385,10 @@
                 
                 if (value === "template") {
                     showDiv($("#templateView"));
+                    showAdvancedInfo();
                 } else if (value === "duplicate") {
                     showDiv($("#duplicateView"));
+                    showAdvancedInfo();
                 } else if (value !== "") {
                     populatePluginProperties(value, $(this).closest("li"));
                     showDiv($("#pluginConfig"));
