@@ -106,11 +106,12 @@ public class BuilderDefinitionDaoImpl extends AbstractAppVersionedObjectDao<Buil
     @Override
     public boolean add(BuilderDefinition object) {
         // save in db
-        object.setDateCreated(new Date());
-        object.setDateModified(new Date());
+        Date date = new Date();
+        object.setDateCreated(date);
+        object.setDateModified(date);
         
         boolean result = super.add(object);
-        appDefinitionDao.updateDateModified(object.getAppDefinition());
+        appDefinitionDao.updateDateModified(object.getAppDefinition(), date);
         
         CustomBuilder builder = CustomBuilderUtil.getBuilder(object.getType());
         if (builder instanceof CustomBuilderCallback) {
@@ -135,7 +136,7 @@ public class BuilderDefinitionDaoImpl extends AbstractAppVersionedObjectDao<Buil
         // save in db
         object.setDateModified(new Date());
         boolean result = super.update(object);
-        appDefinitionDao.updateDateModified(object.getAppDefinition());
+        appDefinitionDao.updateDateModified(object.getAppDefinition(), object.getDateModified());
 
         CustomBuilder builder = CustomBuilderUtil.getBuilder(object.getType());
         if (builder instanceof CustomBuilderCallback) {
