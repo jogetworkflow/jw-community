@@ -615,10 +615,20 @@ body.rtl #adminBar.adminBarInactive #environmentName{
         height: calc(100% - 49px);
     }
     #adminBar #environmentName{
-        max-width: 75px;
+        max-width: calc(100vw - 285px);
         height: 45px;
-        padding: 0px;
-        color: #ff6100;
+        padding: 0px 38px 0 3px;
+        color: #fff;
+        font-size: 11px;
+        word-wrap: break-word;
+        line-height: 14px;
+        vertical-align: middle;
+    }
+    #adminBar #environmentName span{
+        display: block;
+        top: 50%;
+        position: relative;
+        transform: translateY(-50%);
     }
 }
 iframe.iframeloading {
