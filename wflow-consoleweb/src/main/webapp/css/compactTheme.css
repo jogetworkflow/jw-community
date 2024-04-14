@@ -266,6 +266,11 @@ body.compact-mode #sidebar .nav > li > a.menu-link > span.badge{
     margin-top: 4px;
 }
 
+body.compact-mode .hasDatepicker + a,
+body.compact-mode .hasDatepicker + a + a{
+    top: 5px;
+}
+
 /*horizontal menu*/
 @media (min-width: 768px){
     body.compact-mode.horizontal_menu #sidebar .nav > li > a > span:not(.badge){
