@@ -91,7 +91,25 @@ public class AjaxUniversalTheme extends UniversalTheme implements SupportBuilder
             if (showHomeBanner()) {
                 data.put("body_classes", data.get("body_classes").toString() + " has_home_banner");
             }
-            if ("true".equals(getPropertyString("darkMode")) || "true".equals(getPropertyString("compactTheme"))) {
+            if ("true".equals(getPropertyString("darkMode")) && !("true".equals(getPropertyString("compactTheme")))) {
+                data.put("body_inner_before", 
+                                "<script>" + 
+                                "const theme = localStorage.getItem(\"theme\");\n" +
+                                "if (theme === \"auto\"){\n"+
+                                        "$(\"body\").addClass((window.matchMedia(\"(prefers-color-scheme: dark)\").matches ? \"dark\" : \"light\") + \"-mode\");\n" +                                        
+                                        "}else{\n"+
+                                "$(\"body\").addClass(theme + \"-mode\");\n" +
+                                        "};\n"+
+                                "</script>\n" +                             
+                     "<div class=\"page-loader\"><div class=\"spinner\"></div></div>");
+            }else if("true".equals(getPropertyString("compactTheme")) && !("true".equals(getPropertyString("darkMode")))){
+                data.put("body_inner_before", 
+                                "<script>" + 
+                                "const density = localStorage.getItem(\"density\");\n" +
+                                "$(\"body\").addClass(density + \"-mode\");\n" +
+                                "</script>\n" +                             
+                     "<div class=\"page-loader\"><div class=\"spinner\"></div></div>");                
+            } else if ("true".equals(getPropertyString("darkMode")) && "true".equals(getPropertyString("compactTheme"))) {
                 data.put("body_inner_before", 
                                 "<script>" + 
                                 "const theme = localStorage.getItem(\"theme\");\n" +
