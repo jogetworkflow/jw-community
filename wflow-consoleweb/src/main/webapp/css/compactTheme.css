@@ -195,8 +195,7 @@ body.compact-mode input[type=datetime-local],
 body.compact-mode input[type=tel],
 body.compact-mode input[type=number],
 body.compact-mode input[type=search],
-body.compact-mode select,
-body.compact-mode textarea
+body.compact-mode select
 {
     height: calc(1.5em + 0.25rem + 2px);
     padding-top: 2px;
