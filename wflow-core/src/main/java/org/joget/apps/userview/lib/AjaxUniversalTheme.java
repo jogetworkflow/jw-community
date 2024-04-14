@@ -593,9 +593,9 @@ public class AjaxUniversalTheme extends UniversalTheme implements SupportBuilder
                 + "	 <i class=\"fas fa-compress\"></i>\n"
                 + "    </a>\n"
                 + "    <ul id=\"density-selector\" class=\"dropdown-menu themes\">\n"
-                + "        <div id=\"dropdown-title\"><span class=\"header\"></span>Theme</div>\n"
-                + "        <li data-value=\"normal\"><span class=\"header\"></span>Normal</li>\n"
-                + "        <li data-value=\"compact\"><span class=\"header\"></span>Compact</li>\n"
+                + "        <div id=\"dropdown-title\"><span class=\"header\">" + ResourceBundleUtil.getMessage("theme.ajaxUniversalTheme.compactTheme.density") + "</span></div>\n"
+                + "        <li data-value=\"normal\"><span class=\"header\">" + ResourceBundleUtil.getMessage("theme.ajaxUniversalTheme.compactTheme.normalmode") + "</span></li>\n"
+                + "        <li data-value=\"compact\"><span class=\"header\">" + ResourceBundleUtil.getMessage("theme.ajaxUniversalTheme.compactTheme.compactmode") + "</span></li>\n"
                 + "    </ul>\n"
                 + "<li>";
     }
