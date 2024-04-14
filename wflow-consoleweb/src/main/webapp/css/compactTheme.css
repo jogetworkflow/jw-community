@@ -270,6 +270,11 @@ body.compact-mode .hasDatepicker + a + a{
     top: 5px;
 }
 
+body.compact-mode .form-cell > label.label,
+body.compact-mode .subform-cell > label.label{
+    padding-top: 3px;
+}
+
 body.compact-mode .form-section + .form-section.no_label:not(#section-actions),
 body.compact-mode .subform-section + .subform-section.no_label:not(#section-actions){
     margin-top: -5px;
