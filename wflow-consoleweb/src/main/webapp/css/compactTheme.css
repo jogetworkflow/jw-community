@@ -81,7 +81,6 @@ body.compact-mode .line-wrap .line.center{
 }
 
 body.compact-mode #sidebar .nav > li > a,
-body.compact-mode #sidebar .nav-tabs.user-menu .mm-profile > a,
 body.compact-mode #sidebar .nav > li > a > span:not(.badge) 
 {
     padding-top: 2px;
