@@ -3813,8 +3813,8 @@ public class ConsoleWebController {
         }
     }
     
-    @RequestMapping("/json/console/app/builders/overviewTools")
-    public void consoleBuilderOverviewTools(Writer writer, @RequestParam(value = "callback", required = false) String callback) throws IOException, JSONException {
+    @RequestMapping("/json/console/app/(*:appId)/(~:version)/builders/overviewTools")
+    public void consoleBuilderOverviewTools(Writer writer, @RequestParam String appId, @RequestParam(required = false) String version, @RequestParam(value = "callback", required = false) String callback) throws IOException, JSONException {
         Map<String, AppOverviewTool> tools = AppOverviewUtil.getTools();
         
         JSONArray jsonArr = new JSONArray();
