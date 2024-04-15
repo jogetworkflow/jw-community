@@ -151,7 +151,7 @@ $(document).ready(function () {
                     }
                     // move menu item to More dropdown
                     let menuItemId = $(this).prop('id');
-                    $("#" + menuItemId).appendTo($('#moreSubMenu'));
+                    $("li#" + menuItemId).appendTo($('#moreSubMenu'));
                     navItemVisible[count] = false;
                 }
                 // update count
