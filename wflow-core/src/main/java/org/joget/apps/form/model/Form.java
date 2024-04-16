@@ -246,6 +246,15 @@ public class Form extends Element implements FormBuilderEditable, FormContainer 
     }
     
     @Override
+    public String decorateWithBuilderProperties(String html, FormData formData) {
+        if (getParent() != null) {
+            return html; //skip for subform
+        } else {
+            return super.decorateWithBuilderProperties(html, formData);
+        }
+    }
+    
+    @Override
     public Map<String, String> getElementStyles(String styleClass, Map<String, String> attrs) {
         Map<String, String> styles = super.getElementStyles(styleClass, attrs);
         
@@ -294,20 +303,18 @@ public class Form extends Element implements FormBuilderEditable, FormContainer 
             } 
             
             if ("label-top".equals(getPropertyString("css-label-position"))) {
-                styles.put("DESKTOP", styles.get("DESKTOP") + " ." + styleClass +" .form-cell:not(.label-left) > label.label, ." + styleClass + ".subform-cell:not(.label-left) > label.label, " + 
-                        " ." + styleClass +" .form-cell:not(.label-left) > label.label + *:not(.ui-screen-hidden), ." + styleClass + ".subform-cell:not(.label-left) > label.label + *:not(.ui-screen-hidden), " +
-                        " ." + styleClass +" .form-cell:not(.label-left) > label.label + .ui-screen-hidden + *, ." + styleClass + ".subform-cell:not(.label-left) > label.label + .ui-screen-hidden + * " +
+                styles.put("DESKTOP", styles.get("DESKTOP") + " ." + styleClass +" .form-cell:not(.label-left) > label.label, ." + styleClass + " .subform-cell:not(.label-left) > label.label, " + 
+                        " ." + styleClass +" .form-cell:not(.label-left) > label.label + *:not(.ui-screen-hidden), ." + styleClass + " .subform-cell:not(.label-left) > label.label + *:not(.ui-screen-hidden), " +
+                        " ." + styleClass +" .form-cell:not(.label-left) > label.label + .ui-screen-hidden + *, ." + styleClass + " .subform-cell:not(.label-left) > label.label + .ui-screen-hidden + * " +
                         " {width: 100%; float: none;} ");
             }
             if ("tablet-label-top".equals(getPropertyString("css-tablet-label-position"))) {
-                styles.put("TABLET", styles.get("TABLET") + " ." + styleClass +" .form-cell:not(.tablet-label-top) > label.label, ." + styleClass + ".subform-cell:not(.tablet-label-top) > label.label, " + 
-                        " ." + styleClass +" .form-cell:not(.tablet-label-top) > label.label + *:not(.ui-screen-hidden), ." + styleClass + ".subform-cell:not(.tablet-label-top) > label.label + *:not(.ui-screen-hidden), " +
-                        " ." + styleClass +" .form-cell:not(.tablet-label-top) > label.label + .ui-screen-hidden + *, ." + styleClass + ".subform-cell:not(.tablet-label-top) > label.label + .ui-screen-hidden + * " +
+                styles.put("TABLET", styles.get("TABLET") + " ." + styleClass +" .form-cell:not(.tablet-label-top) > label.label, ." + styleClass + " .subform-cell:not(.tablet-label-top) > label.label, " + 
+                        " ." + styleClass +" .form-cell:not(.tablet-label-top) > label.label + *:not(.ui-screen-hidden), ." + styleClass + " .subform-cell:not(.tablet-label-top) > label.label + *:not(.ui-screen-hidden), " +
+                        " ." + styleClass +" .form-cell:not(.tablet-label-top) > label.label + .ui-screen-hidden + *, ." + styleClass + " .subform-cell:not(.tablet-label-top) > label.label + .ui-screen-hidden + * " +
                         " {width: 100%; float: none;} ");
             }
         }
-        
-        
         
         return styles;
     }
