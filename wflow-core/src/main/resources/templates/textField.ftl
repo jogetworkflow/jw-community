@@ -39,6 +39,9 @@
                     margin-top: 4px;
                     margin-right: 10px;
                 }
+                body.compact-mode #incr_${elementParamName!} {
+                    margin-top: 0;
+                }
                 #incr_${elementParamName!}:focus {
                     outline: none;
                 }
@@ -52,6 +55,9 @@
                     border: none;
                     background: none;
                     margin-right: 10px;
+                }
+                body.compact-mode #decr_${elementParamName!} {
+                    margin-bottom: 0;
                 }
                 #decr_${elementParamName!}:focus {
                     outline: none;

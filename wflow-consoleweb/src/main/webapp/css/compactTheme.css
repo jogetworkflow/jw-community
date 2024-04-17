@@ -303,6 +303,8 @@ body.compact-mode.dataList .column_body a{
     padding-top: 0;
     padding-bottom: 0;
 }
+body.compact-mode div[id^='container_']:has(#indication){
+    margin-bottom: 15px;
 }
 /*horizontal menu*/
 @media (min-width: 768px){
