@@ -1666,7 +1666,7 @@ public class FormUtil implements ApplicationContextAware {
         if (!(element instanceof Form) && element.getParent() != null) {
             uniqueKey = element.getParent().getPropertyString(PROPERTY_ELEMENT_UNIQUE_KEY) + uniqueKey;
         }
-        return uniqueKey;
+        return uniqueKey.replaceAll("-", "_");
     }
     
     /**
