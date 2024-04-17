@@ -2593,12 +2593,43 @@ i.fa-sort, i.fa-sort-asc, i.fa-sort-desc{
     float:right;
     padding: 4px 0px 0px 0px;
 }
+.grid_sorting_container {
+    display: none;
+}
+.editor-panel-mode.narrow:not(.wider) .grid_sorting_container {
+    display: block;
+    position: absolute;
+    top: -24px;
+    right: 0;
+}
+.grid_sorting_config {
+    font-size: 16px;
+    cursor: pointer;
+}
+.grid_sorting_field{
+    position: absolute;
+    display: none;
+    right: 0;
+    background: #fff;
+    padding: 15px;
+    border-radius: 5px;
+    box-shadow: 6px 7px 21px -8px rgba(0,0,0,0.75);
+    border: 1px solid #ccc;
+    min-width: 250px;
+    text-align: right;
+}
+.grid_sorting_field select {
+    margin-bottom: 5px;
+}
+.grid_sorting_container:hover .grid_sorting_field{
+    display: block;
+}
 .sortingTable{
     margin: 10px 0px 0px 0px;
     padding: 6px 12px;
     border: 1px solid #ced4da;
     border-radius: 5px;
-    height: 32px;
+    width: 100%;
     color: #495057;
     font-weight: 500;
 }
