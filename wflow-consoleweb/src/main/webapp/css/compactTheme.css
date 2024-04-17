@@ -295,6 +295,12 @@ body.compact-mode .tablesaw th,
 body.compact-mode .tablesaw td{
     padding: .25em .35em;
 }
+body.compact-mode .dataList .rowaction_body a:not(.stretched-link),
+body.compact-mode .dataList a.rowaction_body:not(.stretched-link),
+body.compact-mode.dataList .column_body a{
+    padding-top: 0;
+    padding-bottom: 0;
+}
 }
 /*horizontal menu*/
 @media (min-width: 768px){
