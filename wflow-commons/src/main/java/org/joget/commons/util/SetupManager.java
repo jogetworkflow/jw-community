@@ -25,6 +25,9 @@ public class SetupManager {
 
     static {
         String baseDirectory = System.getProperty(SYSTEM_PROPERTY_WFLOW_HOME, System.getProperty("user.home") + File.separator + "wflow" + File.separator);
+        if (!baseDirectory.endsWith(File.separator)) {
+            baseDirectory += File.separator;
+        }
         BASE_DIRECTORY = baseDirectory;
         LogUtil.info(SetupManager.class.getName(), "Using base directory: " + BASE_DIRECTORY);
         if (HostManager.isVirtualHostEnabled()) {
