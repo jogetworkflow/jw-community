@@ -234,7 +234,7 @@ body.compact-mode .dataList.size_sm > .table-wrapper > table.responsivetable > t
 
 body.compact-mode .form-section + .form-section:not(.no_label),
 body.compact-mode .subform-section + .subform-section:not(.no_label){
-    margin-top: 5px;
+    margin-top: 10px;
 }
 
 body.compact-mode .form-section,
