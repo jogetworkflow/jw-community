@@ -373,3 +373,22 @@ body.compact-mode.rtl:not(.horizontal_menu) header.navbar .container-fluid{
     padding-top: 4px !important;
     padding-bottom: 4px !important;
 }
+body.compact-mode.rtl #sidebar .nav > li > a, body.compact-mode.rtl #sidebar .nav > li > a > span:not(.badge){
+    padding-top: 2px;
+    padding-bottom: 2px;
+}
+
+body.compact-mode.rtl:not(.horizontal_menu) #sidebar .nav > li > a.menu-link > span:not(.badge){
+    padding-top: 2px;
+    padding-bottom: 2px;
+}
+
+body.compact-mode.rtl:not(.horizontal_menu) #sidebar .nav > li > ul > li > a{
+    padding-top: 4px;
+    padding-bottom: 4px;    
+}
+
+body.compact-mode.rtl #sidebar .nav-tabs.user-menu .mm-profile > a{
+    padding: 25px 15px;
+}
+
