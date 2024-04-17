@@ -369,3 +369,7 @@ body.compact-mode div[id^='container_']:has(#indication){
 body.rtl #selectedDensity{
     left: 15px;
 }
+body.compact-mode.rtl:not(.horizontal_menu) header.navbar .container-fluid{
+    padding-top: 4px !important;
+    padding-bottom: 4px !important;
+}
