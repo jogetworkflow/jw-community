@@ -278,6 +278,9 @@ body.compact-mode .subform-cell > label.label{
 body.compact-mode .form-section + .form-section.no_label:not(#section-actions),
 body.compact-mode .subform-section + .subform-section.no_label:not(#section-actions){
     margin-top: -5px;
+body.compact-mode #section-actions{
+    padding-top: 10px;
+}
 }
 /*horizontal menu*/
 @media (min-width: 768px){
