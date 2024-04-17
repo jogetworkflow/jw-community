@@ -50,7 +50,7 @@
         <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-test</artifactId>
-            <version>5.3.31</version>
+            <version>5.3.33</version>
         </dependency>
         <dependency>
             <groupId>javax.servlet</groupId>
@@ -120,17 +120,17 @@
         <dependency>
             <groupId>org.bouncycastle</groupId>
             <artifactId>bcmail-jdk18on</artifactId>
-            <version>1.77</version>
+            <version>1.78</version>
         </dependency>
         <dependency>
             <groupId>org.bouncycastle</groupId>
             <artifactId>bcprov-jdk18on</artifactId>
-            <version>1.77</version>
+            <version>1.78</version>
         </dependency>
         <dependency>
             <groupId>org.bouncycastle</groupId>
             <artifactId>bcpkix-jdk18on</artifactId>
-            <version>1.77</version>
+            <version>1.78</version>
         </dependency>
         <dependency>
             <groupId>org.xhtmlrenderer</groupId>
