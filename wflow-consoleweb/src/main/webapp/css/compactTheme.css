@@ -281,6 +281,15 @@ body.compact-mode .subform-section + .subform-section.no_label:not(#section-acti
 body.compact-mode #section-actions{
     padding-top: 10px;
 }
+body.compact-mode .tablesaw thead tr:first-child th{
+    padding-top: .45em;
+    padding-bottom: .35em;  
+}
+
+body.compact-mode .tablesaw th,
+body.compact-mode .tablesaw td{
+    padding: .25em .35em;
+}
 }
 /*horizontal menu*/
 @media (min-width: 768px){
