@@ -161,7 +161,7 @@ body.compact-mode .form-section-title,
 body.compact-mode .subform-section-title {
     padding-top: 0.25rem;
     padding-bottom: 0.25rem;
-    margin-bottom: 5px;
+    margin-bottom: 10px;
 }
 
 body.compact-mode .form-cell-value > label,
@@ -171,7 +171,7 @@ body.compact-mode .subform-cell-value > label {
 
 body.compact-mode .form-section.no_label,
 body.compact-mode .subform-section.no_label{
-    padding-top: 2px;
+    padding-top: 10px;
 }
 
 body.compact-mode #content .main-body-content{
@@ -239,7 +239,7 @@ body.compact-mode .subform-section + .subform-section:not(.no_label){
 
 body.compact-mode .form-section,
 body.compact-mode .subform-section{
-    padding-bottom: 5px;
+    padding-bottom: 10px;
 }
 
 body.compact-mode .list-group-item{
@@ -277,7 +277,9 @@ body.compact-mode .subform-cell > label.label{
 
 body.compact-mode .form-section + .form-section.no_label:not(#section-actions),
 body.compact-mode .subform-section + .subform-section.no_label:not(#section-actions){
-    margin-top: -5px;
+    margin-top: -10px;
+    padding-top: 2px;
+}
 body.compact-mode #section-actions{
     padding-top: 10px;
 }
