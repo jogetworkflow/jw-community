@@ -364,3 +364,8 @@ body.compact-mode div[id^='container_']:has(#indication){
         top: -1px;
     }
 }
+
+/*Display From Right To Left (rtl)*/
+body.rtl #selectedDensity{
+    left: 15px;
+}
