@@ -61,7 +61,7 @@ $(document).ready(function () {
             }
             //checks if the first menu item width is same as the one captured in navItemWIdth array
             //if no, removes old content, remeasures and adds the lengths back in
-            if (firstItemLength != navItemWidth[0] && $(window).outerWidth() >= menuBreakpoint ){;
+            if (firstItemLength !== navItemWidth[0] && $(window).outerWidth() >= menuBreakpoint ){
                 navItemWidth.length = 0;
                 $('#category-container > li').each(function () {
                     let itemWidth = $(this).outerWidth();
@@ -69,7 +69,7 @@ $(document).ready(function () {
                 });
             }
             // checks if id is undefined, if so creates a new id
-            if(id == undefined){
+            if(id === undefined){
                 id = setTimeout(onResize, 500);
             }
             clearTimeout(id);
@@ -82,7 +82,7 @@ $(document).ready(function () {
                 //to prevent the sidebar menu from being affected when within menu breakpoint (less than 768px)
                 $("#sidebar").width("");
             }
-            if(winWidth != $(window).width()){
+            if(winWidth !== $(window).width()){
                 moreWidth = $('#menu-more').outerWidth();
                 // hide all submenus
                 $('.menu-item-has-children').removeClass('visible');
@@ -144,16 +144,16 @@ $(document).ready(function () {
                     $('#menu-more').hide();
                 }
                 // if the menu item will fit
-                else if (((tempWidth < (containerWidth - moreWidth - navPadding)) || ((tempWidth < (containerWidth)) && (count == numItems))) && (room == true)) {
+                else if (((tempWidth < (containerWidth - moreWidth - navPadding)) || ((tempWidth < (containerWidth)) && (count === numItems))) && (room === true)) {
                     // update current menu width
                     totalWidth = tempWidth;
                     // show menu item
-                    if (navItemVisible[count] != true) {
+                    if (navItemVisible[count] !== true) {
                         // move back to main menu
                         $('#menu-more').before($('#moreSubMenu').children().first());
                         navItemVisible[count] = true;
                         // if all are visible, hide More
-                        if (count == numItems) {
+                        if (count === numItems) {
                             $('#menu-more').hide();
                         }
                     }
@@ -161,13 +161,10 @@ $(document).ready(function () {
                 // if the menu item will not fit
                 else {
                     // if there is now no room, show more dropdown
-                    if (room == true) {
+                    if (room === true) {
                         room = false;
                         // change text to "Menu" if no links are showing
-                        if (count == 0) {
-                            ;
-                        }
-                        else {
+                        if (count !== 0) {
                             $('nav').removeClass('all-hidden');
                         }
                         $('#menu-more').show();
