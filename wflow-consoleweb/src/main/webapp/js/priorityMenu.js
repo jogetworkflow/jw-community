@@ -5,11 +5,9 @@ $(document).ready(function () {
     let moreWidth = 0;
     let winWidth = 0;
     const menuBreakpoint = 768;
+    let initialLoad = true;
 
-    if ($("body").hasClass("horizontal_menu")){
-        if ($("body").hasClass("inline_menu") && $(window).outerWidth() >= menuBreakpoint){
-            resizeMenuWidth();
-        }
+    if ($("body").hasClass("horizontal_menu")) {
         winWidth = $(window).width();
         navItems = $('#category-container > li');
         // get width of each item, and list each as visible
@@ -17,7 +15,7 @@ $(document).ready(function () {
             let itemWidth = $(this).outerWidth();
             navItemWidth.push(itemWidth);
             navItemVisible.push(true);
-        });  
+        });
         // add more link
         $('#category-container').append('<li id="menu-more" class="menu-item menu-item-has-children" style="display: none;"><i class="fas fa-ellipsis-h" id="menuMoreLink" href="#"></i><ul id="moreSubMenu" class="sub-menu"></ul></li>');
         moreWidth = $('#menu-more').outerWidth();
@@ -48,7 +46,11 @@ $(document).ready(function () {
         });
         // format navigation on page load
         // delay is added so that menu loads in the items that fit properly
-        setTimeout(formatNav, 250);
+        if ($("body").hasClass("inline_menu") && $(window).outerWidth() >= menuBreakpoint) {
+            resizeMenuWidth(formatNav);
+        } else {
+            setTimeout(formatNav, 250);
+        }
         // format navigation on page resize
         let id;
         $(window).resize(function() {
@@ -57,14 +59,14 @@ $(document).ready(function () {
             if ($(window).outerWidth() >= menuBreakpoint){
                 firstItemLength = $("#" + menuItemId).outerWidth();
             }
-            //checks if the first menu item width is same as the one captured in navItemWIdth array 
+            //checks if the first menu item width is same as the one captured in navItemWIdth array
             //if no, removes old content, remeasures and adds the lengths back in
             if (firstItemLength != navItemWidth[0] && $(window).outerWidth() >= menuBreakpoint ){;
                 navItemWidth.length = 0;
                 $('#category-container > li').each(function () {
                     let itemWidth = $(this).outerWidth();
                     navItemWidth.push(itemWidth);
-                }); 
+                });
             }
             // checks if id is undefined, if so creates a new id
             if(id == undefined){
@@ -75,7 +77,7 @@ $(document).ready(function () {
         });
         function onResize () {
             if($(window).outerWidth() >= menuBreakpoint && $("body").hasClass("inline_menu")){
-                resizeMenuWidth();
+                resizeMenuWidth(formatNav, true);
             }else{
                 //to prevent the sidebar menu from being affected when within menu breakpoint (less than 768px)
                 $("#sidebar").width("");
@@ -88,29 +90,50 @@ $(document).ready(function () {
                 setTimeout(formatNav, 150);
             }
         }
-        function resizeMenuWidth (){
-            let headerlink = 0;
-            let headernav = 0;
-            let totalheaderlengths = 0;
-            
-            headerlink = $('#header-link').outerWidth(true);
-            headernav = $(".header-nav").width();
-            //measured in px
-            totalheaderlengths = headerlink + headernav + 40;
-            totalheaderlengthsstring = totalheaderlengths.toString();
-            line = "calc( 95vw - " + totalheaderlengthsstring + "px)";
-            $("#sidebar").width(line);
+        function resizeMenuWidth (callback, checkWidth){
+            // header title and header nav button container width
+            const headerLinkWidth = $('#header-link').outerWidth(true);
+            const headerNavWidth = $(".header-nav").outerWidth(true);
+            const totalHeaderWidth = headerLinkWidth + headerNavWidth;
+
+            // width of the containerFluid
+            const containerFluidElem = $('.container-fluid');
+            const containerFluidWidth = containerFluidElem.width();
+
+            // Calculate the available width for the sidebar, with an additional 20 pixels for safety distance from the header-nav button.
+            // navbar width - all the extra width and header length
+            let availableWidth = containerFluidWidth - totalHeaderWidth - 20;
+            $("#sidebar").width(availableWidth);
+
+            // Call the callback function if provided
+            if (typeof callback === 'function') {
+                if (checkWidth) {
+                    //for initial load skip width check
+                    if (winWidth !== $(window).width() || initialLoad) {
+                        initialLoad = false;
+                        moreWidth = $('#menu-more').outerWidth();
+                        // hide all submenus
+                        $('.menu-item-has-children').removeClass('visible');
+                        winWidth = $(window).width();
+
+                        callback(availableWidth);
+                    }
+                } else {
+                    callback(availableWidth);
+                }
+            }
         }
-        function formatNav () {
+        function formatNav(containerWidth) {
             // initial variables
             let room = true;
             let count = 0;
             let tempWidth = 0;
-            let totalWidth = 0; 
-            let containerWidth = $('#navigation').innerWidth();
-            let navPadding = 5; // for spacing around items
+            let totalWidth = 0;
+            let navPadding = $('#category-container').outerWidth() - $('#category-container').width(); // for spacing around items
             let numItems = navItems.length - 1;
-
+            if (containerWidth === undefined) {
+                containerWidth = $('#navigation').innerWidth();
+            }
             // for each menu item
             navItems.each(function () {
                 // get width of menu with that item
