@@ -59,7 +59,7 @@ $(document).ready(function () {
             if ($(window).outerWidth() >= menuBreakpoint){
                 firstItemLength = $("#" + menuItemId).outerWidth();
             }
-            //checks if the first menu item width is same as the one captured in navItemWIdth array
+            //checks if the first menu item width is same as the one captured in navItemWidth array
             //if no, removes old content, remeasures and adds the lengths back in
             if (firstItemLength !== navItemWidth[0] && $(window).outerWidth() >= menuBreakpoint ){
                 navItemWidth.length = 0;
@@ -100,9 +100,15 @@ $(document).ready(function () {
             const containerFluidElem = $('.container-fluid');
             const containerFluidWidth = containerFluidElem.width();
 
+            // get width of the sidebar's outer width (padding, margin, borders)
+            const sidebarElem = $('#sidebar');
+            const sidebarOuterWidth = sidebarElem.outerWidth(true);
+            const sidebarWidth = sidebarElem.width();
+            const sidebarExtraWidth = sidebarOuterWidth - sidebarWidth;
+
             // Calculate the available width for the sidebar, with an additional 20 pixels for safety distance from the header-nav button.
             // navbar width - all the extra width and header length
-            let availableWidth = containerFluidWidth - totalHeaderWidth - 20;
+            let availableWidth = containerFluidWidth - totalHeaderWidth - sidebarExtraWidth - 20;
             $("#sidebar").width(availableWidth);
 
             // Call the callback function if provided
