@@ -4048,6 +4048,29 @@ public class WorkflowManagerImpl implements WorkflowManager {
     }
 
     /**
+     * Returns a list of closed assignments for the current user by state.
+     *
+     * @param state the sub state of the closed state. If null or empty, all sub states are selected
+     */
+    public Collection<WorkflowActivity> getClosedAssignmentList(String packageId, String processDefId, String processId, String activityDefId, String state, String sort, Boolean desc, Integer start, Integer rows) {
+        if (processDefId != null) {
+            processDefId = getConvertedLatestProcessDefId(processDefId);
+        }
+        if (state == null || state.isEmpty()) {
+            // add wildcard to search all closed states e.g.: closed.%
+            state = "%";
+        }
+        String username = getWorkflowUserManager().getCurrentUsername();
+        Collection<WorkflowActivity> closedList = workflowAssignmentDao.getClosedAssignment(packageId, processDefId, processId, activityDefId, username, state, sort, desc, start, rows);
+        boolean includeArchived = "archive".equals(setupManager.getSettingValue("deleteProcessOnCompletion"));
+        if (includeArchived) {
+            Collection<WorkflowActivity> archivedList = workflowAssignmentDao.getArchivedAssignment(processId, activityDefId, username, state, sort, desc, start, rows);
+            closedList.addAll(archivedList);
+        }
+        return closedList;
+    }
+
+    /**
      * Returns accepted assignments for the current user
      * 
      * @deprecated Since v3, the concept of accept & withdraw assignment is removed.  
@@ -4107,6 +4130,15 @@ public class WorkflowManagerImpl implements WorkflowManager {
         return workflowAssignmentDao.getAssignmentSize(packageId, processDefId, processId, activityDefId, username, state);
     }
 
+    /**
+     * Returns the number of closed assignments for the current user by state.
+     *
+     * @param state the sub state of the closed state. If null or empty, all sub states are selected
+     */
+    public int getClosedAssignmentListSize(String packageId, String processDefId, String processId, String activityDefId, String state) {
+        return getClosedAssignmentList(packageId, processDefId, processId, activityDefId, state, null, null, null, null).size();
+    }
+    
     /**
      * Accept an assignment (for the current user) based on the activity instance ID.
      * 

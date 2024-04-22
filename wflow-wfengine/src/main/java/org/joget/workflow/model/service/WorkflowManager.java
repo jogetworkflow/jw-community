@@ -346,6 +346,13 @@ public interface WorkflowManager {
     Collection<WorkflowAssignment> getAssignmentListLite(String packageId, String processDefId, String processId, String activityDefId, String sort, Boolean desc, Integer start, Integer rows); // REFACTOR??
 
     /**
+     * Returns a list of closed assignments for the current user by state.
+     *
+     * @param state the sub state of the closed state. If null or empty, all sub states are selected
+     */
+    Collection<WorkflowActivity> getClosedAssignmentList(String packageId, String processDefId, String processId, String activityDefId, String state, String sort, Boolean desc, Integer start, Integer rows); // REFACTOR??
+
+    /**
      * Returns a list of assignments for the current user filter by processDefIds.
      * @param processDefIds
      * @param sort
@@ -382,6 +389,13 @@ public interface WorkflowManager {
      * @return 
      */
     int getAssignmentSize(String packageId, String processDefId, String processId, String activityDefId); // TODO: REFACTOR??
+    
+    /**
+     * Returns the number of closed assignments for the current user by state.
+     *
+     * @param state the sub state of the closed state. If null or empty, all sub states are selected
+     */ 
+    int getClosedAssignmentListSize(String packageId, String processDefId, String processId, String activityDefId, String state); // TODO: REFACTOR??
 
     /**
      * Returns the number of assignments for the current user filter by processDefIds.
