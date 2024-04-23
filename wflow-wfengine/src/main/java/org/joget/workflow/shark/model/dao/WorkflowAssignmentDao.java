@@ -558,7 +558,7 @@ public class WorkflowAssignmentDao extends AbstractSpringDao {
         return transformToWorkflowAssignment(shAss);
     }
     
-    public Collection<WorkflowActivity> getClosedAssignment(String packageId, String processDefId, String processId, String activityDefId, String username, String state, String sort, Boolean desc, Integer start, Integer rows) {
+    public Collection<WorkflowActivity> getClosedActivities(String packageId, String processDefId, String processId, String activityDefId, String username, String state, String sort, Boolean desc, Integer start, Integer rows) {
 
         //sorting
         if (sort != null && !sort.isEmpty()) {
@@ -589,18 +589,18 @@ public class WorkflowAssignmentDao extends AbstractSpringDao {
             }
             
             if (processDefId != null && !processDefId.isEmpty()) {
-                condition += " and PDefName = ?";
+                condition += " and PDefName like ?";
                 processDefId = ignoreVersion(processDefId);
                 params.add(processDefId);
             }
             
             if (processId != null && !processId.isEmpty()) {
-                condition += " and processId = ?";
+                condition += " and ProcessId = ?";
                 params.add(processId);
             }
             
             if (activityDefId != null && !activityDefId.isEmpty()) {
-                condition += " and activityDefId = ?";
+                condition += " and ActivityDefinitionId = ?";
                 params.add(activityDefId);
             }
             if (state != null && !state.isEmpty()) {
@@ -618,7 +618,7 @@ public class WorkflowAssignmentDao extends AbstractSpringDao {
         return transformToWorkflowActivity(shAss);
     }
     
-    public Collection<WorkflowActivity> getArchivedAssignment(String processId, String actDefId, String username, String state, String sort, Boolean desc, Integer start, Integer rows) {
+    public Collection<WorkflowActivity> getArchivedActivities(String packageId, String processDefId, String processId, String actDefId, String username, String state, String sort, Boolean desc, Integer start, Integer rows) {
 
         if (sort != null && !sort.isEmpty()) {
             if (sort.equals("id")) {
@@ -633,28 +633,40 @@ public class WorkflowAssignmentDao extends AbstractSpringDao {
                 sort = "e.performer";
             }
         }
-         
-        String condition = " where 1=1";
+        
+        //required to disable lazy loading 
+        String condition = " join e.process p where 1=1";
         Collection<String> params = new ArrayList<String>();
 
-        if (processId != null || actDefId != null || username != null || state != null) {              
+        if (packageId != null || processDefId != null || processId != null || actDefId != null || username != null || state != null) {              
+            if (packageId != null && !packageId.isEmpty()) {
+                condition += " and p.processDefId like ?";          
+                params.add(packageId+"#%");
+            }
+            
+            if (processDefId != null && !processDefId.isEmpty()) {
+               condition += " and p.processDefId like ?";
+                processDefId = ignoreVersion(processDefId);
+                params.add(processDefId);
+            }
+            
             if (actDefId != null && !actDefId.isEmpty()) {
-                condition += " and activityDefId = ?";
+                condition += " and e.activityDefId = ?";
                 params.add(actDefId);
             }
             
             if (processId != null && !processId.isEmpty()) {
-                condition += " and processId = ?";
+                condition += " and e.processId = ?";
                 params.add(processId);
             }
             
             if (state != null && !state.isEmpty()) {
-                condition += " and state like ?";
+                condition += " and e.state like ?";
                 params.add("closed."+state);
             }
             
             if (username != null && !username.isEmpty()) {
-                condition += " and performer = ?";
+                condition += " and e.performer = ?";
                 params.add(username);
             }
         }
@@ -703,6 +715,95 @@ public class WorkflowAssignmentDao extends AbstractSpringDao {
             }
         }
         Long total = count(ENTITY_NAME, condition, params.toArray(new String[0]));
+        
+        if (total != null) {
+            return total.intValue();
+        }
+        return 0;
+    }
+    
+    public int getClosedActivitiesSize(String packageId, String processDefId, String processId, String activityDefId, String username, String state) {
+        //required to disable lazy loading 
+        String condition = " join e.state s";
+        Collection<String> params = new ArrayList<String>();
+        condition += " where 1=1";
+      
+        if (packageId != null || processDefId != null || processId != null || activityDefId != null || username != null || state != null) {           
+            if (packageId != null && !packageId.isEmpty()) {
+                condition += " and PDefName like ?";                
+                params.add(packageId+"#%");
+            }
+            
+            if (processDefId != null && !processDefId.isEmpty()) {
+                condition += " and PDefName like ?";
+                processDefId = ignoreVersion(processDefId);
+                params.add(processDefId);
+            }
+            
+            if (processId != null && !processId.isEmpty()) {
+                condition += " and ProcessId = ?";
+                params.add(processId);
+            }
+            
+            if (activityDefId != null && !activityDefId.isEmpty()) {
+                condition += " and ActivityDefinitionId = ?";
+                params.add(activityDefId);
+            }
+            if (state != null && !state.isEmpty()) {
+                condition += " and s.name like ?";
+                params.add("closed."+state);
+            }
+            if (username != null && !username.isEmpty()) {
+                condition += " and ResourceId like ?";
+                params.add(username);
+            }
+        }
+        Long total = count(ACTIVITY_ENTITY_NAME, condition, params.toArray(new String[0]));
+        
+        if (total != null) {
+            return total.intValue();
+        }
+        return 0;
+    }
+    
+    public int getArchivedActivitiesSize(String packageId, String processDefId, String processId, String actDefId, String username, String state) {
+        //required to disable lazy loading 
+        String condition = " join e.process p where 1=1";
+        Collection<String> params = new ArrayList<String>();
+
+        if (packageId != null || processDefId != null || processId != null || actDefId != null || username != null || state != null) {              
+            if (packageId != null && !packageId.isEmpty()) {
+                condition += " and p.processDefId like ?";          
+                params.add(packageId+"#%");
+            }
+            
+            if (processDefId != null && !processDefId.isEmpty()) {
+               condition += " and p.processDefId like ?";
+                processDefId = ignoreVersion(processDefId);
+                params.add(processDefId);
+            }
+            
+            if (actDefId != null && !actDefId.isEmpty()) {
+                condition += " and e.activityDefId = ?";
+                params.add(actDefId);
+            }
+            
+            if (processId != null && !processId.isEmpty()) {
+                condition += " and e.processId = ?";
+                params.add(processId);
+            }
+            
+            if (state != null && !state.isEmpty()) {
+                condition += " and e.state like ?";
+                params.add("closed."+state);
+            }
+            
+            if (username != null && !username.isEmpty()) {
+                condition += " and e.performer = ?";
+                params.add(username);
+            }
+        }
+        Long total = count(ACTIVITY_HISTORY_ENTITY_NAME, condition, params.toArray(new String[0]));
         
         if (total != null) {
             return total.intValue();
