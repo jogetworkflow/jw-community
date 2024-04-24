@@ -18,6 +18,4 @@ public interface UserMetaDataDao {
     Boolean deleteUserMetaData(String username, String key);
     
     Boolean deleteUserMetaDatas(String username);
-
-    Boolean deleteUserMetaDatasByUsernameKey(String username, String key);
 }

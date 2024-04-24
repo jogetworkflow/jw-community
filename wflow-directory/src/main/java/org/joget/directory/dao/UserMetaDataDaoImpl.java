@@ -93,20 +93,4 @@ public class UserMetaDataDaoImpl extends AbstractSpringDao implements UserMetaDa
             return false;
         }
     }
-
-    @Override
-    public Boolean deleteUserMetaDatasByUsernameKey(String username, String key) {
-        try {
-            Collection<UserMetaData> collection = (Collection<UserMetaData>) find("UserMetaData", "WHERE e.username = ? AND e.key = ?", new Object[]{username, key}, null, null, null, null);
-            if (collection != null) {
-                for (UserMetaData data : collection) {
-                    delete("UserMetaData", data);
-                }
-            }
-            return true;
-        } catch (Exception e) {
-            LogUtil.error(UserDaoImpl.class.getName(), e, "Delete User Error!");
-            return false;
-        }
-    }
 }
