@@ -371,7 +371,7 @@ body#home #home_column .row{
     color:#000;
 }
 #design_app .card .column_desc {
-    max-height:60px;
+    max-height: 40px;
     overflow:hidden;
 }
 #design_app .card .card-body .card-actions {
@@ -652,6 +652,31 @@ body #content > main > div > div.d-flex.flex-lg-row-fluid.w-lg-50.bgi-size-cover
 body#design_app #tutorial_section{
     display: none;
 }
+body#home #filters_applist > div{
+    margin-bottom: 5px;
+}
+body#home #d-1331669-fn_apps_name{
+    width: 150px !important;
+}
+body#home #filters_applist > div > span:nth-child(3){
+    margin-left: 2px;
+}
+body#home #filters_applist > div > span:nth-child(3) > input{
+    -webkit-backdrop-filter: blur(10px);
+    backdrop-filter: blur(10px);
+    background-color: rgba(255, 255, 255, 0.5);
+    color: #495057;
+    font-weight: 500 !important;
+}
+#home_column #home:has(#filters_applist){
+    padding-top: 0px;
+}
+body:not(:has(#adminBar)) #home_column #home:has(#filters_applist){
+    margin-top: -25px;
+}
+#dataList_applist form[name="form_applist"] .table-wrapper{
+    min-height: 0px;
+}
 
 body.dark-mode#home{
     background-color: var(--theme-background) !important;
@@ -695,5 +720,8 @@ body.dark-mode main-body-submessage{
     color: var(--theme-font-color, #fff);
 }
 body.dark-mode #pc-AED245A047CB49A6405198CF2B1AFCE7{
-     border-color: var(--theme-border-color) !important;
+    border-color: var(--theme-border-color) !important;
+}
+body.dark-mode  .dataList#dataList_applist .column_2 {
+    color: var(--theme-field-font-color) !important;
 }
