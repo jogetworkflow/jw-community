@@ -4048,6 +4048,29 @@ public class WorkflowManagerImpl implements WorkflowManager {
     }
 
     /**
+     * Returns a list of closed activities for the current user by state.
+     *
+     * @param state the sub state of the closed state. If null or empty, all sub states are selected
+     */
+    @Override
+    public Collection<WorkflowActivity> getClosedActivitiesList(String packageId, String processDefId, String processId, String activityDefId, String username, String state, String sort, Boolean desc, Integer start, Integer rows) {
+        if (processDefId != null) {
+            processDefId = getConvertedLatestProcessDefId(processDefId);
+        }
+        if (state == null || state.isEmpty()) {
+            // add wildcard to search all closed states e.g.: closed.%
+            state = "%";
+        }
+        Collection<WorkflowActivity> closedList = workflowAssignmentDao.getClosedActivities(packageId, processDefId, processId, activityDefId, username, state, sort, desc, start, rows);
+        boolean includeArchived = "archive".equals(setupManager.getSettingValue("deleteProcessOnCompletion"));
+        if (includeArchived) {
+            Collection<WorkflowActivity> archivedList = workflowAssignmentDao.getArchivedActivities(packageId, processDefId, processId, activityDefId, username, state, sort, desc, start, rows);
+            closedList.addAll(archivedList);
+        }
+        return closedList;
+    }
+
+    /**
      * Returns accepted assignments for the current user
      * 
      * @deprecated Since v3, the concept of accept & withdraw assignment is removed.  
@@ -4107,6 +4130,30 @@ public class WorkflowManagerImpl implements WorkflowManager {
         return workflowAssignmentDao.getAssignmentSize(packageId, processDefId, processId, activityDefId, username, state);
     }
 
+    /**
+     * Returns the number of closed activity for the user by state.
+     *
+     * @param state the sub state of the closed state. If null or empty, all sub states are selected
+     */
+    @Override
+    public int getClosedActivitiesListSize(String packageId, String processDefId, String processId, String activityDefId, String username, String state) {
+        int total = 0;
+        if (processDefId != null) {
+            processDefId = getConvertedLatestProcessDefId(processDefId);
+        }
+        if (state == null || state.isEmpty()) {
+            // add wildcard to search all closed states e.g.: closed.%
+            state = "%";
+        }
+        total = workflowAssignmentDao.getClosedActivitiesSize(packageId, processDefId, processId, activityDefId, username, state);
+        
+        boolean includeArchived = "archive".equals(setupManager.getSettingValue("deleteProcessOnCompletion"));
+        if (includeArchived) {
+            total += workflowAssignmentDao.getArchivedActivitiesSize(packageId, processDefId, processId, activityDefId, username, state);
+        }
+        return total;
+    }
+    
     /**
      * Accept an assignment (for the current user) based on the activity instance ID.
      * 

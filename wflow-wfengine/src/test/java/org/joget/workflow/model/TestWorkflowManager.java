@@ -8,6 +8,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.Collection;
 import java.util.Map;
+import org.joget.workflow.shark.model.dao.WorkflowAssignmentDao;
 import org.junit.Test;
 import org.junit.Assert;
 import org.junit.runner.RunWith;
@@ -25,6 +26,9 @@ public class TestWorkflowManager {
     }
     @Autowired
     WorkflowManager workflowManager;
+    
+    @Autowired
+    WorkflowAssignmentDao workflowAssignmentDao;
 
     String packageId = "workflow_patterns";
     String processId = "WfBCP1_Sequence";
@@ -44,6 +48,7 @@ public class TestWorkflowManager {
             testStartActivityC();
             testStartProcessWithLinking();
             testCopyProcess();
+            testGetAssignments();
         }
         finally {
             testCloseAndRemovePackage();
@@ -51,7 +56,7 @@ public class TestWorkflowManager {
     }
     
     public void testUploadProcess() throws FileNotFoundException, IOException, Exception {
-        LogUtil.info(getClass().getName(), ">>> testUploadProcess");
+        System.out.println(">>> testUploadProcess");
 
         BufferedReader reader = null;
         String fileContents = "";
@@ -73,19 +78,19 @@ public class TestWorkflowManager {
     }
 
     public void testStartProcess(){
-        LogUtil.info(getClass().getName(), ">>> testStartProcess");
+        System.out.println(">>> testStartProcess");
         String packageVersion = workflowManager.getCurrentPackageVersion(packageId);
         workflowManager.processStart(packageId+"#"+packageVersion+"#"+processId);
-        }
+    }
 
     public void testPendingA(){
-        LogUtil.info(getClass().getName(), ">>> testPendingA");
+        System.out.println(">>> testPendingA");
         Map activityInstance = workflowManager.getActivityInstanceByProcessIdAndStatus(processId, false);
         workflowManager.assignmentAccept(String.valueOf(activityInstance.get("A")));
     }
 
     public void testAssignment(){
-        LogUtil.info(getClass().getName(), ">>> testAssignment");
+        System.out.println(">>> testAssignment");
         Map activityInstance = workflowManager.getActivityInstanceByProcessIdAndStatus(processId, true);
         String activityId = String.valueOf(activityInstance.get("A"));
         WorkflowActivity wa = workflowManager.getActivityById(activityId);
@@ -96,13 +101,13 @@ public class TestWorkflowManager {
     }
 
     public void testAcceptedA(){
-        LogUtil.info(getClass().getName(), ">>> testAcceptedA");
+        System.out.println(">>> testAcceptedA");
         Map activityInstance = workflowManager.getActivityInstanceByProcessIdAndStatus(processId, true);
         workflowManager.assignmentComplete(String.valueOf(activityInstance.get("A")));
     }
 
     public void testStartActivityC() {
-        LogUtil.info(getClass().getName(), ">>> testStartActivityC");
+        System.out.println(">>> testStartActivityC");
 
         String currentActivityDef = "B";
         String desiredActivityDef = "C";
@@ -120,36 +125,36 @@ public class TestWorkflowManager {
         runningActivities = workflowManager.getActivityInstanceByProcessIdAndStatus(processId, null);
         String abortedActivity = (String)runningActivities.get(currentActivityDef);
         String runningActivity = (String)runningActivities.get(desiredActivityDef);
-        LogUtil.info(getClass().getName(), "Running activities: " + runningActivities + "; Result: " + started);
+        System.out.println("Running activities: " + runningActivities + "; Result: " + started);
 
         Assert.assertTrue(abortedActivity == null && runningActivity != null);
     }
 
     public void testStartProcessWithLinking(){
-        LogUtil.info(getClass().getName(), ">>> testStartProcessWithLinking");
+        System.out.println(">>> testStartProcessWithLinking");
 
         //start and get instant id of 1st process
         String packageVersion = workflowManager.getCurrentPackageVersion(packageId);
         WorkflowProcessResult result = workflowManager.processStart(packageId+"#"+packageVersion+"#"+processId);
         String process1Id = result.getProcess().getInstanceId();
         String parentProcess1Id = result.getParentProcessId();
-        LogUtil.info(getClass().getName(), "-------------  process one id : " + process1Id + "  -------------");
+        System.out.println("-------------  process one id : " + process1Id + "  -------------");
 
         //start 2nd process with 1st process instant id and get 2nd process instant id
         WorkflowProcessResult nextResult = workflowManager.processStartWithLinking(packageId+"#"+packageVersion+"#"+processId, null, null, parentProcess1Id);
         String process2Id = nextResult.getProcess().getInstanceId();
-        LogUtil.info(getClass().getName(), "-------------  process two id : " + process2Id + "  -------------");
+        System.out.println("-------------  process two id : " + process2Id + "  -------------");
 
         //check process linking data is correct or not
         WorkflowProcessLink link = workflowManager.getWorkflowProcessLink(process2Id);
-        LogUtil.info(getClass().getName(), "-------------  origin process id : " + link.getOriginProcessId() + "  -------------");
+        System.out.println("-------------  origin process id : " + link.getOriginProcessId() + "  -------------");
         workflowManager.internalDeleteWorkflowProcessLink(link);
         Assert.assertNotNull(link);
         Assert.assertTrue(parentProcess1Id.equals(link.getOriginProcessId()) && parentProcess1Id.equals(link.getParentProcessId()));
     }
 
     public void testCopyProcess() {
-        LogUtil.info(getClass().getName(), ">>> testCopyProcess");
+        System.out.println(">>> testCopyProcess");
 
         boolean valid = false;
 
@@ -157,7 +162,7 @@ public class TestWorkflowManager {
         String packageVersion = workflowManager.getCurrentPackageVersion(packageId);
         WorkflowProcessResult result = workflowManager.processStart(packageId+"#"+packageVersion+"#"+processId);
         String processInstanceId = result.getProcess().getInstanceId();
-        LogUtil.info(getClass().getName(), "-------------  process one id : " + processInstanceId + "  -------------");
+        System.out.println("-------------  process one id : " + processInstanceId + "  -------------");
 
         // abort running activities and start activity B
         String firstActivityDef = "A";
@@ -184,7 +189,7 @@ public class TestWorkflowManager {
                         }
                     }
                 }
-                LogUtil.info(getClass().getName(), "-------------  new process id : " + newProcessId + "  ------------- " + valid);
+                System.out.println("-------------  new process id : " + newProcessId + "  ------------- " + valid);
 
                 // cleanup
                 WorkflowProcessLink link = workflowManager.getWorkflowProcessLink(newProcessId);
@@ -194,12 +199,175 @@ public class TestWorkflowManager {
 
         Assert.assertTrue(valid);
     }
+    
+    public void testGetAssignments() {
+        System.out.println(">>> testGetAssignments");
+        
+        String packageVersion = workflowManager.getCurrentPackageVersion(packageId);
+        
+        System.out.println(">>> getAssignmentListLite by packageId");
+        Collection<WorkflowAssignment> assignments = workflowManager.getAssignmentListLite(packageId, null, null, null, null, null, null, null);
+        Assert.assertEquals(4, assignments.size());
+        
+        System.out.println(">>> getAssignmentListLite by processDefId");
+        assignments = workflowManager.getAssignmentListLite(null, packageId+"#"+packageVersion+"#"+processId, null, null, null, null, null, null);
+        Assert.assertEquals(4, assignments.size());
+        
+        System.out.println(">>> getAssignmentListLite by processId");
+        assignments = workflowManager.getAssignmentListLite(null, null, assignments.iterator().next().getProcessId(), null, null, null, null, null);
+        Assert.assertEquals(1, assignments.size());
+        
+        System.out.println(">>> getAssignmentListLite by activityDefId");
+        assignments = workflowManager.getAssignmentListLite(null, null, null, "A", null, null, null, null);
+        Assert.assertEquals(2, assignments.size());
+        
+        System.out.println(">>> getAssignmentList by packageId");
+        assignments = workflowManager.getAssignmentList(packageId, null, null, null, null, null, null, null);
+        Assert.assertEquals(4, assignments.size());
+        
+        System.out.println(">>> getAssignmentList by processDefId");
+        assignments = workflowManager.getAssignmentList(null, packageId+"#"+packageVersion+"#"+processId, null, null, null, null, null, null);
+        Assert.assertEquals(4, assignments.size());
+        
+        System.out.println(">>> getAssignmentList by processId");
+        assignments = workflowManager.getAssignmentList(null, null, assignments.iterator().next().getProcessId(), null, null, null, null, null);
+        Assert.assertEquals(1, assignments.size());
+        
+        System.out.println(">>> getAssignmentList by activityDefId");
+        assignments = workflowManager.getAssignmentList(null, null, null, "A", null, null, null, null);
+        Assert.assertEquals(2, assignments.size());
+        
+        System.out.println(">>> getAssignmentSize by packageId");
+        int count = workflowManager.getAssignmentSize(packageId, null, null, null);
+        Assert.assertEquals(4, count);
+        
+        System.out.println(">>> getAssignmentSize by processDefId");
+        count = workflowManager.getAssignmentSize(null, packageId+"#"+packageVersion+"#"+processId, null, null);
+        Assert.assertEquals(4, count);
+        
+        System.out.println(">>> getAssignmentSize by processId");
+        count = workflowManager.getAssignmentSize(null, null, assignments.iterator().next().getProcessId(), null);
+        Assert.assertEquals(1, count);
+        
+        System.out.println(">>> getAssignmentSize by activityDefId");
+        count = workflowManager.getAssignmentSize(null, null, null, "A");
+        Assert.assertEquals(2, count);
+        
+        System.out.println(">>> getClosedActivitiesList by packageId");
+        Collection<WorkflowActivity> activities = workflowManager.getClosedActivitiesList(packageId, null, null, null, null, null, null, null, null, null);
+        Assert.assertEquals(4, activities.size());
+        
+        System.out.println(">>> getClosedActivitiesList by packageId & aborted");
+        activities = workflowManager.getClosedActivitiesList(packageId, null, null, null, null, "aborted", null, null, null, null);
+        Assert.assertEquals(3, activities.size());
+        
+        System.out.println(">>> getClosedActivitiesList by packageId & completed");
+        activities = workflowManager.getClosedActivitiesList(packageId, null, null, null, null, "completed", null, null, null, null);
+        Assert.assertEquals(1, activities.size());
+        
+        System.out.println(">>> getClosedActivitiesList by processDefId");
+        activities = workflowManager.getClosedActivitiesList(null, packageId+"#"+packageVersion+"#"+processId, null, null, null, null, null, null, null, null);
+        Assert.assertEquals(4, activities.size());
+        
+        System.out.println(">>> getClosedActivitiesList by processDefId & aborted");
+        activities = workflowManager.getClosedActivitiesList(null, packageId+"#"+packageVersion+"#"+processId, null, null, null, "aborted", null, null, null, null);
+        Assert.assertEquals(3, activities.size());
+        
+        System.out.println(">>> getClosedActivitiesList by processDefId & completed");
+        activities = workflowManager.getClosedActivitiesList(null, packageId+"#"+packageVersion+"#"+processId, null, null, null, "completed", null, null, null, null);
+        Assert.assertEquals(1, activities.size());
+        
+        System.out.println(">>> getClosedActivitiesList by processId");
+        String processInsId = activities.iterator().next().getProcessId();
+        activities = workflowManager.getClosedActivitiesList(null, null, processInsId, null, null, null, null, null, null, null);
+        Assert.assertEquals(2, activities.size());
+        
+        System.out.println(">>> getClosedActivitiesList by processId & aborted");
+        activities = workflowManager.getClosedActivitiesList(null, null, processInsId, null, null, "aborted", null, null, null, null);
+        Assert.assertEquals(1, activities.size());
+        
+        System.out.println(">>> getClosedActivitiesList by processId & completed");
+        activities = workflowManager.getClosedActivitiesList(null, null, processInsId, null, null, "completed", null, null, null, null);
+        Assert.assertEquals(1, activities.size());
+        
+        System.out.println(">>> getClosedActivitiesList by username");
+        activities = workflowManager.getClosedActivitiesList(null, null, null, null, "roleAnonymous", null, null, null, null, null);
+        Assert.assertEquals(1, activities.size());
+        
+        System.out.println(">>> getClosedActivitiesList by username & aborted");
+        activities = workflowManager.getClosedActivitiesList(null, null, null, null, "roleAnonymous", "aborted", null, null, null, null);
+        Assert.assertEquals(0, activities.size());
+        
+        System.out.println(">>> getClosedActivitiesList by username & completed");
+        activities = workflowManager.getClosedActivitiesList(null, null, null, null, "roleAnonymous", "completed", null, null, null, null);
+        Assert.assertEquals(1, activities.size());
+        
+        System.out.println(">>> getClosedActivitiesList by admin username");
+        activities = workflowManager.getClosedActivitiesList(null, null, null, null, "admin", null, null, null, null, null);
+        Assert.assertEquals(0, activities.size());
+        
+        System.out.println(">>> getClosedActivitiesListSize by packageId");
+        count = workflowManager.getClosedActivitiesListSize(packageId, null, null, null, null, null);
+        Assert.assertEquals(4, count);
+        
+        System.out.println(">>> getClosedActivitiesListSize by packageId & aborted");
+        count = workflowManager.getClosedActivitiesListSize(packageId, null, null, null, null, "aborted");
+        Assert.assertEquals(3, count);
+        
+        System.out.println(">>> getClosedActivitiesListSize by packageId & completed");
+        count = workflowManager.getClosedActivitiesListSize(packageId, null, null, null, null, "completed");
+        Assert.assertEquals(1, count);
+        
+        System.out.println(">>> getClosedActivitiesListSize by processDefId");
+        count = workflowManager.getClosedActivitiesListSize(null, packageId+"#"+packageVersion+"#"+processId, null, null, null, null);
+        Assert.assertEquals(4, count);
+        
+        System.out.println(">>> getClosedActivitiesListSize by processDefId & aborted");
+        count = workflowManager.getClosedActivitiesListSize(null, packageId+"#"+packageVersion+"#"+processId, null, null, null, "aborted");
+        Assert.assertEquals(3, count);
+        
+        System.out.println(">>> getClosedActivitiesListSize by processDefId & completed");
+        count = workflowManager.getClosedActivitiesListSize(null, packageId+"#"+packageVersion+"#"+processId, null, null, null, "completed");
+        Assert.assertEquals(1, count);
+        
+        System.out.println(">>> getClosedActivitiesListSize by processId");
+        count = workflowManager.getClosedActivitiesListSize(null, null, processInsId, null, null, null);
+        Assert.assertEquals(2, count);
+        
+        System.out.println(">>> getClosedActivitiesListSize by processId & aborted");
+        count = workflowManager.getClosedActivitiesListSize(null, null, processInsId, null, null, "aborted");
+        Assert.assertEquals(1, count);
+        
+        System.out.println(">>> getClosedActivitiesListSize by processId & completed");
+        count = workflowManager.getClosedActivitiesListSize(null, null, processInsId, null, null, "completed");
+        Assert.assertEquals(1, count);
+        
+        System.out.println(">>> getClosedActivitiesListSize by username");
+        count = workflowManager.getClosedActivitiesListSize(null, null, null, null, "roleAnonymous", null);
+        Assert.assertEquals(1, count);
+        
+        System.out.println(">>> getClosedActivitiesListSize by username & aborted");
+        count = workflowManager.getClosedActivitiesListSize(null, null, null, null, "roleAnonymous", "aborted");
+        Assert.assertEquals(0, count);
+        
+        System.out.println(">>> getClosedActivitiesListSize by username & completed");
+        count = workflowManager.getClosedActivitiesListSize(null, null, null, null, "roleAnonymous", "completed");
+        Assert.assertEquals(1, count);
+        
+        System.out.println(">>> getClosedActivitiesListSize by admin username");
+        count = workflowManager.getClosedActivitiesListSize(null, null, null, null, "admin", null);
+        Assert.assertEquals(0, count);
+    }
 
     public void testCloseAndRemovePackage(){
-        LogUtil.info(getClass().getName(), ">>> testCloseAndRemovePackage");
+        System.out.println(">>> testCloseAndRemovePackage");
         Collection<WorkflowProcess> processList = workflowManager.getRunningProcessList(packageId, null, null, null, null, null, 0, 100);
 
         for(WorkflowProcess process : processList) workflowManager.removeProcessInstance(process.getInstanceId());
+        
+        //remove all history data
+        Collection<WorkflowProcess> hisProcessList = workflowAssignmentDao.getProcessHistories(null, null, null, null, null, null, null, null, null, null, null);
+        for(WorkflowProcess process : hisProcessList) workflowAssignmentDao.deleteProcessHistory(process.getInstanceId());
 
         workflowManager.processDeleteAndUnload(packageId);
     }
