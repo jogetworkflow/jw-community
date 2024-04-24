@@ -658,7 +658,7 @@ body.dark-mode#home{
 }
 body.dark-mode#home #pc- {
     background-color: var(--theme-content-background) !important;
-    background-image: linear-gradient(to bottom, #1e1e2d, #2b2b40 100%), url(/jw/images/appCenterBanner.png);
+    background-image: linear-gradient(to bottom, #1e1e2d, #2b2b40 100%) !important;
 }
 body.dark-mode .dataList#dataList_applist .appIcon{
     background-color: var(--theme-background) !important;
