@@ -1,0 +1,394 @@
+.density-selection .themes li {
+    cursor: default;
+    padding: 5px;
+}
+
+.density-selection .themes li:hover {
+    background-color: #f6f6f6;
+}
+
+.themes #dropdown-title {
+    border-bottom: 1px solid #dee2e6;
+    padding: 0px 10px;
+    text-align: center;
+    padding-bottom: 5px;
+    margin-bottom: 5px;
+}
+
+.density-selection .themes li .header {
+    padding-left: 35px;
+}
+
+#selectedDensity {
+    position: absolute;
+    font-size: 1.4rem;
+}
+
+.dropdown-menu.themes {
+    width: 220px;
+}
+
+/*compact CSS*/
+body.compact-mode .sidebar_brand{
+    padding-top: 2px;
+    padding-bottom: 2px;
+    height: 50px;
+}
+
+body.compact-mode .adjustfontSize{
+    padding-bottom: 0px !important;
+}
+
+body.compact-mode .hi-trigger{
+    padding-top: 7px;
+    padding-bottom: 7px;
+}
+
+body.compact-mode .dataList .filters,
+body.compact-mode .dataList .actions.top{
+    margin-bottom: 0px;
+}
+
+body.compact-mode .dataList .actions{
+    margin-top: 0px;
+}
+
+body.compact-mode input[type=hidden] + .form-cell,
+body.compact-mode .form-cell + .form-cell,
+body.compact-mode .subform-cell + .subform-cell,
+body.compact-mode .form-cell + .subform-cell,
+body.compact-mode .subform-cell + .form-cell
+{
+    margin-top: 2px;
+}
+
+body.compact-mode #content.page_content{
+    padding-top: 60px;
+}
+
+body.compact-mode header.navbar{
+    /*-8*/
+    height: 50px;
+}
+body.compact-mode header.navbar .container-fluid {
+    padding-top: 4px;
+    padding-bottom: 4px;
+}
+
+body.compact-mode .line-wrap .line.center{
+    margin-top: 2px;
+    margin-bottom: 2px;
+}
+
+body.compact-mode #sidebar .nav > li > a,
+body.compact-mode #sidebar .nav > li > a > span:not(.badge) 
+{
+    padding-top: 2px;
+    padding-bottom: 2px;
+    min-height: 0;
+}
+
+body.compact-mode #sidebar .nav > li > ul > li > a{
+    padding-top: 4px;
+    padding-bottom: 4px;
+}
+
+body.compact-mode .dataList thead th{
+    padding-top: 5px;
+    padding-bottom: 5px;
+}
+
+body.compact-mode .dataList th, 
+body.compact-mode .dataList td {
+    padding-top: 2px;
+    padding-bottom: 0px;    
+    vertical-align: middle;
+}
+
+body.compact-mode input[type=checkbox]{
+    height: 14px;
+    width: 14px;
+}
+
+body.compact-mode .dataList .filters > span + span{
+    margin-left: 0px;
+}
+
+body.compact-mode form.form fieldset .form-row + .form-row{
+    margin-top: 0px;
+}
+
+body.compact-mode form.form fieldset + fieldset{
+    margin-top: 5px;
+}
+
+body.compact-mode form.form fieldset {
+    padding-bottom: 0px;
+}
+
+body.compact-mode form.form fieldset legend {
+    padding-top: 0.25rem;
+    padding-bottom: 0.25rem;
+}
+
+body.compact-mode .breadcrumb {
+    margin-bottom: 0.25rem;
+}
+
+body.compact-mode #content main button[class*=button],
+body.compact-mode #content main input[class*=button]{
+    padding-top: 0.125rem;
+    padding-bottom: 0.125rem;
+}
+
+body.compact-mode .dataList .table-wrapper{
+    padding-bottom: 10px;
+    min-height: 0;
+}
+
+body.compact-mode .btn-group-sm>.btn,
+body.compact-mode .btn-sm,
+body.compact-mode .dataList .row_action a:not(.btn){
+    padding-top: 0;
+    padding-bottom: 0;
+}
+
+body.compact-mode .viewForm-body-content{
+    padding-top: 0;
+}
+
+body.compact-mode .form-section-title,
+body.compact-mode .subform-section-title {
+    padding-top: 0.25rem;
+    padding-bottom: 0.25rem;
+    margin-bottom: 10px;
+}
+
+body.compact-mode .form-cell-value > label,
+body.compact-mode .subform-cell-value > label {
+    margin-bottom: .1rem;
+}
+
+body.compact-mode .form-section.no_label,
+body.compact-mode .subform-section.no_label{
+    padding-top: 10px;
+}
+
+body.compact-mode #content .main-body-content{
+    padding-top: 10px;
+    padding-bottom: 10px;
+}
+
+body.compact-mode .dataList .filter-cell input[type="submit"]{
+    height: 26px;
+}
+
+body.compact-mode input:not([type]),
+body.compact-mode input[type=text],
+body.compact-mode input[type=password],
+body.compact-mode input[type=email],
+body.compact-mode input[type=url],
+body.compact-mode input[type=time],
+body.compact-mode input[type=date],
+body.compact-mode input[type=datetime],
+body.compact-mode input[type=datetime-local],
+body.compact-mode input[type=tel],
+body.compact-mode input[type=number],
+body.compact-mode input[type=search],
+body.compact-mode select
+{
+    height: calc(1.5em + 0.25rem + 2px);
+    padding-top: 2px;
+    padding-bottom: 2px;
+}
+
+body.compact-mode .fc .fc-toolbar.fc-header-toolbar{
+    margin-bottom: 1.0em;
+}
+
+body.compact-mode .dataList span.pagelinks a,
+body.compact-mode .dataList span.pagelinks strong,
+body.compact-mode .dataList span.pagelinks > span{
+    height: 25px;
+}
+
+body.compact-mode .dataList span.pagelinks a,
+body.compact-mode .dataList span.pagelinks strong,
+body.compact-mode .dataList span.pagelinks > span{
+    line-height: 23px;
+}
+
+body.compact-mode .dataList .pagelinks .pc.first-disabled,
+body.compact-mode .dataList .pagelinks .pc.prev-disabled,
+body.compact-mode .dataList .pagelinks .pc.next-disabled,
+body.compact-mode .dataList .pagelinks .pc.last-disabled{
+    line-height: 24px;
+}
+
+body.compact-mode .dataList.size_sm > form > .table-wrapper > table.responsivetable > tbody > tr,
+body.compact-mode .dataList.size_sm > .table-wrapper > table.responsivetable > tbody > tr{
+    padding-top: 5px;
+    padding-bottom: 5px;
+    margin-bottom: 5px;
+}
+
+body.compact-mode .form-section + .form-section:not(.no_label),
+body.compact-mode .subform-section + .subform-section:not(.no_label){
+    margin-top: 10px;
+}
+
+body.compact-mode .form-section,
+body.compact-mode .subform-section{
+    padding-bottom: 10px;
+}
+
+body.compact-mode .list-group-item{
+    padding-top: .25rem;
+    padding-bottom: .25rem;
+}
+
+body.compact-mode #content .main-body-content + .main-body-content{
+    margin-top: 10px;
+}
+
+body.compact-mode .btn-secondary{
+    padding-top: .125rem;
+    padding-bottom: .125rem;
+}
+
+body.compact-mode .dataList .filter-cell input[type="submit"]{
+    padding-top: 2px;
+    padding-bottom: 2px;
+}
+
+body.compact-mode #sidebar .nav > li > a.menu-link > span.badge{
+    margin-top: 4px;
+}
+
+body.compact-mode .hasDatepicker + a,
+body.compact-mode .hasDatepicker + a + a{
+    top: 5px;
+}
+
+body.compact-mode .form-cell > label.label,
+body.compact-mode .subform-cell > label.label{
+    padding-top: 3px;
+}
+
+body.compact-mode .form-section + .form-section.no_label:not(#section-actions),
+body.compact-mode .subform-section + .subform-section.no_label:not(#section-actions){
+    margin-top: -10px;
+    padding-top: 2px;
+}
+body.compact-mode #section-actions{
+    padding-top: 10px;
+}
+body.compact-mode #sidebar .nav > li > a > span > i:first-child{
+    height: 25px;
+    line-height: 25px;
+    font-size: 15px
+}
+body.compact-mode .tablesaw thead tr:first-child th{
+    padding-top: .45em;
+    padding-bottom: .35em;  
+}
+
+body.compact-mode .tablesaw th,
+body.compact-mode .tablesaw td{
+    padding: .25em .35em;
+}
+body.compact-mode .dataList .rowaction_body a:not(.stretched-link),
+body.compact-mode .dataList a.rowaction_body:not(.stretched-link),
+body.compact-mode.dataList .column_body a{
+    padding-top: 0;
+    padding-bottom: 0;
+}
+body.compact-mode div[id^='container_']:has(#indication){
+    margin-bottom: 15px;
+}
+/*horizontal menu*/
+@media (min-width: 768px){
+    body.compact-mode.horizontal_menu #sidebar .nav > li > a > span:not(.badge){
+        padding-top: 6px;
+        padding-bottom: 6px;
+        min-height: 35px;
+    }
+    
+    body.compact-mode.horizontal_menu #sidebar{
+        height: 36px;
+    }
+    
+    body.compact-mode.horizontal_menu #content.page_content{
+        padding-top: 10px;
+    }
+    
+    body.compact-mode.horizontal_menu #sidebar .nav > li > a {
+        padding-top: 0;
+        padding-bottom: 1px;
+        padding-left: 7px;
+        padding-right: 7px;
+    }
+    
+    body.compact-mode.horizontal_menu #sidebar li a.dropdown{
+        padding-right: 25px;
+    }
+    
+    body.compact-mode.horizontal_menu header.navbar .container-fluid {
+        padding-top: 4px ;
+        padding-bottom: 4px;
+    }
+    
+    body.compact-mode ul#moreSubMenu.sub-menu > li > ul > li > a {
+        padding-top: 4px;
+        padding-bottom: 4px;
+    }
+    
+    body.compact-mode.horizontal_menu #sidebar .nav {
+        height: 36px;
+    }
+    
+    body.compact-mode i#menuMoreLink{
+        padding-top: 10px;
+        padding-bottom: 12px;
+    }
+    
+    body.compact-mode.horizontal_menu #sidebar .nav > li.toggled:hover > ul,
+    body.compact-mode.horizontal_menu #sidebar li:hover > ul,
+    body.compact-mode.horizontal_menu #sidebar .nav > li.toggled > ul.focusVisible, 
+    body.compact-mode.horizontal_menu #sidebar li > ul.focusVisible,
+    body.compact-mode.horizontal_menu #sidebar ul#moreSubMenu.sub-menu{
+        top: 34px;
+    }
+    
+    body.compact-mode.horizontal_menu ul#moreSubMenu.sub-menu > li:hover> ul{
+        top: -1px;
+    }
+}
+
+/*Display From Right To Left (rtl)*/
+body.rtl #selectedDensity{
+    left: 15px;
+}
+body.compact-mode.rtl:not(.horizontal_menu) header.navbar .container-fluid{
+    padding-top: 4px !important;
+    padding-bottom: 4px !important;
+}
+body.compact-mode.rtl #sidebar .nav > li > a, body.compact-mode.rtl #sidebar .nav > li > a > span:not(.badge){
+    padding-top: 2px;
+    padding-bottom: 2px;
+}
+
+body.compact-mode.rtl:not(.horizontal_menu) #sidebar .nav > li > a.menu-link > span:not(.badge){
+    padding-top: 2px;
+    padding-bottom: 2px;
+}
+
+body.compact-mode.rtl:not(.horizontal_menu) #sidebar .nav > li > ul > li > a{
+    padding-top: 4px;
+    padding-bottom: 4px;    
+}
+
+body.compact-mode.rtl #sidebar .nav-tabs.user-menu .mm-profile > a{
+    padding: 25px 15px;
+}
+

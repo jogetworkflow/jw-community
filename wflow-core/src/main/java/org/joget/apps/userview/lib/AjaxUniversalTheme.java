@@ -91,8 +91,9 @@ public class AjaxUniversalTheme extends UniversalTheme implements SupportBuilder
             if (showHomeBanner()) {
                 data.put("body_classes", data.get("body_classes").toString() + " has_home_banner");
             }
+            data.put("body_inner_before", "<div class=\"page-loader\"><div class=\"spinner\"></div></div>");
             if ("true".equals(getPropertyString("darkMode"))) {
-                data.put("body_inner_before", 
+                data.put("body_inner_before", data.get("body_inner_before").toString() +
                                 "<script>" + 
                                 "const theme = localStorage.getItem(\"theme\");\n" +
                                 "if (theme === \"auto\"){\n"+
@@ -100,10 +101,14 @@ public class AjaxUniversalTheme extends UniversalTheme implements SupportBuilder
                                         "}else{\n"+
                                 "$(\"body\").addClass(theme + \"-mode\");\n" +
                                         "};\n"+
-                                "</script>\n" +                             
-                     "<div class=\"page-loader\"><div class=\"spinner\"></div></div>");
-            }else {
-                data.put("body_inner_before", "<div class=\"page-loader\"><div class=\"spinner\"></div></div>");
+                                "</script>\n");
+            }
+            if("true".equals(getPropertyString("compactTheme"))) {
+                data.put("body_inner_before", data.get("body_inner_before").toString() +
+                                "<script>" + 
+                                "const density = localStorage.getItem(\"density\");\n" +
+                                "$(\"body\").addClass(density + \"-mode\");\n" +
+                                "</script>\n");
             }
             return UserviewUtil.getTemplate(this, data, "/templates/userview/layout.ftl");
         }
@@ -199,6 +204,11 @@ public class AjaxUniversalTheme extends UniversalTheme implements SupportBuilder
             if ("true".equals(getPropertyString("darkMode"))) {
                 jsCssLink += "<script src=\"" + data.get("context_path") + "/wro/darkTheme.js\" defer></script>\n";
                 jsCssLink += "<link rel=\"stylesheet\" href=\"" + data.get("context_path") + "/wro/darkTheme.css\"></link>\n";
+            }
+            
+            if ("true".equals(getPropertyString("compactTheme"))) {
+                jsCssLink += "<script src=\"" + data.get("context_path") + "/wro/compactTheme.js\" defer></script>\n";
+                jsCssLink += "<link rel=\"stylesheet\" href=\"" + data.get("context_path") + "/wro/compactTheme.css\"></link>\n";
             }
             
             if (MobileUtil.isIE()) {
@@ -557,6 +567,9 @@ public class AjaxUniversalTheme extends UniversalTheme implements SupportBuilder
         if ("true".equals(getPropertyString("darkMode"))) {
             html += getThemeSwitch(data);
         }
+        if ("true".equals(getPropertyString("compactTheme"))) {
+            html += getCompactThemeSwitch(data);
+        }
         html += getUserMenu(data);
         html += "</ul></div>\n";
         return html;
@@ -575,4 +588,19 @@ public class AjaxUniversalTheme extends UniversalTheme implements SupportBuilder
                 + "    </ul>\n"
                 + "<li>";
     }
+    
+    protected String getCompactThemeSwitch(Map<String, Object> data) {
+        return "<li class=\"density-selection dropdown\">\n"
+                + "    <a data-toggle=\"dropdown\" href=\"javascript:;\" class=\"btn dropdown-toggle\">\n"
+                + "	 <i class=\"fas fa-compress\"></i>\n"
+                + "    </a>\n"
+                + "    <ul id=\"density-selector\" class=\"dropdown-menu themes\">\n"
+                + "        <div id=\"dropdown-title\"><span class=\"header\">" + ResourceBundleUtil.getMessage("theme.ajaxUniversalTheme.compactTheme.density") + "</span></div>\n"
+                + "        <li data-value=\"normal\"><span class=\"header\">" + ResourceBundleUtil.getMessage("theme.ajaxUniversalTheme.compactTheme.normalmode") + "</span></li>\n"
+                + "        <li data-value=\"compact\"><span class=\"header\">" + ResourceBundleUtil.getMessage("theme.ajaxUniversalTheme.compactTheme.compactmode") + "</span></li>\n"
+                + "    </ul>\n"
+                + "<li>";
+    }
+    
+    
 }
