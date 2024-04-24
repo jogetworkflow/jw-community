@@ -4647,6 +4647,8 @@ public class ConsoleWebController {
 
     @RequestMapping(value = "/console/setting/general/submit", method = RequestMethod.POST)
     public String consoleSettingGeneralSubmit(HttpServletRequest request, ModelMap map) {
+        boolean localeChanged = false;
+        
         List<String> settingsIsNotNull = new ArrayList<String>();
 
         List<String> booleanSettingsList = new ArrayList<String>();
@@ -4695,6 +4697,12 @@ public class ConsoleWebController {
                     setting.setValue(SecurityUtil.encrypt(paramValue));
                 }
             } else {
+                
+                //check for locale changes
+                if ("systemLocale".equals(paramName) && !paramValue.equals(setting.getValue())) {
+                    localeChanged = true;
+                }
+                
                 setting.setValue(paramValue);
             }
             
@@ -4724,7 +4732,12 @@ public class ConsoleWebController {
 
         //clear all caches & update the settings
         setupManager.clearCache();
-        ((LocalLocaleResolver) localeResolver).reset(request);
+        
+        //only reset the locale when setting changed
+        if (localeChanged) {
+            ((LocalLocaleResolver) localeResolver).reset(request);
+        }
+        
         if (refreshPlugins) {
             pluginManager.refresh();
         } else {
