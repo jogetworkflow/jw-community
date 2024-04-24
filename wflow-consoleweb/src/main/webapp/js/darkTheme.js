@@ -40,4 +40,10 @@ $(document).ready(function () {
             updateSelectedIconAndSave(selectedTheme);
         }
     });
+    
+    if (currentTheme === "auto") {
+        toggleTheme(prefersDarkScheme.matches ? "dark" : "light");
+    } else {
+        toggleTheme(currentTheme);
+    }
 });
