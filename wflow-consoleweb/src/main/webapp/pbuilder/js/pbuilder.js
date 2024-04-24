@@ -3788,6 +3788,7 @@ ProcessBuilder = {
         var def = [
             {
                 title: get_cbuilder_msg("pbuilder.label.configureMapping"),
+                helplink: get_cbuilder_msg("pbuilder.label.configureMapping.helplink"),
                 properties: [{
                     name: 'mapping_par_type',
                     label: get_cbuilder_msg("cbuilder.type"),

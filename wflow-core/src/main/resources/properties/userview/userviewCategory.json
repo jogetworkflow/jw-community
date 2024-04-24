@@ -1,7 +1,7 @@
 [
     {
         title : '@@ubuilder.editCategory@@', 
-        helplink : '@@userview.userviewcategory.setPermission.helplink@@', 
+        helplink : '@@userview.userviewcategory.editCategory.helplink@@', 
         properties : [
             {
                 name : 'id',
