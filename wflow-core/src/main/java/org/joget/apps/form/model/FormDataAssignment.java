@@ -8,6 +8,7 @@ public class FormDataAssignment {
     private String ActivityId;
     private String ActivityProcessDefName;
     private String ActivityProcessId;
+    private Boolean IsValid;
     private WorkflowProcessLink link;
 
     public long getId() {
@@ -48,6 +49,14 @@ public class FormDataAssignment {
 
     public void setActivityProcessId(String ActivityProcessId) {
         this.ActivityProcessId = ActivityProcessId;
+    }
+
+    public Boolean getIsValid() {
+        return IsValid;
+    }
+
+    public void setIsValid(Boolean IsValid) {
+        this.IsValid = IsValid;
     }
 
     public WorkflowProcessLink getLink() {
