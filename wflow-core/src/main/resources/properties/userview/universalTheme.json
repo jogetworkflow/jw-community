@@ -983,6 +983,12 @@
             value : 'true',
             label : ''
         }]
+    },
+    {
+        name : 'customLogin',
+        label : 'Custom Login',
+        type : 'hidden',
+        value : 'false'
     }],
 },
 {

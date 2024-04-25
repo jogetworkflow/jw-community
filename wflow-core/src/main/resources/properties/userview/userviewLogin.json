@@ -22,6 +22,317 @@
         type: 'textarea',
         rows: '10',
         cols: '50'
-    }],
+    },
+    {
+        "name" : "template",
+        "label" : "@@userview.customLogin.chooseLoginTemplate@@",
+        "type" : "custom",
+        "script_url" : "[CONTEXT_PATH]/web/json/app[APP_PATH]/plugin/org.joget.plugin.enterprise.UniversalTheme/service?version=@@build.number@@",
+        "mode" : "html",
+        "required" : "False",
+        "control_field": "customLogin",
+        "control_value": "true",
+        "tags" : [
+            {"value" : "card", "label" : "@@userview.customLogin.card@@"},
+            {"value" : "icon", "label": "@@userview.customLogin.icon@@"},
+            {"value" : "image", "label": "@@userview.customLogin.image@@"},
+            {"value" : "title", "label": "@@userview.customLogin.title@@"},
+            {"value" : "simple", "label": "@@userview.customLogin.tag.simple@@"},
+            {"value" : "subtitle", "label": "@@userview.customLogin.subtitle@@"}
+        ]
+    },
+    {
+        "name" : "title",
+        "label" : "@@userview.customLogin.title@@",
+        "type" : "textfield",
+        "control_field": "template",
+        "control_value": "^[\\s\\S]*\\{\\{title[\\||\\}]{2}[\\s\\S]*$",
+        "control_use_regex": "true",
+        "required" : "true"
+    },
+    {
+        "name" : "titleColor",
+        "label" : "@@userview.customLogin.titleColor@@",
+        "type" : "color",
+        "control_field": "template",
+        "control_value": "^[\\s\\S]*\\{\\{titleColor[\\||\\}]{2}[\\s\\S]*$",
+        "control_use_regex": "true",
+        "required" : "true"
+    },
+    {
+        "name" : "formColor",
+        "label" : "@@userview.customLogin.formColor@@",
+        "type" : "color",
+        "control_field": "template",
+        "control_value": "^[\\s\\S]*\\{\\{formColor[\\||\\}]{2}[\\s\\S]*$",
+        "control_use_regex": "true"
+    },
+    {
+        "name" : "customUsername",
+        "label" : "@@userview.customLogin.usernameText@@",
+        "type" : "textfield",
+        "control_field": "template",
+        "control_value": "^[\\s\\S]*\\{\\{customUsername[\\||\\}]{2}[\\s\\S]*$",
+        "control_use_regex": "true",
+        "required" : "true",
+        "value" : "@@userview.customLogin.username.value@@"
+    },
+    {
+        "name" : "customUsernameColor",
+        "label" : "@@userview.customLogin.usernameColor@@",
+        "type" : "color",
+        "control_field": "template",
+        "control_value": "^[\\s\\S]*\\{\\{customUsernameColor[\\||\\}]{2}[\\s\\S]*$",
+        "control_use_regex": "true"
+    },
+    {
+        "name" : "customPassword",
+        "label" : "@@userview.customLogin.passwordText@@",
+        "type" : "textfield",
+        "control_field": "template",
+        "control_value": "^[\\s\\S]*\\{\\{customPassword[\\||\\}]{2}[\\s\\S]*$",
+        "control_use_regex": "true",
+        "required" : "true",
+        "value" : "@@userview.customLogin.password.value@@"
+    },
+    {
+        "name" : "customPasswordColor",
+        "label" : "@@userview.customLogin.passwordColor@@",
+        "type" : "color",
+        "control_field": "template",
+        "control_value": "^[\\s\\S]*\\{\\{customPasswordColor[\\||\\}]{2}[\\s\\S]*$",
+        "control_use_regex": "true"
+    },
+    {
+        "name" : "icon",
+        "label" : "@@userview.customLogin.icon@@",
+        "type" : "icon-textfield",
+        "iconOnly" : "true",
+        "control_field": "template",
+        "control_value": "^[\\s\\S]*\\{\\{icon[\\||\\}]{2}[\\s\\S]*$",
+        "control_use_regex": "true",
+        "required" : "true"
+    },
+    {
+        "name" : "subtitle",
+        "label" : "@@userview.customLogin.subtitle@@",
+        "type" : "textfield",
+        "control_field": "template",
+        "control_value": "^[\\s\\S]*\\{\\{subtitle[\\||\\}]{2}[\\s\\S]*$",
+        "control_use_regex": "true",
+        "value": "@@userview.customLogin.subtitle@@"
+    },{
+        "name" : "subtitleColor",
+        "label" : "@@userview.customLogin.subtitleColor@@",
+        "type" : "color",
+        "control_field": "template",
+        "control_value": "^[\\s\\S]*\\{\\{subtitleColor[\\||\\}]{2}[\\s\\S]*$",
+        "control_use_regex": "true"
+    },
+    {
+        "name" : "image",
+        "label" : "@@userview.customLogin.image@@",
+        "type": "image",
+        "appPath": "[APP_PATH]",
+        "allowInput" : "true",
+        "isPublic" : "true",
+        "imageSize" : "width:80px; height:80px; background-size: contain; background-repeat: no-repeat;",
+        "control_field": "template",
+        "control_value": "^[\\s\\S]*\\{\\{image[\\||\\}]{2}[\\s\\S]*$",
+        "control_use_regex": "true",
+        "required" : "true"
+    },
+    {
+        "name" : "bgColor",
+        "label" : "@@userview.customLogin.bgColor@@",
+        "type" : "color",
+        "control_field": "template",
+        "control_value": "^[\\s\\S]*\\{\\{bgColor[\\||\\}]{2}[\\s\\S]*$",
+        "control_use_regex": "true"
+    },
+    {
+        "name" : "btnColor",
+        "label" : "@@userview.customLogin.btnColor@@",
+        "type" : "color",
+        "control_field": "template",
+        "control_value": "^[\\s\\S]*\\{\\{btnColor[\\||\\}]{2}[\\s\\S]*$",
+        "control_use_regex": "true"
+    },
+    {
+        "name" : "btnText",
+        "label" : "@@userview.customLogin.btnText@@",
+        "type" : "textfield",
+        "control_field": "template",
+        "control_value": "^[\\s\\S]*\\{\\{btnText[\\||\\}]{2}[\\s\\S]*$",
+        "control_use_regex": "true"
+    },
+    {
+        "name" : "btnTextColor",
+        "label" : "@@userview.customLogin.btnTextColor@@",
+        "type" : "color",
+        "control_field": "template",
+        "control_value": "^[\\s\\S]*\\{\\{btnTextColor[\\||\\}]{2}[\\s\\S]*$",
+        "control_use_regex": "true"
+    },
+    {
+        "name" : "cardColor",
+        "label" : "@@userview.customLogin.cardColor@@",
+        "type" : "color",
+        "control_field": "template",
+        "control_value": "^[\\s\\S]*\\{\\{cardColor[\\||\\}]{2}[\\s\\S]*$",
+        "control_use_regex": "true"
+    },
+    {
+        "name" : "repeat",
+        "label" : "@@userview.customLogin.repeat@@",
+        "type" : "repeater",
+        "control_field": "customLogin",
+        "control_value": "true",
+        "fields" : [
+            {
+                "name" : "title",
+                "label" : "@@userview.customLogin.title@@",
+                "type" : "textfield",
+                "control_field": "template",
+                "control_value": "^[\\s\\S]*\\{\\{repeat\\.title[\\||\\}]{2}[\\s\\S]*$",
+                "control_use_regex": "true",
+                "required" : "true",
+                "value" : "@@userview.customLogin.title.value@@"
+            },
+            {
+                "name" : "titleColor",
+                "label" : "@@userview.customLogin.titleColor@@",
+                "type" : "color",
+                "control_field": "template",
+                "control_value": "^[\\s\\S]*\\{\\{repeat\\.titleColor[\\||\\}]{2}[\\s\\S]*$",
+                "control_use_regex": "true",
+                "required" : "true"
+            },
+            {
+                "name" : "formColor",
+                "label" : "@@userview.customLogin.formColor@@",
+                "type" : "color",
+                "control_field": "template",
+                "control_value": "^[\\s\\S]*\\{\\{repeat\\.formColor[\\||\\}]{2}[\\s\\S]*$",
+                "control_use_regex": "true"
+            },
+            {
+                "name" : "customUsername",
+                "label" : "@@userview.customLogin.usernameText@@",
+                "type" : "textfield",
+                "control_field": "template",
+                "control_value": "^[\\s\\S]*\\{\\{repeat\\.customUsername[\\||\\}]{2}[\\s\\S]*$",
+                "control_use_regex": "true",
+                "required" : "true",
+                "value" : "@@userview.customLogin.username.value@@"
+            },
+            {
+                "name" : "customUsernameColor",
+                "label" : "@@userview.customLogin.usernameColor@@",
+                "type" : "color",
+                "control_field": "template",
+                "control_value": "^[\\s\\S]*\\{\\{repeat\\.customUsernameColor[\\||\\}]{2}[\\s\\S]*$",
+                "control_use_regex": "true"
+            },
+            {
+                "name" : "customPassword",
+                "label" : "@@userview.customLogin.passwordText@@",
+                "type" : "textfield",
+                "control_field": "template",
+                "control_value": "^[\\s\\S]*\\{\\{repeat\\.customPassword[\\||\\}]{2}[\\s\\S]*$",
+                "control_use_regex": "true",
+                "required" : "true",
+                "value" : "@@userview.customLogin.username.value@@"
+            },
+            {
+                "name" : "customPasswordColor",
+                "label" : "@@userview.customLogin.passwordColor@@",
+                "type" : "color",
+                "control_field": "template",
+                "control_value": "^[\\s\\S]*\\{\\{repeat\\.customPasswordColor[\\||\\}]{2}[\\s\\S]*$",
+                "control_use_regex": "true"
+            },
+            {
+                "name" : "icon",
+                "label" : "@@userview.customLogin.icon@@",
+                "type" : "icon-textfield",
+                "iconOnly" : "true",
+                "control_field": "template",
+                "control_value": "^[\\s\\S]*\\{\\{repeat\\.icon[\\||\\}]{2}[\\s\\S]*$",
+                "control_use_regex": "true",
+                "required" : "true"
+            },
+            {
+                "name" : "subtitle",
+                "label" : "@@userview.customLogin.subtitle@@",
+                "type" : "textfield",
+                "control_field": "template",
+                "control_value": "^[\\s\\S]*\\{\\{repeat\\.subtitle[\\||\\}]{2}[\\s\\S]*$",
+                "control_use_regex": "true",
+                "value": "@@userview.customLogin.subtitle@@"
+            },{
+                "name" : "subtitleColor",
+                "label" : "@@userview.customLogin.subtitleColor@@",
+                "type" : "color",
+                "control_field": "template",
+                "control_value": "^[\\s\\S]*\\{\\{repeat\\.subtitleColor[\\||\\}]{2}[\\s\\S]*$",
+                "control_use_regex": "true"
+            },
+            {
+                "name" : "image",
+                "label" : "@@userview.customLogin.image@@",
+                "type": "image",
+                "appPath": "[APP_PATH]",
+                "allowInput" : "true",
+                "isPublic" : "true",
+                "imageSize" : "width:80px; height:80px; background-size: contain; background-repeat: no-repeat;",
+                "control_field": "template",
+                "control_value": "^[\\s\\S]*\\{\\{repeat\\.image[\\||\\}]{2}[\\s\\S]*$",
+                "control_use_regex": "true",
+                "required" : "true"
+            },
+            {
+                "name" : "bgColor",
+                "label" : "@@userview.customLogin.bgColor@@",
+                "type" : "color",
+                "control_field": "template",
+                "control_value": "^[\\s\\S]*\\{\\{repeat\\.bgColor[\\||\\}]{2}[\\s\\S]*$",
+                "control_use_regex": "true"
+            },
+            {
+                "name" : "btnColor",
+                "label" : "@@userview.customLogin.btnColor@@",
+                "type" : "color",
+                "control_field": "template",
+                "control_value": "^[\\s\\S]*\\{\\{repeat\\.btnColor[\\||\\}]{2}[\\s\\S]*$",
+                "control_use_regex": "true"
+            },
+            {
+                "name" : "btnText",
+                "label" : "@@userview.customLogin.btnText@@",
+                "type" : "textfield",
+                "control_field": "template",
+                "control_value": "^[\\s\\S]*\\{\\{repeat\\.btnText[\\||\\}]{2}[\\s\\S]*$",
+                "control_use_regex": "true"
+            },
+            {
+                "name" : "btnTextColor",
+                "label" : "@@userview.customLogin.btnTextColor@@",
+                "type" : "color",
+                "control_field": "template",
+                "control_value": "^[\\s\\S]*\\{\\{repeat\\.btnTextColor[\\||\\}]{2}[\\s\\S]*$",
+                "control_use_regex": "true"
+            },
+            {
+                "name" : "cardColor",
+                "label" : "@@userview.customLogin.cardColor@@",
+                "type" : "color",
+                "control_field": "template",
+                "control_value": "^[\\s\\S]*\\{\\{repeat\\.cardColor[\\||\\}]{2}[\\s\\S]*$",
+                "control_use_regex": "true"
+            }
+        ]
+    }
+    ],
     developer_mode : 'advanced'
 }

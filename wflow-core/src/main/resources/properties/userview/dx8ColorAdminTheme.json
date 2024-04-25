@@ -42,6 +42,16 @@
         imageSize : 'width:80px; height:35px; background-size: contain; background-repeat: no-repeat;'
     },
     {
+        name : 'customLogin',
+        label : '@@userview.customLogin.customLoginMessage@@',
+        type : 'checkbox',
+        value : 'true',
+        options : [{
+            value : 'true',
+            label : ''
+        }]
+    },
+    {
         label : '@@ubuilder.customColor@@',
         type : 'header'
     },
