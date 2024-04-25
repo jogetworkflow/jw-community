@@ -3788,7 +3788,6 @@ ProcessBuilder = {
         var def = [
             {
                 title: get_cbuilder_msg("pbuilder.label.configureMapping"),
-                helplink: get_cbuilder_msg("pbuilder.label.configureMapping.helplink"),
                 properties: [{
                     name: 'mapping_par_type',
                     label: get_cbuilder_msg("cbuilder.type"),
@@ -3885,7 +3884,7 @@ ProcessBuilder = {
                         var options = [{label : '', value : ''}];
                         var plugins = ProcessBuilder.availableParticipantPlugin;
                         for(var e in plugins){
-                            options.push({label : UI.escapeHTML(plugins[e].label), value : e});
+                            options.push({label : UI.escapeHTML(plugins[e].label), value : e, helplink : plugins[e].helplink});
                         }
                         return options;
                     },
@@ -3909,6 +3908,7 @@ ProcessBuilder = {
         var def = [
             {
                 title: get_cbuilder_msg("pbuilder.label.configureMapping"),
+                helplink: get_cbuilder_msg("pbuilder.label.activityMapping.helplink"),
                 properties: [{
                     name: 'mapping_act_type',
                     label: get_cbuilder_msg("cbuilder.type"),
@@ -3981,7 +3981,7 @@ ProcessBuilder = {
                     var options = [{label : '', value : ''}];
                     var plugins = ProcessBuilder.availableAssignmentFormModifier;
                     for(var e in plugins){
-                        options.push({label : UI.escapeHTML(plugins[e]), value : e});
+                        options.push({label : UI.escapeHTML(plugins[e].label), value : e, helplink : plugins[e].helplink});
                     }
                     return options;
                 },
@@ -4016,7 +4016,7 @@ ProcessBuilder = {
                         var options = [{label : '', value : ''}];
                         var plugins = ProcessBuilder.availableDecisionPlugin;
                         for(var e in plugins){
-                            options.push({label : UI.escapeHTML(plugins[e].label), value : e});
+                            options.push({label : UI.escapeHTML(plugins[e].label), value : e, helplink : plugins[e].helplink});
                         }
                         return options;
                     },
@@ -4097,7 +4097,7 @@ ProcessBuilder = {
                     var options = [{label : '', value : ''}];
                     var plugins = ProcessBuilder.availableStartProcessFormModifier;
                     for(var e in plugins){
-                        options.push({label : UI.escapeHTML(plugins[e]), value : e});
+                        options.push({label : UI.escapeHTML(plugins[e].label), value : e, helplink : plugins[e].helplink});
                     }
                     return options;
                 },
@@ -4234,7 +4234,7 @@ ProcessBuilder = {
                 ProcessBuilder.availableAssignmentFormModifier = {};
                 for (e in returnedData) {
                     if (returnedData[e].value !== "") {
-                        ProcessBuilder.availableAssignmentFormModifier[returnedData[e].value] = returnedData[e].label;
+                        ProcessBuilder.availableAssignmentFormModifier[returnedData[e].value] = returnedData[e];
                     }
                 }
                 wait.resolve();
@@ -4255,7 +4255,7 @@ ProcessBuilder = {
                 ProcessBuilder.availableStartProcessFormModifier = {};
                 for (e in returnedData) {
                     if (returnedData[e].value !== "") {
-                        ProcessBuilder.availableStartProcessFormModifier[returnedData[e].value] = returnedData[e].label;
+                        ProcessBuilder.availableStartProcessFormModifier[returnedData[e].value] = returnedData[e];
                     }
                 }
                 wait.resolve();
@@ -4619,9 +4619,9 @@ ProcessBuilder = {
                     && elementObj.properties.mapping_act_modifier["className"] !== "") {
                 var label = '<span class="missing-plugin">' + elementObj.properties.mapping_act_modifier["className"] + " (" + get_advtool_msg('dependency.tree.Missing.Plugin') + ")</span>";
                 if (elementObj.className === "activity" && ProcessBuilder.availableAssignmentFormModifier[elementObj.properties.mapping_act_modifier["className"]] !== undefined) {
-                    label = ProcessBuilder.availableAssignmentFormModifier[elementObj.properties.mapping_act_modifier["className"]];
+                    label = ProcessBuilder.availableAssignmentFormModifier[elementObj.properties.mapping_act_modifier["className"]].label;
                 } else if (elementObj.className === "start" && ProcessBuilder.availableStartProcessFormModifier[elementObj.properties.mapping_act_modifier["className"]] !== undefined) {
-                    label = ProcessBuilder.availableStartProcessFormModifier[elementObj.properties.mapping_act_modifier["className"]]
+                    label = ProcessBuilder.availableStartProcessFormModifier[elementObj.properties.mapping_act_modifier["className"]].label;
                 }
                 $(dl).append('<dt><i class="las la-plug" title="'+get_cbuilder_msg('pbuilder.label.moreSettings')+'"></i></dt><dd>'+label+'</dd>');
             }

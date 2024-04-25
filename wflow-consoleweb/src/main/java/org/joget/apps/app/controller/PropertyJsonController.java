@@ -105,6 +105,7 @@ public class PropertyJsonController {
                     Map<String, String> option = new HashMap<String, String>();
                     option.put("value", pClassName);
                     option.put("label", p.getI18nLabel());
+                    option.put("helplink", p.getHelpLink());
                     if (pwaValidation) {
                         if (p instanceof PwaOfflineValidation) {
                             option.put("pwaValidation", "checking");
@@ -172,9 +173,6 @@ public class PropertyJsonController {
         } else if (element != null) {
             json = element.getPropertyOptions();
         }
-        if (element != null) {
-            json = PropertyUtil.injectHelpLink(((Plugin) element).getHelpLink(), json);
-        }
 
         writer.write(json);
     }
@@ -198,9 +196,6 @@ public class PropertyJsonController {
             json = FormUtil.injectBinderExtraProperties((FormBinder) element);
         } else if (element != null) {
             json = element.getPropertyOptions();
-        }
-        if (element != null) {
-            json = PropertyUtil.injectHelpLink(((Plugin) element).getHelpLink(), json);
         }
 
         writer.write(json);        
