@@ -12,7 +12,7 @@
     {
         name : 'label',
         label : '@@form.textfield.label@@',
-        type : 'textfield',
+        type : 'icon-textfield',
         required : 'True',
         value : '@@org.joget.apps.form.lib.TextField.pluginLabel@@'
     }]
