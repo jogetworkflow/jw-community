@@ -44,6 +44,10 @@ import org.joget.workflow.model.service.WorkflowManager;
 import org.joget.workflow.model.service.WorkflowUserManager;
 import org.joget.workflow.util.WorkflowUtil;
 import org.json.JSONObject;
+import org.apache.commons.lang3.StringUtils;
+
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class UniversalTheme extends UserviewV5Theme implements UserviewPwaTheme, PluginWebSupport {
     protected final static String PROFILE = "_ja_profile"; 
@@ -714,6 +718,41 @@ public class UniversalTheme extends UserviewV5Theme implements UserviewPwaTheme,
     }
     
     public String getLoginForm(Map<String, Object> data) {
+        String template;
+        String html = "<style>\n" +
+        "body#login #loginForm {display: none;}\n" +
+        ".img100 {height: 100% !important;};\n" +
+        "body#login header, body#login footer {display: none;} \n"+
+        "</style>";
+        if (getPropertyString("customLogin").equalsIgnoreCase("true") && !getPropertyString("template").isEmpty()){
+            template = getPropertyString("template");
+
+            //remove template meta
+            template = template.replaceFirst("<!--.*?-->", "");
+            template = template.replaceFirst("<!---->", "");
+
+            html += fillVariables(template, null);
+    
+            html += "<script>\n" +
+                            "$(document).ready(function(){\n" +
+                            "  $('#loginButton').on('click', function(){\n" +
+                            "    $('input[name=\"submit\"]').click();\n" +
+                            "  })\n" +
+                            "  $('#customUsername').on('change', function(e){\n" +
+                            "    $('#j_username').val($(this).val());\n" +
+                            "  })\n" +
+                            "  $('#customPassword').on('change', function(e){\n" +
+                            "    $('#j_password').val($(this).val());\n" +
+                            "  })\n" +
+                            "   if ($('#openIDLogin').length > 0){ \n"+
+                            "       $('#loginButton').after($('#openIDLogin').parent().parent().clone(true).addClass('w-100 d-flex justify-content-center')) \n"+  
+                            "   } \n"+
+                            "});\n" +
+                            "</script>";
+
+            data.put("login_form_before", html);
+        }
+
         data.put("hide_nav", true);
         return super.getLoginForm(data);
     }
@@ -1125,8 +1164,96 @@ public class UniversalTheme extends UserviewV5Theme implements UserviewPwaTheme,
         return html;
     }
 
+    public String fillVariables(String template, Map properties) {
+        template = fillLoopVariables(template, properties);
+        template = fillStandardVariables(template, properties);
+        return template;
+    }
+
+    public String fillLoopVariables(String template, Map properties) {
+        //find loop variables
+        Pattern pattern = Pattern.compile("\\{\\{(repeat)(\\|\\|(.+))?\\}\\}([\\s\\S]+)\\{\\{\\1\\}\\}", Pattern.MULTILINE);
+        Matcher matcher = pattern.matcher(template);
+        
+        while (matcher.find()) {
+            String replace = matcher.group(0);
+            String key = matcher.group(1);
+            String sampleProps = matcher.group(3);
+            String childtemplate = matcher.group(4);
+            
+            childtemplate = childtemplate.replaceAll("\\{\\{"+key+"\\.", "\\{\\{");
+            
+            if (properties == null) {
+                properties = getProperties();
+            }
+            
+            String value = "";
+                
+            if ("repeat".equals(key) && properties.get(key) != null && ((Object[]) properties.get(key)).length > 0) {
+                try {
+                    Map[] props = (Map[]) properties.get(key);
+                    for (int i = 0; i < props.length ; i++) {
+                        value += fillVariables(childtemplate, props[i]);
+                    }
+                } catch (Exception e) {}
+            } 
+            
+            template = template.replaceAll(StringUtil.escapeRegex(replace), StringUtil.escapeRegex(value));
+        }
+        
+        return template;
+    }
+
+
+    public String fillStandardVariables(String template, Map properties) {
+        //find normal variables
+        Pattern pattern = Pattern.compile("\\{\\{(.+?)\\}\\}");
+        Matcher matcher = pattern.matcher(template);
+        
+        while (matcher.find()) {
+            String replace = matcher.group(0);
+            String key = matcher.group(1);
+            String value = getValue(key, properties);
+            
+            template = template.replaceAll(StringUtil.escapeRegex(replace), StringUtil.escapeRegex(value));
+        }
+        
+        return template;
+    }
+
+    public String getValue(String key, Map properties) {
+        String defaultValue = "";
+        if (key.contains("||")) {
+            defaultValue = key.substring(key.indexOf("||")+2);
+            key = key.substring(0, key.indexOf("||"));
+        }
+        
+        String value = "";
+        if (properties == null) {
+            properties = getProperties();
+        }
+        
+        if (properties.containsKey(key)) {
+            value = properties.get(key).toString();
+        }
+        
+        if ((value.isEmpty() || value.matches("#[\\S]+\\.[\\S]+#"))) {
+            value = defaultValue;
+        }
+        
+        return value;
+    }
+
     public void webService(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         String action = request.getParameter("_a");
+        
+        String temp = AppUtil.readPluginResource(getClassName(), "/templates/loginTemplates.html", null, false, null);
+        String[] templates = temp.split("\\r?\\n\\r?\\n");
+        for (int i = 0; i < templates.length; i++) {
+            templates[i] = "\"" + StringUtil.escapeString(templates[i], StringUtil.TYPE_JSON, null) + "\"";
+        }
+
+        response.getWriter().write(AppUtil.readPluginResource(getClassName(), "/resources/js/templateEditor.js", new Object[]{StringUtils.join(templates, ", ")}, false, null));
 
         if ("getAssignment".equals(action)) {
             try {
