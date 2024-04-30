@@ -7594,203 +7594,34 @@ PropertyEditor.Type.Grid.prototype = {
 
     // Reads each CSV rows and makes a <tr> of it 
     convertCsvToTable: function (valTextArea) {
-
         var thisObj = this;
-        var table = document.getElementById(thisObj.id);
-
-        // Remove all previous <tr> elements, because <table> is reconstructed again
-        var trElements = table.getElementsByTagName("tr");
-        for (var i = trElements.length - 1; i >= 0; i--) {
-            trElements[i].parentNode.removeChild(trElements[i]);
-        }
-
-        //render header
-        var html = '<tr class="grid_header">';
-        html += '<th class="property-type-grid-row-header">' + thisObj.properties.label + '</th>';
-        $.each(thisObj.properties.columns, function (i, column) {
-            var required = "";
-            if (column.required !== undefined && column.required.toLowerCase() === 'true') {
-                required = ' <span class="property-required">' + get_peditor_msg('peditor.mandatory.symbol') + '</span>';
-            }
-            html += '<th><span>' + column.label + '</span>' + required + '</th>';
-        });
-        html += '<th class="property-type-grid-action-column"></th></tr>';
-
-        //render model
-        html += '<tr class="grid_model" style="display:none">';
-        html += '<th class="property-type-grid-row-header">' + thisObj.properties.label + '</th>';
-        $.each(thisObj.properties.columns, function (i, column) {
-            var required = "";
-            if (column.required !== undefined && column.required.toLowerCase() === 'true') {
-                required = ' <span class="property-required">' + get_peditor_msg('peditor.mandatory.symbol') + '</span>';
-            }
-            var tdclass = column.type;
-            if (tdclass === undefined) {
-                tdclass = "";
-            }
-            html += '<td class="' + tdclass + '"><span class="label"><span>' + column.label + '</span> ' + required + '</span><span>';
-
-            PropertyEditor.Util.retrieveOptionsFromCallback(thisObj, column, column.key);
-
-            if (column.type === "truefalse") {
-                column.true_value = (column.true_value !== undefined) ? column.true_value : 'true';
-                html += '<label><input name="' + column.key + '" type="checkbox" value="' + column.true_value + '"/><span class="hidden_label">' + column.label + '</span></label>';
-            } else if (column.options !== undefined || column.options_ajax !== undefined) {
-                if (column.type === "autocomplete") {
-                    thisObj.updateSource(column.key, column.options);
-                    html += '<input name="' + column.key + '" class="autocomplete" size="10" value=""/>';
-                } else {
-                    html += '<select name="' + column.key + '" data-value="">';
-                    if (column.options !== undefined) {
-                        $.each(column.options, function (i, option) {
-                            html += '<option value="' + PropertyEditor.Util.escapeHtmlTag(option.value) + '">' + PropertyEditor.Util.escapeHtmlTag(option.label) + '</option>';
-                        });
-                    }
-                    html += '</select>';
-                }
-            } else if (column.type === "number") {
-                html += '<input name="' + column.key + '" type="number" size="10" value=""/>';
-            } else {
-                html += '<input name="' + column.key + '" size="10" value=""/>';
-            }
-            html += '</span></td>';
-        });
-        html += '<td class="property-type-grid-action-column">';
-        html += '<a href="#" class="property-type-grid-action-moveup"><i class="fas fa-chevron-circle-up"></i><span>' + get_peditor_msg('peditor.moveUp') + '</span></a>';
-        html += ' <a href="#" class="property-type-grid-action-movedown"><i class="fas fa-chevron-circle-down"></i><span>' + get_peditor_msg('peditor.moveDown') + '</span></a>';
-        html += ' <a href="#" class="property-type-grid-action-delete"><i class="fas fa-times-circle"></i><span>' + get_peditor_msg('peditor.delete') + '</span></a>';
-        html += '</td></tr>';
-
-        table.innerHTML = html;
-
+        delete thisObj.switchCSVvalue;
+        
         // Convert CSV rows from <textarea> to become JSON
         var csvRows = thisObj.parseCSV(valTextArea);
-
+        
         // Check whether each row has correct number of required columns or not
-        isValid = csvRows.every(obj => Object.keys(obj).length === thisObj.properties.columns.length);
-
-        if (isValid) {
-            $.each(csvRows, function (i, csvRow) {
-                var html = "";
-                html += '<th class="property-type-grid-row-header">' + thisObj.properties.label + '</th>';
-
-                $.each(thisObj.properties.columns, function (j, column) {
-                    var required = "";
-                    if (column.required !== undefined && column.required.toLowerCase() === 'true') {
-                        required = ' <span class="property-required">' + get_peditor_msg('peditor.mandatory.symbol') + '</span>';
-                    }
-                    var tdclass = column.type;
-                    if (tdclass === undefined) {
-                        tdclass = "";
-                    }
-                    html += '<td class="' + tdclass + '"><span class="label"><span>' + column.label + '</span> ' + required + '</span><span>';
-                    PropertyEditor.Util.retrieveOptionsFromCallback(thisObj, column, column.key);
-                    if (column.type === "truefalse") {
-                        column.true_value = (column.true_value !== undefined) ? column.true_value : 'true';
-                        html += '<label><input name="' + column.key + '" type="checkbox" value="' + csvRows[i][j.toString()] + '"/><span class="hidden_label">' + column.label + '</span></label>';
-                    } else if (column.options !== undefined || column.options_ajax !== undefined) {
-                        if (column.type === "autocomplete") {
-                            thisObj.updateSource(column.key, column.options);
-                            html += '<input name="' + column.key + '" class="autocomplete" size="10" value="' + csvRows[i][j.toString()] + '"/>';
-                        } else {
-                            html += '<select name="' + column.key + '" data-value="' + csvRows[i][j.toString()] + '">';
-                            if (column.options !== undefined) {
-                                $.each(column.options, function (i, option) {
-                                    html += '<option value="' + PropertyEditor.Util.escapeHtmlTag(option.value) + '">' + PropertyEditor.Util.escapeHtmlTag(option.label) + '</option>';
-                                });
-                            }
-                            html += '</select>';
-                        }
-                    } else if (column.type === "number") {
-                        html += '<input name="' + column.key + '" type="number" size="10" value="' + csvRows[i][j.toString()] + '"/>';
-                    } else {
-                        html += '<input name="' + column.key + '" size="10" value="' + csvRows[i][j.toString()] + '"/>';
-                    }
-                    html += '</span></td>';
-                });
-                html += '<td class="property-type-grid-action-column">';
-                html += '<a href="#" class="property-type-grid-action-moveup"><i class="fas fa-chevron-circle-up"></i><span>' + get_peditor_msg('peditor.moveUp') + '</span></a>';
-                html += ' <a href="#" class="property-type-grid-action-movedown"><i class="fas fa-chevron-circle-down"></i><span>' + get_peditor_msg('peditor.moveDown') + '</span></a>';
-                html += ' <a href="#" class="property-type-grid-action-delete"><i class="fas fa-times-circle"></i><span>' + get_peditor_msg('peditor.delete') + '</span></a>';
-                html += '</td>';
-                var row = $('<tr>' + html + '</tr>');
-                $(row).find("select").each(function () {
-                    $(this).addClass("initFullWidthChosen");
-                    if (UI.rtl) {
-                        $(this).addClass("chosen-rtl");
-                    }
-                    $(this).chosen({ width: "100%", placeholder_text: " " });
-                });
-                $(row).find("input.autocomplete").each(function () {
-                    var key = $(this).attr("name");
-                    $(this).autocomplete({
-                        source: thisObj.options_sources[thisObj.id + ":" + key],
-                        minLength: 0,
-                        open: function () {
-                            $(this).autocomplete('widget').css('z-index', 99999);
-                            return false;
-                        }
-                    });
-                });
-                $(table).append(row);
-                $(row).find('a.property-type-grid-action-delete').click(function () {
-                    thisObj.gridActionDelete(this);
-                    return false;
-                });
-                $(row).find('a.property-type-grid-action-moveup').click(function () {
-                    thisObj.gridActionMoveUp(this);
-                    return false;
-                });
-                $(row).find('a.property-type-grid-action-movedown').click(function () {
-                    thisObj.gridActionMoveDown(this);
-                    return false;
-                });
-                thisObj.gridDisabledMoveAction(table);
-            });
-
-            return true;
-
-        } else {
-
+        var isValid = csvRows.every(obj => Object.keys(obj).length === thisObj.properties.columns.length);
+        if (!isValid) {
             return false;
         }
-    },
-
-    // Initialize functionality of the switch buttons
-    initSwitchButtons: function () {
-        var thisObj = this;
-        var table = $('#' + this.id);
-        var switchButton = $('#' + this.id + '_switch_button');
-        var gridActionAddButton = $(table).next('a.property-type-grid-action-add');
-        var textArea = $('#' + this.id + '_textarea');
-
-        switchButton.on('click', function () {
-            if (textArea.css('display') === 'none') {
-                // Switch to CSV
-                textArea.val(thisObj.convertToCsv(thisObj.getData())).show();
-                table.hide();
-                gridActionAddButton.hide();
-                switchButton.text('Switch to Grid');
-            } else {
-                // Switch to Grid
-                let isValid = thisObj.convertCsvToTable(textArea.val().trim());
-                if (isValid) {
-                    table.show();
-                    gridActionAddButton.show();
-                    textArea.hide();
-                    switchButton.text('Switch to CSV');
-                } else {
-                    thisObj.showCsvErrorMessage();
-                }
-
-            }
-        });
+        
+        thisObj.value = csvRows;
+        thisObj.switchCSVvalue = csvRows;
+        
+        //reconstructed using renderField & initScripting implementation
+        var html = thisObj.renderField();
+        $("#" + this.id + "_input").html(html);
+        
+        thisObj.initScripting();
+        
+        return true;
     },
 
     // Convert values of Grid that is in JSON format to CSV
     convertToCsv: function (data) {
         var csv = '';
-        data.options.forEach(function (option) {
+        data[this.properties.name].forEach(function (option) {
             var row = Object.values(option).map(value => value || '').join(';');
             csv += row + '\n';
         });
@@ -7799,6 +7630,8 @@ PropertyEditor.Type.Grid.prototype = {
 
     // Convert CSV to JSON
     parseCSV: function (csv) {
+        var thisObj = this;
+        
         var data = [];
         if (csv != "") {
             var rows = csv.trim().split('\n');
@@ -7806,7 +7639,9 @@ PropertyEditor.Type.Grid.prototype = {
                 var row = rows[i].split(';');
                 var rowData = {};
                 for (var j = 0; j < row.length; j++) {
-                    rowData[j.toString()] = row[j] ? row[j].trim() : "";
+                    if (thisObj.properties.columns[j] !== undefined) {
+                        rowData[thisObj.properties.columns[j].key] = row[j] ? row[j].trim() : "";
+                    }
                 }
                 data.push(rowData);
             }
@@ -7816,24 +7651,48 @@ PropertyEditor.Type.Grid.prototype = {
 
     // Show error message if CSV format is wrong
     showCsvErrorMessage: function () {
-        var errorMessage = document.getElementById("csv_error_message");
-        errorMessage.style.display = "inline";
+        var div = $("#" + this.id + '_input');
+        
+        var errorMessage = $(div).find(".csv_error_message");
+        $(errorMessage).show();
         setTimeout(function () {
-            errorMessage.style.display = "none";
+            $(errorMessage).hide();
         }, 2000);
     },
 
     // Append switch buttons above <table>
     addSwitchButtons: function () {
+        var thisObj = this;
+        var table = $('#' + this.id);
+        
         var div = $("#" + this.id + '_input');
-        if (div[0].id.indexOf("options") !== -1) {
-            var html = '<div style="padding-bottom:5px;display:flex;justify-content:space-between;align-items:center;" ><a href="#" id="' + this.id + '_switch_button">Switch to CSV</a><span id="csv_error_message" style="color:red;display:none">Invalid CSV format</span></div>';
-            html += '<textarea id="' + this.id + '_textarea" style="display:none;width:100%;line-height:1.8"></textarea>';
-            var switchButtonElement = document.createElement("div");
-            switchButtonElement.innerHTML = html;
-            var divElement = document.getElementById(this.id + '_input');
-            var tableElement = divElement.querySelector("table");
-            divElement.insertBefore(switchButtonElement, tableElement);
+        if ($(div).find(".switch_button").length === 0) {
+            $(div).append('<a class="switch_button" style="display: block; position: absolute; top: -24px; right: 25px; font-size: 125%;" title="'+get_peditor_msg('peditor.switchCsv')+'"><i class="las la-file-csv"></i></a>');
+            
+            $(div).find(".switch_button").off('click')
+                .on('click', function(){
+                    $(div).find("> *").hide();
+                    $(div).append('<div class="csv_container"><div class="property-input-error csv_error_message" style="display:none">'+get_peditor_msg('peditor.invalidCsvFormat')+'</div><textarea id="' + thisObj.id + '_textarea" class="csv_field" style="width:100%;line-height:1.8;margin-bottom:5px;"></textarea><p>'+get_peditor_msg('peditor.switchCsvMsg')+'<br/><button class="switchUpdate btn btn-sm btn-secondary">'+get_peditor_msg('peditor.update')+'</button> <button class="switchCancel btn btn-sm btn-text">'+get_peditor_msg('peditor.cancel')+'</button></p></div>');
+                    $(div).find('.csv_field').val(thisObj.convertToCsv(thisObj.getData()));
+                    
+                    //cancel button
+                    $(div).find('.switchCancel').off('click')
+                        .on('click', function(){
+                            $(div).find(".csv_container").remove();
+                            $(div).find("> *").show();
+                            return false;
+                        });
+                        
+                    //update button
+                    $(div).find('.switchUpdate').off('click')
+                        .on('click', function(){
+                            let isValid = thisObj.convertCsvToTable($(div).find('.csv_field').val().trim());
+                            if (!isValid) {
+                                thisObj.showCsvErrorMessage();
+                            }
+                            return false;
+                        });    
+                });
         }
     },
 
@@ -7843,7 +7702,6 @@ PropertyEditor.Type.Grid.prototype = {
 
         // SWITCH GRID-CSV
         this.addSwitchButtons();
-        this.initSwitchButtons();
         // SWITCH GRID-CSV
 
         var table = $("#" + this.id);
@@ -8422,7 +8280,9 @@ PropertyEditor.Type.GridCombine.prototype = {
         html += '</td></tr>';
 
         var values = new Array();
-        if (thisObj.options.propertyValues !== undefined && thisObj.options.propertyValues !== null) {
+        if (thisObj.switchCSVvalue !== undefined) {
+            values = thisObj.switchCSVvalue;
+        } else if (thisObj.options.propertyValues !== undefined && thisObj.options.propertyValues !== null) {
             $.each(this.properties.columns, function(i, column) {
                 var temp = thisObj.options.propertyValues[column.key];
                 if (temp !== undefined) {
@@ -8572,19 +8432,31 @@ PropertyEditor.Type.GridCombine.prototype = {
 
     // Reads each CSV rows and makes a <tr> of it 
     convertCsvToTable: PropertyEditor.Type.Grid.prototype.convertCsvToTable,
-
-    // Initialize functionality of the switch buttons
-    initSwitchButtons: PropertyEditor.Type.Grid.prototype.initSwitchButtons,
-
+    
     // Convert values of Grid that is in JSON format to CSV
     convertToCsv: function (data) {
-        let csv = '';
-        const params = data.hrefParam.split(';');
-        const columns = data.hrefColumn.split(';');
-        for (let i = 0; i < params.length; i++) {
-            csv += params[i] + ';' + columns[i] + '\n';
+        var values = new Array();
+        if (data !== undefined && data !== null) {
+            $.each(this.properties.columns, function(i, column) {
+                var temp = data[column.key];
+                if (temp !== undefined) {
+                    var temp_arr = temp.split(";");
+
+                    $.each(temp_arr, function(i, row) {
+                        if (values[i] === null || values[i] === undefined) {
+                            values[i] = new Object();
+                        }
+                        values[i][column.key] = row;
+                    });
+                }
+            });
         }
-        return csv.trim();
+        var csv = '';
+        values.forEach(function (option) {
+            var row = Object.values(option).map(value => value || '').join(';');
+            csv += row + '\n';
+        });
+        return csv;
     },
 
     // Convert CSV to JSON
@@ -8594,15 +8466,7 @@ PropertyEditor.Type.GridCombine.prototype = {
     showCsvErrorMessage: PropertyEditor.Type.Grid.prototype.showCsvErrorMessage,
 
     // Append switch buttons above <table>
-    addSwitchButtons: function () {
-        var html = '<div style="padding-bottom:5px;display:flex;justify-content:space-between;align-items:center;" ><a href="#" id="' + this.id + '_switch_button">Switch to CSV</a><span id="csv_error_message" style="color:red;display:none">Invalid CSV format</span></div>';
-        html += '<textarea id="' + this.id + '_textarea" style="display:none;width:100%;line-height:1.8"></textarea>';
-        var switchButtonElement = document.createElement("div");
-        switchButtonElement.innerHTML = html;
-        var divElement = document.getElementById(this.id + '_input');
-        var tableElement = divElement.querySelector("table");
-        divElement.insertBefore(switchButtonElement, tableElement);
-    },
+    addSwitchButtons: PropertyEditor.Type.Grid.prototype.addSwitchButtons,
 
     // <<END>> SWITCH GRID-CSV
     
@@ -8751,152 +8615,8 @@ PropertyEditor.Type.GridFixedRow.prototype = {
         return html;
     },
     renderDefault: PropertyEditor.Type.Grid.prototype.renderDefault,
-
-    // <<START>> SWITCH GRID-CSV
-
-    // Reads each CSV rows and makes a <tr> of it
-    convertCsvToTable: function (valTextArea) {
-
-        var thisObj = this;
-        var table = document.getElementById(thisObj.id);
-
-        // Remove all previous <tr> elements, because <table> is reconstructed again
-        var trElements = table.getElementsByTagName("tr");
-        for (var i = trElements.length - 1; i >= 0; i--) {
-            trElements[i].parentNode.removeChild(trElements[i]);
-        }
-
-        //render header
-        var html = '<tr class="grid_header">';
-        html += '<th class="property-type-grid-row-header">' + thisObj.properties.label + '</th>';
-        $.each(this.properties.columns, function (i, column) {
-            var required = "";
-            if (column.required !== undefined && column.required.toLowerCase() === 'true') {
-                required = ' <span class="property-required">' + get_peditor_msg('peditor.mandatory.symbol') + '</span>';
-            }
-            html += '<th><span>' + column.label + '</span>' + required + '</th>';
-        });
-        html += '<th class="property-type-grid-action-column"></th></tr>';
-
-        table.innerHTML = html;
-
-        // Convert CSV rows from <textarea> to become JSON
-        var csvRows = thisObj.parseCSV(valTextArea);
-
-        // Check whether each row has correct number of required columns or not
-        isValid = csvRows.every(obj => Object.keys(obj).length === thisObj.properties.columns.length - 1);
-
-        // In this case, there only must be two rows which are Reassignment and Withdrawal
-        rowCount = thisObj.properties.rows.length - csvRows.length
-
-        if (isValid && rowCount == 0) {
-            $.each(thisObj.properties.rows, function (i, row) {
-                var html = '<tr>';
-                html += '<th class="property-type-grid-row-header">' + thisObj.properties.label + '</th>';
-
-                $.each(thisObj.properties.columns, function (j, column) {
-                    if (j === 0) { //first column to display Row label
-                        var required = "";
-                        if (row.required !== undefined && row.required.toLowerCase() === 'true') {
-                            required = ' <span class="property-required">' + get_peditor_msg('peditor.mandatory.symbol') + '</span>';
-                        }
-                        html += '<td><span>' + row.label + '</span>' + required;
-                        html += '<input type="hidden" name="' + column.key + '" value="' + PropertyEditor.Util.escapeHtmlTag(row.label) + '"/></td>';
-                    } else {
-                        var columnValue = "";
-                        if (thisObj.value !== undefined && thisObj.value !== null &&
-                            thisObj.value[i] !== undefined && thisObj.value[i] !== null &&
-                            thisObj.value[i][column.key] !== undefined) {
-                            columnValue = thisObj.value[i][column.key];
-                        }
-                        PropertyEditor.Util.retrieveOptionsFromCallback(thisObj, column, column.key);
-                        var required = "";
-                        if (column.required !== undefined && column.required.toLowerCase() === 'true') {
-                            required = ' <span class="property-required">' + get_peditor_msg('peditor.mandatory.symbol') + '</span>';
-                        }
-                        var tdclass = column.type;
-                        if (tdclass === undefined) {
-                            tdclass = "";
-                        }
-                        html += '<td class="' + tdclass + '"><span class="label"><span>' + column.label + '</span> ' + required + '</span><span>';
-                        if (column.type === "truefalse") {
-                            var checked = "";
-                            column.true_value = (column.true_value !== undefined) ? column.true_value : 'true';
-                            if (columnValue === column.true_value) {
-                                checked = "checked";
-                            }
-                            html += '<label><input name="' + column.key + '" type="checkbox" ' + checked + ' value="' + csvRows[i][(j - 1).toString()] + '"/><span class="hidden_label">' + column.label + '</span></label>';
-                        } else if (column.options !== undefined || column.options_ajax !== undefined) {
-                            if (column.type === "autocomplete") {
-                                if (i === 0) {
-                                    thisObj.updateSource(column.key, column.options);
-                                }
-                                html += '<input name="' + column.key + '" class="autocomplete" size="10" value="' + csvRows[i][(j - 1).toString()] + '"/>';
-                            } else {
-                                html += '<select name="' + column.key + '" data-value="' + csvRows[i][(j - 1).toString()] + '" class="initFullWidthChosen">';
-                                if (column.options !== undefined) {
-                                    $.each(column.options, function (i, option) {
-                                        var selected = "";
-                                        if (columnValue === option.value) {
-                                            selected = " selected";
-                                        }
-                                        html += '<option value="' + PropertyEditor.Util.escapeHtmlTag(option.value) + '"' + selected + '>' + PropertyEditor.Util.escapeHtmlTag(option.label) + '</option>';
-                                    });
-                                }
-                                html += '</select>';
-                            }
-                        } else if (column.type === "number") {
-                            html += '<input name="' + column.key + '" type="number" size="10" value="' + csvRows[i][(j - 1).toString()] + '"/>';
-                        } else {
-                            html += '<input name="' + column.key + '" size="10" value="' + csvRows[i][(j - 1).toString()] + '"/>';
-                        }
-                        html += '</span></td>';
-                    }
-                });
-
-                html += '</tr>';
-                $(table).append(html);
-            });
-
-            return true;
-
-        } else {
-
-            return false;
-
-        }
-    },
-
-    // Initialize functionality of the switch buttons
-    initSwitchButtons: PropertyEditor.Type.Grid.prototype.initSwitchButtons,
-
-    // Convert values of Grid that is in JSON format to CSV
-    convertToCsv: function (data) {
-        let csv = '';
-        data.statusValue.forEach(item => {
-            csv += `${item.customValue};${item.customLabel}\n`;
-        });
-        return csv.trim();
-    },
-    
-    // Convert CSV to JSON
-    parseCSV: PropertyEditor.Type.Grid.prototype.parseCSV,
-
-    // Show error message if CSV format is wrong
-    showCsvErrorMessage: PropertyEditor.Type.Grid.prototype.showCsvErrorMessage,
-
-    // Append switch buttons above <table>
-    addSwitchButtons: PropertyEditor.Type.GridCombine.prototype.addSwitchButtons,
-
-    // <<END>> SWITCH GRID-CSV
-
     initScripting: function () {
-
-        // SWITCH GRID-CSV
-        this.addSwitchButtons();
-        this.initSwitchButtons();
-        // SWITCH GRID-CSV
-
+        
         var table = $("#" + this.id);
         var grid = this;
 
