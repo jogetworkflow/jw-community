@@ -5036,6 +5036,86 @@ public class ConsoleWebController {
         return "console/setting/message";
     }
 
+    @RequestMapping("/console/setting/message/export")
+    public String consoleSettingMessageExport(ModelMap map, @RequestParam(value = "sort", required = false) String sort, @RequestParam(value = "desc", required = false) Boolean desc, @RequestParam(value = "start", required = false) Integer start, @RequestParam(value = "rows", required = false) Integer rows) {
+        
+        String condition = "";
+        List<String> param = new ArrayList<String>();
+        
+        List<ResourceBundleMessage> messageList = rbmDao.getMessages(condition, param.toArray(new String[param.size()]), sort, desc, start, rows);
+        
+        JSONObject jsonObject = new JSONObject();
+        
+        List<String> localeList = new ArrayList<>();
+        
+        if (messageList != null && !messageList.isEmpty()) {
+            for (ResourceBundleMessage rbm : messageList) {
+                String locale = rbm.getLocale();
+                if (!localeList.contains(locale)) {
+                    localeList.add(locale);
+                    Map<String, String> data = new HashMap<>();
+                    data.put("locale", locale);
+                    jsonObject.accumulate("data", data);
+                }
+            }
+        }
+        
+        map.addAttribute("localeList", localeList);
+
+        ResourceBundleMessage message = new ResourceBundleMessage();
+        map.addAttribute("message", message);
+        return "console/setting/messageExport";
+    }
+
+    @RequestMapping(value = "/console/setting/message/export/submit", method = RequestMethod.POST)
+    public String consoleSettingMessageExportSubmit(ModelMap map, HttpServletResponse response, @ModelAttribute("message") ResourceBundleMessage message, @RequestParam(value = "sort", required = false) String sort, @RequestParam(value = "desc", required = false) Boolean desc, @RequestParam(value = "start", required = false) Integer start, @RequestParam(value = "rows", required = false) Integer rows) throws IOException {
+
+        String condition = "";
+        List<String> param = new ArrayList<String>();
+
+        if (message.getLocale() != null && message.getLocale().trim().length() != 0) {
+            condition += "e.locale = ? ";
+            param.add(message.getLocale());
+        }
+
+        if (condition.length() > 0) {
+            condition = "WHERE " + condition;
+        }
+
+        List<ResourceBundleMessage> messageList = rbmDao.getMessages(condition, param.toArray(new String[param.size()]), sort, desc, start, rows);
+
+        JSONObject jsonObject = new JSONObject();
+
+        if (messageList != null && messageList.size() > 0) {
+            for (ResourceBundleMessage rbm : messageList) {
+                Map data = new HashMap();
+                data.put("id", rbm.getId());
+                data.put("key", rbm.getKey());
+                data.put("locale", rbm.getLocale());
+                data.put("message", rbm.getMessage());
+                jsonObject.accumulate("data", data);
+            }
+        }
+
+        ServletOutputStream output = null;
+        try {
+            String locale = SecurityUtil.validateStringInput(message.getLocale());
+            String filename = locale + ".po";
+            response.setContentType("text/plain; charset=utf-8");
+            response.addHeader("Content-Disposition", "attachment; filename=" + filename);
+            output = response.getOutputStream();
+            appService.exportPO(locale, output, jsonObject);
+        } catch (Exception ex) {
+            LogUtil.error(getClass().getName(), ex, "");
+        } finally {
+            if (output != null) {
+                output.flush();
+            }
+        }
+        
+        return "console/setting/messageExport";
+    }
+
     @RequestMapping("/console/setting/message/create")
     public String consoleSettingMessageCreate(ModelMap map) {
         map.addAttribute("localeList", getSortedLocalList());

@@ -19,6 +19,7 @@ import org.joget.directory.model.Group;
 import org.joget.workflow.model.WorkflowAssignment;
 import org.joget.workflow.model.WorkflowProcess;
 import org.joget.workflow.model.WorkflowProcessResult;
+import org.json.JSONObject;
 import org.springframework.web.multipart.MultipartFile;
 
 /**
@@ -694,6 +695,15 @@ public interface AppService {
      * @return 
      */
     public Map<AppDefinition, Collection<WorkflowProcess>> getPublishedProcesses(String appId);
+
+    /**
+     * Export PO file
+     * @param locale
+     * @param output
+     * @param jsonObject
+     * @throws IOException 
+     */
+    public void exportPO(String locale, OutputStream output, JSONObject jsonObject) throws IOException;
     
     /**
      * Generate Message Bundle PO file to OutputStream
