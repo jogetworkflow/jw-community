@@ -3627,44 +3627,6 @@ public class AppServiceImpl implements AppService {
         
         return appProcessMap;
     }
-
-    /**
-     * Export PO file
-     * @param locale
-     * @param output
-     * @param jsonObject
-     * @throws IOException 
-     */
-    public void exportPO(String locale, OutputStream output, JSONObject jsonObject) throws IOException {
-        Writer writer = new OutputStreamWriter(output, "UTF-8");
-        
-        try {
-        
-            writer.append("\"Language: " + locale + "\\n\"\r\n\n");
-
-            JSONArray dataArray = jsonObject.getJSONArray("data");
-
-            for(int i=0;i<dataArray.length();i++){
-                Object object = dataArray.get(i);
-
-                if (object instanceof Map) {
-                    Map<?, ?> map = (Map<?, ?>) object;
-                    writer.append("#: " +  map.get("key").toString().trim() + "\n");
-                    writer.append("msgid \"\"\n");
-                    writer.append("msgstr \"" +  map.get("message").toString().trim() + "\"\n\n");
-                }
-                
-            }
-
-            writer.append(" ");
-            
-        } catch(Exception e) {
-            LogUtil.error(AppServiceImpl.class.getName(), e, "Error exporting PO file");
-        } finally {
-            writer.flush();
-            writer.close();
-        }
-    }
     
     /**
      * Generate Message Bundle PO file to OutputStream

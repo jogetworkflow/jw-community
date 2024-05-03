@@ -4,6 +4,9 @@ import java.io.IOException;
 import java.io.BufferedReader;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.OutputStream;
+import java.io.OutputStreamWriter;
+import java.io.Writer;
 import java.util.List;
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -76,6 +79,30 @@ public class ResourceBundleUtil implements ApplicationContextAware {
             }
         }
         return messages;
+    }
+    
+    /**
+     * Export PO file
+     * @param locale
+     * @param output
+     * @throws IOException 
+     */
+    public static void exportPO(String locale, OutputStream output) throws IOException {
+        try (Writer writer = new OutputStreamWriter(output, "UTF-8")) {
+            List<ResourceBundleMessage> messageList = getResourceBundleMessageDao().getMessages(locale, null, null, null, null);
+            writer.append("\"Language: " + locale + "\\n\"\r\n\n");
+
+            for (ResourceBundleMessage message : messageList) {
+                writer.append("#: " +  message.getKey() + "\n");
+                writer.append("msgid \"" +  message.getMessage() + "\"\n");
+                writer.append("msgstr \"" +  message.getMessage() + "\"\n\n");
+            }
+
+            writer.append(" ");
+            
+        } catch(Exception e) {
+            LogUtil.error(ResourceBundleUtil.class.getName(), e, "Error exporting PO file");
+        }
     }
 
     /**

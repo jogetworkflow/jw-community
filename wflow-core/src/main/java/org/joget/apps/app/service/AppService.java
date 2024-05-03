@@ -695,15 +695,6 @@ public interface AppService {
      * @return 
      */
     public Map<AppDefinition, Collection<WorkflowProcess>> getPublishedProcesses(String appId);
-
-    /**
-     * Export PO file
-     * @param locale
-     * @param output
-     * @param jsonObject
-     * @throws IOException 
-     */
-    public void exportPO(String locale, OutputStream output, JSONObject jsonObject) throws IOException;
     
     /**
      * Generate Message Bundle PO file to OutputStream
