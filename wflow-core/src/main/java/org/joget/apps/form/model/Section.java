@@ -238,54 +238,52 @@ public class Section extends Element implements FormBuilderEditable, FormContain
             Double fieldValueNumber = null;
             Double valueNumber = null;
             boolean isNumeric = false;
-            if (!fieldValue.isEmpty()) {
-                try {
-                    fieldValueNumber = Double.parseDouble(fieldValue);
-                    valueNumber = Double.parseDouble(value);
-                    isNumeric = true;
-                } catch (Exception e) {
-                    //ignore
+            try {
+                fieldValueNumber = Double.parseDouble(fieldValue);
+                valueNumber = Double.parseDouble(value);
+                isNumeric = true;
+            } catch (Exception e) {
+                //ignore
+            }
+
+            if (isNumeric) {
+                int compare = Double.compare(fieldValueNumber, valueNumber);
+                if (operator.isEmpty()) {
+                    result = compare == 0;
+                } else if (">".equals(operator)) {
+                    result = compare > 0;
+                } else if (">=".equals(operator)) {
+                    result = compare >= 0;
+                } else if ("<".equals(operator)) {
+                    result = compare < 0;
+                } else if ("<=".equals(operator)) {
+                    result = compare <= 0;
                 }
-                
-                if (isNumeric) {
-                    int compare = Double.compare(fieldValueNumber, valueNumber);
-                    if (operator.isEmpty()) {
-                        result = compare == 0;
-                    } else if (">".equals(operator)) {
-                        result = compare > 0;
-                    } else if (">=".equals(operator)) {
-                        result = compare >= 0;
-                    } else if ("<".equals(operator)) {
-                        result = compare < 0;
-                    } else if ("<=".equals(operator)) {
-                        result = compare <= 0;
-                    }
-                } else {
-                    if (operator.isEmpty()) {
-                        result = fieldValue.equals(value);
-                    } else if (">".equals(operator)) {
-                        result = fieldValue.compareTo(value) > 0;
-                    } else if (">=".equals(operator)) {
-                        result = fieldValue.compareTo(value) >= 0;
-                    } else if ("<".equals(operator)) {
-                        result = fieldValue.compareTo(value) < 0;
-                    } else if ("<=".equals(operator)) {
-                        result = fieldValue.compareTo(value) <= 0;
-                    } else if ("isTrue".equals(operator)) {
-                        result = fieldValue.equalsIgnoreCase("true") || fieldValue.equals("1");
-                    } else if ("isFalse".equals(operator)) {
-                        result = fieldValue.equalsIgnoreCase("false") || fieldValue.equals("0");
-                    } else if ("contains".equals(operator)) {
-                        result = fieldValue.contains(value);
-                    } else if ("listContains".equals(operator)) {
-                        String[] list = fieldValue.split(";");
-                        result = ArrayUtils.contains(list, value);
-                    } else if ("in".equals(operator)) {
-                        String[] list = value.replaceAll("__", ";").split(";");
-                        result = ArrayUtils.contains(list, fieldValue);
-                    } else if ("true".equals(operator)) {
-                        result = fieldValue.matches(StringEscapeUtils.unescapeJavaScript(value));
-                    }
+            } else {
+                if (operator.isEmpty()) {
+                    result = fieldValue.equals(value);
+                } else if (">".equals(operator)) {
+                    result = fieldValue.compareTo(value) > 0;
+                } else if (">=".equals(operator)) {
+                    result = fieldValue.compareTo(value) >= 0;
+                } else if ("<".equals(operator)) {
+                    result = fieldValue.compareTo(value) < 0;
+                } else if ("<=".equals(operator)) {
+                    result = fieldValue.compareTo(value) <= 0;
+                } else if ("isTrue".equals(operator)) {
+                    result = fieldValue.equalsIgnoreCase("true") || fieldValue.equals("1");
+                } else if ("isFalse".equals(operator)) {
+                    result = fieldValue.equalsIgnoreCase("false") || fieldValue.equals("0");
+                } else if ("contains".equals(operator)) {
+                    result = fieldValue.contains(value);
+                } else if ("listContains".equals(operator)) {
+                    String[] list = fieldValue.split(";");
+                    result = ArrayUtils.contains(list, value);
+                } else if ("in".equals(operator)) {
+                    String[] list = value.replaceAll("__", ";").split(";");
+                    result = ArrayUtils.contains(list, fieldValue);
+                } else if ("true".equals(operator)) {
+                    result = fieldValue.matches(StringEscapeUtils.unescapeJavaScript(value));
                 }
             }
         }
