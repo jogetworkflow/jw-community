@@ -347,7 +347,7 @@ public class UserviewThemeProcesser {
     protected String loginPageRedirection() {
         boolean isAnonymous = WorkflowUtil.isCurrentUserAnonymous();
         boolean hasCurrentPage = userview.getCurrent() != null;
-        if ((!isAuthorized || !hasCurrentPage) && isAnonymous) {
+        if ((!isAuthorized || !hasCurrentPage || hasCurrentPage) && isAnonymous) {
             return "redirect:" + getLoginLink() + (request.getQueryString() == null ? "" : ("?" + StringUtil.decodeURL(request.getQueryString())));
         }
         return null;
