@@ -94,7 +94,12 @@ $(document).ready(function () {
             // header title and header nav button container width
             const headerLinkWidth = $('#header-link').outerWidth(true);
             const headerNavWidth = $(".header-nav").outerWidth(true);
-            const totalHeaderWidth = headerLinkWidth + headerNavWidth;
+            let totalHeaderWidth = headerLinkWidth + headerNavWidth;
+            const logo = $("#header-name img.logo");
+            if (logo.length > 0) {
+                const logoWidth = logo.outerWidth();
+                totalHeaderWidth += logoWidth; // Add logo width to totalHeaderWidth
+            }
 
             // width of the containerFluid
             const containerFluidElem = $('.container-fluid');

@@ -1969,8 +1969,8 @@ body.rtl .ContainerComponent {
     }
     ul#moreSubMenu.sub-menu > li:hover> ul{
         top: -1px;
-        width: 100px;
-        right: 199px;
+        width: auto;
+        right: 100%;
     }
     ul#moreSubMenu.sub-menu{
         overflow: unset!important;
