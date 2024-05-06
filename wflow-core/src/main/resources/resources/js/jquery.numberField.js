@@ -59,7 +59,7 @@
                     var output = incrementDecrementValue($(element).val(), incrDecrValue);
                     
                     var formatted = FormUtil.numberFormat(output, o);
-                    $(element).val(formatted);
+                    $(element).val(formatted).trigger("change");
                 });
             };
             
