@@ -115,56 +115,54 @@ VisibilityMonitor.prototype.isMatch = function(fieldValue, controlValue, operato
         var fieldValueNumber = null;
         var controlValueNumber = null;
         var isNumeric = false;
-        if (fieldValue !== "") {
-            if (controlValue !== null && controlValue !== "" && !isNaN(fieldValue) && !isNaN(controlValue)) {
-                try {
-                    fieldValueNumber = parseFloat(fieldValue);
-                    controlValueNumber = parseFloat(controlValue);
-                    isNumeric = true;
-                } catch (err) {}
+        if (controlValue !== null && controlValue !== "" && !isNaN(fieldValue) && !isNaN(controlValue)) {
+            try {
+                fieldValueNumber = parseFloat(fieldValue);
+                controlValueNumber = parseFloat(controlValue);
+                isNumeric = true;
+            } catch (err) {}
+        }
+        if (isNumeric) {
+            if (operator === "") {
+                result = fieldValueNumber == controlValueNumber;
+            } else if (">" === operator) {
+                result = fieldValueNumber > controlValueNumber;
+            } else if (">=" === operator) {
+                result = fieldValueNumber >= controlValueNumber;
+            } else if ("<" === operator) {
+                result = fieldValueNumber < controlValueNumber;
+            } else if ("<=" === operator) {
+                result = fieldValueNumber <= controlValueNumber;
             }
-            if (isNumeric) {
-                if (operator === "") {
-                    result = fieldValueNumber == controlValueNumber;
-                } else if (">" === operator) {
-                    result = fieldValueNumber > controlValueNumber;
-                } else if (">=" === operator) {
-                    result = fieldValueNumber >= controlValueNumber;
-                } else if ("<" === operator) {
-                    result = fieldValueNumber < controlValueNumber;
-                } else if ("<=" === operator) {
-                    result = fieldValueNumber <= controlValueNumber;
-                }
-            } else {
-                if (operator === "") {
-                    result = fieldValue === controlValue;
-                } else if (">" === operator) {
-                    result = fieldValue > controlValue;
-                } else if (">=" === operator) {
-                    result = fieldValue >= controlValue;
-                } else if ("<" === operator) {
-                    result = fieldValue < controlValue;
-                } else if ("<=" === operator) {
-                    result = fieldValue <= controlValue;
-                } else if ("isTrue" === operator) {
-                    result = fieldValue.toLowerCase() === "true" || fieldValue === "1";
-                } else if ("isFalse" === operator) {
-                    result = fieldValue.toLowerCase() === "false" || fieldValue === "0";
-                } else if ("contains" === operator) {
-                    result = fieldValue.indexOf(controlValue) >= 0;
-                } else if ("listContains" === operator) {
-                    var list = fieldValue.split(";");
-                    result = $.inArray(controlValue, list) >= 0;
-                } else if ("in" === operator) {
-                    var list = controlValue.replaceAll("__", ";").split(";");
-                    result = $.inArray(fieldValue, list) >= 0;
-                } else if ("true" === operator) {
-                    try {
-                        var regex = new RegExp(controlValue);
-                        var regexResult = regex.exec(fieldValue);
-                        result = regexResult.length > 0 && regexResult[0] === fieldValue;
-                    } catch (err) {}
-                }
+        } else {
+            if (operator === "") {
+                result = fieldValue === controlValue;
+            } else if (">" === operator) {
+                result = fieldValue > controlValue;
+            } else if (">=" === operator) {
+                result = fieldValue >= controlValue;
+            } else if ("<" === operator) {
+                result = fieldValue < controlValue;
+            } else if ("<=" === operator) {
+                result = fieldValue <= controlValue;
+            } else if ("isTrue" === operator) {
+                result = fieldValue.toLowerCase() === "true" || fieldValue === "1";
+            } else if ("isFalse" === operator) {
+                result = fieldValue.toLowerCase() === "false" || fieldValue === "0";
+            } else if ("contains" === operator) {
+                result = fieldValue.indexOf(controlValue) >= 0;
+            } else if ("listContains" === operator) {
+                var list = fieldValue.split(";");
+                result = $.inArray(controlValue, list) >= 0;
+            } else if ("in" === operator) {
+                var list = controlValue.replaceAll("__", ";").split(";");
+                result = $.inArray(fieldValue, list) >= 0;
+            } else if ("true" === operator) {
+                try {
+                    var regex = new RegExp(controlValue);
+                    var regexResult = regex.exec(fieldValue);
+                    result = regexResult.length > 0 && regexResult[0] === fieldValue;
+                } catch (err) {}
             }
         }
     }
