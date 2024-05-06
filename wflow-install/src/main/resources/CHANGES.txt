@@ -2,6 +2,42 @@ Joget DX COMMUNITY
 ====================
 For more information, please refer to https://community.joget.org
 
+8.1.0
+=====
+de3f5af70 Added: wflow-consoleweb/wflow-core - Compact Theme - Incorporated Compact Theme to existing DX8 themes. @8.1-SNAPSHOT
+9f0c0d779 Added: wflow-wfengine - WorkflowManager - Added method to get closed assignments by user & subtype (completed, aborted). @8.1-SNAPSHOT
+e8fbb069c Modified: wflow-consoleweb - Form - Using consistent unique key for form field. @8.1-SNAPSHOT
+0e8be4379 Modified: wflow-consoleweb - Security - Upgrade TinyMCE to 7.0.1. @8.1-SNAPSHOT
+846528014 Fixed: wflow-consoleweb - Admin Bar - App Designer role seeing links lead to no permission page. @8.1-SNAPSHOT
+8eebf3f5b Fixed: wflow-consoleweb - i18n - Fixed missing confirmation messages for theme switching @8.1-SNAPSHOT
+b4eac7ace Added: App Center - Added ability to search app list. @8.1-SNAPSHOT
+2d6f41e1c Fixed: wflow-consoleweb - Dark Theme - Fixed dark theme is not applied to popup created by form grid and list grid. @8.1-SNAPSHOT
+b47a28518 Fixed: wflow-consoleweb - Fixed hardcoded asset paths. @8.1-SNAPSHOT
+2af0f7ab6 Fixed: wflow-consoleweb - UI - Popup template is not handled RTL. @8.0-SNAPSHOT
+a760f113a Modified: jw-community - Installer - Support Java 21 LTS @8.1-SNAPSHOT
+ef87c68c4 Fixed: wflow-core - List Inbox - Regression of ec194fa1. Multi approval feature is broken. @7.0-SNAPSHOT
+b4645b968 Modified: wflow-consoleweb - Form Builder - Support configure default styling of all form elements. @8.1-SNAPSHOT
+7957ff03d Modified: wflow-core - JSON API List Binder - Support auto handling filters on API results. @8.1-SNAPSHOT
+a4d117143 Modified: wflow-core - Section - Enhance visibility control to support operators and parentheses grouping. @8.1-SNAPSHOT
+28cbedd35 Fixed: wflow-consoleweb - DX8 Theme - The hide menu button can't trigger when window width is within 1280px to 1286px and there is a scrollbar. @8.1-SNAPSHOT
+c4b06007e Fixed: wflow-consoleweb - UI - Priority menu not able to move current page menu. @8.1-SNAPSHOT
+e652d8a38 Fixed: wflow-consoleweb - Admin Bar - Fixed admin bar not displaying properly at different widths. @8.1-SNAPSHOT
+b7c19a3fa Modified: wflow-consoleweb - Create App - Enhance table prefix handling on create app from template and clone app. @8.1-SNAPSHOT
+36c8dc728 Fixed: wflow-consoleweb - Simple Rule - Configuration UI is misaligned. @8.1-SNAPSHOT
+3765cce81 Modified: wflow-core - BeanShell - Exception handling to log line number for easier debugging and tracing. @8.1-SNAPSHOT
+003fe53d2 Fixed: wflow-consoleweb - App Composer - App Designer Role should not able to assign another app designer or remove themselves from the role. @8.1-SNAPSHOT
+7e3a4232b Modified: wflow-consoleweb - Builders - Diff Checker - Added navigation button. @8.1-SNAPSHOT
+5e10534ca Modified: jw-community - Security - Upgrade Spring Framework to 5.3.33, Spring Security to 5.8.11, Hibernate to 5.6.15.Final, dom4j to 2.1.4, bouncycastle to 1.78, moment.js to 2.30.1. @7.1-SNAPSHOT
+642c7d2fa Fixed: wflow-commons - SetupManager - Base directory path is not consistently ends with a path separator. @7.0-SNAPSHOT
+a4c2507fa Fixed: wflow-core - MFA - Does not call user security login post processing after logged in. @7.0-SNAPSHOT
+d50aa032c Fixed: wflow-commons - Security - Prevent DOS due to Glowroot upgrade. @7.1-SNAPSHOT
+999af7774 Added: wflow-consoleweb - App Composer - Added app overview tools. @ 8.1-SNAPSHOT
+180760b36 Modified: wflow-core - Text Field - Added numpad support for smartphones @ 8.1-SNAPSHOT
+77c7674d2 Fixed: wflow-core - commons-io is not upgrade correctly. @7.1-SNAPSHOT
+653f87ec4 Modified: wflow-consoleweb - Sorting Feature - added sorting feature to Grid property. @8.1-SNAPSHOT
+c0b6f260a Modified: wflow-consoleweb - Import App - Support import zipped git source. @8.1-SNAPSHOT
+d1416bbad Modified: wflow-consoleweb - UI - Adding priority menu to addressed long horizontal menu. @8.1-SNAPSHOT
+
 8.0.12
 ======
 b48f76d66 Fixed: jw-community - Security - Update commons-compress to 1.26.0 and commons-io to 2.15.1 for CVE-2024-26308. @7.0-SNAPSHOT
