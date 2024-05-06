@@ -53,21 +53,22 @@
         UI.locale = "<c:out value="${currentLocale}"/>";
         UI.theme = "<c:out value="${theme}"/>";
         
-        if (window.self !== window.parent && window.parent.UI !== undefined
-                && window.parent.UI.locale !== undefined && window.parent.UI.locale !== ""
-                && window.parent.UI.locale !== UI.locale) {
-            if (confirm("<ui:msgEscJS key="general.label.languageSwitching"/>")) {
-                window.top.location.reload(true);
-            }
-        }
+        var switchLocale = window.self !== window.parent && window.parent.UI !== undefined && window.parent.UI.locale !== undefined && window.parent.UI.locale !== "" && window.parent.UI.locale !== UI.locale;
+        var switchTheme = window.self !== window.parent && window.parent.UI !== undefined && window.parent.UI.theme !== undefined && window.parent.UI.theme !== "" && window.parent.UI.theme !== UI.theme;
         
         if(window.parent.UI.theme === ""){
             window.parent.UI.theme = "<c:out value="${theme}"/>";
         }
-
-        if (window.self !== window.parent && window.parent.UI !== undefined
-                && window.parent.UI.theme !== undefined && window.parent.UI.theme !== ""
-                && window.parent.UI.theme !== UI.theme) {
+        
+        if (switchLocale && switchTheme){
+            if (confirm("<ui:msgEscJS key="general.label.languageAndThemeSwitching"/>")) {
+                window.top.location.reload(true);
+            }
+        } else  if (switchLocale) {
+            if (confirm("<ui:msgEscJS key="general.label.languageSwitching"/>")) {
+                window.top.location.reload(true);
+            }
+        } else  if (switchTheme) {
             if (confirm("<ui:msgEscJS key="general.label.themeSwitching"/>")) {
                 window.parent.UI.theme = "<c:out value="${theme}"/>";
                 window.top.location.reload(true);
