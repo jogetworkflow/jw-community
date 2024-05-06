@@ -276,7 +276,8 @@ input[type=tel],
 input[type=number],
 input[type=search], 
 select, 
-textarea {
+textarea,
+.ql-container.ql-bubble{
     display: block;
     width: 100%;
     height: calc(1.5em + 0.75rem + 2px);
@@ -288,6 +289,10 @@ textarea {
     border: 1px solid #ced4da;
     border-radius: 0.25rem;
     transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+}
+.ql-container.ql-bubble.focus{
+    outline: 1px auto;
+    outline-color: var(--theme-primary, var(--theme-color3, #007bff));
 }
 input[size]{
     width: auto !important;
