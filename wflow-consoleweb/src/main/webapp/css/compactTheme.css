@@ -1,33 +1,3 @@
-.density-selection .themes li {
-    cursor: default;
-    padding: 5px;
-}
-
-.density-selection .themes li:hover {
-    background-color: #f6f6f6;
-}
-
-.themes #dropdown-title {
-    border-bottom: 1px solid #dee2e6;
-    padding: 0px 10px;
-    text-align: center;
-    padding-bottom: 5px;
-    margin-bottom: 5px;
-}
-
-.density-selection .themes li .header {
-    padding-left: 35px;
-}
-
-#selectedDensity {
-    position: absolute;
-    font-size: 1.4rem;
-}
-
-.dropdown-menu.themes {
-    width: 220px;
-}
-
 /*compact CSS*/
 body.compact-mode .sidebar_brand{
     padding-top: 2px;
@@ -366,9 +336,6 @@ body.compact-mode div[id^='container_']:has(#indication){
 }
 
 /*Display From Right To Left (rtl)*/
-body.rtl #selectedDensity{
-    left: 15px;
-}
 body.compact-mode.rtl:not(.horizontal_menu) header.navbar .container-fluid{
     padding-top: 4px !important;
     padding-bottom: 4px !important;
