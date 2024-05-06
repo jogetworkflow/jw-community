@@ -824,3 +824,16 @@ body.rtl .form-edit-btn{
     width: 100% !important;
     margin-top: 20px !important;
 }
+
+/* numeric field */
+.numeric_field_controls {display:inline-block; position:absolute; top: -4px;}
+.label-top .numeric_field_controls {right: 0px; bottom: 50px; top:auto;}
+body.rtl .label-top .numeric_field_controls {left: 0px; right: auto;}
+.numeric_field_control {position: absolute; top: 5px; right: 10px; font-size:10px; cursor: pointer;}
+.numeric_field_control img {width:12px; height:12px; max-width: fit-content; min-width: fit-content; max-height: fit-content; min-height: fit-content;}
+body.rtl .numeric_field_control {left:10px; right:auto;}
+.numeric_field_control.numeric_field_control_decr {top: 15px;} 
+@media (max-width: 768px) {
+    .numeric_field_controls {right: 0px; bottom: 50px; top:auto;}
+    body.rtl .numeric_field_controls {left: 0px; right: auto;}
+}
