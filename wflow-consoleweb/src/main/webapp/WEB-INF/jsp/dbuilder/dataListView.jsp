@@ -100,7 +100,7 @@
                                 <fmt:message key="dbuilder.pleaseSubmitFilter"/>
                             </p>    
                         </c:if>    
-                        <form name="filters_${dataListId}" data-searchpopup="${dataList.responsiveSearchPopup}" class="filter_form" id="filters_${dataListId}" action="?" method="GET">
+                        <form name="filters_${dataListId}" class="filter_form" id="filters_${dataListId}" action="?" method="GET">
                             <a class="mobile_search_trigger" title="<ui:msgEscHTML key="dbuilder.filter"/>"><i class="fas fa-filter"></i> <fmt:message key="dbuilder.filter"/></a>
                             <div class="filters">
                                 <c:forEach items="${dataList.filterTemplates}" var="template">
