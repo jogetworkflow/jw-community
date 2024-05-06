@@ -1038,6 +1038,10 @@ body.rtl #sidebar li ul>li>a > span:first-child{
     body.horizontal_menu #main .systemAlert + .row-fluid {
         margin-top: 40px;
     }
+    body.horizontal_menu.inline_menu div#header-name img {
+        position: relative;
+        top: -15px;
+    }
 }
 @media (max-width:767px) {
     body.horizontal_menu #sidebar li.toggled>a.dropdown:before {
@@ -1808,8 +1812,8 @@ body:not(#login) #content > main > .datalist-body-content:not(.quickEdit) {
     }
     ul#moreSubMenu.sub-menu > li:hover> ul{
         top: -1px;
-        width: 203px;
-        right: 199px;
+        width: auto;
+        right: 100%;
         visibility: visible;
     }
     ul#moreSubMenu.sub-menu > li > ul{
