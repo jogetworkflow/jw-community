@@ -11,6 +11,8 @@ public interface UserMetaDataDao {
 
     Collection<UserMetaData> getUserMetaDatasByKeyValue(String key, String value);
 
+    Collection<UserMetaData> getUserMetaDatasByUsernameKeyPrefix(String username, String keyPrefix);
+
     Boolean addUserMetaData(UserMetaData data);
     
     Boolean updateUserMetaData(UserMetaData data);

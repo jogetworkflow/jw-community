@@ -109,7 +109,9 @@
                 </div>
             </div>
         </div>
-        <jsp:include page="idp.jsp" flush="true"/>
+        <div id="idpMfaSetup">
+            <jsp:include page="idpMfa.jsp" flush="true"/>
+        </div>
     </div>
 </div>
 

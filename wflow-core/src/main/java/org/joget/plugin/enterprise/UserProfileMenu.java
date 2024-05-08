@@ -24,12 +24,9 @@ import org.joget.commons.util.StringUtil;
 import org.joget.commons.util.TimeZoneUtil;
 import org.joget.directory.dao.UserDao;
 import org.joget.directory.dao.UserMetaDataDao;
-import org.joget.directory.model.service.IdentityProviderManager;
+import org.joget.directory.model.service.*;
 import org.joget.directory.model.User;
 import org.joget.directory.model.UserMetaData;
-import org.joget.directory.model.service.DirectoryUtil;
-import org.joget.directory.model.service.ExtDirectoryManager;
-import org.joget.directory.model.service.UserSecurity;
 import org.joget.plugin.base.PluginManager;
 import org.joget.workflow.model.service.WorkflowUserManager;
 import org.joget.workflow.util.WorkflowUtil;
@@ -199,6 +196,11 @@ public class UserProfileMenu extends UserviewMenu {
         IdentityProviderManager identityProviderManager = (IdentityProviderManager) AppUtil.getApplicationContext().getBean("identityProviderManager");
         String idpProfileFooter = identityProviderManager.getProfileFooterHtml(user);
         sbProfileFooter.append(idpProfileFooter);
+
+        // Get profile footer from MFA Manager
+        MfaManager mfaManager = (MfaManager) AppUtil.getApplicationContext().getBean("mfaManager");
+        String mfaProfileFooter = mfaManager.getProfileFooterHtml(user);
+        sbProfileFooter.append(mfaProfileFooter);
 
         UserSecurity us = DirectoryUtil.getUserSecurity();
         if (us != null) {

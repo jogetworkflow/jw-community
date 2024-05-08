@@ -45,7 +45,22 @@ public class UserMetaDataDaoImpl extends AbstractSpringDao implements UserMetaDa
         }
         return result;
     }
-    
+
+    @Override
+    public Collection<UserMetaData> getUserMetaDatasByUsernameKeyPrefix(String username, String keyPrefix) {
+        try {
+            // escape existing % in search string then only append the SQL % at the end
+            if (keyPrefix.contains("%")) {
+                keyPrefix = keyPrefix.replace("%", "\\%");
+            }
+            keyPrefix += "%";
+            return (Collection<UserMetaData>) find("UserMetaData", "where e.username = ? and e.key LIKE ?", new Object[]{username, keyPrefix}, null, null, null, null);
+        } catch (Exception e) {
+            LogUtil.error(UserDaoImpl.class.getName(), e, "Get User Meta Data Error!");
+        }
+        return null;
+    }
+
     public Boolean addUserMetaData(UserMetaData data) {
         try {
             save("UserMetaData", data);

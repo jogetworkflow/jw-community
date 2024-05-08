@@ -98,6 +98,10 @@
         <security:intercept-url pattern="/web/idp/callback/*" access="ROLE_ADMIN, ROLE_APPADMIN, ROLE_USER, ROLE_ANONYMOUS" />
         <security:intercept-url pattern="/web/idp/unlink/*" access="ROLE_ADMIN, ROLE_APPADMIN, ROLE_USER" />
         <security:intercept-url pattern="/web/idp/admin/**" access="ROLE_ADMIN" />
+        <security:intercept-url pattern="/web/mfa" access="ROLE_ADMIN, ROLE_APPADMIN, ROLE_USER, ROLE_ANONYMOUS" />
+        <security:intercept-url pattern="/web/mfa/*" access="ROLE_ADMIN, ROLE_APPADMIN, ROLE_USER, ROLE_ANONYMOUS" />
+        <security:intercept-url pattern="/web/mfa/unlink/*" access="ROLE_ADMIN, ROLE_APPADMIN, ROLE_USER" />
+        <security:intercept-url pattern="/web/mfa/admin/**" access="ROLE_ADMIN" />
         <security:logout logout-url="/j_spring_security_logout" logout-success-url="/web/login"/>
         <security:anonymous username="roleAnonymous"/>
 

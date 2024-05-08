@@ -107,5 +107,14 @@
             timeToIdleSeconds="600"
             timeToLiveSeconds="600"
             diskPersistent="false"/>
+
+    <!-- Cache for MFA nonce -->
+    <cache name="org.joget.cache.MFA_NONCE"
+            maxElementsInMemory="10000"
+            eternal="false"
+            overflowToDisk="false"
+            timeToIdleSeconds="600"
+            timeToLiveSeconds="600"
+            diskPersistent="false"/>
     
 </ehcache>
