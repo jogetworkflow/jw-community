@@ -733,7 +733,8 @@ public class XadminTheme extends UniversalTheme {
     
     @Override
     public String getCustomHomepage() {
-        if (isIndex() && userview.getCurrent() == null) {
+        boolean hasPermission = getUserview().getSetting().isIsAuthorize();
+        if (isIndex() && hasPermission && userview.getCurrent() == null) { //only do this when having permission, else it won't redirect to login page correctly
             UserviewMenu dummy = new HtmlPage();
             dummy.setProperties(new HashMap<String, Object>());
             dummy.setProperty("id", "_index");
