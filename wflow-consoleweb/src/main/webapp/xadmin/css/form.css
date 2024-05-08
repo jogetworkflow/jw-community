@@ -592,6 +592,7 @@ body .chosen-container-multi .chosen-choices{
     border:1px solid #e6e6e6;
     background-image: none !important;
     box-shadow: none !important;
+    padding: 0px 25px 0px;
 }
 body .chosen-container-multi.chosen-container-active .chosen-choices{
     border:1px solid #5FB878;
@@ -599,10 +600,9 @@ body .chosen-container-multi.chosen-container-active .chosen-choices{
 body .chosen-container-multi .chosen-choices li.search-choice {
     background-image: none !important;
     box-shadow: none !important;
-}
-body .chosen-container-multi .chosen-choices li.search-choice{
     background-color: #e6e6e6;
     border-color: #e6e6e6;
+    margin: 12px 5px 0 5px;
 }
 body .chosen-container .chosen-results li.highlighted {
     background-image: none !important;
