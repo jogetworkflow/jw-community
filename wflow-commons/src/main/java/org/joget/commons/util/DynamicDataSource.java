@@ -6,6 +6,7 @@ import java.util.Map;
 import java.util.Properties;
 import org.apache.commons.beanutils.BeanUtils;
 import org.apache.tomcat.jdbc.pool.XADataSource;
+import org.joget.commons.ignite.IgniteCacheManager;
 
 public class DynamicDataSource extends XADataSource {
 

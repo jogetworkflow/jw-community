@@ -23,7 +23,7 @@
     </bean>
 
     <!-- Transaction manager factory -->
-    <bean id="igniteTxManagerFactory" class="org.joget.commons.util.IgniteTxManagerFactory">
+    <bean id="igniteTxManagerFactory" class="org.joget.commons.ignite.IgniteTxManagerFactory">
         <property name="transactionManager" ref="transactionManager"/>
     </bean>        
 
@@ -75,7 +75,7 @@
         </property>                
     </bean>
     
-    <bean id="igniteCacheManager" class="org.joget.commons.util.IgniteCacheManager">
+    <bean id="igniteCacheManager" class="org.joget.commons.ignite.IgniteCacheManager">
     	<constructor-arg ref="igniteConfiguration"/>
     </bean>
      

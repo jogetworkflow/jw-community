@@ -33,7 +33,7 @@ import org.apache.ignite.lang.IgniteCallable;
 import org.apache.ignite.lang.IgniteFutureTimeoutException;
 import org.apache.ignite.resources.IgniteInstanceResource;
 import org.jetbrains.annotations.Nullable;
-import org.joget.commons.util.IgniteCacheManager;
+import org.joget.commons.ignite.IgniteCacheManager;
 import org.joget.commons.util.LogUtil;
 
 /**

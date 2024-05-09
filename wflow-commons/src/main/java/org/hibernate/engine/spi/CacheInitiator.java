@@ -8,7 +8,7 @@ import org.hibernate.cache.spi.CacheImplementor;
 import org.hibernate.cache.spi.RegionFactory;
 import org.hibernate.service.spi.ServiceRegistryImplementor;
 import org.hibernate.service.spi.SessionFactoryServiceInitiator;
-import org.joget.commons.util.IgniteCacheManager;
+import org.joget.commons.ignite.IgniteCacheManager;
 
 /**
  * Initiator for second level cache support

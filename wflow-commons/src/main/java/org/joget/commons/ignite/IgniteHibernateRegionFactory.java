@@ -1,4 +1,4 @@
-package org.joget.commons.util;
+package org.joget.commons.ignite;
 
 import java.util.Map;
 import org.apache.ignite.Ignition;
@@ -13,6 +13,7 @@ import org.hibernate.cache.spi.DomainDataRegion;
 import org.hibernate.cache.spi.QueryResultsRegion;
 import org.hibernate.cache.spi.TimestampsRegion;
 import org.hibernate.engine.spi.SessionFactoryImplementor;
+import org.joget.commons.util.SecurityUtil;
 
 /**
  * Custom HibernateRegionFactory for Apache Ignite to allow ignite to be enabled or disabled at startup.
