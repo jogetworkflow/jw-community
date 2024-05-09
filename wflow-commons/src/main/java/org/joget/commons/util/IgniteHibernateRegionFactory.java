@@ -38,6 +38,7 @@ public class IgniteHibernateRegionFactory extends HibernateRegionFactory {
             String regionName = regionConfig.getRegionName();
             CacheConfiguration cacheConfiguration = (CacheConfiguration)SecurityUtil.getApplicationContext().getBean("igniteAtomicCache");
             cacheConfiguration.setName(regionName);
+            IgniteCacheManager.setCacheMode(cacheConfiguration);
             ignite.getOrCreateCache(cacheConfiguration);
             DomainDataRegion domainDataRegion = super.buildDomainDataRegion(regionConfig, buildingContext);
             return domainDataRegion;
@@ -53,6 +54,7 @@ public class IgniteHibernateRegionFactory extends HibernateRegionFactory {
         if (IgniteCacheManager.isStarted()) {
             CacheConfiguration cacheConfiguration = (CacheConfiguration)SecurityUtil.getApplicationContext().getBean("igniteAtomicCache");
             cacheConfiguration.setName(regionName);
+            IgniteCacheManager.setCacheMode(cacheConfiguration);
             ignite.getOrCreateCache(cacheConfiguration);
             QueryResultsRegion queryResultsRegion = super.buildQueryResultsRegion(regionName, sessionFactory);
             return queryResultsRegion;
@@ -68,6 +70,7 @@ public class IgniteHibernateRegionFactory extends HibernateRegionFactory {
         if (IgniteCacheManager.isStarted()) {
             CacheConfiguration cacheConfiguration = (CacheConfiguration)SecurityUtil.getApplicationContext().getBean("igniteAtomicCache");
             cacheConfiguration.setName(regionName);
+            IgniteCacheManager.setCacheMode(cacheConfiguration);
             ignite.getOrCreateCache(cacheConfiguration);
             TimestampsRegion timestampsRegion = super.buildTimestampsRegion(regionName, sessionFactory);
             return timestampsRegion;

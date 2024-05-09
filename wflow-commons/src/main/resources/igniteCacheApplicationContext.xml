@@ -31,10 +31,10 @@
     <bean id="igniteConfiguration" class="org.apache.ignite.configuration.IgniteConfiguration">
         <!--<property name="consistentId" value="node01"/>-->
         <property name="igniteInstanceName" value="ignite-grid"/>
-        <property name="clientMode" value="false"/>
-        <property name="publicThreadPoolSize" value="100"/>
-        <property name="systemThreadPoolSize" value="100"/>    
-        <property name="stripedPoolSize" value="100"/>    
+        <property name="clientMode" value="false"/>        
+        <property name="publicThreadPoolSize" value="24"/>
+        <property name="systemThreadPoolSize" value="24"/>    
+        <property name="stripedPoolSize" value="24"/>            
         <property name="metricsLogFrequency" value="300000"/>    
 
         <!-- JTA transaction configuration -->
