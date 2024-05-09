@@ -1,6 +1,7 @@
 package org.joget.apps.app.dao;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
@@ -21,9 +22,18 @@ public class UserReplacementDaoImpl extends AbstractSpringDao implements UserRep
     
     public List<UserReplacement> getTodayUserReplacements(String username) {
         Collection<Object> params = new ArrayList<Object>();
+        
+        // set fixed time of day to support query caching
+        Calendar cal = Calendar.getInstance();
+        cal.set(Calendar.HOUR_OF_DAY, 12);
+        cal.set(Calendar.MINUTE, 0);
+        cal.set(Calendar.SECOND, 0);
+        cal.set(Calendar.MILLISECOND, 0);
+        Date now = cal.getTime();        
+        
         String condition = " where e.replacementUser = ? and ? between e.startDate and e.endDate";
         params.add(username);
-        params.add(new Date());
+        params.add(now);
         
         return (List<UserReplacement>) super.find(ENTITY_NAME, condition, params.toArray(), null, null, null, null);
     }
@@ -42,12 +52,21 @@ public class UserReplacementDaoImpl extends AbstractSpringDao implements UserRep
 
     public List<UserReplacement> getUserTodayReplacedBy(String username, String appId, String processId) {
         String pId = appId + ":" +processId;
+        
+        // set fixed time of day to support query caching
+        Calendar cal = Calendar.getInstance();
+        cal.set(Calendar.HOUR_OF_DAY, 12);
+        cal.set(Calendar.MINUTE, 0);
+        cal.set(Calendar.SECOND, 0);
+        cal.set(Calendar.MILLISECOND, 0);
+
+        Date now = cal.getTime();
         Collection<Object> params = new ArrayList<Object>();
         String condition = " where e.username = ? and ? between e.startDate and e.endDate ";
         condition += "and ((e.processIds like ? or e.processIds like ? or e.processIds like ? or e.processIds = ?) ";
         condition += "or (e.processIds = '' and (e.appId like ? or e.appId like ? or e.appId like ? or e.appId = ?)))";
         params.add(username);
-        params.add(new Date());
+        params.add(now);
         params.add(pId + ";%");
         params.add("%;"+pId);
         params.add("%;"+pId+";%");
