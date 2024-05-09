@@ -1,4 +1,4 @@
-package org.joget.commons.util;
+package org.joget.commons.ignite;
 
 import java.util.Arrays;
 import java.util.Collection;
@@ -15,6 +15,9 @@ import org.apache.ignite.spi.discovery.tcp.ipfinder.kubernetes.TcpDiscoveryKuber
 import org.apache.ignite.spi.discovery.tcp.ipfinder.vm.TcpDiscoveryVmIpFinder;
 import org.hibernate.cache.spi.RegionFactory;
 import org.hibernate.query.Query;
+import org.joget.commons.util.HostManager;
+import org.joget.commons.util.LogUtil;
+import org.joget.commons.util.SetupManager;
 
 /**
  * To initialize and manage the Apache Ignite cache.

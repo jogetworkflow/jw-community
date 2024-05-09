@@ -132,7 +132,7 @@ import static org.hibernate.cfg.AvailableSettings.WRAP_RESULT_SETS;
 import static org.hibernate.cfg.AvailableSettings.DISCARD_PC_ON_CLOSE;
 import static org.hibernate.engine.config.spi.StandardConverters.BOOLEAN;
 import static org.hibernate.internal.CoreLogging.messageLogger;
-import org.joget.commons.util.IgniteCacheManager;
+import org.joget.commons.ignite.IgniteCacheManager;
 
 /**
  * In-flight state of {@link org.hibernate.boot.spi.SessionFactoryOptions}

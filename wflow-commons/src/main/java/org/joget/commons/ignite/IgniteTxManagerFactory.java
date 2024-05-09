@@ -1,4 +1,4 @@
-package org.joget.commons.util;
+package org.joget.commons.ignite;
 
 import javax.cache.configuration.Factory;
 import javax.transaction.TransactionManager;

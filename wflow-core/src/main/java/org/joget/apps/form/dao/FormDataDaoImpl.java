@@ -55,10 +55,10 @@ import org.joget.apps.form.model.FormColumnCache;
 import org.joget.apps.form.model.FormContainer;
 import org.joget.apps.form.service.CustomFormDataTableUtil;
 import org.joget.apps.form.service.FormService;
+import org.joget.commons.ignite.IgniteCacheManager;
 import org.joget.commons.util.DynamicDataSourceManager;
 import static org.joget.commons.util.DynamicDataSourceManager.getProperties;
 import org.joget.commons.util.HostManager;
-import org.joget.commons.util.IgniteCacheManager;
 import org.joget.commons.util.LogUtil;
 import org.joget.commons.util.PluginThread;
 import org.joget.commons.util.StringUtil;
@@ -1031,7 +1031,7 @@ public class FormDataDaoImpl extends HibernateDaoSupport implements FormDataDao 
         configuration.setProperty("cglib.use_reflection_optimizer", "true");
         configuration.setProperty(Environment.USE_QUERY_CACHE, "true");
         configuration.setProperty(Environment.USE_SECOND_LEVEL_CACHE, "true");
-        configuration.setProperty(Environment.CACHE_REGION_FACTORY, "org.joget.commons.util.IgniteHibernateRegionFactory");
+        configuration.setProperty(Environment.CACHE_REGION_FACTORY, "org.joget.commons.ignite.IgniteHibernateRegionFactory");
         configuration.setProperty("org.apache.ignite.hibernate.ignite_instance_name", "ignite-grid");
         configuration.setProperty(Environment.LOG_SLOW_QUERY, "500");
         

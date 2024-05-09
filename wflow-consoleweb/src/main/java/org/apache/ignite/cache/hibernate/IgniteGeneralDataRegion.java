@@ -30,7 +30,7 @@ import org.hibernate.cache.spi.RegionFactory;
 import org.hibernate.cache.spi.TimestampsRegion;
 import org.hibernate.engine.spi.SharedSessionContractImplementor;
 import org.jetbrains.annotations.Nullable;
-import org.joget.commons.util.IgniteCacheManager;
+import org.joget.commons.ignite.IgniteCacheManager;
 import org.joget.commons.util.LogUtil;
 
 /**
