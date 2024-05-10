@@ -260,7 +260,7 @@ body.rtl:not(.horizontal_menu) #sidebar{
 
 /* side navigation */
 #navigation {
-    height: calc(100vh - 65px);
+    height: calc(100vh - 94px);
     list-style: none;
     margin: 0;
     padding: 0;
