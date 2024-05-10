@@ -974,7 +974,6 @@ UserviewBuilder = {
                 if (elementObj.properties.label === undefined) {
                     elementObj.properties.label = component.label;
                 }
-                UserviewBuilder.updateLabelProperty(component);
                 UserviewBuilder.renderElementAjax(element, elementObj, component, callback, "menu");
                 if (UserviewBuilder.selectedMenu !== null && UserviewBuilder.selectedMenu.properties.id === elementObj.properties.id) {
                     UserviewBuilder.showMenuSnapshot();
@@ -986,33 +985,11 @@ UserviewBuilder = {
             } else if (elementObj.className === "menu-component") {
                 UserviewBuilder.renderMenuComponent(element, elementObj, component, callback);
             } else {
-                // Hide label field if UserviewBuilder mode is "page"
-                if (typeof UserviewBuilder !== "undefined" && UserviewBuilder.mode === "page") {
-                    UserviewBuilder.updateLabelProperty(component);
-                }
                 UserviewBuilder.renderElementAjax(element, elementObj, component, callback, "component");
             }
         }
     },
     
-    /*
-     * Hide label on page component
-     */
-    updateLabelProperty : function (component) {
-        for (var i in component.propertyOptions) {
-            for (var r in component.propertyOptions[i].properties) {         
-                if (component.propertyOptions[i].properties[r].name === "label") {
-                    if (UserviewBuilder.mode === "userview") {
-                        component.propertyOptions[i].properties[r].type = 'icon-textfield';
-                    } else {
-                        component.propertyOptions[i].properties[r].type = 'hidden';
-                    }
-                    break;
-                }
-            }
-        }
-    },
-
     /*
      * Retrieve element template using ajax and render element. Called from UserviewBuilder.renderElement
      */
@@ -1331,6 +1308,18 @@ UserviewBuilder = {
      */
     getAjaxEventPropertyOptions : function (elementOptions) {
         var props = $.extend(true, [], elementOptions);
+        
+        //remove menu label which useless when render as component, also change menu id label to id
+        for (var i in props) {
+            for (var r in props[i].properties) {         
+                if (props[i].properties[r].name === "label") {
+                    props[i].properties[r].type = 'hidden';
+                } else if (props[i].properties[r].name === "customId") {
+                    props[i].properties[r].label = get_cbuilder_msg('cbuilder.id');
+                }
+            }
+            break;
+        }
         
         props.push({
             title: get_cbuilder_msg("ubuilder.ajaxAndEvents"),
