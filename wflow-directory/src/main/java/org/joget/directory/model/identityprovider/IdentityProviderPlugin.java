@@ -82,5 +82,5 @@ public interface IdentityProviderPlugin {
      *
      * @return a base64 encoded string of the image
      */
-    String getLoginButtonIconBase64();
+    String getLoginButtonIcon();
 }

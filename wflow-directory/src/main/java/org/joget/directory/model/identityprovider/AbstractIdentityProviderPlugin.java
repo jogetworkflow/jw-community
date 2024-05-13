@@ -49,8 +49,8 @@ public abstract class AbstractIdentityProviderPlugin extends ExtDefaultPlugin im
     }
 
     @Override
-    public String getLoginButtonIconBase64() {
-        String unescapedJson = StringUtil.unescapeJSON(getPropertyString("loginButtonIconBase64"));
+    public String getLoginButtonIcon() {
+        String unescapedJson = StringUtil.unescapeJSON(getPropertyString("loginButtonIcon"));
         String escapedHtml = StringUtil.escapeString(unescapedJson, StringUtil.TYPE_HTML);
         return escapedHtml;
     }
