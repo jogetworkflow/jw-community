@@ -260,7 +260,7 @@ body.rtl:not(.horizontal_menu) #sidebar{
 
 /* side navigation */
 #navigation {
-    height: calc(100vh - 94px);
+    height: calc(100vh - 65px);
     list-style: none;
     margin: 0;
     padding: 0;
@@ -271,6 +271,9 @@ body.rtl:not(.horizontal_menu) #sidebar{
     -ms-touch-action: auto;
     position: relative;
     border-top: 1px solid rgba(0,0,0,.0625);
+}
+body:not(.horizontal_menu).adminBarShown #navigation {
+    height: calc(100vh - 94px);
 }
 body:not(.horizontal_menu) #navigation {
     width: 280px;
