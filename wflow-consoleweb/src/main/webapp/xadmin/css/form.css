@@ -623,6 +623,9 @@ body .chosen-container-single .chosen-single{
 #content .chosen-container ol, #content .chosen-container ul {
     padding-left:0px;
 }
+body.rtl #content .chosen-container ol, body.rtl #content .chosen-container ul {
+    padding-right:0px;
+}
 #content .chosen-container li {
     list-style:none;
 }
