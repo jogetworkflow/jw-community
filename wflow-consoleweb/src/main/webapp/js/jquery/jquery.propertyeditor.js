@@ -1630,7 +1630,7 @@ PropertyEditor.Model.Editor.prototype = {
         this.initScripting();
     },
     renderNoPropertyPage: function() {
-        var p = new PropertyEditor.Model.Page(this, 'no_property', { title: get_peditor_msg('peditor.noProperties') });
+        var p = new PropertyEditor.Model.Page(this, 'no_property', { title: get_peditor_msg('peditor.noProperties'), helplink : this.options.helplink });
         this.pages[p.id] = p;
 
         this.options.propertiesDefinition = new Array();
@@ -9064,13 +9064,27 @@ PropertyEditor.Type.ElementSelect.prototype = {
         if (this.properties.options !== undefined && this.properties.options !== null) {
             $.each(this.properties.options, function(i, option) {
                 var selected = "";
+                var cssClass = "";
                 if (valueString === option.value) {
                     selected = " selected";
                 }
-                html += '<option value="' + PropertyEditor.Util.escapeHtmlTag(option.value) + '"' + selected + '>' + PropertyEditor.Util.escapeHtmlTag(option.label) + '</option>';
+                if (option.developer_mode !== undefined && option.developer_mode !== "") {
+                    var temp = option.developer_mode.split(";");
+                    for (var j in temp) {
+                        cssClass += " "+temp[j]+"-mode-only";
+                    }
+                    cssClass = 'class="'+cssClass+'"';
+                }
+                if (option.helplink !== undefined && option.helplink !== "") {
+                    cssClass += ' data-helplink="' + PropertyEditor.Util.escapeHtmlTag(option.helplink) + '"';
+                }
+                html += '<option '+cssClass+' value="' + PropertyEditor.Util.escapeHtmlTag(option.value) + '"' + selected + '>' + PropertyEditor.Util.escapeHtmlTag(option.label) + '</option>';
             });
         }
         html += '</select>';
+        
+        html += " <a href=\"\" target=\"_blank\" class=\"elementHelplink\" style=\"display:none;\" ><i class=\"fas fa-question-circle\"></i></a>";
+        
         return html;
     },
     renderDefault: function() {
@@ -9118,6 +9132,9 @@ PropertyEditor.Type.ElementSelect.prototype = {
                     }
                     cssClass = 'class="'+cssClass+'"';
                 }
+                if (option.helplink !== undefined && option.helplink !== "") {
+                    cssClass += ' data-helplink="' + PropertyEditor.Util.escapeHtmlTag(option.helplink) + '"';
+                }
                 html += '<option '+cssClass+' value="' + PropertyEditor.Util.escapeHtmlTag(option.value) + '"' + selected + '>' + PropertyEditor.Util.escapeHtmlTag(option.label) + '</option>';
             });
             $("#" + this.id).html(html);
@@ -9162,12 +9179,25 @@ PropertyEditor.Type.ElementSelect.prototype = {
         }
         return "";
     },
+    renderHelpLink: function(field) {
+        var helplink = $(field).filter(":not(.hidden)").find('option:checked').data('helplink');
+        if (helplink !== undefined && helplink !== "") {
+            $(field).parent().find('.elementHelplink').attr("href", helplink).show();
+        } else {
+            $(field).parent().find('.elementHelplink').hide();
+        }
+    },
     renderPages: function() {
         var thisObj = this;
         var field = $("#" + this.id);
         var value = $(field).filter(":not(.hidden)").val();
         var currentPage = $(this.editor).find("#" + this.page.id);
         var anchor = $(this.editor).find(".anchor[anchorField=\"" + this.id + "\"]");
+        
+        //render helplinks
+        if (thisObj.renderHelpLink !== undefined) {
+            thisObj.renderHelpLink(field);
+        }
         
         if (value !== "") {
             $(field).closest(".property-type-elementselect").addClass("has_value");
@@ -9599,13 +9629,26 @@ PropertyEditor.Type.ElementMultiSelect.prototype = {
         if (!((typeof thisObj.properties.options) === "undefined") && thisObj.properties.options !== null) {
             $.each(thisObj.properties.options, function(i, option) {
                 var selected = "";
+                var cssClass = "";
                 if (valueString === option.value) {
                     selected = " selected";
                 }
-                html += '<option value="' + PropertyEditor.Util.escapeHtmlTag(option.value) + '"' + selected + '>' + PropertyEditor.Util.escapeHtmlTag(option.label) + '</option>';
+                if (option.developer_mode !== undefined && option.developer_mode !== "") {
+                    var temp = option.developer_mode.split(";");
+                    for (var j in temp) {
+                        cssClass += " "+temp[j]+"-mode-only";
+                    }
+                    cssClass = 'class="'+cssClass+'"';
+                }
+                if (option.helplink !== undefined && option.helplink !== "") {
+                    cssClass += ' data-helplink="' + PropertyEditor.Util.escapeHtmlTag(option.helplink) + '"';
+                }
+                html += '<option '+cssClass+' value="' + PropertyEditor.Util.escapeHtmlTag(option.value) + '"' + selected + '>' + PropertyEditor.Util.escapeHtmlTag(option.label) + '</option>';
             });
         }
         html += '</select>';
+        
+        html += " <a href=\"\" target=\"_blank\" class=\"elementHelplink\" style=\"display:none;\" ><i class=\"fas fa-question-circle\"></i></a>";
         
         $(row).find(".inputs .inputs-container").append(html);
         
@@ -9704,6 +9747,9 @@ PropertyEditor.Type.ElementMultiSelect.prototype = {
                         }
                         cssClass = 'class="'+cssClass+'"';
                     }
+                    if (option.helplink !== undefined && option.helplink !== "") {
+                        cssClass += ' data-helplink="' + PropertyEditor.Util.escapeHtmlTag(option.helplink) + '"';
+                    }
                     html += '<option '+cssClass+' value="' + PropertyEditor.Util.escapeHtmlTag(option.value) + '"' + selected + '>' + PropertyEditor.Util.escapeHtmlTag(option.label) + '</option>';
                 });
                 $(this).html(html);
@@ -9720,6 +9766,11 @@ PropertyEditor.Type.ElementMultiSelect.prototype = {
         var row = $(field).closest(".repeater-row");
         var anchor = $(this.editor).find(".anchor[anchorField=\"" + id + "\"]");
         var elData = $(row).data("element");
+        
+        //render helplinks
+        if (thisObj.renderHelpLink !== undefined) {
+            thisObj.renderHelpLink(field);
+        }
 
         var data = null;
         var propertyValues = null;
@@ -10003,7 +10054,8 @@ PropertyEditor.Type.ElementMultiSelect.prototype = {
     updateRows: function() {
         var thisObj = this;
         thisObj.editorObject.refresh();
-    }
+    },
+    renderHelpLink : PropertyEditor.Type.ElementSelect.prototype.renderHelpLink
 };
 PropertyEditor.Type.ElementMultiSelect = PropertyEditor.Util.inherit(PropertyEditor.Model.Type, PropertyEditor.Type.ElementMultiSelect.prototype);
 

@@ -189,6 +189,12 @@
     clear: none;
     margin-right: 3px;
 }
+.rtl .form-column-horizontal .form-cell,
+.rtl .form-column-horizontal .subform-cell {
+    float: right;
+    margin-left: 3px;
+    margin-right: 0;
+}
 .form-fileupload {
     float: left;
 }
