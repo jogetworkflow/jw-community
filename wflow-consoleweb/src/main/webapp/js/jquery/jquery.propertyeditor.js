@@ -7589,7 +7589,121 @@ PropertyEditor.Type.Grid.prototype = {
     getContainerClass: function() {
         return "property-grid";
     },
+
+    // <<START>> SWITCH GRID-CSV
+
+    // Reads each CSV rows and makes a <tr> of it 
+    convertCsvToTable: function (valTextArea) {
+        var thisObj = this;
+        delete thisObj.switchCSVvalue;
+        
+        // Convert CSV rows from <textarea> to become JSON
+        var csvRows = thisObj.parseCSV(valTextArea);
+        
+        // Check whether each row has correct number of required columns or not
+        var isValid = csvRows.every(obj => Object.keys(obj).length === thisObj.properties.columns.length);
+        if (!isValid) {
+            return false;
+        }
+        
+        thisObj.value = csvRows;
+        thisObj.switchCSVvalue = csvRows;
+        
+        //reconstructed using renderField & initScripting implementation
+        var html = thisObj.renderField();
+        $("#" + this.id + "_input").html(html);
+        
+        thisObj.initScripting();
+        
+        return true;
+    },
+
+    // Convert values of Grid that is in JSON format to CSV
+    convertToCsv: function (data) {
+        var csv = '';
+        data[this.properties.name].forEach(function (option) {
+            var row = Object.values(option).map(value => value || '').join(';');
+            csv += row + '\n';
+        });
+        return csv;
+    },
+
+    // Convert CSV to JSON
+    parseCSV: function (csv) {
+        var thisObj = this;
+        
+        var data = [];
+        if (csv != "") {
+            var rows = csv.trim().split('\n');
+            for (var i = 0; i < rows.length; i++) {
+                var row = rows[i].split(';');
+                var rowData = {};
+                for (var j = 0; j < row.length; j++) {
+                    if (thisObj.properties.columns[j] !== undefined) {
+                        rowData[thisObj.properties.columns[j].key] = row[j] ? row[j].trim() : "";
+                    }
+                }
+                data.push(rowData);
+            }
+        }
+        return data;
+    },
+
+    // Show error message if CSV format is wrong
+    showCsvErrorMessage: function () {
+        var div = $("#" + this.id + '_input');
+        
+        var errorMessage = $(div).find(".csv_error_message");
+        $(errorMessage).show();
+        setTimeout(function () {
+            $(errorMessage).hide();
+        }, 2000);
+    },
+
+    // Append switch buttons above <table>
+    addSwitchButtons: function () {
+        var thisObj = this;
+        var table = $('#' + this.id);
+        
+        var div = $("#" + this.id + '_input');
+        if ($(div).find(".switch_button").length === 0) {
+            $(div).append('<a class="switch_button" style="display: block; position: absolute; top: -24px; right: 25px; font-size: 125%;" title="'+get_peditor_msg('peditor.switchCsv')+'"><i class="las la-file-csv"></i></a>');
+            
+            $(div).find(".switch_button").off('click')
+                .on('click', function(){
+                    $(div).find("> *").hide();
+                    $(div).append('<div class="csv_container"><div class="property-input-error csv_error_message" style="display:none">'+get_peditor_msg('peditor.invalidCsvFormat')+'</div><textarea id="' + thisObj.id + '_textarea" class="csv_field" style="width:100%;line-height:1.8;margin-bottom:5px;"></textarea><p>'+get_peditor_msg('peditor.switchCsvMsg')+'<br/><button class="switchUpdate btn btn-sm btn-secondary">'+get_peditor_msg('peditor.update')+'</button> <button class="switchCancel btn btn-sm btn-text">'+get_peditor_msg('peditor.cancel')+'</button></p></div>');
+                    $(div).find('.csv_field').val(thisObj.convertToCsv(thisObj.getData()));
+                    
+                    //cancel button
+                    $(div).find('.switchCancel').off('click')
+                        .on('click', function(){
+                            $(div).find(".csv_container").remove();
+                            $(div).find("> *").show();
+                            return false;
+                        });
+                        
+                    //update button
+                    $(div).find('.switchUpdate').off('click')
+                        .on('click', function(){
+                            let isValid = thisObj.convertCsvToTable($(div).find('.csv_field').val().trim());
+                            if (!isValid) {
+                                thisObj.showCsvErrorMessage();
+                            }
+                            return false;
+                        });    
+                });
+        }
+    },
+
+    // <<END>> SWITCH GRID-CSV
+
     initScripting: function() {
+
+        // SWITCH GRID-CSV
+        this.addSwitchButtons();
+        // SWITCH GRID-CSV
+
         var table = $("#" + this.id);
         var grid = this;
 
@@ -8166,7 +8280,9 @@ PropertyEditor.Type.GridCombine.prototype = {
         html += '</td></tr>';
 
         var values = new Array();
-        if (thisObj.options.propertyValues !== undefined && thisObj.options.propertyValues !== null) {
+        if (thisObj.switchCSVvalue !== undefined) {
+            values = thisObj.switchCSVvalue;
+        } else if (thisObj.options.propertyValues !== undefined && thisObj.options.propertyValues !== null) {
             $.each(this.properties.columns, function(i, column) {
                 var temp = thisObj.options.propertyValues[column.key];
                 if (temp !== undefined) {
@@ -8311,6 +8427,49 @@ PropertyEditor.Type.GridCombine.prototype = {
     getContainerClass: function() {
         return "property-grid";
     },
+
+    // <<START>> SWITCH GRID-CSV
+
+    // Reads each CSV rows and makes a <tr> of it 
+    convertCsvToTable: PropertyEditor.Type.Grid.prototype.convertCsvToTable,
+    
+    // Convert values of Grid that is in JSON format to CSV
+    convertToCsv: function (data) {
+        var values = new Array();
+        if (data !== undefined && data !== null) {
+            $.each(this.properties.columns, function(i, column) {
+                var temp = data[column.key];
+                if (temp !== undefined) {
+                    var temp_arr = temp.split(";");
+
+                    $.each(temp_arr, function(i, row) {
+                        if (values[i] === null || values[i] === undefined) {
+                            values[i] = new Object();
+                        }
+                        values[i][column.key] = row;
+                    });
+                }
+            });
+        }
+        var csv = '';
+        values.forEach(function (option) {
+            var row = Object.values(option).map(value => value || '').join(';');
+            csv += row + '\n';
+        });
+        return csv;
+    },
+
+    // Convert CSV to JSON
+    parseCSV: PropertyEditor.Type.Grid.prototype.parseCSV,
+
+    // Show error message if CSV format is wrong
+    showCsvErrorMessage: PropertyEditor.Type.Grid.prototype.showCsvErrorMessage,
+
+    // Append switch buttons above <table>
+    addSwitchButtons: PropertyEditor.Type.Grid.prototype.addSwitchButtons,
+
+    // <<END>> SWITCH GRID-CSV
+    
     initScripting: PropertyEditor.Type.Grid.prototype.initScripting,
     gridActionAdd: PropertyEditor.Type.Grid.prototype.gridActionAdd,
     gridActionDelete: PropertyEditor.Type.Grid.prototype.gridActionDelete,
@@ -8456,7 +8615,8 @@ PropertyEditor.Type.GridFixedRow.prototype = {
         return html;
     },
     renderDefault: PropertyEditor.Type.Grid.prototype.renderDefault,
-    initScripting: function() {
+    initScripting: function () {
+        
         var table = $("#" + this.id);
         var grid = this;
 
