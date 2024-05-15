@@ -2,6 +2,18 @@ Joget DX COMMUNITY
 ====================
 For more information, please refer to https://community.joget.org
 
+8.1.1
+=====
+d996ab2d8 Fixed: wflow-core - DX8 Themes - Dark & compact mode selector styling is not consistent. @8.1-SNAPSHOT
+de725840e Fixed: wflow-consoleweb - DX8 Theme - Inline rich text field is not styled correctly. @8.1-SNAPSHOT
+6903d4c3a Fixed: wflow-consoleweb - Universal/Progressive Theme - Fixed ensure the multi-select box follows the design standards. @8.1-SNAPSHOT
+6638a90e9 Fixed: wflow-consoleweb - Priority Menu - Fixed priority menu displaying issues. @8.1-SNAPSHOT
+01695bbf6 Fixed: wflow-core - Regression of 9756e9d8 - Validation does not work correctly for ID field. T4186 @8.1-SNAPSHOT
+8d9eaf2a4 Fixed: wflow-core - Text Field - Regression of 180760b3 causing field render issue. @8.1-SNAPSHOT
+5d9e98e69 Fixed: wflow-wfengine - Archived Process Data - Retrieved process linkage data return in wrong order. T4169 @8.1-SNAPSHOT
+2986739fe Fixed: wflow-core - List - Deprecated property is not handled properly and caused filters missing in display. @8.1-SNAPSHOT
+c18ba7c57 Fixed: wflow-core - Section - Regression of a4d11714 causing regex does not check on empty value. @8.1-SNAPSHOT
+
 8.1.0
 =====
 de3f5af70 Added: wflow-consoleweb/wflow-core - Compact Theme - Incorporated Compact Theme to existing DX8 themes. @8.1-SNAPSHOT
