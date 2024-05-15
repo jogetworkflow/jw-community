@@ -974,13 +974,12 @@ UserviewBuilder = {
                 if (elementObj.properties.label === undefined) {
                     elementObj.properties.label = component.label;
                 }
-                
                 UserviewBuilder.renderElementAjax(element, elementObj, component, callback, "menu");
                 if (UserviewBuilder.selectedMenu !== null && UserviewBuilder.selectedMenu.properties.id === elementObj.properties.id) {
                     UserviewBuilder.showMenuSnapshot();
                 }
             }
-        } else {
+        } else { 
             if (elementObj.className === "org.joget.apps.userview.model.UserviewPage") {
                 UserviewBuilder.renderUserviewPage(element, elementObj, component, callback);
             } else if (elementObj.className === "menu-component") {
@@ -1309,6 +1308,18 @@ UserviewBuilder = {
      */
     getAjaxEventPropertyOptions : function (elementOptions) {
         var props = $.extend(true, [], elementOptions);
+        
+        //remove menu label which useless when render as component, also change menu id label to id
+        for (var i in props) {
+            for (var r in props[i].properties) {         
+                if (props[i].properties[r].name === "label") {
+                    props[i].properties[r].type = 'hidden';
+                } else if (props[i].properties[r].name === "customId") {
+                    props[i].properties[r].label = get_cbuilder_msg('cbuilder.id');
+                }
+            }
+            break;
+        }
         
         props.push({
             title: get_cbuilder_msg("ubuilder.ajaxAndEvents"),
