@@ -66,6 +66,7 @@ public class TestAppService {
     private FormDataDao formDataDao;
 
     public TestAppService() {
+        TestUtil.cleanFormMappingFile();
     }
 
     @Test

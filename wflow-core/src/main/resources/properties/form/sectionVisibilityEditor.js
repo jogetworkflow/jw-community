@@ -129,11 +129,11 @@
         
         var values = new Array();
         if (thisObj.options.propertyValues !== undefined && thisObj.options.propertyValues !== null && thisObj.options.propertyValues["visibilityControl"] !== undefined) {
-            var joins = thisObj.options.propertyValues["join"].split(";");
-            var reverses = thisObj.options.propertyValues["reverse"].split(";");
-            var visibilityControls = thisObj.options.propertyValues["visibilityControl"].split(";");
-            var visibilityValues = thisObj.options.propertyValues["visibilityValue"].split(";");
-            var regexs = thisObj.options.propertyValues["regex"].split(";");
+            var joins = (thisObj.options.propertyValues["join"])?thisObj.options.propertyValues["join"].split(";"):[];
+            var reverses = (thisObj.options.propertyValues["reverse"])?thisObj.options.propertyValues["reverse"].split(";"):[];
+            var visibilityControls = (thisObj.options.propertyValues["visibilityControl"])?thisObj.options.propertyValues["visibilityControl"].split(";"):[];
+            var visibilityValues = (thisObj.options.propertyValues["visibilityValue"])?thisObj.options.propertyValues["visibilityValue"].split(";"):[];
+            var regexs = (thisObj.options.propertyValues["regex"])?thisObj.options.propertyValues["regex"].split(";"):[];
             
             for (var i in visibilityControls) {
                 values.push({

@@ -79,10 +79,11 @@ public class Form extends Element implements FormBuilderEditable, FormContainer 
                     }
                 }
                 
+                //if the meta original id is not null (it is submission) and form has errors, keep using meta original id even it is empty
                 if (formData.getRequestParameter(FormUtil.FORM_META_ORIGINAL_ID) != null &&
-                        !formData.getRequestParameter(FormUtil.FORM_META_ORIGINAL_ID).isEmpty()) {
+                        !formData.getFormErrors().isEmpty()) {
                     setFormMeta(FormUtil.FORM_META_ORIGINAL_ID, new String[]{formData.getRequestParameter(FormUtil.FORM_META_ORIGINAL_ID)});
-                } else if (primaryKey != null) {
+                } else if (primaryKey != null) { //reach here and below if it is load or after submission with no error
                     setFormMeta(FormUtil.FORM_META_ORIGINAL_ID, new String[]{primaryKey});
                 } else {
                     setFormMeta(FormUtil.FORM_META_ORIGINAL_ID, new String[]{""});
@@ -99,10 +100,11 @@ public class Form extends Element implements FormBuilderEditable, FormContainer 
                 }
             } else {
                 String uniqueId = getCustomParameterName();
+                //if the meta original id is not null (it is submission) and form has errors, keep using meta original id even it is empty
                 if (formData.getRequestParameter(uniqueId + FormUtil.FORM_META_ORIGINAL_ID) != null &&
-                        !formData.getRequestParameter(uniqueId + FormUtil.FORM_META_ORIGINAL_ID).isEmpty()) {
+                        !formData.getFormErrors().isEmpty()) {
                     setFormMeta(uniqueId + FormUtil.FORM_META_ORIGINAL_ID, new String[]{formData.getRequestParameter(uniqueId + FormUtil.FORM_META_ORIGINAL_ID)});
-                } else if (primaryKey != null) {
+                } else if (primaryKey != null) { //reach here and below if it is load or after submission with no error
                     setFormMeta(uniqueId + FormUtil.FORM_META_ORIGINAL_ID, new String[]{primaryKey});
                 } else {
                     setFormMeta(uniqueId + FormUtil.FORM_META_ORIGINAL_ID, new String[]{""});

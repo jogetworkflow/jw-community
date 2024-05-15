@@ -1969,8 +1969,8 @@ body.rtl .ContainerComponent {
     }
     ul#moreSubMenu.sub-menu > li:hover> ul{
         top: -1px;
-        width: 100px;
-        right: 199px;
+        width: auto;
+        right: 100%;
     }
     ul#moreSubMenu.sub-menu{
         overflow: unset!important;
@@ -2068,4 +2068,40 @@ body.rtl .subform-cell > label.label > i{
 .form-cell > label.label:has(+ .ui-screen-hidden + span.selector_element) > i,
 .subform-cell > label.label:has(+ .ui-screen-hidden + span.selector_element) > i{
     height: 31px;
+}
+/*Priority Menu*/   
+
+/* dark mode & compact mode selector */
+[class*=-selection].dropdown .dropdown-menu li {
+    cursor: default;
+    padding: 5px;
+}
+[class*=-selection].dropdown .dropdown-menu li:hover {
+    background-color: #f6f6f6;
+}
+body.dark-mode [class*=-selection].dropdown .dropdown-menu li:hover {
+    background-color: var(--theme-background);
+}
+body.dark-mode [class*=-selection].dropdown .dropdown-menu #dropdown-title {
+    border-bottom: 1px solid var(--theme-border-color);
+}
+[class*=-selection].dropdown .dropdown-menu #dropdown-title {
+    border-bottom: 1px solid #dee2e6;
+    padding: 0px 10px;
+    text-align: center;
+    padding-bottom: 5px;
+    margin-bottom: 5px;
+}
+[class*=-selection].dropdown .dropdown-menu li .header {
+    padding-left: 35px;
+}
+[class*=-selection].dropdown .dropdown-menu i.zmdi-check {
+    position: absolute;
+    font-size: 1.4rem;
+}
+body.rtl [class*=-selection].dropdown .dropdown-menu i.zmdi-check{
+    left: 15px;
+}
+[class*=-selection].dropdown .dropdown-menu {
+    width: 220px;
 }
