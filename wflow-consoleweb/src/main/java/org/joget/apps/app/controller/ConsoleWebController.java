@@ -5059,6 +5059,46 @@ public class ConsoleWebController {
         return "console/setting/message";
     }
 
+    @RequestMapping("/console/setting/message/export")
+    public String consoleSettingMessageExport(ModelMap map) {
+        map.addAttribute("localeList", rbmDao.getLocaleList());
+
+        ResourceBundleMessage message = new ResourceBundleMessage();
+        map.addAttribute("message", message);
+        return "console/setting/messageExport";
+    }
+
+    @RequestMapping(value = "/console/setting/message/export/submit", method = RequestMethod.POST)
+    public String consoleSettingMessageExportSubmit(ModelMap map, HttpServletResponse response, @RequestParam("locale") String locale) throws IOException {
+        Collection<String> locales = rbmDao.getLocaleList();
+        
+        if (locale == null || locale.isEmpty() || !locales.contains(locale)) {
+            Collection<String> errors = new ArrayList<>();
+            errors.add(ResourceBundleUtil.getMessage("console.setting.message.export.error"));
+            map.addAttribute("errors", errors);
+            
+            return "console/setting/messageExport";
+        } else {
+            ServletOutputStream output = null;
+            try {
+                locale = SecurityUtil.validateStringInput(locale);
+                String filename = locale + ".po";
+                response.setContentType("text/plain; charset=utf-8");
+                response.addHeader("Content-Disposition", "attachment; filename=" + filename);
+                output = response.getOutputStream();
+                ResourceBundleUtil.exportPO(locale, output);
+            } catch (Exception ex) {
+                LogUtil.error(getClass().getName(), ex, "");
+            } finally {
+                if (output != null) {
+                    output.flush();
+                }
+            }
+            
+            return "console/dialogClose";
+        }
+    }
+
     @RequestMapping("/console/setting/message/create")
     public String consoleSettingMessageCreate(ModelMap map) {
         map.addAttribute("localeList", getSortedLocalList());

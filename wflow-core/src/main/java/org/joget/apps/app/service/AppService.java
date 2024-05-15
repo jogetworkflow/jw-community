@@ -19,6 +19,7 @@ import org.joget.directory.model.Group;
 import org.joget.workflow.model.WorkflowAssignment;
 import org.joget.workflow.model.WorkflowProcess;
 import org.joget.workflow.model.WorkflowProcessResult;
+import org.json.JSONObject;
 import org.springframework.web.multipart.MultipartFile;
 
 /**
