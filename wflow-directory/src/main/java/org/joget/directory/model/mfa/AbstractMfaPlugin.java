@@ -6,6 +6,11 @@ import org.joget.plugin.property.model.PropertyEditable;
 public abstract class AbstractMfaPlugin extends ExtDefaultPlugin implements MfaPlugin, PropertyEditable {
 
     @Override
+    public String getLabel() {
+        return getName();
+    }
+
+    @Override
     public String getDisplayName() {
         return getName();
     }
