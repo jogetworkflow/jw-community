@@ -968,3 +968,161 @@ body.rtl .form-edit-btn{
 @media (max-width: 480px) {
     .numeric_field_controls {bottom: 53px; top: auto;}
 }
+
+body #form-canvas .form-cell label.label:has(i), body #form-canvas .subform-cell label.label:has(i) {
+    position: relative;
+}
+@media (min-width: 480px) {
+    .form-cell > label.label:has(i) + *:not(.ui-screen-hidden),
+    .subform-cell > label.label:has(i) + *:not(.ui-screen-hidden),
+    .form-cell > label.label:has(i) + .ui-screen-hidden + *,
+    .subform-cell > label.label:has(i) + .ui-screen-hidden + * {
+        min-width: calc(50% - 35px);
+        width: calc(50% - 35px);
+        border-radius: 0 2px 2px 0;
+    }
+}
+@media (max-width: 480px) {
+    .form-cell > label.label:has(i) + *:not(.ui-screen-hidden),
+    .subform-cell > label.label:has(i) + *:not(.ui-screen-hidden),
+    .form-cell > label.label:has(i) + .ui-screen-hidden + *,
+    .subform-cell > label.label:has(i) + .ui-screen-hidden + * {
+        width: calc(100% - 35px);
+    }
+    .form-cell > label.label > i, .subform-cell > label.label > i{
+        right: unset;
+        top: unset;
+        bottom: -36px;
+    }
+    .form-cell > label.label:has(+ .ui-screen-hidden + div.chosen-container) > i,
+    .subform-cell > label.label:has(+ .ui-screen-hidden + div.chosen-container) > i{
+        bottom: -52px;
+    }
+    .form-cell > label.label:has(+ .ui-screen-hidden + span.selector_element) > i,
+    .subform-cell > label.label:has(+ .ui-screen-hidden + span.selector_element) > i{
+        bottom: -42px;
+        left: 150px;
+    }
+    body #form-canvas label.label:has(i) + .hasDatepicker{
+        width: calc(100% - 77px);
+    }
+    .label-top.form-cell > label.label:has(i) + .hasDatepicker,
+    .label-top.subform-cell > label.label:has(i) + .hasDatepicker{
+        width: calc(100% - 77px);
+    }
+    .label-top.form-cell > label.label:has(+ .ui-screen-hidden + span.selector_element) > i,
+    .label-top.subform-cell > label.label:has(+ .ui-screen-hidden + span.selector_element) > i{
+        left: unset;
+    }
+    .form-cell > label.label:has(+ .ui-screen-hidden + span.selector_element) > i,
+    .subform-cell > label.label:has(+ .ui-screen-hidden + span.selector_element) > i{
+        bottom: 0px;
+    }
+}
+@media (max-width: 768px) and (min-width: 480px) {
+    .form-cell > label.label:has(+ .ui-screen-hidden + span.selector_element) > i,
+    .subform-cell > label.label:has(+ .ui-screen-hidden + span.selector_element) > i {
+        bottom: unset;
+    }
+}
+.label-top.form-cell > label.label > i,
+.label-top.subform-cell > label.label > i{
+    bottom: -36px;
+    left: 0;
+}
+.form-cell > label.label:has(+ .ui-screen-hidden + div.chosen-container) > i,
+.subform-cell > label.label:has(+ .ui-screen-hidden + div.chosen-container) > i{
+    height: 46px;
+}
+.label-top.form-cell > label.label:has(+ .ui-screen-hidden + div.chosen-container) > i,
+.label-top.subform-cell > label.label:has(+ .ui-screen-hidden + div.chosen-container) > i{
+    bottom: -52px;
+}
+body #form-canvas .form-cell > label.label:has(i) + .ui-screen-hidden + .selector_element,
+body #form-canvas .subform-cell > label.label:has(i) + .ui-screen-hidden + .selector_element{
+    margin-left: 185px;
+    width: unset;
+}
+.form-cell > label.label:has(+ .ui-screen-hidden + span.selector_element) > i,
+.subform-cell > label.label:has(+ .ui-screen-hidden + span.selector_element) > i{
+    top: unset;
+    height: 33px;
+    right: unset;
+    left: 150px;
+}
+.label-top.form-cell > label.label:has(+ .ui-screen-hidden + span.selector_element) > i,
+.label-top.subform-cell > label.label:has(+ .ui-screen-hidden + span.selector_element) > i{
+    margin-left: 150px;
+    bottom: -42px;
+    left: 0;
+}
+.form-cell > label.label:has(i) + .ui-screen-hidden + .chosen-container,
+.subform-cell > label.label:has(i) + .ui-screen-hidden + .chosen-container{
+    min-width: unset;
+}
+body #form-canvas .form-cell > label.label:has(+ .ui-screen-hidden + span.selector_element),
+body #form-canvas .subform-cell > label.label:has(+ .ui-screen-hidden + span.selector_element){
+    position: unset;
+}
+body #form-canvas .label-top.form-cell > label.label:has(+ .ui-screen-hidden + span.selector_element),
+body #form-canvas .label-top.subform-cell > label.label:has(+ .ui-screen-hidden + span.selector_element){
+    position: relative;
+}
+.form-cell > label.label:has(i) + .ui-screen-hidden + div.chosen-container > .chosen-drop,
+.subform-cell > label.label:has(i) + .ui-screen-hidden + div.chosen-container > .chosen-drop,
+.form-cell > label.label:has(i) + .ui-screen-hidden + div.chosen-container > .chosen-choices,
+.subform-cell > label.label:has(i) + .ui-screen-hidden + div.chosen-container > .chosen-choices{
+    width: calc(100% - 35px);
+}
+body.rtl #form-canvas .form-cell > label.label + .ui-screen-hidden + .selector_element,
+body.rtl #form-canvas .subform-cell > label.label + .ui-screen-hidden + .selector_element{
+    margin-left: 0;
+    margin-right: 150px;
+}
+body.rtl #form-canvas .form-cell > label.label:has(i) + .ui-screen-hidden + .selector_element,
+body.rtl #form-canvas .subform-cell > label.label:has(i) + .ui-screen-hidden + .selector_element{
+    margin-left: 0;
+    margin-right: 185px;
+}
+body.rtl .label-top.form-cell > label.label:has(+ .ui-screen-hidden + span.selector_element) > i,
+body.rtl .label-top.subform-cell > label.label:has(+ .ui-screen-hidden + span.selector_element) > i{
+    bottom: -39px;
+}
+body.rtl .form-cell > label.label:has(+ .ui-screen-hidden + span.selector_element) > i,
+body.rtl .subform-cell > label.label:has(+ .ui-screen-hidden + span.selector_element) > i{
+    right: 150px;
+    left: 0;
+}
+body.rtl .label-top.form-cell > label.label:has(+ .ui-screen-hidden + div.chosen-container),
+body.rtl .label-top.subform-cell > label.label:has(+ .ui-screen-hidden + div.chosen-container){
+    margin-left: 70%;
+}
+body.rtl .label-top.form-cell > label.label:has(+ .ui-screen-hidden + span.selector_element),
+body.rtl .label-top.subform-cell > label.label:has(+ .ui-screen-hidden + span.selector_element){
+    margin-left: 100%;
+}
+@media (max-width: 480px) {
+    body.rtl .form-cell > label.label > i,
+    body.rtl .subform-cell > label.label > i {
+        left: unset;
+        right: 0;
+    }
+    body.rtl .form-cell > label.label:has(+ .ui-screen-hidden + span.selector_element) > i,
+    body.rtl .subform-cell > label.label:has(+ .ui-screen-hidden + span.selector_element) > i{
+        top: 33px;
+    }
+    body.rtl #form-canvas .form-cell > label.label + .ui-screen-hidden + .selector_element,
+    body.rtl #form-canvas .subform-cell > label.label + .ui-screen-hidden + .selector_element{
+        margin-right: 150px;
+    }
+}
+.label-top.form-cell > label.label + .ui-screen-hidden + .selector_element,
+.label-top.subform-cell > label.label + .ui-screen-hidden + .selector_element{
+    width: calc(100% - 150px);
+}
+.label-top.form-cell > label.label:has(i) + .hasDatepicker{
+    width: calc(100% - 50px);
+}
+.label-top.form-cell > label.label + .hasDatepicker{
+    width: calc(100% - 15px);
+}
