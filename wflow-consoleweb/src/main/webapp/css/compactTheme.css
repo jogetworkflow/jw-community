@@ -359,3 +359,19 @@ body.compact-mode.rtl #sidebar .nav-tabs.user-menu .mm-profile > a{
     padding: 25px 15px;
 }
 
+body.compact-mode .label-top.form-cell > label.label > i,
+body.compact-mode .label-top.subform-cell > label.label > i{
+    bottom: -27px;
+}
+
+body.compact-mode .form-cell > label.label > i,
+body.compact-mode .subform-cell > label.label > i{
+    height: 27px;
+    padding: 7px 8px 6px;
+}
+@media(max-width: 768px) {
+    body.compact-mode .form-cell > label.label > i,
+    body.compacy-mode .subform-cell > label.label > i{
+        bottom: -27px;
+    }
+}
