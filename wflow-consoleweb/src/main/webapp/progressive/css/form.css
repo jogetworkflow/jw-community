@@ -1028,3 +1028,11 @@ body .grid-action-header, body td.grid-action-cell {
     border-bottom: 1px solid #727272;
     box-shadow: 0 1px 0 0 #727272;
 }
+.form-cell > label.label:has(i) + .ui-screen-hidden + .chosen-container,
+.subform-cell > label.label:has(i) + .ui-screen-hidden + .chosen-container{
+    width: calc(70% - 35px) !important;
+}
+.label-top.form-cell > label.label:has(i) + .ui-screen-hidden + .chosen-container,
+.label-top.subform-cell > label.label:has(i) + .ui-screen-hidden + .chosen-container{
+    width: calc(100% - 35px) !important;
+}
