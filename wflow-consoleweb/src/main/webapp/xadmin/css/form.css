@@ -118,7 +118,7 @@ body .form fieldset.has-legend legend{
 body #form-canvas #section-actions{
     margin-top: 15px;
     border:0px;
-    padding-left: 150px;
+    padding-left: 0px;
     margin-bottom: 15px;
 }
 body #form-canvas #section-actions .form-cell {
@@ -140,10 +140,13 @@ body .form .form-row > label,
 body #form-canvas .form-cell .label, 
 body #form-canvas .subform-cell .label {
     max-width: 150px;
-    text-align: right;
+    text-align: left;
     padding-right: 15px;
     padding-top: 3px;
     box-sizing: border-box;
+}
+body #form-canvas #section-actions .form-column, body #form-canvas .subform-column {
+    padding-right: 6px;
 }
 body .form .form-row > label{
     width: 30%;
@@ -636,7 +639,12 @@ body .sigPad .pad{
 body .sigPad .pad:hover{
     border-color: #5FB878;
 }
-
+.form-cell-value .sigPad {
+    margin-left: 300px !important;
+}
+body.rtl .form-cell-value .sigPad {
+    margin-right: 300px !important;
+}
 /* datepicker */
 body .hasDatepicker + a, body .hasDatepicker + img {
     position: absolute;
