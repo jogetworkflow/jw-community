@@ -27,15 +27,13 @@ public abstract class AbstractIdentityProviderPlugin extends ExtDefaultPlugin im
     @Override
     public String getAuthorizationEndpointUrl() {
         String unescapedJson = StringUtil.unescapeJSON(getPropertyString("authEndpointUrl"));
-        String escapedHtml = StringUtil.escapeString(unescapedJson, StringUtil.TYPE_HTML);
-        return escapedHtml;
+        return StringUtil.escapeString(unescapedJson, StringUtil.TYPE_HTML);
     }
 
     @Override
     public String getCallbackUrl() {
         String unescapedJson = StringUtil.unescapeJSON(getPropertyString("callbackUrl"));
-        String escapedHtml = StringUtil.escapeString(unescapedJson, StringUtil.TYPE_HTML);
-        return escapedHtml;
+        return StringUtil.escapeString(unescapedJson, StringUtil.TYPE_HTML);
     }
 
     @Override
@@ -49,17 +47,10 @@ public abstract class AbstractIdentityProviderPlugin extends ExtDefaultPlugin im
     }
 
     @Override
-    public String getLoginButtonIcon() {
-        String unescapedJson = StringUtil.unescapeJSON(getPropertyString("loginButtonIcon"));
-        String escapedHtml = StringUtil.escapeString(unescapedJson, StringUtil.TYPE_HTML);
-        return escapedHtml;
-    }
-
-    @Override
-    public String getLoginButtonLabel() {
-        String unescapedJson = StringUtil.unescapeJSON(getPropertyString("loginButtonLabel"));
-        String escapedHtml = StringUtil.escapeString(unescapedJson, StringUtil.TYPE_HTML);
-        return escapedHtml;
+    public String getLoginButtonIconLabel() {
+        // no need to escape the HTML because icon-textfield
+        // generates its own HTML for icons (<i> tag) and label
+        return StringUtil.unescapeJSON(getPropertyString("loginButtonIconLabel"));
     }
 
     @Override

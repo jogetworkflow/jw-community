@@ -71,16 +71,9 @@ public interface IdentityProviderPlugin {
     boolean isAutomaticLinkingEnabled();
 
     /**
-     * Get the text used for the login button on the login screen.
+     * Get the icon and text used for the login button on the login screen.
      *
-     * @return a string for login button label
+     * @return a string for login button icon and label
      */
-    String getLoginButtonLabel();
-
-    /**
-     * Get the image used for the login button on the login screen.
-     *
-     * @return a base64 encoded string of the image
-     */
-    String getLoginButtonIcon();
+    String getLoginButtonIconLabel();
 }
