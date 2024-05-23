@@ -1657,7 +1657,9 @@ public class FormUtil implements ApplicationContextAware {
      */
     public static String getElementUniqueKey(Element element, int index) {
         String uniqueKey = "";
-        if (!element.getPropertyString(FormUtil.PROPERTY_ID).isEmpty()) {
+        if (element instanceof Section) { //for section, section may use same id accidentally
+            uniqueKey = Integer.toString(element.getPropertyString(FormUtil.PROPERTY_ID).hashCode()) + Integer.toString(index);
+        } else if (!element.getPropertyString(FormUtil.PROPERTY_ID).isEmpty()) {
             uniqueKey = Integer.toString(element.getPropertyString(FormUtil.PROPERTY_ID).hashCode());
         } else {
             uniqueKey = Integer.toString(index); //for column or any container without id, use the index
