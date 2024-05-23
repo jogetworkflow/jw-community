@@ -73,6 +73,7 @@
         <css>/js/font-awesome/css/font-awesome.min.css</css>
     </group>
     <group name="bootstrap_responsive_commons">
+        <css>/js/bootstrap/css/bootstrap.custom.css</css>
         <css>/js/bootstrap/css/bootstrap.min.css</css>
         <css>/js/bootstrap/css/bootstrap-responsive.min.css</css>
         <css>/js/font-awesome/css/font-awesome.min.css</css>
@@ -81,6 +82,7 @@
     <group name="universal.preload.min">
         <css>/css/form.css</css>
         <css>/css/datalistBuilderView.css</css>
+        <css>/js/bootstrap/css/bootstrap.custom.css</css>
         <css>/js/bootstrap3/css/bootstrap.min.css</css>
         <css>/css/userview_v5.css</css>
         <css>/universal/lib/material-design-iconic-font/css/material-design-iconic-font.min.css</css>
@@ -107,6 +109,7 @@
     <group name="progressive.preload.min">
         <css>/css/form.css</css>
         <css>/css/datalistBuilderView.css</css>
+        <css>/js/bootstrap/css/bootstrap.custom.css</css>
         <css>/js/bootstrap3/css/bootstrap.min.css</css>
         <css>/css/userview_v5.css</css>
         <css>/progressive/css/form.css</css>
@@ -174,7 +177,7 @@
         <js>/js/ajax-menus-count.js</js>
         <js>/pwa.js</js>
         <js>/js/priorityMenu.js</js>
-    </group> 
+    </group>
     <group name="quill">
         <css>/js/quill/quill.bubble.css</css>
         <css>/js/quill/quill.snow.css</css>
@@ -184,7 +187,7 @@
         <js>/js/quill/image-upload.min.js</js>
         <js>/js/quill/image-resize.min.js</js>
         <js>/js/quill/quill.switch.js</js>
-    </group>  
+    </group>
     <group name="darkTheme">
         <css>/css/darkTheme.css</css>
         <js>/js/darkTheme.js</js>

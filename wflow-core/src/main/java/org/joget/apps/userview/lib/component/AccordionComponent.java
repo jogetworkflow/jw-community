@@ -51,7 +51,7 @@ public class AccordionComponent extends SimplePageComponent {
         if (isBuilder) {
             rowAttr += " data-cbuilder-accordionChilds";
         }
-        return "<div id=\""+id+"\" "+attr+" class=\"accordion "+cssClass+"\" "+rowAttr+">" + renderChildren() + style + "</div>";
+        return "<div id=\""+id+"\" "+attr+" class=\"accordion panel-group"+cssClass+"\" "+rowAttr+">" + renderChildren() + style + "</div>";
     }
 
     @Override
