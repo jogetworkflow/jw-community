@@ -191,16 +191,11 @@ public class UserProfileMenu extends UserviewMenu {
         setProperty("enableUserLocale", enableUserLocale);
         setProperty("localeStringList", localeStringList);
 
-        // Get profile footer from IdP Manager
         StringBuilder sbProfileFooter = new StringBuilder();
-        IdentityProviderManager identityProviderManager = (IdentityProviderManager) AppUtil.getApplicationContext().getBean("identityProviderManager");
-        String idpProfileFooter = identityProviderManager.getProfileFooterHtml(user);
-        sbProfileFooter.append(idpProfileFooter);
 
-        // Get profile footer from MFA Manager
-        MfaManager mfaManager = (MfaManager) AppUtil.getApplicationContext().getBean("mfaManager");
-        String mfaProfileFooter = mfaManager.getProfileFooterHtml(user);
-        sbProfileFooter.append(mfaProfileFooter);
+        // Get profile footer from DirectoryUtil
+        String profileFormFooter = DirectoryUtil.getProfileFormFooter(user);
+        sbProfileFooter.append(profileFormFooter);
 
         UserSecurity us = DirectoryUtil.getUserSecurity();
         if (us != null) {

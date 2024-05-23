@@ -158,6 +158,26 @@ public class DirectoryUtil implements ApplicationContextAware {
         return sb.toString();
     }
 
+    public static String getProfileFormFooter(User user) {
+        StringBuilder sb = new StringBuilder();
+
+        // Get profile footer from IdP Manager
+        Object identityProviderManager = getApplicationContext().getBean("identityProviderManager");
+        if (identityProviderManager != null) {
+            String idpProfileFooter = ((IdentityProviderManager) identityProviderManager).getProfileFooterHtml(user);
+            sb.append(idpProfileFooter == null ? "" : idpProfileFooter);
+        }
+
+        // Get profile footer from MFA Manager
+        Object mfaManager = getApplicationContext().getBean("mfaManager");
+        if (mfaManager != null) {
+            String mfaProfileFooter = ((MfaManager) mfaManager).getProfileFooterHtml(user);
+            sb.append(mfaProfileFooter == null ? "" : mfaProfileFooter);
+        }
+
+        return sb.toString();
+    }
+
     /**
      * Convenient method to retrieve all users in a map of id-value pair
      * @return 
