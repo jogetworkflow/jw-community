@@ -49,12 +49,8 @@ public final class UserAuthenticationService {
      */
     public boolean loginUser(User user) {
         String username = "";
-        String ip = "";
-
+        HttpServletRequest request = WorkflowUtil.getHttpServletRequest();
         try {
-            HttpServletRequest request = WorkflowUtil.getHttpServletRequest();
-            ip = AppUtil.getClientIp(request);
-
             // Generate an authentication token
             WorkflowUserDetails userDetail = new WorkflowUserDetails(user);
             username = userDetail.getUsername();
@@ -77,10 +73,10 @@ public final class UserAuthenticationService {
             }
 
             // Add audit trail
-            loginAuditTrailLogging(true, username, ip);
+            loginAuditTrailLogging(true, username, request);
 
         } catch (Exception e) {
-            loginAuditTrailLogging(false, username, ip);
+            loginAuditTrailLogging(false, username, request);
             LogUtil.error(UserAuthenticationService.class.getName(), e, "Failed to login");
             return false;
         }
@@ -110,12 +106,12 @@ public final class UserAuthenticationService {
             throw new BadCredentialsException(e.getMessage());
         }
         if (!validLogin) {
-            loginAuditTrailLogging(false, username, ip);
+            loginAuditTrailLogging(false, username, request);
             throw new BadCredentialsException(messages.getMessage("AbstractUserDetailsAuthenticationProvider.badCredentials", "Bad credentials"));
         }
 
         // add audit trail
-        loginAuditTrailLogging(true, username, ip);
+        loginAuditTrailLogging(true, username, request);
 
         // return result
         User user = directoryManager.getUserByUsername(username);
@@ -169,7 +165,11 @@ public final class UserAuthenticationService {
         return loginUser(user);
     }
 
-    private void loginAuditTrailLogging(boolean loginSuccess, String username, String ip) {
+    private void loginAuditTrailLogging(boolean loginSuccess, String username, HttpServletRequest request) {
+        String ip = "null";
+        if (request != null) {
+            ip = AppUtil.getClientIp(request);
+        }
         LogUtil.info(getClass().getName(), "Authentication for user " + username + " ("+ip+") : " + loginSuccess);
         WorkflowHelper workflowHelper = (WorkflowHelper) AppUtil.getApplicationContext().getBean("workflowHelper");
         workflowHelper.addAuditTrail(this.getClass().getName(), "authenticate", "Authentication for user " + username + " ("+ip+") : " + loginSuccess, new Class[]{username.getClass()}, new Object[]{username}, loginSuccess);
