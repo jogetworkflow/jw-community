@@ -1362,7 +1362,7 @@ body.rtl .suform-cell > label.label:has(+ input:focus-visible) > i{
     border-right-style: solid;
     border-left-style: none;
     border-right-color: var(--theme-primary, var(--theme-color3, #007bff));
-    border-left-color: none;
+    border-left-color: unset;
 }
 .form-cell > label.label:has(i) + *:not(.ui-screen-hidden),
 .subform-cell > label.label:has(i) + *:not(.ui-screen-hidden),
