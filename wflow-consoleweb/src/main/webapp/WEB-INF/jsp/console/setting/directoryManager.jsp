@@ -55,7 +55,7 @@
                                 <c:set var="selected" value="${settingMap['directoryManagerImpl']}"/>
                             </c:when>
                         </c:choose>
-                        
+
 
                         <dl>
                             <dt><fmt:message key="console.setting.directory.label.currentPluginClassName"/></dt>
@@ -82,7 +82,7 @@
                             </dd>
                         </dl>
                 </div>
-            </div>             
+            </div>
             <div class="main-body-row">
                 <div class="row-content">
                     <dl>
@@ -109,9 +109,11 @@
                 </div>
             </div>
         </div>
-        <div id="idpMfaSetup">
-            <jsp:include page="idpMfa.jsp" flush="true"/>
-        </div>
+        <c:if test="${isEnterprise}">
+            <div id="idpMfaSetup">
+                <jsp:include page="idpMfa.jsp" flush="true"/>
+            </div>
+        </c:if>
     </div>
 </div>
 
@@ -121,20 +123,20 @@
             document.location.href = document.location.href;
         }
     }
-    
+
     <ui:popupdialog var="popupDialog" src="${pageContext.request.contextPath}/web/console/setting/directoryManagerImpl/config"/>
 
     function selectDirectoryManagerImpl(){
         popupDialog.src = "${pageContext.request.contextPath}/web/console/setting/directoryManagerImpl/config?directoryManagerImpl=" + $('#directoryManagerImpl').val();
         popupDialog.init();
     }
-    
+
     function removeDirectoryManagerImpl(){
         if(confirm('<ui:msgEscJS key="console.setting.directory.label.removePluginConfirm"/>')) {
             ConnectionManager.post("${pageContext.request.contextPath}/web/console/setting/directoryManagerImpl/remove", callback, null);
         }
     }
-    
+
     function configDirectoryManagerImpl(pluginName){
         popupDialog.src = "${pageContext.request.contextPath}/web/console/setting/directoryManagerImpl/config?directoryManagerImpl=" + pluginName;
         popupDialog.init();

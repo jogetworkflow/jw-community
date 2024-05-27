@@ -4809,6 +4809,7 @@ public class ConsoleWebController {
 
         map.addAttribute("settingMap", settingMap);
         map.addAttribute("directoryManagerPluginList", pluginList);
+        map.addAttribute("isEnterprise", AppUtil.isEnterprise());
 
         return "console/setting/directoryManager";
     }
