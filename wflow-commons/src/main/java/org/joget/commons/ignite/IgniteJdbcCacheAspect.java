@@ -22,6 +22,30 @@ import org.aspectj.lang.annotation.Around;
 @Aspect
 public class IgniteJdbcCacheAspect {
 
+    private final static ThreadLocal cacheableObject = new InheritableThreadLocal();
+    
+    /**
+     * Intercept JDBC plugin method calls.
+     */
+//    @Pointcut("execution(* org.joget.plugin.enterprise.Jdbc*.*(..))")
+    @Pointcut("execution(* org.joget.commons.ignite.IgniteJdbcCacheable+.*(..))")
+    public void jdbcPluginMethods() {
+    }
+
+    @Around("jdbcPluginMethods()")
+    public Object cacheJdbcPluginSql(ProceedingJoinPoint pjp) throws Throwable {
+        try {
+            Object target = pjp.getTarget();
+            if (target instanceof IgniteJdbcCacheable) {
+                cacheableObject.set(target);
+            }
+            Object result = pjp.proceed();
+            return result;
+        } finally {
+            cacheableObject.set(null);
+        }
+    }
+    
     /**
      * Intercept PreparedStatement.execute* method calls.
      */
@@ -50,6 +74,16 @@ public class IgniteJdbcCacheAspect {
                 return pjp.proceed();
             }
 
+            boolean isCacheable = false;
+            Object activeObject = cacheableObject.get();
+            if (activeObject != null && activeObject instanceof IgniteJdbcCacheable) {
+                isCacheable = ((IgniteJdbcCacheable)activeObject).isJdbcCacheable(cacheKey);
+            }
+            if (!isCacheable) {
+                // not within JDBC plugin, just proceed
+                return pjp.proceed();
+            }            
+            
             // get tables used in query
             Set<String> tableNames = IgniteJdbcCacheManager.extractTableNames(cacheKey);
 
