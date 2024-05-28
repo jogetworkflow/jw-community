@@ -58,8 +58,15 @@ public class IgniteGeneralDataRegion extends HibernateRegion implements DirectAc
     @Nullable @Override public Object getFromCache(Object key, SharedSessionContractImplementor ses) throws CacheException {
         try {
             // CUSTOM: get async
-            IgniteInternalFuture future = cache.getAsync(key);
-            Object val = future.get(IgniteCacheManager.getConfigAsyncTimeout());
+            Object val;
+            long asyncTimeout = IgniteCacheManager.getConfigAsyncTimeout();
+            if (asyncTimeout > 0) {
+                IgniteInternalFuture future = cache.getAsync(key);
+                val = future.get(asyncTimeout);
+            } else {
+                val = cache.get(key);
+            }
+            // END CUSTOM
 
             if (log.isDebugEnabled())
                 log.debug("Get [cache=" + cache.name() + ", key=" + key + ", val=" + val + ']');
@@ -79,8 +86,14 @@ public class IgniteGeneralDataRegion extends HibernateRegion implements DirectAc
     @Override public void putIntoCache(Object key, Object val, SharedSessionContractImplementor ses) throws CacheException {
         try {
             // CUSTOM: put async
-            IgniteInternalFuture future = cache.putAsync(key, val);
-            future.get(IgniteCacheManager.getConfigAsyncTimeout());
+            long asyncTimeout = IgniteCacheManager.getConfigAsyncTimeout();
+            if (asyncTimeout > 0) {
+                IgniteInternalFuture future = cache.putAsync(key, val);
+                future.get(asyncTimeout);
+            } else {
+                val = cache.put(key, val);
+            }
+            // END CUSTOM
 
             if (log.isDebugEnabled())
                 log.debug("Put [cache=" + cache.name() + ", key=" + key + ", val=" + val + ']');
