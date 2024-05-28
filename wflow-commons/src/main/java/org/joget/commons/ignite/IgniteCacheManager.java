@@ -6,10 +6,12 @@ import org.apache.ignite.Ignite;
 import org.apache.ignite.IgniteCache;
 import org.apache.ignite.Ignition;
 import org.apache.ignite.cache.CacheMode;
+import org.apache.ignite.cache.affinity.rendezvous.RendezvousAffinityFunction;
 import org.apache.ignite.cluster.ClusterState;
 import org.apache.ignite.configuration.CacheConfiguration;
 import org.apache.ignite.configuration.IgniteConfiguration;
 import org.apache.ignite.kubernetes.configuration.KubernetesConnectionConfiguration;
+import org.apache.ignite.spi.communication.tcp.TcpCommunicationSpi;
 import org.apache.ignite.spi.discovery.tcp.TcpDiscoverySpi;
 import org.apache.ignite.spi.discovery.tcp.ipfinder.kubernetes.TcpDiscoveryKubernetesIpFinder;
 import org.apache.ignite.spi.discovery.tcp.ipfinder.vm.TcpDiscoveryVmIpFinder;
@@ -31,6 +33,11 @@ public class IgniteCacheManager {
     public static final String SYSTEM_PROPERTY_IGNITE_STATIC_IP = "wflow.igniteStaticIp";
     public static final String SYSTEM_PROPERTY_IGNITE_REPLICATED = "wflow.igniteReplicated";
     public static final String SYSTEM_PROPERTY_IGNITE_MAX_ASYNC = "wflow.igniteMaxAsync";
+    public static final String SYSTEM_PROPERTY_IGNITE_THREAD_POOL_SIZE = "wflow.igniteThreadPoolSize";
+    public static final String SYSTEM_PROPERTY_IGNITE_PARTITIONS = "wflow.ignitePartitions";
+    public static final String SYSTEM_PROPERTY_IGNITE_PARTITION_BACKUPS = "wflow.ignitePartitionBackups";
+    public static final String SYSTEM_PROPERTY_IGNITE_PAIRED_CONNECTIONS = "wflow.ignitePairedConnections";
+    public static final String SYSTEM_PROPERTY_IGNITE_NODE_CONNECTIONS = "wflow.igniteNodeConnections";
     private static boolean started = false;
     static IgniteConfiguration igniteCfg;
 
@@ -96,6 +103,47 @@ public class IgniteCacheManager {
                 // use embedded mode
                 Ignition.setClientMode(false);
                 LogUtil.info(IgniteCacheManager.class.getName(), "Running Ignite server node in embedded mode");
+            }
+
+            // set thread pool size
+            String threadPoolSizeStr = System.getProperty(SYSTEM_PROPERTY_IGNITE_THREAD_POOL_SIZE);
+            if (threadPoolSizeStr != null) {
+                try {
+                    int threadPoolSize = Integer.parseInt(threadPoolSizeStr);
+                    if (threadPoolSize > 0) {
+                        igniteCfg.setSystemThreadPoolSize(threadPoolSize);
+                        igniteCfg.setStripedPoolSize(threadPoolSize);
+                        igniteCfg.setPublicThreadPoolSize(threadPoolSize);
+                        LogUtil.info(IgniteCacheManager.class.getName(), "Using Ignite thread pool size " + threadPoolSize);
+                    }
+                } catch(NumberFormatException e) {
+                    // ignore
+                }
+            }            
+            
+            // set custom connection settings            
+            boolean usePairedConnections = Boolean.parseBoolean(System.getProperty(SYSTEM_PROPERTY_IGNITE_PAIRED_CONNECTIONS));
+            String nodeConnectionsStr = System.getProperty(SYSTEM_PROPERTY_IGNITE_NODE_CONNECTIONS);
+            if (usePairedConnections || nodeConnectionsStr != null) {
+                TcpCommunicationSpi commSpi = new TcpCommunicationSpi();
+                if (usePairedConnections) {
+                    commSpi.setUsePairedConnections(true);
+                    LogUtil.info(IgniteCacheManager.class.getName(), "Using Ignite paired connections");
+                }
+                int nodeConnections = 1;
+                try {
+                    nodeConnections = Integer.parseInt(nodeConnectionsStr);
+                } catch(NumberFormatException e) {
+                    // ignore
+                }
+                commSpi.setConnectionsPerNode(nodeConnections);    
+                
+                // set timeouts
+                commSpi.setConnectTimeout(30000);
+                commSpi.setMaxConnectTimeout(60000);
+                commSpi.setSocketWriteTimeout(10000);                
+                igniteCfg.setCommunicationSpi(commSpi);
+                LogUtil.info(IgniteCacheManager.class.getName(), "Using Ignite with " + nodeConnections + " connections per node");
             }
             IgniteCacheManager.igniteCfg = igniteCfg;            
             
@@ -184,6 +232,7 @@ public class IgniteCacheManager {
         if (useReplicatedCacheMode) {
             cacheConfig.setCacheMode(CacheMode.REPLICATED);
         }
+        
         // set max concurrent asynchronous operations
         int maxAsync = CacheConfiguration.DFLT_MAX_CONCURRENT_ASYNC_OPS;
         String maxAsyncStr = System.getProperty(SYSTEM_PROPERTY_IGNITE_MAX_ASYNC);
@@ -195,6 +244,36 @@ public class IgniteCacheManager {
             }
         }
         cacheConfig.setMaxConcurrentAsyncOperations(maxAsync);
+        
+        // set number of partitions
+        String partitionStr = System.getProperty(SYSTEM_PROPERTY_IGNITE_PARTITIONS);
+        if (partitionStr != null) {
+            try {
+                int partitions = Integer.parseInt(partitionStr);
+                if (partitions > 0) {
+                    RendezvousAffinityFunction affinityFunction = new RendezvousAffinityFunction();
+                    affinityFunction.setPartitions(partitions);
+                    cacheConfig.setAffinity(affinityFunction);
+                    LogUtil.debug(IgniteCacheManager.class.getName(), "Using Ignite RendezvousAffinityFunction with " + partitions + " partitions for cache " + cacheConfig.getName());
+                }
+            } catch(NumberFormatException e) {
+                // ignore
+            }
+        }
+        
+        // set partition backups
+        String backupsStr = System.getProperty(SYSTEM_PROPERTY_IGNITE_PARTITION_BACKUPS);
+        if (backupsStr != null) {
+            try {
+                int backups = Integer.parseInt(backupsStr);
+                if (backups >= 0) {
+                    cacheConfig.setBackups(backups);
+                    LogUtil.debug(IgniteCacheManager.class.getName(), "Using Ignite partition backups to " + backups + " for cache " + cacheConfig.getName());
+                }
+            } catch(NumberFormatException e) {
+                // ignore
+            }
+        }
     }
 
     /**

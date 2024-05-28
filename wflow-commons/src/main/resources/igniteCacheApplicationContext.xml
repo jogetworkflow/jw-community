@@ -9,7 +9,7 @@
     <!-- Basic configuration for atomic cache. -->
     <bean id="igniteAtomicCache" class="org.apache.ignite.configuration.CacheConfiguration" scope="prototype">
         <property name="cacheMode" value="PARTITIONED"/>
-        <property name="backups" value="0"/>
+        <property name="backups" value="1"/>
         <property name="atomicityMode" value="ATOMIC"/>
         <property name="writeSynchronizationMode" value="PRIMARY_SYNC"/>
     </bean>
@@ -17,7 +17,7 @@
     <!-- Basic configuration for transactional cache. -->
     <bean id="igniteTransactionalCache" class="org.apache.ignite.configuration.CacheConfiguration" scope="prototype">
         <property name="cacheMode" value="PARTITIONED"/>
-        <property name="backups" value="0"/>
+        <property name="backups" value="1"/>
         <property name="atomicityMode" value="TRANSACTIONAL"/>
         <property name="writeSynchronizationMode" value="PRIMARY_SYNC"/>
     </bean>
