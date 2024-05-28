@@ -5964,7 +5964,7 @@ body.rtl #content ul {
 body.rtl .form .form-row > label,
 body.rtl #form-canvas .form-cell .label,
 body.rtl #form-canvas .subform-cell .label {
-    text-align: right;
+    text-align: left;
     padding-right: 0;
     padding-left: 15px;
 }
