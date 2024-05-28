@@ -52,7 +52,7 @@ public class IgniteJdbcCacheManager {
         if (jdbcQueryCache == null && isIgniteJdbcQueryCacheEnabled()) {
             Ignite ignite = IgniteCacheManager.getIgnite();
             if (ignite != null) {
-                String regionName = "igniteJdbcQueryCache";
+                String regionName = "jdbc-query-results-region";
                 CacheConfiguration cacheConfiguration = (CacheConfiguration)SecurityUtil.getApplicationContext().getBean("igniteAtomicCache");
                 cacheConfiguration.setName(regionName);
                 cacheConfiguration.setExpiryPolicyFactory(CreatedExpiryPolicy.factoryOf(new Duration(TimeUnit.MILLISECONDS, getConfigJdbcCacheExpiry())));
@@ -148,6 +148,8 @@ public class IgniteJdbcCacheManager {
                 Throwable cause = e.getCause();
                 if (cause instanceof IgniteClientDisconnectedException || cause instanceof CacheStoppedException) {
                     LogUtil.warn(IgniteJdbcCacheManager.class.getName(), "Error connecting to Ignite cache: " + e.toString());
+                    // reconnect
+                    jdbcQueryCache = null;
                 } else {
                     throw e;
                 }
@@ -273,6 +275,7 @@ public class IgniteJdbcCacheManager {
             Throwable cause = e.getCause();
             if (cause instanceof IgniteClientDisconnectedException || cause instanceof CacheStoppedException) {
                 LogUtil.warn(IgniteJdbcCacheManager.class.getName(), "Error connecting to Ignite cache: " + e.toString());
+                jdbcQueryCache = null;
             } else {
                 throw e;
             }
@@ -377,11 +380,13 @@ public class IgniteJdbcCacheManager {
             IgniteCache timestampsCache = getTimestampsCache();
             try {
                 Map<String, Long> resultMap = (Map<String, Long>)getAsyncCacheResult(timestampsCache, tableNames);
-                for (Long lastUpdate: resultMap.values()) {
-                    if (lastUpdate != null && lastUpdate > cachedTimestamp) {
-                        isUpToDate = false;
-                        LogUtil.debug(IgniteJdbcCacheManager.class.getName(), "isCacheUpToDate false: " + tableNames + " last updated " + lastUpdate + ", cached " + cachedTimestamp);            
-                        break;
+                if (resultMap != null) {
+                    for (Long lastUpdate: resultMap.values()) {
+                        if (lastUpdate != null && lastUpdate > cachedTimestamp) {
+                            isUpToDate = false;
+                            LogUtil.debug(IgniteJdbcCacheManager.class.getName(), "isCacheUpToDate false: " + tableNames + " last updated " + lastUpdate + ", cached " + cachedTimestamp);            
+                            break;
+                        }
                     }
                 }
             } catch (IgniteFutureTimeoutException e) {
