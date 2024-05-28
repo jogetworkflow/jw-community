@@ -60,6 +60,15 @@ public interface IdentityProviderPlugin {
     boolean isUserProvisioningEnabled();
 
     /**
+     * Get the password strategy for user provisioning.
+     * <p>
+     * The password strategy is used to determine how the manager generates the password for a new user.
+     * </p>
+     * @return the password strategy configuration of the plugin
+     */
+    String getUserProvisioningPasswordStrategy();
+
+    /**
      * Get policy for automatic identity provider linking
      * <p>
      * This policy determines if the IdP should be automatically linked to the user when the following criteria is true:

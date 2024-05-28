@@ -42,6 +42,11 @@ public abstract class AbstractIdentityProviderPlugin extends ExtDefaultPlugin im
     }
 
     @Override
+    public String getUserProvisioningPasswordStrategy() {
+        return getPropertyString("userProvisioningPasswordStrategy");
+    }
+
+    @Override
     public boolean isAutomaticLinkingEnabled() {
         return "true".equals(getPropertyString("automaticLinking"));
     }
