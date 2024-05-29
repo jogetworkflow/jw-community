@@ -1313,3 +1313,7 @@ body.rtl .numeric_field_control {left:10px; right:auto;}
     body.compact-mode .numeric_field_controls {top:auto; bottom: 32px;}
     body.rtl .numeric_field_controls {left: 15px; right: auto;}
 }
+body.rtl .form-cell > label.label,
+body.rtl .subform-cell > label.label{
+    padding: 8px 0 0 10px;
+}
