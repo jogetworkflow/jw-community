@@ -1042,6 +1042,11 @@ public class StringUtil {
      * @return 
      */
     public static boolean validateEmail(String email, boolean multiple) {
+        // Check for leading or trailing spaces in the entire email string
+        if (!email.equals(email.trim())) {
+            return false;
+        }
+         
         String[] emails;
         if (multiple) {
             emails = email.split(";");
