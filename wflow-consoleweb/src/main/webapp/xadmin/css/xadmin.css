@@ -182,6 +182,14 @@ body{
 
     /*width: 0px;*/
 }
+body:not(.horizontal_menu).adminBarShown #navigation {
+    height: calc(100vh - 87px);
+}
+@media (max-width: 768px) {
+    body:not(.horizontal_menu).adminBarShown #navigation {
+        height: calc(100vh - 105px);
+    }
+}
 #side-nav{
     width: 220px;
 }
