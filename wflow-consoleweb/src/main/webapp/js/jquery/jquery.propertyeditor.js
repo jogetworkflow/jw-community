@@ -7431,7 +7431,7 @@ PropertyEditor.Type.Grid.prototype = {
             if (column.required !== undefined && column.required.toLowerCase() === 'true') {
                 required = ' <span class="property-required">' + get_peditor_msg('peditor.mandatory.symbol') + '</span>';
             }
-            html += '<th><span>' + column.label + '</span>' + required + '</th>';
+            html += '<th value="' + i + '"><span>' + column.label + '</span> <i class="fa fa-sort"></i>' + required + '</th>';
         });
         html += '<th class="property-type-grid-action-column"></th></tr>';
 
@@ -7539,8 +7539,22 @@ PropertyEditor.Type.Grid.prototype = {
                 html += '</td></tr>';
             });
         }
-
-        html += '</table><a href="#" class="property-type-grid-action-add"><i class="fas fa-plus-circle"></i><span>' + get_peditor_msg('peditor.add') + '</span></a>';
+        
+        html += '</table><a href="#" class="property-type-grid-action-add"><i class="fas fa-plus-circle"></i><span>' + get_peditor_msg('peditor.add') + '</span></a>';                
+        
+        html += this.renderSortControl();
+        
+        return html;
+    },
+    renderSortControl: function() {
+        //Sorting selectbox
+        var html = '<div class="grid_sorting_container"><a class="grid_sorting_config"><i class="las la-sort-amount-down-alt"></i></a><div class="grid_sorting_field"><select id="SortingOption">';
+        $.each(this.properties.columns, function(i, column) {
+            html += ' <option value="' + i +'"> '+ column.label +' </option>';
+        });
+        html += '</select><select id="SortingOrderOption">';
+        html += '<option value="asc">' + get_peditor_msg('peditor.sort.asc') + '</option><option value="desc">' + get_peditor_msg('peditor.sort.desc') + '</option>';
+        html += '</select><button class="sortingTable">' + get_peditor_msg('peditor.sort') + '</button></div></div>';
         return html;
     },
     renderDefault: function() {
@@ -7596,6 +7610,21 @@ PropertyEditor.Type.Grid.prototype = {
                     return false;
                 }
             });
+        });
+        
+        //sorting (button)
+        $("#" + this.id + "_input").find('.sortingTable').off("click");
+        $("#" + this.id + "_input").find('.sortingTable').on("click", function() {
+            let chosenValue = $(this).parent().find('#SortingOption').val();
+            let chosenOrder = $(this).parent().find('#SortingOrderOption').val();
+            grid.sortTable(chosenValue, chosenOrder);
+        });
+        
+        //sorting (headers) 
+        $(table).find('.grid_header th').off("click");
+        $(table).find('.grid_header th').on("click", function() {
+            let headerValue = $(this).attr('value');
+            grid.sortTable(headerValue, !$(this).hasClass('sort_asc')?"asc":"desc");
         });
 
         //add
@@ -7704,6 +7733,97 @@ PropertyEditor.Type.Grid.prototype = {
             }
         }
     },
+    sortTable: function(n, dir){
+        let grid = this;
+        let table = $("#" + this.id)[0];
+        
+        if (dir === undefined) {
+            //Sorting direction set to ascending:
+            dir = "asc";
+        }
+        
+        //method to retrieve cell value based on input type
+        let getCellValue = function(cell) {
+            let cellValue = "";
+            if ($(cell).find('select').length > 0) {
+                if ($(cell).find('select option:checked').length > 0) {
+                    cellValue = $(cell).find('select option:checked').text();
+                }
+            } else if ($(cell).find('input[type="checkbox"]').length > 0) { //checks for checkbox
+                if ($(cell).find('input[type="checkbox"]').is(":checked")) {
+                    cellValue = "true";
+                }
+            } else {
+                cellValue = $(cell).find('input').val();
+            }
+            return cellValue;
+        };
+        
+        let rows, switching = true, i, x, y, xCell, yCell, shouldSwitch;
+        
+        /*Loop that will continue until
+        no switching has been done:*/
+        while (switching) {
+            //start by saying: no switching is done:
+            switching = false;
+            rows = table.rows;
+            /*Loop through all table rows (first row is skipped because its the header,
+             * second row is skipped cus its the grid-model*/
+            for (i = 2; i < (rows.length - 1); i++) {
+                //start by saying there should be no switching:
+                shouldSwitch = false;
+                /*Get two elements to compare,
+                one from current row and one from the next:*/
+                
+                x = getCellValue($(rows[i].getElementsByTagName("td")[n]));
+                y = getCellValue($(rows[i+1].getElementsByTagName("td")[n]));
+
+                //prevents infinite looping of the if(x.trim() == '') statement
+                if (x.trim() === '' && y.trim() === '' ) {
+                    continue;
+                } else if (x.trim() === '') { //moves empty cells to the bottom of the row
+                    shouldSwitch= true;
+                    break;
+                } else {
+                     /* check if the two rows should switch place,
+                        based on the direction, asc or desc:*/
+                    if (dir === "asc") {
+                        if ((x.toLowerCase().localeCompare(y.toLowerCase(), undefined,{numeric:true})) > 0 && !(y.trim() === '')) {
+                            //if == 1, mark as a switch and break the loop:
+                            shouldSwitch= true;
+                            break;
+                        } 
+                    } else if (dir === "desc") {
+                        if ((y.toLowerCase().localeCompare(x.toLowerCase(), undefined,{numeric:true})) > 0 && !(y.trim() === '')) {
+                            //if == 1, mark as a switch and break the loop:
+                            shouldSwitch= true;
+                            break;
+                        }
+                    }
+                }
+            }
+            if (shouldSwitch) {
+                /*If a switch has been marked, make the switch
+                and mark that a switch has been done:*/
+                rows[i].parentNode.insertBefore(rows[i + 1], rows[i]);
+                switching = true;
+            }
+        }     
+        
+        //changes all sort icon back to default
+        $(table).find("th i.fa").attr('class','fa fa-sort');
+        
+        //changes icon depending if it is ascending or decending 
+        if (dir === "asc"){
+            $(table).find("th[value='"+n+"']").removeClass("sort_desc").addClass("sort_asc");
+            $(table).find("th[value='"+n+"'] i.fa").attr('class','fa fa-sort-desc');
+        }else if (dir === "desc") {
+            $(table).find("th[value='"+n+"']").removeClass("sort_asc").addClass("sort_desc");
+            $(table).find("th[value='"+n+"'] i.fa").attr('class','fa fa-sort-asc');
+        }
+        
+        grid.gridDisabledMoveAction(table);
+    },    
     gridActionAdd: function(object) {
         var grid = this;
         var table = $(object).prev('table');
@@ -7996,7 +8116,7 @@ PropertyEditor.Type.GridCombine.prototype = {
             if (column.required !== undefined && column.required.toLowerCase() === 'true') {
                 required = ' <span class="property-required">' + get_peditor_msg('peditor.mandatory.symbol') + '</span>';
             }
-            html += '<th><span>' + column.label + '</span>' + required + '</th>';
+            html += '<th value="' + i + '"><span>' + column.label + '</span>  <i class="fa fa-sort"></i>' + required + '</th>';
         });
         html += '<th class="property-type-grid-action-column"></th></tr>';
 
@@ -8136,6 +8256,9 @@ PropertyEditor.Type.GridCombine.prototype = {
         }
 
         html += '</table><a href="#" class="property-type-grid-action-add"><i class="fas fa-plus-circle"></i><span>' + get_peditor_msg('peditor.add') + '</span></a>';
+        
+        html += this.renderSortControl();
+        
         return html;
     },
     renderDefault: function() {
@@ -8196,7 +8319,9 @@ PropertyEditor.Type.GridCombine.prototype = {
     gridDisabledMoveAction: PropertyEditor.Type.Grid.prototype.gridDisabledMoveAction,
     pageShown: PropertyEditor.Type.Grid.prototype.pageShown,
     handleAjaxOptions: PropertyEditor.Type.Grid.prototype.handleAjaxOptions,
-    updateSource: PropertyEditor.Type.Grid.prototype.updateSource
+    updateSource: PropertyEditor.Type.Grid.prototype.updateSource,
+    renderSortControl: PropertyEditor.Type.Grid.prototype.renderSortControl,
+    sortTable: PropertyEditor.Type.Grid.prototype.sortTable
 };
 PropertyEditor.Type.GridCombine = PropertyEditor.Util.inherit(PropertyEditor.Model.Type, PropertyEditor.Type.GridCombine.prototype);
 
@@ -12017,6 +12142,58 @@ PropertyAssistant = {
                 
                 editor.render();
                 $(element).data("editor", editor);
+                
+                //scroll to the field
+                if (o.scrollToField !== null && o.scrollToField !== undefined && o.scrollToField !== "") {
+                    var scrollAndExpandToField = function(fieldElement) {
+                        if ($(element).find(fieldElement).length > 0) {
+                            if ($(fieldElement).eq(0).closest(".property-page-show").hasClass("collapsed")) {
+                                $(fieldElement).eq(0).closest(".property-page-show").removeClass("collapsed");
+                            }
+
+                            if ($(fieldElement).eq(0).closest('.property-editor-container').hasClass('single-page')) {
+                                $(fieldElement).eq(0).closest('.property-editor-pages').animate({
+                                    scrollTop: $(fieldElement).eq(0).offset().top + $(fieldElement).eq(0).closest('.property-editor-pages').scrollTop() - 200
+                                }, 1);
+                            } else {
+                                var pageId = $(fieldElement).eq(0).closest(".property-page-show").attr("id");
+                                editor.changePage(null, pageId);
+                                
+                                var scroll = $(fieldElement).eq(0).offset().top - 100 + $(fieldElement).eq(0).closest('.property-editor-property-container').scrollTop();
+                                scroll = scroll - $(fieldElement).eq(0).closest('.property-editor-property-container').offset().top;
+                                
+                                $(fieldElement).eq(0).closest('.property-editor-property-container').animate({
+                                    scrollTop: scroll 
+                                }, 1);
+                            }
+                        }
+                    };
+                    
+                    setTimeout(function(){
+                        if (o.scrollToField.indexOf('.properties.') !== -1) { // it is element select field
+                            var names = o.scrollToField.split('.');
+                            var fieldSelector = "";
+                            var altFieldSelector = "";
+                            for (var i in names) {
+                                if (names[i] !== "properties") { 
+                                    if (names[i].indexOf('[') !== -1 && names[i].indexOf(']') !== -1 ) {
+                                        //to handle multi element select
+                                        var index = parseInt(names[i].substring(names[i].indexOf('[') + 1, names[i].indexOf(']')));
+                                        var property = names[i].substring(0, names[i].indexOf('['));
+                                        fieldSelector += '.property-page-show [property-name="'+property+'"] .repeater-rows-container .repeater-row:eq('+index+') ';
+                                        altFieldSelector += "_" + property;
+                                    } else {
+                                        fieldSelector += '.property-page-show [property-name="'+names[i]+'"] ';
+                                        altFieldSelector += "_" + names[i];
+                                    }
+                                    scrollAndExpandToField(fieldSelector + ', [name$="' + altFieldSelector + '"]');
+                                }
+                            }
+                        } else {
+                            scrollAndExpandToField('.property-page-show [property-name="'+o.scrollToField+'"]');
+                        }
+                    }, 1000);
+                }
                 
                 return false;
             });

@@ -17,6 +17,7 @@ import org.joget.directory.model.User;
 import org.joget.directory.model.UserMetaData;
 import org.joget.directory.model.service.DirectoryUtil;
 import org.joget.directory.model.service.ExtDirectoryManager;
+import org.joget.directory.model.service.UserSecurity;
 import org.joget.plugin.base.ExtDefaultPlugin;
 import org.joget.plugin.base.PluginManager;
 import org.joget.plugin.property.model.PropertyEditable;
@@ -163,6 +164,12 @@ public abstract class MfaAuthenticator extends ExtDefaultPlugin implements Prope
         LogUtil.info(getClass().getName(), "Authentication for user " + username + " ("+ip+") : true");
         WorkflowHelper workflowHelper = (WorkflowHelper) AppUtil.getApplicationContext().getBean("workflowHelper");
         workflowHelper.addAuditTrail(this.getClass().getName(), "authenticate", "Authentication for user " + username + " ("+ip+") : true"); 
+        
+        //post login processing
+        UserSecurity userSecurity = DirectoryUtil.getUserSecurity();
+        if (userSecurity != null) {
+            userSecurity.loginPostProcessing(user, null, true);
+        }
         
         return "<script>parent.window.location = '"+getRedirectUrl()+"';</script>";
     }

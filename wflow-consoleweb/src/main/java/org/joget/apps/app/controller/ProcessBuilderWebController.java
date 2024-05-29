@@ -7,15 +7,12 @@ import java.awt.RenderingHints;
 import java.awt.image.BufferedImage;
 import java.io.BufferedOutputStream;
 import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.Writer;
 import java.sql.SQLException;
 import java.util.Iterator;
-import java.util.Map;
 import javax.annotation.Resource;
 import javax.imageio.ImageIO;
 import javax.servlet.http.HttpServletRequest;
@@ -33,20 +30,17 @@ import org.joget.apps.app.model.PackageParticipant;
 import org.joget.apps.app.service.AppService;
 import org.joget.apps.app.service.AppUtil;
 import org.joget.apps.ext.ConsoleWebPlugin;
-import org.joget.apps.form.lib.DefaultFormBinder;
 import org.joget.commons.util.FileLimitException;
 import org.joget.commons.util.FileStore;
 import org.joget.commons.util.LogUtil;
 import org.joget.commons.util.ResourceBundleUtil;
 import org.joget.commons.util.SecurityUtil;
 import org.joget.commons.util.SetupManager;
-import org.joget.commons.util.StringUtil;
 import org.joget.plugin.base.PluginManager;
 import org.joget.plugin.property.service.PropertyUtil;
 import org.joget.workflow.model.WorkflowProcess;
 import org.joget.workflow.model.service.WorkflowManager;
 import org.joget.workflow.util.XpdlImageUtil;
-import org.json.JSONException;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -99,7 +93,7 @@ public class ProcessBuilderWebController {
         model.addAttribute("appDefinition", appDef);
         model.addAttribute("packageVersion", (appDef.getPackageDefinition() != null)?(appDef.getPackageDefinition().getVersion()):1);
         
-        model.addAttribute("json", PropertyUtil.propertiesJsonLoadProcessing(getXpdlAndMappingJson(appDef, request)));
+        model.addAttribute("json", PropertyUtil.propertiesJsonLoadProcessing(AppUtil.getXpdlAndMappingJson(appDef)));
         
         return "pbuilder/pbuilder";
     }
@@ -120,7 +114,7 @@ public class ProcessBuilderWebController {
         JSONObject jsonObject = new JSONObject();
 
         AppDefinition appDef = appService.getAppDefinition(appId, version);
-        String oriJson = getXpdlAndMappingJson(appDef, request);
+        String oriJson = AppUtil.getXpdlAndMappingJson(appDef);
         json = PropertyUtil.propertiesJsonStoreProcessing(oriJson, json);
         
         String diff = "";
@@ -326,7 +320,7 @@ public class ProcessBuilderWebController {
 
         if (success) {
             jsonObject.put("success", success);
-            jsonObject.put("data", PropertyUtil.propertiesJsonLoadProcessing(getXpdlAndMappingJson(appDef, request)));
+            jsonObject.put("data", PropertyUtil.propertiesJsonLoadProcessing(AppUtil.getXpdlAndMappingJson(appDef)));
             
             JSONObject props = new JSONObject();
             props.put("packageVersion", appDef.getPackageDefinition().getVersion());
@@ -340,116 +334,6 @@ public class ProcessBuilderWebController {
         return null;
     }
     
-    protected String getXpdlAndMappingJson(AppDefinition appDef, HttpServletRequest request) {
-        JSONObject jsonDef = new JSONObject();
-        
-        try {
-            String xpdl = getXpdl(appDef);
-            if (xpdl != null && !xpdl.isEmpty()) {
-                String xpdlJson = U.xmlToJson(xpdl);
-                jsonDef.put("xpdl", new JSONObject(xpdlJson));
-            }
-            
-            PackageDefinition packageDefinition = appDef.getPackageDefinition();
-            if (packageDefinition != null) {
-                Map<String, PackageActivityForm> activityFormMap = packageDefinition.getPackageActivityFormMap();
-                JSONObject activityForms = new JSONObject();
-                if (activityFormMap != null && !activityFormMap.isEmpty()) {
-                    for (String k : activityFormMap.keySet()) {
-                        JSONObject o = new JSONObject();
-                        PackageActivityForm f = activityFormMap.get(k);
-
-                        populateActivityForm(o, f, appDef);
-                        activityForms.put(k, o);
-                    }
-                }
-                jsonDef.put("activityForms", activityForms);
-
-                Map<String, PackageActivityPlugin> activityMap = packageDefinition.getPackageActivityPluginMap();
-                JSONObject activityPlugins = new JSONObject();
-                if (activityMap != null && !activityMap.isEmpty()) {
-                    for (String k : activityMap.keySet()) {
-                        JSONObject o = new JSONObject();
-                        PackageActivityPlugin p = activityMap.get(k);
-
-                        populateActivityPlugin(o, p);
-                        activityPlugins.put(k, o);
-                    }
-                }
-                jsonDef.put("activityPlugins", activityPlugins);
-
-                Map<String, PackageParticipant> participantMap = packageDefinition.getPackageParticipantMap();
-                JSONObject participants = new JSONObject();
-                if (participantMap != null && !participantMap.isEmpty()) {
-                    for (String k : participantMap.keySet()) {
-                        JSONObject o = new JSONObject();
-                        PackageParticipant p = participantMap.get(k);
-
-                        populateParticipant(request, o, p);
-                        participants.put(k, o);
-                    }
-                }
-                jsonDef.put("participants", participants);
-            } else {
-                jsonDef.put("activityForms", new JSONObject());
-                jsonDef.put("activityPlugins", new JSONObject());
-                jsonDef.put("participants", new JSONObject());
-            }
-            
-        } catch (Exception e) {
-            LogUtil.error(ProcessBuilderWebController.class.getName(), e, "");
-        }
-        
-        return jsonDef.toString();
-    }
-
-    protected String getXpdl(AppDefinition appDef) {
-        try {
-            PackageDefinition packageDef = appDef.getPackageDefinition();
-            String xpdl = null;
-            if (packageDef != null) {
-                byte[] content = workflowManager.getPackageContent(packageDef.getId(), packageDef.getVersion().toString());
-                if (content != null) {
-                    xpdl = new String(content, "UTF-8");
-                }
-            }
-            
-            if (xpdl == null) {
-                // read default xpdl
-                InputStream input = null;
-                ByteArrayOutputStream out = new ByteArrayOutputStream();
-                try {
-                    // get resource input stream
-                    String url = "/org/joget/apps/app/model/default.xpdl";
-                    input = pluginManager.getPluginResource(DefaultFormBinder.class.getName(), url);
-                    if (input != null) {
-                        // write output
-                        byte[] bbuf = new byte[65536];
-                        int length = 0;
-                        while ((input != null) && ((length = input.read(bbuf)) != -1)) {
-                            out.write(bbuf, 0, length);
-                        }
-                        // form xpdl
-                        xpdl = new String(out.toByteArray(), "UTF-8");
-
-                        // replace package ID and name
-                        xpdl = xpdl.replace("${packageId}", StringUtil.escapeString(appDef.getId(), StringUtil.TYPE_XML, null));
-                        xpdl = xpdl.replace("${packageName}", StringUtil.escapeString(appDef.getName(), StringUtil.TYPE_XML, null));
-                        return xpdl;
-                    }
-                } finally {
-                    if (input != null) {
-                        input.close();
-                    }
-                }
-            }
-            return xpdl;
-        } catch (Exception e) {
-            LogUtil.error(ProcessBuilderWebController.class.getName(), e, "");
-        }
-        return null;
-    }
-    
     @RequestMapping({"/console/app/(*:appId)/(~:version)/process/builder/json"})
     public void getJson(Writer writer, HttpServletRequest request, HttpServletResponse response, @RequestParam(value = "appId") String appId, @RequestParam(value = "version", required = false) String version) throws IOException {
         AppDefinition appDef = appService.getAppDefinition(appId, version);
@@ -458,7 +342,7 @@ public class ProcessBuilderWebController {
             return;
         }
         
-        String json = getXpdlAndMappingJson(appDef, request);
+        String json = AppUtil.getXpdlAndMappingJson(appDef);
         writer.write(PropertyUtil.propertiesJsonLoadProcessing(json));
     }
     
@@ -499,34 +383,6 @@ public class ProcessBuilderWebController {
         
         String xpdlJson = U.xmlToJson(xpdl);
         writer.write(xpdlJson);
-    }
-    
-    protected void populateActivityForm(JSONObject o, PackageActivityForm f, AppDefinition appDef) throws JSONException {
-        o.put("formId", f.getFormId());
-        o.put("formUrl", f.getFormUrl());
-        o.put("formIFrameStyle", f.getFormIFrameStyle());
-        o.put("disableSaveAsDraft", f.getDisableSaveAsDraft());
-        o.put("autoContinue", f.isAutoContinue());
-        o.put("type", (f.getType() != null)?f.getType():PackageActivityForm.ACTIVITY_FORM_TYPE_SINGLE);
-    }
-    
-    protected void populateActivityPlugin(JSONObject o, PackageActivityPlugin p) throws JSONException {
-        o.put("className", p.getPluginName());
-        if (p.getPluginProperties() != null && !p.getPluginProperties().isEmpty()) {
-            o.put("properties", new JSONObject(p.getPluginProperties()));
-        } else {
-            o.put("properties", new JSONObject());
-        }
-    }
-    
-    protected void populateParticipant(HttpServletRequest request, JSONObject o, PackageParticipant p) throws JSONException {
-        o.put("type", p.getType());
-        o.put("value", p.getValue());
-        if (p.getPluginProperties() != null && !p.getPluginProperties().isEmpty()) {
-            o.put("properties", new JSONObject(p.getPluginProperties()));
-        } else {
-            o.put("properties", new JSONObject());
-        }
     }
 
     @RequestMapping(value="/console/app/(*:appId)/(~:version)/process/screenshot/(*:processDefId)")

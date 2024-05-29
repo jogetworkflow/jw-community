@@ -1,6 +1,7 @@
 package org.joget.apps.app.dao;
 
 import java.util.Collection;
+import java.util.Date;
 import org.joget.apps.app.model.AppDefinition;
 
 public interface AppDefinitionDao extends VersionedObjectDao<AppDefinition> {
@@ -20,4 +21,6 @@ public interface AppDefinitionDao extends VersionedObjectDao<AppDefinition> {
     public void merge(AppDefinition appDef);    
     
     public void updateDateModified(AppDefinition appDef);
+    
+    public void updateDateModified(AppDefinition appDef, Date dateModified);
 }

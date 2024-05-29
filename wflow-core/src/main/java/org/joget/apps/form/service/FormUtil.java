@@ -248,8 +248,8 @@ public class FormUtil implements ApplicationContextAware {
             // set element properties
             Map<String, Object> properties = FormUtil.parsePropertyFromJsonObject(obj);
             element.setProperties(properties);
-            element.setProperty(FormUtil.PROPERTY_ELEMENT_UNIQUE_KEY, FormUtil.getUniqueKey());
 
+            int index = 0;
             if (parent != null) {
                 element.setParent(parent);
                 // recurse into child elements
@@ -259,7 +259,9 @@ public class FormUtil implements ApplicationContextAware {
                     parent.setChildren(childElements);
                 }
                 childElements.add(element);
+                index = childElements.size();
             }
+            element.setProperty(FormUtil.PROPERTY_ELEMENT_UNIQUE_KEY, FormUtil.getElementUniqueKey(element, index));
             
             // recurse into child elements
             FormUtil.parseChildElementsFromJsonObject(obj, element);
@@ -1645,6 +1647,26 @@ public class FormUtil implements ApplicationContextAware {
      */
     public static boolean isHidden(Element element, FormData formData) {
         return element.isHidden(formData);
+    }
+    
+    /**
+     * Generate a consistent unique key for element based on its parent unique key 
+     * @param element
+     * @param index
+     * @return 
+     */
+    public static String getElementUniqueKey(Element element, int index) {
+        String uniqueKey = "";
+        if (!element.getPropertyString(FormUtil.PROPERTY_ID).isEmpty()) {
+            uniqueKey = Integer.toString(element.getPropertyString(FormUtil.PROPERTY_ID).hashCode());
+        } else {
+            uniqueKey = Integer.toString(index); //for column or any container without id, use the index
+        }
+        //prepend it with parent unique key, so same field id in different section will having different uniqueKey
+        if (!(element instanceof Form) && element.getParent() != null) {
+            uniqueKey = element.getParent().getPropertyString(PROPERTY_ELEMENT_UNIQUE_KEY) + uniqueKey;
+        }
+        return uniqueKey.replaceAll("-", "_");
     }
     
     /**

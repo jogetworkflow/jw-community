@@ -5955,7 +5955,8 @@ body.rtl .button + .button {
     margin-right: 10px;
 }
 
-body.rtl #content ol, #content ul {
+body.rtl #content ol, 
+body.rtl #content ul {
     padding-left: 0;
     padding-right: 30px;
 }

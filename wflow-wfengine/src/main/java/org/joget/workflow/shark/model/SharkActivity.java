@@ -7,6 +7,7 @@ public class SharkActivity {
     private Long activated;
     private String processDefId;
     private String processId;
+    private String resourceId;
     
     private SharkActivityState state;
 
@@ -64,5 +65,13 @@ public class SharkActivity {
 
     public void setProcessId(String processId) {
         this.processId = processId;
+    }
+    
+    public String getResourceId() {
+        return resourceId;
+    }
+
+    public void setResourceId(String resourceId) {
+        this.resourceId = resourceId;
     }
 }

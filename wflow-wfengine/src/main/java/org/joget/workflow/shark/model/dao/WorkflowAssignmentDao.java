@@ -26,6 +26,7 @@ import org.joget.workflow.shark.migrate.model.MigrateAssignment;
 import org.joget.workflow.shark.migrate.model.MigrateProcess;
 import org.joget.workflow.shark.migrate.model.MigrateProcessDefinition;
 import org.joget.workflow.shark.model.SharkActivityHistory;
+import org.joget.workflow.shark.model.SharkActivity;
 import org.joget.workflow.shark.model.SharkAssignment;
 import org.joget.workflow.shark.model.SharkProcess;
 import org.joget.workflow.shark.model.SharkProcessHistory;
@@ -557,6 +558,124 @@ public class WorkflowAssignmentDao extends AbstractSpringDao {
         return transformToWorkflowAssignment(shAss);
     }
     
+    public Collection<WorkflowActivity> getClosedActivities(String packageId, String processDefId, String processId, String activityDefId, String username, String state, String sort, Boolean desc, Integer start, Integer rows) {
+
+        //sorting
+        if (sort != null && !sort.isEmpty()) {
+            if ("processDefId".equals(sort)) {
+                sort = "processDefId";
+            } else if ("processId".equals(sort)) {
+                sort = "processId";
+            } else if ("resourceId".equals(sort)) {
+                sort = "resourceId";
+            } else if ("activityName".equals(sort)) {
+                sort = "activityName";
+            } else if ("activityDefId".equals(sort)) {
+                sort = "activityDefId";
+            } else if ("dateCreated".equals(sort)) {
+                sort = "activated";
+            }
+        }
+
+        //required to disable lazy loading 
+        String condition = " join e.state s";
+        Collection<String> params = new ArrayList<String>();
+        condition += " where 1=1";
+      
+        if (packageId != null || processDefId != null || processId != null || activityDefId != null || username != null || state != null) {           
+            if (packageId != null && !packageId.isEmpty()) {
+                condition += " and PDefName like ?";                
+                params.add(packageId+"#%");
+            }
+            
+            if (processDefId != null && !processDefId.isEmpty()) {
+                condition += " and PDefName like ?";
+                processDefId = ignoreVersion(processDefId);
+                params.add(processDefId);
+            }
+            
+            if (processId != null && !processId.isEmpty()) {
+                condition += " and ProcessId = ?";
+                params.add(processId);
+            }
+            
+            if (activityDefId != null && !activityDefId.isEmpty()) {
+                condition += " and ActivityDefinitionId = ?";
+                params.add(activityDefId);
+            }
+            if (state != null && !state.isEmpty()) {
+                condition += " and s.name like ?";
+                params.add("closed."+state);
+            }
+            if (username != null && !username.isEmpty()) {
+                condition += " and ResourceId like ?";
+                params.add(username);
+            }
+        }
+                                        
+        Collection<SharkActivity> shAss = find(ACTIVITY_ENTITY_NAME, condition, params.toArray(new String[0]), sort, desc, start, rows);
+        
+        return transformToWorkflowActivity(shAss);
+    }
+    
+    public Collection<WorkflowActivity> getArchivedActivities(String packageId, String processDefId, String processId, String actDefId, String username, String state, String sort, Boolean desc, Integer start, Integer rows) {
+
+        if (sort != null && !sort.isEmpty()) {
+            if (sort.equals("id")) {
+                sort = "e.activityId";
+            } else if (sort.equals("Started") || sort.equals("startedTime") || sort.equals("dateStarted")) {
+                sort = "e.accepted";
+            } else if (sort.equals("Created") || sort.equals("createdTime") || sort.equals("dateCreated")) {
+                sort = "e.activated";
+            } else if (sort.equals("name")) {
+                sort = "e.activityName";
+            } else if (sort.equals("performer")) {
+                sort = "e.performer";
+            }
+        }
+        
+        //required to disable lazy loading 
+        String condition = " join e.process p where 1=1";
+        Collection<String> params = new ArrayList<String>();
+
+        if (packageId != null || processDefId != null || processId != null || actDefId != null || username != null || state != null) {              
+            if (packageId != null && !packageId.isEmpty()) {
+                condition += " and p.processDefId like ?";          
+                params.add(packageId+"#%");
+            }
+            
+            if (processDefId != null && !processDefId.isEmpty()) {
+               condition += " and p.processDefId like ?";
+                processDefId = ignoreVersion(processDefId);
+                params.add(processDefId);
+            }
+            
+            if (actDefId != null && !actDefId.isEmpty()) {
+                condition += " and e.activityDefId = ?";
+                params.add(actDefId);
+            }
+            
+            if (processId != null && !processId.isEmpty()) {
+                condition += " and e.processId = ?";
+                params.add(processId);
+            }
+            
+            if (state != null && !state.isEmpty()) {
+                condition += " and e.state like ?";
+                params.add("closed."+state);
+            }
+            
+            if (username != null && !username.isEmpty()) {
+                condition += " and e.performer = ?";
+                params.add(username);
+            }
+        }
+                              
+        Collection<SharkActivityHistory> shAct = find(ACTIVITY_HISTORY_ENTITY_NAME, condition, params.toArray(new String[0]), sort, desc, start, rows);
+        
+        return transformHistoryToWorkflowActivity(shAct);
+    }
+
     public int getAssignmentSize(String packageId, String processDefId, String processId, String activityDefId, String username, String state) {
         //required to disable lazy loading 
         String condition = "join e.process p join e.activity a join a.state s"; 
@@ -596,6 +715,95 @@ public class WorkflowAssignmentDao extends AbstractSpringDao {
             }
         }
         Long total = count(ENTITY_NAME, condition, params.toArray(new String[0]));
+        
+        if (total != null) {
+            return total.intValue();
+        }
+        return 0;
+    }
+    
+    public int getClosedActivitiesSize(String packageId, String processDefId, String processId, String activityDefId, String username, String state) {
+        //required to disable lazy loading 
+        String condition = " join e.state s";
+        Collection<String> params = new ArrayList<String>();
+        condition += " where 1=1";
+      
+        if (packageId != null || processDefId != null || processId != null || activityDefId != null || username != null || state != null) {           
+            if (packageId != null && !packageId.isEmpty()) {
+                condition += " and PDefName like ?";                
+                params.add(packageId+"#%");
+            }
+            
+            if (processDefId != null && !processDefId.isEmpty()) {
+                condition += " and PDefName like ?";
+                processDefId = ignoreVersion(processDefId);
+                params.add(processDefId);
+            }
+            
+            if (processId != null && !processId.isEmpty()) {
+                condition += " and ProcessId = ?";
+                params.add(processId);
+            }
+            
+            if (activityDefId != null && !activityDefId.isEmpty()) {
+                condition += " and ActivityDefinitionId = ?";
+                params.add(activityDefId);
+            }
+            if (state != null && !state.isEmpty()) {
+                condition += " and s.name like ?";
+                params.add("closed."+state);
+            }
+            if (username != null && !username.isEmpty()) {
+                condition += " and ResourceId like ?";
+                params.add(username);
+            }
+        }
+        Long total = count(ACTIVITY_ENTITY_NAME, condition, params.toArray(new String[0]));
+        
+        if (total != null) {
+            return total.intValue();
+        }
+        return 0;
+    }
+    
+    public int getArchivedActivitiesSize(String packageId, String processDefId, String processId, String actDefId, String username, String state) {
+        //required to disable lazy loading 
+        String condition = " join e.process p where 1=1";
+        Collection<String> params = new ArrayList<String>();
+
+        if (packageId != null || processDefId != null || processId != null || actDefId != null || username != null || state != null) {              
+            if (packageId != null && !packageId.isEmpty()) {
+                condition += " and p.processDefId like ?";          
+                params.add(packageId+"#%");
+            }
+            
+            if (processDefId != null && !processDefId.isEmpty()) {
+               condition += " and p.processDefId like ?";
+                processDefId = ignoreVersion(processDefId);
+                params.add(processDefId);
+            }
+            
+            if (actDefId != null && !actDefId.isEmpty()) {
+                condition += " and e.activityDefId = ?";
+                params.add(actDefId);
+            }
+            
+            if (processId != null && !processId.isEmpty()) {
+                condition += " and e.processId = ?";
+                params.add(processId);
+            }
+            
+            if (state != null && !state.isEmpty()) {
+                condition += " and e.state like ?";
+                params.add("closed."+state);
+            }
+            
+            if (username != null && !username.isEmpty()) {
+                condition += " and e.performer = ?";
+                params.add(username);
+            }
+        }
+        Long total = count(ACTIVITY_HISTORY_ENTITY_NAME, condition, params.toArray(new String[0]));
         
         if (total != null) {
             return total.intValue();
@@ -754,6 +962,24 @@ public class WorkflowAssignmentDao extends AbstractSpringDao {
         }
         
         return processes;
+    }
+
+    protected Collection<WorkflowActivity> transformToWorkflowActivity(Collection<SharkActivity> shActivity) {
+        Collection<WorkflowActivity> activity = new ArrayList<>();
+        if (shActivity != null && !shActivity.isEmpty()) {
+            for (SharkActivity shAct : shActivity) {
+                WorkflowActivity wfActivity = new WorkflowActivity();         
+                wfActivity.setId(shAct.getActivityId());
+                wfActivity.setName(shAct.getActivityName());
+                wfActivity.setActivityDefId(shAct.getActivityDefId());
+                wfActivity.setState(shAct.getState().getName());              
+                wfActivity.setProcessId(shAct.getProcessId());
+                wfActivity.setProcessDefId(shAct.getProcessDefId());
+                wfActivity.setPerformer(shAct.getResourceId());               
+                activity.add(wfActivity);
+            }
+        }
+        return activity;
     }
     
     private String ignoreVersion(String processDefId) {

@@ -42,6 +42,7 @@ import org.joget.apps.app.dao.PluginDefaultPropertiesDao;
 import org.joget.apps.app.dao.UserviewDefinitionDao;
 import org.joget.apps.app.dao.DatalistDefinitionDao;
 import org.joget.apps.app.model.AppDefinition;
+import org.joget.apps.app.model.AppOverviewTool;
 import org.joget.apps.app.model.AppResource;
 import org.joget.apps.app.model.BuilderDefinition;
 import org.joget.apps.app.model.CreateAppOption;
@@ -60,6 +61,7 @@ import org.joget.apps.app.model.ImportAppException;
 import org.joget.apps.app.model.ProcessFormModifier;
 import org.joget.apps.app.model.StartProcessFormModifier;
 import org.joget.apps.app.service.AppDevUtil;
+import org.joget.apps.app.service.AppOverviewUtil;
 import org.joget.apps.app.service.AppResourceUtil;
 import org.joget.apps.app.service.AppService;
 import org.joget.apps.app.service.AppUtil;
@@ -1838,7 +1840,12 @@ public class ConsoleWebController {
         AppDefinition appDef = null;
         try {
             if (appZip != null) {
-                appDef = appService.importApp(appZip.getBytes());
+                byte[] bytes = appZip.getBytes();
+                if (appService.isGitSrcZip(bytes)) {
+                    appDef = appService.importAppDefFromGitSrc(bytes);
+                } else {
+                    appDef = appService.importApp(bytes);
+                }
             }
         } catch (ImportAppException e) {
             errors.add(e.getMessage());
@@ -3796,6 +3803,32 @@ public class ConsoleWebController {
         
         AppUtil.writeJson(writer, jsonObject, callback);
     }
+    
+    @RequestMapping("/json/console/app/(*:appId)/(~:version)/builders/overview")
+    public void consoleBuilderOverview(Writer writer, @RequestParam String appId, @RequestParam(required = false) String version, @RequestParam(value = "callback", required = false) String callback) throws IOException, JSONException {
+        AppDefinition appDef = appService.getAppDefinition(appId, version);
+        
+        if (appDef != null) {
+            writer.write(AppOverviewUtil.getOverview(appDef));
+        }
+    }
+    
+    @RequestMapping("/json/console/app/(*:appId)/(~:version)/builders/overviewTools")
+    public void consoleBuilderOverviewTools(Writer writer, @RequestParam String appId, @RequestParam(required = false) String version, @RequestParam(value = "callback", required = false) String callback) throws IOException, JSONException {
+        Map<String, AppOverviewTool> tools = AppOverviewUtil.getTools();
+        
+        JSONArray jsonArr = new JSONArray();
+        for (AppOverviewTool tool : tools.values()) {
+            JSONObject obj = new JSONObject();
+            obj.put("icon", tool.getIcon());
+            obj.put("label", tool.getI18nLabel());
+            obj.put("className", tool.getClassName());
+            
+            jsonArr.put(obj);
+        }
+        
+        AppUtil.writeJson(writer, jsonArr, callback);
+    }
 
     protected void checkAppPublishedVersion(AppDefinition appDef) {
         String appId = appDef.getId();
@@ -4591,6 +4624,8 @@ public class ConsoleWebController {
 
     @RequestMapping(value = "/console/setting/general/submit", method = RequestMethod.POST)
     public String consoleSettingGeneralSubmit(HttpServletRequest request, ModelMap map) {
+        boolean localeChanged = false;
+        
         List<String> settingsIsNotNull = new ArrayList<String>();
 
         List<String> booleanSettingsList = new ArrayList<String>();
@@ -4639,6 +4674,12 @@ public class ConsoleWebController {
                     setting.setValue(SecurityUtil.encrypt(paramValue));
                 }
             } else {
+                
+                //check for locale changes
+                if ("systemLocale".equals(paramName) && !paramValue.equals(setting.getValue())) {
+                    localeChanged = true;
+                }
+                
                 setting.setValue(paramValue);
             }
             
@@ -4668,7 +4709,12 @@ public class ConsoleWebController {
 
         //clear all caches & update the settings
         setupManager.clearCache();
-        ((LocalLocaleResolver) localeResolver).reset(request);
+        
+        //only reset the locale when setting changed
+        if (localeChanged) {
+            ((LocalLocaleResolver) localeResolver).reset(request);
+        }
+        
         if (refreshPlugins) {
             pluginManager.refresh();
         } else {
@@ -6259,7 +6305,7 @@ public class ConsoleWebController {
     }
     
     @RequestMapping(value = "/console/app/(*:appId)/(~:version)/dev/submit", method = RequestMethod.POST)
-    public void consoleDevSubmit(Writer writer, String id, @RequestParam String appId, @RequestParam(required = false) String version, @RequestParam(required = false) String json) throws JSONException, IOException {
+    public void consoleDevSubmit(Writer writer, String id, @RequestParam String appId, @RequestParam(required = false) String version, @RequestParam(value = "json", required = false) String json) throws JSONException, IOException {
         AppDefinition appDef = appService.getAppDefinition(appId, version);
         
         String oldProperties = "{}";  
@@ -6283,6 +6329,9 @@ public class ConsoleWebController {
         }
         
         try {
+            //retrieve from request body if the json is send in file
+            json = AppUtil.getSubmittedJsonDefinition(json);
+
             json = PropertyUtil.propertiesJsonStoreProcessing(oldProperties, json);
             Properties appProps = new Properties();
             JSONObject jsonObject = new JSONObject(json);

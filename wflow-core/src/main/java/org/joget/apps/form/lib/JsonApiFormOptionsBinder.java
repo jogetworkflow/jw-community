@@ -1,5 +1,7 @@
 package org.joget.apps.form.lib;
 
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 import org.apache.commons.lang.StringUtils;
@@ -91,51 +93,194 @@ public class JsonApiFormOptionsBinder extends FormBinder implements FormLoadOpti
         }
 
         if (results != null) {
+            String idField = getPropertyString("idColumn");
+            String labelField = getPropertyString("labelColumn");
+            String groupingField = getPropertyString("groupingColumn");
+            String name = "";
+            
+            Object data = results;
+            
             String multirowBaseObjectName = getPropertyString("multirowBaseObject");
             if (!multirowBaseObjectName.isEmpty()) {
-                String idField = getPropertyString("idColumn").replace(multirowBaseObjectName + ".", "");
-                String labelField = getPropertyString("labelColumn").replace(multirowBaseObjectName + ".", "");
-                String groupingField = getPropertyString("groupingColumn").replace(multirowBaseObjectName + ".", "");
+                data = JsonApiUtil.getObjectFromMap(multirowBaseObjectName, results);
                 
-                Object temp = JsonApiUtil.getObjectFromMap(multirowBaseObjectName, results);
-                if (temp != null) {
-                    if (temp.getClass().isArray()) {
-                        Object[] baseObjectArray = (Object[]) temp;
-                        if (baseObjectArray.length > 0) {
-                            for (Object rowObj : baseObjectArray) {
-                                FormRow r = new FormRow();
-                                Object id = JsonApiUtil.getObjectFromMap(idField, (Map) rowObj);
-                                Object label = JsonApiUtil.getObjectFromMap(labelField, (Map) rowObj);
-                                if (id != null) {
-                                    r.put(FormUtil.PROPERTY_VALUE, id.toString());
-                                    r.put(FormUtil.PROPERTY_LABEL, (label != null)?label.toString():id.toString());
-                                }
-                                if (!groupingField.isEmpty()) {
-                                    Object grouping = JsonApiUtil.getObjectFromMap(groupingField, (Map) rowObj);
-                                    r.put(FormUtil.PROPERTY_GROUPING, (grouping != null)?grouping.toString():"");
-                                }
-                                options.add(r);
-                            }
-                        }
-                    } else {
-                        FormRow r = new FormRow();
-                        Object id = JsonApiUtil.getObjectFromMap(idField, (Map) temp);
-                        Object label = JsonApiUtil.getObjectFromMap(labelField, (Map) temp);
-                        if (id != null) {
-                            r.put(FormUtil.PROPERTY_VALUE, id.toString());
-                            r.put(FormUtil.PROPERTY_LABEL, (label != null) ? label.toString() : id.toString());
-                        }
-                        if (!groupingField.isEmpty()) {
-                            Object grouping = JsonApiUtil.getObjectFromMap(groupingField, (Map) temp);
-                            r.put(FormUtil.PROPERTY_GROUPING, (grouping != null) ? grouping.toString() : "");
-                        }
-                        options.add(r);
-                    }
+                if (data != null) {
+                    idField = idField.replace(multirowBaseObjectName + ".", "");
+                    labelField = labelField.replace(multirowBaseObjectName + ".", "");
+                    groupingField = groupingField.replace(multirowBaseObjectName + ".", "");
+                    name = multirowBaseObjectName;
                 }
+            }
+            
+            if (data != null) {
+                recursiveAddOptions(data, options, idField, null, labelField, null, groupingField, null, name);
             }
         }
         
         return options;
+    }
+    
+    /**
+     * Recursively loop through data tree to add options
+     * 
+     * @param data
+     * @param options
+     * @param idField
+     * @param idValue
+     * @param labelField
+     * @param labelValue
+     * @param groupingField
+     * @param groupingValue
+     * @param name 
+     */
+    public static void recursiveAddOptions(Object data, FormRowSet options, String idField, String idValue, String labelField, String labelValue, String groupingField, String groupingValue, String name) {
+        if (data != null) {
+            if (data.getClass().isArray()) { //Looping array object
+                Object[] array = (Object[]) data;
+                if (array.length > 0) {
+                    for (Object rowObj : array) {
+                        if (rowObj instanceof Map) { //it is an Object
+                            String cGroupingValue = tryRetrieveGroupingValue(rowObj, groupingField, groupingValue);
+
+                            recursiveAddOptions(rowObj, options, idField, idValue, labelField, labelValue, groupingField, cGroupingValue, null);
+                        } else {
+                            String value = rowObj.toString();
+                            recursiveAddOptions(rowObj, options, idField, value, labelField, value, groupingField, groupingValue, null);
+                        }
+                    }
+                }
+            } else if (data instanceof Map && name != null && name.contains("<>")) { //it is an object and there is <> syntax to loop it
+                //support looping object properties
+                Map mapData = (Map) data;
+                for (Object key : mapData.keySet()) {
+                    Object value = mapData.get(key);
+                    
+                    String cIdValue = idValue;
+                    String cLabelValue = labelValue;
+                    String cGroupingValue = groupingValue;
+                    if (cIdValue == null && "KEY".equals(idField)) {
+                        cIdValue = key.toString();
+                    }
+                    if (cLabelValue == null && "KEY".equals(labelField)) {
+                        cLabelValue = key.toString();
+                    }
+                    if (cGroupingValue == null && "KEY".equals(groupingField)) {
+                        cGroupingValue = key.toString();
+                    }
+                    if (cIdValue == null && "VALUE".equals(idField)) {
+                        cIdValue = value.toString();
+                    }
+                    if (cLabelValue == null && "VALUE".equals(labelField)) {
+                        cLabelValue = value.toString();
+                    }
+                    if (cGroupingValue == null && "VALUE".equals(groupingField)) {
+                        cGroupingValue = value.toString();
+                    }
+                    
+                    recursiveAddOptions(value, options, idField, cIdValue, labelField, cLabelValue, groupingField, cGroupingValue, null);
+                }
+            } else if (idField.contains("[].") || idField.contains("<>.")) {
+                //support nested looping array or object
+                
+                int index = idField.contains("[].")?idField.indexOf("[]."):idField.indexOf("<>.");
+                String baseName = idField.substring(0, index + 2);
+                
+                Object loopData = JsonApiUtil.getObjectFromMap(baseName, (Map) data);
+                
+                if (loopData != null) {
+                    String cGroupingValue = tryRetrieveGroupingValue(data, groupingField, groupingValue);
+                    
+                    idField = idField.replace(baseName + ".", "");
+                    labelField = labelField.replace(baseName + ".", "");
+                    groupingField = groupingField.replace(baseName + ".", "");
+                    
+                    recursiveAddOptions(loopData, options, idField, idValue, labelField, labelValue, groupingField, cGroupingValue, baseName);
+                }
+            } else if (idField.endsWith("[]")) { //the value & label is just array value
+                Object loopData = JsonApiUtil.getObjectFromMap(idField, (Map) data);
+                recursiveAddOptions(loopData, options, "", idValue, "", labelValue, groupingField, groupingValue, null);
+            } else {
+                //it is data
+                String cIdValue = idValue;
+                String cLabelValue = labelValue;
+                String cGroupingValue = groupingValue;
+                    
+                if (cIdValue == null) {
+                    Object id = JsonApiUtil.getObjectFromMap(idField, (Map) data);
+                    cIdValue = id != null?id.toString():cIdValue; 
+                }
+                if (cLabelValue == null) {
+                    Object label = JsonApiUtil.getObjectFromMap(labelField, (Map) data);
+                    cLabelValue = label != null?label.toString():cLabelValue; 
+                }
+                
+                if (cIdValue != null && cLabelValue != null) {
+                    FormRow r = new FormRow();
+                    r.put(FormUtil.PROPERTY_VALUE, cIdValue);
+                    r.put(FormUtil.PROPERTY_LABEL, cLabelValue);
+                    
+                    if (!groupingField.isEmpty() && cGroupingValue == null) {
+                        if (groupingField.contains("[]") || groupingField.contains("<>")) { //support grouping is an array or Object
+                            FormRowSet groupingValues = new FormRowSet();
+                            groupingValues.setMultiRow(true);
+                            
+                            recursiveAddOptions(data, groupingValues, groupingField, null, groupingField, null, "", null, null);
+                            
+                            if (!groupingValues.isEmpty()) {
+                                Collection<String> values = new ArrayList<String>();
+                                for (FormRow g : groupingValues) {
+                                    values.add(g.getProperty(FormUtil.PROPERTY_VALUE));
+                                }
+                                cGroupingValue = String.join(";", values);
+                            }
+                        } else {
+                            Object grouping = JsonApiUtil.getObjectFromMap(groupingField, (Map) data);
+                            
+                            if (data.getClass().isArray()) { //grouping is just an array
+                                Collection<String> values = new ArrayList<String>();
+                                Object[] array = (Object[]) data;
+                                if (array.length > 0) {
+                                    for (Object row : array) {
+                                        values.add(row.toString());
+                                    }
+                                    cGroupingValue = String.join(";", values);
+                                }
+                            } else {
+                                cGroupingValue = grouping != null?grouping.toString():cGroupingValue; 
+                            }
+                        }
+                    }
+                    
+                    if (cGroupingValue != null) {
+                        r.put(FormUtil.PROPERTY_GROUPING, cGroupingValue);
+                    }
+                    
+                    options.add(r);
+                }
+            }
+        }
+    }
+    
+    /**
+     * Try retrieve the grouping data if it is exist in parent object
+     * 
+     * @param rowObj
+     * @param groupingField
+     * @param groupingValue
+     * @return 
+     */
+    public static String tryRetrieveGroupingValue(Object rowObj, String groupingField, String groupingValue) {
+        String cGroupingValue = groupingValue;
+        //support getting grouping value from a parent level
+        if (rowObj instanceof Map 
+                && cGroupingValue == null && !groupingField.isEmpty() 
+                && !(groupingField.contains("[]") || groupingField.contains("<>"))) {
+            Object result = JsonApiUtil.getObjectFromMap(groupingField, (Map) rowObj);
+            if (result != null) {
+                cGroupingValue = result.toString();
+            }
+        }
+        return cGroupingValue;
     }
     
     @Override

@@ -276,7 +276,8 @@ input[type=tel],
 input[type=number],
 input[type=search], 
 select, 
-textarea {
+textarea,
+.ql-container.ql-bubble{
     display: block;
     width: 100%;
     height: calc(1.5em + 0.75rem + 2px);
@@ -288,6 +289,10 @@ textarea {
     border: 1px solid #ced4da;
     border-radius: 0.25rem;
     transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+}
+.ql-container.ql-bubble.focus{
+    outline: 1px auto;
+    outline-color: var(--theme-primary, var(--theme-color3, #007bff));
 }
 input[size]{
     width: auto !important;
@@ -1291,4 +1296,20 @@ body.rtl .form-container [class*=form-cell-value]{
 body.rtl .ui-html.ql-editor,
 body.rtl table:not(.ui-datepicker-calendar) * {
     text-align: right;
+}
+
+/* numeric field */
+.numeric_field_controls {display:inline-block; position:absolute;}
+.label-top .numeric_field_controls {right: 15px; bottom: 35px;}
+body.compact-mode .numeric_field_controls {top: -4px;}
+body.compact-mode .label-top .numeric_field_controls {top:auto; bottom: 32px;}
+body.rtl .label-top .numeric_field_controls {left: 15px; right: auto;}
+.numeric_field_control {position: absolute; top: 5px; right: 10px; font-size:10px; cursor: pointer;}
+.numeric_field_control img {width:12px; height:12px; max-width: fit-content; min-width: fit-content; max-height: fit-content; min-height: fit-content;}
+body.rtl .numeric_field_control {left:10px; right:auto;}
+.numeric_field_control.numeric_field_control_decr {top: 15px;} 
+@media (max-width: 768px) {
+    .numeric_field_controls {right: 15px; bottom: 35px;}
+    body.compact-mode .numeric_field_controls {top:auto; bottom: 32px;}
+    body.rtl .numeric_field_controls {left: 15px; right: auto;}
 }

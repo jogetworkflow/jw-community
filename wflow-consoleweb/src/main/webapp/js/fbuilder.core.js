@@ -9,6 +9,17 @@ FormBuilder = {
      */
     initBuilder: function (callback) {
         
+        //add button to edit form style
+        $("#noviewport-view").after('<button class="btn btn-light" id="formstyle-btn" type="button" title="'+get_cbuilder_msg('style.defaultStyles')+'"><i class="las la-palette"></i></button>');
+        $("#formstyle-btn").off("click");
+        $("#formstyle-btn").on("click", function(event){
+            if (!($("#design-btn").is(".active-view") || $("#treeviewer-btn").is(".active-view") || $("#xray-btn").is(".active-view"))) {
+                $("#design-btn").trigger("click");
+            }
+            FormBuilder.editDefaultStyle(event);
+            return false;
+        });
+        
         $("#i18n-btn").after('<button class="btn btn-light" title="'+get_advtool_msg('adv.tool.tooltip')+'" id="tooltip-btn" type="button" data-toggle="button" aria-pressed="false" data-cbuilder-view="tooltip" data-cbuilder-action="switchView" data-view-control><i class="lar la-question-circle"></i> </button>');
         $("#usages-btn").after('<button class="btn btn-light" title="'+get_advtool_msg('adv.tool.Table')+'" id="table-usage-btn" type="button" data-toggle="button" aria-pressed="false" data-cbuilder-view="tableUsage" data-cbuilder-action="switchView" data-view-control><i class="las la-table"></i> </button>');
         
@@ -132,17 +143,15 @@ FormBuilder = {
             component.builderTemplate.parentContainerAttr = "";
             component.builderTemplate.childsContainerAttr = "sections";
             component.builderTemplate.getStylePropertiesDefinition = function(elementObj, component) {
-                var selectedEl = CustomBuilder.Builder.selectedEl;
-                if ($(selectedEl).is(".form-section")) {
-                    return component.builderTemplate.sectionStylePropertiesDefinition;
-                }
+                return component.builderTemplate.sectionStylePropertiesDefinition;
             };
             component.builderTemplate.sectionStylePropertiesDefinition = $.extend(true, [], 
-                self.generateStylePropertiesDefinition("section", [
-                    {}, 
-                    {'prefix' : 'header', 'label' : get_cbuilder_msg('ubuilder.header')},
-                    {'prefix' : 'fieldLabel', 'label' : get_cbuilder_msg('fbuilder.fieldLabel')},
-                    {'prefix' : 'fieldInput', 'label' : get_cbuilder_msg('fbuilder.fieldInput')}
+                self.generateStylePropertiesDefinition("", [
+                    {'prefix' : '', 'label' : get_cbuilder_msg('fbuilder.form')},
+                    {'prefix' : 'section', 'label' : get_cbuilder_msg('fbuilder.section')}, 
+                    {'prefix' : 'section-header', 'label' : get_cbuilder_msg('fbuilder.sectionHeader')},
+                    {'prefix' : 'section-fieldLabel', 'label' : get_cbuilder_msg('fbuilder.fieldLabel')},
+                    {'prefix' : 'section-fieldInput', 'label' : get_cbuilder_msg('fbuilder.fieldInput')}
                 ]));
                 
             component.builderTemplate.sectionStylePropertiesDefinition.push({
@@ -339,18 +348,26 @@ FormBuilder = {
             
             $(box).find(".default-style-btn").off("click");
             $(box).find(".default-style-btn").on("click", function(event){
-                builder.boxActionSetElement(event);
-                
-                $("body").removeClass("no-right-panel");
-                $("#element-properties-tab-link").hide();
-                $("#right-panel #element-properties-tab").find(".property-editor-container").remove();
-                
-                builder.editStyles(CustomBuilder.data.properties, builder.frameBody.find("form"), CustomBuilder.data, builder.parseDataToComponent(CustomBuilder.data));
-                $("#style-properties-tab-link a").trigger("click");
-                
+                FormBuilder.editDefaultStyle(event);
                 return false;
             });
         }
+    },
+    
+    /*
+     * Show the property panel to edit default form style
+     */
+    editDefaultStyle: function(event) {
+        var builder = CustomBuilder.Builder;
+        
+        builder.boxActionSetElement(event);
+                
+        $("body").removeClass("no-right-panel");
+        $("#element-properties-tab-link").hide();
+        $("#right-panel #element-properties-tab").find(".property-editor-container").remove();
+
+        builder.editStyles(CustomBuilder.data.properties, builder.frameBody.find("form"), CustomBuilder.data, builder.parseDataToComponent(CustomBuilder.data));
+        $("#style-properties-tab-link a").trigger("click");
     },
     
     /*
@@ -1454,7 +1471,7 @@ FormBuilder = {
      * remove dynamically added items    
      */            
     unloadBuilder : function() {
-        $("#tooltip-btn, #table-usage-btn").remove();
+        $("#tooltip-btn, #table-usage-btn, #formstyle-btn").remove();
         $("#generator-btn").parent().remove();
         
         jsPlumb.unbind();
