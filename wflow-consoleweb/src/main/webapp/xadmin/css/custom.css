@@ -6016,3 +6016,6 @@ body.rtl .form fieldset.has-legend legend {
 body.rtl .ContainerComponent {
     text-align: right;
 }
+html.adminBarShown {
+    padding-bottom: 0px;
+}
