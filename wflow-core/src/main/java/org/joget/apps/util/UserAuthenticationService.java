@@ -87,12 +87,7 @@ public final class UserAuthenticationService {
         // Determine username
         String username = (authentication.getPrincipal() == null) ? "NONE_PROVIDED" : authentication.getName();
         String password = authentication.getCredentials().toString();
-
-        String ip = "";
         HttpServletRequest request = WorkflowUtil.getHttpServletRequest();
-        if (request != null) {
-            ip = AppUtil.getClientIp(request);
-        }
 
         // check credentials
         boolean validLogin = false;
