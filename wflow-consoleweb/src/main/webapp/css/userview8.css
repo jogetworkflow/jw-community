@@ -1998,8 +1998,7 @@ body.rtl .ContainerComponent {
         flex-wrap: nowrap;
     }
 }
-/*Priority Menu*/   
-
+/*Priority Menu*/
 /* dark mode & compact mode selector */
 [class*=-selection].dropdown .dropdown-menu li {
     cursor: default;

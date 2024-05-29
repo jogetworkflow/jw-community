@@ -1317,3 +1317,103 @@ body.rtl .form-cell > label.label,
 body.rtl .subform-cell > label.label{
     padding: 8px 0 0 10px;
 }
+.form-cell > label.label > i,
+.subform-cell > label.label > i,
+.label-left.form-cell > label.label > i,
+.label-left.subform-cell > label.label > i{
+    position: absolute;
+    background: #ccc;
+    box-sizing: border-box;
+    z-index: 1;
+    border-radius: 0.25rem 0 0 0.25rem;
+    width: 35px;
+    height: calc(1.5em + 0.75rem + 2px);
+    right: -35px;
+    top: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+body.rtl .form-cell > label.label > i,
+body.rtl .subform-cell > label.label > i{
+    border-radius: 0 0.25rem 0.25rem 0;
+    left: -35px;
+    right: unset;
+}
+select:focus-visible{
+    border: 2px solid var(--theme-primary, var(--theme-color3, #007bff));
+}
+.form-cell > label.label:has(+ input:focus-visible) > i,
+.suform-cell > label.label:has(+ input:focus-visible) > i,
+.form-cell > label.label:has(+ select:focus-visible) > i,
+.suform-cell > label.label:has(+ input:focus-visible) > i{
+    border-top-width: 2px;
+    border-bottom-width: 2px;
+    border-left-width: 2px;
+    border-top-style: solid;
+    border-bottom-style: solid;
+    border-left-style: solid;
+    border-top-color: var(--theme-primary, var(--theme-color3, #007bff));
+    border-bottom-color: var(--theme-primary, var(--theme-color3, #007bff));
+    border-left-color: var(--theme-primary, var(--theme-color3, #007bff));
+}
+body.rtl .form-cell > label.label:has(+ input:focus-visible) > i,
+body.rtl .suform-cell > label.label:has(+ input:focus-visible) > i,
+body.rtl .form-cell > label.label:has(+ select:focus-visible) > i,
+body.rtl .suform-cell > label.label:has(+ input:focus-visible) > i{
+    border-right-width: 2px;
+    border-left-width: 0px;
+    border-right-style: solid;
+    border-left-style: none;
+    border-right-color: var(--theme-primary, var(--theme-color3, #007bff));
+    border-left-color: unset;
+}
+.form-cell > label.label:has(i) + *:not(.ui-screen-hidden),
+.subform-cell > label.label:has(i) + *:not(.ui-screen-hidden),
+.form-cell > label.label:has(i) + .ui-screen-hidden + *,
+.subform-cell > label.label:has(i) + .ui-screen-hidden + *{
+    padding-left: 40px;
+}   
+body.rtl .form-cell > label.label:has(i) + *:not(.ui-screen-hidden),
+body.rtl .subform-cell > label.label:has(i) + *:not(.ui-screen-hidden),
+body.rtl .form-cell > label.label:has(i) + .ui-screen-hidden + *,
+body.rtl .subform-cell > label.label:has(i) + .ui-screen-hidden + *{
+    padding-right: 40px;
+    padding-left: 12px;
+}
+.label-top .form-cell:not(.label-left) > label.label > i,
+.label-top .subform-cell:not(.label-left) > label.label > i{
+   right: unset;
+   bottom: -35px;
+   top: unset;
+}
+body.rtl .label-top .form-cell:not(.label-left) > label.label > i,
+body.rtl .label-top .subform-cell:not(.label-left) > label.label > i{
+    left:unset;
+}
+@media (max-width: 768px){
+    .form-cell > label.label > i,
+    .subform-cell > label.label > i,
+    .label-left.form-cell > label.label > i,
+    .label-left.subform-cell > label.label > i{
+        bottom: -35px;
+        right: unset;
+        top: unset;
+    }
+    body.rtl .form-cell > label.label > i,
+    body.rtl .subform-cell > label.label > i{
+        bottom: -35px;
+        right: 0;
+        top: unset;
+    }
+}
+.label-top.form-cell > label.label > i,
+.label-top.subform-cell > label.label > i{
+    bottom: -35px;
+    right: unset;
+    top: unset;
+}
+body.rtl .label-top.form-cell > label.label > i,
+body.rtl .label-top.subform-cell > label.label > i{
+    left: unset;
+}

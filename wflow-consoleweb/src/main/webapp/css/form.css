@@ -843,3 +843,70 @@ body.rtl .numeric_field_control {left:10px; right:auto;}
     .numeric_field_controls {right: 0px; bottom: 50px; top:auto;}
     body.rtl .numeric_field_controls {left: 0px; right: auto;}
 }
+.form-cell > label.label > i,
+.subform-cell > label.label > i,
+.label-left.form-cell > label.label > i,
+.label-left.subform-cell > label.label > i{
+    position: absolute;
+    background: #ccc;
+    box-sizing: border-box;
+    z-index: 1;
+    width: 35px;
+    height: 30px;
+    right: -35px;
+    top: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+body.rtl .form-cell > label.label > i,
+body.rtl .subform-cell > label.label > i{
+    left: -35px;
+    right: unset;
+}
+.form-cell > label.label:has(i) + *:not(.ui-screen-hidden),
+.subform-cell > label.label:has(i) + *:not(.ui-screen-hidden),
+.form-cell > label.label:has(i) + .ui-screen-hidden + *,
+.subform-cell > label.label:has(i) + .ui-screen-hidden + *{
+    padding-left: 40px;
+}   
+body.rtl .form-cell > label.label:has(i) + *:not(.ui-screen-hidden),
+body.rtl .subform-cell > label.label:has(i) + *:not(.ui-screen-hidden),
+body.rtl .form-cell > label.label:has(i) + .ui-screen-hidden + *,
+body.rtl .subform-cell > label.label:has(i) + .ui-screen-hidden + *{
+    padding-right: 40px;
+    padding-left: 12px;
+}
+.label-top .form-cell:not(.label-left) > label.label > i,
+.label-top .subform-cell:not(.label-left) > label.label > i{
+   right: unset;
+   bottom: -35px;
+   top: unset;
+}
+body.rtl .label-top .form-cell:not(.label-left) > label.label > i,
+body.rtl .label-top .subform-cell:not(.label-left) > label.label > i{
+    left:unset;
+}
+.label-top.form-cell > label.label > i,
+.label-top.subform-cell > label.label > i{
+    bottom: -35px;
+    right: unset;
+    top: unset;
+}
+body.rtl .label-top.form-cell > label.label > i,
+body.rtl .label-top.subform-cell > label.label > i{
+    left: unset;
+}
+@media (max-width: 480px) {
+    .form-cell > label.label > i, .subform-cell > label.label > i, .label-left.form-cell > label.label > i, .label-left.subform-cell > label.label > i {
+        right: unset;
+        top: unset;
+        bottom: -35px;
+    }
+    body.rtl .form-cell > label.label > i,
+    body.rtl .subform-cell > label.label > i,
+    body.rtl .label-left.form-cell > label.label > i,
+    body.rtl .label-left.subform-cell > label.label > i{
+        left: unset;
+    }
+}
