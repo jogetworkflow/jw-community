@@ -979,3 +979,26 @@ body.rtl .form-edit-btn{
 @media (max-width: 480px) {
     .numeric_field_controls {bottom: 53px; top: auto;}
 }
+
+/* fields with top-aligned label */
+body #form-canvas .label-top .label {
+    text-align: left;
+}
+.label-top > .label + *:not(.ui-screen-hidden) {
+    max-width: 90%
+}
+
+/*
+ *  Higher specificity by targeting <form> and .form-cell class to overwrite the
+ *  "body.rtl #form-canvas .form-cell .label" CSS declaration from xadmin/css/custom.css
+ *  due to wro.xml including custom.css after this form.css
+ */
+body.rtl #form-canvas form.label-top .label,
+body.rtl #form-canvas .label-top.form-cell .label {
+    text-align: right;
+}
+
+/* targeting the misaligned form "save" buttons */
+.form-column-horizontal .form-cell, .form-column-horizontal .subform-cell {
+    float: none;
+}
