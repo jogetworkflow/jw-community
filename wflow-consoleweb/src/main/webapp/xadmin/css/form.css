@@ -944,6 +944,17 @@ body .handsontable input, .handsontable textarea{
     body #form-canvas .hasDatepicker{
         width: calc(100% - 42px);
     }
+    body.rtl #form-canvas div.form-cell .label {
+        text-align: right;
+    }
+    body.rtl #form-canvas .hasDatepicker + a {
+        left: 16px;
+        top: 32px;
+    }
+    body.rtl #form-canvas .hasDatepicker + a + a:after {
+        left: -22px;
+        top: 32px;
+    }
 }
 
 .form-edit-btn{
