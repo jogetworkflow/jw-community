@@ -122,6 +122,11 @@ body .subform-cell > .subform-container.has-frame, .form-cell > .subform-contain
     width: 100%;
     float: none !important;
 }
+/* For datepicker trigger and close field icons */
+.label-top .hasDatepicker + a, .label-top .hasDatepicker + a + a {
+    top: unset;
+    bottom: 7px;
+}
 .form-cell > label.label + *:not(.ui-screen-hidden),
 .subform-cell > label.label + *:not(.ui-screen-hidden),
 .form-cell > label.label + .ui-screen-hidden + *,
