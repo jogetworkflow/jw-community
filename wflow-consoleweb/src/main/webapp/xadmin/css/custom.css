@@ -5969,6 +5969,14 @@ body.rtl #form-canvas .subform-cell .label {
     padding-left: 15px;
 }
 
+@media (max-width: 480px) {
+    body.rtl .form .form-row > label,
+    body.rtl #form-canvas .form-cell .label,
+    body.rtl #form-canvas .subform-cell .label {
+        text-align: right;      
+    }
+}
+
 body.rtl .form .form-buttons {
     padding-left: 15px;
     padding-right: 170px;
