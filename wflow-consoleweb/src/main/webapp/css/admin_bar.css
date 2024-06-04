@@ -301,7 +301,7 @@ body.rtl #quickOverlayFrameDiv {
         display: none;
     }
 }
-@media screen and (max-width:680px) {
+@media screen and (max-width: 680px), (device-width: 1024px) and (device-height:600px) {
     #adminBar #appCenter i{
         font-size: 30px;
         padding: 4px 5px;
@@ -388,6 +388,14 @@ body.rtl #quickOverlayFrameDiv {
         html.adminBarShown body {
             padding-bottom: 45px;
         }
+    }
+}
+@media screen and (device-width:1024px) and (device-height:600px) {
+    #adminBar .analyzer-page {
+        margin: 12px 10px !important;
+    }
+    #adminBar #environmentName {
+        padding: 13px 60px !important;
     }
 }
 .quickEdit, #form-canvas .quickEdit {
@@ -558,6 +566,18 @@ body.fixiosframe.stop-scrolling {
     font-family: arial;
     line-height: 20px;
 }
+@media only screen and (max-width: 768px), (device-width: 1024px) and (device-height: 1366px) {
+    #adminBar #environmentName {
+        max-width: calc(100vw - 285px);
+        height: 45px;
+        padding: 0px 38px 0 6px;
+        font-size: 15px;
+        word-wrap: break-word;
+        line-height: 30px;
+        vertical-align: middle;
+        width: 150px;
+    }
+}
 body.rtl #adminBar #environmentName{
     right: unset;
     left:0;
@@ -615,10 +635,20 @@ body.rtl #adminBar.adminBarInactive #environmentName{
         height: calc(100% - 49px);
     }
     #adminBar #environmentName{
-        max-width: 75px;
+        max-width: calc(100vw - 285px);
         height: 45px;
-        padding: 0px;
-        color: #ff6100;
+        padding: 0px 38px 0 3px;
+        color: #fff;
+        font-size: 11px;
+        word-wrap: break-word;
+        line-height: 14px;
+        vertical-align: middle;
+    }
+    #adminBar #environmentName span{
+        display: block;
+        top: 50%;
+        position: relative;
+        transform: translateY(-50%);
     }
 }
 iframe.iframeloading {

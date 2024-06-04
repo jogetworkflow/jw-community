@@ -1,6 +1,8 @@
 <%@ include file="/WEB-INF/jsp/includes/taglibs.jsp" %>
+<%@ page import="org.joget.apps.workflow.security.EnhancedWorkflowUserManager"%>
 <%@ page import="org.joget.apps.app.service.AppDevUtil"%>
 <c:set var="isGitDisabled" value="<%= AppDevUtil.isGitDisabled() %>"/>
+<c:set var="isCustomAppAdmin" value="<%= EnhancedWorkflowUserManager.isAppAdminRole() %>"/>
 
 <c:set var="appDef" scope="request" value="${appDefinition}"/>
 <c:set var="builderLabel" scope="request"><fmt:message key="abuilder.title"/></c:set>
@@ -127,8 +129,9 @@
                 type : 'textfield'
             }
         ]
-    },
-    {
+    }
+    <c:if test="${!isCustomAppAdmin}">
+    ,{
         title: '<ui:msgEscJS key="console.app.dev.admin.settings"/>',
         properties : [
             {
@@ -155,6 +158,7 @@
             }
         ]
     }
+    </c:if>
     <c:if test="${!isGitDisabled}">
     ,{
         title: '<ui:msgEscJS key="console.app.dev.git.configuration"/>',

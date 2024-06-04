@@ -1,9 +1,9 @@
 package org.joget.apps.app.service;
 
+import bsh.EvalError;
 import bsh.Interpreter;
 import com.google.gson.Gson;
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
@@ -15,7 +15,6 @@ import org.apache.commons.collections4.map.LRUMap;
 import org.joget.apps.app.dao.PluginDefaultPropertiesDao;
 import org.joget.apps.app.lib.RulesDecisionPlugin;
 import org.joget.apps.app.model.AppDefinition;
-import org.joget.apps.app.model.PackageDefinition;
 import org.joget.apps.app.model.PluginDefaultProperties;
 import org.joget.commons.util.CsvUtil;
 import org.joget.commons.util.LogUtil;
@@ -26,9 +25,6 @@ import org.joget.plugin.base.PluginManager;
 import org.joget.plugin.property.model.PropertyEditable;
 import org.joget.plugin.property.service.PropertyUtil;
 import org.joget.workflow.model.WorkflowAssignment;
-import org.joget.workflow.model.WorkflowVariable;
-import org.joget.workflow.model.service.WorkflowManager;
-import org.joget.workflow.util.WorkflowUtil;
 import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
@@ -209,6 +205,15 @@ public class AppPluginUtil implements ApplicationContextAware {
     }
     
     public static Object executeScript(String script, Map properties) {
+        try {
+            return executeScript(script, properties, false);
+        } catch (Exception e) {
+            LogUtil.error(AppPluginUtil.class.getName(), e, "Error executing script");
+            return null;
+        }
+    }
+    
+    public static Object executeScript(String script, Map properties, boolean throwException) throws RuntimeException {
         Object result = null;
         try {
             Interpreter interpreter = new Interpreter();
@@ -219,10 +224,18 @@ public class AppPluginUtil implements ApplicationContextAware {
             LogUtil.debug(AppPluginUtil.class.getName(), "Executing script " + script);
             result = interpreter.eval(script);
             return result;
+        } catch (EvalError e) {
+            LogUtil.error(AppPluginUtil.class.getName(), e, "Error executing script, line number: " + e.getErrorLineNumber());
+            if (throwException) {
+                throw new RuntimeException("Error executing script");
+            }
         } catch (Exception e) {
             LogUtil.error(AppPluginUtil.class.getName(), e, "Error executing script");
-            return null;
+            if (throwException) {
+                throw new RuntimeException("Error executing script");
+            }
         }
+        return null;
     }
     
     // least recently used (LRU) cache to hold generated styles

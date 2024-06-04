@@ -188,6 +188,10 @@
     <group name="darkTheme">
         <css>/css/darkTheme.css</css>
         <js>/js/darkTheme.js</js>
+    </group>
+    <group name="compactTheme">
+        <css>/css/compactTheme.css</css>
+        <js>/js/compactTheme.js</js>
     </group> 
     <group name="dx8ColorAdmin.min">
         <css>classpath:resources/css/dx8ColorAdminTheme.css</css>

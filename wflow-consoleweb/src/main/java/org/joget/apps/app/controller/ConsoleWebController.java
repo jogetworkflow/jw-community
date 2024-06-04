@@ -3813,8 +3813,8 @@ public class ConsoleWebController {
         }
     }
     
-    @RequestMapping("/json/console/app/builders/overviewTools")
-    public void consoleBuilderOverviewTools(Writer writer, @RequestParam(value = "callback", required = false) String callback) throws IOException, JSONException {
+    @RequestMapping("/json/console/app/(*:appId)/(~:version)/builders/overviewTools")
+    public void consoleBuilderOverviewTools(Writer writer, @RequestParam String appId, @RequestParam(required = false) String version, @RequestParam(value = "callback", required = false) String callback) throws IOException, JSONException {
         Map<String, AppOverviewTool> tools = AppOverviewUtil.getTools();
         
         JSONArray jsonArr = new JSONArray();
@@ -4624,6 +4624,8 @@ public class ConsoleWebController {
 
     @RequestMapping(value = "/console/setting/general/submit", method = RequestMethod.POST)
     public String consoleSettingGeneralSubmit(HttpServletRequest request, ModelMap map) {
+        boolean localeChanged = false;
+        
         List<String> settingsIsNotNull = new ArrayList<String>();
 
         List<String> booleanSettingsList = new ArrayList<String>();
@@ -4672,6 +4674,12 @@ public class ConsoleWebController {
                     setting.setValue(SecurityUtil.encrypt(paramValue));
                 }
             } else {
+                
+                //check for locale changes
+                if ("systemLocale".equals(paramName) && !paramValue.equals(setting.getValue())) {
+                    localeChanged = true;
+                }
+                
                 setting.setValue(paramValue);
             }
             
@@ -4701,7 +4709,12 @@ public class ConsoleWebController {
 
         //clear all caches & update the settings
         setupManager.clearCache();
-        ((LocalLocaleResolver) localeResolver).reset(request);
+        
+        //only reset the locale when setting changed
+        if (localeChanged) {
+            ((LocalLocaleResolver) localeResolver).reset(request);
+        }
+        
         if (refreshPlugins) {
             pluginManager.refresh();
         } else {

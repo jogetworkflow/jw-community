@@ -7,6 +7,7 @@
         <property column="ActivityId" name="ActivityId" type="string"/>
         <property column="ActivityProcessDefName" name="ActivityProcessDefName" type="string"/>
         <property column="ActivityProcessId" name="ActivityProcessId" type="string"/>
+        <property column="IsValid" name="IsValid" type="boolean"/>
         
         <many-to-one entity-name="WorkflowProcessLink" not-found="ignore" insert="false" fetch="join" lazy="no-proxy" update="false" name="link" column="ActivityProcessId"/>
     </class>

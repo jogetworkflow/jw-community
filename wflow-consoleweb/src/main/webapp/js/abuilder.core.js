@@ -72,7 +72,7 @@ AppBuilder = {
         
         CustomBuilder.cachedAjax({
             type: "POST",
-            url: CustomBuilder.contextPath + '/web/json/console/app/builders/overviewTools',
+            url: CustomBuilder.contextPath + '/web/json/console/app'+CustomBuilder.appPath+'/builders/overviewTools',
             dataType : "json",
             beforeSend: function (request) {
                request.setRequestHeader(ConnectionManager.tokenName, ConnectionManager.tokenValue);

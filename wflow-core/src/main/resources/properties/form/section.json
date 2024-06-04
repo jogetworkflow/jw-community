@@ -66,43 +66,8 @@
             {
                 name : 'rules',
                 label : '@@form.section.visibilityRules@@',
-                type : 'gridCombine',
-                columns : [{
-                    key : 'join',
-                    label : '@@form.section.join@@',
-                    options : [
-                        {value : '', label : '@@form.section.join.and@@'},
-                        {value : 'or', label : '@@form.section.join.or@@'}
-                    ]
-                },
-                {
-                    key : 'reverse',
-                    label : '@@form.section.reverse@@',
-                    type : 'truefalse',
-                    false_value: ''
-                },
-                {
-                    key : 'visibilityControl',
-                    label : '@@form.section.fieldIdControl@@',
-                    options_extra : [
-                        {value : '', label : ''},
-                        {value : '(', label : '('},
-                        {value : ')', label : ')'}
-                    ],
-                    type : 'autocomplete',
-                    options_callback : 'FormBuilder.getFieldOptions',
-                    required: 'true'
-                },
-                {
-                    key : 'visibilityValue',
-                    label : '@@form.section.fieldValueControl@@'
-                },
-                {
-                    key : 'regex',
-                    label : '@@form.section.regex@@',
-                    type : 'truefalse',
-                    false_value: ''
-                }],
+                type : custom,
+                script_url : '[CONTEXT_PATH]/web/json/app[APP_PATH]/plugin/org.joget.apps.form.model.Section/service',
                 developer_mode : 'advanced'
             },
             {

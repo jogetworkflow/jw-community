@@ -123,6 +123,16 @@
         }]
     },
     {
+        "name" : "handleFilters",
+        "label" : "@@datalist.jsonapibinder.autoHandleFilters@@",
+        "type" : "checkbox",
+        "value" : "true",       
+        "options" : [{
+            "value" : "true",
+            "label" : ""
+        }]
+    },
+    {
         "name" : "debugMode",
         "label" : "@@app.jsontool.debugMode@@",
         "description" : "@@app.jsontool.debugMode.desc@@",
@@ -137,5 +147,15 @@
         "label":"@@app.jsontool.sampleResponse@@",
         "type" : "codeeditor",
         "mode"   : "json"
+    },
+    {
+        "name" : "joinObjectKeysAndValues",
+        "label" : "@@datalist.jsonapibinder.joinObjectKeysAndValues@@",
+        "description" : "@@datalist.jsonapibinder.joinObjectKeysAndValues.desc@@",
+        "type" : "checkbox",
+        "options" : [{
+            "value" : "true",
+            "label" : ""
+        }]
     }]
 }]

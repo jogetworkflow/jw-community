@@ -17,6 +17,7 @@ import org.joget.apps.form.model.FormData;
 import org.joget.apps.form.model.FormRowSet;
 import org.joget.apps.form.service.FormService;
 import org.joget.apps.form.service.FormUtil;
+import org.joget.commons.util.SetupManager;
 
 public class TestUtil {
     
@@ -121,6 +122,18 @@ public class TestUtil {
         if (src.exists()) {
             try {
                 FileUtils.deleteDirectory(src);
+            } catch (Exception e) {}
+        }
+    }
+    
+    /**
+     * Removed all created mapping file
+     */
+    public static void cleanFormMappingFile() {
+        File dir = new File(SetupManager.getBaseDirectory() + "app_forms");
+        if (dir.exists()) {
+            try {
+                FileUtils.deleteDirectory(dir);
             } catch (Exception e) {}
         }
     }

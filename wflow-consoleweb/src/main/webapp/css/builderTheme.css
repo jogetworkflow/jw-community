@@ -2950,6 +2950,15 @@ body[builder-theme='dark'] .item_usages_container .no_usage h3 {
 body[builder-theme='dark'] #builder-menu-search input::placeholder{
     color: #ccc;
 }
+body[builder-theme='dark'] .grid_sorting_field {
+    background-color: var(--theme-primary-color-1);
+    border-color: var(--theme-border-color-1);
+}
+body[builder-theme='dark'] .sortingTable{
+    background-color: var(--theme-primary-color-3);
+    border-color: var(--theme-border-color-1);
+    color: var(--theme-label-color-1);
+}
 body[builder-theme] .nv-tags label {
     color: var(--theme-label-color-2);
 }
