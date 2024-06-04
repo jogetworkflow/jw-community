@@ -8653,7 +8653,7 @@
 
         var interpret = function (val) { return typeof val == "number" || /^\d+$/.test(String(val)) ? val + "px" : val; };
         if (width != null) { this.display.wrapper.style.width = interpret(width); }
-        if (height != null) { this.display.wrapper.style.height = interpret(height); }
+        if (height != null) { this.display.wrapper.style.height = "auto";} 
         if (this.options.lineWrapping) { clearLineMeasurementCache(this); }
         var lineNo = this.display.viewFrom;
         this.doc.iter(lineNo, this.display.viewTo, function (line) {

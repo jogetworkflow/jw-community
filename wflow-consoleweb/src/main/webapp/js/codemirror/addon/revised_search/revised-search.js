@@ -1,61 +1,29 @@
+"use strict";
+
+var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
+
 // CodeMirror, copyright (c) by Marijn Haverbeke and others
 // Distributed under an MIT license: http://codemirror.net/LICENSE
 
 // Revised search plugin written by Jamie Morris
 // Define search commands. Depends on advanceddialog.js
-((mod) => {
-  if (typeof exports == "object" && typeof module == "object") // CommonJS
-    mod(require("codemirror"), require("codemirror-advanceddialog"));
-  else if (typeof define == "function" && define.amd) // AMD
-    define(["codemirror", "codemirror-advanceddialog"], mod);
-  else // Plain browser env
+(function (mod) {
+  if ((typeof exports === "undefined" ? "undefined" : _typeof(exports)) == "object" && (typeof module === "undefined" ? "undefined" : _typeof(module)) == "object") // CommonJS
+    mod(require("codemirror"), require("codemirror-advanceddialog"));else if (typeof define == "function" && define.amd) // AMD
+    define(["codemirror", "codemirror-advanceddialog"], mod);else // Plain browser env
     mod(CodeMirror);
-})((CodeMirror) => {
+})(function (CodeMirror) {
   "use strict";
 
-  var replaceDialog = `
-    <div class="row find">
-      <label for="CodeMirror-find-field">Replace:</label>
-      <input id="CodeMirror-find-field" type="text" class="CodeMirror-search-field" placeholder="Find" />
-      <span class="CodeMirror-search-hint">(Use /re/ syntax for regexp search)</span>
-      <span class="CodeMirror-search-count"></span>
-    </div>
-    <div class="row replace">
-      <label for="CodeMirror-replace-field">With:</label>
-      <input id="CodeMirror-replace-field" type="text" class="CodeMirror-search-field" placeholder="Replace" />
-    </div>
-    <div class="buttons">
-      <button>Find Previous</button>
-      <button>Find Next</button>
-      <button>Replace</button>
-      <button>Replace All</button>
-      <button>Close</button>
-    </div>
-  `;
+  var replaceDialog = "\n    <div class=\"row find\">\n    <div class=\"replace-box\"> <input id=\"CodeMirror-find-field\" type=\"text\" class=\"CodeMirror-search-field\" placeholder=\"Find\" />\n      <span class=\"CodeMirror-search-count\"></span>\n        <div class=\"row replace\">\n      <label for=\"CodeMirror-replace-field\">With:</label>\n      <input id=\"CodeMirror-replace-field\" type=\"text\" class=\"CodeMirror-search-field\" placeholder=\"Replace\" />\n    </div>\n  <span class=\"CodeMirror-search-hint\">(Use /re/ syntax for regexp search)</span>\n </div>\n </div>\n   <div class=\"buttons-replace\">\n      <button type=\"button\" class=\"btn btn-outline-secondary border-0\"><i class=\"fas fa-arrow-up\"></i></button>\n      <button type=\"button\" class=\"btn btn-outline-secondary border-0\"><i class=\"fas fa-arrow-down\"></i></button>\n     <button type=\"button\" class=\"btn btn-outline-secondary border-0\">Replace</button>\n      <button type=\"button\" class=\"btn btn-outline-secondary border-0\">Replace All</button>\n      <button type=\"button\" class=\"btn btn-outline-secondary border-0\"><i class=\"zmdi zmdi-close\"></i></button>\n    </div>\n  ";
+  var findDialog = "\n    <div class=\"row find\">\n     <div class=\"search-box\"> <input id=\"CodeMirror-find-field\" type=\"text\" class=\"CodeMirror-search-field\" placeholder=\"Find\" />\n  <span class=\"CodeMirror-search-count\"></span>\n </div>    <span class=\"CodeMirror-search-hint\">(Use /re/ syntax for regexp search)</span>\n     </div>\n    <div class=\"buttons\">\n      <button type=\"button\" class=\"btn btn-outline-secondary border-0\"><i class=\"fas fa-arrow-up\"></i></button>\n      <button type=\"button\" class=\"btn btn-outline-secondary border-0\"><i class=\"fas fa-arrow-down\"></i></button>\n      <button type=\"button\" class=\"btn btn-outline-secondary border-0\"><i class=\"zmdi zmdi-close\"></i></button>\n    </div>\n" ;
 
-  var findDialog = `
-    <div class="row find">
-      <label for="CodeMirror-find-field">Find:</label>
-      <input id="CodeMirror-find-field" type="text" class="CodeMirror-search-field" placeholder="Find" />
-      <span class="CodeMirror-search-hint">(Use /re/ syntax for regexp search)</span>
-      <span class="CodeMirror-search-count"></span>
-    </div>
-    <div class="buttons">
-      <button>Find Previous</button>
-      <button>Find Next</button>
-      <button>Close</button>
-    </div>
-  `;
-
-  let numMatches = 0;
-  let searchOverlay = (query, caseInsensitive) => {
-    if (typeof query == "string")
-      query = new RegExp(query.replace(/[\-\[\]\/\{\}\(\)\*\+\?\.\\\^\$\|]/g, "\\$&"), caseInsensitive ? "gi" : "g");
-    else if (!query.global)
-      query = new RegExp(query.source, query.ignoreCase ? "gi" : "g");
+  var numMatches = 0;
+  var searchOverlay = function searchOverlay(query, caseInsensitive) {
+    if (typeof query == "string") query = new RegExp(query.replace(/[\-\[\]\/\{\}\(\)\*\+\?\.\\\^\$\|]/g, "\\$&"), caseInsensitive ? "gi" : "g");else if (!query.global) query = new RegExp(query.source, query.ignoreCase ? "gi" : "g");
 
     return {
-      token: (stream) => {
+      token: function token(stream) {
         query.lastIndex = stream.pos;
         var match = query.exec(stream.string);
         if (match && match.index == stream.pos) {
@@ -68,53 +36,52 @@
         }
       }
     };
-  }
+  };
 
   function SearchState() {
     this.posFrom = this.posTo = this.lastQuery = this.query = null;
     this.overlay = null;
   }
 
-  let getSearchState = (cm) => {
+  var getSearchState = function getSearchState(cm) {
     return cm.state.search || (cm.state.search = new SearchState());
-  }
+  };
 
-  let queryCaseInsensitive = (query) => {
+  var queryCaseInsensitive = function queryCaseInsensitive(query) {
     return typeof query == "string" && query == query.toLowerCase();
-  }
+  };
 
-  let getSearchCursor = (cm, query, pos) => {
+  var getSearchCursor = function getSearchCursor(cm, query, pos) {
     // Heuristic: if the query string is all lowercase, do a case insensitive search.
     return cm.getSearchCursor(parseQuery(query), pos, queryCaseInsensitive(query));
-  }
+  };
 
-  let parseString = (string) => {
-    return string.replace(/\\(.)/g, (_, ch) => {
-      if (ch == "n") return "\n"
-      if (ch == "r") return "\r"
-      return ch
-    })
-  }
+  var parseString = function parseString(string) {
+    return string.replace(/\\(.)/g, function (_, ch) {
+      if (ch == "n") return "\n";
+      if (ch == "r") return "\r";
+      return ch;
+    });
+  };
 
-  let parseQuery = (query) => {
+  var parseQuery = function parseQuery(query) {
     if (query.exec) {
       return query;
     }
     var isRE = query.indexOf('/') === 0 && query.lastIndexOf('/') > 0;
     if (!!isRE) {
       try {
-        let matches = query.match(/^\/(.*)\/([a-z]*)$/);
+        var matches = query.match(/^\/(.*)\/([a-z]*)$/);
         query = new RegExp(matches[1], matches[2].indexOf("i") == -1 ? "" : "i");
       } catch (e) {} // Not a regular expression after all, do a string search
     } else {
       query = parseString(query);
     }
-    if (typeof query == "string" ? query == "" : query.test(""))
-      query = /x^/;
+    if (typeof query == "string" ? query == "" : query.test("")) query = /x^/;
     return query;
-  }
+  };
 
-  let startSearch = (cm, state, query) => {
+  var startSearch = function startSearch(cm, state, query) {
     if (!query || query === '') return;
     state.queryText = query;
     state.query = parseQuery(query);
@@ -128,9 +95,9 @@
       }
       state.annotate = cm.showMatchesOnScrollbar(state.query, queryCaseInsensitive(state.query));
     }
-  }
+  };
 
-  let doSearch = (cm, query, reverse, moveToNext) => {
+  var doSearch = function doSearch(cm, query, reverse, moveToNext) {
     var hiding = null;
     var state = getSearchState(cm);
     if (query != state.queryText) {
@@ -138,13 +105,13 @@
       state.posFrom = state.posTo = cm.getCursor();
     }
     if (moveToNext || moveToNext === undefined) {
-      findNext(cm, (reverse || false));
+      findNext(cm, reverse || false);
     }
     updateCount(cm);
-  }
+  };
 
-  let clearSearch = (cm) => {
-    cm.operation(() => {
+  var clearSearch = function clearSearch(cm) {  
+    cm.operation(function () {
       var state = getSearchState(cm);
       state.lastQuery = state.query;
       if (!state.query) return;
@@ -155,10 +122,10 @@
         state.annotate = null;
       }
     });
-  }
+  };
 
-  let findNext = (cm, reverse, callback) => {
-    cm.operation(() => {
+  var findNext = function findNext(cm, reverse, callback) {
+    cm.operation(function () {
       var state = getSearchState(cm);
       var cursor = getSearchCursor(cm, state.query, reverse ? state.posFrom : state.posTo);
       if (!cursor.find(reverse)) {
@@ -172,67 +139,65 @@
       }, 20);
       state.posFrom = cursor.from();
       state.posTo = cursor.to();
-      if (callback) callback(cursor.from(), cursor.to())
+      if (callback) callback(cursor.from(), cursor.to());
     });
-  }
+  };
 
-  let replaceNext = (cm, query, text) => {
-    let cursor = getSearchCursor(cm, query, cm.getCursor('from'));
-    let start = cursor.from();
-    let match = cursor.findNext();
+  var replaceNext = function replaceNext(cm, query, text) {
+    var cursor = getSearchCursor(cm, query, cm.getCursor('from'));
+    var start = cursor.from();
+    var match = cursor.findNext();
     if (!match) {
       cursor = getSearchCursor(cm, query);
       match = cursor.findNext();
-      if (!match ||
-        (start && cursor.from().line === start.line && cursor.from().ch === start.ch)) return;
+      if (!match || start && cursor.from().line === start.line && cursor.from().ch === start.ch) return;
     }
     cm.setSelection(cursor.from(), cursor.to());
     cm.scrollIntoView({
       from: cursor.from(),
       to: cursor.to()
     });
-    cursor.replace(typeof query === 'string' ? text :
-      text.replace(/\$(\d)/g, (_, i) => {
-        return match[i];
-      }));
-  }
+    cursor.replace(typeof query === 'string' ? text : text.replace(/\$(\d)/g, function (_, i) {
+      return match[i];
+    }));
+  };
 
-  let replaceAll = (cm, query, text) => {
-    cm.operation(() => {
+  var replaceAll = function replaceAll(cm, query, text) {
+    cm.operation(function () {
       for (var cursor = getSearchCursor(cm, query); cursor.findNext();) {
         if (typeof query != "string") {
           var match = cm.getRange(cursor.from(), cursor.to()).match(query);
-          cursor.replace(text.replace(/\$(\d)/g, (_, i) => {
+          cursor.replace(text.replace(/\$(\d)/g, function (_, i) {
             return match[i];
           }));
         } else cursor.replace(text);
       }
     });
-  }
+  };
 
-  let closeSearchCallback = (cm, state) => {
+  var closeSearchCallback = function closeSearchCallback(cm, state) {
     if (state.annotate) {
       state.annotate.clear();
       state.annotate = null;
     }
     clearSearch(cm);
-  }
+  };
 
-  let getOnReadOnlyCallback = (callback) => {
-    let closeFindDialogOnReadOnly = (cm, opt) => {
+  var getOnReadOnlyCallback = function getOnReadOnlyCallback(callback) {
+    var closeFindDialogOnReadOnly = function closeFindDialogOnReadOnly(cm, opt) {
       if (opt === 'readOnly' && !!cm.getOption('readOnly')) {
         callback();
         cm.off('optionChange', closeFindDialogOnReadOnly);
       }
-    }
+    };
     return closeFindDialogOnReadOnly;
   };
 
-  let updateCount = (cm) => {
-    let state = getSearchState(cm);
-    let value = cm.getDoc().getValue();
-    let globalQuery;
-    let queryText = state.queryText;
+  var updateCount = function updateCount(cm) {
+    var state = getSearchState(cm);
+    var value = cm.getDoc().getValue();
+    var globalQuery = void 0;
+    var queryText = state.queryText;
 
     if (!queryText || queryText === '') {
       resetCount(cm);
@@ -249,34 +214,34 @@
       globalQuery = new RegExp(state.query.source, state.query.flags + 'g');
     }
 
-    let matches = value.match(globalQuery);
-    let count = matches ? matches.length : 0;
+    var matches = value.match(globalQuery);
+    var count = matches ? matches.length : 0;
 
-    let countText = count === 1 ? '1 match found.' : count + ' matches found.';
+    var countText = count === 1 ? '1 match found.' : count + ' matches found.';
     cm.getWrapperElement().parentNode.querySelector('.CodeMirror-search-count').innerHTML = countText;
-  }
+  };
 
-  let resetCount = (cm) => {
+  var resetCount = function resetCount(cm) {
     cm.getWrapperElement().parentNode.querySelector('.CodeMirror-search-count').innerHTML = '';
-  }
+  };
 
-  let getFindBehaviour = (cm, defaultText, callback) => {
+  var getFindBehaviour = function getFindBehaviour(cm, defaultText, callback) {
     if (!defaultText) {
       defaultText = '';
     }
-    let behaviour = {
+    var behaviour = {
       value: defaultText,
       focus: true,
       selectValueOnOpen: true,
       closeOnEnter: false,
       closeOnBlur: false,
-      callback: (inputs, e) => {
-        let query = inputs[0].value;
+      callback: function callback(inputs, e) {
+        var query = inputs[0].value;
         if (!query) return;
         doSearch(cm, query, !!e.shiftKey);
       },
-      onInput: (inputs, e) => {
-        let query = inputs[0].value;
+      onInput: function onInput(inputs, e) {
+        var query = inputs[0].value;
         if (!query) {
           resetCount(cm);
           clearSearch(cm);
@@ -289,48 +254,42 @@
       behaviour.callback = callback;
     }
     return behaviour;
-  }
+  };
 
-  let getFindPrevBtnBehaviour = (cm) => {
+  var getFindPrevBtnBehaviour = function getFindPrevBtnBehaviour(cm) {
     return {
-      callback: (inputs) => {
-        let query = inputs[0].value;
+      callback: function callback(inputs) {
+        var query = inputs[0].value;
         if (!query) return;
         doSearch(cm, query, true);
       }
-    }
+    };
   };
 
-  let getFindNextBtnBehaviour = (cm) => {
+  var getFindNextBtnBehaviour = function getFindNextBtnBehaviour(cm) {
     return {
-      callback: (inputs) => {
-        let query = inputs[0].value;
+      callback: function callback(inputs) {
+        var query = inputs[0].value;
         if (!query) return;
         doSearch(cm, query, false);
       }
-    }
+    };
   };
 
-  let closeBtnBehaviour = {
+  var closeBtnBehaviour = {
     callback: null
   };
 
-  CodeMirror.commands.find = (cm) => {
+  CodeMirror.commands.find = function (cm) {
     if (cm.getOption("readOnly")) return;
     clearSearch(cm);
-    let state = getSearchState(cm);
+    var state = getSearchState(cm);
     var query = cm.getSelection() || getSearchState(cm).lastQuery;
-    let closeDialog = cm.openAdvancedDialog(findDialog, {
+    var closeDialog = cm.openAdvancedDialog(findDialog, {
       shrinkEditor: true,
-      inputBehaviours: [
-        getFindBehaviour(cm, query)
-      ],
-      buttonBehaviours: [
-        getFindPrevBtnBehaviour(cm),
-        getFindNextBtnBehaviour(cm),
-        closeBtnBehaviour
-      ],
-      onClose: () => {
+      inputBehaviours: [getFindBehaviour(cm, query)],
+      buttonBehaviours: [getFindPrevBtnBehaviour(cm), getFindNextBtnBehaviour(cm), closeBtnBehaviour],
+      onClose: function onClose() {
         closeSearchCallback(cm, state);
       }
     });
@@ -340,51 +299,42 @@
     updateCount(cm);
   };
 
-  CodeMirror.commands.replace = (cm, all) => {
+  CodeMirror.commands.replace = function (cm, all) {
     if (cm.getOption("readOnly")) return;
     clearSearch(cm);
 
-    let replaceNextCallback = (inputs) => {
-      let query = parseQuery(inputs[0].value);
-      let text = parseString(inputs[1].value);
+    var replaceNextCallback = function replaceNextCallback(inputs) {
+      var query = parseQuery(inputs[0].value);
+      var text = parseString(inputs[1].value);
       if (!query) return;
       replaceNext(cm, query, text);
       doSearch(cm, query);
     };
 
-    let state = getSearchState(cm);
-    let query = cm.getSelection() || state.lastQuery;
-    let closeDialog = cm.openAdvancedDialog(replaceDialog, {
+    var state = getSearchState(cm);
+    var query = cm.getSelection() || state.lastQuery;
+    var closeDialog = cm.openAdvancedDialog(replaceDialog, {
       shrinkEditor: true,
-      inputBehaviours: [
-        getFindBehaviour(cm, query, (inputs) => {
-          inputs[1].focus();
-          inputs[1].select();
-        }),
-        {
-          closeOnEnter: false,
-          closeOnBlur: false,
-          callback: replaceNextCallback
+      inputBehaviours: [getFindBehaviour(cm, query, function (inputs) {
+        inputs[1].focus();
+        inputs[1].select();
+      }), {
+        closeOnEnter: false,
+        closeOnBlur: false,
+        callback: replaceNextCallback
+      }],
+      buttonBehaviours: [getFindPrevBtnBehaviour(cm), getFindNextBtnBehaviour(cm), {
+        callback: replaceNextCallback
+      }, {
+        callback: function callback(inputs) {
+          // Replace all
+          var query = parseQuery(inputs[0].value);
+          var text = parseString(inputs[1].value);
+          if (!query) return;
+          replaceAll(cm, query, text);
         }
-      ],
-      buttonBehaviours: [
-        getFindPrevBtnBehaviour(cm),
-        getFindNextBtnBehaviour(cm),
-        {
-          callback: replaceNextCallback
-        },
-        {
-          callback: (inputs) => {
-            // Replace all
-            let query = parseQuery(inputs[0].value);
-            let text = parseString(inputs[1].value);
-            if (!query) return;
-            replaceAll(cm, query, text);
-          }
-        },
-        closeBtnBehaviour
-      ],
-      onClose: () => {
+      }, closeBtnBehaviour],
+      onClose: function onClose() {
         closeSearchCallback(cm, state);
       }
     });
@@ -394,3 +344,4 @@
     updateCount(cm);
   };
 });
+
