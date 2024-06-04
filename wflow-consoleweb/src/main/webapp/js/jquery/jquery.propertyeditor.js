@@ -8920,67 +8920,7 @@ PropertyEditor.Type.CodeEditor.prototype = {
         return data;
     },
     renderField: function() {
-        return '<pre id="' + this.id + '" name="' + this.id + '" class="ace_editor"></pre>';
-    },
-    initScripting: function() {
-        var thisObj = this;
-        if (this.value === null) {
-            this.value = "";
-        }
-        ace.config.set('loadWorkerFromBlob', false);
-        this.codeeditor = ace.edit(this.id);
-        this.codeeditor.setValue(this.value);
-        this.codeeditor.getSession().setTabSize(4);
-        if (this.properties.theme !== undefined || this.properties.theme !== "") {
-            if ($('body').attr('builder-theme') === "dark") {
-                this.properties.theme = "vibrant_ink";
-            } else {
-                this.properties.theme = "textmate";
-            }
-        }
-        this.codeeditor.setTheme("ace/theme/" + this.properties.theme);
-        if (this.properties.mode !== undefined && this.properties.mode !== "") {
-            this.codeeditor.getSession().setMode("ace/mode/" + this.properties.mode);
-        }
-        if (this.properties.check_syntax !== undefined && this.properties.check_syntax.toLowerCase() === "false") {
-            this.codeeditor.getSession().setUseWorker(false);
-        }
-        this.codeeditor.getSession().on('change', function() {
-            $(thisObj.editor).find("#"+thisObj.id).trigger("change");
-        });
-        this.codeeditor.setAutoScrollEditorIntoView(true);
-        this.codeeditor.setOption("maxLines", 1000000); //unlimited, to fix the height issue
-        this.codeeditor.setOption("minLines", 10);
-        this.codeeditor.resize();
-        $(thisObj.editor).find("#"+thisObj.id).trigger("change");
-    },
-    pageShown: function() {
-        this.codeeditor.resize();
-        this.codeeditor.gotoLine(1);
-    }
-};
-PropertyEditor.Type.CodeEditor = PropertyEditor.Util.inherit(PropertyEditor.Model.Type, PropertyEditor.Type.CodeEditor.prototype);
-
-PropertyEditor.Type.CodeMirror = function() {};
-PropertyEditor.Type.CodeMirror.prototype = {
-    codemirror: null,
-    shortname: "codemirror",
-    getData: function(useDefault) {
-        var data = new Object();
-        if (!this.isHidden()) {
-            var value = this.codemirror.getValue();
-            if (value === undefined || value === null || value === "") {
-                if (useDefault !== undefined && useDefault &&
-                    this.defaultValue !== undefined && this.defaultValue !== null) {
-                    value = this.defaultValue;
-                }
-            }
-            data[this.properties.name] = value;
-        }
-        return data;
-    },
-    renderField: function() {
-        return '<div style="border:1px solid silver;" id="' + this.id + '" name="' + this.id + '" class="code-editor"></div>';
+        return '<div id="' + this.id + '" name="' + this.id + '" class="code-editor"></div>';
     },
     initScripting: function() {
         var thisObj = this;
@@ -8988,7 +8928,7 @@ PropertyEditor.Type.CodeMirror.prototype = {
             this.value = "";
         }
         
-        this.codemirror = CodeMirror(document.getElementById(this.id), {
+        this.codeeditor = CodeMirror(document.getElementById(this.id), {
             lineNumbers: true,
             mode: "text",
             matchBrackets: true,
@@ -9003,7 +8943,16 @@ PropertyEditor.Type.CodeMirror.prototype = {
             highlightSelectionMatches: {annotateScrollbar: true, minChars: 1},
             extraKeys: {
                 "Ctrl-F": function(cm) {
-                  cm.execCommand("findPersistent");
+                  height = cm.display.lastWrapHeight;
+                  cm.execCommand("find");
+                  resetHeight();
+                  if (thisObj.codeeditor.getOption("fullScreen")){
+                    $('#' + thisObj.id).find(".CodeMirror-advanced-dialog").css({"position":"fixed", "z-index":"1001", "top": "0", "right": "0", "width": "30%"})
+                    $('#' + thisObj.id).find(".CodeMirror-advanced-dialog").resizable();
+                    $(".property-editor-container").css({"overflow":"visible"})
+                    $(".property-editor-pages").css({"overflow-y":"visible"})
+                  }
+                  $('#' + thisObj.id).find(".CodeMirror-advanced-dialog").draggable();
                 },
                 "Ctrl-=": function(cm) {
                   modifyFontSize(true);
@@ -9012,41 +8961,48 @@ PropertyEditor.Type.CodeMirror.prototype = {
                   modifyFontSize(false);
                 },
                 "Ctrl-R": function(cm) {
-                  cm.execCommand("replaceAll")
+                    cm.execCommand("replace")
+                    if (thisObj.codeeditor.getOption("fullScreen")){
+                        $('#' + thisObj.id).find(".CodeMirror-advanced-dialog").css({"position":"fixed", "z-index":"1001", "top": "0", "right": "0", "width": "30%"})
+                        $('#' + thisObj.id).find(".CodeMirror-advanced-dialog").resizable();
+                        $(".property-editor-container").css({"overflow":"visible"})
+                        $(".property-editor-pages").css({"overflow-y":"visible"})
+                    }
+                    $('#' + thisObj.id).find(".CodeMirror-advanced-dialog").draggable();
                 }
               }
           });
 
         if (this.properties.mode !== undefined && this.properties.mode !== "") {
             if (this.properties.mode === "html"){
-                this.codemirror.setOption("mode", "htmlmixed");
+                this.codeeditor.setOption("mode", "htmlmixed");
             }
             else if (this.properties.mode === "java"){
-                this.codemirror.setOption("mode", "text/x-java");
+                this.codeeditor.setOption("mode", "text/x-java");
             }else if (this.properties.mode === "json"){
-                this.codemirror.setOption("mode", "application/json");
+                this.codeeditor.setOption("mode", "application/json");
             }else if (this.properties.mode === "sql"){
-                this.codemirror.setOption("mode", "sql");
+                this.codeeditor.setOption("mode", "sql");
             }else if (this.properties.mode === "css"){
-                this.codemirror.setOption("mode", "css");
+                this.codeeditor.setOption("mode", "css");
             }else if (this.properties.mode === "javascript"){
-                this.codemirror.setOption("mode", "javascript");
+                this.codeeditor.setOption("mode", "javascript");
             }else if (this.properties.mode === "xml"){
-                this.codemirror.setOption("mode", "xml");
+                this.codeeditor.setOption("mode", "xml");
             }else {
-                this.codemirror.setOption("mode", "text");
+                this.codeeditor.setOption("mode", "text");
             }
         }
 
         //Set dark theme if dark theme mode is activated
         if ($('body').attr('builder-theme') === "dark") {
-            this.codemirror.setOption("theme", "ayu-mirage");
+            this.codeeditor.setOption("theme", "ayu-mirage");
         }
 
         //Function to modify font size
         //Function to modify font size
         function modifyFontSize(increase){
-            var wrapper = thisObj.codemirror.getWrapperElement();
+            var wrapper = thisObj.codeeditor.getWrapperElement();
             var currentSize = parseFloat(window.getComputedStyle(wrapper, null).getPropertyValue('font-size'));
             var newSize = increase ? currentSize + 2 : currentSize - 2;
 
@@ -9057,25 +9013,18 @@ PropertyEditor.Type.CodeMirror.prototype = {
             }
             wrapper.style.fontSize = newSize + 'px';
 
-            thisObj.codemirror.refresh()
+            thisObj.codeeditor.refresh()
         }
+
 
         //Detect keydown for specific actions, such as f12 to toggle full screen mode, escape
         //to exit full scree mode, and F1 to toggle help panel
         $('#' + this.id).on('keydown', function(event) {
-            // Check if the Esc key is pressed
-            if (event.key === 'Escape') {
-                // Stop event propagation
-                if (thisObj.codemirror.getOption("fullScreen")) {
-                    thisObj.codemirror.setOption("fullScreen", false);
-                    $('#'+this.id).parent().closest('#right-panel').css('z-index', 20);
-                }
-                event.stopPropagation();
-            }else if (event.key === "F1") {
+            if (event.key === "F1") {
                 event.preventDefault();
                 if (panels[panelId]) {
                     //Resets height
-                    thisObj.codemirror.setSize(null, $("#" + thisObj.id).find(".CodeMirror").height()-1)
+                    thisObj.codeeditor.setSize(null, $("#" + thisObj.id).find(".CodeMirror").height()-1)
                     panels[panelId].clear();
                     delete panels[panelId];
                     resetHeight();
@@ -9083,14 +9032,24 @@ PropertyEditor.Type.CodeMirror.prototype = {
                     addPanel("top");
                     resetHeight();
                 }
-            }else if (event.key === 'F12'){
+            }else if (event.key === 'F12' || event.key === 'Escape'){
                 event.preventDefault();
-                if (thisObj.codemirror.getOption("fullScreen")) {
-                    $('#'+this.id).parent().closest('#right-panel').css('z-index', 20);
-                    thisObj.codemirror.setOption("fullScreen", false);
+                if (thisObj.codeeditor.getOption("fullScreen")) {
+                    $('#'+thisObj.id).parent().closest('#right-panel').css('z-index', 20);
+                    thisObj.codeeditor.setOption("fullScreen", false);
+                    $(".property-editor-container").css({"overflow":"hidden"})
+                    $(".property-editor-pages").css({"overflow-y":"scroll"})
+                    $('#' + thisObj.id).find(".CodeMirror-advanced-dialog").draggable("disable");
+                    $('#' + thisObj.id).find(".CodeMirror-advanced-dialog button:last").click();
+                    resetHeight();
+                    event.stopPropagation();
                 }else{
-                    $('#'+this.id).parent().closest('#right-panel').css('z-index', 8999);
-                    thisObj.codemirror.setOption("fullScreen", true);
+                    $('#'+thisObj.id).parent().closest('#right-panel').css('z-index', 8999);
+                    thisObj.codeeditor.setOption("fullScreen", true);
+                    $('#' + thisObj.id).find(".CodeMirror-advanced-dialog").css({"position":"fixed", "z-index":"1001", "top": "0", "right": "0", "width": "30%"})
+                    $('#' + thisObj.id).find(".CodeMirror-advanced-dialog").draggable().resizable();
+                    $(".property-editor-container").css({"overflow":"visible"})
+                    $(".property-editor-pages").css({"overflow-y":"visible"})
                 }
             }
         });
@@ -9105,7 +9064,7 @@ PropertyEditor.Type.CodeMirror.prototype = {
             node.id = "panel-" + thisObj.id;
             node.className = "panel " + where;
             
-            var wrapper = thisObj.codemirror.getWrapperElement();
+            var wrapper = thisObj.codeeditor.getWrapperElement();
             var fontSize = parseFloat(window.getComputedStyle(wrapper, null).getPropertyValue('font-size')) + "px";
 
             div = $("<div>")
@@ -9141,24 +9100,22 @@ PropertyEditor.Type.CodeMirror.prototype = {
         function addPanel(where) {
             var node = makePanel(where);
             panelId = "panel-" + thisObj.id;
-            panels[panelId] = thisObj.codemirror.addPanel(node, {position: where, stable: true});
+            panels[panelId] = thisObj.codeeditor.addPanel(node, {position: where, stable: true});
         }
         
-        this.codemirror.setValue(this.value);
+        this.codeeditor.setValue(this.value);
 
-        var tooltip = $("<span>").attr('title', 'Press F1 to show help panel').append(" <i class=\"zmdi zmdi-info-outline\"></i>");
+        var tooltip = $("<span>").attr('title', get_peditor_msg('peditor.codemirror.tooltipTitle')).append(" <i class=\"zmdi zmdi-info-outline\"></i>");
         
         $("#"+thisObj.id).parent().parent().find(".property-label").append(tooltip);
 
         resetHeight();
     },
     pageShown: function() {
-        this.codemirror.refresh();
+        this.codeeditor.refresh();
     }
 };
-
-PropertyEditor.Type.CodeMirror = PropertyEditor.Util.inherit(PropertyEditor.Model.Type, PropertyEditor.Type.CodeMirror.prototype);
-
+PropertyEditor.Type.CodeEditor = PropertyEditor.Util.inherit(PropertyEditor.Model.Type, PropertyEditor.Type.CodeEditor.prototype);
 
 PropertyEditor.Type.ElementSelect = function() {};
 PropertyEditor.Type.ElementSelect.prototype = {
