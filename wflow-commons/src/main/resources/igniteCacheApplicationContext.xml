@@ -36,6 +36,8 @@
         <property name="systemThreadPoolSize" value="24"/>    
         <property name="stripedPoolSize" value="24"/>            
         <property name="metricsLogFrequency" value="300000"/>    
+        <property name="failureDetectionTimeout" value="30000"/>
+        <property name="clientFailureDetectionTimeout" value="30000"/>
 
         <!-- JTA transaction configuration -->
         <property name="transactionConfiguration">
