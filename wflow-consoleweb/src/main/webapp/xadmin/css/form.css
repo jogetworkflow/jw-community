@@ -984,8 +984,8 @@ body.rtl .form-edit-btn{
 body #form-canvas .label-top .label {
     text-align: left;
 }
-.label-top > .label + *:not(.ui-screen-hidden) {
-    max-width: 90%
+body #form-canvas .label-top .hasDatepicker {
+    width: calc(100% - 42px);
 }
 
 /*
