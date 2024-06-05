@@ -7,9 +7,11 @@ import org.apache.ignite.IgniteCache;
 import org.apache.ignite.Ignition;
 import org.apache.ignite.cache.CacheMode;
 import org.apache.ignite.cache.affinity.rendezvous.RendezvousAffinityFunction;
+import org.apache.ignite.cache.eviction.lru.LruEvictionPolicyFactory;
 import org.apache.ignite.cluster.ClusterState;
 import org.apache.ignite.configuration.CacheConfiguration;
 import org.apache.ignite.configuration.IgniteConfiguration;
+import org.apache.ignite.configuration.NearCacheConfiguration;
 import org.apache.ignite.kubernetes.configuration.KubernetesConnectionConfiguration;
 import org.apache.ignite.spi.communication.tcp.TcpCommunicationSpi;
 import org.apache.ignite.spi.discovery.tcp.TcpDiscoverySpi;
@@ -38,6 +40,7 @@ public class IgniteCacheManager {
     public static final String SYSTEM_PROPERTY_IGNITE_PARTITION_BACKUPS = "wflow.ignitePartitionBackups";
     public static final String SYSTEM_PROPERTY_IGNITE_PAIRED_CONNECTIONS = "wflow.ignitePairedConnections";
     public static final String SYSTEM_PROPERTY_IGNITE_NODE_CONNECTIONS = "wflow.igniteNodeConnections";
+    public static final String SYSTEM_PROPERTY_IGNITE_NEAR_CACHE = "wflow.igniteNearCache";
     private static boolean started = false;
     static IgniteConfiguration igniteCfg;
 
@@ -269,6 +272,22 @@ public class IgniteCacheManager {
                 if (backups >= 0) {
                     cacheConfig.setBackups(backups);
                     LogUtil.debug(IgniteCacheManager.class.getName(), "Using Ignite partition backups to " + backups + " for cache " + cacheConfig.getName());
+                }
+            } catch(NumberFormatException e) {
+                // ignore
+            }
+        }
+
+        // enable near cache
+        String nearCacheStr = System.getProperty(SYSTEM_PROPERTY_IGNITE_NEAR_CACHE);
+        if (nearCacheStr != null) {
+            try {
+                int nearCacheLimit = Integer.parseInt(nearCacheStr);
+                if (nearCacheLimit >= 0) {
+                    NearCacheConfiguration<Integer, String> nearCfg = new NearCacheConfiguration<>();
+                    nearCfg.setNearEvictionPolicyFactory(new LruEvictionPolicyFactory<>(nearCacheLimit));
+                    cacheConfig.setNearConfiguration(nearCfg);
+                    LogUtil.debug(IgniteCacheManager.class.getName(), "Using Ignite near cache with " + nearCacheLimit + " limit for cache " + cacheConfig.getName());
                 }
             } catch(NumberFormatException e) {
                 // ignore
