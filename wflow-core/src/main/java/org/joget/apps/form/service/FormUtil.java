@@ -68,6 +68,7 @@ import org.joget.commons.util.SecurityUtil;
 import org.joget.commons.util.StringUtil;
 import org.joget.directory.model.User;
 import org.joget.commons.util.TimeZoneUtil;
+import org.joget.commons.util.UuidGenerator;
 import org.joget.plugin.base.ApplicationPlugin;
 import org.joget.plugin.base.HiddenPlugin;
 import org.joget.plugin.base.MockRequest;
@@ -1662,9 +1663,15 @@ public class FormUtil implements ApplicationContextAware {
         } else {
             uniqueKey = Integer.toString(index); //for column or any container without id, use the index
         }
-        //prepend it with parent unique key, so same field id in different section will having different uniqueKey
-        if (!(element instanceof Form) && element.getParent() != null) {
-            uniqueKey = element.getParent().getPropertyString(PROPERTY_ELEMENT_UNIQUE_KEY) + uniqueKey;
+        
+        if (!(element instanceof Form)) {
+            if (element.getParent() != null) {
+                //prepend it with parent unique key, so same field id in different section will having different uniqueKey
+                uniqueKey = element.getParent().getPropertyString(PROPERTY_ELEMENT_UNIQUE_KEY) + uniqueKey;
+            } else {
+                //it is dynamic created element (from advanced grid), append a random hash
+                uniqueKey += UuidGenerator.getInstance().getUuid().hashCode();
+            }
         }
         return uniqueKey.replaceAll("-", "_");
     }
