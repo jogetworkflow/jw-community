@@ -136,16 +136,12 @@
         <url-pattern>/*</url-pattern>
     </filter-mapping>
     <filter>
-        <filter-name>CSRFGuard</filter-name>
+        <filter-name>CSRFGuardLogin</filter-name>
         <filter-class>org.owasp.csrfguard.CsrfGuardFilter</filter-class>
         <async-supported>true</async-supported>
     </filter>
     <filter-mapping>
-        <filter-name>CSRFGuard</filter-name>
-        <url-pattern>/web/*</url-pattern>
-    </filter-mapping>
-    <filter-mapping>
-        <filter-name>CSRFGuard</filter-name>
+        <filter-name>CSRFGuardLogin</filter-name>
         <url-pattern>/j_spring_security_check</url-pattern>
     </filter-mapping>
     <filter>
@@ -189,6 +185,15 @@
     <filter-mapping>
         <filter-name>MultipartFilter</filter-name>
         <url-pattern>/*</url-pattern>
+    </filter-mapping>
+    <filter>
+        <filter-name>CSRFGuard</filter-name>
+        <filter-class>org.owasp.csrfguard.CsrfGuardFilter</filter-class>
+        <async-supported>true</async-supported>
+    </filter>
+    <filter-mapping>
+        <filter-name>CSRFGuard</filter-name>
+        <url-pattern>/web/*</url-pattern>
     </filter-mapping>
     <filter>
         <filter-name>ResponseOverrideFilter</filter-name>
