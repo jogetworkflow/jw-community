@@ -467,9 +467,6 @@ body .dataList#dataList_applist .appIcon{
     #clock,#date, #assignment_msg > a, #assignment_msg > h3{
         display: none !important;
     }
-    #home_column #home {
-        margin-top:30px;
-    }
 }
 @media (max-width: 680px){
     #clock, #date{
@@ -487,7 +484,6 @@ body .dataList#dataList_applist .appIcon{
         overflow:visible;
         overflow-y: visible;
         padding-bottom:20px;
-        margin-top: -70px;
     }
     body#home #main{
         height: 100vh;
@@ -667,9 +663,6 @@ body#home #filters_applist > div > span:nth-child(3) > input{
     background-color: rgba(255, 255, 255, 0.5);
     color: #495057;
     font-weight: 500 !important;
-}
-#home_column #home:has(#filters_applist){
-    padding-top: 0px;
 }
 body:not(:has(#adminBar)) #home_column #home:has(#filters_applist){
     margin-top: -25px;
