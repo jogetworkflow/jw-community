@@ -998,6 +998,13 @@ body.rtl #form-canvas .label-top.form-cell .label {
     text-align: right;
 }
 
+/*
+ *  Fixes the "X" and "Calendar" field buttons for datepicker are misaligned when in RTL
+ */
+body.rtl .label-top input.hasDatepicker {
+    float: none !important;
+}
+
 /* targeting the misaligned form "save" buttons */
 .form-column-horizontal .form-cell, .form-column-horizontal .subform-cell {
     float: none;
