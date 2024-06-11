@@ -388,7 +388,6 @@ body.embeded #content > main {
     position: fixed;
     height: calc(100% - 65px);
     top: 65px;
-    left:-1px;
     -webkit-transition: all;
     -o-transition: all;
     transition: all;
@@ -915,7 +914,7 @@ body.rtl #sidebar li ul>li>a > span:first-child{
         padding-right: 20px;
     }  
     body.horizontal_menu #sidebar {
-        width: 100vw;
+        width: 100%;
         position: relative;
         height:auto;
         top:0;
@@ -1602,7 +1601,6 @@ body#welcome:not(#login) #content > main > .ui-html {
     position: fixed;
     height: calc(100% - 65px);
     top: 65px;
-    left: -1px;
     -webkit-transition: all;
     -o-transition: all;
     transition: all;
@@ -1834,6 +1832,7 @@ body:not(#login) #content > main > .datalist-body-content:not(.quickEdit) {
     body.horizontal_menu #sidebar .nav {
         flex-wrap: nowrap;
         display: flex;
+        align-items: baseline;
     }
     #category-container > li {
         flex: 0 0 auto;
