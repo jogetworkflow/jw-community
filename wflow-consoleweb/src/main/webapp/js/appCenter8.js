@@ -40,4 +40,21 @@ $(document).ready(function() {
     $('#loginForm > table > tbody > tr:nth-child(3) > td:nth-child(2) > input').val('Sign In');
 });
 
-
+$(document).ready(function () {
+    $('main #home.main-body-content #filters_applist').hide();
+    $("main #home.main-body-content").before('<div id="customSearchSection" style="display: flex; justify-content: center;"><input id="customSearchInput" type="text" placeholder="Filter apps..." style="margin-inline: 2.5%;"/></div>');
+    $("#customSearchInput").off("input").on("input", function () {
+        const input = this.value.trim().toLowerCase();
+        const apps = $("#dataList_applist .table-wrapper .cards.row").children();
+        if (input === "") {
+            apps.show();
+            return;
+        }
+        apps.each(function () {
+            const $this = $(this);
+            const name = $this.find(".card-title").text().trim().toLowerCase();
+            const toggleCondition = name.includes(input) || name.replace(/[^\p{L}\p{N}]/gu, '').includes(input);
+            $this.toggle(toggleCondition);
+        });
+    });
+});
