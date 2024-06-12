@@ -1267,7 +1267,7 @@ public class AppUtil implements ApplicationContextAware {
                                     FileDataSource fds = new FileDataSource(file);
                                     String name = MimeUtility.encodeText(file.getName(), "UTF-8", null);
                                     if (embed != null && "true".equalsIgnoreCase(embed)) {
-                                        email.embed(fds, name, name);
+                                        email.embed(fds, name, name.replaceAll("[^a-zA-Z0-9_.]", ""));
                                         inlineImages.add(file.getName());
                                     } else {
                                         email.attach(fds, name, "");
@@ -1358,7 +1358,12 @@ public class AppUtil implements ApplicationContextAware {
             if (!(html.contains("/web/client/app/") && html.contains("/form/download/"))) {
                 break;
             }
-            html = html.replaceAll("src=\"[^\"]*/web/client/app/"+StringUtil.escapeRegex(appId)+"/form/download/"+StringUtil.escapeRegex(formId)+"/"+StringUtil.escapeRegex(primaryKey)+"/"+StringUtil.escapeRegex(name)+"\\.\"", StringUtil.escapeRegex("src=\"cid:"+StringUtil.escapeString(name, StringUtil.TYPE_URL, null)+"\""));
+            try {
+                String escapedCid = MimeUtility.encodeText(name, "UTF-8", null).replaceAll("[^a-zA-Z0-9_.]", "");
+                html = html.replaceAll("src=\"[^\"]*/web/client/app/"+StringUtil.escapeRegex(appId)+"/form/download/"+StringUtil.escapeRegex(formId)+"/"+StringUtil.escapeRegex(primaryKey)+"/"+StringUtil.escapeRegex(name)+"\\.\"", StringUtil.escapeRegex("src=\"cid:"+escapedCid+"\""));
+            } catch (Exception e) {
+                LogUtil.error(AppUtil.class.getName(), e, name);
+            }
         }
         return html;
     }

@@ -119,6 +119,15 @@
         <url-pattern>/*</url-pattern>
     </filter-mapping>
     <filter>
+        <filter-name>CSRFGuardLogin</filter-name>
+        <filter-class>org.owasp.csrfguard.CsrfGuardFilter</filter-class>
+        <async-supported>true</async-supported>
+    </filter>
+    <filter-mapping>
+        <filter-name>CSRFGuardLogin</filter-name>
+        <url-pattern>/j_spring_security_check</url-pattern>
+    </filter-mapping>
+    <filter>
         <filter-name>springSecurityFilterChain</filter-name>
         <filter-class>org.joget.commons.spring.web.CustomDelegatingFilterProxy</filter-class>
         <async-supported>true</async-supported>
