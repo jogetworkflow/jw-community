@@ -205,6 +205,9 @@
     float: left;
     width: 70%;
 }
+.rtl .form-cell-value, .rtl .subform-cell-value {
+    float: right;
+}
 .form-cell-value, .subform-cell-value, .form-cell-value span, .subform-cell-value span, .grid-cell{
     overflow-wrap: break-word;
     word-wrap: break-word;
@@ -764,9 +767,17 @@ body.rtl #${elementParamName!}_multiPagedForm_${element.properties.elementUnique
     display: block;
     margin-left: 30%;
 }
+body.rtl .selector_element {
+    float: right;
+}
 .selector_items {
     display: block;
     margin: 5px 0px;
+}
+@media (max-width: 480px) {
+    .selector_element {
+        margin-left: 0%;
+    }  
 }
 .selector_item {
     margin-right: 5px;
@@ -832,7 +843,7 @@ body.rtl .form-edit-btn{
 }
 
 /* numeric field */
-.numeric_field_controls {display:inline-block; position:absolute; top: -4px;}
+.numeric_field_controls {display:inline-block; position:absolute; top: -1px;}
 .label-top .numeric_field_controls {right: 0px; bottom: 50px; top:auto;}
 body.rtl .label-top .numeric_field_controls {left: 0px; right: auto;}
 .numeric_field_control {position: absolute; top: 5px; right: 10px; font-size:10px; cursor: pointer;}
@@ -840,8 +851,8 @@ body.rtl .label-top .numeric_field_controls {left: 0px; right: auto;}
 body.rtl .numeric_field_control {left:10px; right:auto;}
 .numeric_field_control.numeric_field_control_decr {top: 15px;} 
 @media (max-width: 768px) {
-    .numeric_field_controls {right: 0px; bottom: 50px; top:auto;}
-    body.rtl .numeric_field_controls {left: 0px; right: auto;}
+    .numeric_field_controls {bottom: 50px; top:auto;}
+    body.rtl .numeric_field_controls {right: auto;}
 }
 
 /* datepicker */
