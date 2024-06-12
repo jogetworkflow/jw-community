@@ -299,7 +299,7 @@
     .form-cell .label, .subform-cell .label {
         width:auto;
         max-width: 90%;
-        float:none;
+        float:none !important;
     }
     .form-container textarea, .form-container input[type="text"], .form-container input[type="password"], .form-container input[type="datetime"], .form-container input[type="datetime-local"], .form-container input[type="date"], .form-container input[type="month"], .form-container input[type="time"], .form-container input[type="week"], .form-container input[type="number"], .form-container input[type="email"], .form-container input[type="url"], .form-container input[type="search"], .form-container input[type="tel"], .form-container input[type="color"], .form-container .form-cell-value{
         max-width: 90%;
