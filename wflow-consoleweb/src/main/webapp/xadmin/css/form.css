@@ -668,7 +668,7 @@ body.rtl .filter-cell input.hasDatepicker {
     padding-right: auto;
 }
 body .hasDatepicker + a + .close-icon:after {
-    top: 0px;
+    bottom: auto;
     margin-left: 25px;
     margin-top: 8px;
 }
@@ -954,6 +954,17 @@ body .handsontable input, .handsontable textarea{
     body #form-canvas .hasDatepicker{
         width: calc(100% - 42px);
     }
+    body.rtl #form-canvas div.form-cell .label {
+        text-align: right;
+    }
+    body.rtl #form-canvas .hasDatepicker + a {
+        left: 16px;
+        top: 32px;
+    }
+    body.rtl #form-canvas .hasDatepicker + a + a:after {
+        left: -22px;
+        top: 32px;
+    }
 }
 
 .form-edit-btn{
@@ -977,4 +988,34 @@ body.rtl .form-edit-btn{
 }
 @media (max-width: 480px) {
     .numeric_field_controls {bottom: 53px; top: auto;}
+}
+
+/* fields with top-aligned label */
+body #form-canvas .label-top .label {
+    text-align: left;
+}
+body #form-canvas .label-top .hasDatepicker {
+    width: calc(100% - 42px);
+}
+
+/*
+ *  Higher specificity by targeting <form> and .form-cell class to overwrite the
+ *  "body.rtl #form-canvas .form-cell .label" CSS declaration from xadmin/css/custom.css
+ *  due to wro.xml including custom.css after this form.css
+ */
+body.rtl #form-canvas form.label-top .label,
+body.rtl #form-canvas .label-top.form-cell .label {
+    text-align: right;
+}
+
+/*
+ *  Fixes the "X" and "Calendar" field buttons for datepicker are misaligned when in RTL
+ */
+body.rtl .label-top input.hasDatepicker {
+    float: none !important;
+}
+
+/* targeting the misaligned form "save" buttons */
+.form-column-horizontal .form-cell, .form-column-horizontal .subform-cell {
+    float: none;
 }
