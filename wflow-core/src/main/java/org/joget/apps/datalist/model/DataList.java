@@ -83,7 +83,9 @@ public class DataList {
     private boolean disableQuickEdit = false;
     private boolean showDataWhenFilterSet = false;
     private boolean disableResponsive = false;
+    @Deprecated
     private boolean responsiveSearchPopup = false;
+    @Deprecated
     private String responsiveJson = "";
     private Boolean considerFilterWhenGetTotal = null;
     private Map<String, String[]> requestParamMap = null;
@@ -1074,18 +1076,22 @@ public class DataList {
         this.disableResponsive = disableResponsive;
     }
 
+    @Deprecated
     public boolean isResponsiveSearchPopup() {
         return responsiveSearchPopup;
     }
 
+    @Deprecated
     public void setResponsiveSearchPopup(boolean responsiveSearchPopup) {
         this.responsiveSearchPopup = responsiveSearchPopup;
     }
     
+    @Deprecated
     public String getResponsiveJson() {
         return responsiveJson;
     }
 
+    @Deprecated
     public void setResponsiveJson(String responsiveJson) {
         this.responsiveJson = responsiveJson;
     }

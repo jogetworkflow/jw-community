@@ -267,7 +267,11 @@ public class UrlPathHelper {
 	 * or if the servlet has been mapped to root; {@code false} otherwise
 	 */
 	private boolean skipServletPathDetermination(HttpServletRequest request) {
-		if (servlet4Present) {
+                // CUSTOM: Always return false as workaround to avoid Undertow regression bug in JBoss EAP 7.4.14 
+                // where an incorrect HttpServletMapping is returned for nested includes, introduced in 
+                // https://github.com/undertow-io/undertow/pull/1507/commits/b0314890
+                // https://github.com/undertow-io/undertow/blob/2.2.28.Final/servlet/src/main/java/io/undertow/servlet/util/DispatchUtils.java#L126
+		if (false && servlet4Present) {
 			return Servlet4Delegate.skipServletPathDetermination(request);
 		}
 		return false;
@@ -776,14 +780,6 @@ public class UrlPathHelper {
 	private static class Servlet4Delegate {
 
 		public static boolean skipServletPathDetermination(HttpServletRequest request) {
-                        // CUSTOM: Workaround to prevent "class javax.servlet.http.MappingMatch cannot be cast to class javax.servlet.http.HttpServletMapping" 
-                        // in JBoss EAP, due to use of MappingMatch instead of HttpServletMapping 
-                        // https://github.com/undertow-io/undertow/blob/2.2.x/servlet/src/main/java/io/undertow/servlet/util/DispatchUtils.java#L126
-                        Object mappingObject = request.getAttribute(RequestDispatcher.INCLUDE_MAPPING);
-                        if (mappingObject != null && mappingObject instanceof MappingMatch) {
-                            return !mappingObject.equals(MappingMatch.PATH);
-                        }
-                        // END CUSTOM
 			HttpServletMapping mapping = (HttpServletMapping) request.getAttribute(RequestDispatcher.INCLUDE_MAPPING);
 			if (mapping == null) {
 				mapping = request.getHttpServletMapping();

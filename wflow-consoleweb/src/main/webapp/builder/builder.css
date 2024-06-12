@@ -2297,11 +2297,18 @@ table.diff tbody th{
 }
 #diff-indicator {
     position: fixed;
-    height: calc(100% - 120px);
+    height: calc(100% - 145px);
     right: 6px;
-    top: 65px;
+    top: 86px;
     width: 20px;
     overflow: hidden;
+}
+#diff-indicator > div {
+    position: relative;
+    width: 20px;
+    overflow: hidden;
+    background-repeat: repeat-x;
+    background-size: contain;
 }
 #i18nView .builder-view-body{
     padding: 20px 20px 0px;

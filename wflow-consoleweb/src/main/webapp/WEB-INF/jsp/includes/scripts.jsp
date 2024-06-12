@@ -1,6 +1,12 @@
 <%@ include file="/WEB-INF/jsp/includes/taglibs.jsp" %>
 <%@ page import="org.joget.directory.model.service.DirectoryUtil"%>
 <%@ page import="org.joget.commons.util.SecurityUtil"%>
+<%@ page import="org.joget.workflow.util.WorkflowUtil"%>
+
+<%
+    String theme = WorkflowUtil.getSystemSetupValue("systemTheme");
+    pageContext.setAttribute("theme", theme);
+%>
 
 <c:if test="${!jsonUiInRequest}">
     
@@ -45,11 +51,25 @@
         JPopup.tokenName = "<%= SecurityUtil.getCsrfTokenName() %>";
         JPopup.tokenValue = "<%= SecurityUtil.getCsrfTokenValue(request) %>";
         UI.locale = "<c:out value="${currentLocale}"/>";
+        UI.theme = "<c:out value="${theme}"/>";
         
         if (window.self !== window.parent && window.parent.UI !== undefined
                 && window.parent.UI.locale !== undefined && window.parent.UI.locale !== ""
                 && window.parent.UI.locale !== UI.locale) {
             if (confirm("<ui:msgEscJS key="general.label.languageSwitching"/>")) {
+                window.top.location.reload(true);
+            }
+        }
+        
+        if(window.parent.UI.theme === ""){
+            window.parent.UI.theme = "<c:out value="${theme}"/>";
+        }
+
+        if (window.self !== window.parent && window.parent.UI !== undefined
+                && window.parent.UI.theme !== undefined && window.parent.UI.theme !== ""
+                && window.parent.UI.theme !== UI.theme) {
+            if (confirm("<ui:msgEscJS key="general.label.themeSwitching"/>")) {
+                window.parent.UI.theme = "<c:out value="${theme}"/>";
                 window.top.location.reload(true);
             }
         }

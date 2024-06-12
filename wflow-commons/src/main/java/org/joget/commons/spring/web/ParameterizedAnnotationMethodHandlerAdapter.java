@@ -34,7 +34,7 @@ public class ParameterizedAnnotationMethodHandlerAdapter extends RequestMappingH
 
     private class ParameterizedPathServletRequest extends HttpServletRequestWrapper {
 
-        private Map<String, String[]> parameters = null;
+        private Map<String, String[]> parameters = new HashMap<String, String[]>();
 
         public ParameterizedPathServletRequest(javax.servlet.http.HttpServletRequest request) {
             super(request);

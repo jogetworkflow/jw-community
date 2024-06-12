@@ -703,7 +703,7 @@ body .form-fileupload-value {
 body .chosen-container-multi .chosen-choices,
 body .chosen-container-single .chosen-single {
     border:0;
-    padding: 3px 0 27px;
+    padding: 3px 0 6px;
     box-shadow:none;
     border-radius: 0;
     border-bottom: 1px solid #B6B6B6;
@@ -730,7 +730,7 @@ body .chosen-container-single .chosen-single abbr {
 }
 
 body .chosen-container-single .chosen-single div {
-    top:4px;
+    top:0px;
 }
 
 body .chosen-container-single.chosen-with-drop .chosen-single {

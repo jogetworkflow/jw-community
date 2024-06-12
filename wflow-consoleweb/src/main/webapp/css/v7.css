@@ -1985,3 +1985,43 @@ span.dot_yellow{
         margin-top: 35px;
     }
 }
+
+/* progress bar start */
+.progress {
+    display: -ms-flexbox;
+    display: flex;
+    height: 1rem;
+    overflow: hidden;
+    line-height: 0;
+    font-size: .75rem;
+    background-color: #e9ecef;
+    border-radius: .25rem
+}
+.progress-bar {
+    display: -ms-flexbox;
+    display: flex;
+    -ms-flex-direction: column;
+    flex-direction: column;
+    -ms-flex-pack: center;
+    justify-content: center;
+    overflow: hidden;
+    color: #fff;
+    text-align: center;
+    white-space: nowrap;
+    background-color: #007bff;
+    transition: width .6s ease
+}
+.progress-bar-animated {
+    -webkit-animation: progress-bar-stripes 1s linear infinite;
+    animation: progress-bar-stripes 1s linear infinite
+}
+@media(prefers-reduced-motion:reduce) {
+    .progress-bar {
+        transition: none
+    }
+    .progress-bar-animated {
+        -webkit-animation: none;
+        animation: none
+    }
+}
+/* progress bar end */

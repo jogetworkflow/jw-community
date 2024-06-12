@@ -101,6 +101,10 @@ public final class JavaScriptServlet extends HttpServlet {
     private static final Map<String, BiFunction<CsrfGuard, HttpServletRequest, String>> JS_REPLACEMENT_MAP = new HashMap<>();
 
     static {
+        /* CUSTOM : Adding a system property flag to disable domainStrict or set checking domain*/
+        String domainStrict = System.getProperty("wflow.domainStrict");
+        String domainOrigin = System.getProperty("wflow.csrfDomain");
+        
         JS_REPLACEMENT_MAP.put(TOKEN_NAME_IDENTIFIER, (csrfGuard, request) -> StringUtils.defaultString(csrfGuard.getTokenName()));
         JS_REPLACEMENT_MAP.put(TOKEN_VALUE_IDENTIFIER, (csrfGuard, request) -> StringUtils.defaultString(getMasterToken(request, csrfGuard)));
         JS_REPLACEMENT_MAP.put(UNPROTECTED_EXTENSIONS_IDENTIFIER, (csrfGuard, request) -> String.valueOf(csrfGuard.getJavascriptUnprotectedExtensions()));
@@ -108,7 +112,10 @@ public final class JavaScriptServlet extends HttpServlet {
         JS_REPLACEMENT_MAP.put(SERVLET_PATH_IDENTIFIER, (csrfGuard, request) -> StringUtils.defaultString(request.getContextPath() + request.getServletPath()));
         JS_REPLACEMENT_MAP.put(X_REQUESTED_WITH_IDENTIFIER, (csrfGuard, request) -> StringUtils.defaultString(csrfGuard.getJavascriptXrequestedWith()));
         JS_REPLACEMENT_MAP.put(DYNAMIC_NODE_CREATION_EVENT_NAME_IDENTIFIER, (csrfGuard, request) -> StringUtils.defaultString(csrfGuard.getJavascriptDynamicNodeCreationEventName()));
-        JS_REPLACEMENT_MAP.put(DOMAIN_ORIGIN_IDENTIFIER, (csrfGuard, request) -> ObjectUtils.defaultIfNull(csrfGuard.getDomainOrigin(), StringUtils.defaultString(parseDomain(request.getRequestURL()))));
+        
+        /* CUSTOM : allow custom domain used for validation */
+        JS_REPLACEMENT_MAP.put(DOMAIN_ORIGIN_IDENTIFIER, (csrfGuard, request) -> ObjectUtils.defaultIfNull(domainOrigin != null?domainOrigin:csrfGuard.getDomainOrigin(), StringUtils.defaultString(parseDomain(request.getRequestURL()))));
+        
         JS_REPLACEMENT_MAP.put(INJECT_INTO_FORMS_IDENTIFIER, (csrfGuard, request) -> Boolean.toString(csrfGuard.isJavascriptInjectIntoForms()));
         JS_REPLACEMENT_MAP.put(INJECT_GET_FORMS_IDENTIFIER, (csrfGuard, request) -> Boolean.toString(csrfGuard.isJavascriptInjectGetForms()));
         JS_REPLACEMENT_MAP.put(INJECT_FORM_ATTRIBUTES_IDENTIFIER, (csrfGuard, request) -> Boolean.toString(csrfGuard.isJavascriptInjectFormAttributes()));
@@ -116,7 +123,9 @@ public final class JavaScriptServlet extends HttpServlet {
         JS_REPLACEMENT_MAP.put(INJECT_INTO_DYNAMIC_NODES_IDENTIFIER, (csrfGuard, request) -> Boolean.toString(csrfGuard.isJavascriptInjectIntoDynamicallyCreatedNodes()));
         JS_REPLACEMENT_MAP.put(INJECT_INTO_XHR_IDENTIFIER, (csrfGuard, request) -> Boolean.toString(csrfGuard.isAjaxEnabled()));
         JS_REPLACEMENT_MAP.put(TOKENS_PER_PAGE_IDENTIFIER, (csrfGuard, request) -> Boolean.toString(csrfGuard.isTokenPerPageEnabled()));
-        JS_REPLACEMENT_MAP.put(DOMAIN_STRICT_IDENTIFIER, (csrfGuard, request) -> Boolean.toString(csrfGuard.isJavascriptDomainStrict()));
+        
+        /* CUSTOM : override the domain strict value if system property exist*/
+        JS_REPLACEMENT_MAP.put(DOMAIN_STRICT_IDENTIFIER, (csrfGuard, request) -> Boolean.toString(("false".equalsIgnoreCase(domainStrict))?false:csrfGuard.isJavascriptDomainStrict()));
         JS_REPLACEMENT_MAP.put(ASYNC_XHR, (csrfGuard, request) -> Boolean.toString(!csrfGuard.isForceSynchronousAjax()));
     }
 

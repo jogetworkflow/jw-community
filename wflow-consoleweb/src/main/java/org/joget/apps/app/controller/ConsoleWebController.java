@@ -48,6 +48,7 @@ import org.joget.apps.app.dao.PluginDefaultPropertiesDao;
 import org.joget.apps.app.dao.UserviewDefinitionDao;
 import org.joget.apps.app.dao.DatalistDefinitionDao;
 import org.joget.apps.app.model.AppDefinition;
+import org.joget.apps.app.model.AppOverviewTool;
 import org.joget.apps.app.model.AppResource;
 import org.joget.apps.app.model.BuilderDefinition;
 import org.joget.apps.app.model.CreateAppOption;
@@ -66,6 +67,7 @@ import org.joget.apps.app.model.ImportAppException;
 import org.joget.apps.app.model.ProcessFormModifier;
 import org.joget.apps.app.model.StartProcessFormModifier;
 import org.joget.apps.app.service.AppDevUtil;
+import org.joget.apps.app.service.AppOverviewUtil;
 import org.joget.apps.app.service.AppResourceUtil;
 import org.joget.apps.app.service.AppService;
 import org.joget.apps.app.service.AppUtil;
@@ -113,10 +115,10 @@ import org.joget.commons.util.HostManager;
 import org.joget.commons.util.LogUtil;
 import org.joget.commons.util.PagedList;
 import org.joget.commons.util.PagingUtils;
-import org.joget.commons.util.PluginThread;
 import org.joget.commons.util.ResourceBundleUtil;
 import org.joget.commons.util.SecurityUtil;
 import org.joget.commons.util.ServerUtil;
+import org.joget.commons.util.SetupDao;
 import org.joget.commons.util.SetupManager;
 import org.joget.commons.util.StringUtil;
 import org.joget.directory.dao.DepartmentDao;
@@ -137,6 +139,7 @@ import org.joget.plugin.property.model.PropertyEditable;
 import org.joget.plugin.property.service.PropertyUtil;
 import org.joget.workflow.model.WorkflowProcessLink;
 import org.joget.workflow.model.service.WorkflowManager;
+import org.joget.workflow.model.service.WorkflowManagerImpl;
 import org.joget.workflow.model.service.WorkflowUserManager;
 import org.joget.workflow.shark.model.dao.WorkflowAssignmentDao;
 import org.joget.workflow.util.WorkflowUtil;
@@ -1855,7 +1858,12 @@ public class ConsoleWebController {
         AppDefinition appDef = null;
         try {
             if (appZip != null) {
-                appDef = appService.importApp(appZip.getBytes());
+                byte[] bytes = appZip.getBytes();
+                if (appService.isGitSrcZip(bytes)) {
+                    appDef = appService.importAppDefFromGitSrc(bytes);
+                } else {
+                    appDef = appService.importApp(bytes);
+                }
             }
         } catch (ImportAppException e) {
             errors.add(e.getMessage());
@@ -3813,6 +3821,32 @@ public class ConsoleWebController {
         
         AppUtil.writeJson(writer, jsonObject, callback);
     }
+    
+    @RequestMapping("/json/console/app/(*:appId)/(~:version)/builders/overview")
+    public void consoleBuilderOverview(Writer writer, @RequestParam String appId, @RequestParam(required = false) String version, @RequestParam(value = "callback", required = false) String callback) throws IOException, JSONException {
+        AppDefinition appDef = appService.getAppDefinition(appId, version);
+        
+        if (appDef != null) {
+            writer.write(AppOverviewUtil.getOverview(appDef));
+        }
+    }
+    
+    @RequestMapping("/json/console/app/(*:appId)/(~:version)/builders/overviewTools")
+    public void consoleBuilderOverviewTools(Writer writer, @RequestParam String appId, @RequestParam(required = false) String version, @RequestParam(value = "callback", required = false) String callback) throws IOException, JSONException {
+        Map<String, AppOverviewTool> tools = AppOverviewUtil.getTools();
+        
+        JSONArray jsonArr = new JSONArray();
+        for (AppOverviewTool tool : tools.values()) {
+            JSONObject obj = new JSONObject();
+            obj.put("icon", tool.getIcon());
+            obj.put("label", tool.getI18nLabel());
+            obj.put("className", tool.getClassName());
+            
+            jsonArr.put(obj);
+        }
+        
+        AppUtil.writeJson(writer, jsonArr, callback);
+    }
 
     protected void checkAppPublishedVersion(AppDefinition appDef) {
         String appId = appDef.getId();
@@ -4608,6 +4642,8 @@ public class ConsoleWebController {
 
     @RequestMapping(value = "/console/setting/general/submit", method = RequestMethod.POST)
     public String consoleSettingGeneralSubmit(HttpServletRequest request, ModelMap map) {
+        boolean localeChanged = false;
+        
         List<String> settingsIsNotNull = new ArrayList<String>();
 
         List<String> booleanSettingsList = new ArrayList<String>();
@@ -4656,6 +4692,12 @@ public class ConsoleWebController {
                     setting.setValue(SecurityUtil.encrypt(paramValue));
                 }
             } else {
+                
+                //check for locale changes
+                if ("systemLocale".equals(paramName) && !paramValue.equals(setting.getValue())) {
+                    localeChanged = true;
+                }
+                
                 setting.setValue(paramValue);
             }
             
@@ -4667,16 +4709,7 @@ public class ConsoleWebController {
             
             //only run it after saved the value, workflow manager do check the value before run the migration
             if ("deleteProcessOnCompletion".equals(paramName) && "archive".equals(paramValue) && !"archive".equals(setting.getOriginalValue())) {
-                //run in new thread to prevent it keep the setting page waiting
-                Thread thread = new PluginThread(new Runnable() {
-                    
-                    @Override
-                    public void run() {
-                        workflowManager.internalMigrateProcessHistories();
-                    }
-                });
-                thread.setDaemon(true);
-                thread.start();
+                workflowManager.internalMigrateProcessHistories();
             }
         }
 
@@ -4694,7 +4727,12 @@ public class ConsoleWebController {
 
         //clear all caches & update the settings
         setupManager.clearCache();
-        ((LocalLocaleResolver) localeResolver).reset(request);
+        
+        //only reset the locale when setting changed
+        if (localeChanged) {
+            ((LocalLocaleResolver) localeResolver).reset(request);
+        }
+        
         if (refreshPlugins) {
             pluginManager.refresh();
         } else {
@@ -5291,6 +5329,25 @@ public class ConsoleWebController {
         workflowManager.internalMigrateProcessHistories();
         
         return "console/dialogClose";
+    }
+    
+    @RequestMapping(value = "/json/console/monitor/completed/process/archive/(*:mode)", method = RequestMethod.POST)
+    public void consoleMonitorArchivePauseResume(Writer writer, @RequestParam("mode") String mode) throws IOException {
+        if ("resume".equals(mode)) {
+            workflowManager.internalMigrateProcessHistories();
+        } else if ("pause".equals(mode)) {
+            //not using setupManager due to the value is cached
+            SetupDao setupDao = (SetupDao) WorkflowUtil.getApplicationContext().getBean("setupDao");
+            Collection<Setting> result = setupDao.find("WHERE property = ?", new String[]{WorkflowManagerImpl.ARCHIVE_SETTING}, null, null, null, null);
+            Setting status = (result.isEmpty()) ? null : result.iterator().next();
+           
+            if (status != null) {
+                status.setValue(status.getValue().replace("STARTED", "PAUSE"));
+                setupDao.saveOrUpdate(status);
+            }
+        }
+        
+        writer.write(Double.toString(AppUtil.getArchivedProcessStatus()));
     }
 
     @RequestMapping("/json/console/monitor/(*:mode)/list")
@@ -6266,7 +6323,7 @@ public class ConsoleWebController {
     }
     
     @RequestMapping(value = "/console/app/(*:appId)/(~:version)/dev/submit", method = RequestMethod.POST)
-    public void consoleDevSubmit(Writer writer, String id, @RequestParam String appId, @RequestParam(required = false) String version, @RequestParam(required = false) String json) throws JSONException, IOException {
+    public void consoleDevSubmit(Writer writer, String id, @RequestParam String appId, @RequestParam(required = false) String version, @RequestParam(value = "json", required = false) String json) throws JSONException, IOException {
         AppDefinition appDef = appService.getAppDefinition(appId, version);
         
         String oldProperties = "{}";  
@@ -6290,6 +6347,9 @@ public class ConsoleWebController {
         }
         
         try {
+            //retrieve from request body if the json is send in file
+            json = AppUtil.getSubmittedJsonDefinition(json);
+
             json = PropertyUtil.propertiesJsonStoreProcessing(oldProperties, json);
             Properties appProps = new Properties();
             JSONObject jsonObject = new JSONObject(json);

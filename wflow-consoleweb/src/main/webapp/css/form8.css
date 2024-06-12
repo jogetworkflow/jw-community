@@ -276,7 +276,8 @@ input[type=tel],
 input[type=number],
 input[type=search], 
 select, 
-textarea {
+textarea,
+.ql-container.ql-bubble{
     display: block;
     width: 100%;
     height: calc(1.5em + 0.75rem + 2px);
@@ -288,6 +289,10 @@ textarea {
     border: 1px solid #ced4da;
     border-radius: 0.25rem;
     transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+}
+.ql-container.ql-bubble.focus{
+    outline: 1px auto;
+    outline-color: var(--theme-primary, var(--theme-color3, #007bff));
 }
 input[size]{
     width: auto !important;
@@ -402,6 +407,9 @@ body.rtl .hasDatepicker + a + a{
     color: #f8d7da;
     right: 42px;
     top: 10px;
+    z-index: 1;
+}
+.datapicker-native.ui-screen-hidden.ios + .hasDatepicker + a + a {
     z-index: 4;
 }
 .hasDatepicker + a + a:hover {
@@ -432,6 +440,23 @@ img.ui-datepicker-trigger {
 body input.no-manual-input{
     cursor: text;
     background-color: #fff;
+}
+.datapicker-native.ui-screen-hidden.ios {
+    right: 15px;
+    top: unset;
+    bottom: 0px;
+    z-index: 2;
+    opacity: 0;
+    width: auto;
+    visibility: unset;  
+}
+.datapicker-native.ui-screen-hidden.ios input{
+    width:100%;
+    -webkit-appearance: none;
+}
+.datapicker-native.ui-screen-hidden.ios.manual{
+    left:unset;
+    width: 25px;
 }
 
 /* subform */
@@ -608,6 +633,9 @@ body input.no-manual-input{
 /* grid */
 .grid table {
     width: 100%;
+}
+.grid table td{
+    vertical-align: top;
 }
 .grid table th, .grid table td {
     border-top: 1px solid #ced4da !important;
@@ -1185,23 +1213,6 @@ body.rtl .handsontable .htCore tr td:last-child {
         top: unset;
         bottom: 6px;
     }
-    .datapicker-native.ui-screen-hidden.ios {
-        right: 15px;
-        top: unset;
-        bottom: 0px;
-        z-index: 2;
-        opacity: 0;
-        width: auto;
-        visibility: unset;  
-    }
-    .datapicker-native.ui-screen-hidden.ios input{
-        width:100%;
-        -webkit-appearance: none;
-    }
-    .datapicker-native.ui-screen-hidden.ios.manual{
-        left:unset;
-        width: 25px;
-    }
 }
 @media screen and (max-width: 39.9375em) {
     .grid table td,
@@ -1276,4 +1287,29 @@ body.popupBody .form-section:first-of-type {
         margin-top: 20px !important;
         padding-top: 0px !important;
     }
+}
+
+body.rtl .form-container [class*=form-cell-value]{
+    float: right;
+}
+
+body.rtl .ui-html.ql-editor,
+body.rtl table:not(.ui-datepicker-calendar) * {
+    text-align: right;
+}
+
+/* numeric field */
+.numeric_field_controls {display:inline-block; position:absolute;}
+.label-top .numeric_field_controls {right: 15px; bottom: 35px;}
+body.compact-mode .numeric_field_controls {top: -4px;}
+body.compact-mode .label-top .numeric_field_controls {top:auto; bottom: 32px;}
+body.rtl .label-top .numeric_field_controls {left: 15px; right: auto;}
+.numeric_field_control {position: absolute; top: 5px; right: 10px; font-size:10px; cursor: pointer;}
+.numeric_field_control img {width:12px; height:12px; max-width: fit-content; min-width: fit-content; max-height: fit-content; min-height: fit-content;}
+body.rtl .numeric_field_control {left:10px; right:auto;}
+.numeric_field_control.numeric_field_control_decr {top: 15px;} 
+@media (max-width: 768px) {
+    .numeric_field_controls {right: 15px; bottom: 35px;}
+    body.compact-mode .numeric_field_controls {top:auto; bottom: 32px;}
+    body.rtl .numeric_field_controls {left: 15px; right: auto;}
 }

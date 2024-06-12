@@ -155,6 +155,9 @@ public abstract class DataListBinderDefault extends ExtDefaultPlugin implements 
                     values.add(inboxSetting.getUsername());
                 }
             }
+            
+            conds += " AND ass.IsValid = 1";
+            
             queryObj.setOperator("AND");
             queryObj.setQuery(conds);
             queryObj.setValues(values.toArray(new String[0]));

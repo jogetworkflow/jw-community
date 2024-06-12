@@ -20,7 +20,8 @@
             options : {
                 getDefinitionUrl : "",
                 rightPropertyPanel : false,
-                defaultBuilder : false
+                defaultBuilder : false,
+                submitDiff : false //use for saving, prepare diff and post together with json definition
             },
             callbacks : {
                 initBuilder : "",
@@ -530,6 +531,12 @@
             CustomBuilder.togglePaletteFav($(this).parent());
         });
         CustomBuilder.updatePaletteFav();
+        
+        CustomBuilder.overviewPath = null;
+        var params = UrlUtil.getUrlParams(window.location.search);
+        if (params !== undefined && params["overview_path"] !== undefined) {
+            CustomBuilder.overviewPath = params["overview_path"][0];
+        }
         
         var builderCallback = function(){
             var jsonData = JSON.decode($("#cbuilder-json").val());
@@ -1098,6 +1105,11 @@
         CustomBuilder.updatePasteIcons();
         
         CustomBuilder.callback(CustomBuilder.config.builder.callbacks["afterUpdate"], [CustomBuilder.data]);
+        
+        //if non default builder and addToUndo is false, it is after old CustomBuilder.loadJson
+        if (!$("body").hasClass("default-builder") && addToUndo === false) {
+            CustomBuilder.handleOverviewPath();
+        }
     },
     
     /*
@@ -1151,50 +1163,86 @@
             CustomBuilder.showMessage(get_cbuilder_msg('cbuilder.saving'));
             var self = CustomBuilder;
             var json = CustomBuilder.getJson();
-            $.post(CustomBuilder.saveUrl, {json : json} , function(data) {
-                var d = JSON.decode(data);
-                if(d.success == true){
-                    $("#save-btn").removeClass("unsaved");
-                    CustomBuilder.savedJson = json;
-                    $('#cbuilder-json-original').val(d.data);
-                    CustomBuilder.updateSaveStatus("0");
-                    CustomBuilder.showMessage(get_cbuilder_msg('ubuilder.saved'), "success");
-                    
-                    if (d.properties !== undefined && d.properties !== null) {
-                        CustomBuilder.config.builder.properties = $.extend(true, CustomBuilder.config.builder.properties, d.properties);
-                    }
+            
+            var jsonFile = new Blob([json], {type : 'text/plain'});
+            var params = new FormData();
+            params.append("jsonFile", jsonFile);
+            
+            if (CustomBuilder.config.builder.options["submitDiff"]) {
+                //prepare diff file
+                // Parse the original JSON strings into JavaScript objects
+                const oldData = JSON.decode($('#cbuilder-json-original').val());
 
-                    CustomBuilder.callback(CustomBuilder.config.builder.callbacks["builderSaved"]);
-                }else{
-                    CustomBuilder.showMessage(get_cbuilder_msg('ubuilder.saveFailed') + ((d.error && d.error !== "")?(" : " + d.error):""), "danger");
-
-                    CustomBuilder.callback(CustomBuilder.config.builder.callbacks["builderSaveFailed"]);
-                }
+                // Get the difference patch
+                let diff = jsondiffpatch.diff(oldData, CustomBuilder.data);
                 
-                //check builder name change
-                var name = CustomBuilder.getBuilderItemName();
-                if ((name !== null && $("#builderElementName .title span.item_name").text() !== name) || (name === null && CustomBuilder.builderType === "process")) {
-                    if (name !== null) {
-                        $("#builderElementName .title span.item_name").text(name);
-
-                        $("head title").text(CustomBuilder.builderLabel + " : " + name);
-                    }
-                    
-                    //reload nav
-                    CustomBuilder.reloadBuilderMenu();
+                if (diff === null || diff === undefined) {
+                    diff = {};
                 }
+
+                // Convert the difference patch to a JSON string
+                const diffString = JSON.stringify(diff);
+                
+                //submit it
+                var diffFile = new Blob([diffString], {type : 'text/plain'});
+                params.append("diffFile", diffFile);
+            }
         
-                setTimeout(function(){
-                    $("#save-btn").removeAttr("disabled");
-                    if (typeof $('body').attr("builder-theme") !== 'undefined' && $('body').attr("builder-theme") !== false) {
-                        $("#save-btn > span").text(get_cbuilder_msg('cbuilder.saved'));
-                        $("#save-btn > i").removeClass("las la-cloud-upload-alt");
-                        $("#save-btn > i").addClass("zmdi zmdi-check");
-                        $("body").removeClass("initializing");
-                        $("#loadingMessage").text("");
+            $.ajax({ 
+                type: "POST", 
+                url: CustomBuilder.saveUrl,
+                data: params,
+                cache: false,
+                processData: false,
+                contentType: false,
+                beforeSend: function (request) {
+                   request.setRequestHeader(ConnectionManager.tokenName, ConnectionManager.tokenValue);
+                },
+                success:function(data) {
+                    var d = JSON.decode(data);
+                    if(d.success == true){
+                        $("#save-btn").removeClass("unsaved");
+                        CustomBuilder.savedJson = json;
+                        $('#cbuilder-json-original').val(d.data);
+                        CustomBuilder.updateSaveStatus("0");
+                        CustomBuilder.showMessage(get_cbuilder_msg('ubuilder.saved'), "success");
+
+                        if (d.properties !== undefined && d.properties !== null) {
+                            CustomBuilder.config.builder.properties = $.extend(true, CustomBuilder.config.builder.properties, d.properties);
+                        }
+
+                        CustomBuilder.callback(CustomBuilder.config.builder.callbacks["builderSaved"]);
+                    }else{
+                        CustomBuilder.showMessage(get_cbuilder_msg('ubuilder.saveFailed') + ((d.error && d.error !== "")?(" : " + d.error):""), "danger");
+
+                        CustomBuilder.callback(CustomBuilder.config.builder.callbacks["builderSaveFailed"]);
                     }
-                }, 3000);
-            }, "text");
+
+                    //check builder name change
+                    var name = CustomBuilder.getBuilderItemName();
+                    if ((name !== null && $("#builderElementName .title span.item_name").text() !== name) || (name === null && CustomBuilder.builderType === "process")) {
+                        if (name !== null) {
+                            $("#builderElementName .title span.item_name").text(name);
+
+                            $("head title").text(CustomBuilder.builderLabel + " : " + name);
+                        }
+
+                        //reload nav
+                        CustomBuilder.reloadBuilderMenu();
+                    }
+
+                    setTimeout(function(){
+                        $("#save-btn").removeAttr("disabled");
+                        if (typeof $('body').attr("builder-theme") !== 'undefined' && $('body').attr("builder-theme") !== false) {
+                            $("#save-btn > span").text(get_cbuilder_msg('cbuilder.saved'));
+                            $("#save-btn > i").removeClass("las la-cloud-upload-alt");
+                            $("#save-btn > i").addClass("zmdi zmdi-check");
+                            $("body").removeClass("initializing");
+                            $("#loadingMessage").text("");
+                        }
+                    }, 3000);
+                }
+            });
         } else {
             setTimeout(function(){
                 $("#save-btn").removeAttr("disabled");
@@ -1672,6 +1720,7 @@
             propertyValues : elementProperty,
             showCancelButton:true,
             changeCheckIgnoreUndefined: true,
+            scrollToField: CustomBuilder.overviewPropertiesPath,
             cancelCallback: function() {
                 CustomBuilder.callback(CustomBuilder.config.builder.callbacks["cancelEditProperties"], [elementObj, element]);
             },
@@ -2263,7 +2312,8 @@
             closeAfterSaved : false,
             changeCheckIgnoreUndefined: true,
             autoSave: true,
-            saveCallback: CustomBuilder.saveBuilderProperties
+            saveCallback: CustomBuilder.saveBuilderProperties,
+            scrollToField: CustomBuilder.overviewPropertiesPath
         };
         $("body").addClass("stop-scrolling");
         
@@ -2450,14 +2500,28 @@
                 }));
                 
                 //generate indicator
-                var height = $("#diffoutput table").outerHeight() + 75;
-                $("#diffoutput").append('<div id="diff-indicator" style="visibility:hidden;" ><canvas id="diff-indicator-canvas" width="10" height="'+(height + 3)+'"></div>');
-                var c = document.getElementById("diff-indicator-canvas");
-                var ctx = c.getContext("2d");
+                var totalRow = $("#diffoutput table tbody tr > td").length;
+                var totalHeight = $("#diffoutput table").outerHeight() + 20 + 55; //padding top & padding bottom
+                var count = 0;
+                var rowHeight = $("#diffoutput table tbody tr:first-child > td").outerHeight();
+                $("#diffoutput").append('<div id="diff-indicator" style="visibility:hidden;" ></div>');
+                
+                let c, ctx, yoffset;
+                let curTotalHeight = 20, curHeight = 20;
+                
                 $("#diffoutput table tbody tr > td").each(function(index, td){
+                    //break indicator to render max 200 rows at a time
+                    if (count === 0) {
+                        c = document.createElement('canvas');
+                        c.width = 10;
+                        c.height = rowHeight * 200 * 3; //buffer triple the height to cater multiline row
+                        ctx = c.getContext("2d");
+                        yoffset = curTotalHeight;
+                    }
+                    var cellHeight = $(td).outerHeight();
                     if ($(td).is(".replace, .delete, .insert")) {
                         var cssClass = $(td).attr("class");
-                        var y = $(td).offset().top - 65;
+                        var y = $(td).offset().top - 85 - yoffset;
                         
                         var color = "#ff3349";
                         if (cssClass === "insert") {
@@ -2467,18 +2531,113 @@
                         }
                         
                         ctx.beginPath();
-                        ctx.rect(0, y, 10, $(td).outerHeight());
+                        ctx.rect(0, y, 10, cellHeight);
                         ctx.fillStyle = color;
                         ctx.fill();
                     }
+                    count ++;
+                    curTotalHeight += cellHeight;
+                    curHeight += cellHeight;
+                    
+                    if (count === 200 || index === totalRow -1 ) {
+                        if (index === totalRow -1) {
+                            curHeight += 55; //55 is bottom margin of the diff viewer body
+                        }
+                        //save current data and resize
+                        let imageData = ctx.getImageData(0, 0, ctx.canvas.width, ctx.canvas.height);
+                        let newCanvas = document.createElement('canvas');
+                        newCanvas.width = 10;
+                        newCanvas.height = curHeight;
+                        let newCtx = newCanvas.getContext('2d');
+                        newCtx.putImageData(imageData, 0, 0);
+                        
+                        //render the indicator
+                        var image = newCanvas.toDataURL("image/png");
+                        $("#diff-indicator").append('<div style="background-image : url('+image+'); height:'+(curHeight/totalHeight*100)+'%;"></div>');
+                        $("#diff-indicator canvas").remove();
+                        count = 0;
+                        curHeight = 0;
+                    }
                 });
-                var image = c.toDataURL("image/png");
-                $("#diff-indicator canvas").remove();
+                
                 $("#diff-indicator").css({
-                    "visibility" : "",
-                    "background-image" : "url("+image+")",
-                    "background-repeat" : "repeat-x",
-                    "background-size" : "contain"
+                    "visibility" : ""
+                });
+                
+                $(view).append('<div class="sticky-buttons"><button class="prev-btn btn button btn-secondary"><i class="las la-angle-up"></i></button> <button class="next-btn btn button btn-secondary"><i class="las la-angle-down"></i></button></div>');
+        
+                var findChange = function(isNext) {
+                    var tds = $("#diffoutput table tbody tr").find('> .replace, > .delete, > .insert');
+                    
+                    //find current change
+                    var index = -1;
+                    if ($("#diffoutput table tbody tr .current").length > 0) {
+                        index = $(tds).index($("#diffoutput table tbody tr .current"));
+                    }
+                    
+                    var row;
+                    var continueFind = false;
+                    
+                    do {
+                        var currentIndex = index;
+                        
+                        //find next or prev index
+                        if (isNext) {
+                            index++;
+                        } else {
+                            index--;
+                        }
+
+                        //check boundary
+                        if (index >= tds.length) {
+                            index = 0;
+                        }
+                        if (index < 0) {
+                            index = tds.length - 1;
+                        }
+
+                        row = $(tds).eq(index);
+                        
+                        if (isNext) {
+                            continueFind = $(tds).eq(currentIndex).closest("tr").next().find("td").is(row);
+                        } else {
+                            continueFind = $(tds).eq(currentIndex).closest("tr").prev().find("td").is(row);
+                        }
+                    } while (continueFind);
+                    
+                    //if it is prev, find the first row of current change block
+                    if (!isNext) {
+                        var preRow;
+                        continueFind = false;
+                        do {
+                            preRow = $(row).closest("tr").prev().find("td");
+                            
+                            if ($(preRow).length > 0) {
+                                continueFind = $(preRow).attr("class") === $(row).attr("class");
+
+                                if (continueFind) {
+                                    row = preRow;
+                                }
+                            } else {
+                                break;
+                            }
+                        } while (continueFind);
+                    }
+                    
+                    $("#diffoutput table tbody tr .current").removeClass("current");
+                    $(row).addClass("current");
+                    
+                    $(view).animate({
+                        scrollTop: $(row).offset().top + $(view).scrollTop() - 150
+                    }, 500);
+                };
+        
+                $(view).find("button.next-btn").off("click").on("click", function() {
+                    findChange(true);
+                });
+
+                $(view).find("button.prev-btn").off("click").on("click", function() {
+                    findChange(false);
                 });
             }
         });
@@ -3557,6 +3716,94 @@
                 delete data[name];
             }
         }
+    },
+    
+    /**
+     *  Check and handle if there is overview path in the URL param for old design Custom Builder
+     */
+    handleOverviewPath: function() {
+        if (CustomBuilder.overviewPath !== null && CustomBuilder.overviewPath !== undefined && CustomBuilder.overviewPath !== "") {
+            var path = CustomBuilder.overviewPath;
+            if (CustomBuilder.config.builder.callbacks["handleOverviewPath"] !== undefined &&
+                CustomBuilder.config.builder.callbacks["handleOverviewPath"] !== "") {
+                CustomBuilder.callback(CustomBuilder.config.builder.callbacks["handleOverviewPath"], [path]);
+            } else {
+                //edit the path element
+                if (path.indexOf("properties") === 0) {
+                    //it is properties page
+                    setTimeout(function(){
+                        $("#properties-btn").trigger("click");
+                    }, 1);
+                    
+                    CustomBuilder.overviewPropertiesPath = path.substring(11);
+                } else {
+                    var element = $(CustomBuilder.buildLegacyBuilderSelectorByPath(CustomBuilder.data, path));
+                    if ($(element).length > 0) {
+                        if ($(element).find("> .element-options > .element-edit").length > 0) {
+                            $(element).find("> .element-options > .element-edit").trigger("click");
+                        } else {
+                            //no edit button, scroll to the element. cater for API builder
+                            $('#cbuilder #builder_canvas > div:not(#iframe-wrapper)').animate({
+                                scrollTop: $(element).offset().top
+                            }, 1);
+                        }
+                    }
+                }
+            }
+            
+            CustomBuilder.overviewPath = null;
+        }
+    },
+    
+    /**
+     * Utility method to build selector based on overview path for legacy custom builder
+     */
+    buildLegacyBuilderSelectorByPath: function(obj, path) {
+        var selector = "";
+        var propertiesPath = "";
+        if (obj !== null && obj !== undefined 
+                && path !== null && path !== undefined && path !== "") {
+            propertiesPath = path;
+            var splitpath = path.split(".");
+            var currentObj = obj;
+            
+            for (var i in splitpath) {
+                //remove processed path from propertiesPath
+                propertiesPath = propertiesPath.substring(splitpath[i].length + 1);
+                
+                //stop the selector building when it reach the properties
+                if (splitpath[i] == "properties") {
+                    break;
+                }
+                
+                try {
+                    var index = null;
+                    var property = splitpath[i];
+                    if (property.indexOf('[') !== -1) {
+                        index = parseInt(property.substring(property.indexOf('[') + 1, property.indexOf(']')));
+                        property = property.substring(0, property.indexOf('['));
+                    }
+                    
+                    currentObj = CustomBuilder.Builder.getObjectByProperty(currentObj, property, index);
+                    
+                    if (currentObj !== null) {
+                        if (currentObj['properties'] !== undefined && currentObj['properties']['id'] !== undefined) {
+                            selector += '#'+ currentObj['properties']['id'] + ' ';
+                        }
+                    } else {
+                        break;
+                    }
+                } catch (err) {
+                    if (console && console.error) {
+                        console.error(err);
+                    }
+                }
+            }
+            
+            CustomBuilder.overviewPropertiesPath = propertiesPath;
+        }
+        
+        return selector;
     }
 };
 
@@ -3658,6 +3905,7 @@ _CustomBuilder.Builder = {
         self.canvas = $("#builder_canvas");
         
         $("body").addClass("default-builder");
+        $("body").addClass(CustomBuilder.builderType);
         
         self._loadIframe(CustomBuilder.contextPath+'/builder/blank.jsp', callback);
         
@@ -3698,15 +3946,30 @@ _CustomBuilder.Builder = {
         
         var selectedELSelector = "";
         var selectedElIndex = 0;
-        if (self.selectedEl) {
+
+        //find overview path element if overviewPath having value
+        if (CustomBuilder.overviewPath !== null && CustomBuilder.overviewPath !== undefined && CustomBuilder.overviewPath !== "") {
+            if (CustomBuilder.config.builder.callbacks["getOverviewPathElementSelector"] !== undefined &&
+                CustomBuilder.config.builder.callbacks["getOverviewPathElementSelector"] !== "") {
+                [selectedELSelector, CustomBuilder.overviewPropertiesPath] = CustomBuilder.callback(CustomBuilder.config.builder.callbacks["getOverviewPathElementSelector"], [data, CustomBuilder.overviewPath]);
+            } else {
+                [selectedELSelector, CustomBuilder.overviewPropertiesPath] = CustomBuilder.Builder.getOverviewPathElementSelector(data, CustomBuilder.overviewPath);
+            }
+            
+            CustomBuilder.overviewPath = null;
+        } else if (self.selectedEl) {
             if ($(self.selectedEl).is("[data-cbuilder-id]")) {
                 selectedELSelector = '[data-cbuilder-id="'+ $(self.selectedEl).data("cbuilder-id") +'"]';
             } else {
                 selectedELSelector = '[data-cbuilder-id="'+ $(self.selectedEl).closest('[data-cbuilder-id]').data("cbuilder-id") +'"]';
                 selectedELSelector += ' [data-cbuilder-classname="' + $(self.selectedEl).data("cbuilder-classname") + '"]';
             }
-            
             selectedElIndex = self.frameBody.find(selectedELSelector).index(self.selectedEl);
+            
+            //to handle change of id
+            selectedELAltSelector = '[data-cbuilder-id="'+ $(self.selectedEl).parent().closest('[data-cbuilder-id]').data("cbuilder-id") +'"]';
+            selectedELAltSelector += ' [data-cbuilder-classname="' + $(self.selectedEl).data("cbuilder-classname") + '"]';
+            selectedElAltIndex = self.frameBody.find(selectedELAltSelector).index(self.selectedEl);
         } 
         
         self.frameBody.html("");
@@ -3724,6 +3987,13 @@ _CustomBuilder.Builder = {
             //reselect previous selected element
             if (selectedELSelector !== "") {
                 var element = self.frameBody.find(selectedELSelector);
+                
+                //to handle change of id
+                if (element.length === 0) {
+                    element = self.frameBody.find(selectedELAltSelector);
+                    selectedElIndex = selectedElAltIndex;
+                }
+                
                 if (element.length > 1) {
                     var elements = element;
                     do {
@@ -3751,6 +4021,102 @@ _CustomBuilder.Builder = {
         }
         
         $("#iframe-wrapper").show();
+    },
+    
+    /*
+     * Prepare the selector based on overview path parameter
+     */
+    getOverviewPathElementSelector : function(data, path) {
+        //check is setting page
+        var propertiesIndex = path.indexOf("properties.");
+        if (propertiesIndex === 0) {
+            setTimeout(function(){
+                $("#properties-btn").trigger("click");
+            }, 1);
+            
+            return ["", path.substring("properties.".length)];
+        } else {
+            return CustomBuilder.Builder.buildSelectorByPath(data, path);
+        }
+    },
+    
+    /**
+     *  Utility method to get object by property
+     */
+    getObjectByProperty: function(obj, property, index) {
+        if (obj[property] !== undefined) {
+            if (index !== null) {
+                if (obj[property][index] !== undefined) {
+                    return obj[property][index];
+                }
+            } else {
+                return obj[property];
+            }
+        }
+        return null;
+    },
+    
+    /**
+     * Utility method to build selector based on overview path
+     */
+    buildSelectorByPath: function(obj, path) {
+        var selector = "";
+        var propertiesPath = "";
+        if (obj !== null && obj !== undefined 
+                && path !== null && path !== undefined && path !== "") {
+            propertiesPath = path;
+            var splitpath = path.split(".");
+            var currentObj = obj;
+            
+            for (var i in splitpath) {
+                //remove processed path from propertiesPath
+                propertiesPath = propertiesPath.substring(splitpath[i].length + 1);
+                
+                //stop the selector building when it reach the properties
+                if (splitpath[i] == "properties") {
+                    break;
+                }
+                
+                try {
+                    var index = null;
+                    var property = splitpath[i];
+                    if (property.indexOf('[') !== -1) {
+                        index = parseInt(property.substring(property.indexOf('[') + 1, property.indexOf(']')));
+                        property = property.substring(0, property.indexOf('['));
+                    }
+                    
+                    currentObj = CustomBuilder.Builder.getObjectByProperty(currentObj, property, index);
+                    
+                    if (currentObj !== null) {
+                        if (currentObj['properties'] !== undefined && currentObj['properties']['id'] !== undefined) {
+                            selector += '[data-cbuilder-id="'+ currentObj['properties']['id'] +'"] ';
+                        } else if (currentObj['className'] !== undefined && currentObj['className'] !== "") {
+                            selector += '[data-cbuilder-classname="'+currentObj['className']+'"]:eq('+index+') ';
+                        }
+                    } else {
+                        break;
+                    }
+                } catch (err) {
+                    if (console && console.error) {
+                        console.error(err);
+                    }
+                }
+            }
+        }
+        
+        if (propertiesPath.indexOf('style-') !== -1) {
+            //show styling tab
+            setTimeout(function(){
+                $("#style-properties-tab-link a").trigger("click");
+            }, 1);
+        } else {
+            //show properties tab
+            setTimeout(function(){
+                $("#element-properties-tab-link a").trigger("click");
+            }, 1);
+        }
+        
+        return [selector, propertiesPath];
     },
     
     /*
@@ -4357,6 +4723,7 @@ _CustomBuilder.Builder = {
      * Select an element in canvas
      */
     selectNode:  function(node, dragging) {
+        CustomBuilder.Builder.highlightEl = node;
         CustomBuilder.Builder.selectNodeAndShowProperties(node, dragging, true);
     },
     
@@ -4502,6 +4869,7 @@ _CustomBuilder.Builder = {
                         }
                         
                         if (inilineEditEl !== null) {
+                            $(target).attr('data-cbuilder-inlineedit-element', '');
                             var inlineid = $(inilineEditEl).attr("id");
                             if (inlineid === undefined || inlineid === null || inlineid === "") {
                                 inlineid = "inline_" + CustomBuilder.uuid();
@@ -4748,6 +5116,9 @@ _CustomBuilder.Builder = {
                 }
             }
             var target = $(eventTarget);
+            if (CustomBuilder.Builder.isInlineEditing(target)) {
+                return true;
+            }
             
             if ($(target).closest(".ui-draggable-handle").length > 0) {
                 return;
@@ -5011,7 +5382,7 @@ _CustomBuilder.Builder = {
         self.frameHtml.on("mouseup.builder touchend.builder", function (event) {
             self.mousedown = false;
             var target = $(event.target);
-            if ($(target).closest('.mce-content-body[contenteditable]').length > 0 || $(target).closest('.mce-container').length > 0) {
+            if (CustomBuilder.Builder.isInlineEditing(target)) {
                 return true;
             }
             if (self.isDragging)
@@ -5032,7 +5403,7 @@ _CustomBuilder.Builder = {
         self.frameHtml.on("mousedown.builder touchstart.builder", function (event) {
             self.mousedown = true;
             var target = $(event.target);
-            if ($(target).closest('.mce-content-body[contenteditable]').length > 0 || $(target).closest('.tox-tinymce').length > 0) {
+            if (CustomBuilder.Builder.isInlineEditing(target)) {
                 self.mousedown = false;
                 return true;
             }
@@ -5130,7 +5501,7 @@ _CustomBuilder.Builder = {
         self.frameHtml.off("click.builder");
         self.frameHtml.on("click.builder", function (event) {
             var target = $(event.target);
-            if ($(target).closest('.mce-content-body[contenteditable]').length > 0 || $(target).closest('.mce-container').length > 0) {
+            if (CustomBuilder.Builder.isInlineEditing(target)) {
                 return true;
             }
             if (!$(target).is("[data-cbuilder-classname]")) {
@@ -5153,6 +5524,18 @@ _CustomBuilder.Builder = {
             event.preventDefault();
             return false;    
         });
+    },
+    
+    /*
+     * Used to check the current event target is from the inline editor
+     */
+    isInlineEditing : function(target) {
+        return $(target).find("> .mce-edit-focus").length > 0  //inline editing is focused
+                || $(target).closest('.mce-content-body[contenteditable]').length > 0 //the event target is within the inline editor
+                || $(target).closest('.tox-tinymce').length > 0 //the event target is toolbar
+                || $(target).closest('.tox-tiered-menu').length > 0 // the event target is toolbar menu
+                || $(target).closest('.tox-dialog').length > 0 // the event target is form dialog box for html editor
+                || $(target).closest('.tox-tbtn').length > 0; // the event target is additional toolbar menu for rich text
     },
     
     /*
@@ -5328,11 +5711,23 @@ _CustomBuilder.Builder = {
         var right = offset.left + $(nameWrapper).width();
         var frameRight = $("#iframe-wrapper").offset().left + $("#iframe-wrapper").width();
         if (right > frameRight) {
-            $(nameWrapper).css("right", ($(nameWrapper).width() - boxOffset.width) + "px");
+            if ((CustomBuilder.systemTheme === 'light' || CustomBuilder.systemTheme === 'dark')
+                    && (CustomBuilder.builderType === 'datalist' || CustomBuilder.builderType === 'process') && nameWrapper[0].id === 'element-select-name') {
+                // add 2 cause in light and dark mode theme the select border is 2px
+                $(nameWrapper).css("right", ($(nameWrapper).width() - boxOffset.width + 2) + "px");
+            } else {
+                $(nameWrapper).css("right", ($(nameWrapper).width() - boxOffset.width + 1) + "px");
+            }
             $(nameWrapper).css("left", "unset");
         } else {
             $(nameWrapper).css("right", "unset");
-            $(nameWrapper).css("left", "-1px");
+            if ((CustomBuilder.systemTheme === 'light' || CustomBuilder.systemTheme === 'dark')
+                    && (CustomBuilder.builderType === 'datalist' || CustomBuilder.builderType === 'process') && nameWrapper[0].id === 'element-select-name') {
+                // add 2 cause in light and dark mode theme the select border is 2px
+                $(nameWrapper).css("left", "-2px");
+            } else {
+                $(nameWrapper).css("left", "-1px");
+            }
         }
         
         $(box).data("element", element);
@@ -6868,6 +7263,7 @@ _CustomBuilder.Builder = {
             changeCheckIgnoreUndefined: true,
             editorPanelMode: true,
             closeAfterSaved: false,
+            scrollToField: CustomBuilder.overviewPropertiesPath,
             saveCallback: function(container, properties) {
                 var d = $(container).find(".property-editor-container").data("deferred");
                 d.resolve({
@@ -6922,6 +7318,16 @@ _CustomBuilder.Builder = {
             });
             $("#right-panel #style-properties-tab").find(".property-editor-container").attr("data-viewport", "desktop");
             $("#right-panel #style-properties-tab").find(".property-editor-container > .property-editor-pages").prepend(controls);
+            
+            //handle viewport style in overview path
+            if (CustomBuilder.overviewPropertiesPath !== undefined && CustomBuilder.overviewPropertiesPath !== null
+                    && CustomBuilder.overviewPropertiesPath !== "") {
+                if (CustomBuilder.overviewPropertiesPath.indexOf("style-tablet-") !== -1) {
+                    $(controls).find('[data-viewport="tablet"]').trigger("click");
+                } else if (CustomBuilder.overviewPropertiesPath.indexOf("style-mobile-") !== -1) {
+                    $(controls).find('[data-viewport="mobile"]').trigger("click");
+                }
+            }
         }
         
         if ($("body").hasClass("max-property-editor")) {

@@ -370,29 +370,29 @@ body input.no-manual-input{
     cursor: text;
     background-color: #fff;
 }
+.datapicker-native.ui-screen-hidden.ios + .hasDatepicker + a + a {
+    z-index: 4;
+}
+.datapicker-native.ui-screen-hidden.ios {
+    right: 15px;
+    top: unset;
+    bottom: 0px;
+    z-index: 2;
+    opacity: 0;
+    width: auto;
+    visibility: unset;  
+}
+.datapicker-native.ui-screen-hidden.ios input{
+    width:100%;
+    -webkit-appearance: none;
+}
+.datapicker-native.ui-screen-hidden.ios.manual{
+    left:unset;
+    width: 25px;
+}
 
 .trigger:hover, .close-icon:hover{
     opacity: 0.8;
-}
-
-@media (max-width: 768px) {
-    .datapicker-native.ui-screen-hidden.ios {
-        right: 15px;
-        top: unset;
-        bottom: 0px;
-        z-index: 2;
-        opacity: 0;
-        width: auto;
-        visibility: unset;  
-    }
-    .datapicker-native.ui-screen-hidden.ios input{
-        width:100%;
-        -webkit-appearance: none;
-    }
-    .datapicker-native.ui-screen-hidden.ios.manual{
-        left:unset;
-        width: 25px;
-    }
 }
 
 /* File upload */
@@ -405,6 +405,9 @@ ul.form-fileupload-value li a {display: inline-block;}
 /* grid */
 .cgrid table {
     width: 100%;
+}
+.grid td {
+    vertical-align: top;
 }
 .grid th, .grid td {
     border: solid 1px silver;
@@ -820,4 +823,17 @@ body.rtl .form-edit-btn{
 .comments_thread .comment {
     width: 100% !important;
     margin-top: 20px !important;
+}
+
+/* numeric field */
+.numeric_field_controls {display:inline-block; position:absolute; top: -4px;}
+.label-top .numeric_field_controls {right: 0px; bottom: 50px; top:auto;}
+body.rtl .label-top .numeric_field_controls {left: 0px; right: auto;}
+.numeric_field_control {position: absolute; top: 5px; right: 10px; font-size:10px; cursor: pointer;}
+.numeric_field_control img {width:12px; height:12px; max-width: fit-content; min-width: fit-content; max-height: fit-content; min-height: fit-content;}
+body.rtl .numeric_field_control {left:10px; right:auto;}
+.numeric_field_control.numeric_field_control_decr {top: 15px;} 
+@media (max-width: 768px) {
+    .numeric_field_controls {right: 0px; bottom: 50px; top:auto;}
+    body.rtl .numeric_field_controls {left: 0px; right: auto;}
 }

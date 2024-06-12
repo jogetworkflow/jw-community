@@ -8,6 +8,7 @@
         <property column="Activated" name="activated" type="long"/>
         <property column="PDefName" name="processDefId" type="string"/>
         <property column="ProcessId" name="processId" type="string"/>
+        <property column="ResourceId" name="resourceId" type="string"/>
         
         <many-to-one entity-name="SharkActivityState" insert="false" fetch="join" lazy="false" update="false" name="state" column="State" />        
     </class>

@@ -4,6 +4,7 @@ UI = {
    userview_app_id: '',
    userview_id: '',
    locale: '',
+   theme: '',
    escapeHTML: function(c) {
       if (c == null || c == undefined) {
           return '';

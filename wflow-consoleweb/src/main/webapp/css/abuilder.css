@@ -37,8 +37,24 @@ body {--builder-left-panel-width: 0px !important;}
 #builders-seperator > span:nth-child(2) {left:calc(((100% - 30px)/3 * 2) + 14px);}
 #builders > div:nth-child(n+5){border-top:1px solid #ccc; padding-top: 20px !important;}
 #cbuilder[data-browser="ie"] #builders > div {border-top:0px !important; padding-top: 0px !important;}
-#cbuilder .advanced-tools, #cbuilder .advanced-tools-toogle, #cbuilder .tool {display:none !important; }
+#cbuilder .tool {display:none !important; }
 #app-info {display: inline-block; vertical-align: middle;}
+body.overview_view .builder-type ul li.item > a .item-id {visibility: visible;}
+.builder-type ul.overview_container {padding:0; min-height: 0; font-size: 90%; padding-left: 20px; padding-right: 5px; padding-bottom: 5px;}
+.builder-type ul.overview_container li.overview_data {display: flex; padding: 3px; background: var(--theme-primary-color-5, #e9ecef); min-height: 0; }
+.builder-type ul.overview_container li.overview_data.no_record {background: #fff9f9; color:#bbb;}
+.builder-type ul.overview_container li.overview_data.error > a.path_link {color: red;}
+.builder-type ul.overview_container li.overview_data + li {margin-top: 3px;}
+.builder-type ul.overview_container li.overview_data a {padding: 3px 5px; box-sizing: border-box;}
+.builder-type ul.overview_container li.overview_data a.path_link {flex: 1 1 auto!important; padding-right: 25px; text-overflow: ellipsis; white-space: nowrap; overflow: hidden;}
+.builder-type ul.overview_container li.overview_data a.path_link:hover{text-overflow: unset; white-space: initial; overflow: hidden; word-break: break-all;}
+.builder-type ul.overview_container li.overview_data a.more_detail{cursor: pointer;}
+.builder-type ul.overview_container li.overview_data a.more_detail:hover {color:#007bff;}
+.overview_container .overview_data .more_detail_content {display: none; position:absolute;}
+.overview_view .no_overview_data {display: none !important;}
+.overview_view .show_overview_no_data .no_overview_data:not(.search_hide) {display: list-item !important;}
+#toogle_no_overview_data {margin-left: 20px; cursor: pointer; color: #007bff; display:none;}
+.overview_view #toogle_no_overview_data{display: inline-block;}
 @media screen and (max-width:1290px) {
     #builders {grid-auto-rows: 200px;}
     #builders-seperator > span {left:calc((100% - 30px)/2 + 14px); right: auto;}

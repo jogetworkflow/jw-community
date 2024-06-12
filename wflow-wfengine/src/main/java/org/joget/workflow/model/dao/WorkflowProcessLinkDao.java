@@ -223,13 +223,15 @@ public class WorkflowProcessLinkDao extends AbstractSpringDao {
         origin.setOriginProcessId(processId);
         links.add(origin);
         
-        Collection<WorkflowProcessLink> temp = super.find(ENTITY_NAME, conditions, new String[]{processId}, null, null, null, null);
-        if (temp != null && !temp.isEmpty()) {
-            links.addAll(temp);
-        }
+        //the histories link should have higher order to render consistent result in process status as DX7
         Collection<WorkflowProcessLink> tempHistory = super.find(HISTORY_ENTITY_NAME, conditions, new String[]{processId}, null, null, null, null);
         if (tempHistory != null && !tempHistory.isEmpty()) {
             links.addAll(tempHistory);
+        }
+        
+        Collection<WorkflowProcessLink> temp = super.find(ENTITY_NAME, conditions, new String[]{processId}, null, null, null, null);
+        if (temp != null && !temp.isEmpty()) {
+            links.addAll(temp);
         }
         
         return links;

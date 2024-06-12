@@ -571,7 +571,7 @@ body .filter-cell select:not([class^="ui-"]){
 }
 body.rtl .filter-cell select:not([class^="ui-"]){
   padding-left: 30px;
-  padding-right: 0;
+  padding-right: 10px;
 }
   
 body select:not([class^="ui-"]):disabled {
@@ -957,4 +957,14 @@ body.rtl .form-edit-btn{
 }
 .form-edit-btn.bottom{
     bottom: 31px;
+}
+
+/* numeric field */
+.numeric_field_controls {top: -8px;}
+.label-top .numeric_field_controls {bottom: 53px; top: auto;}
+@media (max-width: 768px) {
+    .numeric_field_controls {bottom: auto; top: -8px; right: auto;}
+}
+@media (max-width: 480px) {
+    .numeric_field_controls {bottom: 53px; top: auto;}
 }

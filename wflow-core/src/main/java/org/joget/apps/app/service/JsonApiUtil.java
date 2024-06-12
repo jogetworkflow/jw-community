@@ -3,7 +3,9 @@ package org.joget.apps.app.service;
 import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
@@ -24,9 +26,9 @@ import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.util.EntityUtils;
 import org.joget.commons.util.LogUtil;
 import org.joget.commons.util.StringUtil;
-import org.joget.plugin.property.service.PropertyUtil;
 import org.joget.workflow.model.WorkflowAssignment;
 import org.joget.workflow.util.WorkflowUtil;
+import org.json.JSONArray;
 import org.json.JSONObject;
 
 public class JsonApiUtil {
@@ -158,7 +160,7 @@ public class JsonApiUtil {
                 if ("true".equalsIgnoreCase(properties.get("debugMode").toString())) {
                     LogUtil.info(JsonApiUtil.class.getName(), jsonResponse);
                 }
-                result = PropertyUtil.getProperties(new JSONObject(jsonResponse));
+                result = JsonApiUtil.getJsonObjectMap(new JSONObject(jsonResponse));
             }
         } catch (Exception ex) {
             LogUtil.error(JsonApiUtil.class.getName(), ex, "");
@@ -199,7 +201,31 @@ public class JsonApiUtil {
     }
     
     public static Object getObjectFromMap(String key, Map object) {
-        if (key.contains(".")) {
+        if (key.endsWith("<>") || key.endsWith("[]")) { //to support retrieve map or array for looping in option binder
+            key = key.substring(0, key.length() - 2);
+        }
+        
+        /* added {} annotation to handle the keys which contains . eg { "user.Org":"Joget Inc"} 
+    
+         Using annotation like {user.Org} in the field mapping it will be able to parse the records
+         */
+        if (key.startsWith("{")) {
+            String key1 = key.substring(1, key.indexOf("}")); //{search.name}
+            Object tempObject = object.get(key1);
+
+            String subKey = key.replace("{" + key1 + "}", ""); //{search.name}.first to .first
+            if (subKey.startsWith(".")) {
+                subKey = subKey.substring(0, 1);  //first
+            }
+            if (subKey.length() > 0) {
+
+                if (tempObject != null && tempObject instanceof Map) {
+                    return getObjectFromMap(subKey, (Map) tempObject);
+                }
+            }
+
+            return tempObject;
+        } else if (key.contains(".")) {
             String subKey = key.substring(key.indexOf(".") + 1);
             key = key.substring(0, key.indexOf("."));
 
@@ -221,5 +247,61 @@ public class JsonApiUtil {
             }
         }
         return null;
+    }
+    
+    /**
+     * Convenient method used by system to parses a JSON object in to a map,
+     * this method is duplicate of PropertyUtil.getProperties to return value in its original data type instead of string
+     * @param obj
+     * @return 
+     */
+    public static Map<String, Object> getJsonObjectMap(JSONObject obj) {
+        Map<String, Object> object = new HashMap<String, Object>();
+        try {
+            if (obj != null) {
+                Iterator keys = obj.keys();
+                while (keys.hasNext()) {
+                    String key = (String) keys.next();
+                    if (!obj.isNull(key)) {
+                        Object value = obj.get(key);
+                        if (value instanceof JSONArray) {
+                            object.put(key, getArray((JSONArray) value));
+                        } else if (value instanceof JSONObject) {
+                            object.put(key, getJsonObjectMap((JSONObject) value));
+                        } else {
+                            String stringValue = obj.get(key).toString();
+                            if ("{}".equals(stringValue)) {
+                                object.put(key, new HashMap<String, Object>());
+                            } else {
+                                object.put(key, obj.get(key));
+                            }
+                        }
+                    } else {
+                        object.put(key, "");
+                    }
+                }
+            }
+        } catch (Exception e) {
+        }
+        return object;
+    }
+    
+    private static Object[] getArray(JSONArray arr) throws Exception {
+        Collection<Object> array = new ArrayList<Object>();
+        if (arr != null && arr.length() > 0) {
+            for (int i = 0; i < arr.length(); i++) {
+                Object value = arr.get(i);
+                if (value != null) {
+                    if (value instanceof JSONArray) {
+                        array.add(getArray((JSONArray) value));
+                    } else if (value instanceof JSONObject) {
+                        array.add(getJsonObjectMap((JSONObject) value));
+                    } else if (value instanceof String) {
+                        array.add(value);
+                    }
+                }
+            }
+        }
+        return array.toArray();
     }
 }

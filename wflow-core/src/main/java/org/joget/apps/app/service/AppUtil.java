@@ -1,7 +1,10 @@
 package org.joget.apps.app.service;
 
+import com.github.underscore.lodash.U;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.Writer;
 import java.lang.reflect.Field;
 import java.net.URI;
@@ -58,12 +61,14 @@ import org.joget.apps.app.model.DatalistDefinition;
 import org.joget.apps.app.model.FormDefinition;
 import org.joget.apps.app.model.HashVariablePlugin;
 import org.joget.apps.app.model.Message;
+import org.joget.apps.app.model.PackageActivityForm;
 import org.joget.apps.app.model.PackageActivityPlugin;
 import org.joget.apps.app.model.PackageDefinition;
 import org.joget.apps.app.model.PackageParticipant;
 import org.joget.apps.app.model.PluginDefaultProperties;
 import org.joget.apps.app.model.UserReplacement;
 import org.joget.apps.app.model.UserviewDefinition;
+import org.joget.apps.form.lib.DefaultFormBinder;
 import org.joget.apps.form.model.Element;
 import org.joget.apps.form.model.Form;
 import org.joget.apps.form.model.FormData;
@@ -73,10 +78,14 @@ import org.joget.apps.userview.lib.AjaxUniversalTheme;
 import org.joget.apps.userview.model.UserviewTheme;
 import org.joget.apps.userview.model.UserviewV5Theme;
 import org.joget.apps.userview.service.UserviewService;
+import org.joget.commons.spring.model.Setting;
 import org.joget.commons.util.DistributedIdGenerator;
+import org.joget.commons.util.FileLimitException;
+import org.joget.commons.util.FileStore;
 import org.joget.commons.util.LogUtil;
 import org.joget.commons.util.ResourceBundleUtil;
 import org.joget.commons.util.SecurityUtil;
+import org.joget.commons.util.SetupDao;
 import org.joget.commons.util.SetupManager;
 import org.joget.commons.util.StringUtil;
 import org.joget.commons.util.TimeZoneUtil;
@@ -89,6 +98,7 @@ import org.joget.plugin.property.service.PropertyUtil;
 import org.joget.workflow.model.WorkflowAssignment;
 import org.joget.workflow.model.WorkflowProcess;
 import org.joget.workflow.model.service.WorkflowManager;
+import org.joget.workflow.model.service.WorkflowManagerImpl;
 import org.joget.workflow.shark.model.dao.WorkflowAssignmentDao;
 import org.joget.workflow.util.WorkflowUtil;
 import org.json.JSONArray;
@@ -103,6 +113,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.ClassUtils;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.util.HtmlUtils;
 
 /**
@@ -421,7 +432,7 @@ public class AppUtil implements ApplicationContextAware {
      * @return Language code
      */
     public static String getAppLanguage() {
-        return LocaleContextHolder.getLocale().getLanguage();
+        return StringUtil.stripAllHtmlTag(LocaleContextHolder.getLocale().getLanguage());
     }
     
     /**
@@ -429,7 +440,7 @@ public class AppUtil implements ApplicationContextAware {
      * @return timezone id
      */
     public static String getAppTimezone() {
-        return LocaleContextHolder.getTimeZone().getID();
+        return StringUtil.stripAllHtmlTag(LocaleContextHolder.getTimeZone().getID());
     }
     
     /**
@@ -1070,8 +1081,7 @@ public class AppUtil implements ApplicationContextAware {
                             data.put("params", request.getParameterMap());
                             data.put("context_path", request.getContextPath());
                             data.put("build_number", ResourceBundleUtil.getMessage("build.number"));
-                            String rightToLeft = WorkflowUtil.getSystemSetupValue("rightToLeft");
-                            data.put("right_to_left", "true".equalsIgnoreCase(rightToLeft));
+                            data.put("right_to_left", isRTL());
                             String locale = AppUtil.getAppLocale();
                             data.put("locale", locale);
                             data.put("is_popup_view", true);
@@ -1850,7 +1860,9 @@ public class AppUtil implements ApplicationContextAware {
      */
     public static boolean hasNonArchivedProcessData() {
         WorkflowAssignmentDao workflowAssignmentDao = (WorkflowAssignmentDao)AppUtil.getApplicationContext().getBean("workflowAssignmentDao");
-        return workflowAssignmentDao.hasNonHistoryCompletedProcess() || !isArchivedProcessDataModeEnabled();
+        SetupManager setupManager = (SetupManager)AppUtil.getApplicationContext().getBean("setupManager");
+        
+        return (workflowAssignmentDao.hasNonHistoryCompletedProcess() && setupManager.getSettingValue(WorkflowManagerImpl.ARCHIVE_SETTING) == null) || !isArchivedProcessDataModeEnabled();
     }
     
     /**
@@ -1860,6 +1872,58 @@ public class AppUtil implements ApplicationContextAware {
         SetupManager setupManager = (SetupManager)AppUtil.getApplicationContext().getBean("setupManager");
         String mode = setupManager.getSettingValue("deleteProcessOnCompletion");
         return "archive".equalsIgnoreCase(mode);
+    }
+    
+    /**
+     * Used to retrieve the archiving process status percentage
+     * negative value = paused
+     * 100 = completed or no migration running
+     */
+    public static double getArchivedProcessStatus() {
+        //not using setupManager due to the value is cached
+        SetupDao setupDao = (SetupDao) WorkflowUtil.getApplicationContext().getBean("setupDao");
+        Collection<Setting> result = setupDao.find("WHERE property = ?", new String[]{WorkflowManagerImpl.ARCHIVE_SETTING}, null, null, null, null);
+        Setting status = (result.isEmpty()) ? null : result.iterator().next();
+        
+        if (status != null) {
+            try {
+                JSONObject statusObj = new JSONObject(status.getValue());
+
+                //check the date to see if the archive migration thread is still running, assume it is stopped if no update for 15mins
+                if (statusObj.getString("state").equals("STARTED")) {
+                    SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+                    if ((new Date()).getTime() - sdf.parse(statusObj.getString("lastRun")).getTime() > (15 * 60 * 1000)) {
+                        statusObj.put("state", "PAUSE");
+                        status.setValue(statusObj.toString());
+                        setupDao.saveOrUpdate(status);
+                    }
+                }
+                
+                double percentage = 0;
+                double total = statusObj.getDouble("total");
+                double completed = statusObj.getDouble("completed");
+                
+                if (total > completed) {
+                    percentage = completed/total * 100;
+                } else {
+                    percentage = 95;
+                }
+                
+                if (percentage == 0) {
+                    percentage = 1;
+                }
+                
+                if (statusObj.getString("state").equals("PAUSE")) {
+                    //make it negative value is the migration thread is not running
+                    percentage = percentage * -1;
+                }
+                
+                return percentage;
+            } catch (Exception e) {
+                LogUtil.error(AppUtil.class.getName(), e, "");
+            }
+        }
+        return 100;
     }
     
     /**
@@ -1941,5 +2005,177 @@ public class AppUtil implements ApplicationContextAware {
             value = value.replaceAll(pattern, StringUtil.escapeRegex(runningNumber));
         }
         return value;
+    }
+    
+    /**
+     * Check to retrieve JSON from multipart file in POST body if json is null or empty
+     * @param json
+     * @return 
+     */
+    public static String getSubmittedJsonDefinition(String json) {
+        if (json == null || json.isEmpty()) {
+            // get json file in POST body
+            MultipartFile jsonFile = null;
+            try {
+                jsonFile = FileStore.getFile("jsonFile");
+            } catch (FileLimitException e) {
+                LogUtil.warn(AppUtil.class.getName(), ResourceBundleUtil.getMessage("general.error.fileSizeTooLarge", new Object[]{FileStore.getFileSizeLimit()}));
+            }
+            
+            if (jsonFile != null) {
+                try {
+                    json =  new String(jsonFile.getBytes(), "UTF-8");
+                } catch (IOException e) {
+                    LogUtil.error(AppUtil.class.getName(), e, "Fail to retrieve submitted JSON definition");
+                }
+            }
+        }
+        
+        return json;
+    }
+    
+    public static String getXpdlAndMappingJson(AppDefinition appDef) {
+        return getXpdlAndMappingJsonObj(appDef).toString();
+    }
+    
+    public static JSONObject getXpdlAndMappingJsonObj(AppDefinition appDef) {
+        JSONObject jsonDef = new JSONObject();
+        
+        try {
+            String xpdl = getXpdl(appDef);
+            if (xpdl != null && !xpdl.isEmpty()) {
+                String xpdlJson = U.xmlToJson(xpdl);
+                jsonDef.put("xpdl", new JSONObject(xpdlJson));
+            }
+            
+            PackageDefinition packageDefinition = appDef.getPackageDefinition();
+            if (packageDefinition != null) {
+                Map<String, PackageActivityForm> activityFormMap = packageDefinition.getPackageActivityFormMap();
+                JSONObject activityForms = new JSONObject();
+                if (activityFormMap != null && !activityFormMap.isEmpty()) {
+                    for (String k : activityFormMap.keySet()) {
+                        JSONObject o = new JSONObject();
+                        PackageActivityForm f = activityFormMap.get(k);
+
+                        populateActivityForm(o, f);
+                        activityForms.put(k, o);
+                    }
+                }
+                jsonDef.put("activityForms", activityForms);
+
+                Map<String, PackageActivityPlugin> activityMap = packageDefinition.getPackageActivityPluginMap();
+                JSONObject activityPlugins = new JSONObject();
+                if (activityMap != null && !activityMap.isEmpty()) {
+                    for (String k : activityMap.keySet()) {
+                        JSONObject o = new JSONObject();
+                        PackageActivityPlugin p = activityMap.get(k);
+
+                        populateActivityPlugin(o, p);
+                        activityPlugins.put(k, o);
+                    }
+                }
+                jsonDef.put("activityPlugins", activityPlugins);
+
+                Map<String, PackageParticipant> participantMap = packageDefinition.getPackageParticipantMap();
+                JSONObject participants = new JSONObject();
+                if (participantMap != null && !participantMap.isEmpty()) {
+                    for (String k : participantMap.keySet()) {
+                        JSONObject o = new JSONObject();
+                        PackageParticipant p = participantMap.get(k);
+
+                        populateParticipant(o, p);
+                        participants.put(k, o);
+                    }
+                }
+                jsonDef.put("participants", participants);
+            } else {
+                jsonDef.put("activityForms", new JSONObject());
+                jsonDef.put("activityPlugins", new JSONObject());
+                jsonDef.put("participants", new JSONObject());
+            }
+            
+        } catch (Exception e) {
+            LogUtil.error(AppUtil.class.getName(), e, "");
+        }
+        
+        return jsonDef;
+    }
+
+    protected static String getXpdl(AppDefinition appDef) {
+        try {
+            PackageDefinition packageDef = appDef.getPackageDefinition();
+            String xpdl = null;
+            if (packageDef != null) {
+                WorkflowManager workflowManager = (WorkflowManager) AppUtil.getApplicationContext().getBean("workflowManager");
+                byte[] content = workflowManager.getPackageContent(packageDef.getId(), packageDef.getVersion().toString());
+                if (content != null) {
+                    xpdl = new String(content, "UTF-8");
+                }
+            }
+            
+            if (xpdl == null) {
+                // read default xpdl
+                InputStream input = null;
+                ByteArrayOutputStream out = new ByteArrayOutputStream();
+                try {
+                    // get resource input stream
+                    String url = "/org/joget/apps/app/model/default.xpdl";
+                    
+                    PluginManager pluginManager = (PluginManager) AppUtil.getApplicationContext().getBean("pluginManager");
+                    input = pluginManager.getPluginResource(DefaultFormBinder.class.getName(), url);
+                    if (input != null) {
+                        // write output
+                        byte[] bbuf = new byte[65536];
+                        int length = 0;
+                        while ((input != null) && ((length = input.read(bbuf)) != -1)) {
+                            out.write(bbuf, 0, length);
+                        }
+                        // form xpdl
+                        xpdl = new String(out.toByteArray(), "UTF-8");
+
+                        // replace package ID and name
+                        xpdl = xpdl.replace("${packageId}", StringUtil.escapeString(appDef.getId(), StringUtil.TYPE_XML, null));
+                        xpdl = xpdl.replace("${packageName}", StringUtil.escapeString(appDef.getName(), StringUtil.TYPE_XML, null));
+                        return xpdl;
+                    }
+                } finally {
+                    if (input != null) {
+                        input.close();
+                    }
+                }
+            }
+            return xpdl;
+        } catch (Exception e) {
+            LogUtil.error(AppUtil.class.getName(), e, "");
+        }
+        return null;
+    }
+    
+    protected static void populateActivityForm(JSONObject o, PackageActivityForm f) throws JSONException {
+        o.put("formId", f.getFormId());
+        o.put("formUrl", f.getFormUrl());
+        o.put("formIFrameStyle", f.getFormIFrameStyle());
+        o.put("disableSaveAsDraft", f.getDisableSaveAsDraft());
+        o.put("autoContinue", f.isAutoContinue());
+        o.put("type", (f.getType() != null)?f.getType():PackageActivityForm.ACTIVITY_FORM_TYPE_SINGLE);
+    }
+    
+    protected static void populateActivityPlugin(JSONObject o, PackageActivityPlugin p) throws JSONException {
+        o.put("className", p.getPluginName());
+        if (p.getPluginProperties() != null && !p.getPluginProperties().isEmpty()) {
+            o.put("properties", new JSONObject(p.getPluginProperties()));
+        } else {
+            o.put("properties", new JSONObject());
+        }
+    }
+    
+    protected static void populateParticipant(JSONObject o, PackageParticipant p) throws JSONException {
+        o.put("type", p.getType());
+        o.put("value", p.getValue());
+        if (p.getPluginProperties() != null && !p.getPluginProperties().isEmpty()) {
+            o.put("properties", new JSONObject(p.getPluginProperties()));
+        } else {
+            o.put("properties", new JSONObject());
+        }
     }
 }

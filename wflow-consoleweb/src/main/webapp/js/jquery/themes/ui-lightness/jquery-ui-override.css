@@ -70,9 +70,12 @@
 .ui-timepicker-div dl {
     margin: 5px 60px;
 }
-.ui-timepicker-div dl dd {
-    margin: 0 -15px 5px 51% !important;
+#ui-datepicker-div .ui-timepicker-div dl dd {
+    margin: 0 -15px 5px 51%;
     width: 80px;
+}
+#ui-datepicker-div .ui-timepicker-div.ui-timepicker-rtl dl dd {
+    margin: 0 40% 10px 10px;
 }
 .ui-datepicker .ui-datepicker-buttonpane {
     margin: .3em 0 0 0;

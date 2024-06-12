@@ -145,9 +145,13 @@
         }
         
         function htmlDecode(input){
-            var e = document.createElement('div');
-            e.innerHTML = input;
-            return e.childNodes.length === 0 ? "" : e.childNodes[0].nodeValue;
+            if (/&[#0-9a-zA-Z]+;/.test(input)) { //check the input is encoded previously
+                var e = document.createElement('div');
+                e.innerHTML = input;
+                return e.childNodes.length === 0 ? "" : e.childNodes[0].nodeValue;
+            } else {
+                return input;
+            }
         }
         
         function getSelectedData() {

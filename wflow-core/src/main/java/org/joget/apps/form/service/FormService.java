@@ -141,6 +141,14 @@ public interface FormService {
      * @return
      */
     FormData retrieveFormDataFromRequest(FormData formData, HttpServletRequest request);
+    
+    /**
+     * Merge the request parameters from previous form data to new form data
+     * 
+     * @param newFormData
+     * @param mergeFormData 
+     */
+    void mergeProcessedRequestParams(FormData newFormData, FormData mergeFormData);
 
     /**
      * Retrieves form data submitted via a HTTP servlet request parameters map

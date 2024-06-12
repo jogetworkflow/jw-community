@@ -4804,7 +4804,7 @@ ProcessBuilder = {
             }
         }
         
-        if (typeof obj === "object") {
+        if (typeof obj === "object" && !(obj instanceof String)) {
             for (var prop in obj) {
                 if (prop === "-self-closing") {
                     selfClosing = obj['-self-closing'];
@@ -4829,7 +4829,7 @@ ProcessBuilder = {
         if (name !== "") {
             if (selfClosing) {
                 xml = space + "<" + name + attrs + "/>\n";
-            } else if (typeof obj !== "object") {
+            } else if (typeof obj !== "object" || obj instanceof String) {
                 xml = space + "<" + name + ">" + body + "</" + name + ">\n";
             } else {
                 xml = space + "<" + name + attrs + ">\n" + body + space + "</" + name + ">\n";
@@ -4868,13 +4868,18 @@ ProcessBuilder = {
      * Update json def based on xpdl
      */
     updateJsonFromXpdl : function(xpdl, callback) {
+        var xpdlFile = new Blob([xpdl], {type : 'text/plain'});
+        var params = new FormData();
+        params.append("xpdlFile", xpdlFile);
+        
         $.ajax({
             type: "POST",
-            data: {
-                "xpdl": xpdl
-            },
+            data: params,
             url: CustomBuilder.contextPath + '/web/console/app'+CustomBuilder.appPath+'/process/builder/xpdlJson',
             dataType : "json",
+            cache: false,
+            processData: false,
+            contentType: false,
             beforeSend: function (request) {
                 request.setRequestHeader(ConnectionManager.tokenName, ConnectionManager.tokenValue);
             },
@@ -4884,7 +4889,8 @@ ProcessBuilder = {
                         var data = eval(response);
                         if (data !== null && data["Package"] !== undefined) {
                             CustomBuilder.data.xpdl["Package"] = data["Package"];
-                            CustomBuilder.loadJson(CustomBuilder.getJson(), true); //update through loadJson addToUndo to make sure package id does not change.
+                            var json = JSON.encode(CustomBuilder.data);
+                            CustomBuilder.loadJson(json, true); //update through loadJson addToUndo to make sure package id does not change.
                         }
                     } catch (err) {}
                 }  
@@ -5077,6 +5083,77 @@ ProcessBuilder = {
             
     builderSaved : function() {
         ProcessBuilder.updateAdvancedView();
+    },
+     
+    /*
+     * Prepare the selector based on overview path parameter
+     */
+    getOverviewPathElementSelector : function(data, path) {
+        var selector = "";
+        var propertiesPath = path;
+        
+        if (path.indexOf("xpdl.") === 0) {
+            var xpdl = CustomBuilder.data.xpdl['Package'];
+            var xpdlProcesses = ProcessBuilder.getArray(xpdl['WorkflowProcesses']['WorkflowProcess']);
+            
+            var index = 0;
+            if (propertiesPath.indexOf('WorkflowProcess[') !== -1) {
+                index = parseInt(propertiesPath.substring(propertiesPath.indexOf('WorkflowProcess[') + 16, propertiesPath.indexOf('].')));
+                propertiesPath = propertiesPath.substring(propertiesPath.indexOf('].') + 1);
+            }
+            var xpdlProcess = xpdlProcesses[index];
+            
+            if (path.indexOf(".Activity[") !== -1) { //is activity node
+                var xpdlActivities = ProcessBuilder.getArray(xpdlProcess['Activities'], 'Activity');
+                
+                //find activity
+                index = parseInt(propertiesPath.substring(propertiesPath.indexOf('.Activity[') + 10, propertiesPath.indexOf('].')));
+                propertiesPath = propertiesPath.substring(propertiesPath.indexOf('].') + 1);
+                var xpdlActivity = xpdlActivities[index];
+                
+                selector = "#" + xpdlActivity['-Id'];
+            } else if (path.indexOf(".Transition[") !== -1) { //is transition
+                var xpdlTransitions = ProcessBuilder.getArray(xpdlProcess['Transitions'], 'Transition');
+                
+                //find transition
+                index = parseInt(propertiesPath.substring(propertiesPath.indexOf('.Transition[') + 12, propertiesPath.indexOf('].')));
+                propertiesPath = propertiesPath.substring(propertiesPath.indexOf('].') + 1);
+                var xpdlTransition = xpdlTransitions[index];
+                
+                selector = "#" + xpdlTransition['-Id'];
+            } else { //is edit process
+                setTimeout(function(){
+                    $("#process-edit-btn").trigger("click");
+                }, 1);
+            
+                return ["", propertiesPath];
+            }
+            
+            //show properties tab
+            setTimeout(function(){
+                $("#element-properties-tab-link a").trigger("click");
+            }, 1);
+            
+        } else { //it is mapping
+            var temp = path.split("::");
+            var id = temp[1].substring(0, temp[1].indexOf("."));
+            propertiesPath = temp[1].substring(temp[1].indexOf(".") + 12);
+            
+            if (id === "processStartWhiteList") {
+                selector = '[data-cbuilder-classname="start"]';
+            } else if (path.indexOf("participants.") !== -1) {
+                selector = "#participant_" + id;
+            } else {
+                selector = "#" + id;
+            }
+            
+            //show mapping tab
+            setTimeout(function(){
+                $("#style-properties-tab-link a").trigger("click");
+            }, 1);
+        }
+        
+        return [selector, propertiesPath];
     },
     
     showAdvancedInfo : function() {

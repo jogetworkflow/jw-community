@@ -91,7 +91,7 @@ public class CustomWfActivityImpl extends WfActivityImpl {
             persist(shandle);
             
             //write transaction now instead of write before next query execute to catch the exception
-            transactionWrite(shandle); 
+            SharkUtil.transactionWrite(shandle); 
             
             this.lastStateEventAudit = SharkEngineManager.getInstance().getObjectFactory().createStateEventAuditWrapper(shandle, this, "activityStateChanged", oldState, new_state);
         } catch (DataObjectException e) {
@@ -104,33 +104,6 @@ public class CustomWfActivityImpl extends WfActivityImpl {
             } else {
                 throw e;
             }
-        }
-    }
-    
-    /**
-     * write transaction immediately instead of write before next query execute, so that any exception can be handled directly
-     * @param shandle
-     * @throws Exception 
-     */
-    protected void transactionWrite(WMSessionHandle shandle) throws Exception {
-        String dbName = ActivityDO.get_logicalDBName();
-        try {
-            if (DODS.getDatabaseManager().getConfig().getBoolean("DB." + dbName + ".JTA", DODS.getDatabaseManager().getConfig().getBoolean("defaults.JTA", false))){
-                DBTransaction transaction = DODS.getDatabaseManager().createTransaction(dbName);
-                
-                if ((transaction != null) && ((transaction instanceof CachedDBTransaction))) {
-                    if (((CachedDBTransaction)transaction).getAutoWrite()) {
-                        try {
-                            transaction.write();
-                        } catch (SQLException sqle) {
-                            throw new DataObjectException("Couldn't write transaction: " + sqle);
-                        }
-                        ((CachedDBTransaction) transaction).dontAggregateDOModifications();
-                    }
-                }
-            }
-        } catch (ConfigException e) {
-            //ignore
         }
     }
     

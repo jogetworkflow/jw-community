@@ -4,7 +4,7 @@
     <groupId>org.joget</groupId>
     <artifactId>wflow-commons</artifactId>
     <packaging>jar</packaging>
-    <version>8.0-SNAPSHOT</version>
+    <version>8.1-SNAPSHOT</version>
     <name>wflow-commons</name>
     <url>http://www.joget.org</url>
     <build>
@@ -51,27 +51,27 @@
         <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-core</artifactId>
-            <version>5.3.29</version>
+            <version>5.3.33</version>
         </dependency>
         <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-orm</artifactId>
-            <version>5.3.29</version>
+            <version>5.3.33</version>
         </dependency>
         <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-context-support</artifactId>
-            <version>5.3.29</version>
+            <version>5.3.33</version>
         </dependency>
         <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-aop</artifactId>
-            <version>5.3.29</version>
+            <version>5.3.33</version>
         </dependency>
         <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-aspects</artifactId>
-            <version>5.3.29</version>
+            <version>5.3.33</version>
             <exclusions>
                 <exclusion>
                     <groupId>org.aspectj</groupId>
@@ -82,7 +82,7 @@
         <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-test</artifactId>
-            <version>5.3.29</version>
+            <version>5.3.33</version>
             <scope>test</scope>
         </dependency>
         <dependency>
@@ -93,7 +93,7 @@
         <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-webmvc</artifactId>
-            <version>5.3.29</version>
+            <version>5.3.33</version>
         </dependency>
         <dependency>
             <groupId>org.springmodules</groupId>
@@ -171,7 +171,7 @@
         <dependency>
             <groupId>org.springframework.security</groupId>
             <artifactId>spring-security-acl</artifactId>
-            <version>5.7.11</version>
+            <version>5.8.11</version>
             <exclusions>
                 <exclusion>
                     <groupId>org.springframework</groupId>
@@ -182,7 +182,7 @@
         <dependency>
             <groupId>org.springframework.security</groupId>
             <artifactId>spring-security-web</artifactId>
-            <version>5.7.11</version>
+            <version>5.8.11</version>
             <exclusions>
                 <exclusion>
                     <groupId>org.springframework</groupId>
@@ -193,7 +193,7 @@
         <dependency>
             <groupId>org.springframework.security</groupId>
             <artifactId>spring-security-config</artifactId>
-            <version>5.7.11</version>
+            <version>5.8.11</version>
             <exclusions>
                 <exclusion>
                     <groupId>org.springframework</groupId>
@@ -210,7 +210,7 @@
         <dependency>
             <groupId>org.hibernate</groupId>
             <artifactId>hibernate-core</artifactId>
-            <version>5.6.7.Final</version>
+            <version>5.6.15.Final</version>
             <exclusions>
                 <exclusion>
                     <groupId>dom4j</groupId>
@@ -221,7 +221,7 @@
         <dependency>
             <groupId>org.hibernate</groupId>
             <artifactId>hibernate-entitymanager</artifactId>
-            <version>5.6.7.Final</version>
+            <version>5.6.15.Final</version>
             <exclusions>
                 <exclusion>
                     <groupId>dom4j</groupId>
@@ -240,7 +240,7 @@
         <dependency>
             <groupId>org.dom4j</groupId>
             <artifactId>dom4j</artifactId>
-            <version>2.1.3</version>
+            <version>2.1.4</version>
         </dependency>
         <dependency>
             <groupId>javax.transaction</groupId>
@@ -291,7 +291,7 @@
         <dependency>
             <groupId>commons-io</groupId>
             <artifactId>commons-io</artifactId>
-            <version>2.7</version>
+            <version>2.15.1</version>
         </dependency>
         <dependency>
             <groupId>javax.resource</groupId>
@@ -307,7 +307,7 @@
         <dependency>
             <groupId>org.apache.tomcat</groupId>
             <artifactId>tomcat-jdbc</artifactId>
-            <version>9.0.82</version>
+            <version>9.0.86</version>
         </dependency>      
         <dependency>
             <groupId>org.joget</groupId>
