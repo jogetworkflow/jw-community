@@ -19,7 +19,7 @@
         <script src="${pageContext.request.contextPath}/wro/form_common.js"></script>
         <script src="${pageContext.request.contextPath}/wro/ajaxuniversal.min.js"></script>
         
-        <script>loadCSS("/jw/wro/ajaxuniversal.min.css")</script>
+        <script>loadCSS("${pageContext.request.contextPath}/wro/ajaxuniversal.min.css")</script>
         
         <c:if test="${rightToLeft == 'true' || fn:startsWith(currentLocale, 'ar') == true}">
             <link rel="stylesheet" href="${pageContext.request.contextPath}/css/form_rtl.css?build=<fmt:message key="build.number"/>" />
