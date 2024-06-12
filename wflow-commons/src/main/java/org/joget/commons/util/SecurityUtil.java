@@ -350,6 +350,12 @@ public class SecurityUtil implements ApplicationContextAware {
         if (normalizedFileName.contains("../") || normalizedFileName.contains("..\\")) {
             throw new SecurityException("Invalid filename " + normalizedFileName);
         }
+        
+        //handle for commonly used chinese colon char
+        if (filename.contains("：")) {
+            normalizedFileName = normalizedFileName.replaceAll(":", "：");
+        }
+        
         return normalizedFileName;
     }
 }
