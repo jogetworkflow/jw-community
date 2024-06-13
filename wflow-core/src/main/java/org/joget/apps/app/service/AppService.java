@@ -744,4 +744,23 @@ public interface AppService {
      * @return 
      */
     public AppDefinition importAppDefFromGitSrc(byte[] zip);
+    
+    /**
+     * Lock and processing process update & process instance migration
+     * @param appDef
+     * @return 
+     */
+    public boolean lockProcessUpdate(AppDefinition appDef);
+    
+    /**
+     * Release the lock after done process update and process instance migration
+     * @param appDef 
+     */
+    public void tryReleaseProcessUpdate(AppDefinition appDef);
+    
+    /**
+     * Check there is process update & process instance migration
+     * @param appDef 
+     */
+    public boolean hasProcessUpdate(AppDefinition appDef);
 }

@@ -5081,9 +5081,56 @@ ProcessBuilder = {
         }
     },
             
-    builderSaved : function() {
+    builderSaved : function(data) {
         ProcessBuilder.updateAdvancedView();
+        
+        ProcessBuilder.showProcessMigrationChecker(data);
     },
+            
+    builderSaveFailed : function(data) {
+        ProcessBuilder.showProcessMigrationChecker(data);
+    },
+      
+    /**
+     * Show a message to block the save button if there is process migration in progress. Unblock when it is done.
+     */                
+    showProcessMigrationChecker: function(data) {
+        if (data.processMigration) {
+            if ($("#processMigrationLoader").length === 0) {
+                $("#save-btn").parent().append('<div id="processMigrationLoader" class="alert alert-warning"><i class="las la-circle-notch fa-spin"></i> '+get_cbuilder_msg("pbuilder.migrationInProgress")+'</div>');
+            }  
+            
+            //add a progress checker
+            var checker = function() {
+                $("#save-btn").attr("disabled", "disabled");
+                
+                $.ajax({ 
+                    type: "POST", 
+                    url: CustomBuilder.contextPath + '/web/json/console/app/' + CustomBuilder.appId + '/' + CustomBuilder.appVersion + '/process/builder/processUpdateCheck',
+                    cache: false,
+                    processData: false,
+                    contentType: false,
+                    beforeSend: function (request) {
+                       request.setRequestHeader(ConnectionManager.tokenName, ConnectionManager.tokenValue);
+                    },
+                    success:function(data) {
+                        if (data.processMigration) {
+                            setTimeout(function(){
+                                checker();
+                            }, 5000);
+                        } else {
+                            $("#processMigrationLoader").remove();
+                            $("#save-btn").removeAttr("disabled");
+                        }
+                    }
+                });
+            };
+            
+            setTimeout(function(){
+                checker();
+            }, 3500);
+        }
+    },        
      
     /*
      * Prepare the selector based on overview path parameter
