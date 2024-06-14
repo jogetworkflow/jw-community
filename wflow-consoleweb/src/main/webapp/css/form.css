@@ -998,12 +998,7 @@ body.rtl .label-top.subform-cell > label.label > i{
 body.rtl #form-canvas .form-cell .label {
     text-align: right;
 }
-.form-cell:has(.datapicker-native) img.ui-datepicker-trigger{
-    display: none;
-}
-.label-top:has(.datapicker-native) input {
-    max-width: 100%;
-}
+
 .form-cell > label.label > i,
 .subform-cell > label.label > i,
 .label-left.form-cell > label.label > i,
@@ -1030,7 +1025,7 @@ body.rtl .subform-cell > label.label > i{
 .form-cell > label.label:has(i) + .ui-screen-hidden + *,
 .subform-cell > label.label:has(i) + .ui-screen-hidden + *{
     padding-left: 40px;
-}   
+}
 body.rtl .form-cell > label.label:has(i) + *:not(.ui-screen-hidden),
 body.rtl .subform-cell > label.label:has(i) + *:not(.ui-screen-hidden),
 body.rtl .form-cell > label.label:has(i) + .ui-screen-hidden + *,
