@@ -693,10 +693,6 @@ body #form-canvas .page-button-panel .button{
     border-radius: 2px;
 }
 
-/* popup select */
-body #form-canvas .selector_element{    
-    margin-left: 150px;
-}
 body #form-canvas .selector_element .selector_button {
     border-color: #5FB878;
     background-color: #5FB878;
