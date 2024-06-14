@@ -118,7 +118,7 @@ body .form fieldset.has-legend legend{
 body #form-canvas #section-actions{
     margin-top: 15px;
     border:0px;
-    padding-left: 150px;
+    padding-left: 0;
     margin-bottom: 15px;
 }
 body #form-canvas #section-actions .form-cell {
