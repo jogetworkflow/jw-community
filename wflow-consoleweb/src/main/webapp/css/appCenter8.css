@@ -657,7 +657,7 @@ body#home #d-1331669-fn_apps_name{
 body#home #filters_applist > div > span:nth-child(3){
     margin-left: 2px;
 }
-body#home #filters_applist > div > span:nth-child(3) > input{
+body#home #filters_applist > div > span:nth-child(3) > input, #customSearchSection > #customSearchButton {
     -webkit-backdrop-filter: blur(10px);
     backdrop-filter: blur(10px);
     background-color: rgba(255, 255, 255, 0.5);
@@ -718,3 +718,50 @@ body.dark-mode #pc-AED245A047CB49A6405198CF2B1AFCE7{
 body.dark-mode  .dataList#dataList_applist .column_2 {
     color: var(--theme-field-font-color) !important;
 }
+
+/* START custom search styles */
+#customSearchSection {
+    margin-inline: 1.8rem;
+    display: flex;
+    justify-content: flex-end;
+}
+
+#customSearchInput,
+#customSearchButton {
+    transition: all 0.3s ease;
+}
+
+#customSearchSection.closed {
+    #customSearchInput {
+        width: 0;
+        opacity: 0;
+    }
+
+    #customSearchButton {
+        opacity: 1;
+    }
+}
+
+#customSearchSection.open {
+    #customSearchInput {
+        width: 250px;
+        opacity: 1;
+    }
+
+    #customSearchButton {
+        opacity: 0;
+    }
+}
+
+@media (max-width: 767px) {
+    #customSearchSection.closed, #customSearchSection.open {
+        #customSearchButton {
+            display: none;
+        }
+        #customSearchInput {
+            width: 100%;
+            opacity: 1;
+        }
+    }
+}
+/* END custom search styles */
