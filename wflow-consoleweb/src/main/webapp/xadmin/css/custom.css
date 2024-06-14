@@ -6016,3 +6016,10 @@ body.rtl .form fieldset.has-legend legend {
 body.rtl .ContainerComponent {
     text-align: right;
 }
+
+@media(max-width: 480px) {
+    /* field label */
+    body.rtl #form-canvas .form-cell .label {
+        text-align: right;
+    }
+}
