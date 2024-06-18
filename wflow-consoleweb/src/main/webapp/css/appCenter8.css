@@ -721,7 +721,7 @@ body.dark-mode  .dataList#dataList_applist .column_2 {
 
 /* START custom search styles */
 #customSearchSection {
-    margin-inline: 1.8rem;
+    margin: 0 1.8rem;
     display: flex;
     justify-content: flex-end;
 }
@@ -751,6 +751,10 @@ body.dark-mode  .dataList#dataList_applist .column_2 {
 }
 
 @media (max-width: 767px) {
+    #customSearchSection {
+        margin: 1rem 1.8rem 0;
+    }
+
     #customSearchSection.closed #customSearchButton, #customSearchSection.open #customSearchButton {
         display: none;
     }
