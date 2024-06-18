@@ -1,194 +1,346 @@
-<!--{sampleWidth: '100%', tags: 'icon title image'}-->
-<section class="vh-100" style="background-color:{{bgColor||#FFF}}">
-    <div class="container-fluid">
-      <div class="row">
-        <div class="col-sm-6 text-black">
-          <div class="px-5 ms-xl-4 fa-2x me-3 pt-5 mt-xl-4">
-            {{icon||<i class="fas fa-crow" style="color: #709085;"></i>}}
-            <span class="h1 fw-bold mb-0" style="color: {{subtitleColor||#000}};">{{subtitle||Subtitle}}</span>
-          </div>
-          <div class="d-flex align-items-center h-custom-2 px-5 ms-xl-4 mt-5 pt-5 pt-xl-0 mt-xl-5">
-            <form style="width: 23rem;">
-              <h3 class="fw-normal mb-3 pb-3" style="letter-spacing: 1px;color:{{formColor||#000}}">{{title||Log in}}</h3>
-              <div class="form-outline mb-4">
-                <input type="text" id="customUsername" class="form-control form-control-lg" />
-                <label class="form-label" for="customUsername" style="color:{{formColor||#000}}">{{customUsername||@@ubuilder.login.username@@}}</label>
-              </div>
-              <div class="form-outline mb-4">
-                <input type="password" id="customPassword" class="form-control form-control-lg" />
-                <label class="form-label" for="customPassword" style="color:{{formColor||#000}}">{{customPassword||@@ubuilder.login.password@@}}</label>
-              </div>
-              <div class="pt-1 mb-4">
-                <button class="btn btn-info btn-lg btn-block" type="button" id="loginButton" style="border:none;background-color:{{btnColor||#17a2b8}};color:{{btnTextColor||#FFF}}">{{btnText||@@ubuilder.login@@}}</button>
-              </div>
-            </form>
-          </div>
-        </div>
-        <div class="col-sm-6 px-0 d-none d-sm-block">
-          <img src="{{image||#request.contextPath#/progressive/cover.png}}"
-            alt="Login image" class="w-100 vh-100" style="object-fit: cover; object-position: left;">
-        </div>
-      </div>
+<!--{sampleWidth: '100%', tags: 'basic'}-->
+<style>
+  .login-container-1 {
+    display: flex;
+    height: 100vh;
+    background-color: {{bgColor||#FFF}};
+  }
+  .login-form-1 {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .login-form-1 form {
+    width: 100%;
+    max-width: 400px;
+    color: {{formColor||red}};
+  }
+  .login-image-1 {
+    flex: 1;
+    background-image: url('{{image||#request.contextPath#/images/appCenterCreateApp.png}}');
+    background-size: cover;
+    background-position: center;
+  }
+</style>
+<div class="container-fluid login-container-1">
+<div class="login-form-1">
+  <form>
+    <h2 class="mb-4 text-center" style="color:{{titleColor||inherit}}">{{title||Login}}</h2>
+    <div class="mb-3">
+      <label for="username" class="form-label">{{customUsername||@@ubuilder.login.username@@}}</label>
+      <input type="text" class="form-control w-100" id="customUsername">
     </div>
-  </section>
-<!---->
-
-<!--{sampleWidth: '100%', tags: 'simple'}-->
-<section class="w-100 vh-100 p-4 d-flex justify-content-center pb-4" style="background-color:{{bgColor||#FFF}}">
-  <form style="width: 50rem;">
-    <div class="form-outline mb-4">
-      <input type="text" id="customUsername" class="form-control" />
-      <label class="form-label" for="customUsername" color:{{formColor||#000}}>{{customUsername||@@ubuilder.login.username@@}}</label>
+    <div class="mb-3">
+      <label for="password" class="form-label">{{customPassword||@@ubuilder.login.password@@}}</label>
+      <input type="password" class="form-control w-100" id="customPassword">
     </div>
-    <div class="form-outline mb-4">
-      <input type="password" id="customPassword" class="form-control" />
-      <label class="form-label" for="customPassword" color:{{formColor||#000}}>{{customPassword||@@ubuilder.login.password@@}}</label>
-    </div>
-    <button type="button" class="btn btn-primary btn-block mb-4" id="loginButton" style="background-color:{{btnColor||#17a2b8}};color:{{btnTextColor||#FFF}}">{{btnText||@@ubuilder.login@@}}</button>
+    <button type="button" class="btn btn-primary w-100" id="loginButton">Login</button>
   </form>
-</section>
+</div>
+<div class="login-image-1 d-none d-md-block"></div>
+</div>
 <!---->
 
-<!--{sampleWidth: '100%', tags: 'card icon title image'}-->
-<section class="vh-100" style="background-color: {{bgColor||#9A616D}};">
-  <div class="container py-5 h-100">
-    <div class="row d-flex justify-content-center align-items-center h-100">
-      <div class="col col-xl-10">
-        <div class="card" style="border-radius: 1rem;">
-          <div class="row g-0">
-            <div class="col-md-6 col-lg-5 d-none d-md-block">
-              <img src="{{image||#request.contextPath#/progressive/cover.png}}"
-                alt="login form" class="img-fluid" style="border-radius: 1rem 0 0 1rem;" />
-            </div>
-            <div class="col-md-6 col-lg-7 d-flex align-items-center">
-              <div class="card-body text-black">
-                <form>
-                  <div class="d-flex align-items-center mb-3 pb-1">
-                    <div class="fa-2x me-3">
-                      {{icon||<i class="fas fa-cubes"></i>}}
-                    </div>
-                    <span class="h1 fw-bold mb-0" style="color: {{subtitleColor||#000}};">{{subtitle||Subtitle}}</span>
-                  </div>
-                  <h5 class="fw-normal mb-3 pb-3" style="letter-spacing: 1px;color:{{formColor||#000}}">{{Title||Sign into your account}}</h5>
-                  <div class="form-outline mb-4">
-                    <input type="text" id="customUsername" class="form-control form-control-lg" />
-                    <label class="form-label" for="customUsername" style="color:{{formColor||#000}}">{{customUsername||@@ubuilder.login.username@@}}</label>
-                  </div>
-                  <div class="form-outline mb-4">
-                    <input type="password" id="customPassword" class="form-control form-control-lg" />
-                    <label class="form-label" for="customPassword" style="color:{{formColor||#000}}">{{customPassword||@@ubuilder.login.password@@}}</label>
-                  </div>
-                  <div class="pt-1 mb-4">
-                    <button class="btn btn-dark btn-lg btn-block" type="button" id="loginButton" style="background-color:{{btnColor||#17a2b8}};color:{{btnTextColor||#FFF}}">{{btnText||@@ubuilder.login@@}}</button>
-                  </div>
-                </form>
-              </div>
+<!--{sampleWidth: '100%', tags: 'fullBackground'}-->
+<style>
+  .login-container-2 {
+    display: flex;
+    height: 100vh;
+    background-image: url('{{image||#request.contextPath#/images/appCenterCreateApp.png}}'); 
+    background-size: cover;
+    background-position: center;
+    background-color: {{bgColor||#FFF}};
+  }
+  .login-form-2 {
+    position: absolute !important;
+    margin-top: 20px !important;
+    right: 20px !important;
+    margin-right: 20px !important;
+    width: 100% !important;
+    max-width: 400px !important;
+    background: {{cardColor||rgb(255, 255, 255)}} !important;
+    border-radius: 16px !important;
+    box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1) !important;
+  }
+  .login-form-2 form{
+      color: {{formColor||#000}};
+  }
+  .login-form-2 button {
+      background-color: {{btnColor||#1434A4}};
+  }
+  .login-card-2 {
+    padding: 20px;
+  }
+  @media (max-width: 768px) {
+    .login-container-2 {
+      justify-content: center;
+      align-items: center;
+    }
+    .login-form-2 {
+      position: static;
+    }
+  }
+</style>
+<div class="container-fluid login-container-2">
+  <div class="card login-form-2 login-card-2">
+    <form>
+      <h2 class="mb-4" style="color:{{titleColor||#000}}">{{title||Enter your credentials}}</h2>
+      <div class="mb-3">
+        <label for="username" class="form-label">{{customUsername||@@ubuilder.login.username@@}}</label>
+        <input type="text" class="form-control w-100" id="customUsername">
+      </div>
+      <div class="mb-3">
+        <label for="password" class="form-label">{{customPassword||@@ubuilder.login.password@@}}</label>
+        <input type="password" class="form-control w-100" id="customPassword">
+      </div>
+      <button type="button" class="btn btn-primary w-100" id="loginButton">{{btnText||Login}}</button>
+    </form>
+  </div>
+</div>
+<!---->
+
+<!--{sampleWidth: '100%', tags: 'transparent'}-->
+<style>
+  .login-container-3 {
+    display: flex !important;
+    height: 100vh !important;
+    background-image: url('{{image||#request.contextPath#/images/appCenterCreateApp.png}}') !important;  
+    background-size: cover !important;
+    background-position: center !important;
+    background-color: {{bgColor||#FFF}};
+  }
+  .login-form-3 {
+    width: 100% !important;
+    max-width: 400px !important;
+    padding: 20px !important;
+    position: absolute !important;
+    top: 50% !important;
+    left: 50% !important;
+    transform: translate(-50%, -50%) !important;
+    background: {{cardColor||rgba(255, 255, 255, 0.8)}} !important;
+    border-radius: 16px !important;
+    box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1) !important;
+  }
+  .input-container-3 {
+    position: relative !important;
+    margin-bottom: 1rem !important;
+  }
+  .login-form-3 input {
+    border: none !important;
+    background: rgba(255,255,255,0.1) !important;
+    border-radius: 16px !important;
+    padding-left: 40px !important;
+    height: 48px !important;
+  }
+  .login-form-3 button {
+    border-radius: 16px !important;
+    background-color: {{btnColor||#1434A4}};
+    color: {{btnTextColor||#fff}};
+  }
+  .icon-3 {
+    position: absolute !important;
+    left: 10px !important;
+    top: 50% !important;
+    transform: translateY(-50%) !important;
+    color: #666 !important;
+    font-size: 20px !important;
+  }
+</style>
+<div class="container-fluid login-container-3">
+  <div class="login-form-3">
+    <form>
+      <h2 class="mb-4 text-center" style="color:{{titleColor||#000}}">{{title||Login}}</h2>
+      <div class="mb-3 input-container-3">
+        <i class="fa fa-user icon-3"></i>
+        <input type="text" class="form-control w-100" id="customUsername" placeholder="{{customUsername||@@ubuilder.login.username@@}}">
+      </div>
+      <div class="mb-3 input-container-3">
+        <i class="fas fa-lock icon-3"></i>
+        <input type="password" class="form-control w-100" id="customPassword" placeholder="{{customPassword||@@ubuilder.login.password@@}}">
+      </div>
+      <button type="button" id="loginButton" class="btn btn-primary w-100">{{btnText||Login}}</button>
+    </form>
+  </div>
+</div>
+<!---->
+
+<!--{sampleWidth: '100%', tags: 'columns'}-->
+<style>
+  :root {
+    --customColor: {{formColor||#30c6b0}}
+  }
+  .login-container-4 {
+    display: flex !important;
+    height: 100vh !important;
+    background-size: cover !important;
+    background-position: center !important;
+    background-color: {{bgColor||#FFF}};
+  }
+  .login-form-4 {
+    width: 80% !important;
+    position: absolute !important;
+    padding-right: 20px !important;
+    top: 50% !important;
+    left: 50% !important;
+    transform: translate(-50%, -50%) !important;
+    background: {{cardColor||rgba(255, 255, 255, 0.8)}} !important;
+    box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1) !important;
+    color: var(--customColor)
+  }
+  .input-container-4 {
+    position: relative !important;
+    margin-bottom: 1rem !important;
+  }
+  .login-form-4 input {
+    border: none !important;
+    border-bottom: 1px solid !important;
+    border-color: var(--customColor) !important;
+    background: rgba(255,255,255,0.1) !important;
+    padding-right: 40px !important;
+    height: 48px !important;
+  }
+  .login-form-4 button {
+    border-radius: 16px !important;
+    color: {{btnTextColor||#fff}};
+    background-color: {{btnColor||#1434A4}};
+  }
+  .icon-4 {
+    position: absolute !important;
+    right: 10px !important;
+    top: 50% !important;
+    transform: translateY(-50%) !important;
+    color: #666 !important;
+    font-size: 20px !important;
+  }
+</style>
+<div class="container-fluid login-container-4">
+      <div class="login-form-4">
+        <div class="row">
+          <div class="col">
+            <div class="d-none d-md-block d-lg-block">
+              <img src="{{image||#request.contextPath#/images/appCenterLoginPageBackground.png}}" class="img-fluid" />
             </div>
           </div>
-        </div>
-      </div>
-    </div>
-  </div>
-</section>
-<!---->
-
-<!--{sampleWidth: '100%', tags: 'card title'}-->
-<section class="vh-100" style="background-color: {{bgColor||#6a11cb}};">
-  <div class="container py-5 h-100">
-    <div class="row d-flex justify-content-center align-items-center h-100">
-      <div class="col-12 col-md-8 col-lg-6 col-xl-5">
-        <div class="card bg-dark text-white" style="border-radius: 1rem;">
-          <div class="card-body p-5 text-center" style="background-color:{{cardColor||#343a40}}">
-            <div class="mb-md-5 mt-md-4 pb-5">
-              <h2 class="fw-bold mb-2 text-uppercase" style="{{subtitleColor||#FFF}}">{{subtitle||Login}}</h2>
-              <p class="text mb-5" style="color:{{formColor||#FFF}}">{{title||Please enter your login and password!}}</p>
-              <div class="form-outline form-white mb-4">
-                <input type="text" id="customUsername" class="form-control form-control-lg" />
-                <label class="form-label" for="customUsername" style="color:{{formColor||#FFF}}">{{customUsername||@@ubuilder.login.username@@}}</label>
-              </div>
-              <div class="form-outline form-white mb-4">
-                <input type="password" id="customPassword" class="form-control form-control-lg" />
-                <label class="form-label" for="customPassword" style="color:{{formColor||#FFF}}">{{customPassword||@@ubuilder.login.password@@}}</label>
-              </div>
-              <button class="btn btn-outline-light btn-lg px-5" type="button" id="loginButton" style="border:none;background-color:{{btnColor||#17a2b8}};color:{{btnTextColor||#FFF}}">{{btnText||@@ubuilder.login@@}}</button>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-</section>
-<!---->
-
-<!--{sampleWidth: '100%', tags: 'card image simple'}-->
-<section class="text-center" style="background-color:{{bgColor||#FCFFE0}};">
-  <div class="p-5 bg-image" style="
-        background-image: url('{{image||#request.contextPath#/xadmin/images/bg.png}}');
-        height: 300px;
-        "></div>
-  <div class="card mx-4 mx-md-5 shadow-5-strong bg-body-tertiary" style="
-        margin-top: -100px;
-        backdrop-filter: blur(30px);
-        ">
-    <div class="card-body py-5 px-md-5" style="background-color:{{cardColor||#F5DAD2}};">
-      <div class="row d-flex justify-content-center">
-        <div class="col-lg-8">
-          <h2 class="fw-bold mb-5" style="color:{{formColor||#000}}">{{title||Sign in}}</h2>
+        <div class="col">
           <form>
-            <div class="form-outline mb-4">
-              <input type="text" id="customUsername" class="form-control" />
-              <label class="form-label" for="customUsername" style="color:{{formColor||#000}}">{{customUsername||@@ubuilder.login.username@@}}</label>
+            <h2 class="mb-4 text-center" style="color:{{titleColor||#30c6b0}}">{{title||Login}}</h2>
+            <label>{{customUsername||@@ubuilder.login.username@@}}</label>
+            <div class="mb-3 input-container-4">
+              <i class="fa fa-user icon-4"></i>
+              <input type="text" class="form-control w-100" id="customUsername">
             </div>
-            <div class="form-outline mb-4">
-              <input type="password" id="customPassword" class="form-control" />
-              <label class="form-label" for="customPassword" style="color:{{formColor||#000}}">{{customPassword||@@ubuilder.login.password@@}}</label>
+            <label>{{customPassword||@@ubuilder.login.password@@}}</label>
+            <div class="mb-3 input-container-4">
+              <i class="fas fa-lock icon-4"></i>
+              <input type="password" class="form-control w-100" id="customPassword">
             </div>
-            <button type="button" class="btn btn-primary btn-block mb-4" id="loginButton" style="border:none;background-color:{{btnColor||#17a2b8}};color:{{btnTextColor||#FFF}}">
-              {{btnText||@@ubuilder.login@@}}  
-            </button>
+            <button type="button" class="btn btn-primary w-100" id="loginButton">{{btnText||Login}}</button>
           </form>
         </div>
       </div>
     </div>
-  </div>
-</section>
+</div>
 <!---->
 
-<!--{sampleWidth: '100%', tags: 'card image subtitle'}-->
-<section class="overflow-hidden vh-100" style="background-image:url('{{image||#request.contextPath#/xadmin/images/bg.png}}')">
-  <div class="container px-4 py-5 px-md-5 text-center text-lg-start my-5">
-    <div class="row gx-lg-5 align-items-center mb-5">
-      <div class="col-lg-6 mb-5 mb-lg-0" style="z-index: 10">
-        <h1 class="my-5 display-5 fw-bold ls-tight" style="color:{{titleColor||#FFF}}">
-          {{title||Come Join Us!}}
-        </h1>
-        <p class="mb-4 opacity-70" style="color:{{subtitleColor||#FFF}};">
-          {{subtitle||Lorem ipsum dolor, sit amet consectetur adipisicing elit. Temporibus, expedita iusto veniam atque, magni tempora mollitia dolorum consequatur nulla, neque debitis eos reprehenderit quasiab ipsum nisi dolorem modi. Quos?}}
-        </p>
-      </div>
-      <div class="col-lg-6 mb-5 mb-lg-0 position-relative">
-        <div id="radius-shape-1" class="position-absolute rounded-circle shadow-5-strong"></div>
-        <div id="radius-shape-2" class="position-absolute shadow-5-strong"></div>
-        <div class="card bg-glass">
-          <div class="card-body px-4 py-5 px-md-5" style="background-color:{{cardColor||#343a40}}">
+<!--{sampleWidth: '100%', tags: 'carousel'}-->
+<style>
+  .login-container-5 {
+    display: flex !important;
+    height: 100vh !important;
+    background-size: cover !important;
+    background-position: center !important;
+    color: black;
+    background-color: {{bgColor||#fff}};
+  }
+  .login-form-5 {
+    width: 80% !important;
+    padding: 20px !important;
+    position: absolute !important;
+    top: 50% !important;
+    left: 50% !important;
+    transform: translate(-50%, -50%) !important;
+    background: {{cardColor||rgba(255, 255, 255, 0.8)}} !important;
+    box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1) !important;
+  }
+  .input-container-5 {
+    position: relative !important;
+    margin-bottom: 1rem !important;
+  }
+  .login-form-5 input {
+    background: rgba(255,255,255,0.1) !important;
+  }
+  .login-form-5 label {
+    color: red;
+  }
+  .login-form-5 button {
+    border-radius: 16px !important;
+    border-color: {{btnColor||#1434A4}};
+    background-color: {{btnColor||#1434A4}};
+  }
+  .car-5 .carousel-inner img {
+    width: 100%;
+    height: auto;
+  }
+  .car-5 .carousel-control-prev, .carousel .carousel-control-next {
+    display:none;
+  }
+  .car-5 .carousel-indicators button{
+    background-color: black;
+    border: none;
+  }
+</style>
+<div class="container-fluid login-container-5">
+      <div class="login-form-5">
+        <div class="row">
+          <div class="col mx-5">
             <form>
-              <div class="form-outline mb-4">
-                <input type="text" id="customUsername" class="form-control" />
-                <label class="form-label" for="customUsername" style="color:{{formColor||#000}}">{{customUsername||@@ubuilder.login.username@@}}</label>
+              <h2 class="mb-4">{{title||Log in}}</h2>
+              <div class="mb-3 input-container-5">
+                <label>{{customUsername||@@ubuilder.login.username@@}}</label>
+                <input type="text" class="form-control w-100" id="customUsername">
               </div>
-              <div class="form-outline mb-4">
-                <input type="password" id="customPassword" class="form-control" />
-                <label class="form-label" for="customPassword" style="color:{{formColor||#000}}">{{customPassword||@@ubuilder.login.password@@}}</label>
+              <div class="mb-3 input-container-5">
+                <label>{{customPassword||@@ubuilder.login.password@@}}</label>
+                <input type="password" class="form-control w-100" id="customPassword">
               </div>
-              <button type="button" class="btn btn-primary btn-block mb-4" id="loginButton" style="border:none;background-color:{{btnColor||#17a2b8}};color:{{btnTextColor||#FFF}}">
-                {{btnText||@@ubuilder.login@@}}
-              </button>
+              <button type="button" class="btn btn-primary w-100" id="loginButton">{{btnText||Login}}</button>
             </form>
           </div>
-        </div>
+          <div class="col d-sm-none d-md-block">
+            <!-- Carousel -->
+            <div id="carousel_{{id}}" class="carousel slide car-5" data-bs-ride="carousel">
+              <div class="carousel-indicators" data-hide="{{hideIndicator||false}}">
+              </div>
+              <div class="carousel-inner">
+              {{repeat||[{image: "#request.contextPath#/builder/icons/image.svg", title: "Test 1", description: "Test Description 1"},{image: "#request.contextPath#/builder/icons/image.svg", title: "Test 2", description: "Test Description 2"},{image: "#request.contextPath#/builder/icons/image.svg", title: "Test 3", description: "Test Description 3"}]}}
+                <div class="carousel-item">
+                  <div class="row h-50">
+                    <img src="{{repeat.image}}" style="max-height:100%;max-width:100%">>
+                  </div>
+                  <div class="row h-50">
+                    <div class="text-container w-100 text-center">
+                      <h2 style="color:{{repeat.titleColor}}">{{repeat.title}}</h2>
+                      <p style="color:{{repeat.subtitleColor}}">{{repeat.subtitle}}</p>
+                    </div>
+                  </div>
+                </div>
+                {{repeat}}
+              </div>
+            </div>
+          </div>
+          <script>
+              $(function(){
+                  var carousel = $("#carousel_{{id}}");
+                  //create navigation link
+                  $(carousel).find(".carousel-item").each(function(i){
+                      $(carousel).find('.carousel-indicators').append('<button class="mx-1" data-target="#carousel_{{id}}" data-slide-to="'+i+'"></button>');
+                  });
+                  //active first slide
+                  $(carousel).find(".carousel-item:first-child, .carousel-indicators button:first-child").addClass("active");
+              });
+          </script> 
       </div>
     </div>
-  </div>
-</section>
+</div>
 <!---->
-
