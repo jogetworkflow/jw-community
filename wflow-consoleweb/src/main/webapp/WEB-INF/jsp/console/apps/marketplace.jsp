@@ -25,7 +25,7 @@
             </div>
             <div class="content">
                 <div class="page-header">
-                    <h1 id="page-title" style="font-size:30px"></h1>
+                    <h1 id="page-title"></h1>
                     <section id="page-description"></section>
                 </div>
                 <div id="plugin-container"></div>
@@ -37,12 +37,16 @@
                 *:before {
                     box-sizing: border-box;
                 }
+                body{
+                    font-family: -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,"Noto Sans",sans-serif,"Apple Color Emoji","Segoe UI Emoji","Segoe UI Symbol","Noto Color Emoji";
+                }
                 #plugin-container>article>div.card-footer>div.card-meta.card-meta--views>i {
                     margin-right: 5px;
                     margin-top: 2px;
                 }
                 #main-body-header .header-title {
                     font-size: 21px;
+                    text-transform: none;
                 }
                 #selectContainer #pluginCategory {
                     height: 35px;
@@ -67,11 +71,13 @@
                 body .page-header {
                     padding: 1px 50px 10px;
                 }
-                body .page-header h1 {
+                body .page-header #page-title {
                     text-transform: none;
-                    font-weight: 500;
-                    margin-bottom: 15px;
-                    color: var(--theme-label-color-1);
+                    font-weight: 600;
+                    margin-bottom: 5px;
+                    color: var(--theme-label-color-1, #071437);
+                    font-size: 17px;
+                    margin-top: 30px;
                 }
                 body {
                     overflow: hidden;
@@ -79,7 +85,7 @@
                 body div.content {
                     overflow: auto;
                     height: 100%;
-                    background-color: var(--theme-primary-color-3);
+                    background-color: var(--theme-primary-color-3, #fcfcfc);
                 }
                 #marketplaceAppFrame {
                     position: absolute;
@@ -112,7 +118,7 @@
                 }
                 #plugin-container .card {
                     background-color: var(--theme-primary-color-1, #fff);
-                    border-radius: 15px;
+                    border-radius: 0.625rem;
                     overflow: hidden;
                     padding: 1.25rem;
                     position: relative;
@@ -121,7 +127,8 @@
                     margin-right: 20px;
                     width: calc(25% - 20px);
                     margin-bottom: 20px;
-                    border: 1px solid var(--theme-border-color-1, #e6e6e6);
+                    border: 1px solid var(--theme-border-color-1, #F1F1F4);
+                    box-shadow: 0px 3px 4px 0px rgba(0, 0, 0, 0.03);
                 }
                 #plugin-container .card:hover,
                 #plugin-container .card:focus-within {
@@ -142,7 +149,7 @@
                     line-height: 1.25;
                     padding-right: 1rem;
                     text-decoration: none;
-                    color: var(--theme-label-color-2, #4B5675);
+                    color: var(--theme-label-color-2, #071437);
                     will-change: transform;
                 }
                 #plugin-container .card .card-header .desc {
@@ -150,7 +157,9 @@
                     height: 70px;
                     min-height: 70px;
                     overflow: hidden;
-                    color: var(--theme-label-color-2, #6c757d);
+                    color: var(--theme-label-color-2, #99A1B7);
+                    font-weight: 500;
+                    text-align: justify;
                 }
                 #plugin-container .card .card-header .icon-button {
                     border: 0;
@@ -222,7 +231,9 @@
                     right: 20px;
                 }
                 section#page-description {
-                    color: var(--theme-label-color-1);
+                    color: var(--theme-label-color-1, #99A1B7);
+                    font-weight: 500;
+                    font-size: 13px;
                 }
             </style>
             <script>
@@ -273,7 +284,7 @@
                 function selectedCategory() {
                     $('#plugin-container').addClass('ajaxloading');
                     var searhText = $('#searchPlugin').val();
-                    var selectedValue = $('#pluginCategory').val();
+                    var selectedValue = $('#pluginCategory').find(':selected').text();
                     $('#plugin-container').empty();
                     if (selectedValue === 'all') {
                         getPluginCategories(selectedValue, false);
@@ -287,7 +298,7 @@
                 var searchPlugin = function () {
                     $('#plugin-container').addClass('ajaxloading');
                     var searhText = $('#searchPlugin').val();
-                    var selectedValue = $('#pluginCategory').val();
+                    var selectedValue = $('#pluginCategory').find(':selected').text();
                     $('#plugin-container').empty();
                     getPluginList(searhText, selectedValue);
 
@@ -333,7 +344,10 @@
                             select.append(option);
                             // Loop through the options and add category options
                             $.each(data.data, function (index, optionValue) {
-                                const option = $('<option>').text(optionValue.category_name).val(optionValue.category_name);
+                                const option = $('<option>').text(optionValue.category_name).val(optionValue.class_name);
+                                if(optionValue.class_name.indexOf(category) !== -1){
+                                    category = optionValue.category_name;
+                                }
                                 if (category === "all" || (category === "undefined")) {
                                     getPluginList(searhText, optionValue.category_name);
                                 } else if (optionValue.category_name === category) {

@@ -7720,36 +7720,14 @@ _CustomBuilder.Builder = {
     
     //user plugin categories to find the classname and remove it from the cache
     //this part not completed yet wil need to find a better for this
-    removePropertiesCache: function (pluginName) {
+    removePropertiesCache: function (pluginClass) {
         var reloadProperties = false;
-        const nameToPluginClass = {
-            "Form Permission": "org.joget.apps.form.model.FormPermission",
-            "Form Validator": [
-                "org.joget.apps.form.model.FormValidator",
-                "org.joget.apps.form.model.FormMultiRowValidator"
-            ],
-            "Form Binder": [
-                "org.joget.apps.form.model.FormBinder",
-                "org.joget.apps.form.model.FormLoadElementBinder",
-                "org.joget.apps.form.model.FormStoreElementBinder",
-                "org.joget.apps.form.model.FormLoadMultiRowElementBinder",
-                "org.joget.apps.form.model.FormStoreMultiRowElementBinder"
-            ],
-            "Form Options Binder": "org.joget.apps.form.model.FormLoadOptionsBinder",
-            "Datalist Filter": "org.joget.apps.datalist.model.DataListFilterType",
-            "Datalist Formatter": "org.joget.apps.datalist.model.DataListColumnFormat",
-            "Datalist Binder": "org.joget.apps.datalist.model.DataListBinder",
-            "Userview Theme": "org.joget.apps.userview.model.UserviewTheme",
-            "Process Participant": "org.joget.workflow.model.ParticipantPlugin",
-            "Process Tool": "org.joget.plugin.base.ApplicationPlugin"
-        };
-    
-        const pluginClass = nameToPluginClass[pluginName];
         if (pluginClass) {
             reloadProperties = true;
             const ajaxUrl = "/jw/web/property/json/getElements?classname=";
-            if ((pluginName === "Form Binder"|| pluginName === "Form Validator") && Array.isArray(pluginClass)) {
-                pluginClass.forEach((className) => {
+            if (pluginClass.includes(';')) {
+                let pluginClassesArray = pluginClass.split(';');
+                pluginClassesArray.forEach((className) => {
                     delete parent.PropertyEditor.Util.cachedAjaxCalls[ajaxUrl + className];
                 });
             } else {
