@@ -17,7 +17,7 @@
     renderField : function() {
         
         var html = '<div class="template_editor_container" style="overflow:hidden;">';
-        html += '<div class="actions"><a class="choosetemplate btn button small" style="margin-left:0px;">@@userview.infotile.chooseTemplate@@</a> <a class="edittemplate btn button small">@@userview.infotile.editTemplate@@</a> <a style="display:none;" class="hideedit btn button small">@@userview.infotile.hideTemplateEditor@@</a></div>';
+        html += '<div class="actions"><a class="choosetemplate btn button small" style="margin-left:0px;">@@userview.infotile.chooseTemplate@@</a> <a class="edittemplate btn button small">@@userview.infotile.editTemplate@@</a> <a style="display:none;" class="hideedit btn button small">@@userview.infotile.hideTemplateEditor@@</a><a class="reloadtemplate btn button small">@@userview.infotile.reloadTemplate@@</a> <a class="reloadMessage" style="color:green;display:none;">@@userview.infotile.reloadMessage@@</a></div>';
         html += '<div class="editor" style="margin-top:10px; display:none;"><pre id="' + this.id + '" name="' + this.id + '" class="ace_editor"></pre></div>';
         html += '<div class="sample_container" style="margin-top:10px; padding:10px; border:1px solid #ced4da; background:#fff; border-radius:5px; overflow: scroll;"><label>@@userview.infotile.sample@@</label><div class="sample_preview" style="position:relative;"></div></div>';
         html += '</div>';
@@ -28,12 +28,66 @@
     },
     initScripting: function() {
         var thisObj = this;
-        
         var container = $("#" + this.id).closest('.template_editor_container');
-        
+
         $(container).find(".choosetemplate").off("click");
         $(container).find(".choosetemplate").on("click", function() {
             thisObj.showTemplateChooser();
+        });
+
+        $(document).ready(function(){
+            var dataControlField = $("#"+thisObj.id).closest(".property-input").parent().attr("property-name"); 
+            $('div[class^="property-editor-property-container"] div[id^="property_"][data-control_field="' + dataControlField + '"]:not([property-name="repeat"]):not([style*="display: none"]):not([data-control_value*="repeat"]) input').on('focusout', function(){
+                var scroll = $(this).closest(".property-editor-property-container").scrollTop()
+                $(container).find('.reloadtemplate').click();
+                
+                $(this).closest(".property-editor-property-container").scrollTop(scroll)
+            })
+        })
+
+        $(container).find(".reloadtemplate").off("click");
+        $(container).find(".reloadtemplate").on("click", function() {
+            $(container).find(".sample_preview").html("");
+            var dataControlField = $("#"+thisObj.id).closest(".property-input").parent().attr("property-name"); 
+            
+            var template = thisObj.codeeditor.getSession().getValue();
+            var dict = {}   
+            var arr = []
+
+            $('div[class^="property-editor-property-container"] div[id^="property_"][property-name="repeat"][data-control_field="' + dataControlField + '"] .repeater-row').each(function(){
+                $(this).find('.inputs-container div[id^="property_"][data-control_field="' + dataControlField + '"]:not([style*="display: none"])').each(function(){
+                    var propertyName = $(this).attr('property-name');
+
+                    if (propertyName === "icon"){
+                        dict[propertyName] = "<i class=\"" +$(this).find('.value').children()[0].html() + "\"> </i>"
+                    }else if ($(this).find("input").val() !== ""){
+                        dict[propertyName] = $(this).find("input").val();
+                    }
+                })
+                
+                arr.push(dict);
+                dict = {}
+            })
+
+            template = thisObj.fillLoopVariables(template, arr, "");
+
+            dict = {}
+            $('div[class^="property-editor-property-container"] div[id^="property_"][data-control_field="' + dataControlField + '"]:not([property-name="repeat"]):not([style*="display: none"]):not([data-control_value*="repeat"]) input').each(function(){
+                var propertyName = $(this).closest('div[id^="property_"][data-control_field="' + dataControlField + '"]').attr('property-name');
+                if (propertyName === "icon"){
+                    dict[propertyName] = "<i class=\"" + $(this).closest('div[id^="property_"][data-control_field="' + dataControlField + '"]').find('.value').children().attr('class') + "\"> </i>";
+                }
+                else if ($(this).val() !== ""){
+                    dict[propertyName] = $(this).val();
+                }
+            })
+
+            template = thisObj.fillStandardVariables(template, dict, "");
+
+            thisObj.codeeditor.getSession().setValue(template);
+            $(container).find(".reloadMessage").css({"display":"block"})
+
+            setTimeout(function(){ $(container).find(".reloadMessage").css({"display":"none"})}, 2000);
         });
         
         $(container).find(".edittemplate").off("click");
@@ -63,6 +117,7 @@
         this.codeeditor = ace.edit(this.id);
         this.codeeditor.setValue(this.value);
         this.codeeditor.getSession().setTabSize(4);
+
         if (this.properties.theme !== undefined || this.properties.theme !== "") {
             this.properties.theme = "textmate";
         }
@@ -76,7 +131,6 @@
         this.codeeditor.getSession().on('change', function() {
             thisObj.updateSample();
         });
-        this.codeeditor.setAutoScrollEditorIntoView(true);
         this.codeeditor.setOption("maxLines", 1000000); //unlimited, to fix the height issue
         this.codeeditor.setOption("minLines", 10);
         this.codeeditor.resize();
@@ -101,6 +155,7 @@
             if (!$(container).find(".editor").is(":visible")) {
                 $(container).find(".edittemplate").show();
             }
+            
             $(container).find(".sample_preview").append(thisObj.getTile(value));
         }
     },
@@ -130,6 +185,8 @@
         for (; r < 1; r++) {
             var t_container = $(object).find(".templates");
             var tile = thisObj.getTile(thisObj.templates[r]);
+            //Added border for better distinguish between different tempates
+            $(tile).css({"border": "1px solid black"})
             $(tile).css("cursor", "pointer");
             t_container.append(tile);
         }
@@ -209,6 +266,7 @@
         $(object).on("click", ".templates > div.tile", function() {
             var template = $(this).data('template');
             thisObj.codeeditor.setValue(template);
+            
             $(object).dialog("close");
         });
         
@@ -217,6 +275,8 @@
             for (; r < thisObj.templates.length; r++) {
                 var t_container = $(object).find(".templates");
                 var tile = thisObj.getTile(thisObj.templates[r]);
+                //Added border for better distinguish between different tempates
+                $(tile).css({"border": "1px solid black"})
                 $(tile).css("cursor", "pointer");
                 t_container.append(tile);
             }
@@ -232,7 +292,7 @@
         
         var regexp = new RegExp('<!--(\{[^\}]+\})-->','g');
         var match;
-        
+
         while ((match = regexp.exec(template)) !== null) {
             newTemplate = newTemplate.replace(match[0], "");
             try {
@@ -246,7 +306,6 @@
         }
         
         var tile = $('<div class="tile" style="position:relative;margin:5px;display:inline-block;'+width+'"></div>');
-        
         var id = CustomBuilder.uuid();
         newTemplate = newTemplate.replace(/\{\{id\}\}/g, id);
         newTemplate = newTemplate.replace(/\{\{contextPath\}\}/g, CustomBuilder.contextPath);
@@ -260,13 +319,13 @@
         
         return tile;
     },
-    fillVariables : function(template, objs) {
+    fillVariables : function(template, objs, propertyName) {
         var thisObj = this;
-        template = thisObj.fillLoopVariables(template, objs);
-        template = thisObj.fillStandardVariables(template, objs);
+        template = thisObj.fillLoopVariables(template, objs, propertyName);
+        template = thisObj.fillStandardVariables(template, objs, propertyName);
         return template;
     },
-    fillLoopVariables : function(template, objs) {
+    fillLoopVariables : function(template, objs, propertyName) {
         var thisObj = this;
         var newTemplate = template;
         var regexp = (/\{\{([^\|]+)\|\|(.+)\}\}([\s\S]+)\{\{\1\}\}/gm);
@@ -277,6 +336,12 @@
                 var sampleProps = match[2];
                 var childtemplate = match[3];
 
+                if (propertyName !== undefined && objs !== undefined){
+                    newTemplate = newTemplate.replaceAll(sampleProps, JSON.stringify(objs))
+                    
+                    return newTemplate
+                }
+
                 var cregexp = new RegExp('\{\{'+key+'\.','gm');
                 childtemplate = childtemplate.replace(cregexp, "\{\{");
 
@@ -284,10 +349,10 @@
                 try {
                     var arr = eval(sampleProps);
                     for (var i = 0; i < arr.length; i++) {
-                        value += thisObj.fillVariables(childtemplate, arr[i]);
+                        value += thisObj.fillVariables(childtemplate, arr[i], propertyName);
                     }
                 } catch (err) {}
-
+                
                 newTemplate = newTemplate.replace(replace, value);
             } else {
                 break;
@@ -295,7 +360,7 @@
         }
         return newTemplate;
     },
-    fillStandardVariables : function(template, objs) {
+    fillStandardVariables : function(template, objs, propertyName) {
         var newTemplate = template;
         var regexp = (/\{\{(.+?)\}\}/g);
         while ((match = regexp.exec(template)) !== null) {
@@ -305,7 +370,6 @@
                 value = match[1].substring(match[1].indexOf("||")+2);
                 key = match[1].substring(0, match[1].indexOf("||"));
             }
-            
             if (objs !== undefined && objs[key] !== undefined) {
                 value = objs[key];
             }
@@ -315,7 +379,17 @@
                 value = '<div class="dropdown"><a class="text-muted"><i class="fa fa-ellipsis-h"></i></a></div>';
             }
             
-            newTemplate = newTemplate.replace(match[0], value);
+            if(propertyName !== undefined && objs !== undefined){
+                if (!match[0].includes("repeat")){
+                    newTemplate = newTemplate.replace(match[0], "{{"+ key +"||"+value+"}}")
+                }
+            }else{
+                if (value.includes("#appResource")){
+                    value = value.replace("#appResource.", CustomBuilder.contextPath+"/web/app"+CustomBuilder.appPath+"/resources/");
+                    value = value.slice(0, -1);
+                }
+                newTemplate = newTemplate.replace(match[0], value);
+            }
         }
         return newTemplate;
     }
