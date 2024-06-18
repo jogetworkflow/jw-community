@@ -91,7 +91,6 @@ public class PropertyJsonController {
             } else {
                 clazz = Class.forName(className);
             }
-            
             Collection<Plugin> elementList = pluginManager.list(clazz);
             Map<String, String> empty = new HashMap<String, String>();
             empty.put("value", "");
@@ -132,33 +131,7 @@ public class PropertyJsonController {
                     list.add(option);
                 }
             }
-            
-            //Map the classname to marketplace plugin categories
-            //this part not completed yet wil need to find a better way for this
-            String pluginTypeName = null;
-            Boolean addMarketplaceOption = true;
-            Map<String, String> classToPluginType = new HashMap<>();
-            classToPluginType.put("org.joget.apps.form.model.FormPermission", "Form Permission");
-            classToPluginType.put("org.joget.apps.form.model.FormValidator", "Form Validator");
-            classToPluginType.put("org.joget.apps.form.model.FormMultiRowValidator", "Form Validator");
-            classToPluginType.put("org.joget.apps.form.model.FormBinder", "Form Binder");
-            classToPluginType.put("org.joget.apps.form.model.FormLoadElementBinder", "Form Binder");
-            classToPluginType.put("org.joget.apps.form.model.FormStoreElementBinder", "Form Binder");
-            classToPluginType.put("org.joget.apps.form.model.FormLoadMultiRowElementBinder", "Form Binder");
-            classToPluginType.put("org.joget.apps.form.model.FormStoreMultiRowElementBinder", "Form Binder");
-            classToPluginType.put("org.joget.apps.form.model.FormLoadOptionsBinder", "Form Options Binder");
-            classToPluginType.put("org.joget.apps.datalist.model.DataListFilterType", "Datalist Filter");
-            classToPluginType.put("org.joget.apps.datalist.model.DataListColumnFormat", "Datalist Formatter");
-            classToPluginType.put("org.joget.apps.datalist.model.DataListBinder", "Datalist Binder");
-            classToPluginType.put("org.joget.apps.userview.model.UserviewTheme", "Userview Theme");
-            classToPluginType.put("org.joget.workflow.model.ParticipantPlugin", "Process Participant");
-            classToPluginType.put("org.joget.plugin.base.ApplicationPlugin", "Process Tool");
-
-            pluginTypeName = classToPluginType.get(className);
-            if (pluginTypeName == null) {
-                addMarketplaceOption = false;
-            }
-
+        
             Collections.sort(list, new Comparator() {
                 @Override
                 public int compare(Object objA, Object objB) {
@@ -173,15 +146,12 @@ public class PropertyJsonController {
                     }
                 }
             });
-            
-            //add marketplace option into the properties option
-            if (addMarketplaceOption) {
-                Map<String, String> marketplaceOption = new HashMap<String, String>();
-                marketplaceOption.put("value", pluginTypeName);
-                marketplaceOption.put("label", ResourceBundleUtil.getMessage("cbuilder.seamless.marketplace.more") + " " + pluginTypeName + " " + ResourceBundleUtil.getMessage("cbuilder.seamless.marketplace.plugin.marketplace"));
-                marketplaceOption.put("marketplace", "true");
-                list.add(marketplaceOption);
-            }
+        
+            Map<String, String> marketplaceOption = new HashMap<String, String>();
+            marketplaceOption.put("value", className);
+            marketplaceOption.put("label", "Get More Plugin From Marketplace");
+            marketplaceOption.put("marketplace", "true");
+            list.add(marketplaceOption);
             
             for (int i = 0; i < list.size(); i++) {
                 jsonArray.put(list.get(i));
