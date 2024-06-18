@@ -731,38 +731,33 @@ body.dark-mode  .dataList#dataList_applist .column_2 {
     transition: all 0.3s ease;
 }
 
-#customSearchSection.closed {
-    #customSearchInput {
-        width: 0;
-        padding: 0;
-        opacity: 0;
-    }
-
-    #customSearchButton {
-        opacity: 1;
-    }
+#customSearchSection.closed #customSearchInput {
+    width: 0;
+    padding: 0;
+    opacity: 0;
 }
 
-#customSearchSection.open {
-    #customSearchInput {
-        width: 250px;
-        opacity: 1;
-    }
+#customSearchSection.closed #customSearchButton {
+    opacity: 1;
+}
 
-    #customSearchButton {
-        opacity: 0;
-    }
+#customSearchSection.open #customSearchInput {
+    width: 250px;
+    opacity: 1;
+}
+
+#customSearchSection.open #customSearchButton {
+    opacity: 0;
 }
 
 @media (max-width: 767px) {
-    #customSearchSection.closed, #customSearchSection.open {
-        #customSearchButton {
-            display: none;
-        }
-        #customSearchInput {
-            width: 100%;
-            opacity: 1;
-        }
+    #customSearchSection.closed #customSearchButton, #customSearchSection.open #customSearchButton {
+        display: none;
+    }
+    #customSearchSection.closed #customSearchInput, #customSearchSection.open #customSearchInput {
+        width: 100%;
+        padding: 6px 12px;
+        opacity: 1;
     }
 }
 /* END custom search styles */
