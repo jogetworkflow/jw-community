@@ -567,6 +567,11 @@ public class XadminTheme extends UniversalTheme {
     @Override
     public String getLoginForm(Map<String, Object> data) {
         data.put("hide_nav", true);
+
+        if (getPropertyString("customLogin").equalsIgnoreCase("true") && !getPropertyString("template").isEmpty()){
+            return super.getLoginForm(data);            
+        }
+
         if (!getPropertyString("logo").isEmpty()) {
             data.put("logo", "<img class=\"logo\" alt=\"logo\" src=\""+getPropertyString("logo")+"\" />");
         }
@@ -588,6 +593,7 @@ public class XadminTheme extends UniversalTheme {
                 data.put("login_form_after", this.userview.getSetting().getPropertyString("loginPageBottom"));
             }
         }
+
         return UserviewUtil.getTemplate(this, data, "/templates/xadmin/login.ftl");
     }
     

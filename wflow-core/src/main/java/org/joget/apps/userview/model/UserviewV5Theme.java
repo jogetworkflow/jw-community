@@ -7,6 +7,7 @@ import org.joget.commons.util.LogUtil;
 import org.joget.commons.util.ResourceBundleUtil;
 import org.joget.commons.util.StringUtil;
 import org.joget.plugin.base.PluginManager;
+import org.joget.directory.model.service.DirectoryUtil;
 
 /**
  * A base abstract class to develop a Userview Theme plugin for version v5.0 onward.
@@ -248,7 +249,6 @@ public abstract class UserviewV5Theme extends UserviewTheme {
                 String html = "<style>\n" +
                 "body#login #loginForm {display: none;}\n" +
                 ".img100 {height: 100% !important;};\n" +
-                "body#login header, body#login footer {display: none;} \n"+
                 "</style>";
                 
                 infoTile.setProperties(getProperties());
@@ -279,10 +279,16 @@ public abstract class UserviewV5Theme extends UserviewTheme {
                                 "  $('#customPassword').on('change', function(e){\n" +
                                 "    $('#j_password').val($(this).val());\n" +
                                 "  })\n" +
-                                "   if ($('#openIDLogin').length > 0){ \n"+
-                                "       $('#loginButton').after($('#openIDLogin').parent().parent().clone(true).addClass('w-100 d-flex justify-content-center')) \n"+  
-                                "   } \n"+
-                                "});\n" +
+                                "$(\"body#login #main > div\").css({maxWidth: \"100%\"})\n"; 
+                
+                //Handle login footer
+                String footerContent = DirectoryUtil.getLoginFormFooter();
+                footerContent = footerContent.replace("</script>", "<\\/script>");
+                if (!footerContent.equalsIgnoreCase("")){
+                    html += "$(`<table class=\"w-100 d-flex justify-content-center\"> <tbody> <tr> <td colspan=\"2\">" + footerContent + "</td> </tr> </tbody> </table>`).insertAfter($('#loginButton'));";
+                }
+                                
+                html +=         "});\n" +
                                 "</script>";
 
                 data.put("login_form_before", html);
