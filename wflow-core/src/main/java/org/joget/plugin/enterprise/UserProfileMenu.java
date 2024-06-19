@@ -24,6 +24,7 @@ import org.joget.commons.util.StringUtil;
 import org.joget.commons.util.TimeZoneUtil;
 import org.joget.directory.dao.UserDao;
 import org.joget.directory.dao.UserMetaDataDao;
+import org.joget.directory.model.mfa.exception.MfaRequiredException;
 import org.joget.directory.model.service.*;
 import org.joget.directory.model.User;
 import org.joget.directory.model.UserMetaData;
@@ -263,7 +264,9 @@ public class UserProfileMenu extends UserviewMenu {
                         if (directoryManager.authenticate(currentUser.getUsername(), getRequestParameterString("oldPassword"))) {
                             authenticated = true;
                         }
-                    } catch (Exception e) { }
+                    } catch (MfaRequiredException e) {
+                        authenticated = true;
+                    } catch (Exception ignored) {}
                 }
             }
         
