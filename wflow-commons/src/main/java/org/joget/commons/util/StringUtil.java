@@ -441,6 +441,7 @@ public class StringUtil {
             } else if (TYPE_URL.equals(f)) {
                 try {
                     inStr = URLEncoder.encode(inStr, "UTF-8");
+                    inStr = inStr.replaceAll(StringUtil.escapeRegex("+"), StringUtil.escapeRegex("%20"));
                 } catch (Exception e) {/* ignored */}
             } else if (TYPE_NL2BR.equals(f)) {
                 inStr = inStr.replaceAll("(\r\n|\n)", "<br class=\"nl2br\" />");
