@@ -172,7 +172,7 @@ public class DirectoryUtil implements ApplicationContextAware {
         Object mfaManager = getApplicationContext().getBean("mfaManager");
         if (mfaManager != null) {
             String mfaProfileFooter = ((MfaManager) mfaManager).getProfileFooterHtml(user);
-            sb.append(mfaProfileFooter == null ? "" : mfaProfileFooter);
+            sb.append(mfaProfileFooter);
         }
 
         return sb.toString();
