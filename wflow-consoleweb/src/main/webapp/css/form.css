@@ -765,7 +765,6 @@ body.rtl #${elementParamName!}_multiPagedForm_${element.properties.elementUnique
 /* Popup select box */
 .selector_element {
     display: block;
-    margin-left: 30%;
 }
 body.rtl .selector_element {
     float: right;
