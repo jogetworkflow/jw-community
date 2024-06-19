@@ -859,9 +859,3 @@ body.rtl .numeric_field_control {left:10px; right:auto;}
 body.rtl #form-canvas .form-cell .label {
     text-align: right;
 }
-.form-cell:has(.datapicker-native) img.ui-datepicker-trigger{
-    display: none;
-}
-.label-top:has(.datapicker-native) input {
-    max-width: 100%;
-}
