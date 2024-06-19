@@ -17,6 +17,9 @@ import java.io.UnsupportedEncodingException;
 import java.io.Writer;
 import java.net.URISyntaxException;
 import java.net.URLDecoder;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -179,6 +182,7 @@ public class AppServiceImpl implements AppService {
     //----- Workflow use cases ------
     
     final protected Map<String, String> processMigration = new HashMap<String, String>();
+    private final static String PROCESS_MIGRATION_PATH = "app_migration" + File.separator;
 
     /**
      * Retrieves the workflow process definition for a specific app version.
@@ -2832,21 +2836,25 @@ public class AppServiceImpl implements AppService {
         Thread backgroundThread = new Thread(new Runnable() {
 
             public void run() {
-                HostManager.setCurrentProfile(profile);
-                AppUtil.setCurrentAppDefinition(appDef);
-                workflowUserManager.setCurrentThreadUser(currentUser);
-                
-                processMigration.put(profile + "::" + packageId + "::" + fromVersion, toVersion.toString());
-                
-                LogUtil.info(getClass().getName(), "Updating running processes for " + packageId + " from " + fromVersion + " to " + toVersion.toString());
-                
-                Collection<String> runningProcessList = workflowAssignmentDao.getMigrateProcessInstances(packageId + "#" + fromVersion); 
+                try {
+                    HostManager.setCurrentProfile(profile);
+                    AppUtil.setCurrentAppDefinition(appDef);
+                    workflowUserManager.setCurrentThreadUser(currentUser);
 
-                migrateProcessInstance(runningProcessList, profile, packageId, fromVersion.toString(), toVersion.toString());
+                    processMigration.put(profile + "::" + appDef.getAppId() + "_" + appDef.getVersion() + "::" + fromVersion, toVersion.toString());
                 
-                processMigration.remove(profile + "::" + packageId + "::" + fromVersion);
-                LogUtil.info(getClass().getName(), "Completed updating running processes for " + packageId + " from " + fromVersion + " to " + toVersion.toString());
-                removeUnusedXpdl(profile, packageId);
+                    LogUtil.info(getClass().getName(), "Updating running processes for " + packageId + " from " + fromVersion + " to " + toVersion.toString());
+
+                    Collection<String> runningProcessList = workflowAssignmentDao.getMigrateProcessInstances(packageId + "#" + fromVersion); 
+
+                    migrateProcessInstance(runningProcessList, profile, packageId, fromVersion.toString(), toVersion.toString());
+
+                    processMigration.remove(profile + "::" + appDef.getAppId() + "_" + appDef.getVersion() + "::" + fromVersion);
+                    LogUtil.info(getClass().getName(), "Completed updating running processes for " + packageId + " from " + fromVersion + " to " + toVersion.toString());
+                    removeUnusedXpdl(profile, packageId);
+                } finally {
+                    tryReleaseProcessUpdate(appDef);
+                }
             }
         });
         backgroundThread.setDaemon(false);
@@ -2858,6 +2866,7 @@ public class AppServiceImpl implements AppService {
             return;
         }
         
+        AppDefinition appDef = AppUtil.getCurrentAppDefinition();
         String newVersion = toVersion;
         
         Collection<String> processInstanceNeedReview = new ArrayList<String>();
@@ -2876,10 +2885,10 @@ public class AppServiceImpl implements AppService {
                 LogUtil.error(getClass().getName(), e, "Error updating Process Instance ID " + processId);
             }
 
-            if (processMigration.containsKey(profile + "::" + packageId + "::" + newVersion)) {
-                String tempVersion = processMigration.get(profile + "::" + packageId + "::" + newVersion);
+            if (processMigration.containsKey(profile + "::" + appDef.getAppId() + "_" + appDef.getVersion() + "::" + newVersion)) {
+                String tempVersion = processMigration.get(profile + "::" + appDef.getAppId() + "_" + appDef.getVersion() + "::" + newVersion);
                 if (fromVersion != null) {
-                    processMigration.put(profile + "::" + packageId + "::" + fromVersion, tempVersion);
+                    processMigration.put(profile + "::" + appDef.getAppId() + "_" + appDef.getVersion() + "::" + fromVersion, tempVersion);
                 }
                 LogUtil.info(getClass().getName(), "New update found when updating running processes for " + packageId + " from " + fromVersion + " to " + newVersion + ". Continue update remaining running processes to " + tempVersion);
                 newVersion = tempVersion;
@@ -2896,20 +2905,20 @@ public class AppServiceImpl implements AppService {
         for (WorkflowProcess p : existingProcesses) {
             versions.add(p.getVersion());
         }
-        
+
         //removed version of latest package used by each app version
         Collection<Long> allPackageVersion = packageDefinitionDao.getPackageVersions(packageId);
         for (Long l : allPackageVersion) {
             versions.remove(l.toString());
         }
-        
+
         //removed version of package used by all existing assignment
         Set<String> usedVersion = workflowAssignmentDao.getUsedVersion(packageId);
         for (String id : usedVersion) {
             String[] part = id.split("#");
             versions.remove(part[1]);
         }
-        
+
         for (String v : versions) {
             if (!processMigration.containsKey(profile + "::" + packageId + "::" + v)) {
                 try {
@@ -2920,7 +2929,7 @@ public class AppServiceImpl implements AppService {
                 }
             }
         }
-    } 
+    }
 
     /**
      * Import an app definition object and XPDL content into the system.
@@ -3877,5 +3886,61 @@ public class AppServiceImpl implements AppService {
             }
         }
         return prefix;
+    }
+    
+    /**
+     * Lock and processing process update & process instance migration
+     * @param appDef
+     * @return 
+     */
+    public boolean lockProcessUpdate(AppDefinition appDef) {
+        try {
+            String key = SecurityUtil.normalizedFileName(appDef.getAppId() + "_" + appDef.getVersion().toString() + ".lock");
+            Path path = Paths.get(SetupManager.getBaseDirectory() + PROCESS_MIGRATION_PATH + key);
+            Files.createDirectories(path.getParent());
+
+            if (!Files.exists(path)) {
+                Files.createFile(path);
+                return true;
+            }
+        } catch (Exception e) {
+            LogUtil.warn(AppServiceImpl.class.getName(), "Fail to acquire lock for " + appDef.getAppId() + "_" + appDef.getVersion().toString() + ". Will retry again.");
+        }
+        return false;
+    }
+    
+    /**
+     * Release the lock after done process update and process instance migration
+     * @param appDef 
+     */
+    public void tryReleaseProcessUpdate(AppDefinition appDef) {
+        //should not release when process migration is running
+        String checker = DynamicDataSourceManager.getCurrentProfile() + "::" + appDef.getAppId() + "_" + appDef.getVersion() + "::";
+        for (String key : processMigration.keySet()) {
+            if (key.startsWith(checker)) {
+                return;
+            }
+        }
+        
+        //remove the file to release lock
+        try {
+            String key = SecurityUtil.normalizedFileName(appDef.getAppId() + "_" + appDef.getVersion().toString() + ".lock");
+            Path path = Paths.get(SetupManager.getBaseDirectory() + PROCESS_MIGRATION_PATH + key);
+            if (Files.exists(path)) {
+                Files.deleteIfExists(path);
+            }
+        } catch (Exception e) {
+            LogUtil.info(AppServiceImpl.class.getName(), e.getMessage());
+        }  
+    }
+    
+    /**
+     * Check there is process update & process instance migration
+     * @param appDef 
+     */
+    public boolean hasProcessUpdate(AppDefinition appDef) {
+        String key = SecurityUtil.normalizedFileName(appDef.getAppId() + "_" + appDef.getVersion().toString() + ".lock");
+        Path path = Paths.get(SetupManager.getBaseDirectory() + PROCESS_MIGRATION_PATH + key);
+        return Files.exists(path);
     }
 }

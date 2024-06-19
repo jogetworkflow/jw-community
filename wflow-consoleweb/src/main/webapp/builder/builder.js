@@ -1205,11 +1205,11 @@
                             CustomBuilder.config.builder.properties = $.extend(true, CustomBuilder.config.builder.properties, d.properties);
                         }
 
-                        CustomBuilder.callback(CustomBuilder.config.builder.callbacks["builderSaved"]);
+                        CustomBuilder.callback(CustomBuilder.config.builder.callbacks["builderSaved"], [d]);
                     }else{
                         CustomBuilder.showMessage(get_cbuilder_msg('ubuilder.saveFailed') + ((d.error && d.error !== "")?(" : " + d.error):""), "danger");
 
-                        CustomBuilder.callback(CustomBuilder.config.builder.callbacks["builderSaveFailed"]);
+                        CustomBuilder.callback(CustomBuilder.config.builder.callbacks["builderSaveFailed"], [d]);
                     }
 
                     //check builder name change
@@ -1228,9 +1228,11 @@
                     setTimeout(function(){
                         $("#save-btn").removeAttr("disabled");
                         if (typeof $('body').attr("builder-theme") !== 'undefined' && $('body').attr("builder-theme") !== false) {
-                            $("#save-btn > span").text(get_cbuilder_msg('cbuilder.saved'));
-                            $("#save-btn > i").removeClass("las la-cloud-upload-alt");
-                            $("#save-btn > i").addClass("zmdi zmdi-check");
+                            if(d.success === true){
+                                $("#save-btn > span").text(get_cbuilder_msg('cbuilder.saved'));
+                                $("#save-btn > i").removeClass("las la-cloud-upload-alt");
+                                $("#save-btn > i").addClass("zmdi zmdi-check");
+                            }
                             $("body").removeClass("initializing");
                             $("#loadingMessage").text("");
                         }
@@ -1378,7 +1380,7 @@
      */
     showMessage: function(message, type, center) {
         if (message && message !== "") {
-            if (typeof $('body').attr("builder-theme") !== 'undefined' && $('body').attr("builder-theme") !== false) {
+            if (typeof $('body').attr("builder-theme") !== 'undefined' && $('body').attr("builder-theme") !== false && type !== "danger") {
                 $("#loadingMessage").text(message);
             }
             var id = "toast-" + (new Date()).getTime();
@@ -1386,6 +1388,8 @@
             if (type === undefined) {
                 type = "secondary";
                 delay = 1500;
+            } else if (type === "danger") {
+                delay = 10000;
             }
             var toast = $('<div id="'+id+'" role="alert" aria-live="assertive" aria-atomic="true" class="toast alert-dismissible toast-'+type+'" data-autohide="true">\
                 '+message+'\

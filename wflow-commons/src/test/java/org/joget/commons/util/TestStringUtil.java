@@ -76,7 +76,7 @@ public class TestStringUtil {
     @Test
     public void testEscapeURL() throws Exception {
         String original = "a url param with & = ?";
-        String escaped = "a+url+param+with+%26+%3D+%3F";
+        String escaped = "a%20url%20param%20with%20%26%20%3D%20%3F";
         
         Assert.isTrue(escaped.equals(StringUtil.escapeString(original, StringUtil.TYPE_URL, null)));
         Assert.isTrue(original.equals(StringUtil.unescapeString(escaped, StringUtil.TYPE_URL, null)));
