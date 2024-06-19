@@ -31,6 +31,7 @@ import com.drew.metadata.jpeg.JpegDirectory;
 public class FileManager {
     public final static Integer THUMBNAIL_SIZE = 60; 
     public final static String THUMBNAIL_EXT = ".thumb.jpg"; 
+    public final static String ILLEGAL_CHARS = "[:*?\"<>|]";
     
     public static final long CLEANER_INTERVAL_MS = 12 * 60 * 60 * 1000; // 12 hours
     public static final long EXPIRES_MS = 24 * 60 * 60 * 1000; // 24 hours
@@ -81,6 +82,10 @@ public class FileManager {
                     filename += customFileName.replaceAll("%", ""); //remove % to prevent java.lang.IllegalArgumentException in future use
                 }
                 filename = SecurityUtil.normalizedFileName(filename);
+                
+                // remove all illegal chars after normalized the file name (unicode chars are normalized and become illegal chars)
+                filename = filename.replaceAll(ILLEGAL_CHARS, "");
+                
                 File uploadFile = new File(getBaseDirectory(), filename);
                 if (!uploadFile.isDirectory()) {
                     //create directories if not exist
