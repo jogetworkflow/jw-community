@@ -1,5 +1,7 @@
 package org.joget.directory.model.mfa;
 
+import org.joget.directory.model.mfa.exception.MfaExecutionException;
+
 public interface MfaPlugin {
 
     /**
