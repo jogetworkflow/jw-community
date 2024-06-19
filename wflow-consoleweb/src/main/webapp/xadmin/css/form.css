@@ -968,23 +968,3 @@ body.rtl .form-edit-btn{
 @media (max-width: 480px) {
     .numeric_field_controls {bottom: 53px; top: auto;}
 }
-body #form-canvas .label-top .form-cell .label,
-body #form-canvas .label-top .subform-cell .label,
-body #form-canvas .label-top.form-cell .label,
-body #form-canvas .label-top.subform-cell .label{
-    text-align: left;
-}
-body #form-canvas .label-top .label-left.form-cell .label,
-body #form-canvas .label-top .label-left.subform-cell .label{
-    text-align: right;
-}
-body.rtl #form-canvas .label-top .form-cell .label,
-body.rtl #form-canvas .label-top .subform-cell .label,
-body.rtl #form-canvas .label-top.form-cell .label,
-body.rtl #form-canvas .label-top.subform-cell .label{
-    text-align: right;
-}
-body.rtl #form-canvas .label-top .label-left.form-cell .label,
-body.rtl #form-canvas .label-top .label-left.subform-cell .label{
-    text-align: left;
-}
