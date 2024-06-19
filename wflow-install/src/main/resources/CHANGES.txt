@@ -3,6 +3,18 @@ Joget DX 7 COMMUNITY
 For more information, please refer to 
 https://dev.joget.org/community/display/DX7/Joget+DX+7+Knowledge+Base
 
+CHANGES IN 7.1.45
+=================
+edcc0f382 Fixed: wflow-consoleweb - Security - Remove version info from public page. T4081 @7.0-SNAPSHOT
+99a0cefa0 Fixed: wflow-commons - Security - Update log4j to 2.23.1. @7.1-SNAPSHOT
+764e24552 Modified: wflow-consoleweb - Startup - Log error when server fail to start. @7.0-SNAPSHOT
+c12bb0b4f Modified: jw-community - Installer - Support Java 21 LTS @7.1-SNAPSHOT
+ef87c68c4 Fixed: wflow-core - List Inbox - Regression of ec194fa1. Multi approval feature is broken. @7.0-SNAPSHOT
+5e10534ca Modified: jw-community - Security - Upgrade Spring Framework to 5.3.33, Spring Security to 5.8.11, Hibernate to 5.6.15.Final, dom4j to 2.1.4, bouncycastle to 1.78, moment.js to 2.30.1. @7.1-SNAPSHOT
+642c7d2fa Fixed: wflow-commons - SetupManager - Base directory path is not consistently ends with a path separator. @7.0-SNAPSHOT
+a4c2507fa Fixed: wflow-core - MFA - Does not call user security login post processing after logged in. @7.0-SNAPSHOT
+d50aa032c Fixed: wflow-commons - Security - Prevent DOS due to Glowroot upgrade. @7.1-SNAPSHOT
+
 CHANGES IN 7.1.44
 =================
 b48f76d66 Fixed: jw-community - Security - Update commons-compress to 1.26.0 and commons-io to 2.15.1 for CVE-2024-26308. @7.0-SNAPSHOT
