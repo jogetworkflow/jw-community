@@ -49,6 +49,7 @@
         #screenshotView .sticky-buttons {top: 125px;}
         #cbuilder.hide-tool:not(.screenshot-builder-view) {--builder-left-panel-width: 0px; --builder-content-top: var(--builder-header-top-height);}
         #xpdlView{top:85px !important;}
+        #processMigrationLoader{position: absolute; width: 300px; right: 0; top: 3px; z-index: 1; text-align: center;}
     </style>    
 </c:set>    
 <c:set var="builderCode" scope="request" value="process"/>
@@ -78,6 +79,7 @@
                 "listViewerViewBeforeClosed" : "ProcessBuilder.listViewerViewBeforeClosed",
                 "saveEditProperties" : "ProcessBuilder.saveEditProperties",
                 "builderSaved" : "ProcessBuilder.builderSaved",
+                "builderSaveFailed" : "ProcessBuilder.builderSaveFailed",
                 "getOverviewPathElementSelector" : "ProcessBuilder.getOverviewPathElementSelector"
             },
             "properties" : {
