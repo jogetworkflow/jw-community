@@ -869,6 +869,9 @@ body.rtl .handsontable .htCore tr td:last-child {
 .calculationField_value {
     padding: 6px 10px 0 1px;
 }
+body.rtl .calculationField_value {
+    padding-right: 1px;
+}
 
 /* Multipaged form */
 .multiPagedForm,
