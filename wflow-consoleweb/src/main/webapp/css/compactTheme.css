@@ -382,3 +382,29 @@ body.compact-mode .label-top .subform-cell:not(.label-left) > label.label > i{
         bottom: -27px;
     }
 }
+body.compact-mode.mediumFontSize .label-top .form-cell:not(.label-left) > label.label > i,
+body.compact-mode.mediumFontSize .label-top .subform-cell:not(.label-left) > label.label > i,
+body.compact-mode.mediumFontSize .label-top.form-cell > label.label > i,
+body.compact-mode.mediumFontSize .label-top.subform-cell > label.label > i{
+    bottom: -31.5px;
+}
+body.compact-mode.largeFontSize .label-top .form-cell:not(.label-left) > label.label > i,
+body.compact-mode.largeFontSize .label-top .subform-cell:not(.label-left) > label.label > i,
+body.compact-mode.largeFontSize .label-top.form-cell > label.label > i,
+body.compact-mode.largeFontSize .label-top.subform-cell > label.label > i{
+    bottom: -36px;
+}
+@media (max-width: 768px){
+        body.compact-mode.mediumFontSize .form-cell > label.label > i,
+    body.compact-mode.mediumFontSize .subform-cell > label.label > i,
+    body.compact-mode.mediumFontSize .label-left.form-cell > label.label > i,
+    body.compact-mode.mediumFontSize .label-left.subform-cell > label.label > i{
+        bottom: -31.5px;
+    }
+    body.compact-mode.largeFontSize .form-cell > label.label > i,
+    body.compact-mode.largeFontSize .subform-cell > label.label > i,
+    body.compact-mode.largeFontSize .label-left.form-cell > label.label > i,
+    body.compact-mode.largeFontSize .label-left.subform-cell > label.label > i{
+        bottom: -36px;
+    }
+}

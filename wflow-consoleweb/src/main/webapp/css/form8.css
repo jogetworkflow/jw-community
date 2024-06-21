@@ -1413,3 +1413,29 @@ body.rtl .label-top.form-cell > label.label > i,
 body.rtl .label-top.subform-cell > label.label > i{
     left: unset;
 }
+.mediumFontSize .label-top .form-cell:not(.label-left) > label.label > i,
+.mediumFontSize .label-top .subform-cell:not(.label-left) > label.label > i,
+.mediumFontSize .label-top.form-cell > label.label > i,
+.mediumFontSize .label-top.subform-cell > label.label > i{
+    bottom: -39.5px;
+}
+.largeFontSize .label-top .form-cell:not(.label-left) > label.label > i,
+.largeFontSize .label-top .subform-cell:not(.label-left) > label.label > i,
+.largeFontSize .label-top.form-cell > label.label > i,
+.largeFontSize .label-top.subform-cell > label.label > i{
+    bottom: -44px;
+}
+@media (max-width: 768px){
+    .mediumFontSize .form-cell > label.label > i,
+    .mediumFontSize .subform-cell > label.label > i,
+    .mediumFontSize .label-left.form-cell > label.label > i,
+    .mediumFontSize .label-left.subform-cell > label.label > i{
+        bottom: -39.5px;
+    }   
+    .largeFontSize .form-cell > label.label > i,
+    .largeFontSize .subform-cell > label.label > i,
+    .largeFontSize .label-left.form-cell > label.label > i,
+    .largeFontSize .label-left.subform-cell > label.label > i{
+        bottom: -44px;
+    }
+}
