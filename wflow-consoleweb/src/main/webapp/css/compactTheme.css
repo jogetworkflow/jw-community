@@ -366,7 +366,7 @@ body.compact-mode .label-top.subform-cell > label.label > i{
 
 body.compact-mode .form-cell > label.label > i,
 body.compact-mode .subform-cell > label.label > i{
-    height: 27px;
+    height: calc(1.5em + 0.25rem + 2px);
 }
 body.compact-mode .label-top .form-cell:not(.label-left) > label.label > i,
 body.compact-mode .label-top .subform-cell:not(.label-left) > label.label > i{
