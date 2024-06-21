@@ -1340,9 +1340,9 @@ select:focus-visible{
     border: 2px solid var(--theme-primary, var(--theme-color3, #007bff));
 }
 .form-cell > label.label:has(+ input:focus-visible) > i,
-.suform-cell > label.label:has(+ input:focus-visible) > i,
+.subform-cell > label.label:has(+ input:focus-visible) > i,
 .form-cell > label.label:has(+ select:focus-visible) > i,
-.suform-cell > label.label:has(+ input:focus-visible) > i{
+.subform-cell > label.label:has(+ select:focus-visible) > i{
     border-top-width: 2px;
     border-bottom-width: 2px;
     border-left-width: 2px;
@@ -1354,9 +1354,9 @@ select:focus-visible{
     border-left-color: var(--theme-primary, var(--theme-color3, #007bff));
 }
 body.rtl .form-cell > label.label:has(+ input:focus-visible) > i,
-body.rtl .suform-cell > label.label:has(+ input:focus-visible) > i,
+body.rtl .subform-cell > label.label:has(+ input:focus-visible) > i,
 body.rtl .form-cell > label.label:has(+ select:focus-visible) > i,
-body.rtl .suform-cell > label.label:has(+ input:focus-visible) > i{
+body.rtl .subform-cell > label.label:has(+ select:focus-visible) > i{
     border-right-width: 2px;
     border-left-width: 0px;
     border-right-style: solid;
