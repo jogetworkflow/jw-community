@@ -59,6 +59,14 @@ public class UserviewThemeProcesser {
         }
     }
 
+    public String getThemeHash() {
+        return themeHash;
+    }
+
+    public void setThemeHash(String themeHash) {
+        this.themeHash = themeHash;
+    }
+
     public String getPreviewView() {
         if (userview.getSetting().getTheme() != null && !(userview.getSetting().getTheme() instanceof UserviewV5Theme)) {
             return "ubuilder/preview";
