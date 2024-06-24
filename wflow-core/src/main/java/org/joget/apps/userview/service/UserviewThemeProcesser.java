@@ -31,6 +31,10 @@ public class UserviewThemeProcesser {
     Userview userview;
     UserviewV5Theme defaultTheme;
     UserviewV5Theme theme;
+    /**
+     * themeHash is used for refreshing the cache for PWA/offline mode
+     */
+    String themeHash;
     HttpServletRequest request;
     String redirectUrl = null;
     String alertMessage = null;
@@ -39,6 +43,11 @@ public class UserviewThemeProcesser {
     boolean isPwaOfflinePage = false;
     boolean isPwaUnavailablePage = false;
     boolean isQuickEditEnabled = AppUtil.isQuickEditEnabled();
+
+    public UserviewThemeProcesser(Userview userview, HttpServletRequest request, String themeHash) {
+        this(userview, request);
+        this.themeHash = themeHash;
+    }
 
     public UserviewThemeProcesser(Userview userview, HttpServletRequest request) {
         this.userview = userview;
@@ -234,6 +243,12 @@ public class UserviewThemeProcesser {
         }
         data.put("joget_footer", getJogetFooter());
         data.put("content_container", getContentContainer(data));
+
+        if (themeHash != null) {
+            String bodyInnerAfter = data.getOrDefault("body_inner_after", "").toString();
+            bodyInnerAfter += "<script>navigator.serviceWorker.controller.postMessage({themeHash:'" + themeHash + "'});</script>";
+            data.put("body_inner_after", bodyInnerAfter);
+        }
 
         return getLayout(data);
     }

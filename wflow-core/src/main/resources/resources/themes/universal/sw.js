@@ -4,7 +4,7 @@ var contextPath = '%s';
 var appUserviewId = '%s';
 var userviewKey = '_';
 var homePageLink = '';
-var cache = appUserviewId + "-" + version;
+var appCacheName = appUserviewId + "-" + version;
 var urlsToCache = [
     contextPath + '/css/v7.css',
     contextPath + '/css/console_custom.css',
@@ -27,6 +27,7 @@ var urlsToCache = [
     %s
 ];
 var template = '%s';
+var themeHash = '';
 
 var ROLE_ANONYMOUS = 'roleAnonymous';
 
@@ -66,8 +67,8 @@ function cacheUserview(){
     //const cacheApi = fetchRequest.url.substring(0, fetchRequest.url.lastIndexOf("/")) + "/cacheUrls";
     const cacheApi = getPath() + '/' + userviewKey + "/cacheUrls";
     console.log("Retrieve urls to cache by API (" + cacheApi + ")");
-    fetch(cacheApi, {  
-        credentials: 'include'  
+    fetch(cacheApi, {
+        credentials: 'include'
     })
     .then(function(response) {
         if (response.status !== 200) {
@@ -76,15 +77,15 @@ function cacheUserview(){
         }
         response.json().then(function(data) {
             data = data.app;
-            
-            caches.open(cache)
+
+            caches.open(appCacheName)
             .then(function (cache) {
                 var promises = [];
 
                 data.push(getPath() + '/_/pwaoffline');
                 data.push(getPath() + '/_/offline');
                 data.push(homePageLink);
-               
+
                 promises.push(
                     //cache one by one to prevent duplicate url causing DOMexception
                     data.map(function(url) {
@@ -106,7 +107,7 @@ function cacheUserview(){
                         })
                     })
                 )
-                
+
                 return Promise.all(promises).then(function() {
                     console.log("URLs retrieved from API cached");
                 });
@@ -125,9 +126,9 @@ self.addEventListener('install', function (event) {
     console.log('SW install event');
     self.skipWaiting();
     event.waitUntil(
-        caches.delete(cache)
+        caches.delete(appCacheName)
             .then(function(){
-                caches.open(cache)
+                caches.open(appCacheName)
                     .then(function (cache) {
                         var promises = [];
 
@@ -154,7 +155,7 @@ self.addEventListener('install', function (event) {
                     })
             })
 
-                
+
     );
 });
 
@@ -178,7 +179,7 @@ self.addEventListener('fetch', function (event) {
                 return response;
 
             } else {
-                if(fetchRequest.url.indexOf('/web/json/workflow/currentUsername') === -1 
+                if(fetchRequest.url.indexOf('/web/json/workflow/currentUsername') === -1
                         && fetchRequest.url.indexOf('/images/v3/cj.gif') === -1
                         && fetchRequest.url.indexOf('/images/favicon_uv.ico?m=testconnection') === -1){
                     var responseToCache = response.clone();
@@ -188,13 +189,13 @@ self.addEventListener('fetch', function (event) {
                         });
                 }
             }
-            
+
             return response;
         })
         .catch(function () {
             if(event.request.method === 'POST' && formData !== null){
                 console.log('form POST failed, saving to indexedDB');
-                
+
                 savePostRequest(event.request.clone().url, formUserviewAppId, formPageTitle, formData, formUsername);
 
                 //redirect instead
@@ -232,7 +233,7 @@ self.addEventListener('fetch', function (event) {
                                 resolve(response);
                             }
                         })
-                    }); 
+                    });
                 }
             }
         })
@@ -278,7 +279,7 @@ self.addEventListener('push', function (event) {
     if (typeof badge === "undefined") {
         badge = contextPath + '/images/v3/logo.png';
     }
-    
+
     event.waitUntil(new Promise(function(resolve, reject) {
         connectCacheDB(function(store){
             var request = store.get("serviceWorkerList");
@@ -319,7 +320,7 @@ self.addEventListener('push', function (event) {
 
                 if (show) {
                     var notification = self.registration.showNotification(title, options);
-                    
+
                     notification.then(function(result) {
                         resolve(result);
                     }, function(err) {
@@ -329,7 +330,7 @@ self.addEventListener('push', function (event) {
                     reject("");
                 }
             };
-        }, 'readonly');    
+        }, 'readonly');
     }));
 });
 
@@ -459,7 +460,7 @@ function savePostRequest(url, userviewAppId, title, payload, username) {
         status: STATUS_PENDING,
         method: 'POST'
     });
-    
+
     request.onsuccess = function (event) {
         console.log('a new record has been added to indexedb');
         formData = null;
@@ -472,7 +473,7 @@ function savePostRequest(url, userviewAppId, title, payload, username) {
 
 function sendFormDataToServer(savedRequest){
     console.log('sendFormDataToServer', savedRequest);
-    
+
     return new Promise(function(resolve, reject) {
         if(savedRequest.status === STATUS_FORM_ERROR){
             reject();
@@ -540,12 +541,12 @@ function sendFormDataToServer(savedRequest){
 
                                     savedRequest.status = STATUS_FORM_ERROR;
                                     getObjectStore(FORM_DB_STORE_NAME, 'readwrite').put(savedRequest);
-                                    
+
                                     reject();
-                                    
+
                                 }else{
                                     getObjectStore(FORM_DB_STORE_NAME, 'readwrite').delete(savedRequest.id);
-                                    
+
                                     resolve();
                                 }
                             })
@@ -555,7 +556,7 @@ function sendFormDataToServer(savedRequest){
                     }else{
                         savedRequest.status = STATUS_FAILED;
                         getObjectStore(FORM_DB_STORE_NAME, 'readwrite').put(savedRequest);
-                        
+
                         reject();
                     }
                 }).catch(function (error) {
@@ -568,8 +569,8 @@ function sendFormDataToServer(savedRequest){
                 })
             })
     });
-    
-        
+
+
 }
 
 function processStoredFormData() {
@@ -577,7 +578,7 @@ function processStoredFormData() {
         //console.log('processStoredFormData is syncing, ignoring...');
         return;
     }
-    
+
     isSyncing = true;
 
     //delay to make sure already online
@@ -593,7 +594,7 @@ function processStoredFormData() {
 
                 req.onsuccess = async function(event) {
                     var cursor = event.target.result;
-                    
+
                     if (cursor) {
                         savedRequests.push(cursor.value);
                         cursor.continue();
@@ -632,7 +633,7 @@ function processStoredFormData() {
                         }else{
                             //proceed to send the data
                             var promises = [];
-                            
+
                             for(let savedRequest of savedRequests) {
                                 /*
                                 if(savedRequest.status !== STATUS_FORM_ERROR){
@@ -641,16 +642,16 @@ function processStoredFormData() {
                                 */
                                 promises.push(sendFormDataToServer(savedRequest));
                             }
-                            
+
                             Promise.allSettled(promises).then(function(results){
                                 var hasFailedRequest = false;
-                                
+
                                 results.forEach(function(result){
                                     if(result.status === 'rejected'){
                                         hasFailedRequest = true;
                                     }
                                 });
-                                
+
                                 if(hasFailedRequest){
                                     //show syncFailed notification
                                     postMessageToClients({
@@ -664,7 +665,7 @@ function processStoredFormData() {
                                         })
                                     }
                                 }
-                                
+
                                 isSyncing = false;
                             });
 
@@ -679,7 +680,7 @@ function processStoredFormData() {
                 console.log('error getting username', error);
             });
     }, 10000);
-        
+
 }
 
 function connectCacheDB(f, mode) {
@@ -694,9 +695,9 @@ function connectCacheDB(f, mode) {
     };
     request.onupgradeneeded = function(e){
         var db = e.currentTarget.result;
-        
+
         if(!db.objectStoreNames.contains(CACHE_DB_STORE_NAME)) {
-            db.createObjectStore(CACHE_DB_STORE_NAME, {keyPath: "name"});  
+            db.createObjectStore(CACHE_DB_STORE_NAME, {keyPath: "name"});
         }
         connectCacheDB(f, mode);
     };
@@ -707,14 +708,27 @@ self.addEventListener('message', function(event) {
         console.log('sync received');
         processStoredFormData();
     }
-    
+
+    if (event.data.hasOwnProperty('themeHash') && themeHash !== event.data.themeHash) {
+        themeHash = event.data.themeHash;
+        caches.delete(appCacheName)
+            .then(deleted => {
+                if (deleted) {
+                    console.log('Theme updated: deleted offline cache');
+                } else {
+                    throw new Error('Theme updated');
+                }
+            })
+            .catch(error => console.error(error, ': failed to delete offline cache'));
+    }
+
     if (event.data.hasOwnProperty('userviewKey')) {
         console.log('userviewKey received');
         userviewKey = event.data.userviewKey;
         homePageLink = event.data.homePageLink;
         cacheUserview();
     }
-    
+
     if (event.data.hasOwnProperty('formData')) {
         console.log('formData received');
         formPageTitle = event.data.formPageTitle;
@@ -722,7 +736,7 @@ self.addEventListener('message', function(event) {
         formUserviewAppId = event.data.formUserviewAppId;
         formUsername = event.data.formUsername;
     }
-    
+
     if (event.data.hasOwnProperty('serviceWorkerList')) {
         console.log("serviceWorkerList received");
         connectCacheDB(function(store){
