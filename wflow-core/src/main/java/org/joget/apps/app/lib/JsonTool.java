@@ -243,7 +243,7 @@ public class JsonTool extends DefaultApplicationPlugin {
 
             String subKey = key.replace("{" + key1 + "}", ""); //{search.name}.first to .first
             if (subKey.startsWith(".")) {
-                subKey = subKey.substring(0, 1);  //first
+                subKey = subKey.substring(1);  //first
             }
             if (subKey.length() > 0) {
 
