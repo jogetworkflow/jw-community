@@ -1,22 +1,16 @@
 .CodeMirror-advanced-dialog {
-    display: flex;
-    flex-direction: row;
-    justify-content: space-between;
-    flex-wrap: wrap;
-    align-items: center;
-    background: var(--theme-primary-color-1);
-    padding: 10px;
-    padding-left: 25px;
+    position: sticky;
+    top: 0;
+    background: inherit;
+    padding-left: 2px;
     overflow: hidden;
-    color: var(--theme-label-color-1);
-    border: 1px solid var(--theme-border-color-1);
-    box-shadow: #000 0 0 40px;
-    position: relative;
+    border: 1px solid var(--theme-border-color-1, #000);
     z-index: 10;
-}
-
-.CodeMirror-advanced-dialog .row .replace {
-    width: 100%;
+    background-color: var(--theme-primary-color-1, #e0f0ff);
+    color: var(--theme-label-color-1);
+    height: 40px;
+    width: 320px;
+    margin-left: auto;
 }
 
 .CodeMirror-advanced-dialog input {
@@ -30,7 +24,6 @@
 
 .CodeMirror-advanced-dialog button {
     font-size: 90%;
-    margin-bottom: 5px;
 }
 
 .CodeMirror-advanced-dialog .buttons {
@@ -39,25 +32,53 @@
     flex-wrap: wrap;
 }
 
-.CodeMirror-advanced-dialog .buttons-replace {
+.CodeMirror-advanced-dialog .collapse-button {
     display: flex;
-    flex-direction: column;
-    justify-content: space-evenly;
+    flex-direction: row;
+    flex-wrap: wrap;
+    border-color: transparent !important;
 }
 
 .CodeMirror-advanced-dialog .row {
-    display: flex;
     flex-direction: column;
-    width: 60%;
-    flex-grow:3;
-    margin-right: 5px;
+    margin-bottom: 10px;
+    margin-left: 25px;
+    width: 300px;
+    position: absolute;
+    top: 0px;
 }
 
-.CodeMirror-advanced-dialog .replace-box {
+.CodeMirror-advanced-dialog .find-part {
     display: flex;
-    flex-direction: column;
-    align-items: baseline;
-    width: 8;
+    font-size: 12px;
+    margin-right: 15px;
+    position: absolute;
+    top: 0px;
+}
+
+.CodeMirror-advanced-dialog .find-part #find-input {
+    display: flex;
+    flex: 1;
+}
+
+.CodeMirror-advanced-dialog .find-part .find-actions {
+    display: flex;
+    align-items: center;
+    height: 25px;
+    min-width: 135px;
+    font-size: x-small;
+}
+
+.CodeMirror-advanced-dialog .find-part .find-actions button {
+    width:25px;
+    padding:0;
+    height:25px;
+}
+
+.CodeMirror-advanced-dialog button {
+    background-color: var(--theme-button-bgcolor-1, inherit);
+    color: inherit;
+    border-color: transparent !important;
 }
 
 .CodeMirror-advanced-dialog .search-box {
@@ -67,7 +88,7 @@
 }
 
 .CodeMirror-advanced-dialog label {
-    flex: 0 0;
+    flex: 0 0 100px;
 }
 
 .CodeMirror-advanced-dialog input[type="text"] {
@@ -75,17 +96,24 @@
     border: 1px solid #000;
     margin-bottom: 5px;
     margin-right: 5px;
+    height: 23px;
     flex: 1 1 auto;
+    background-color: #fff;
 }
 
 .CodeMirror-search-hint {
     display: block;
+    position: absolute;
+    top: 22px;
     font-style: italic;
     flex: 0 0 100%;
 }
 
 .CodeMirror-search-count {
-    font-weight: 600;
+    width: 20%;
+    min-width:60px;
+    max-width:60px;
+    white-space:normal;
 }
 
 .buttons button {

@@ -8,6 +8,8 @@
 
 <commons:popupHeader bodyCssClass=" builder-popup no-header" builderTheme="${theme}"/>
 <script type="text/javascript" src="${pageContext.request.contextPath}/js/ace/ace.js"></script>
+<script type="text/javascript" src="${pageContext.request.contextPath}/wro/codeMirror.min.js"></script>
+<link rel="stylesheet" href="${pageContext.request.contextPath}/wro/codeMirror.min.css" />
 <c:if test="${not empty theme and theme ne 'classic'}">
     <link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/css/builderTheme.css?build=<fmt:message key="build.number"/>" />
 </c:if>
@@ -56,22 +58,99 @@
     </div> 
     <script>
         $(document).ready(function(){
-            var editor = ace.edit("description_editor");
-            var textarea = $('textarea[name="description"]');
-            editor.getSession().setValue(textarea.val());
-            editor.getSession().setTabSize(4);
+            codeeditor = CodeMirror(document.getElementById("description_editor"), {
+                lineNumbers: true,
+                mode: "text",
+                autoRefresh:true,
+                matchBrackets: true,
+                theme: "default",
+                gutters: ["CodeMirror-lint-markers", "CodeMirror-linenumbers", "CodeMirror-foldgutter"],
+                lint: true,
+                autoCloseTags: true,
+                autoCloseBrackets: true,
+                foldGutter: true,
+                lint: true,
+                lineWrapping: true,
+                highlightSelectionMatches: {annotateScrollbar: true, minChars: 1},
+                extraKeys: {
+                    "Ctrl-F": function(cm) {
+                        cm.execCommand("replace")
+                        $('#description_editor').find(".CodeMirror-advanced-dialog").css({display: 'block'})
+                        if (codeeditor.getOption("fullScreen")){
+                            $('#description_editor').find(".CodeMirror-advanced-dialog").css({position:"fixed", zIndex:"1001", top: "0px", right: "0px", width: "320px", marginRight: "80px"})
+                            $(".property-editor-container").css({"overflow":"visible"})
+                            $(".property-editor-pages").css({"overflow-y":"visible"})
+                        }
+                        else{
+                            $('#description_editor').find(".CodeMirror-advanced-dialog").css({position:"sticky", top:"0px", width:"320px", zIndex:"10", marginRight: "80px"});
+                            $('#main-body-content').attr('style', 'overflow:visible !important;')
+                            $('#description_editor').css({overflow: "visible"})
+                        }
+                    },
+                    "Ctrl-=": function(cm) {
+                        modifyFontSize(true);
+                    },
+                    "Ctrl--": function(cm) {
+                        modifyFontSize(false);
+                    }
+                    }
+                });
+            
+            //Make the replace appear
+            codeeditor.execCommand("replace");
+            
+            //Set height
+            $('#description_editor').find(".CodeMirror-advanced-dialog").css({display: 'none'})
+            $('#description_editor').find(".CodeMirror").css({"height":"auto", "minHeight": "300px"})
+            $('#description_editor').find(".CodeMirror-scroll").css({"maxHeight":"100%", "minHeight":"300px"});
+
+            //Set dark theme if dark theme mode is activated
             if ($('body').attr('builder-theme') === "dark") {
-                editor.setTheme("ace/theme/vibrant_ink");
-            } else {
-                editor.setTheme("ace/theme/textmate");
+                codeeditor.setOption("theme", "ayu-mirage");
             }
-            editor.getSession().setMode("ace/mode/text");
-            editor.setAutoScrollEditorIntoView(true);
-            editor.setOption("maxLines", 1000000); //unlimited, to fix the height issue
-            editor.setOption("minLines", 20);
-            editor.resize();
-            editor.getSession().on('change', function(){
-                textarea.val(editor.getSession().getValue());
+
+            //Function to modify font size
+            function modifyFontSize(increase){
+                var wrapper = codeeditor.getWrapperElement();
+                var currentSize = parseFloat(window.getComputedStyle(wrapper, null).getPropertyValue('font-size'));
+                var newSize = increase ? currentSize + 2 : currentSize - 2;
+
+                wrapper.style.fontSize = newSize + 'px';
+
+                codeeditor.refresh()
+            }
+
+            //Detect keydown for specific actions, such as f12 to toggle full screen mode, escape
+            //to exit full scree mode, and F1 to toggle help panel
+            $('#description_editor').on('keydown', function(event) {
+                if (event.key === 'F12' || (event.key === 'Escape' && codeeditor.getOption("fullScreen")) ){
+                    event.preventDefault();
+                    if (codeeditor.getOption("fullScreen")) {
+                        $(this).parent().closest('#right-panel').css('z-index', 20);
+                        codeeditor.setOption("fullScreen", false);
+                        $(".property-editor-container").css({"overflow":"hidden"})
+                        $(".property-editor-pages").css({"overflow-y":"scroll"})
+                        $(this).find(".CodeMirror-advanced-dialog button:last").click();
+                        $('#description_editor').find(".CodeMirror-advanced-dialog").css({display: 'none'})
+                        $('#description_editor').find(".CodeMirror").css({"height":"auto", "minHeight": "300px"})
+                        $('#description_editor').find(".CodeMirror-scroll").css({"maxHeight":"100%", "minHeight":"300px"});
+                        $(this).find(".CodeMirror-advanced-dialog .row.find button:last").click();
+                        $(this).find(".CodeMirror-advanced-dialog").css({position:"sticky", top:"0px", width:"320px", zIndex:"10"});
+                        event.stopPropagation();
+                    }else{
+                        $(this).parent().closest('#right-panel').css('z-index', 8999);
+                        codeeditor.setOption("fullScreen", true);
+                        $('#description_editor').find(".CodeMirror-advanced-dialog").css({position:"fixed", zIndex:"1001", top: "0px", right: "0px", width: "320px", marginRight: "30px"})
+                        $(".property-editor-container").css({"overflow":"visible"})
+                        $(".property-editor-pages").css({"overflow-y":"visible"})
+                    }
+                }
+            });
+            var textarea = $('textarea[name="description"]');
+            codeeditor.setValue(textarea.val())
+
+            codeeditor.on('change', function(){
+                textarea.val(codeeditor.getValue());
             });
             
             if ("${saved}" === "true") {
