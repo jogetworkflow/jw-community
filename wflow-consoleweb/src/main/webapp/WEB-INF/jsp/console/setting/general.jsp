@@ -601,6 +601,11 @@
         var params = "username=" + username + "&password=" + password;
         ConnectionManager.post('${pageContext.request.contextPath}/web/console/setting/general/loginHash', callback, params);
     }
+    
+    $(document).ready(function() {
+        UI.validateField("form", "#smtpEmail");
+    });
+    
 </script>
 
 <script>
