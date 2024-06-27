@@ -204,6 +204,7 @@
         <!-- Required dependencies -->
         <js>/js/codemirror/lib/codemirror.js</js>
         <js>/js/codemirror/addon/display/panel.js</js>
+        <js>/js/codemirror/addon/display/autorefresh.js</js>
 
         <!-- For the modes -->
         <js>/js/codemirror/mode/javascript/javascript.js</js>

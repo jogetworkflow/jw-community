@@ -1,7 +1,3 @@
-"use strict";
-
-var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
-
 // CodeMirror, copyright (c) by Marijn Haverbeke and others
 // Distributed under an MIT license: http://codemirror.net/LICENSE
 
@@ -15,9 +11,10 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 })(function (CodeMirror) {
   "use strict";
 
-  var replaceDialog = "\n    <div class=\"row find\">\n    <div class=\"replace-box\"> <input id=\"CodeMirror-find-field\" type=\"text\" class=\"CodeMirror-search-field\" placeholder=\"Find\" />\n      <span class=\"CodeMirror-search-count\"></span>\n        <div class=\"row replace\">\n      <label for=\"CodeMirror-replace-field\">With:</label>\n      <input id=\"CodeMirror-replace-field\" type=\"text\" class=\"CodeMirror-search-field\" placeholder=\"Replace\" />\n    </div>\n  <span class=\"CodeMirror-search-hint\">(Use /re/ syntax for regexp search)</span>\n </div>\n </div>\n   <div class=\"buttons-replace\">\n      <button type=\"button\" class=\"btn btn-outline-secondary border-0\"><i class=\"fas fa-arrow-up\"></i></button>\n      <button type=\"button\" class=\"btn btn-outline-secondary border-0\"><i class=\"fas fa-arrow-down\"></i></button>\n     <button type=\"button\" class=\"btn btn-outline-secondary border-0\">Replace</button>\n      <button type=\"button\" class=\"btn btn-outline-secondary border-0\">Replace All</button>\n      <button type=\"button\" class=\"btn btn-outline-secondary border-0\"><i class=\"zmdi zmdi-close\"></i></button>\n    </div>\n  ";
-  var findDialog = "\n    <div class=\"row find\">\n     <div class=\"search-box\"> <input id=\"CodeMirror-find-field\" type=\"text\" class=\"CodeMirror-search-field\" placeholder=\"Find\" />\n  <span class=\"CodeMirror-search-count\"></span>\n </div>    <span class=\"CodeMirror-search-hint\">(Use /re/ syntax for regexp search)</span>\n     </div>\n    <div class=\"buttons\">\n      <button type=\"button\" class=\"btn btn-outline-secondary border-0\"><i class=\"fas fa-arrow-up\"></i></button>\n      <button type=\"button\" class=\"btn btn-outline-secondary border-0\"><i class=\"fas fa-arrow-down\"></i></button>\n      <button type=\"button\" class=\"btn btn-outline-secondary border-0\"><i class=\"zmdi zmdi-close\"></i></button>\n    </div>\n" ;
-
+  var replaceDialog = `<button id="collapse-button" type="button" class="btn btn-light" style="margin-right: 5px;height:100%;position:absolute;top:0;width:18px;padding:0"><i class="fas fa-chevron-down"></i></button> <div class="row find" style="margin-top:2px;display: block;align-items: center;flex-wrap:nowrap;flex-direction:column;height: 28px;"> <div class="find-part"> <div id="find-input"> <input id="CodeMirror-find-field" type="text" class="CodeMirror-search-field" placeholder="Find" style="flex: 1;"/> </div> <div class="find-actions"> <span class="CodeMirror-search-count" style="font-weight: bold;">0/0</span> <button type="button" class="btn btn-light" title="Find Previous"><i class="fas fa-arrow-up"></i></button> <button type="button" class="btn btn-light" title="Find Next"><i class="fas fa-arrow-down"></i></button> <button type="button" class="btn btn-light" id="closeDialogButton" title="Close"><i class="fa fa-times"></i></button> </div> </div> <span class="CodeMirror-search-hint" style="font-size: 0.9em; color: #888;">(Use /re/ syntax for regexp search)</span> </div> <div class="row replace" style="align-items: center;flex-flow: column;height: 28px;display: none;top: 50px;"> <div class="find-part"> <div id="find-input"> <input id="CodeMirror-replace-field" type="text" class="CodeMirror-search-field" placeholder="Replace" style="flex:1"/> </div> <div class="find-actions"> <button type="button" class="btn btn-light" title="Replace"><i class="zmdi zmdi-mail-reply"></i></button> <button type="button" class="btn btn-light" title="Replace All"><i class="fas fa-reply-all"></i></button> </div> </div> </div>`;
+  
+  var findDialog = `<div style="display: flex; align-items: center; width:100%;"> <div class="height:100%;"> <button class="btn btn-light" style="margin-right: 5px;height:100%">></button> </div> <div class="row find" style="display: flex; align-items: center;flex-wrap:nowrap;flex-direction:column;height:50px"> <div class="find-part" style="display:flex;font-size:12px"> <div id="find-input" style="position:relative;display:flex;flex:1;"> <input id="CodeMirror-find-field" type="text" class="CodeMirror-search-field" placeholder="Find" style="flex: 1;"/> </div> <div class="find-actions"> <span class="CodeMirror-search-count" style="font-weight: bold;min-width:120px;">0/0</span> <button class="btn btn-light" style="margin-right: 5px;"><i class="fa-solid fa-arrow-up"></i></button> <button class="btn btn-light" style="margin-right: 5px;"><i class="fa-solid fa-arrow-down"></i></button> <button class="btn btn-light"><i class="fa fa-times"></i></button> </div> </div> <span class="CodeMirror-search-hint" style="font-size: 0.9em; color: #888;">(Use /re/ syntax for regexp search)</span> </div> </div> `; var numMatches = 0; var searchOverlay = function searchOverlay(query, caseInsensitive) { if (typeof query == "string") query = new RegExp(query.replace(/[\-\[\]\/\{\}\(\)\*\+\?\.\\\^\$\|]/g, "\\$&"), caseInsensitive ? "gi" : "g"); else if (!query.global) query = new RegExp(query.source, query.ignoreCase ? "gi" : "g"); return { token: function token(stream) { query.lastIndex = stream.pos; var match = query.exec(stream.string); if (match && match.index == stream.pos) { stream.pos += match[0].length || 1; return "searching"; } else if (match) { stream.pos = match.index; } else { stream.skipToEnd(); } } }; }; function SearchState() { this.posFrom = this.posTo = this.lastQuery = this.query = null; this.overlay = null; }
+    
   var numMatches = 0;
   var searchOverlay = function searchOverlay(query, caseInsensitive) {
     if (typeof query == "string") query = new RegExp(query.replace(/[\-\[\]\/\{\}\(\)\*\+\?\.\\\^\$\|]/g, "\\$&"), caseInsensitive ? "gi" : "g");else if (!query.global) query = new RegExp(query.source, query.ignoreCase ? "gi" : "g");
@@ -209,7 +206,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
     }
 
     if (typeof state.query === 'string') {
-      globalQuery = new RegExp(queryText, 'ig');
+      globalQuery = new RegExp(queryText.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'ig');
     } else {
       globalQuery = new RegExp(state.query.source, state.query.flags + 'g');
     }
@@ -222,8 +219,25 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
   };
 
   var resetCount = function resetCount(cm) {
-    cm.getWrapperElement().parentNode.querySelector('.CodeMirror-search-count').innerHTML = '';
+    cm.getWrapperElement().parentNode.querySelector('.CodeMirror-search-count').innerHTML = 'No results';
   };
+
+  var openCloseReplace = function openCloseReplace(cm) {
+    return {
+        callback: function callback(inputs) {
+            if (cm.getWrapperElement().parentNode.querySelector('.row.replace').style.display == "block") {
+                cm.getWrapperElement().parentNode.querySelector('.row.replace').style.display = "none"
+                cm.getWrapperElement().parentNode.querySelector('.CodeMirror-advanced-dialog').style.height = "40px"
+                cm.getWrapperElement().parentNode.querySelector('#collapse-button').innerHTML = "<i class=\"fas fa-chevron-down\"></i>"
+            }
+            else {
+                cm.getWrapperElement().parentNode.querySelector('.row.replace').style.display = "block"
+                cm.getWrapperElement().parentNode.querySelector('.CodeMirror-advanced-dialog').style.height = "80px"
+                cm.getWrapperElement().parentNode.querySelector('#collapse-button').innerHTML = "<i class=\"fas fa-chevron-up\"></i>"
+            }
+        }
+    }
+}
 
   var getFindBehaviour = function getFindBehaviour(cm, defaultText, callback) {
     if (!defaultText) {
@@ -276,8 +290,13 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
     };
   };
 
-  var closeBtnBehaviour = {
-    callback: null
+  var closeBtnBehaviour = function closeBtnBehaviour(cm) {
+    return {
+        callback: function callback(inputs) {
+            cm.getWrapperElement().parentNode.querySelector(".CodeMirror-advanced-dialog").style.display = 'none';
+            clearSearch(cm);
+        }
+    }
   };
 
   CodeMirror.commands.find = function (cm) {
@@ -288,7 +307,7 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
     var closeDialog = cm.openAdvancedDialog(findDialog, {
       shrinkEditor: true,
       inputBehaviours: [getFindBehaviour(cm, query)],
-      buttonBehaviours: [getFindPrevBtnBehaviour(cm), getFindNextBtnBehaviour(cm), closeBtnBehaviour],
+      buttonBehaviours: [getReplaceBtnBehaviour(cm), getFindPrevBtnBehaviour(cm), getFindNextBtnBehaviour(cm), closeBtnBehaviour(cm)],
       onClose: function onClose() {
         closeSearchCallback(cm, state);
       }
@@ -298,6 +317,15 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
     startSearch(cm, state, query);
     updateCount(cm);
   };
+
+  function getReplaceBtnBehaviour(cm) {
+    return {
+      text: "Replace",
+      callback: function() {
+        CodeMirror.commands.replace(cm);
+      }
+    };
+  }
 
   CodeMirror.commands.replace = function (cm, all) {
     if (cm.getOption("readOnly")) return;
@@ -323,7 +351,8 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
         closeOnBlur: false,
         callback: replaceNextCallback
       }],
-      buttonBehaviours: [getFindPrevBtnBehaviour(cm), getFindNextBtnBehaviour(cm), {
+      buttonBehaviours: [openCloseReplace(cm), getFindPrevBtnBehaviour(cm), getFindNextBtnBehaviour(cm), closeBtnBehaviour(cm),
+        {
         callback: replaceNextCallback
       }, {
         callback: function callback(inputs) {
@@ -332,8 +361,9 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
           var text = parseString(inputs[1].value);
           if (!query) return;
           replaceAll(cm, query, text);
+          updateCount(cm);
         }
-      }, closeBtnBehaviour],
+      }],
       onClose: function onClose() {
         closeSearchCallback(cm, state);
       }
@@ -344,4 +374,3 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
     updateCount(cm);
   };
 });
-

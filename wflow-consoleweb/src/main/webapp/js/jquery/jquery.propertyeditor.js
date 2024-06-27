@@ -8933,6 +8933,7 @@ PropertyEditor.Type.CodeEditor.prototype = {
             mode: "text",
             matchBrackets: true,
             theme: "default",
+            autoRefresh:true,
             gutters: ["CodeMirror-lint-markers", "CodeMirror-linenumbers", "CodeMirror-foldgutter"],
             lint: true,
             autoCloseTags: true,
@@ -8943,35 +8944,29 @@ PropertyEditor.Type.CodeEditor.prototype = {
             highlightSelectionMatches: {annotateScrollbar: true, minChars: 1},
             extraKeys: {
                 "Ctrl-F": function(cm) {
-                  height = cm.display.lastWrapHeight;
-                  cm.execCommand("find");
-                  resetHeight();
+                  cm.execCommand("replace")
+                  $('#' + thisObj.id).find(".CodeMirror-advanced-dialog").css({display: 'block'})
                   if (thisObj.codeeditor.getOption("fullScreen")){
-                    $('#' + thisObj.id).find(".CodeMirror-advanced-dialog").css({"position":"fixed", "z-index":"1001", "top": "0", "right": "0", "width": "30%"})
-                    $('#' + thisObj.id).find(".CodeMirror-advanced-dialog").resizable();
+                    $('#' + thisObj.id).find(".CodeMirror-advanced-dialog").css({position:"fixed", zIndex:"1001", top: "0px", right: "0px", width: "320px"})
                     $(".property-editor-container").css({"overflow":"visible"})
                     $(".property-editor-pages").css({"overflow-y":"visible"})
                   }
-                  $('#' + thisObj.id).find(".CodeMirror-advanced-dialog").draggable();
+                  else{
+                    $('#' + thisObj.id).find(".CodeMirror-advanced-dialog").css({position:"fixed", top:"0", right:"0", width:"320px", zIndex:"999", marginTop:"150px"});
+                    $('#' + thisObj.id).closest(".property-type-codeeditor").css({overflow: "visible"})
+                  }
                 },
                 "Ctrl-=": function(cm) {
                   modifyFontSize(true);
                 },
                 "Ctrl--": function(cm) {
                   modifyFontSize(false);
-                },
-                "Ctrl-R": function(cm) {
-                    cm.execCommand("replace")
-                    if (thisObj.codeeditor.getOption("fullScreen")){
-                        $('#' + thisObj.id).find(".CodeMirror-advanced-dialog").css({"position":"fixed", "z-index":"1001", "top": "0", "right": "0", "width": "30%"})
-                        $('#' + thisObj.id).find(".CodeMirror-advanced-dialog").resizable();
-                        $(".property-editor-container").css({"overflow":"visible"})
-                        $(".property-editor-pages").css({"overflow-y":"visible"})
-                    }
-                    $('#' + thisObj.id).find(".CodeMirror-advanced-dialog").draggable();
                 }
               }
           });
+
+        thisObj.codeeditor.execCommand("replace");
+        $('#' + thisObj.id).find(".CodeMirror-advanced-dialog").css({display: 'none'})
 
         if (this.properties.mode !== undefined && this.properties.mode !== "") {
             if (this.properties.mode === "html"){
@@ -9000,17 +8995,11 @@ PropertyEditor.Type.CodeEditor.prototype = {
         }
 
         //Function to modify font size
-        //Function to modify font size
         function modifyFontSize(increase){
             var wrapper = thisObj.codeeditor.getWrapperElement();
             var currentSize = parseFloat(window.getComputedStyle(wrapper, null).getPropertyValue('font-size'));
             var newSize = increase ? currentSize + 2 : currentSize - 2;
 
-            //Increase fontsize o code and help message
-            if ($("#panel-"+thisObj.id).length > 0){
-                var helpMessage = $("#panel-"+thisObj.id + " div").get(0);
-                helpMessage.style.fontSize = newSize + 'px';
-            }
             wrapper.style.fontSize = newSize + 'px';
 
             thisObj.codeeditor.refresh()
@@ -9032,22 +9021,21 @@ PropertyEditor.Type.CodeEditor.prototype = {
                     addPanel("top");
                     resetHeight();
                 }
-            }else if (event.key === 'F12' || event.key === 'Escape'){
+            }else if (event.key === 'F12' || (event.key === 'Escape' && thisObj.codeeditor.getOption("fullScreen"))){
                 event.preventDefault();
                 if (thisObj.codeeditor.getOption("fullScreen")) {
                     $('#'+thisObj.id).parent().closest('#right-panel').css('z-index', 20);
                     thisObj.codeeditor.setOption("fullScreen", false);
                     $(".property-editor-container").css({"overflow":"hidden"})
                     $(".property-editor-pages").css({"overflow-y":"scroll"})
-                    $('#' + thisObj.id).find(".CodeMirror-advanced-dialog").draggable("disable");
-                    $('#' + thisObj.id).find(".CodeMirror-advanced-dialog button:last").click();
+                    $('#' + thisObj.id).find(".CodeMirror-advanced-dialog .row.find button:last").click();
                     resetHeight();
+                    $('#' + thisObj.id).find(".CodeMirror-advanced-dialog").css({position:"sticky", top:"0px", width:"320px", zIndex:"10"});
                     event.stopPropagation();
                 }else{
                     $('#'+thisObj.id).parent().closest('#right-panel').css('z-index', 8999);
                     thisObj.codeeditor.setOption("fullScreen", true);
-                    $('#' + thisObj.id).find(".CodeMirror-advanced-dialog").css({"position":"fixed", "z-index":"1001", "top": "0", "right": "0", "width": "30%"})
-                    $('#' + thisObj.id).find(".CodeMirror-advanced-dialog").draggable().resizable();
+                    $('#' + thisObj.id).find(".CodeMirror-advanced-dialog").css({position:"fixed", zIndex:"1001", top: "0px", right: "0px", marginTop:"0px"})
                     $(".property-editor-container").css({"overflow":"visible"})
                     $(".property-editor-pages").css({"overflow-y":"visible"})
                 }
@@ -9059,14 +9047,11 @@ PropertyEditor.Type.CodeEditor.prototype = {
 
         function makePanel(where) {
             var node = document.createElement("div");
-            var label, div, msg, fontSize;
+            var label, div, msg;
 
             node.id = "panel-" + thisObj.id;
             node.className = "panel " + where;
             
-            var wrapper = thisObj.codeeditor.getWrapperElement();
-            var fontSize = parseFloat(window.getComputedStyle(wrapper, null).getPropertyValue('font-size')) + "px";
-
             div = $("<div>")
             msg = get_peditor_msg('peditor.codemirror.helpMessage')
             msg.split(" | ").forEach(el =>{
@@ -9077,7 +9062,7 @@ PropertyEditor.Type.CodeEditor.prototype = {
 
             label.css({
                 "color": "black",
-                "font-size": fontSize,
+                "font-size": "12px",
                 "padding": "5px 10px",
                 "font-weight":"bold",
                 "display": "flex",
@@ -9089,7 +9074,7 @@ PropertyEditor.Type.CodeEditor.prototype = {
             })
 
             return node;
-        }
+        };
 
         function resetHeight(){
             //Make CodeMirror unscrollable, and height follows the code written 
@@ -11426,8 +11411,7 @@ PropertyAssistant = {
                 }
                 codeeditor.session.insert(PropertyAssistant.currentCaretPosition, value);
             } else if ($(PropertyAssistant.currentField).hasClass("code-editor")) {
-                var id = $(PropertyAssistant.currentField).closest(".code-editor").attr("id");
-                var codeeditor = document.querySelector('#'+id + " .CodeMirror").CodeMirror;
+                var codeeditor = $(PropertyAssistant.currentField).find(".CodeMirror")[0].CodeMirror;
                 var old = codeeditor.getValue();
                 if (old !== "") {
                     value = " " + value;
@@ -12015,8 +11999,7 @@ PropertyAssistant = {
             var codeeditor = ace.edit(id);
             return codeeditor.getCursorPosition();
         } else if ($(PropertyAssistant.currentField).hasClass("code-editor")) {
-            var id = $(PropertyAssistant.currentField).closest(".code-editor").attr("id");
-            var codeeditor = document.querySelector('#'+id + " .CodeMirror").CodeMirror;
+            var codeeditor = $(PropertyAssistant.currentField).find(".CodeMirror")[0].CodeMirror;
             return codeeditor.getCursor();
         }  else {
             // Initialize

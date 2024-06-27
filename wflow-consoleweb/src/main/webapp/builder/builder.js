@@ -2647,32 +2647,76 @@
             $(view).find("button.button").wrap('<div class="sticky-buttons">');
             $(view).prepend('<pre id="json_definition" style="height:100%"></pre>');
 
-            var editor = ace.edit("json_definition");
-            editor.$blockScrolling = Infinity;
+            codeeditor = CodeMirror(document.getElementById("json_definition"), {
+                lineNumbers: true,
+                mode: "text",
+                autoRefresh:true,
+                matchBrackets: true,
+                theme: "default",
+                gutters: ["CodeMirror-lint-markers", "CodeMirror-linenumbers", "CodeMirror-foldgutter"],
+                lint: true,
+                autoCloseTags: true,
+                autoCloseBrackets: true,
+                foldGutter: true,
+                lint: true,
+                lineWrapping: true,
+                highlightSelectionMatches: {annotateScrollbar: true, minChars: 1},
+                extraKeys: {
+                    "Ctrl-F": function(cm) {
+                        cm.execCommand("replace")
+                        $('#json_definition').find(".CodeMirror-advanced-dialog").css({display: 'block', marginRight: '100px'})
+                    },
+                    "Ctrl-=": function(cm) {
+                      modifyFontSize(true);
+                    },
+                    "Ctrl--": function(cm) {
+                      modifyFontSize(false);
+                    }
+                  }
+              });
+
+            //Set Mode
+            codeeditor.setOption("mode", "application/json");
+            
+            //Make the replace appear
+            codeeditor.execCommand("replace");
+            
+            //Set height
+            $('#json_definition').find(".CodeMirror-advanced-dialog").css({display: 'none'})
+            $("#json_definition").find(".CodeMirror").css({"height":"100%"});
+            $('#json_definition').find(".CodeMirror-scroll").css({"maxHeight":"100%", "minHeight":"100%"});
+
+            //Set dark theme if dark theme mode is activated
             if ($('body').attr('builder-theme') === "dark") {
-                editor.setTheme("ace/theme/vibrant_ink");
-            } else {
-                editor.setTheme("ace/theme/textmate");
+                codeeditor.setOption("theme", "ayu-mirage");
             }
-            editor.getSession().setTabSize(4);
-            editor.getSession().setMode("ace/mode/json");
-            editor.setAutoScrollEditorIntoView(true);
-            editor.resize();
+
+            //Function to modify font size
+            function modifyFontSize(increase){
+                var wrapper = codeeditor.getWrapperElement();
+                var currentSize = parseFloat(window.getComputedStyle(wrapper, null).getPropertyValue('font-size'));
+                var newSize = increase ? currentSize + 2 : currentSize - 2;
+
+                wrapper.style.fontSize = newSize + 'px';
+
+                codeeditor.refresh()
+            }
+            
             var textarea = $("#cbuilder-info").find('textarea[name="json"]').hide();
             $(textarea).on("change", function() {
                 if (!CustomBuilder.editorSilentChange) {
                     CustomBuilder.editorSilentChange = true;
                     var jsonObj = JSON.decode($(this).val());
-                    editor.getSession().setValue(JSON.stringify(jsonObj, null, 4));
-                    editor.resize(true);
+                    codeeditor.setValue(JSON.stringify(jsonObj, null, 4))
+                    codeeditor.refresh()
                     CustomBuilder.editorSilentChange = false;
                 }
             });
             $(textarea).trigger("change");
-            editor.getSession().on('change', function(){
+            codeeditor.on('change', function(){
                 if (!CustomBuilder.editorSilentChange) {
                     CustomBuilder.editorSilentChange = true;
-                    var value = editor.getSession().getValue();
+                    var value = codeeditor.getValue();
                     if (value.length > 0) {
                         var jsonObj = JSON.decode(value);
                         textarea.val(JSON.encode(jsonObj)).trigger("change");
@@ -2680,6 +2724,7 @@
                     CustomBuilder.editorSilentChange = false;
                 }
             });
+
             $(view).find("button.button").on("click", function() {
                 CustomBuilder.editorIsChange = true;
                 var text = $(this).text();
@@ -2690,11 +2735,12 @@
                     $(view).find("button.button").removeAttr("disabled");
                 }, 1000);
             });
-            $(view).data("editor", editor);
+
+            $(view).data("editor", codeeditor);
+            
         } else {
             var editor = $(view).data("editor");
             CustomBuilder.editorIsChange = false;
-            editor.resize(true);
         }
     },
     
@@ -3036,7 +3082,7 @@
      */
     propertySearch : function() {
         var searchText = this.value.toLowerCase();
-	var tab = $(this).closest(".element-properties");
+	    var tab = $(this).closest(".element-properties");
         $(tab).find(".property-page-show").each(function() {
             var page = $(this);
             if ($(page).find(".property-editor-page-title > span").text().toLowerCase().indexOf(searchText) > -1) { 
@@ -3055,6 +3101,13 @@
                             if ($(this).is('.ace_editor')) {
                                 var id = $(this).attr('id');
                                 var codeeditor = ace.edit(id);
+                                var value = codeeditor.getValue();
+                                if (CustomBuilder.isSearchMatch(value, searchText)) {
+                                    show = true;
+                                    return false;
+                                }
+                            } else if ($(this).is(".code-editor")) {
+                                var codeeditor = $(this)[0].CodeMirror;
                                 var value = codeeditor.getValue();
                                 if (CustomBuilder.isSearchMatch(value, searchText)) {
                                     show = true;
@@ -3190,6 +3243,9 @@
                                 var id = $(event.target).closest(".ace_editor").attr("id");
                                 var codeeditor = ace.edit(id);
                                 codeeditor.session.insert(codeeditor.getCursorPosition(), clipText);
+                            } else if ($(event.target).hasClass("code-editor")) {
+                                var codeeditor = $(event.target).find(".CodeMirror")[0].CodeMirror;
+                                codeeditor.getDoc().replaceRange(clipText, PropertyAssistant.currentCaretPosition);
                             } else {
                                 var caret = PropertyAssistant.doGetCaretPosition(event.target);
                                 var text = $(event.target).val();
@@ -4906,7 +4962,7 @@ _CustomBuilder.Builder = {
                                             //copy the value from property editor
                                             var value = "";
                                             if ($(pfield).hasClass('property-type-codeeditor')) {
-                                                value = ace.edit($(pfield).find('pre.ace_editor').attr('id')).getValue();
+                                                value = $(pfield).find('.CodeMirror')[0].CodeMirror.getValue();
                                             } else if ($(pfield).hasClass('property-type-htmleditor')) {
                                                 value = tinymce.get($(pfield).find('textarea').attr('id')).getContent();
                                             } else {
@@ -4929,7 +4985,7 @@ _CustomBuilder.Builder = {
                                                     $(pfield).addClass("syncInlineValue");
                                                     var value = "";
                                                     if ($(pfield).hasClass('property-type-codeeditor')) {
-                                                        value = ace.edit($(pfield).find('pre.ace_editor').attr('id')).getValue();
+                                                        value = $(pfield).find('.CodeMirror')[0].CodeMirror.getValue();
                                                     } else if ($(pfield).hasClass('property-type-htmleditor')) {
                                                         value = tinymce.get($(pfield).find('textarea').attr('id')).getContent();
                                                     } else {
@@ -4981,7 +5037,7 @@ _CustomBuilder.Builder = {
             $(field).addClass("syncPropValue");
 
             if ($(field).hasClass('property-type-codeeditor')) {
-                ace.edit($(field).find('pre.ace_editor').attr('id')).setValue(content);
+                value = $(pfield).find('.CodeMirror')[0].CodeMirror.setValue(content);
             } else if ($(field).hasClass('property-type-htmleditor')) {
                 tinymce.get($(field).find('textarea').attr('id')).setContent(content);
             } else {
