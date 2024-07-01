@@ -8946,14 +8946,15 @@ PropertyEditor.Type.CodeEditor.prototype = {
                 "Ctrl-F": function(cm) {
                   cm.execCommand("replace")
                   $('#' + thisObj.id).find(".CodeMirror-advanced-dialog").css({display: 'block'})
+                  var offsetTop = "0px"
+                  if ($("body #top-panel").length > 0){
+                    offsetTop = $("body #top-panel").height() + "px"
+                  }
                   if (thisObj.codeeditor.getOption("fullScreen")){
-                    $('#' + thisObj.id).find(".CodeMirror-advanced-dialog").css({position:"fixed", zIndex:"1001", top: "0px", right: "0px", width: "320px"})
-                    $(".property-editor-container").css({"overflow":"visible"})
-                    $(".property-editor-pages").css({"overflow-y":"visible"})
+                    $('#' + thisObj.id).find(".CodeMirror-advanced-dialog").css({position:"fixed", zIndex:"2147483647", top: offsetTop, right: "0px", width: "320px"});
                   }
                   else{
                     $('#' + thisObj.id).find(".CodeMirror-advanced-dialog").css({position:"fixed", top:"0", right:"0", width:"320px", zIndex:"999", marginTop:"150px"});
-                    $('#' + thisObj.id).closest(".property-type-codeeditor").css({overflow: "visible"})
                   }
                 },
                 "Ctrl-=": function(cm) {
@@ -9024,20 +9025,24 @@ PropertyEditor.Type.CodeEditor.prototype = {
             }else if (event.key === 'F12' || (event.key === 'Escape' && thisObj.codeeditor.getOption("fullScreen"))){
                 event.preventDefault();
                 if (thisObj.codeeditor.getOption("fullScreen")) {
-                    $('#'+thisObj.id).parent().closest('#right-panel').css('z-index', 20);
                     thisObj.codeeditor.setOption("fullScreen", false);
-                    $(".property-editor-container").css({"overflow":"hidden"})
-                    $(".property-editor-pages").css({"overflow-y":"scroll"})
                     $('#' + thisObj.id).find(".CodeMirror-advanced-dialog .row.find button:last").click();
                     resetHeight();
                     $('#' + thisObj.id).find(".CodeMirror-advanced-dialog").css({position:"sticky", top:"0px", width:"320px", zIndex:"10"});
+                    $('#'+thisObj.id).find(".CodeMirror").css({left: "", top: ""})
                     event.stopPropagation();
                 }else{
-                    $('#'+thisObj.id).parent().closest('#right-panel').css('z-index', 8999);
+                    var offsetTop = "0px"
+                    var offsetLeft = "0px"
+                    if ($("body #top-panel").length > 0){
+                        offsetTop = $("body #top-panel").height() + "px"
+                    }
+                    if ($("body #quick-nav-bar").length > 0){
+                        offsetLeft = $("body #quick-nav-bar").width()+"px"
+                    }
                     thisObj.codeeditor.setOption("fullScreen", true);
-                    $('#' + thisObj.id).find(".CodeMirror-advanced-dialog").css({position:"fixed", zIndex:"1001", top: "0px", right: "0px", marginTop:"0px"})
-                    $(".property-editor-container").css({"overflow":"visible"})
-                    $(".property-editor-pages").css({"overflow-y":"visible"})
+                    $('#' + thisObj.id).find(".CodeMirror-advanced-dialog").css({position:"fixed", zIndex:"2147483647", top: offsetTop, right: "0px", marginTop:"0px"})
+                    $('#'+thisObj.id).find(".CodeMirror").css({left: offsetLeft, top: offsetTop})
                 }
             }
         });

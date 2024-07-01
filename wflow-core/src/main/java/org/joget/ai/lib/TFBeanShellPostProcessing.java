@@ -65,14 +65,15 @@ public class TFBeanShellPostProcessing implements TensorFlowPostProcessing {
                         "                \"Ctrl-F\": function(cm) {\n" +
                         "                  cm.execCommand(\"replace\")\n" +
                         "                  $(row).find(\".CodeMirror-advanced-dialog\").css({display: 'block'})\n" +
+                        "                   var offsetTop = \"0px\"\r\n" + //
+                        "                  if ($(\"body #top-panel\").length > 0){\r\n" + //
+                        "                    offsetTop = $(\"body #top-panel\").height() + \"px\"\r\n" + //
+                        "                  }\n"+
                         "                  if (codeeditor.getOption(\"fullScreen\")){\n" +
-                        "                    $(row).find(\".CodeMirror-advanced-dialog\").css({position:\"fixed\", zIndex:\"1001\", top: \"0px\", right: \"0px\", width: \"320px\"})\n" +
-                        "                    $(\".property-editor-container\").css({\"overflow\":\"visible\"})\n" +
-                        "                    $(\".property-editor-pages\").css({\"overflow-y\":\"visible\"})\n" +
+                        "                    $(row).find(\".CodeMirror-advanced-dialog\").css({position:\"fixed\", zIndex:\"2147483647\", top: offsetTop, right: \"0px\", width: \"320px\"});\n" +
                         "                  }\n" +
                         "                  else{\n" +
                         "                    $(row).find(\".CodeMirror-advanced-dialog\").css({position:\"fixed\", top:\"0\", right:\"0\", width:\"320px\", zIndex:\"999\", marginTop:\"150px\"});" +
-                        "                    $(row).closest(\".property-type-codeeditor\").css({overflow: \"visible\"})\n" +
                         "                  }\n" +
                         "                },\n" +
                         "                \"Ctrl-=\": function(cm) {\n" +
@@ -122,7 +123,7 @@ public class TFBeanShellPostProcessing implements TensorFlowPostProcessing {
                         "                \"padding\": \"5px 10px\",\r\n" + //
                         "                \"font-weight\":\"bold\",\r\n" + //
                         "                \"display\": \"flex\",\r\n" + //
-                        "                \"flex-direction\": \"column\"\r\n" + //
+                        "                \"flex-direction\": \"column\",\r\n" + //
                         "                \"white-space\": \"normal\"\r\n" + //
                         "            })\r\n" + //
                         "\r\n" + //
@@ -148,20 +149,26 @@ public class TFBeanShellPostProcessing implements TensorFlowPostProcessing {
                     "            }else if (event.key === 'F12' || (event.key === 'Escape' && codeeditor.getOption(\"fullScreen\"))){\n" +
                     "                event.preventDefault();\n" +
                     "                if (codeeditor.getOption(\"fullScreen\")) {\n" +
-                    "                    $(row).closest('#right-panel').css('z-index', 20);\n" +
                     "                    codeeditor.setOption(\"fullScreen\", false);\n" +
                     "                    $(\".property-editor-container\").css({\"overflow\":\"hidden\"})\n" +
                     "                    $(\".property-editor-pages\").css({\"overflow-y\":\"scroll\"})\n" +
                     "                    $(row).find(\".CodeMirror-advanced-dialog .row.find button:last\").click();\n" +
                     "                    resetHeight();\n" +
                     "                    $(row).find(\".CodeMirror-advanced-dialog\").css({position:\"sticky\", top:\"0px\", width:\"320px\", zIndex:\"10\"});\n" +
+                    "                    $(row).find(\".CodeMirror\").css({left: \"\", top: \"\"})\n"+
                     "                    event.stopPropagation();\n" +
                     "                }else{\n" +
-                    "                    $(row).closest('#right-panel').css('z-index', 8999);\n" +
+                    "                    var offsetTop = \"0px\"\r\n" + //
+                    "                    var offsetLeft = \"0px\"\r\n" + //
+                    "                    if ($(\"body #top-panel\").length > 0){\r\n" + //
+                    "                        offsetTop = $(\"body #top-panel\").height() + \"px\"\r\n" + //
+                    "                    }\r\n" + //
+                    "                    if ($(\"body #quick-nav-bar\").length > 0){\r\n" + //
+                    "                        offsetLeft = $(\"body #quick-nav-bar\").width()+\"px\"\r\n" + //
+                    "                    }\n"+
                     "                    codeeditor.setOption(\"fullScreen\", true);\n" +
-                    "                    $(row).find(\".CodeMirror-advanced-dialog\").css({position:\"fixed\", zIndex:\"1001\", top: \"0px\", right: \"0px\", marginTop:\"0px\"})\n" +
-                    "                    $(\".property-editor-container\").css({\"overflow\":\"visible\"})\n" +
-                    "                    $(\".property-editor-pages\").css({\"overflow-y\":\"visible\"})\n" +
+                    "                    $(row).find(\".CodeMirror-advanced-dialog\").css({position:\"fixed\", zIndex:\"1001\", top: offsetTop, right: \"0px\", marginTop:\"0px\"})\n" +
+                    "                   $(row).find(\".CodeMirror\").css({left: offsetLeft, top: offsetTop})"+
                     "                }\n" +
                     "            }\n" +
                     "        });";

@@ -99,6 +99,7 @@
     height: 23px;
     flex: 1 1 auto;
     background-color: #fff;
+    margin-top: 0px !important;
 }
 
 .CodeMirror-search-hint {
