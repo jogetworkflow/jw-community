@@ -84,6 +84,10 @@ public class XadminTheme extends UniversalTheme {
     public String getJsCssLib(Map<String, Object> data) {
         String path = data.get("context_path").toString();
         String jsCssLink = "";
+        
+        if(getPropertyString("customLogin").equalsIgnoreCase("true") && !getPropertyString("template").isEmpty() && (Boolean) data.get("is_login_page")){
+            return super.getJsCssLib(data);
+        }
 
         jsCssLink += "<link rel=\"stylesheet\" href=\""+path+"/wro/xadmin.min.css\">\n";
         jsCssLink += "<script>loadCSS(\"" + data.get("context_path") + "/xadmin/css/font.css" + "\")</script>\n";

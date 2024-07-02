@@ -17,7 +17,7 @@
     renderField : function() {
         
         var html = '<div class="template_editor_container" style="overflow:hidden;">';
-        html += '<div class="actions"><a class="choosetemplate btn button small" style="margin-left:0px;">@@userview.infotile.chooseTemplate@@</a> <a class="edittemplate btn button small">@@userview.infotile.editTemplate@@</a> <a style="display:none;" class="hideedit btn button small">@@userview.infotile.hideTemplateEditor@@</a><a class="reloadtemplate btn button small">@@userview.infotile.reloadTemplate@@</a> <a class="reloadMessage" style="color:green;display:none;">@@userview.infotile.reloadMessage@@</a></div>';
+        html += '<div class="actions"><a class="choosetemplate btn button small" style="margin-left:0px;">@@userview.infotile.chooseTemplate@@</a> <a class="edittemplate btn button small">@@userview.infotile.editTemplate@@</a> <a style="display:none;" class="hideedit btn button small">@@userview.infotile.hideTemplateEditor@@</a><a class="reloadtemplate btn button small">@@userview.infotile.reloadTemplate@@</a> <div class="reloadMessage toast hide" style="position:fixed;z-index:300;top: 0px;right:50px;margin-top:150px;background-color:green;" role="alert" aria-live="assertive" aria-atomic="true" data-delay="2000"> <div class="toast-header"> <strong class="mr-auto">@@userview.infotile.reloadMessage@@</strong> <button type="button" class="ml-2 mb-1 close" data-dismiss="toast" aria-label="Close"> <span aria-hidden="true">&times;</span> </button> </div> </div></div>';
         html += '<div class="editor" style="margin-top:10px; display:none;"><pre id="' + this.id + '" name="' + this.id + '" class="ace_editor"></pre></div>';
         html += '<div class="sample_container" style="margin-top:10px; padding:10px; border:1px solid #ced4da; background:#fff; border-radius:5px; overflow: scroll;"><label>@@userview.infotile.sample@@</label><div class="sample_preview" style="position:relative;"></div></div>';
         html += '</div>';
@@ -37,11 +37,10 @@
 
         $(document).ready(function(){
             var dataControlField = $("#"+thisObj.id).closest(".property-input").parent().attr("property-name"); 
-            $('div[class^="property-editor-property-container"] div[id^="property_"][data-control_field="' + dataControlField + '"]:not([property-name="repeat"]):not([style*="display: none"]):not([data-control_value*="repeat"]) input').on('focusout', function(){
-                var scroll = $(this).closest(".property-editor-property-container").scrollTop()
-                $(container).find('.reloadtemplate').click();
-                
-                $(this).closest(".property-editor-property-container").scrollTop(scroll)
+            $('body').on('focusout', 'div[class^="property-editor-property-container"] div[id^="property_"][data-control_field="' + dataControlField + '"]:not([style*="display: none"]) input',function(event){
+                    var scroll = $(this).closest(".property-editor-property-container").scrollTop()
+                    $(container).find('.reloadtemplate').click();
+                    $(this).closest(".property-editor-property-container").scrollTop(scroll);
             })
         })
 
@@ -85,9 +84,8 @@
             template = thisObj.fillStandardVariables(template, dict, "");
 
             thisObj.codeeditor.getSession().setValue(template);
-            $(container).find(".reloadMessage").css({"display":"block"})
-
-            setTimeout(function(){ $(container).find(".reloadMessage").css({"display":"none"})}, 2000);
+            $(container).find(".reloadMessage").toast();  
+            $(container).find(".reloadMessage").toast('show');  
         });
         
         $(container).find(".edittemplate").off("click");

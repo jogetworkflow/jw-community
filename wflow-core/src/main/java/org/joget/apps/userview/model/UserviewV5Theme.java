@@ -176,6 +176,14 @@ public abstract class UserviewV5Theme extends UserviewTheme {
      * @return 
      */
     public String getJsCssLib(Map<String, Object> data) {
+        if(getPropertyString("customLogin").equalsIgnoreCase("true") && !getPropertyString("template").isEmpty() && (Boolean) data.get("is_login_page")){
+            PluginManager pluginManager = (PluginManager) AppUtil.getApplicationContext().getBean("pluginManager");
+            UserviewV5Theme dx8Theme = (UserviewV5Theme) pluginManager.getPlugin("org.joget.apps.userview.lib.AjaxUniversalTheme");
+            dx8Theme.setProperties(getProperties());
+            dx8Theme.setUserview(getUserview());
+            dx8Theme.setRequestParameters(getRequestParameters());
+            return dx8Theme.getJsCssLib(data);
+        }
         return "<link href=\"" + data.get("context_path") + "/css/empty_userview.css?build=" + data.get("build_number") + "\" rel=\"stylesheet\" type=\"text/css\" />";
     }
 
@@ -279,13 +287,18 @@ public abstract class UserviewV5Theme extends UserviewTheme {
                                 "  $('#customPassword').on('change', function(e){\n" +
                                 "    $('#j_password').val($(this).val());\n" +
                                 "  })\n" +
+                                " $(\"input\").off('keyup').on('keyup', function(e) {\n" +
+                                "    if (e.which === 13) {\n" +
+                                "      $('#loginButton').click();\n" +
+                                "    }\n" +
+                                "  }); \n" +
                                 "$(\"body#login #main > div\").css({maxWidth: \"100%\"})\n"; 
                 
                 //Handle login footer
                 String footerContent = DirectoryUtil.getLoginFormFooter();
                 footerContent = footerContent.replace("</script>", "<\\/script>");
                 if (!footerContent.equalsIgnoreCase("")){
-                    html += "$(`<table class=\"w-100 d-flex justify-content-center\"> <tbody> <tr> <td colspan=\"2\">" + footerContent + "</td> </tr> </tbody> </table>`).insertAfter($('#loginButton'));";
+                    html += "$(`<table> <tbody> <tr> <td colspan=\"2\">" + footerContent + "</td> </tr> </tbody> </table>`).insertAfter($('#loginButton'));";
                 }
                                 
                 html +=         "});\n" +

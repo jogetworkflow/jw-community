@@ -332,6 +332,10 @@ public class UniversalTheme extends UserviewV5Theme implements UserviewPwaTheme,
     @Override
     public String getJsCssLib(Map<String, Object> data) {
         String path = data.get("context_path") + "/" + getPathName();
+        
+        if(getPropertyString("customLogin").equalsIgnoreCase("true") && !getPropertyString("template").isEmpty() && (Boolean) data.get("is_login_page")){
+            return super.getJsCssLib(data);
+        }
 
         String jsCssLink = "";
         jsCssLink += "<link href=\"" + data.get("context_path") + "/wro/" + getPathName() + ".preload.min.css" + "\" rel=\"stylesheet\" />\n";
