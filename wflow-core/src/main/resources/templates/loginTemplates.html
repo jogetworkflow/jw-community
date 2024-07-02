@@ -98,6 +98,13 @@
     </form>
   </div>
 </div>
+<script>
+    $(function(){
+        if ($("body header").length > 0){
+            $(".login-card-2").attr('style', "margin-top:"+ $("body header").height()+"px !important;")
+        }
+    });
+</script>
 <!---->
 
 <!--{sampleWidth: '100%', tags: 'transparent'}-->
@@ -289,6 +296,10 @@
     background-color: black;
     border: none;
   }
+  .carousel .carousel-item img {
+      max-height: 50vh;
+      min-width: auto;
+  }
 </style>
 <div class="container-fluid login-container-5">
       <div class="login-form-5">
@@ -309,14 +320,14 @@
           </div>
           <div class="col d-sm-none d-md-block">
             <!-- Carousel -->
-            <div id="carousel_{{id}}" class="carousel slide car-5" data-bs-ride="carousel">
+            <div id="carousel_{{id}}" class="carousel slide car-5" data-ride="carousel">
               <div class="carousel-indicators" data-hide="{{hideIndicator||false}}">
               </div>
               <div class="carousel-inner">
               {{repeat||[{image: "#request.contextPath#/builder/icons/image.svg", title: "Test 1", description: "Test Description 1"},{image: "#request.contextPath#/builder/icons/image.svg", title: "Test 2", description: "Test Description 2"},{image: "#request.contextPath#/builder/icons/image.svg", title: "Test 3", description: "Test Description 3"}]}}
                 <div class="carousel-item">
                   <div class="row h-50">
-                    <img src="{{repeat.image}}" style="max-height:100%;max-width:100%">>
+                    <img src="{{repeat.image}}">
                   </div>
                   <div class="row h-50">
                     <div class="text-container w-100 text-center">
@@ -338,7 +349,9 @@
                   });
                   //active first slide
                   $(carousel).find(".carousel-item:first-child, .carousel-indicators button:first-child").addClass("active");
-              });
+                  //Initialise carousel
+                  $(carousel).carousel();
+            });
           </script> 
       </div>
     </div>
