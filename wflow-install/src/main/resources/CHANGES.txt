@@ -2,6 +2,40 @@ Joget DX COMMUNITY
 ====================
 For more information, please refer to https://community.joget.org
 
+8.1.2
+=====
+1e093147d Modified: wflow-consoleweb - UI - Updated help links @8.1-SNAPSHOT
+6c698a7d9 Fixed: jw-community - Process Builder - Adding checking to prevent processes missing during concurrent save. @8.1-SNAPSHOT
+27d2e129c Fixed: wflow-consoleweb - App Center - App search not working correctly. @8.1-SNAPSHOT
+480268c8c Fixed: wflow-consoleweb - Progressive Theme - Fixed horizontal menu below header size and alignment. @8.1-SNAPSHOT
+c67eae133 Fixed: wflow-consoleweb - Janux Theme - Fixed positioning and rtl issue @8.1-SNAPSHOT
+8b35f89cc Fixed: wflow-core - Numeric Validator - Fixed cannot use incrementor when using only numeric validation for the text field. @8.1-SNAPSHOT
+43657bd74 Fixed: wflow-consoleweb - UI - Some context paths are hardcoded. #T4273 @8.1-SNAPSHOT
+b6fbea306 Fixed: wflow-core - Section - Regression of e8fbb069. Visibility control not working when custom parameter name is used and there are same section id. T4409 @8.1-SNAPSHOT
+75d18b98b Fixed: wflow-consoleweb - Progressive/Janux/X-Admin/Universal Theme - Fixed position issues when in rtl @8.1-SNAPSHOT
+d94963cab Fixed: wflow-consoleweb - X-Admin Theme - Popup select form field button misaligned in smaller screen widths. @8.1-SNAPSHOT
+05ce58554 Fixed: jw-community - Security - Update BouncyCastle to 1.78.1, Spring Framework to 5.3.37 & Spring Security to 5.8.12. @7.1-SNAPSHOT
+b854e5ed2 Fixed: wflow-commons - String Util - Space is escaped to '+' char instead of '%20'. T4239 @7.0-SNAPSHOT
+11051bc46 Fixed: wflow-core - Date Picker - Fixed empty parentheses in label for 'Date and Time stored in UTC' field type with timezone enabled. @8.1-SNAPSHOT
+9ff4b49a6 Fixed: wflow-consoleweb - BeanShell - Fixed incorrect injected variable Info. @8.1-SNAPSHOT
+03ff699a4 Fixed: wflow-consoleweb - x-admin theme - Ensure multiple selection multi-select box follows the design standards. @8.1-SNAPSHOT
+29643ef0b Fixed: wflow-consoleweb - System Setting - Alert message is shown twice when theme and language is switched at once @8.1-SNAPSHOT
+f5f8ad9bd Fixed: wflow-core - Login - No Permission login page appearing in theme tab instead of whole page in x-admin. @8.1-SNAPSHOT
+ea4344881 Fixed: wflow-consoleweb - UI - Chosen library not working correctly on RTL mode. @8.1-SNAPSHOT
+32507081e Fixed: wflow-core - Section - Regression of e8fbb069. Section visibility control not working when there is other section with same id. @8.1-SNAPSHOT
+3d5767fd4 Fixed: wflow-core - AccordionComponent - Fixed inconsistent accordion component spacing across DX8, Progressive, Universal and Janux themes. @8.1-SNAPSHOT
+b07d3ecfd Fixed: wflow-consoleweb - AjaxComponent.js - Fixed issue where same page URI fragments (# href) will cause ajax page load. @8.1-SNAPSHOT
+ae785db91 Fixed: wflow-consoleweb - X-Admin Theme - Fixed double scroll bar when admin bar is active. @8.1-SNAPSHOT
+20bb8cb24 Fixed: wflow-consoleweb - DX8 Theme - FIxed long sidebar navigation scrolling issue. @8.1-SNAPSHOT
+642dec7d5 Fixed: wflow-commons - Field Validator - Email validator accepts leading and trailing spaces as valid email. T4280 @8.1-SNAPSHOT
+ec159357f Fixed: wflow-core - Form - Regression of e8fbb069. Dynamic created upload field always having same id causing it can't initialized correctly.  #T4342 @8.1-SNAPSHOT
+f5dbbb515 Fixed: wflow-commons - File Upload - Unicode symbol in file name causing exception. #T4031 @8.1-SNAPSHOT
+c6c22f0df Fixed: wflow-core - Email Tool - Inline attachment CID should not contains space and special chars. @7.0-SNAPSHOT
+89c6375bc Fixed: wflow-consoleweb - Security - CSRF does not check on login page. T4385 @7.0-SNAPSHOT
+edcc0f382 Fixed: wflow-consoleweb - Security - Remove version info from public page. T4081 @7.0-SNAPSHOT
+99a0cefa0 Fixed: wflow-commons - Security - Update log4j to 2.23.1. @7.1-SNAPSHOT
+764e24552 Modified: wflow-consoleweb - Startup - Log error when server fail to start. @7.0-SNAPSHOT
+
 8.1.1
 =====
 d996ab2d8 Fixed: wflow-core - DX8 Themes - Dark & compact mode selector styling is not consistent. @8.1-SNAPSHOT
