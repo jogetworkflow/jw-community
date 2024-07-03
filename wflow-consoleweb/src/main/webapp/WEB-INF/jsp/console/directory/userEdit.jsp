@@ -246,6 +246,8 @@
                     $(hidden).val("");
                 }
             });
+            
+            UI.validateField("#createUser", "[name=email]");
         });
 
         function validateField(){

@@ -227,6 +227,15 @@
                         valid = false;
                     }
                 </#if>
+                if($("#email").val() != ""){
+                    if(!UI.validateEmail($("#email").val())){
+                        if(alertString != ""){
+                            alertString += '\n';
+                        }
+                        alertString += '@@app.edm.message.invalidEmailFormat@@';
+                        valid = false;
+                    }
+                }
 
                 if(valid){
                     $("form#profile").submit();
