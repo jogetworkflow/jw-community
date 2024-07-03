@@ -809,3 +809,9 @@ body.dark-mode .form-cell > label.label > i,
 body.dark-mode .subform-cell > label.label > i{
     background: var(--theme-border-color);
 }
+body.dark-mode .form-cell > label.label:has(+ input:focus) > i,
+body.dark-mode .subform-cell > label.label:has(+ input:focus) > i,
+body.dark-mode .form-cell > label.label:has(+ select:focus) > i,
+body.dark-mode .subform-cell > label.label:has(+ select:focus) > i{
+    border: 1px solid var(--theme-border-color);
+}

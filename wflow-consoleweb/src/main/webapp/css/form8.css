@@ -1352,9 +1352,9 @@ select:focus-visible{
     border: 2px solid var(--theme-primary, var(--theme-color3, #007bff));
 }
 .form-cell > label.label:has(+ input:focus-visible) > i,
-.suform-cell > label.label:has(+ input:focus-visible) > i,
+.subform-cell > label.label:has(+ input:focus-visible) > i,
 .form-cell > label.label:has(+ select:focus-visible) > i,
-.suform-cell > label.label:has(+ input:focus-visible) > i{
+.subform-cell > label.label:has(+ select:focus-visible) > i{
     border-top-width: 2px;
     border-bottom-width: 2px;
     border-left-width: 2px;
@@ -1366,9 +1366,9 @@ select:focus-visible{
     border-left-color: var(--theme-primary, var(--theme-color3, #007bff));
 }
 body.rtl .form-cell > label.label:has(+ input:focus-visible) > i,
-body.rtl .suform-cell > label.label:has(+ input:focus-visible) > i,
+body.rtl .subform-cell > label.label:has(+ input:focus-visible) > i,
 body.rtl .form-cell > label.label:has(+ select:focus-visible) > i,
-body.rtl .suform-cell > label.label:has(+ input:focus-visible) > i{
+body.rtl .subform-cell > label.label:has(+ select:focus-visible) > i{
     border-right-width: 2px;
     border-left-width: 0px;
     border-right-style: solid;
@@ -1424,4 +1424,30 @@ body.rtl .label-top .subform-cell:not(.label-left) > label.label > i{
 body.rtl .label-top.form-cell > label.label > i,
 body.rtl .label-top.subform-cell > label.label > i{
     left: unset;
+}
+.mediumFontSize .label-top .form-cell:not(.label-left) > label.label > i,
+.mediumFontSize .label-top .subform-cell:not(.label-left) > label.label > i,
+.mediumFontSize .label-top.form-cell > label.label > i,
+.mediumFontSize .label-top.subform-cell > label.label > i{
+    bottom: -39.5px;
+}
+.largeFontSize .label-top .form-cell:not(.label-left) > label.label > i,
+.largeFontSize .label-top .subform-cell:not(.label-left) > label.label > i,
+.largeFontSize .label-top.form-cell > label.label > i,
+.largeFontSize .label-top.subform-cell > label.label > i{
+    bottom: -44px;
+}
+@media (max-width: 768px){
+    .mediumFontSize .form-cell > label.label > i,
+    .mediumFontSize .subform-cell > label.label > i,
+    .mediumFontSize .label-left.form-cell > label.label > i,
+    .mediumFontSize .label-left.subform-cell > label.label > i{
+        bottom: -39.5px;
+    }   
+    .largeFontSize .form-cell > label.label > i,
+    .largeFontSize .subform-cell > label.label > i,
+    .largeFontSize .label-left.form-cell > label.label > i,
+    .largeFontSize .label-left.subform-cell > label.label > i{
+        bottom: -44px;
+    }
 }

@@ -1034,9 +1034,9 @@ body .grid-action-header, body td.grid-action-cell {
     border-bottom: 1px solid #555;
 }
 .form-cell > label.label:has(+ input:focus-visible) > i,
-.suform-cell > label.label:has(+ input:focus-visible) > i,
+.subform-cell > label.label:has(+ input:focus-visible) > i,
 .form-cell > label.label:has(+ select:focus-visible) > i,
-.suform-cell > label.label:has(+ input:focus-visible) > i{
+.subform-cell > label.label:has(+ select:focus-visible) > i{
     border-bottom: 1px solid #3f51b5;
     box-shadow: 0 1px 0 0 #3f51b5;
 }
