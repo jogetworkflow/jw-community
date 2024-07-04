@@ -3527,6 +3527,15 @@ DatalistBuilder = {
             }
         }
     },
+      
+    /*
+     * Reload the palette after new plugin is installed
+     */  
+    marketplaceReloadPalette : function() {
+        //use back existing script to reload palette
+        var deferreds = [];
+        DatalistBuilder.initActionList(deferreds);
+    },
             
     /*
      * Validation for duplicate id of columns

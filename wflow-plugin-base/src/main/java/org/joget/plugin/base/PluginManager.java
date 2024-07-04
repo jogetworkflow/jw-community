@@ -44,8 +44,10 @@ import java.io.StringWriter;
 import java.io.Writer;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.Dictionary;
 import java.util.Enumeration;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.jar.JarEntry;
 import javax.servlet.http.HttpServletRequest;
 import org.apache.commons.collections.map.ListOrderedMap;
@@ -61,6 +63,7 @@ import org.joget.commons.util.PagingUtils;
 import org.joget.commons.util.ResourceBundleUtil;
 import org.joget.commons.util.SecurityUtil;
 import org.joget.commons.util.StringUtil;
+import org.json.JSONObject;
 import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.util.ClassUtils;
 import org.springframework.web.context.request.RequestContextHolder;
@@ -410,6 +413,99 @@ public class PluginManager implements ApplicationContextAware {
             return true;
         }
         return false;
+    }
+    
+    public Map<String, Object> getInstalledBundles(List<String> classes, boolean getVersionOnly) {
+        Map<String, Object> bundles = new HashMap<String, Object>();
+        Set<String> checked = new HashSet<String>(); 
+        
+        BundleContext context = getOsgiContainer().getBundleContext();
+        
+        //retrieve all osgi plugins based on filter class
+        Collection<Plugin> plugins; 
+        if (classes == null || classes.isEmpty()) {
+            plugins = listOsgiPlugin(null);
+        } else {
+            plugins = new ArrayList<Plugin>();
+            
+            for (String c : classes) {
+                try {
+                    Class clazz;
+                    CustomPluginInterface cpi = getCustomPluginInterface(c);
+                    if (cpi != null) {
+                        clazz = cpi.getClassObj();
+                    } else {
+                        clazz = Class.forName(c);
+                    }
+                    
+                    plugins.addAll(listOsgiPlugin(clazz));
+                } catch (Exception e) {
+                    LogUtil.warn(PluginManager.class.getName(), c + " not found!");
+                }
+            }
+        }
+        
+        //find the bundle and add to JSON object
+        for (Plugin p : plugins) {
+            ServiceReference sr = context.getServiceReference(ClassUtils.getUserClass(p).getName());
+            if (sr != null) {
+                try {
+                    Bundle bundle = sr.getBundle();
+                    
+                    if (checked.contains(bundle.getSymbolicName())) {
+                        continue;
+                    }
+                    
+                    Dictionary<String,String> dic = bundle.getHeaders();
+                    String name = dic.get("Bundle-Name");
+                    
+                    String version = bundle.getVersion().toString();
+                    String filename = bundle.getLocation();
+                    filename = filename.substring(filename.lastIndexOf(File.separator) + 1);
+                    
+                    //the bundle version may converted the 8.0-BETA to 8.0.0.BETA, read it from properties
+                    if (!filename.contains(version)) {
+                        String path = bundle.getSymbolicName();
+                        path = path.substring(0, path.lastIndexOf(".")) + "/" + path.substring(path.lastIndexOf(".") + 1);
+                        URL resourceUrl = bundle.getResource("META-INF/maven/"+path+"/pom.properties");
+                        if (resourceUrl == null) {
+                            path = bundle.getSymbolicName();
+                            path = path.substring(0, path.lastIndexOf(".")) + "/" + name;
+                            
+                            resourceUrl = bundle.getResource("META-INF/maven/"+path+"/pom.properties");
+                        }
+                        if (resourceUrl != null) {
+                            try (InputStream inputStream = resourceUrl.openStream()) {
+                                Properties properties = new Properties();
+                                properties.load(inputStream);
+                                
+                                version = properties.getProperty("version");
+                            }
+                        }
+                    }
+                    
+                    if (getVersionOnly) {
+                        bundles.put(dic.get("Bundle-Name"), version);
+                    } else {
+                        Map<String, String> data = new HashMap<String, String>();
+                        
+                        data.put("version", version);
+                        data.put("id", filename);
+                        data.put("label", dic.get("Joget-Name") != null?dic.get("Joget-Name"):dic.get("Bundle-Name"));
+                        data.put("description", dic.get("Joget-Description") != null?dic.get("Joget-Description"):"");
+                        data.put("pluginClass", ClassUtils.getUserClass(p).getName()); //just add 1 for easy locate the bundle later
+                        
+                        bundles.put(dic.get("Bundle-Name"), data);
+                    }
+                    
+                    checked.add(bundle.getSymbolicName());
+                } catch (Exception ex) {
+                    LogUtil.error(PluginManager.class.getName(), ex, "");
+                }
+            }
+        }
+        
+        return bundles;
     }
 
     /**

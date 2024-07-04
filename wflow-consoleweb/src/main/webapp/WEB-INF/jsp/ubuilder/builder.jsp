@@ -111,7 +111,8 @@
             "options" : {
                 "getDefinitionUrl" : "${pageContext.request.contextPath}/web/json/console/app/${appId}/${appVersion}/userview/builder/${userview.id}/json",
                 "rightPropertyPanel" : true,
-                "defaultBuilder" : true
+                "defaultBuilder" : true,
+                "marketplacePaletteClass" : "org.joget.apps.userview.model.UserviewMenu"
             },
             "callbacks" : {
                 "initBuilder" : "UserviewBuilder.initBuilder",
@@ -126,7 +127,8 @@
                 "previewViewBeforeClosed" : "UserviewBuilder.previewViewBeforeClosed",
                 "screenshotViewInit" : "UserviewBuilder.screenshotViewInit",
                 "builderSaved" : "UserviewBuilder.builderSaved",
-                "getOverviewPathElementSelector" : "UserviewBuilder.getOverviewPathElementSelector"
+                "getOverviewPathElementSelector" : "UserviewBuilder.getOverviewPathElementSelector",
+                "marketplaceReloadPalette" : "UserviewBuilder.marketplaceReloadPalette"
             }
         },
         "advanced_tools" : {

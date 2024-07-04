@@ -1468,6 +1468,28 @@ FormBuilder = {
     },
       
     /*
+     * Reload the palette after new plugin is installed
+     */  
+    marketplaceReloadPalette : function() {
+        var url = CustomBuilder.contextPath + '/web/console/app/' + CustomBuilder.appId + '/' + CustomBuilder.appVersion + '/' + CustomBuilder.builderType + '/palette/' + CustomBuilder.id;
+        CustomBuilder.Builder.reloadPalette(url, function(element) {
+            var {
+                template,
+                developer
+            } = element;
+                
+            element.metadata = {
+                builderTemplate: {
+                    dragHtml: "<div class=\"form-cell\">" + template + "</div>"
+                },
+                developer: developer
+            };
+            
+            return element;
+        });
+    },
+      
+    /*
      * remove dynamically added items    
      */            
     unloadBuilder : function() {
