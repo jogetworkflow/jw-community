@@ -28,7 +28,7 @@
         <div id="pluginstab">
             <ul>
                 <li class="selected"><a href="#installed"><span><fmt:message key="console.setting.plugin.common.label.installed"/></span></a></li>
-                <li><a href="#allplugins"><span><fmt:message key="console.setting.plugin.common.label.allplugins"/></span></a></li>
+                <li><a href="#update"><span>Update</span> <span class="jgt-badge update_count">(0)</span></a></li>
             </ul>
             <div>
                 <div id="installed">
@@ -44,7 +44,7 @@
                             </select>
                         </form>
                     </div>
-                    <ui:jsontable url="${pageContext.request.contextPath}/web/json/plugin/listOsgi?${pageContext.request.queryString}"
+                    <ui:jsontable url="${pageContext.request.contextPath}/web/json/plugin/listInstalledBundle?${pageContext.request.queryString}"
                         var="JsonDataTable1"
                         divToUpdate="pluginList"
                         jsonData="data"
@@ -52,28 +52,28 @@
                         width="100%"
                         sort="name"
                         desc="false"
-                        hrefParam="id"
+                        hrefParam="pluginClass"
                         hrefQuery="false"
                         hrefDialog="false"
                         hrefDialogWidth="600px"
                         hrefDialogHeight="400px"
                         hrefDialogTitle="Process Dialog"
                         checkbox="true"
+                        checkboxId="pluginClass"
                         checkboxButton2="console.setting.plugin.unintall.label"
                         checkboxCallback2="uninstall"
                         searchItems="name|Name"
-                        fields="['id','name','description','version','plugintype', 'uninstallable']"
-                        column1="{key: 'name', label: 'console.plugin.label.name', sortable: false, width: 180}"
+                        fields="['pluginClass','label','description','version','plugintype']"
+                        column1="{key: 'label', label: 'console.plugin.label.name', sortable: false, width: 180}"
                         column2="{key: 'description', label: 'console.plugin.label.description', sortable: false, width: 300}"
                         column3="{key: 'version', label: 'console.plugin.label.version', sortable: false, width: 140}"
-                        column4="{key: 'plugintype', label: 'console.plugin.label.plugintype', sortable: false, width: 300}"
                         />
                 </div>
-                <div id="allplugins">
+                <div id="update">
                     <div id="main-body-content-filter">
                         <form>
                             <fmt:message key="console.plugin.label.typeFilter"/>
-                            <select id="JsonDataTable_filterbytype" onchange="filter(JsonDataTable, '&className=', this.options[this.selectedIndex].value)">
+                            <select id="JsonDataTable2_filterbytype" onchange="filter(JsonDataTable2, '&className=', this.options[this.selectedIndex].value)">
                                 <option></option>
                             <c:forEach items="${pluginType}" var="t">
                                 <c:set var="selected"><c:if test="${t.key == param.className}"> selected</c:if></c:set>
@@ -82,7 +82,7 @@
                             </select>
                         </form>
                     </div>
-                    <ui:jsontable url="${pageContext.request.contextPath}/web/json/plugin/list?${pageContext.request.queryString}"
+                    <ui:jsontable url="${pageContext.request.contextPath}/web/json/plugin/listInstalledBundle?isUpdate=true"
                         var="JsonDataTable"
                         divToUpdate="pluginList2"
                         jsonData="data"
@@ -97,17 +97,16 @@
                         hrefDialogHeight="400px"
                         hrefDialogTitle="Process Dialog"
                         checkbox="true"
-                        checkboxButton2="console.setting.plugin.unintall.label"
-                        checkboxCallback2="uninstall"
+                        checkboxButton2="appCenter.label.updateApp"
+                        checkboxCallback2="update"
                         searchItems="name|Name"
-                        fields="['id','name','description','version','plugintype', 'uninstallable']"
-                        column1="{key: 'name', label: 'console.plugin.label.name', sortable: false, width: 180}"
+                        fields="['id','label','description','version','plugintype']"
+                        column1="{key: 'label', label: 'console.plugin.label.name', sortable: false, width: 180}"
                         column2="{key: 'description', label: 'console.plugin.label.description', sortable: false, width: 300}"
-                        column3="{key: 'version', label: 'console.plugin.label.version', sortable: false, width: 140}"
-                        column4="{key: 'plugintype', label: 'console.plugin.label.plugintype', sortable: false, width: 300}"
-                        column5="{key: 'uninstallable', label: 'console.plugin.label.uninstallable', sortable: false, width: 110, relaxed: true}"
+                        column3="{key: 'latestVersion', label: 'console.plugin.label.latestVersion', sortable: false, width: 140}"
+                        column4="{key: 'version', label: 'console.plugin.label.version', sortable: false, width: 140}"
                         />
-                </div>
+                </div>    
             </div>
         </div>
     </div>
@@ -127,6 +126,11 @@
             $('#JsonDataTable1_pluginList-buttons button').hide();
             $('#JsonDataTable1_pluginList-buttons button:eq(0)').show();
         </c:if>
+            
+        //update the count when table done loading
+        $("#pluginList2").on("success", function(){
+            $(".update_count").text("(" + JsonDataTable.flexiGrid[0].p.total + ")");
+        });
     });
 
     <ui:popupdialog var="popupDialog" src="${pageContext.request.contextPath}/web/console/setting/plugin/upload"/>
@@ -158,6 +162,39 @@
                 }
             }
             var request = ConnectionManager.post('${pageContext.request.contextPath}/web/console/setting/plugin/uninstall', callback, 'selectedPlugins='+selectedList);
+        }
+    }
+    
+    /* Update all selected plugin from marketplace */
+    function update(selectedList){
+         if (confirm('<ui:msgEscJS key="appCenter.label.confirmPluginInstallation"/>')) {
+            UI.blockUI(); 
+            var installUrl = "${pageContext.request.contextPath}/web/json/apps/install";
+            
+            for (var i in selectedList) {
+                var deferreds = [];
+
+                var temp = $.Deferred();
+                deferreds.push(temp);
+                var installCallback = {
+                    success: function (data) {
+                        temp.resolve();
+                    },
+                    error: function (data) {
+                        temp.resolve();
+                    }
+                };
+
+                // invoke installation
+                var installParams = "url=" + encodeURIComponent("<ui:msgEscJS key="appCenter.link.marketplace.url"/>/jw/web/json/plugin/org.joget.marketplace.ProtectedAppUpload/service?action=download&id=" + selectedList[i]);
+                ConnectionManager.post(installUrl, installCallback, installParams);
+            }
+            
+            //reload the table after all plugin updated
+            $.when.apply($, deferreds).then(function(){
+                UI.unblockUI(); 
+                JsonDataTable.reload();
+            });
         }
     }
     

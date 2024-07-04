@@ -107,7 +107,8 @@
             "options" : {
                 "getDefinitionUrl" : "${pageContext.request.contextPath}/web/json/console/app/${appId}/${appDefinition.version}/form/${formId}/json",
                 "rightPropertyPanel" : true,
-                "defaultBuilder" : true
+                "defaultBuilder" : true,
+                "marketplacePaletteClass" : "org.joget.apps.form.model.Element"
             },
             "callbacks" : {
                 "initBuilder" : "FormBuilder.initBuilder",
@@ -117,7 +118,8 @@
                 "tooltipViewInit" : "FormBuilder.tooltipViewInit",
                 "tableUsageViewInit" : "FormBuilder.tableUsageViewInit",
                 "afterUpdate" : "FormBuilder.afterUpdate",
-                "builderSaved" : "FormBuilder.afterUpdate"
+                "builderSaved" : "FormBuilder.afterUpdate",
+                "marketplaceReloadPalette" : "FormBuilder.marketplaceReloadPalette"
             }
         },
         "advanced_tools" : {

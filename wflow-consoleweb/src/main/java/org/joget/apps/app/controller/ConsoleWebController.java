@@ -1,11 +1,8 @@
 package org.joget.apps.app.controller;
 
 import au.com.bytecode.opencsv.CSVWriter;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.underscore.lodash.U;
 import java.awt.image.BufferedImage;
-import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.DataInputStream;
@@ -13,13 +10,10 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.StringWriter;
 import java.io.UnsupportedEncodingException;
 import java.io.Writer;
-import java.net.HttpURLConnection;
-import java.net.URL;
 import java.net.URLDecoder;
 import java.net.URLEncoder;
 import java.text.DateFormat;
@@ -162,7 +156,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.LocaleResolver;
 import org.springframework.web.util.HtmlUtils;
-import org.springframework.web.util.UriComponentsBuilder;
+
 @Controller
 public class ConsoleWebController {
 
@@ -235,10 +229,6 @@ public class ConsoleWebController {
     @Autowired
     WorkflowAssignmentDao workflowAssignmentDao;
     
-    private static final int CONNECTION_TIMEOUT = 3000;
-    private static final String API_ID = "API-d7650560-68cb-4440-940e-a25a94f8d6ee";
-    private static final String API_KEY = "1835ef0c846645afa362eea453880871";
-
     @RequestMapping({"/index", "/", "/home"})
     public String index() {
         String landingPage = WorkflowUtil.getSystemSetupValue("landingPage");
@@ -1729,13 +1719,6 @@ public class ConsoleWebController {
         map.addAttribute("saved", "");
         
         return "console/apps/note";
-    }
-
-    @RequestMapping("/console/app/(*:appId)/(~:version)/marketplace")
-    public String consoleAppMarketplace(ModelMap model, @RequestParam(value = "type") String type, @RequestParam(value = "pluginType") String pluginType) {
-        model.addAttribute("type", type);
-        model.addAttribute("pluginType", pluginType);
-        return "console/apps/marketplace";
     }
     
     @RequestMapping(value = "/console/app/(*:appId)/(~:version)/note/submit", method = RequestMethod.POST)
@@ -6021,32 +6004,7 @@ public class ConsoleWebController {
             map.addAttribute("isPublished", appDef.isPublished());
             return "console/apps/packageUploadSuccess";
         }
-    }    
-
-    @RequestMapping({"/desktop/marketplace/app"})
-    public String marketplaceApp(ModelMap model, @RequestParam(value = "url") String url) {
-        boolean trusted = false;
-        String trustedUrlsKey = "appCenter.link.marketplace.trusted";
-        String trustedUrls = ResourceBundleUtil.getMessage(trustedUrlsKey);
-        if (trustedUrls != null && !trustedUrls.isEmpty()) {
-            StringTokenizer st = new StringTokenizer(trustedUrls, ",");
-            while (st.hasMoreTokens()) {
-                String trustedUrl = st.nextToken().trim();
-                if (url.startsWith(trustedUrl)) {
-                    trusted = true;
-                    break;
-                }
-            }
-        }
-        
-        if (trusted) {
-            model.addAttribute("appUrl", url);
-        } else {
-            model.addAttribute("appUrl", "");
-        }
-        
-        return "desktop/marketplaceApp";
-    }
+    } 
     
     @RequestMapping({"/json/console/app/(*:appId)/(~:version)/userview/(*:userviewId)/json"})
     public void getUserviewJson(Writer writer, HttpServletResponse response, @RequestParam(value = "appId") String appId, @RequestParam(value = "version", required = false) String version, @RequestParam(value = "userviewId") String userviewId) throws IOException {
@@ -6490,115 +6448,6 @@ public class ConsoleWebController {
                 //ignore it
             } finally {
                 HostManager.resetProfile();
-            }
-        }
-    }
-    
-    //get plugin and plugin categories by calling marketplace api
-    @RequestMapping(value = "/json/marketplace/plugin/list")
-    public void getPluginCategories(Writer writer, @RequestParam(value = "callback", required = false) String callback, HttpServletRequest request) throws JSONException, IOException {
-        JSONObject jsonObject = new JSONObject();
-        HttpURLConnection connection = null;
-        try {
-            String baseUrl;
-            if (request.getParameter("type") != null) {
-                //get list of plugin categories
-                baseUrl = "http://localhost:8080/jw/api/list/SidebarPluginCategories";
-            } else {
-                //get list of plugins
-                baseUrl = "http://localhost:8080/jw/api/list/seamless_marketplace_product_list";
-            }
-            
-            //add parameters
-            Map<String, String[]> parameterMap = request.getParameterMap();
-            UriComponentsBuilder builder = UriComponentsBuilder.fromHttpUrl(baseUrl);
-            for (Map.Entry<String, String[]> entry : parameterMap.entrySet()) {
-                String paramName = entry.getKey();
-                String[] paramValues = entry.getValue();
-                if (paramValues != null && !paramName.equalsIgnoreCase("type") && paramValues.length > 0) {
-                    builder.queryParam(paramName, paramValues[0]);
-                }
-            }
-
-            String finalUrl = builder.toUriString();
-            URL siteURL = new URL(finalUrl);
-            connection = (HttpURLConnection) siteURL.openConnection();
-            connection.setRequestMethod("GET");
-            connection.setRequestProperty("Content-Type", "application/json");
-            connection.setRequestProperty("api_id", API_ID);
-            connection.setRequestProperty("api_key", API_KEY);
-            connection.setConnectTimeout(CONNECTION_TIMEOUT);
-            connection.connect();
-
-            int code = connection.getResponseCode();
-            if (code == HttpURLConnection.HTTP_OK) {
-                // If the response code is HTTP_OK, read the response data
-                try (BufferedReader reader = new BufferedReader(new InputStreamReader(connection.getInputStream()))) {
-                    StringBuilder response = new StringBuilder();
-                    String line;
-
-                    while ((line = reader.readLine()) != null) {
-                        response.append(line);
-                    }
-
-                    // Parse JSON response using Jackson
-                    ObjectMapper objectMapper = new ObjectMapper();
-                    JsonNode jsonNode = objectMapper.readTree(response.toString());
-
-                    jsonObject = new JSONObject(jsonNode.toString());
-                }
-            }
-        } catch (Exception e) {
-        } finally {
-            connection.disconnect();
-        }
-
-        AppUtil.writeJson(writer, jsonObject, callback);
-    }
-    
-    //download plugin image by calling marketplace api
-    @RequestMapping(value = "/json/marketplace/plugin/(*:id)/download/(*:picture)")
-    public void getPluginDetails(@RequestParam(value = "callback", required = false) String callback, 
-                                 @RequestParam(value = "id") String id,
-                                 @RequestParam(value = "picture") String picture, 
-                                 HttpServletRequest request, 
-                                 HttpServletResponse response) throws JSONException, IOException {
-        HttpURLConnection downloadConnection = null;
-
-        try {
-            //api for downloading the plugin image
-            String baseUrl = "http://localhost:8080/jw/api/form/ManageMarketplace/" + id + "/download/" + URLEncoder.encode(picture, "UTF8").replaceAll("\\+", "%20");
-            URL siteURL = new URL(baseUrl);
-            
-            // Download image
-            downloadConnection = (HttpURLConnection) siteURL.openConnection();
-            downloadConnection.setRequestProperty("api_id", API_ID);
-            downloadConnection.setRequestProperty("api_key", API_KEY);
-
-            DataInputStream in = new DataInputStream(downloadConnection.getInputStream());
-            byte[] bbuf = new byte[65536];
-
-            ServletOutputStream stream = response.getOutputStream();
-
-            // Set content type and response headers
-            String contentType = request.getSession().getServletContext().getMimeType(picture);
-            response.setContentType(contentType);
-            response.setHeader("Content-Disposition", "attachment; filename=" + picture);
-            try {
-                // send output
-                int length = 0;
-                while ((in != null) && ((length = in.read(bbuf)) != -1)) {
-                    stream.write(bbuf, 0, length);
-                }
-            } finally {
-                in.close();
-                stream.flush();
-                stream.close();
-            }
-        } catch (Exception e) {
-        } finally {
-            if (downloadConnection != null) {
-                downloadConnection.disconnect();
             }
         }
     }

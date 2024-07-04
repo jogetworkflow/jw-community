@@ -2586,9 +2586,12 @@ body.right-panel-mode-window #right-panel-window-resize  {
     font-size: 12px;
 }
 a.marketplaceLink {
-    position: absolute !important;
-    bottom: 0px;
     width: 100%;
+    padding: 0px 10px;
+    text-wrap: wrap;
+    text-align: center;
+    position: relative;
+    display: block;
 }
 .drag-elements-sidepane.sidepane li:has(a.marketplaceLink){
     padding-bottom: 30px;

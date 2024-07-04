@@ -149,7 +149,7 @@ public class PropertyJsonController {
         
             Map<String, String> marketplaceOption = new HashMap<String, String>();
             marketplaceOption.put("value", className);
-            marketplaceOption.put("label", "Get More Plugin From Marketplace");
+            marketplaceOption.put("label", ResourceBundleUtil.getMessage("cbuilder.seamless.marketplace.more.plugin"));
             marketplaceOption.put("marketplace", "true");
             list.add(marketplaceOption);
             

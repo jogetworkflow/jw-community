@@ -682,6 +682,8 @@ UserviewBuilder = {
         
         $("body").removeClass("page-component-editor");
         if (UserviewBuilder.mode === "page") {
+            CustomBuilder.config.builder.options['marketplacePaletteClass'] = "org.joget.apps.userview.model.PageComponent";
+            
             if (UserviewBuilder.selectedMenu !== undefined && UserviewBuilder.selectedMenu !== null) {
                 var self = CustomBuilder.Builder;
 
@@ -713,6 +715,8 @@ UserviewBuilder = {
                 
             UserviewBuilder.loadContentPage();
         } else {
+            CustomBuilder.config.builder.options['marketplacePaletteClass'] = "org.joget.apps.userview.model.UserviewMenu";
+            
             //hide viewport buttons & set to desktop size
             $("#top-panel .responsive-buttons").hide();
             CustomBuilder.viewport("desktop");
@@ -2357,6 +2361,40 @@ UserviewBuilder = {
                 }
             })
         }, true);
+    },
+      
+    /*
+     * Reload the palette after new plugin is installed
+     */  
+    marketplaceReloadPalette : function() {
+        var url = CustomBuilder.contextPath + '/web/console/app/' + CustomBuilder.appId + '/' + CustomBuilder.appVersion + '/' + CustomBuilder.builderType + '/palette/' + CustomBuilder.id;
+        CustomBuilder.Builder.reloadPalette(url, function(element) {
+            var {
+                category,
+                template,
+                developer,
+                pwaValidationType,
+                type
+            } = element;
+                
+            var metadata = {
+                builderTemplate: JSON.parse(template),
+                developer: developer,
+                pwaValidation: pwaValidationType,
+                type: type
+            };
+
+            if (type !== "menu") {
+                category = get_cbuilder_msg("ubuilder.pageComponents");
+            } else {
+                category = get_cbuilder_msg("ubuilder.pageComponents") + ";" + category;
+            }
+            
+            element.category = category;
+            element.metadata = metadata;
+            
+            return element;
+        });
     },
       
     /*
