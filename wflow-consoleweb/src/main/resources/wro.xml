@@ -213,6 +213,13 @@
         <js>/js/codemirror/mode/htmlmixed/htmlmixed.js</js>
         <js>/js/codemirror/mode/clike/clike.js</js>
 
+        <!-- Fontsize -->
+        <js>/js/codemirror/addon/display/fontSize.js</js>
+
+        <!-- Comment -->
+        <js>/js/codemirror/addon/comment/comment.js</js>
+        <js>/js/codemirror/addon/comment/continuecomment.js</js>
+
         <!-- Fullscreen -->
         <js>/js/codemirror/addon/display/fullscreen.js</js>
 
