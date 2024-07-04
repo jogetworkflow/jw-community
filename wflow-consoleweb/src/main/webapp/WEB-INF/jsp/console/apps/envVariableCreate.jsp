@@ -74,18 +74,21 @@
                         cm.execCommand("replace")
                         $('#value_editor').find(".CodeMirror-advanced-dialog").css({display: 'block'})
                         if (codeeditor.getOption("fullScreen")){
-                            $('#value_editor').find(".CodeMirror-advanced-dialog").css({position:"fixed", zIndex:"2147483647", top: "0px", right: "0px", width: "320px", marginRight: "30px"})
+                            $('#value_editor').find(".CodeMirror-advanced-dialog").css({position:"fixed", zIndex:"2147483647", top: "0px", left:"50%"})
                         }
                         else{
-                            $('#value_editor').find(".CodeMirror-advanced-dialog").css({position:"sticky", top:"0px", width:"320px", zIndex:"10"});
+                            $('#value_editor').find(".CodeMirror-advanced-dialog").css({position:"fixed", top:"100px", zIndex:"10", left:"50%"});
                         }
-                        $('#value_editor').css({overflow: "visible"})
+                        $('#value_editor').find(".CodeMirror-advanced-dialog").draggable()
                     },
                     "Ctrl-=": function(cm) {
-                      modifyFontSize(true);
+                      cm.increaseFontSize();
                     },
                     "Ctrl--": function(cm) {
-                      modifyFontSize(false);
+                      cm.decreaseFontSize();
+                    },
+                    "Ctrl-/": function(cm) {
+                      cm.toggleComment()
                     }
                   }
               });
@@ -103,21 +106,6 @@
                 codeeditor.setOption("theme", "ayu-mirage");
             }
 
-            //Function to modify font size
-            function modifyFontSize(increase){
-                var wrapper = codeeditor.getWrapperElement();
-                var currentSize = parseFloat(window.getComputedStyle(wrapper, null).getPropertyValue('font-size'));
-                var newSize = increase ? currentSize + 2 : currentSize - 2;
-
-                wrapper.style.fontSize = newSize + 'px';
-
-                codeeditor.refresh()
-            }
-
-            // var editor = ace.edit("value_editor");
-            var textarea = $('textarea[name="value"]');
-            codeeditor.setValue(textarea.val());
-
             //Detect keydown for specific actions, such as f12 to toggle full screen mode, escape
             //to exit full scree mode, and F1 to toggle help panel
             $('#value_editor').on('keydown', function(event) {
@@ -129,12 +117,13 @@
                         $('#value_editor').find(".CodeMirror").css({"height":"auto", "minHeight": "175px"})
                         $('#value_editor').find(".CodeMirror-scroll").css({"maxHeight":"100%", "minHeight":"175px"});
                         $(this).find(".CodeMirror-advanced-dialog .row.find button:last").click();
-                        $(this).find(".CodeMirror-advanced-dialog").css({position:"sticky", top:"0px", width:"320px", zIndex:"10"});
+                        $(this).find(".CodeMirror-advanced-dialog").css({position:"sticky", top:"0px", zIndex:"10"});
                         $(this).find(".CodeMirror").css({left: "", top: ""})
                         event.stopPropagation();
                     }else{
                         codeeditor.setOption("fullScreen", true);
-                        $('#value_editor').find(".CodeMirror-advanced-dialog").css({position:"fixed", zIndex:"2147483647", top: "0px", right: "0px", width: "320px", marginRight: "30px"});
+                        $('#value_editor').find(".CodeMirror-advanced-dialog").css({position:"fixed", zIndex:"2147483647", top: "0px", left: "50%"})
+                        $('#value_editor').find(".CodeMirror-advanced-dialog").draggable()
                     }
                 }
             });

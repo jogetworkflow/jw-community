@@ -2664,13 +2664,17 @@
                 extraKeys: {
                     "Ctrl-F": function(cm) {
                         cm.execCommand("replace")
-                        $('#json_definition').find(".CodeMirror-advanced-dialog").css({display: 'block', marginRight: '100px'})
+                        $('#json_definition').find(".CodeMirror-advanced-dialog").css({position:"fixed", zIndex:"2147483647", top: $("body #top-panel").outerHeight() + "px", left:"calc(90% - 320px)", display: 'block'})
+                        $('#json_definition').find(".CodeMirror-advanced-dialog").draggable({containment: 'parent'})
                     },
                     "Ctrl-=": function(cm) {
-                      modifyFontSize(true);
+                      cm.increaseFontSize();
                     },
                     "Ctrl--": function(cm) {
-                      modifyFontSize(false);
+                      cm.decreaseFontSize();
+                    },
+                    "Ctrl-/": function(cm) {
+                      cm.toggleComment()
                     }
                   }
               });
@@ -2689,17 +2693,6 @@
             //Set dark theme if dark theme mode is activated
             if ($('body').attr('builder-theme') === "dark") {
                 codeeditor.setOption("theme", "ayu-mirage");
-            }
-
-            //Function to modify font size
-            function modifyFontSize(increase){
-                var wrapper = codeeditor.getWrapperElement();
-                var currentSize = parseFloat(window.getComputedStyle(wrapper, null).getPropertyValue('font-size'));
-                var newSize = increase ? currentSize + 2 : currentSize - 2;
-
-                wrapper.style.fontSize = newSize + 'px';
-
-                codeeditor.refresh()
             }
             
             var textarea = $("#cbuilder-info").find('textarea[name="json"]').hide();

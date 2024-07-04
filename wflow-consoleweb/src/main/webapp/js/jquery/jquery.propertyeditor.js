@@ -8948,20 +8948,24 @@ PropertyEditor.Type.CodeEditor.prototype = {
                   $('#' + thisObj.id).find(".CodeMirror-advanced-dialog").css({display: 'block'})
                   var offsetTop = "0px"
                   if ($("body #top-panel").length > 0){
-                    offsetTop = $("body #top-panel").height() + "px"
+                    offsetTop = $("body #top-panel").outerHeight() + "px"
                   }
                   if (thisObj.codeeditor.getOption("fullScreen")){
-                    $('#' + thisObj.id).find(".CodeMirror-advanced-dialog").css({position:"fixed", zIndex:"2147483647", top: offsetTop, right: "0px", width: "320px"});
+                    $('#' + thisObj.id).find(".CodeMirror-advanced-dialog").css({position:"fixed", zIndex:"2147483647", top: offsetTop, left:"calc(100% - 320px)"});
                   }
                   else{
-                    $('#' + thisObj.id).find(".CodeMirror-advanced-dialog").css({position:"fixed", top:"0", right:"0", width:"320px", zIndex:"999", marginTop:"150px"});
+                    $('#' + thisObj.id).find(".CodeMirror-advanced-dialog").css({position:"fixed", top:"0", left:"calc(100% - 320px)", zIndex:"999", marginTop:"150px"});
                   }
+                  $('#' + thisObj.id).find(".CodeMirror-advanced-dialog").draggable()
                 },
                 "Ctrl-=": function(cm) {
-                  modifyFontSize(true);
+                  cm.increaseFontSize();
                 },
                 "Ctrl--": function(cm) {
-                  modifyFontSize(false);
+                  cm.decreaseFontSize();
+                },
+                "Ctrl-/": function(cm) {
+                  cm.toggleComment()
                 }
               }
           });
@@ -8995,23 +8999,10 @@ PropertyEditor.Type.CodeEditor.prototype = {
             this.codeeditor.setOption("theme", "ayu-mirage");
         }
 
-        //Function to modify font size
-        function modifyFontSize(increase){
-            var wrapper = thisObj.codeeditor.getWrapperElement();
-            var currentSize = parseFloat(window.getComputedStyle(wrapper, null).getPropertyValue('font-size'));
-            var newSize = increase ? currentSize + 2 : currentSize - 2;
-
-            wrapper.style.fontSize = newSize + 'px';
-
-            thisObj.codeeditor.refresh()
-        }
-
-
         //Detect keydown for specific actions, such as f12 to toggle full screen mode, escape
         //to exit full scree mode, and F1 to toggle help panel
         $('#' + this.id).on('keydown', function(event) {
-            if (event.key === "F1") {
-                event.preventDefault();
+            if (event.key === "F1" && !thisObj.codeeditor.getOption("fullScreen")) {
                 if (panels[panelId]) {
                     //Resets height
                     thisObj.codeeditor.setSize(null, $("#" + thisObj.id).find(".CodeMirror").height()-1)
@@ -9022,28 +9013,32 @@ PropertyEditor.Type.CodeEditor.prototype = {
                     addPanel("top");
                     resetHeight();
                 }
-            }else if (event.key === 'F12' || (event.key === 'Escape' && thisObj.codeeditor.getOption("fullScreen"))){
                 event.preventDefault();
+            }else if (event.key === "F1" && thisObj.codeeditor.getOption("fullScreen")) {
+                event.preventDefault();
+            }else if (event.key === 'F12' || (event.key === 'Escape' && thisObj.codeeditor.getOption("fullScreen"))){
                 if (thisObj.codeeditor.getOption("fullScreen")) {
                     thisObj.codeeditor.setOption("fullScreen", false);
                     $('#' + thisObj.id).find(".CodeMirror-advanced-dialog .row.find button:last").click();
                     resetHeight();
-                    $('#' + thisObj.id).find(".CodeMirror-advanced-dialog").css({position:"sticky", top:"0px", width:"320px", zIndex:"10"});
+                    $('#' + thisObj.id).find(".CodeMirror-advanced-dialog").css({position:"sticky", top:"0px", zIndex:"10"});
                     $('#'+thisObj.id).find(".CodeMirror").css({left: "", top: ""})
                     event.stopPropagation();
                 }else{
                     var offsetTop = "0px"
                     var offsetLeft = "0px"
                     if ($("body #top-panel").length > 0){
-                        offsetTop = $("body #top-panel").height() + "px"
+                        offsetTop = $("body #top-panel").outerHeight() + "px"
                     }
                     if ($("body #quick-nav-bar").length > 0){
-                        offsetLeft = $("body #quick-nav-bar").width()+"px"
+                        offsetLeft = $("body #quick-nav-bar").outerWidth()+"px"
                     }
                     thisObj.codeeditor.setOption("fullScreen", true);
-                    $('#' + thisObj.id).find(".CodeMirror-advanced-dialog").css({position:"fixed", zIndex:"2147483647", top: offsetTop, right: "0px", marginTop:"0px"})
+                    $('#' + thisObj.id).find(".CodeMirror-advanced-dialog").css({position:"fixed", zIndex:"2147483647", top: offsetTop, left:"calc(100% - 320px)", marginTop:"0px"})
                     $('#'+thisObj.id).find(".CodeMirror").css({left: offsetLeft, top: offsetTop})
+                    $('#' + thisObj.id).find(".CodeMirror-advanced-dialog").draggable()
                 }
+                event.preventDefault();
             }
         });
 

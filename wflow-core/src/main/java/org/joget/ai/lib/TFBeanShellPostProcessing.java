@@ -67,21 +67,25 @@ public class TFBeanShellPostProcessing implements TensorFlowPostProcessing {
                         "                  $(row).find(\".CodeMirror-advanced-dialog\").css({display: 'block'})\n" +
                         "                   var offsetTop = \"0px\"\r\n" + //
                         "                  if ($(\"body #top-panel\").length > 0){\r\n" + //
-                        "                    offsetTop = $(\"body #top-panel\").height() + \"px\"\r\n" + //
+                        "                    offsetTop = $(\"body #top-panel\").outerHeight() + \"px\"\r\n" + //
                         "                  }\n"+
-                        "                  if (codeeditor.getOption(\"fullScreen\")){\n" +
-                        "                    $(row).find(\".CodeMirror-advanced-dialog\").css({position:\"fixed\", zIndex:\"2147483647\", top: offsetTop, right: \"0px\", width: \"320px\"});\n" +
-                        "                  }\n" +
-                        "                  else{\n" +
-                        "                    $(row).find(\".CodeMirror-advanced-dialog\").css({position:\"fixed\", top:\"0\", right:\"0\", width:\"320px\", zIndex:\"999\", marginTop:\"150px\"});" +
-                        "                  }\n" +
-                        "                },\n" +
-                        "                \"Ctrl-=\": function(cm) {\n" +
-                        "                  modifyFontSize(true);\n" +
-                        "                },\n" +
-                        "                \"Ctrl--\": function(cm) {\n" +
-                        "                  modifyFontSize(false);\n" +
-                        "                }\n" +
+                        "                 if (codeeditor.getOption(\"fullScreen\")){\r\n" + //
+                        "                    $(row).find(\".CodeMirror-advanced-dialog\").css({position:\"fixed\", zIndex:\"2147483647\", top: offsetTop, left:\"calc(100% - 320px)\"});\r\n" + //
+                        "                  }\r\n" + //
+                        "                  else{\r\n" + //
+                        "                    $(row).find(\".CodeMirror-advanced-dialog\").css({position:\"fixed\", top:\"0\", left:\"calc(100% - 320px)\", zIndex:\"999\", marginTop:\"150px\"});\r\n" + //
+                        "                  }\r\n" + //
+                        "                  $(row).find(\".CodeMirror-advanced-dialog\").draggable()"+
+                        "               },\r\n" + //
+                        "                \"Ctrl-=\": function(cm) {\r\n" + //
+                        "                  cm.increaseFontSize();\r\n" + //
+                        "                },\r\n" + //
+                        "                \"Ctrl--\": function(cm) {\r\n" + //
+                        "                  cm.decreaseFontSize();\r\n" + //
+                        "                },\r\n" + //
+                        "                \"Ctrl-/\": function(cm) {\r\n" + //
+                        "                  cm.toggleComment()\r\n" + //
+                        "                }"+
                         "              }\n" +
                         "          });";
         script += "codeeditor.execCommand(\"replace\");";
@@ -89,15 +93,6 @@ public class TFBeanShellPostProcessing implements TensorFlowPostProcessing {
         script += "$(row).find(\".code-editor .CodeMirror-advanced-dialog\").css({display: 'none'});";
         script += "codeeditor.setOption(\"mode\", \"text/x-java\");";
         script += "if ($('body').attr('builder-theme') === \"dark\") {\n codeeditor.setOption(\"theme\", \"ayu-mirage\");\n}";
-        script += "function modifyFontSize(increase){\n" +
-                    "var wrapper = codeeditor.getWrapperElement();\n" +
-                    "var currentSize = parseFloat(window.getComputedStyle(wrapper, null).getPropertyValue('font-size'));\n" +
-                    "var newSize = increase ? currentSize + 2 : currentSize - 2;\n" +
-                    "\n" +
-                    "wrapper.style.fontSize = newSize + 'px';\n" +
-                    "\n" +
-                    "codeeditor.refresh()\n" +
-                    "}";
         script += "var panels = {};\r\n" + //
                   "var panelId = \"\";";
         script += "function makePanel(where) {\r\n" + //
@@ -146,6 +141,9 @@ public class TFBeanShellPostProcessing implements TensorFlowPostProcessing {
                     "                    addPanel(\"top\");\n" +
                     "                    resetHeight();\n" +
                     "                }\n" +
+                    "            }\n"+
+                    "            else if (event.key === \"F1\" && codeeditor.getOption(\"fullScreen\")) {\r\n" + //
+                    "               event.preventDefault();"+
                     "            }else if (event.key === 'F12' || (event.key === 'Escape' && codeeditor.getOption(\"fullScreen\"))){\n" +
                     "                event.preventDefault();\n" +
                     "                if (codeeditor.getOption(\"fullScreen\")) {\n" +
@@ -154,21 +152,22 @@ public class TFBeanShellPostProcessing implements TensorFlowPostProcessing {
                     "                    $(\".property-editor-pages\").css({\"overflow-y\":\"scroll\"})\n" +
                     "                    $(row).find(\".CodeMirror-advanced-dialog .row.find button:last\").click();\n" +
                     "                    resetHeight();\n" +
-                    "                    $(row).find(\".CodeMirror-advanced-dialog\").css({position:\"sticky\", top:\"0px\", width:\"320px\", zIndex:\"10\"});\n" +
+                    "                    $(row).find(\".CodeMirror-advanced-dialog\").css({position:\"sticky\", top:\"0px\", zIndex:\"10\"});\n" +
                     "                    $(row).find(\".CodeMirror\").css({left: \"\", top: \"\"})\n"+
                     "                    event.stopPropagation();\n" +
                     "                }else{\n" +
                     "                    var offsetTop = \"0px\"\r\n" + //
                     "                    var offsetLeft = \"0px\"\r\n" + //
                     "                    if ($(\"body #top-panel\").length > 0){\r\n" + //
-                    "                        offsetTop = $(\"body #top-panel\").height() + \"px\"\r\n" + //
+                    "                        offsetTop = $(\"body #top-panel\").outerHeight() + \"px\"\r\n" + //
                     "                    }\r\n" + //
                     "                    if ($(\"body #quick-nav-bar\").length > 0){\r\n" + //
-                    "                        offsetLeft = $(\"body #quick-nav-bar\").width()+\"px\"\r\n" + //
+                    "                        offsetLeft = $(\"body #quick-nav-bar\").outerWidth()+\"px\"\r\n" + //
                     "                    }\n"+
                     "                    codeeditor.setOption(\"fullScreen\", true);\n" +
-                    "                    $(row).find(\".CodeMirror-advanced-dialog\").css({position:\"fixed\", zIndex:\"1001\", top: offsetTop, right: \"0px\", marginTop:\"0px\"})\n" +
-                    "                   $(row).find(\".CodeMirror\").css({left: offsetLeft, top: offsetTop})"+
+                    "                    $(row).find(\".CodeMirror-advanced-dialog\").css({position:\"fixed\", zIndex:\"2147483647\", top: offsetTop, left:\"calc(100% - 320px)\", marginTop:\"0px\"})\r\n" + //
+                    "                    $(row).find(\".CodeMirror\").css({left: offsetLeft, top: offsetTop})\r\n" + //
+                    "                    $(row).find(\".CodeMirror-advanced-dialog\").draggable()" +
                     "                }\n" +
                     "            }\n" +
                     "        });";
