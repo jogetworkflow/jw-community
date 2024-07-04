@@ -4,13 +4,14 @@
     background: inherit;
     padding-left: 2px;
     overflow: hidden;
-    border: 1px solid var(--theme-border-color-1, #000);
+    border: 1px solid var(--theme-border-color-1, #cbcbcb);
     z-index: 10;
-    background-color: var(--theme-primary-color-1, #e0f0ff);
+    background-color: var(--theme-primary-color-1, #ddd);
     color: var(--theme-label-color-1);
     height: 40px;
-    width: 320px;
+    width: 225px;
     margin-left: auto;
+    border-radius: 5px;
 }
 
 .CodeMirror-advanced-dialog input {
@@ -23,7 +24,8 @@
 }
 
 .CodeMirror-advanced-dialog button {
-    font-size: 90%;
+    font-size: 90% !important;
+    margin-right: 0px !important;
 }
 
 .CodeMirror-advanced-dialog .buttons {
@@ -42,7 +44,8 @@
 .CodeMirror-advanced-dialog .row {
     flex-direction: column;
     margin-bottom: 10px;
-    margin-left: 25px;
+    margin-left: 20px;
+    margin-top: 10px;
     width: 300px;
     position: absolute;
     top: 0px;
@@ -64,15 +67,16 @@
 .CodeMirror-advanced-dialog .find-part .find-actions {
     display: flex;
     align-items: center;
-    height: 25px;
+    height: 22px;
     min-width: 135px;
     font-size: x-small;
 }
 
 .CodeMirror-advanced-dialog .find-part .find-actions button {
-    width:25px;
-    padding:0;
-    height:25px;
+    width: 17px;
+    padding: 0;
+    height: 25px;
+    margin-bottom: 0px !important;
 }
 
 .CodeMirror-advanced-dialog button {
@@ -93,10 +97,10 @@
 
 .CodeMirror-advanced-dialog input[type="text"] {
     display: inline-block;
-    border: 1px solid #000;
+    border: 1px solid #ced4da;
     margin-bottom: 5px;
     margin-right: 5px;
-    height: 23px;
+    height: 22px;
     flex: 1 1 auto;
     background-color: #fff;
     margin-top: 0px !important;
@@ -105,16 +109,17 @@
 .CodeMirror-search-hint {
     display: block;
     position: absolute;
-    top: 22px;
+    top: 20px;
+    left: 1px;
     font-style: italic;
     flex: 0 0 100%;
 }
 
 .CodeMirror-search-count {
     width: 20%;
-    min-width:60px;
-    max-width:60px;
-    white-space:normal;
+    min-width: 50px;
+    max-width: 50px;
+    white-space: normal;
 }
 
 .buttons button {
