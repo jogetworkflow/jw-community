@@ -21,7 +21,7 @@
 .cm-s-ayu-mirage span.cm-comment.cm-tag { color: #5ccfe6; }
 .cm-s-ayu-mirage span.cm-comment.cm-type { color: #5998a6; }
 
-.cm-s-ayu-mirage span.cm-property { color: #f29e74; }
+.cm-s-ayu-mirage span.cm-property { color: #f29e74 !important;}
 .cm-s-ayu-mirage span.cm-attribute { color: #ffd580; }  
 .cm-s-ayu-mirage span.cm-keyword { color: #ffa759; } 
 .cm-s-ayu-mirage span.cm-builtin { color: #ffcc66; }
