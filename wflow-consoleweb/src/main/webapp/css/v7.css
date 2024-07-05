@@ -1042,11 +1042,18 @@ fieldset legend,
     padding-left: 55px;
     box-sizing: border-box;
 }
+.rtl .form-row .form-input.withPrefix input {
+    padding-left: 12px;
+    padding-right: 55px;
+}
 .form-row .form-input.withPrefix.large .prefix {
     width: 65px;
 }
 .form-row .form-input.withPrefix.large input {
     padding-left: 70px;
+}
+.rtl .form-row .form-input.withPrefix.large input {
+    padding-right: 70px;
 }
 .row-content dl dt{
     width: 180px;
