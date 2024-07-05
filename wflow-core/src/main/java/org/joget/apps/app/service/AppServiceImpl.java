@@ -66,6 +66,7 @@ import org.joget.apps.app.model.ProcessFormModifier;
 import org.joget.apps.app.model.StartProcessFormModifier;
 import org.joget.apps.app.model.UserviewDefinition;
 import org.joget.apps.form.dao.FormDataDao;
+import org.joget.apps.form.dao.FormDataDaoImpl;
 import org.joget.apps.form.lib.LinkButton;
 import org.joget.apps.form.lib.SaveAsDraftButton;
 import org.joget.apps.form.lib.SubmitButton;
@@ -2486,7 +2487,8 @@ public class AppServiceImpl implements AppService {
                     if (CustomFormDataTableUtil.TYPE.equals(o.getType())) {
                         try {
                             String dummyKey = "xyz123";
-                            formDataDao.loadWithoutTransaction(o.getId(), o.getId(), dummyKey);
+                            String tableName = o.getId().substring(FormDataDaoImpl.FORM_PREFIX_TABLE_NAME.length());
+                            formDataDao.loadWithoutTransaction(tableName, tableName, dummyKey);
                         } catch (Exception e) {
                             LogUtil.error(getClass().getName(), e, "");
                         }
