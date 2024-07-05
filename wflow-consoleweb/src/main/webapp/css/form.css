@@ -772,11 +772,12 @@ body.rtl .selector_element {
 .selector_items {
     display: block;
     margin: 5px 0px;
+    margin-left: 30%;
 }
-@media (max-width: 480px) {
-    .selector_element {
-        margin-left: 0%;
-    }  
+@media(max-width: 480px) {
+    .selector_items {
+        margin-left:0% !important;
+    }
 }
 .selector_item {
     margin-right: 5px;
