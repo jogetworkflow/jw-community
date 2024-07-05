@@ -167,7 +167,7 @@ public abstract class Element extends ExtDefaultPlugin implements PropertyEditab
         
         //update element unique key
         if (customParameterName != null && !customParameterName.isEmpty()) {
-            setProperty(FormUtil.PROPERTY_ELEMENT_UNIQUE_KEY, getProperty(FormUtil.PROPERTY_ELEMENT_UNIQUE_KEY) + Integer.toString(customParameterName.hashCode()));
+            setProperty(FormUtil.PROPERTY_ELEMENT_UNIQUE_KEY, getProperty(FormUtil.PROPERTY_ELEMENT_UNIQUE_KEY) + Integer.toUnsignedString(customParameterName.hashCode()));
         }
         
         this.customParameterName = customParameterName;
