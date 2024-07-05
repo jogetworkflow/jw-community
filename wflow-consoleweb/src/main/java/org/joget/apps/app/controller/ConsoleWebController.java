@@ -148,10 +148,7 @@ import org.springframework.ui.ModelMap;
 import org.springframework.util.ClassUtils;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.Validator;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.LocaleResolver;
 import org.springframework.web.util.HtmlUtils;
@@ -4785,19 +4782,16 @@ public class ConsoleWebController {
         }
 
         //get directory manager plugin list
-        Collection<Plugin> pluginList = pluginManager.list();
-        Iterator i = pluginList.iterator();
-        while (i.hasNext()) {
-            Plugin plugin = (Plugin) i.next();
-            if (!(plugin instanceof DirectoryManagerPlugin)) {
-                i.remove();
-            }
-        }
+        Collection<Plugin> pluginList = pluginManager.list(DirectoryManagerPlugin.class);
         String className = "";
-        if (DirectoryUtil.isOverridden()) {
+        boolean isDmConfigurable = true;
+        boolean isOverridden = DirectoryUtil.isOverridden();
+        if (isOverridden) {
             className = DirectoryUtil.getOverriddenDirectoryManagerClassName();
         } else if (settingMap.get("directoryManagerImpl") != null) {
             className = settingMap.get("directoryManagerImpl");
+        } else {
+            isDmConfigurable = false;
         }
         
         if (className != null && !className.isEmpty()) {
@@ -4807,6 +4801,9 @@ public class ConsoleWebController {
             }
         }
 
+        map.addAttribute("isDmConfigurable", isDmConfigurable);
+        map.addAttribute("isOverridden", isOverridden);
+        map.addAttribute("overriddenDmClassName", className);
         map.addAttribute("settingMap", settingMap);
         map.addAttribute("directoryManagerPluginList", pluginList);
         map.addAttribute("isEnterprise", AppUtil.isEnterprise());
@@ -4815,9 +4812,44 @@ public class ConsoleWebController {
     }
 
     @RequestMapping(value = "/console/setting/directoryManagerImpl/remove", method = RequestMethod.POST)
-    public void consoleSettingDirectoryManagerImplRemove(Writer writer, ModelMap map) {
+    public void consoleSettingDirectoryManagerImplRemove() {
         setupManager.deleteSetting("directoryManagerImpl");
         setupManager.deleteSetting("directoryManagerImplProperties");
+    }
+
+    @RequestMapping("/console/setting/directoryManagerImpl/select")
+    public String consoleSettingDirectoryManagerImplSelect(ModelMap map) {
+        return "console/setting/dmSelect";
+    }
+
+    @GetMapping("/console/setting/directoryManagerImpl/list")
+    public void consoleSettingDirectoryManagerImplList(Writer writer, HttpServletResponse response) throws IOException {
+        Collection<Plugin> plugins = pluginManager.list(DirectoryManagerPlugin.class);
+        if (plugins.isEmpty()) {
+            response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+        }
+        JSONObject jsonObject = new JSONObject();
+
+        // add default DM
+        Map<String, String> map = new HashMap<>();
+        map.put("directoryManagerImpl", "default");
+        map.put("name", "Default");
+        map.put("description", "Default directory manager implementation");
+        map.put("version", "");
+        jsonObject.accumulate("data", map);
+
+        // add plugin DMs
+        for (Plugin plugin : plugins) {
+            map = new HashMap<>();
+            map.put("directoryManagerImpl", plugin.getClass().getName());
+            map.put("name", plugin.getName());
+            map.put("description", plugin.getDescription());
+            map.put("version", plugin.getVersion());
+            jsonObject.accumulate("data", map);
+        }
+        jsonObject.put("total", plugins.size());
+        jsonObject.put("start", 0);
+        jsonObject.write(writer);
     }
 
     @RequestMapping("/console/setting/directoryManagerImpl/config")
