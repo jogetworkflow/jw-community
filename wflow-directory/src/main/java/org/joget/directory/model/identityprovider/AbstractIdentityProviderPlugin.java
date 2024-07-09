@@ -53,9 +53,9 @@ public abstract class AbstractIdentityProviderPlugin extends ExtDefaultPlugin im
 
     @Override
     public String getLoginButtonIconLabel() {
-        // no need to escape the HTML because icon-textfield
-        // generates its own HTML for icons (<i> tag) and label
-        return StringUtil.unescapeJSON(getPropertyString("loginButtonIconLabel"));
+        // perform relaxed HTML strip because icon-textfield generates its own HTML for icons (<i> tag) and label
+        String content = StringUtil.unescapeJSON(getPropertyString("loginButtonIconLabel"));
+        return StringUtil.stripHtmlRelaxed(content);
     }
 
     @Override
