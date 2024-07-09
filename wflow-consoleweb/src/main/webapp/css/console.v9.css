@@ -79,9 +79,6 @@ button:before, .btn:before {
     font-weight: 600;
     text-transform: none;
 }
-.section-actions .custom-control-label:before {
-    font-size: 5rem;
-}
 .section-list-item {
     display: flex;
     justify-content: space-between;
@@ -160,6 +157,13 @@ button:before, .btn:before {
 }
 .button-list-add .content-title {
     font-weight: 600;
+}
+.section-actions {
+    display: flex;
+    align-items: center;
+}
+.section-actions > * {
+    margin: 0 5px
 }
 
 /* START Temporary fix to override v7.css styles */
