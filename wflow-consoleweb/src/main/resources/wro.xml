@@ -203,4 +203,68 @@
         <css>/fonts/Roboto/css/font.css</css>
         <css>classpath:resources/css/dx8ColorAdminTheme.css</css>
     </group>    
+    <group name="codeMirror.min">
+        <!-- Required dependencies -->
+        <js>/js/codemirror/lib/codemirror.js</js>
+        <js>/js/codemirror/addon/display/panel.js</js>
+        <js>/js/codemirror/addon/display/autorefresh.js</js>
+
+        <!-- For the modes -->
+        <js>/js/codemirror/mode/javascript/javascript.js</js>
+        <js>/js/codemirror/mode/xml/xml.js</js>
+        <js>/js/codemirror/mode/css/css.js</js>
+        <js>/js/codemirror/mode/htmlmixed/htmlmixed.js</js>
+        <js>/js/codemirror/mode/clike/clike.js</js>
+
+        <!-- Fontsize -->
+        <js>/js/codemirror/addon/display/fontSize.js</js>
+
+        <!-- Comment -->
+        <js>/js/codemirror/addon/comment/comment.js</js>
+        <js>/js/codemirror/addon/comment/continuecomment.js</js>
+
+        <!-- Fullscreen -->
+        <js>/js/codemirror/addon/display/fullscreen.js</js>
+
+        <!-- Lint related addons, it provides a way to display errors and warnings in your editor -->
+        <js>/js/codemirror/addon/lint/lint.js</js>
+        <js>/js/codemirror/addon/lint/htmlmixed-lint.js</js>
+        <js>/js/codemirror/addon/lint/javascript-lint.js</js>
+        <js>/js/codemirror/addon/lint/css-lint.js</js>
+        <js>/js/codemirror/addon/lint/json-lint.js</js>
+
+        <!-- Enable code hint. Works together witht he lint addons -->
+        <js>/js/codemirror/addon/hint/jshint.js</js>
+        <js>/js/codemirror/addon/hint/htmlhint.js</js>
+        <js>/js/codemirror/addon/hint/csslint.js</js>
+        <js>/js/codemirror/addon/hint/jsonlint.js</js>
+
+        <!-- Match Brackets, close tags, close brackets, -->
+        <js>/js/codemirror/addon/edit/matchbrackets.js</js>
+        <js>/js/codemirror/addon/edit/closetag.js</js>
+        <js>/js/codemirror/addon/fold/xml-fold.js</js>
+        <js>/js/codemirror/addon/edit/closebrackets.js</js>
+        <js>/js/codemirror/addon/advanced_dialog/advanced-dialog.js</js>
+
+        <!-- Search related addon, these are the dependencies that make search possible -->
+        <js>/js/codemirror/addon/search/searchcursor.js</js>
+        <js>/js/codemirror/addon/revised_search/revised-search.js</js>
+        <js>/js/codemirror/addon/search/jump-to-line.js</js>
+        <js>/js/codemirror/addon/search/match-highlighter.js</js>
+        <js>/js/codemirror/addon/scroll/annotatescrollbar.js</js>
+        <js>/js/codemirror/addon/search/matchesonscrollbar.js</js>
+
+        <!-- Fold addons, these give users the ability to fold the code -->
+        <js>/js/codemirror/addon/fold/foldcode.js</js>
+        <js>/js/codemirror/addon/fold/foldgutter.js</js>
+
+        <!-- CSS for Codemirror5 -->
+        <css>/js/codemirror/lib/codemirror.css</css>
+        <css>/js/codemirror/theme/ayu-mirage.css</css>
+        <css>/js/codemirror/addon/display/fullscreen.css</css>
+        <css>/js/codemirror/addon/lint/lint.css</css>
+        <css>/js/codemirror/addon/advanced_dialog/dialog.css</css>
+        <css>/js/codemirror/addon/search/matchesonscrollbar.css</css>
+        <css>/js/codemirror/addon/fold/foldgutter.css</css>
+    </group>  
 </groups> 
