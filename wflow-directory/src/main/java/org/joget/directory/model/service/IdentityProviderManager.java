@@ -2,7 +2,7 @@ package org.joget.directory.model.service;
 
 import org.joget.directory.model.User;
 import org.joget.plugin.base.Plugin;
-import org.joget.directory.model.identityprovider.IdentityProviderPlugin;
+import org.joget.directory.model.idp.IdentityProviderPlugin;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.Map;

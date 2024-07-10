@@ -1,4 +1,4 @@
-package org.joget.directory.model.identityprovider;
+package org.joget.directory.model.idp;
 
 import org.joget.directory.model.User;
 

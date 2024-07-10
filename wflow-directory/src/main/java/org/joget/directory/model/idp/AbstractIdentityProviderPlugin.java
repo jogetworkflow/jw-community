@@ -1,4 +1,4 @@
-package org.joget.directory.model.identityprovider;
+package org.joget.directory.model.idp;
 
 import org.joget.commons.util.StringUtil;
 import org.joget.plugin.base.ExtDefaultPlugin;
