@@ -47,6 +47,7 @@
         display: inline-block;
         float: right;
         margin-right: 60px;
+        font-weight: 500;
     }
     .loginMarketplace {
         color: #fff;
@@ -69,6 +70,7 @@
         background-color: var(--theme-primary-color-3, #fff);
         float: right;
         margin-right: 10px;
+        font-weight: 500;
     }
     body .page-header {
         padding: 1px 50px 0px;
@@ -122,10 +124,9 @@
         background-color: var(--theme-primary-color-1, #fff);
         border-radius: 0.625rem;
         overflow: hidden;
-        padding: 1.25rem;
+        padding: 1.25rem 1.25rem 0.25rem;
         position: relative;
         transition: 0.15s ease-in;
-        height: 410px;
         margin-right: 20px;
         width: calc(25% - 20px);
         margin-bottom: 20px;
@@ -158,6 +159,7 @@
         text-decoration: none;
         color: var(--theme-label-color-2, #071437);
         will-change: transform;
+        text-transform: capitalize;
     }
     #plugin-container .card .card-header .desc {
         padding: 0px;
@@ -210,6 +212,8 @@
         display: flex;
         align-items: center;
         color: var(--theme-label-color-2, #6c757d);
+        padding: 0 5px;
+        margin-bottom: 5px;
     }
     #plugin-container .card .card-footer .card-meta:first-child:after {
         display: block;
@@ -220,6 +224,9 @@
         background-color: currentcolor;
         margin-left: 0.75rem;
         margin-right: 0.75rem;
+    }
+    #plugin-container .card .card-footer .card-meta.version {
+        margin-left: auto;
     }
     #plugin-container .card .card-footer .card-meta svg {
         flex-shrink: 0;
@@ -260,6 +267,7 @@
     .jgt-tabs li.selected a.jgt-tabs-anchor {
         border-color: var(--theme-label-color-1, #071437);
         opacity: 1;
+        padding-bottom: 12px;
     }
     .jgt-badge{
         background: var(--theme-active-color-1, #0069d9);
@@ -269,6 +277,8 @@
         text-align: center;
         border-radius: 6px;
         margin-left: 2px;
+        padding-inline: 6px;
+        padding-block: 2px;
     }
 </style>
 
@@ -394,7 +404,7 @@
     // get builder label from parent builder
     var getBuilderLabel = function () {
         if (parent.CustomBuilder) {
-            return parent.CustomBuilder.builderLabel + ' <ui:msgEscJS key="cbuilder.seamless.marketplace.plugins"/>';
+            return parent.CustomBuilder.builderLabel;
         } else {
             return '';
         }
@@ -450,6 +460,14 @@
     var removeHtml = function(desc) {
         return $('<div>' + desc + '</div>').find('span').html();
     };
+    
+    var formatSize = function(size) {
+        if (size >= 1000) {
+            return Math.round((size/100))/10 + "MB";
+        } else {
+            return size + "KB";
+        }
+    };
 
     //render list of plugins in card based on category and search value
     var getPluginList = function (searhText, categories, classes) {
@@ -479,7 +497,7 @@
                                     </figure>
                                     <div class="card-header">
                                         <div class="meta">
-                                            <a href="`+card.url+`" target="_blank"><h3>` + card.name + `</h3> <span class="version">`+card.version+ (card.update?(' ('+card.installed+')'):'') + `</span></a>
+                                            <a href="`+card.url+`" target="_blank"><h3>` + card.name + `</h3> <span class="version"><i class="fas fa-code-branch"></i> `+card.version+ (card.update?(' ('+card.installed+')'):'') + `</span></a>
                                             <p class="desc">` + removeHtml(card.brief) + `</p>
                                         </div>
                                         <button data-id="installplugin_` + card.id + `" onclick="installPlugin('` + card.id + `')" class="icon-button">
@@ -491,7 +509,7 @@
                                             <i class="far fa-arrow-alt-circle-down"></i>` + card.count + `
                                         </div>
                                         <div class="card-meta card-meta--views">
-                                            <i class="far fa-file"></i> ` + card.size + `KB
+                                            <i class="far fa-file"></i> ` + formatSize(card.size) + `
                                         </div>
                                     </div>
                                 </article>`
