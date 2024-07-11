@@ -26,14 +26,12 @@ public abstract class AbstractIdentityProviderPlugin extends ExtDefaultPlugin im
 
     @Override
     public String getAuthorizationEndpointUrl() {
-        String unescapedJson = StringUtil.unescapeJSON(getPropertyString("authEndpointUrl"));
-        return StringUtil.escapeString(unescapedJson, StringUtil.TYPE_HTML);
+        return getPropertyString("authEndpointUrl");
     }
 
     @Override
     public String getCallbackUrl() {
-        String unescapedJson = StringUtil.unescapeJSON(getPropertyString("callbackUrl"));
-        return StringUtil.escapeString(unescapedJson, StringUtil.TYPE_HTML);
+        return getPropertyString("callbackUrl");
     }
 
     @Override
@@ -54,7 +52,7 @@ public abstract class AbstractIdentityProviderPlugin extends ExtDefaultPlugin im
     @Override
     public String getLoginButtonIconLabel() {
         // perform relaxed HTML strip because icon-textfield generates its own HTML for icons (<i> tag) and label
-        String content = StringUtil.unescapeJSON(getPropertyString("loginButtonIconLabel"));
+        String content = getPropertyString("loginButtonIconLabel");
         return StringUtil.stripHtmlRelaxed(content);
     }
 
