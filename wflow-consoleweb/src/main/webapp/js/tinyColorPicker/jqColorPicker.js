@@ -312,7 +312,7 @@
             toggle.call(this, event);
         })
         .on('change.tcp', function() {
-            _color.setColor(this.value || '#FFF');
+            // _color.setColor(this.value || '#FFF');
             _this.colorPicker.render(true);
         })
         .each(function() {
