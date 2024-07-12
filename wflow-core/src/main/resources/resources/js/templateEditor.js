@@ -37,10 +37,26 @@
 
         $(document).ready(function(){
             var dataControlField = $("#"+thisObj.id).closest(".property-input").parent().attr("property-name"); 
-            $('body').on('focusout', 'div[class^="property-editor-property-container"] div[id^="property_"][data-control_field="' + dataControlField + '"]:not([style*="display: none"]) input',function(event){
+            $('body').on('focusout focusin', 'div[class^="property-editor-property-container"] div[id^="property_"][data-control_field="' + dataControlField + '"]:not([style*="display: none"]) input',function(event){
                     var scroll = $(this).closest(".property-editor-property-container").scrollTop()
-                    $(container).find('.reloadtemplate').click();
-                    $(this).closest(".property-editor-property-container").scrollTop(scroll);
+                    if (event.type === "focusin"){
+                        //Check for image change
+                        if ($(this).attr("class")==="image" && ($(this).attr("data-value") !== $(this).val() && $(this).attr("data-value") !==  undefined)) {
+                            $(container).find('.reloadtemplate').click();
+                            $(this).closest(".property-editor-property-container").scrollTop(scroll);
+                        }
+
+                        //Save initial value for checking
+                        $(this).attr("data-value", $(this).val());
+                    }
+                    else {                        
+                        //Only reload template once the value has been changed
+                        if ($(this).attr("data-value") !== $(this).val()){
+                            $(container).find('.reloadtemplate').click();
+                        }
+                     
+                        $(this).closest(".property-editor-property-container").scrollTop(scroll);
+                    }
             })
         })
 
@@ -153,8 +169,13 @@
             if (!$(container).find(".editor").is(":visible")) {
                 $(container).find(".edittemplate").show();
             }
+
+            tile = thisObj.getTile(value)
+            if (thisObj.properties.control_field === "customLogin"){
+                $(tile).css("aspect-ratio", "16/9");
+            }
             
-            $(container).find(".sample_preview").append(thisObj.getTile(value));
+            $(container).find(".sample_preview").append(tile);
         }
     },
     showTemplateChooser : function() {
@@ -183,8 +204,13 @@
         for (; r < 1; r++) {
             var t_container = $(object).find(".templates");
             var tile = thisObj.getTile(thisObj.templates[r]);
-            //Added border for better distinguish between different tempates
-            $(tile).css({"border": "1px solid black"})
+            if (thisObj.properties.control_field === "customLogin"){
+                //Added border for better distinguish between different tempates
+                $(tile).css({"border": "1px solid black"})
+                $(tile).css("aspect-ratio", "16/9");
+                $(tile).css("padding", "5px");
+            }
+
             $(tile).css("cursor", "pointer");
             t_container.append(tile);
         }
@@ -273,9 +299,15 @@
             for (; r < thisObj.templates.length; r++) {
                 var t_container = $(object).find(".templates");
                 var tile = thisObj.getTile(thisObj.templates[r]);
-                //Added border for better distinguish between different tempates
-                $(tile).css({"border": "1px solid black"})
+                if (thisObj.properties.control_field === "customLogin"){
+                    //Added border for better distinguish between different tempates
+                    $(tile).css({"border": "1px solid black"})
+                    $(tile).css("aspect-ratio", "16/9");
+                    $(tile).css("padding", "5px");
+                }
+
                 $(tile).css("cursor", "pointer");
+                
                 t_container.append(tile);
             }
             t_container.find(".dt-loading").remove();

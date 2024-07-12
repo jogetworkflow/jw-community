@@ -274,7 +274,9 @@ public abstract class UserviewV5Theme extends UserviewTheme {
                     infoTile.setProperty("btnText", ResourceBundleUtil.getMessage("ubuilder.login"));
                 }
                 
-                html += infoTile.render("custom_login", "", "", "", false);
+                String style = "<style>#custom_login {height: 100vh !important;}</style>";
+                
+                html += infoTile.render("custom_login", "", style, "", false);
 
                 html += "<script>\n" +
                                 "$(document).ready(function(){\n" +
