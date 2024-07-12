@@ -136,7 +136,7 @@
                                             <c:if test="${!empty action.properties.cssClasses}">
                                                 <c:set var="buttonCssClasses" value="${action.properties.cssClasses}"/>
                                             </c:if>
-                                            <button data-target="${action.target}" data-href="${action.href}" data-hrefParam="${action.hrefParam}" name="${dataList.actionParamName}" class="form-button btn button ${buttonCssClasses}" value="${action.properties.id}" ${buttonConfirmation}><c:out value="${action.linkLabel}" escapeXml="true"/></button>
+                                            <button data-target="<c:out value="${action.target}" escapeXml="true"/>" data-href="<c:out value="${action.href}" escapeXml="true"/>" data-hrefParam="<c:out value="${action.hrefParam}" escapeXml="true"/>" name="<c:out value="${dataList.actionParamName}" escapeXml="true"/>" class="form-button btn button <c:out value="${buttonCssClasses}" escapeXml="true"/>" value="<c:out value="${action.properties.id}" escapeXml="true"/>" ${buttonConfirmation}><c:out value="${action.linkLabel}" escapeXml="true"/></button>
                                         </c:if>
                                     </c:forEach>
                                 </div>
@@ -219,7 +219,7 @@
                                             <c:if test="${!empty action.properties.cssClasses}">
                                                 <c:set var="buttonCssClasses" value="${action.properties.cssClasses}"/>
                                             </c:if>
-                                            <button data-target="${action.target}" data-href="${action.href}" data-hrefParam="${action.hrefParam}" name="${dataList.actionParamName}" class="form-button btn button ${buttonCssClasses}" value="${action.properties.id}" ${buttonConfirmation}><c:out value="${action.linkLabel}" escapeXml="true"/></button>
+                                            <button data-target="<c:out value="${action.target}" escapeXml="true"/>" data-href="<c:out value="${action.href}" escapeXml="true"/>" data-hrefParam="<c:out value="${action.hrefParam}" escapeXml="true"/>" name="<c:out value="${dataList.actionParamName}" escapeXml="true"/>" class="form-button btn button <c:out value="${buttonCssClasses}" escapeXml="true"/>" value="<c:out value="${action.properties.id}" escapeXml="true"/>" ${buttonConfirmation}><c:out value="${action.linkLabel}" escapeXml="true"/></button>
                                         </c:if>
                                     </c:forEach>
                                 </div>
