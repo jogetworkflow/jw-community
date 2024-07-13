@@ -575,23 +575,25 @@ public class MarketplaceUtil {
                         continue;
                     }
                     
-                    obj.put("url", marketPlaceUrl+"/jw/web/userview/mp/mpp/_/vad?id="+obj.getString("id"));
-                    if (obj.has("img") && obj.getString("img").startsWith("/")) {
-                        obj.put("img", marketPlaceUrl + obj.getString("img"));
+                    JSONObject clone = new JSONObject(obj.toString());
+                    
+                    clone.put("url", marketPlaceUrl+"/jw/web/userview/mp/mpp/_/vad?id="+clone.getString("id"));
+                    if (clone.has("img") && clone.getString("img").startsWith("/")) {
+                        clone.put("img", marketPlaceUrl + clone.getString("img"));
                     }
                     
                     //check for plugin installed or update available
-                    String[] nameVersion = retrieveNameAndVersion(obj.getString("fileName"));
+                    String[] nameVersion = retrieveNameAndVersion(clone.getString("fileName"));
                     if (nameVersion != null && installedPlugins.containsKey(nameVersion[0])) {
                         String version = (String) installedPlugins.get(nameVersion[0]);
-                        obj.put("installed", version);
+                        clone.put("installed", version);
                         if (compareVersion(version,nameVersion[1]) < 0) {
-                            obj.put("update", true);
+                            clone.put("update", true);
                         }
                     }
                     
-                    if (AppUtil.isEnterprise() || (!AppUtil.isEnterprise() && obj.getString("edition").contains("Community Edition"))) {
-                        list.add(obj);
+                    if (AppUtil.isEnterprise() || (!AppUtil.isEnterprise() && clone.getString("edition").contains("Community Edition"))) {
+                        list.add(clone);
                     }
                 }
             }
