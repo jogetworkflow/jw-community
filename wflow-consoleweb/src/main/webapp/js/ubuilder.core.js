@@ -2369,29 +2369,24 @@ UserviewBuilder = {
     marketplaceReloadPalette : function() {
         var url = CustomBuilder.contextPath + '/web/console/app/' + CustomBuilder.appId + '/' + CustomBuilder.appVersion + '/' + CustomBuilder.builderType + '/palette/' + CustomBuilder.id;
         CustomBuilder.Builder.reloadPalette(url, function(element) {
-            var {
-                category,
-                template,
-                developer,
-                pwaValidationType,
-                type
-            } = element;
-                
-            var metadata = {
-                builderTemplate: JSON.parse(template),
-                developer: developer,
-                pwaValidation: pwaValidationType,
-                type: type
-            };
+            try {
+                element.metadata = {
+                    builderTemplate: eval("[" + element.template + "]")[0],
+                    developer: element.developer,
+                    pwaValidation: element.pwaValidationType,
+                    type: element.type
+                };
 
-            if (type !== "menu") {
-                category = get_cbuilder_msg("ubuilder.pageComponents");
-            } else {
-                category = get_cbuilder_msg("ubuilder.pageComponents") + ";" + category;
+                if (element.type !== "menu") {
+                    element.category = get_cbuilder_msg("ubuilder.pageComponents");
+                } else {
+                    element.category = get_cbuilder_msg("ubuilder.pageComponents") + ";" + element.category;
+                }
+            } catch (err) {
+                if (console && console.log) {
+                    console.log("Error initializing " + element.className + " : " + err);
+                }
             }
-            
-            element.category = category;
-            element.metadata = metadata;
             
             return element;
         });

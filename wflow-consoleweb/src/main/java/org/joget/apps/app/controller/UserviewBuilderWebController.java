@@ -186,7 +186,7 @@ public class UserviewBuilderWebController {
                 pluginObject.put("defaultPropertyValues", cachedMenu.getDefaultPropertyValues());
                 pluginObject.put("category", cachedMenu.getCategory());
                 pluginObject.put("icon", cachedMenu.getIcon());
-                pluginObject.put("template", processTemplate(cachedMenu.getBuilderJavaScriptTemplate()));
+                pluginObject.put("template", cachedMenu.getBuilderJavaScriptTemplate());
                 pluginObject.put("hidden", cachedMenu.isHiddenPlugin());
                 pluginObject.put("pwaValidationType", cachedMenu.getPwaValidationType());
                 pluginObject.put("type", "menu");
@@ -198,7 +198,7 @@ public class UserviewBuilderWebController {
                 pluginObject.put("defaultPropertyValues", component.getDefaultPropertyValues());
                 pluginObject.put("category", component.getCategory());
                 pluginObject.put("icon", component.getIcon());
-                pluginObject.put("template", processTemplate(component.getBuilderJavaScriptTemplate()));
+                pluginObject.put("template", component.getBuilderJavaScriptTemplate());
                 pluginObject.put("hidden", component.isHiddenPlugin());
                 pluginObject.put("pwaValidationType", component);
                 pluginObject.put("type", "component");
@@ -222,10 +222,6 @@ public class UserviewBuilderWebController {
         JSONObject jsonObject = new JSONObject();
         jsonObject.put("success", result);
         jsonObject.write(writer);
-    }
-
-    private String processTemplate(String template) {
-        return template.replaceAll("\"", "\\\\\"").replaceAll("'", "\"");
     }
 
     @RequestMapping(value = "/console/app/(*:appId)/(~:appVersion)/userview/builderSave/(*:userviewId)", method = RequestMethod.POST)
