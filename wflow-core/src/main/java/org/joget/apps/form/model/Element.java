@@ -3,7 +3,9 @@ package org.joget.apps.form.model;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 import org.joget.apps.app.service.AppPluginUtil;
 import org.joget.apps.app.service.AppUtil;
 import org.joget.apps.form.service.FormService;
@@ -32,6 +34,7 @@ public abstract class Element extends ExtDefaultPlugin implements PropertyEditab
     protected Map<FormData, Boolean> isReadonlySet = new HashMap<FormData, Boolean>();
     protected Map<FormData, Boolean> isHiddenSet = new HashMap<FormData, Boolean>();
     protected Map<FormData, String> permissionKeys = new HashMap<FormData, String>();
+    protected Set<String> childsUniqueKeys = new HashSet<String>();
 
     /**
      * Get load binder
@@ -167,7 +170,7 @@ public abstract class Element extends ExtDefaultPlugin implements PropertyEditab
         
         //update element unique key
         if (customParameterName != null && !customParameterName.isEmpty()) {
-            setProperty(FormUtil.PROPERTY_ELEMENT_UNIQUE_KEY, getProperty(FormUtil.PROPERTY_ELEMENT_UNIQUE_KEY) + Integer.toString(customParameterName.hashCode()));
+            setUniqueKey(getProperty(FormUtil.PROPERTY_ELEMENT_UNIQUE_KEY) + Integer.toUnsignedString(customParameterName.hashCode()));
         }
         
         this.customParameterName = customParameterName;
@@ -673,5 +676,20 @@ public abstract class Element extends ExtDefaultPlugin implements PropertyEditab
             return ((FormBuilderPaletteElement) this).getFormBuilderIcon();
         }   
         return "";
+    }
+    
+    public void setUniqueKey(String uniqueKey) {
+        //remove `-` from unique key to prevent it is used as function name and causing js error
+        uniqueKey = uniqueKey.replaceAll("-", "_");
+        
+        //check is there a same field id under same parent, make it unique by adding index
+        if (getParent() != null) {
+            if (getParent().childsUniqueKeys.contains(uniqueKey)) {
+                uniqueKey += getParent().childsUniqueKeys.size();
+            }
+            getParent().childsUniqueKeys.add(uniqueKey);
+        }
+        
+        setProperty(FormUtil.PROPERTY_ELEMENT_UNIQUE_KEY, uniqueKey);
     }
 }

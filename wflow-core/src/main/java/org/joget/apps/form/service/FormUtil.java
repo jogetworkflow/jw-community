@@ -262,7 +262,7 @@ public class FormUtil implements ApplicationContextAware {
                 childElements.add(element);
                 index = childElements.size();
             }
-            element.setProperty(FormUtil.PROPERTY_ELEMENT_UNIQUE_KEY, FormUtil.getElementUniqueKey(element, index));
+            element.setUniqueKey(FormUtil.getElementUniqueKey(element, index));
             
             // recurse into child elements
             FormUtil.parseChildElementsFromJsonObject(obj, element);
@@ -1675,7 +1675,7 @@ public class FormUtil implements ApplicationContextAware {
                 uniqueKey += UuidGenerator.getInstance().getUuid().hashCode();
             }
         }
-        return uniqueKey.replaceAll("-", "_");
+        return uniqueKey;
     }
     
     /**
