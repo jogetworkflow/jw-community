@@ -156,7 +156,7 @@ public abstract class DataListBinderDefault extends ExtDefaultPlugin implements 
                 }
             }
             
-            conds += " AND ass.IsValid = 1";
+            conds += " AND ass.IsValid IS TRUE";
             
             queryObj.setOperator("AND");
             queryObj.setQuery(conds);
