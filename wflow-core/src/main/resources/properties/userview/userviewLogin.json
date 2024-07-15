@@ -1,27 +1,35 @@
 {
-    title: '@@userview.userviewsetting.loginPage@@',
-    properties: [
-    {
-        name : 'loginBackground',
-        label : '@@theme.xadmin.loginBackground@@',
-        type: 'image',
-        appPath: '[APP_PATH]',
-        allowInput : 'true',
-        isPublic : 'true',
-        imageSize : 'width:80px; height:35px; background-size: contain; background-repeat: no-repeat;'
-    },
-    {
-        name: 'loginPageTop',
-        label: '@@userview.userviewsetting.loginPageTop@@',
-        type: 'textarea',
-        rows: '10',
-        cols: '50'
-    }, {
-        name: 'loginPageBottom',
-        label: '@@userview.userviewsetting.loginPageBottom@@',
-        type: 'textarea',
-        rows: '10',
-        cols: '50'
-    }],
-    developer_mode : 'advanced'
+    "title": "@@userview.userviewsetting.loginPage@@",
+    "properties": [
+        %s
+        {
+            "name" : "loginBackground",
+            "label" : "@@theme.xadmin.loginBackground@@",
+            "type": "image",
+            "appPath": "[APP_PATH]",
+            "allowInput" : "true",
+            "isPublic" : "true",
+            "imageSize" : "width:80px; height:35px; background-size: contain; background-repeat: no-repeat;",
+            "control_field": "customLogin",
+            "control_value": "",
+        },
+        {
+            "name": "loginPageTop",
+            "label": "@@userview.userviewsetting.loginPageTop@@",
+            "type": "textarea",
+            "rows": "10",
+            "cols": "50",
+            "control_field": "customLogin",
+            "control_value": "",
+        }, {
+            "name": "loginPageBottom",
+            "label": "@@userview.userviewsetting.loginPageBottom@@",
+            "type": "textarea",
+            "rows": "10",
+            "cols": "50",
+            "control_field": "customLogin",
+            "control_value": "",
+        }
+    ],
+    "developer_mode" : "advanced"
 }

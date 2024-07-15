@@ -4,7 +4,10 @@ import java.util.Map;
 import org.joget.apps.app.service.AppUtil;
 import org.joget.apps.userview.service.UserviewUtil;
 import org.joget.commons.util.LogUtil;
+import org.joget.commons.util.ResourceBundleUtil;
 import org.joget.commons.util.StringUtil;
+import org.joget.plugin.base.PluginManager;
+import org.joget.directory.model.service.DirectoryUtil;
 
 /**
  * A base abstract class to develop a Userview Theme plugin for version v5.0 onward.
@@ -173,6 +176,14 @@ public abstract class UserviewV5Theme extends UserviewTheme {
      * @return 
      */
     public String getJsCssLib(Map<String, Object> data) {
+        if(getPropertyString("customLogin").equalsIgnoreCase("true") && !getPropertyString("template").isEmpty() && (Boolean) data.get("is_login_page")){
+            PluginManager pluginManager = (PluginManager) AppUtil.getApplicationContext().getBean("pluginManager");
+            UserviewV5Theme dx8Theme = (UserviewV5Theme) pluginManager.getPlugin("org.joget.apps.userview.lib.AjaxUniversalTheme");
+            dx8Theme.setProperties(getProperties());
+            dx8Theme.setUserview(getUserview());
+            dx8Theme.setRequestParameters(getRequestParameters());
+            return dx8Theme.getJsCssLib(data);
+        }
         return "<link href=\"" + data.get("context_path") + "/css/empty_userview.css?build=" + data.get("build_number") + "\" rel=\"stylesheet\" type=\"text/css\" />";
     }
 
@@ -234,21 +245,88 @@ public abstract class UserviewV5Theme extends UserviewTheme {
      * @return 
      */
     public String getLoginForm(Map<String, Object> data) {
-        if (!data.containsKey("loginBackground") && !getPropertyString("loginBackground").isEmpty()) {
-            data.put("loginBackground", "<style>#login{background-size:cover; background-image:url('"+getPropertyString("loginBackground")+"');}</style>");
-        }
-        if (!data.containsKey("login_form_before")) {
-            if (getProperties().containsKey("loginPageTop")) {
-                data.put("login_form_before", getPropertyString("loginPageTop"));
-            } else {
-                data.put("login_form_before", this.userview.getSetting().getPropertyString("loginPageTop"));
+        boolean isCustomLogin = false;
+        if (getPropertyString("customLogin").equalsIgnoreCase("true") && !getPropertyString("template").isEmpty()){
+            //reuse info tile in enterprise for this 
+            PluginManager pluginManager = (PluginManager) AppUtil.getApplicationContext().getBean("pluginManager");
+            SimplePageComponent infoTile = (SimplePageComponent) pluginManager.getPlugin("org.joget.plugin.enterprise.InformationTileComponent");
+            
+            if (infoTile != null) {
+                isCustomLogin = true;
+                
+                String html = "<style>\n" +
+                "body#login #loginForm {display: none;}\n" +
+                ".img100 {height: 100% !important;};\n" +
+                "</style>";
+                
+                infoTile.setProperties(getProperties());
+                infoTile.setUserview(getUserview());
+                infoTile.setRequestParameters(getRequestParameters());
+                
+                //preset value
+                if (infoTile.getPropertyString("customUsername").isEmpty()) {
+                    infoTile.setProperty("customUsername", ResourceBundleUtil.getMessage("ubuilder.login.username"));
+                }
+                if (infoTile.getPropertyString("customPassword").isEmpty()) {
+                    infoTile.setProperty("customPassword", ResourceBundleUtil.getMessage("ubuilder.login.password"));
+                }
+                if (infoTile.getPropertyString("btnText").isEmpty()) {
+                    infoTile.setProperty("btnText", ResourceBundleUtil.getMessage("ubuilder.login"));
+                }
+                
+                String style = "<style>#custom_login {height: 100vh !important;}</style>";
+                
+                html += infoTile.render("custom_login", "", style, "", false);
+
+                html += "<script>\n" +
+                                "$(document).ready(function(){\n" +
+                                "  $('#loginButton').on('click', function(){\n" +
+                                "    $('input[name=\"submit\"]').click();\n" +
+                                "  })\n" +
+                                "  $('#customUsername').on('change', function(e){\n" +
+                                "    $('#j_username').val($(this).val());\n" +
+                                "  })\n" +
+                                "  $('#customPassword').on('change', function(e){\n" +
+                                "    $('#j_password').val($(this).val());\n" +
+                                "  })\n" +
+                                " $(\"input\").off('keyup').on('keyup', function(e) {\n" +
+                                "    if (e.which === 13) {\n" +
+                                "      $('#loginButton').click();\n" +
+                                "    }\n" +
+                                "  }); \n" +
+                                "$(\"body#login #main > div\").css({maxWidth: \"100%\"})\n"; 
+                
+                //Handle login footer
+                String footerContent = DirectoryUtil.getLoginFormFooter();
+                footerContent = footerContent.replace("</script>", "<\\/script>");
+                if (!footerContent.equalsIgnoreCase("")){
+                    html += "$(`<table> <tbody> <tr> <td colspan=\"2\">" + footerContent + "</td> </tr> </tbody> </table>`).insertAfter($('#loginButton'));";
+                }
+                                
+                html +=         "});\n" +
+                                "</script>";
+
+                data.put("login_form_before", html);
             }
         }
-        if (!data.containsKey("login_form_after")) {
-            if (getProperties().containsKey("loginPageBottom")) {
-                data.put("login_form_after", getPropertyString("loginPageBottom"));
-            } else {
-                data.put("login_form_after", this.userview.getSetting().getPropertyString("loginPageBottom"));
+        
+        if (!isCustomLogin) {
+            if (!data.containsKey("loginBackground") && !getPropertyString("loginBackground").isEmpty()) {
+                data.put("loginBackground", "<style>#login{background-size:cover; background-image:url('"+getPropertyString("loginBackground")+"');}</style>");
+            }
+            if (!data.containsKey("login_form_before")) {
+                if (getProperties().containsKey("loginPageTop")) {
+                    data.put("login_form_before", getPropertyString("loginPageTop"));
+                } else {
+                    data.put("login_form_before", this.userview.getSetting().getPropertyString("loginPageTop"));
+                }
+            }
+            if (!data.containsKey("login_form_after")) {
+                if (getProperties().containsKey("loginPageBottom")) {
+                    data.put("login_form_after", getPropertyString("loginPageBottom"));
+                } else {
+                    data.put("login_form_after", this.userview.getSetting().getPropertyString("loginPageBottom"));
+                }
             }
         }
         return UserviewUtil.getTemplate(this, data, "/templates/userview/login.ftl");

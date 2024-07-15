@@ -84,6 +84,10 @@ public class XadminTheme extends UniversalTheme {
     public String getJsCssLib(Map<String, Object> data) {
         String path = data.get("context_path").toString();
         String jsCssLink = "";
+        
+        if(getPropertyString("customLogin").equalsIgnoreCase("true") && !getPropertyString("template").isEmpty() && (Boolean) data.get("is_login_page")){
+            return super.getJsCssLib(data);
+        }
 
         jsCssLink += "<link rel=\"stylesheet\" href=\""+path+"/wro/xadmin.min.css\">\n";
         jsCssLink += "<script>loadCSS(\"" + data.get("context_path") + "/xadmin/css/font.css" + "\")</script>\n";
@@ -567,6 +571,11 @@ public class XadminTheme extends UniversalTheme {
     @Override
     public String getLoginForm(Map<String, Object> data) {
         data.put("hide_nav", true);
+
+        if (getPropertyString("customLogin").equalsIgnoreCase("true") && !getPropertyString("template").isEmpty()){
+            return super.getLoginForm(data);            
+        }
+
         if (!getPropertyString("logo").isEmpty()) {
             data.put("logo", "<img class=\"logo\" alt=\"logo\" src=\""+getPropertyString("logo")+"\" />");
         }
@@ -588,6 +597,7 @@ public class XadminTheme extends UniversalTheme {
                 data.put("login_form_after", this.userview.getSetting().getPropertyString("loginPageBottom"));
             }
         }
+
         return UserviewUtil.getTemplate(this, data, "/templates/xadmin/login.ftl");
     }
     

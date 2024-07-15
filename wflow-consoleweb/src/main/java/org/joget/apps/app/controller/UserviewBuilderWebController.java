@@ -11,6 +11,7 @@ import java.util.List;
 import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import org.apache.commons.lang.StringUtils;
 import org.joget.apps.app.dao.BuilderDefinitionDao;
 import org.joget.apps.app.dao.UserviewDefinitionDao;
 import org.joget.apps.app.model.AppDefinition;
@@ -39,7 +40,6 @@ import org.joget.commons.util.SetupManager;
 import org.joget.commons.util.StringUtil;
 import org.joget.plugin.base.Plugin;
 import org.joget.plugin.base.PluginManager;
-import org.joget.plugin.enterprise.UniversalTheme;
 import org.joget.plugin.property.model.PropertyEditable;
 import org.joget.plugin.property.service.PropertyUtil;
 import org.json.JSONArray;
@@ -230,7 +230,14 @@ public class UserviewBuilderWebController {
         if (element != null) {
             propertyOptions = PropertyUtil.injectHelpLink(((Plugin) element).getHelpLink(), element.getPropertyOptions());
             if (element instanceof UserviewTheme) {
-                String loginOptions = AppUtil.readPluginResource(DefaultTheme.class.getName(), "/properties/userview/userviewLogin.json", null, true, "message/userview/userviewLogin");
+                
+                //inject custom login template properties to login page properties if is v5 theme and above and InformationTileComponent available
+                String customLoginProperty = "";
+                if (element instanceof UserviewV5Theme && pluginManager.getPlugin("org.joget.plugin.enterprise.InformationTileComponent") != null) {
+                    customLoginProperty = AppUtil.readPluginResource(DefaultTheme.class.getName(), "/properties/userview/userviewCustomLogin.json", null, true, null);
+                }
+                
+                String loginOptions = AppUtil.readPluginResource(DefaultTheme.class.getName(), "/properties/userview/userviewLogin.json", new String[]{customLoginProperty}, true, "message/userview/userviewLogin");
                 propertyOptions = UserviewUtil.appendPropertyOptions(propertyOptions, loginOptions);
                 if (!(element instanceof UserviewV5Theme)) {
                     String mobileOptions = AppUtil.readPluginResource(DefaultTheme.class.getName(), "/properties/userview/userviewMobile.json", null, true, "message/userview/userviewMobile");
@@ -487,5 +494,16 @@ public class UserviewBuilderWebController {
         }
         String userviewJson = userview.getJson();
         writer.write(PropertyUtil.propertiesJsonLoadProcessing(userviewJson));
+    }
+    
+    @RequestMapping(value = "/console/app/(*:appId)/(~:appVersion)/userview/loginTemplateEditor", method = RequestMethod.GET)
+    public void loginTemplateEditor(HttpServletResponse response, @RequestParam("appId") String appId, @RequestParam(value = "appVersion", required = false) String appVersion) throws Exception {
+        String temp = AppUtil.readPluginResource("org.joget.apps.userview.lib.DefaultV5EmptyTheme", "/templates/loginTemplates.html", null, false, null);
+        String[] templates = temp.split("\\r?\\n\\r?\\n");
+        for (int i = 0; i < templates.length; i++) {
+            templates[i] = "\"" + StringUtil.escapeString(templates[i], StringUtil.TYPE_JSON, null) + "\"";
+        }
+
+        response.getWriter().write(AppUtil.readPluginResource("org.joget.apps.userview.lib.DefaultV5EmptyTheme", "/resources/js/templateEditor.js", new Object[]{StringUtils.join(templates, ", ")}, false, null));
     }
 }
