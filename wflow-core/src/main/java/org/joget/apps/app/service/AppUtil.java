@@ -134,6 +134,7 @@ public class AppUtil implements ApplicationContextAware {
     static ThreadLocal currentAppDefinition = new ThreadLocal();
     static ThreadLocal resetAppDefinition = new ThreadLocal();
     static ThreadLocal processAppDefinition = new ThreadLocal();
+    static ThreadLocal<Boolean> partialParsing = ThreadLocal.withInitial(() -> false);
     static String designerContextPath = "/jwdesigner";
 
     /**
@@ -476,6 +477,23 @@ public class AppUtil implements ApplicationContextAware {
     }
 
     /**
+     * Ties an partial parse flag to the current thread.
+     * @param isEnabled
+     * @throws BeansException
+     */
+    public static void allowPartialParsing(Boolean allow) throws BeansException {
+        partialParsing.set(allow);
+    }
+
+    /**
+     * Retrieve the partial parse flag for the current thread.
+     */
+    public static Boolean isPartialParsingAllowed() {
+        Boolean isEnabled = (Boolean) partialParsing.get();
+        return isEnabled;
+    }
+    
+    /**
      * Reads a resource from a plugin
      * @param pluginName
      * @param resourceUrl
@@ -571,7 +589,7 @@ public class AppUtil implements ApplicationContextAware {
         }
         return content;
     }
-
+ 
     /**
      * Used to parses Hash Variables found in the content and replace it to the Hash
      * Variable value
