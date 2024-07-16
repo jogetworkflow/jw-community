@@ -24,6 +24,7 @@ import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import javax.servlet.http.HttpServletResponse;
+import org.apache.http.Header;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.config.RequestConfig;
 import org.apache.http.client.methods.HttpGet;
@@ -32,6 +33,7 @@ import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.impl.client.LaxRedirectStrategy;
 import org.apache.http.util.EntityUtils;
+import org.joget.apps.app.model.AppDefinition;
 import org.joget.commons.spring.model.Setting;
 import org.joget.commons.util.LogUtil;
 import org.joget.commons.util.ResourceBundleUtil;
@@ -201,45 +203,90 @@ public class MarketplaceUtil {
     }
     
     /**
-     * Download template from marketplace by on app id
+     * Download template from marketplace by id
      * @param id
      * @return 
      */
     public static byte[] downloadTemplate(String id) {
         // get URL InputStream
         HttpClientBuilder builder = HttpClients.custom().setRedirectStrategy(new LaxRedirectStrategy());
-        CloseableHttpClient client = builder.build();
-        InputStream in = null;
-        try {
+        try (CloseableHttpClient client = builder.build()) {
             id = StringUtil.stripAllHtmlTag(id);
         
             String marketPlaceUrl = ResourceBundleUtil.getMessage("appCenter.link.marketplace.url");
             String url = marketPlaceUrl + "/jw/web/json/plugin/org.joget.marketplace.ProtectedAppUpload/service?action=download&id=" + URLEncoder.encode(id, "UTF-8");
         
             HttpGet get = new HttpGet(url);
+            
+            //authentication
+            SetupManager setupManager = (SetupManager) AppUtil.getApplicationContext().getBean("setupManager");
+            String marketplaceAuth = setupManager.getSettingValue("marketplaceAuth");
+            if (marketplaceAuth != null && !marketplaceAuth.isEmpty()) {
+                get.addHeader("referer", WorkflowUtil.getHttpServletRequest().getRequestURL().toString());
+                get.addHeader("Authorization", "Basic " + SecurityUtil.decrypt(marketplaceAuth));
+            }
+                
             HttpResponse httpResponse = client.execute(get);
-            in = httpResponse.getEntity().getContent();
-
-            if (httpResponse.getStatusLine().getStatusCode() == HttpServletResponse.SC_OK) {
-                // read InputStream
-                return readInputStream(in);
+            
+            try (InputStream in = httpResponse.getEntity().getContent()) {
+                if (httpResponse.getStatusLine().getStatusCode() == HttpServletResponse.SC_OK) {
+                    // read InputStream
+                    return readInputStream(in);
+                }
             }
         } catch (Exception e) {
-            LogUtil.error(MarketplaceUtil.class.getName(), e, "");
-        } finally {
-            try {
-                if (in != null) {
-                    in.close();
-                }
-            } catch(IOException e) {
-            }
-            try {
-                client.close();
-            } catch(IOException e) {
-            }
+            LogUtil.warn(MarketplaceUtil.class.getName(), "Fail to download (" + id + ")");
         }
-        
         return null;
+    }
+    
+    /**
+     * Download and install plugin from marketplace by id
+     * @param id
+     * @return 
+     */
+    public static void downloadAndInstallPlugin(String id) {
+        // get URL InputStream
+        HttpClientBuilder builder = HttpClients.custom().setRedirectStrategy(new LaxRedirectStrategy());
+        try (CloseableHttpClient client = builder.build()) {
+            id = StringUtil.stripAllHtmlTag(id);
+        
+            String marketPlaceUrl = ResourceBundleUtil.getMessage("appCenter.link.marketplace.url");
+            String url = marketPlaceUrl + "/jw/web/json/plugin/org.joget.marketplace.ProtectedAppUpload/service?action=download&id=" + URLEncoder.encode(id, "UTF-8");
+        
+            HttpGet get = new HttpGet(url);
+            
+            //authentication
+            SetupManager setupManager = (SetupManager) AppUtil.getApplicationContext().getBean("setupManager");
+            String marketplaceAuth = setupManager.getSettingValue("marketplaceAuth");
+            if (marketplaceAuth != null && !marketplaceAuth.isEmpty()) {
+                get.addHeader("referer", WorkflowUtil.getHttpServletRequest().getRequestURL().toString());
+                get.addHeader("Authorization", "Basic " + SecurityUtil.decrypt(marketplaceAuth));
+            }
+                
+            HttpResponse httpResponse = client.execute(get);
+            
+            try (InputStream in = httpResponse.getEntity().getContent()) {
+                if (httpResponse.getStatusLine().getStatusCode() == HttpServletResponse.SC_OK) {
+                    String filename = "";
+                    //get all headers		
+                    Header[] headers = httpResponse.getAllHeaders();
+                    for (Header header : headers) {
+                        if ("Content-Disposition".equalsIgnoreCase(header.getName())) {
+                            filename = header.getValue().substring(header.getValue().indexOf("filename=") + 9);
+                            break;
+                        }
+                    }
+
+                    if (filename.endsWith(".jar")) {
+                        PluginManager pluginManager = (PluginManager) AppUtil.getApplicationContext().getBean("pluginManager");
+                        pluginManager.upload(filename, in);
+                    }
+                }
+            }
+        } catch (Exception e) {
+            LogUtil.warn(MarketplaceUtil.class.getName(), "Fail to download (" + id + ")");
+        }
     }
     
     /**
@@ -285,6 +332,68 @@ public class MarketplaceUtil {
         }
         
         return plugins;
+    }
+    
+    /**
+     * Based on the plugins used in AppDef, auto install/update it from marketplace
+     * 
+     * @param AppDef 
+     */
+    public static void autoInstallUpdatePlugins(AppDefinition appDef) {
+        update();
+        
+        //find plugins used in the app
+        List<String> plugins = AppUtil.findCustomPlugins(appDef, false, false);
+        
+        //get all installed plugins version
+        PluginManager pluginManager = (PluginManager) AppUtil.getApplicationContext().getBean("pluginManager");
+        Map<String, Object> installedPlugins = pluginManager.getInstalledBundles(null, true);
+        
+        //compare version with marketplace
+        Set<String> needUpdate = new HashSet<String>();
+        try {
+            if (cache != null && cache.has("data")) {
+                JSONArray c = cache.getJSONArray("data");
+                for (int i = 0 ; i < c.length(); i++) {
+                    JSONObject obj = c.getJSONObject(i);
+                    if (TYPE_Plugin.equals(obj.getString("category")) && obj.has("classes")) {
+                        boolean found = false;
+                        JSONArray classes = obj.getJSONArray("classes");
+                        for (int j = 0 ; j < classes.length(); j++) {
+                            String className = classes.getString(j);
+                            int index = plugins.indexOf(className);
+                            if (index != -1) {
+                                found = true;
+                            }
+                        }
+                        
+                        if (found) {
+                            //check for plugin installed or update available
+                            String[] nameVersion = retrieveNameAndVersion(obj.getString("fileName"));
+                            if (nameVersion != null && installedPlugins.containsKey(nameVersion[0])) {
+                                String version = (String) installedPlugins.get(nameVersion[0]);
+                                if (compareVersion(version,nameVersion[1]) < 0) {
+                                    needUpdate.add(obj.getString("id"));
+                                }
+                            } else {
+                                needUpdate.add(obj.getString("id"));
+                            }
+                        }
+                    }
+                    
+                    if (plugins.isEmpty()) {
+                        break;
+                    }
+                }
+            }
+        } catch (Exception e) {
+            LogUtil.error(MarketplaceUtil.class.getName(), e, "");
+        }
+        
+        //install/update each of the plugins
+        for (String id : needUpdate) {
+            downloadAndInstallPlugin(id);
+        }
     }
     
     /**

@@ -2643,6 +2643,10 @@ public class AppServiceImpl implements AppService {
                 }
             }
             
+            if (request != null && request.getParameterValues("autoInstallUpdatePlugins") != null) {
+                MarketplaceUtil.autoInstallUpdatePlugins(newAppDef);
+            }
+            
             return newAppDef;
         } catch (ImportAppException e) {
             throw e;
@@ -2757,7 +2761,15 @@ public class AppServiceImpl implements AppService {
                     AppDevUtil.copyDirectory(newAppDef);
                     
                     //sync it and return the app def
-                    return appDefinitionDao.syncAppDefinition(newAppDef.getAppId(), newAppDef.getVersion());
+                    AppDefinition tempAppDef = appDefinitionDao.syncAppDefinition(newAppDef.getAppId(), newAppDef.getVersion());
+                    
+                    //handle install/update marketplace plugins
+                    HttpServletRequest request = WorkflowUtil.getHttpServletRequest();
+                    if (request != null && request.getParameterValues("autoInstallUpdatePlugins") == null) {
+                        MarketplaceUtil.autoInstallUpdatePlugins(newAppDef);
+                    }
+                    
+                    return tempAppDef;
                 }
             }
         } catch (ImportAppException e) {
