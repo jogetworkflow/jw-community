@@ -5437,6 +5437,7 @@ body.rtl .editor-cell input[type=tel],
 body.rtl .editor-cell input[type=number], 
 body.rtl .editor-cell input[type=search], 
 body.rtl .editor-cell textarea,
+body.rtl .label-top.form-cell .calculationField_value,
 body.rtl .sigPad,
 body.rtl .editor-cell select:not([class^=ui]){
     float: right !important;
