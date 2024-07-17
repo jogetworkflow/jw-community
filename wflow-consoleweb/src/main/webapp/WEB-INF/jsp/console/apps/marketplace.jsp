@@ -334,7 +334,7 @@
     //install plugin in seamless marketplace
     function installPlugin(id) {
         var installUrl = "${pageContext.request.contextPath}/web/json/apps/install";
-        if (confirm('<ui:msgEscJS key="appCenter.label.confirmPluginInstallation"/>')) {
+        if (confirm('<ui:msgEscJS key="cbuilder.seamless.marketplace.confirmPluginInstallation"/>')) {
             var installCallback = {
                 success: function (data) {
                     setTimeout(function(){

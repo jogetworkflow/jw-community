@@ -58,6 +58,9 @@
 <c:set var="builderConfig" scope="request">
     {
         "builder" : {
+            "options" : {
+                "marketplaceUrl" : "<ui:msgEscJS key="appCenter.link.marketplace.url"/>"
+            },
             "callbacks" : {
                 "initBuilder" : "AppBuilder.initBuilder",
                 "unloadBuilder" : "AppBuilder.unloadBuilder",

@@ -313,7 +313,7 @@ public class MarketplaceUtil {
                             int index = plugins.indexOf(className);
                             if (index != -1) {
                                 found.add(className);
-                                newList.add("<a href=\""+marketPlaceUrl+"/jw/web/userview/mp/mpp/_/vad?id="+obj.getString("id")+"\" target=\"_blank\">"+obj.getString("name")+"</a>");
+                                newList.add("<a class=\"marketplace-plugin\" data-id=\""+StringUtil.escapeString(obj.getString("id"), StringUtil.TYPE_HTML)+"\" href=\""+marketPlaceUrl+"/jw/web/userview/mp/mpp/_/vad?id="+StringUtil.escapeString(obj.getString("id"), StringUtil.TYPE_HTML)+"\" target=\"_blank\">"+StringUtil.escapeString(obj.getString("name"), StringUtil.TYPE_HTML)+"</a>");
                             }
                         }
                     }
