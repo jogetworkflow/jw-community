@@ -56,6 +56,12 @@
         float: right;
         margin-right: 30px;
     }
+    .loginMarketplace span{
+        font-size: 18px;
+        vertical-align: middle;
+        display: inline-block;
+        padding: 5px 5px 12px;
+    }
     .loginMarketplace:hover {
         color: #fff;
         opacity: 0.6;
@@ -285,7 +291,7 @@
 <div id="main-body-header" class="marketplacPluginExplorerHeader">
     <span class="header-title"><ui:msgEscHTML key="cbuilder.seamless.marketplace.joget.marketplace"/></span>
     <c:if test="${isAnonymous eq true}">
-        <a class="loginMarketplace" onclick="login()" title="<ui:msgEscHTML key="ubuilder.login"/>"><i class="fa fa-user"></i></a>
+        <a class="loginMarketplace" onclick="login()" title="<ui:msgEscHTML key="ubuilder.login"/>"><i class="fa fa-user"></i> <span><ui:msgEscHTML key="ubuilder.login"/></span></a>
     </c:if>
     <div id="selectContainer">
         <select id="pluginCategory" onChange="selectedCategory()">

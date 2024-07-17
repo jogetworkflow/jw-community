@@ -25,8 +25,9 @@
         -ms-flex-direction: row !important;
         flex-direction: row !important;
     }
-    .bgi-cover img {
-        width: 100%;
+    .bgi-cover {
+        background-image: url('${pageContext.request.contextPath}/images/marketplace.png');
+        background-size:cover;
     }
     .d-flex > * {
         width: 50%;
@@ -103,7 +104,6 @@
         </form>
     </div>
     <div class="bgi-cover">
-        <img src="${pageContext.request.contextPath}/images/marketplace.png" />
     </div>
 </div>
 <script>
