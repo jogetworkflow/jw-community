@@ -300,9 +300,18 @@ public class PluginJsonController {
         }
     }
     
+    @RequestMapping("/json/app/(*:appId)/(~:appVersion)/plugin/listInstalledBundle")
+    public void pluginListAppInstalledBundle(Writer writer, @RequestParam(value = "appId") String appId, @RequestParam(value = "appVersion", required = false) String appVersion, @RequestParam(value = "className", required = false) String className, @RequestParam(value = "name", required = false) String filter, @RequestParam(value = "isUpdate", required = false) Boolean isUpdate, @RequestParam(value = "sort", required = false) String sort, @RequestParam(value = "desc", required = false) Boolean desc, @RequestParam(value = "start", required = false) Integer start, @RequestParam(value = "rows", required = false) Integer rows) throws JSONException, IOException {
+        AppDefinition appDef = appService.getAppDefinition(appId, appVersion);
+        AppUtil.setCurrentAppDefinition(appDef);
+        
+        JSONObject jsonObject = MarketplaceUtil.getInstalledBundledList(appDef, filter, className, isUpdate, sort, desc, start, rows);
+        AppUtil.writeJson(writer, jsonObject, null);
+    }
+    
     @RequestMapping("/json/plugin/listInstalledBundle")
     public void pluginListInstalledBundle(Writer writer, @RequestParam(value = "className", required = false) String className, @RequestParam(value = "name", required = false) String filter, @RequestParam(value = "isUpdate", required = false) Boolean isUpdate, @RequestParam(value = "sort", required = false) String sort, @RequestParam(value = "desc", required = false) Boolean desc, @RequestParam(value = "start", required = false) Integer start, @RequestParam(value = "rows", required = false) Integer rows) throws JSONException, IOException {
-        JSONObject jsonObject = MarketplaceUtil.getInstalledBundledList(filter, className, isUpdate, sort, desc, start, rows);
+        JSONObject jsonObject = MarketplaceUtil.getInstalledBundledList(null, filter, className, isUpdate, sort, desc, start, rows);
         AppUtil.writeJson(writer, jsonObject, null);
     }    
 

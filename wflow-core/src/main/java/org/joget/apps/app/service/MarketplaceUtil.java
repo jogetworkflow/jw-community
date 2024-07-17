@@ -347,7 +347,7 @@ public class MarketplaceUtil {
         
         //get all installed plugins version
         PluginManager pluginManager = (PluginManager) AppUtil.getApplicationContext().getBean("pluginManager");
-        Map<String, Object> installedPlugins = pluginManager.getInstalledBundles(null, true);
+        Map<String, Object> installedPlugins = pluginManager.getInstalledBundles(null, null, true);
         
         //compare version with marketplace
         Set<String> needUpdate = new HashSet<String>();
@@ -659,7 +659,7 @@ public class MarketplaceUtil {
         update();
         
         PluginManager pluginManager = (PluginManager) AppUtil.getApplicationContext().getBean("pluginManager");
-        Map<String, Object> installedPlugins = pluginManager.getInstalledBundles(classes, true);
+        Map<String, Object> installedPlugins = pluginManager.getInstalledBundles(classes, null, true);
         
         JSONObject result = new JSONObject();
         try {
@@ -718,6 +718,7 @@ public class MarketplaceUtil {
     /**
      * Based on the installed plugin jar bundle, populate the label & description from marketplace if available
      * 
+     * @param appDef
      * @param search
      * @param clazz
      * @param isUpdate
@@ -727,7 +728,7 @@ public class MarketplaceUtil {
      * @param rows
      * @return 
      */
-    public static JSONObject getInstalledBundledList(String search, String clazz, Boolean isUpdate, String sort, Boolean desc, Integer start, Integer rows) {
+    public static JSONObject getInstalledBundledList(AppDefinition appDef, String search, String clazz, Boolean isUpdate, String sort, Boolean desc, Integer start, Integer rows) {
         update();
         
         JSONObject jsonObject = new JSONObject();
@@ -739,7 +740,14 @@ public class MarketplaceUtil {
             }
             
             PluginManager pluginManager = (PluginManager) AppUtil.getApplicationContext().getBean("pluginManager");
-            Map<String, Object> installedPlugins = pluginManager.getInstalledBundles(classes, false);
+            
+            //find plugins used in the app
+            List<String> filtePluginClasses = null;
+            if (appDef != null) {
+                filtePluginClasses = AppUtil.findCustomPlugins(appDef, false, false);
+            }
+            
+            Map<String, Object> installedPlugins = pluginManager.getInstalledBundles(classes, filtePluginClasses, false);
             
             //populate with marketplace data
             if (cache != null && cache.has("data")) {

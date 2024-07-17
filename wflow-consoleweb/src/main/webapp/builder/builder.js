@@ -3529,7 +3529,7 @@
         appTools.append('<li><a title="'+get_cbuilder_msg('abuilder.envVariable')+'" id="variables-btn" data-cbuilder-view="envVariables" href="'+CustomBuilder.contextPath+'/web/console/app'+CustomBuilder.appPath+'/envVariable" data-cbuilder-action="switchView" data-hide-tool=""><i class="word-icon" style="font-size: 75%; font-weight: 350; line-height: 20px; vertical-align: top; display:inline-block; letter-spacing: 0.6px;">{x}</i></a></li>');
         appTools.append('<li><a title="'+get_cbuilder_msg('abuilder.appMessage')+'" id="appMessage-btn" data-cbuilder-view="appMessage" data-cbuilder-action="switchView" data-hide-tool=""><i class="la la-language"</i></a></li>');
         appTools.append('<li><a title="'+get_cbuilder_msg('abuilder.resources')+'" id="resources-btn" data-cbuilder-view="resources" href="'+CustomBuilder.contextPath+'/web/console/app'+CustomBuilder.appPath+'/resources" data-cbuilder-action="switchView" data-hide-tool=""><i class="lar la-file-image"></i> </a></li>');
-        appTools.append('<li><a title="'+get_cbuilder_msg('abuilder.pluginDefault')+'" id="plugin-default-btn" data-cbuilder-view="pluginDefaultProperties" href="'+CustomBuilder.contextPath+'/web/console/app'+CustomBuilder.appPath+'/properties" data-cbuilder-action="switchView" data-hide-tool=""><i class="las la-plug"></i> </a></li>');
+        appTools.append('<li><a title="'+get_cbuilder_msg('abuilder.plugins')+'" id="plugin-default-btn" data-cbuilder-view="pluginDefaultProperties" href="'+CustomBuilder.contextPath+'/web/console/app'+CustomBuilder.appPath+'/properties" data-cbuilder-action="switchView" data-hide-tool=""><i class="las la-plug"></i> </a></li>');
         if (CustomBuilder.isGlowrootAvailable === "true") {
             appTools.append('<li><a title="'+get_cbuilder_msg('abuilder.performance')+'" id="performance-btn" data-cbuilder-view="performance" href="'+CustomBuilder.contextPath+'/web/console/app/'+CustomBuilder.appId+'/performance" data-cbuilder-action="switchView" data-hide-tool=""><i class="las la-tachometer-alt"></i> </a></li>');
         }
@@ -7677,6 +7677,10 @@ _CustomBuilder.Builder = {
                 CustomBuilder.initPaletteElement(category, className, i18nLabel, icon, JSON.parse(propertyOptions), defaultPropertyValues, !hidden, "", metadata);
                 
             });
+            
+            //move marketplace link in palette to last position
+            $('.components-list').append($('.components-list .marketplaceLink'));
+            
             $(".drag-elements-sidepane.sidepane .ajaxLoader").hide();
         })
         .catch(error => {

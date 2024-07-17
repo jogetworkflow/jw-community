@@ -167,7 +167,7 @@
     
     /* Update all selected plugin from marketplace */
     function update(selectedList){
-         if (confirm('<ui:msgEscJS key="appCenter.label.confirmPluginInstallation"/>')) {
+         if (confirm('<ui:msgEscJS key="cbuilder.seamless.marketplace.confirmPluginInstallation"/>')) {
             UI.blockUI(); 
             var installUrl = "${pageContext.request.contextPath}/web/json/apps/install";
             
@@ -193,7 +193,11 @@
             //reload the table after all plugin updated
             $.when.apply($, deferreds).then(function(){
                 UI.unblockUI(); 
-                JsonDataTable.reload();
+                JsonDataTable.refresh();
+                JsonDataTable1.refresh();
+                
+                //reset to 0 first
+                $(".update_count").text("(0)");
             });
         }
     }

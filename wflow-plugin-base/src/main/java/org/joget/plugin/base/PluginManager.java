@@ -415,7 +415,7 @@ public class PluginManager implements ApplicationContextAware {
         return false;
     }
     
-    public Map<String, Object> getInstalledBundles(List<String> classes, boolean getVersionOnly) {
+    public Map<String, Object> getInstalledBundles(List<String> classes, List<String> filterClasses, boolean getVersionOnly) {
         Map<String, Object> bundles = new HashMap<String, Object>();
         Set<String> checked = new HashSet<String>(); 
         
@@ -447,7 +447,15 @@ public class PluginManager implements ApplicationContextAware {
         
         //find the bundle and add to JSON object
         for (Plugin p : plugins) {
-            ServiceReference sr = context.getServiceReference(ClassUtils.getUserClass(p).getName());
+            String pluginClass = ClassUtils.getUserClass(p).getName();
+            
+            if (filterClasses != null) {
+                if (!filterClasses.contains(pluginClass)) {
+                    continue;
+                }
+            }
+        
+            ServiceReference sr = context.getServiceReference(pluginClass);
             if (sr != null) {
                 try {
                     Bundle bundle = sr.getBundle();
