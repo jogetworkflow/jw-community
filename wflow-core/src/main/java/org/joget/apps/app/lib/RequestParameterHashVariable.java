@@ -37,10 +37,14 @@ public class RequestParameterHashVariable extends DefaultHashVariablePlugin {
                     }
                     return pathValue;
                 }
-
-                return "";
+                
+                if (params != null && !params.containsKey(variableKey) && AppUtil.isPartialParsingAllowed()) {
+                    return null;
+                } else {
+                    return "";
+                }
             }
-        }
+        } 
         return "";
     }
 
