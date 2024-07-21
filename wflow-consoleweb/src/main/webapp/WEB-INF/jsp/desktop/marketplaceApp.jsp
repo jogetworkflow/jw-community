@@ -82,7 +82,7 @@
                     $("#installApp").attr("disabled", "disabled");
         
                     // invoke installation
-                    var installParams = "url=" + encodeURIComponent(downloadUrl);
+                    var installParams = "autoInstallUpdatePlugins=true&url=" + encodeURIComponent(downloadUrl);
                     ConnectionManager.post(installUrl, installCallback, installParams);
                 }
             });

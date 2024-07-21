@@ -16,6 +16,7 @@ body[builder-theme='light']{
     --theme-active-color-1: #0069d9;
     --theme-active-color-2: #1677ff;
     --theme-link-color-1: #6c757d;
+    --theme-link-color-2: #AAAAAA;
 }
 
 body[builder-theme='dark']{
@@ -36,6 +37,7 @@ body[builder-theme='dark']{
     --theme-active-color-1: #0069d9;
     --theme-active-color-2: #009ef7;
     --theme-link-color-1: #6c757d;
+    --theme-link-color-2: #AAAAAA;
 }   
 /* Dark Theme CSS */
 body[builder-theme]#cbuilder .nav-tabs .nav-link.active, #cbuilder .nav-tabs .nav-item.show .nav-link {
@@ -1302,7 +1304,8 @@ body[builder-theme] .property-description {
 body[builder-theme] .tooltipster-sidetip.tooltipster-right .tooltipster-arrow-background{
     border-right-color: rgba(0, 0, 0, 0.85);
 }
-body[builder-theme] .property-editor-container .loaderIcon {
+body[builder-theme] .property-editor-container .loaderIcon,
+body[builder-theme] .drag-elements-sidepane .loaderIcon{
     color: #91caff;
 }
 body[builder-theme] .tooltipster-sidetip.tooltipster-right .tooltipster-arrow-border{

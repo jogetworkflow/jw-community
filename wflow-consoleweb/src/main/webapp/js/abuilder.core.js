@@ -289,6 +289,13 @@ AppBuilder = {
                         for (var i in response.result) {
                             $(".canvas-header .missingplugin ul").append('<li>'+response.result[i]+'</li>');
                         }
+                        if ($(".canvas-header .missingplugin .marketplace-plugin").length > 0) {
+                            $(".canvas-header .missingplugin").append('<button class="downloadFromMarketplace btn btn-warning">'+get_cbuilder_msg('cbuilder.seamless.marketplace.downloadFromMarketplace')+'</button>');
+                            
+                            $(".canvas-header .missingplugin .downloadFromMarketplace").off("click").on("click", function(){
+                                AppBuilder.downloadFromMarketplace();
+                            });
+                        }
                     }
                 }
             });
@@ -827,5 +834,43 @@ AppBuilder = {
         $('.btn-group.tool').css('display', 'inline-block');
         $("#builder_canvas").css("opacity", "1");
         $(window).off("resize.appbuilder");
+    },
+    
+    /*
+     * download all the missing plugins from marketplace 
+     */
+    downloadFromMarketplace : function() {
+        if ($(".canvas-header .missingplugin .marketplace-plugin").length > 0) {
+            if (confirm(get_cbuilder_msg('cbuilder.seamless.marketplace.confirmPluginInstallation'))) {
+                $(".canvas-header .missingplugin button").prop("disabled", true).append(' <i class="las la-spinner la-spin" ></i>');
+                $(".canvas-header .missingplugin .marketplace-plugin").append(' <i class="las la-spinner la-spin" ></i>');
+                
+                var installUrl = CustomBuilder.contextPath + "/web/json/apps/install";
+                $(".canvas-header .missingplugin .marketplace-plugin").each(function(){
+                    var link = $(this);
+                    
+                    var installCallback = {
+                        success: function (data) {
+                            CustomBuilder.showMessage(get_cbuilder_msg('cbuilder.seamless.marketplace.installed', [$(link).text()]), "success");
+                            $(link).parent().remove();
+                            if ($(".canvas-header .missingplugin .marketplace-plugin").length === 0) {
+                                $(".canvas-header .missingplugin button").remove();
+                            }
+                            if ($(".canvas-header .missingplugin ul li").length === 0) {
+                                $(".canvas-header .missingplugin").remove();
+                            }
+                        },
+                        error: function (data) {
+                            CustomBuilder.showMessage(get_cbuilder_msg('cbuilder.seamless.marketplace.fail', [$(link).text()]), "danger");
+                            $(link).find('i.la-spinner').remove();
+                        }
+                    };
+
+                    // invoke installation
+                    var installParams = "url=" + encodeURIComponent(CustomBuilder.config.builder.options['marketplaceUrl']+"/jw/web/json/plugin/org.joget.marketplace.ProtectedAppUpload/service?action=download&id=" + link.data('id'));
+                    ConnectionManager.post(installUrl, installCallback, installParams);
+                });
+            }
+        }
     }
 };

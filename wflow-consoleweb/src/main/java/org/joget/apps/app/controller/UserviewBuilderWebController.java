@@ -25,6 +25,7 @@ import org.joget.apps.userview.model.ExtElement;
 import org.joget.apps.userview.model.PageComponent;
 import org.joget.apps.userview.model.SupportBuilderColorConfig;
 import org.joget.apps.userview.model.Userview;
+import org.joget.apps.userview.model.UserviewBuilderPalette;
 import org.joget.apps.userview.model.UserviewCategory;
 import org.joget.apps.userview.model.UserviewMenu;
 import org.joget.apps.userview.model.UserviewPage;
@@ -38,6 +39,7 @@ import org.joget.commons.util.LogUtil;
 import org.joget.commons.util.SecurityUtil;
 import org.joget.commons.util.SetupManager;
 import org.joget.commons.util.StringUtil;
+import org.joget.plugin.base.DefaultPlugin;
 import org.joget.plugin.base.Plugin;
 import org.joget.plugin.base.PluginManager;
 import org.joget.plugin.property.model.PropertyEditable;
@@ -154,6 +156,72 @@ public class UserviewBuilderWebController {
         response.addHeader("X-XSS-Protection", "0");
 
         return "ubuilder/builder";
+    }
+    
+    //Get UI palette elements
+    @RequestMapping("/console/app/(*:appId)/(~:appVersion)/userview/palette/(*:userviewId)")
+    public void getPaletteReload(Writer writer, ModelMap map, HttpServletRequest request, HttpServletResponse response,
+            @RequestParam("appId") String appId, @RequestParam(value = "appVersion", required = false) String appVersion,
+            @RequestParam("userviewId") String userviewId, @RequestParam(required = false) String json) throws Exception {
+        Map<String, Object> result = new HashMap<>();
+        AppDefinition appDef = appService.getAppDefinition(appId, appVersion);
+        AppUtil.setCurrentAppDefinition(appDef);
+
+        // get available elements from the plugin manager
+        Collection<Plugin> list = pluginManager.list(PageComponent.class);
+        List<Map<String, Object>> pluginList = new ArrayList<>();
+
+        // add elements to palette
+        for (Plugin plugin : list) {
+            JSONArray jsonArray = new JSONArray();
+            Map<String, Object> pluginObject = new HashMap<>();
+            pluginObject.put("className", plugin.getClass().getName());
+            pluginObject.put("i18nLabel", plugin.getI18nLabel());
+            pluginObject.put("developer", ((DefaultPlugin) plugin).getDeveloperMode());
+
+            if (plugin instanceof UserviewMenu) {
+                UserviewMenu menu = (UserviewMenu) plugin;
+                CachedUserviewMenu cachedMenu = new CachedUserviewMenu(menu);
+
+                pluginObject.put("defaultPropertyValues", cachedMenu.getDefaultPropertyValues());
+                pluginObject.put("category", cachedMenu.getCategory());
+                pluginObject.put("icon", cachedMenu.getIcon());
+                pluginObject.put("template", cachedMenu.getBuilderJavaScriptTemplate());
+                pluginObject.put("hidden", cachedMenu.isHiddenPlugin());
+                pluginObject.put("pwaValidationType", cachedMenu.getPwaValidationType());
+                pluginObject.put("type", "menu");
+                jsonArray = new JSONArray(cachedMenu.getPropertyOptions());
+                
+            } else if (plugin instanceof PageComponent) {
+                PageComponent component = (PageComponent) plugin;
+
+                pluginObject.put("defaultPropertyValues", component.getDefaultPropertyValues());
+                pluginObject.put("category", component.getCategory());
+                pluginObject.put("icon", component.getIcon());
+                pluginObject.put("template", component.getBuilderJavaScriptTemplate());
+                pluginObject.put("hidden", component.isHiddenPlugin());
+                pluginObject.put("pwaValidationType", component);
+                pluginObject.put("type", "component");
+                jsonArray = new JSONArray(component.getPropertyOptions());
+            }
+            JSONArray newPropertyOptions = new JSONArray();
+            for (int i = 0; i < jsonArray.length(); i++) {
+                JSONObject jsonObject = jsonArray.getJSONObject(i);
+                JSONObject newObject = new JSONObject();
+                PropertyUtil.recursivelyAddQuotes(newObject, jsonObject);
+                newPropertyOptions.put(newObject);
+            }
+            pluginObject.put("propertyOptions", newPropertyOptions.toString(2));
+            pluginList.add(pluginObject);
+        }
+
+        // sort based on categories
+        pluginList.sort(Comparator.comparing(m -> (Comparable<Object>) m.get("category")));
+        result.put("elements", pluginList);
+
+        JSONObject jsonObject = new JSONObject();
+        jsonObject.put("success", result);
+        jsonObject.write(writer);
     }
 
     @RequestMapping(value = "/console/app/(*:appId)/(~:appVersion)/userview/builderSave/(*:userviewId)", method = RequestMethod.POST)

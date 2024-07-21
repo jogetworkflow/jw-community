@@ -50,6 +50,14 @@
                     </div>
                     <div class="form-row">                
                         <span class="form-input">
+                            <label for="autoInstallUpdatePlugins" class="upload">
+                                <input id="autoInstallUpdatePlugins" type="checkbox" name="autoInstallUpdatePlugins" value="true"/><i></i>
+                                <fmt:message key="console.app.import.label.autoInstallUpdatePlugins"/>
+                            </label>
+                        </span>
+                    </div>
+                    <div class="form-row">                
+                        <span class="form-input">
                             <label for="doNotImportParticipant" class="upload">
                                 <input id="doNotImportParticipant" type="checkbox" name="doNotImportParticipant" value="true"/><i></i>
                                 <fmt:message key="console.app.import.label.doNotImportParticipant"/>

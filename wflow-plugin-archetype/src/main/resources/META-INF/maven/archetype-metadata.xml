@@ -1,0 +1,6 @@
+<archetype-descriptor name="basic">
+  <requiredProperties>
+    <requiredProperty key="label" />
+    <requiredProperty key="description"/>
+  </requiredProperties>
+</archetype-descriptor>

@@ -830,7 +830,10 @@ JsonTable.prototype = {
             height: thisObject.height,
             resizable: false,
             singleSelect: !thisObject.checkbox || thisObject.checkboxSelectSingle,
-            preProcess: dataPreProcess
+            preProcess: dataPreProcess,
+            onSuccess: function(){
+                $("#" + thisObject.divToUpdate).trigger("success");
+            }
         });
         
         $("#" + thisObject.divToUpdate).on("click", "*", function(){

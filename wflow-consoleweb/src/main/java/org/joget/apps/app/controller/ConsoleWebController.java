@@ -156,6 +156,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.LocaleResolver;
 import org.springframework.web.util.HtmlUtils;
+
 @Controller
 public class ConsoleWebController {
 
@@ -227,7 +228,7 @@ public class ConsoleWebController {
     AuditTrailManager auditTrailManager;
     @Autowired
     WorkflowAssignmentDao workflowAssignmentDao;
-
+    
     @RequestMapping({"/index", "/", "/home"})
     public String index() {
         String landingPage = WorkflowUtil.getSystemSetupValue("landingPage");
@@ -6066,32 +6067,7 @@ public class ConsoleWebController {
             map.addAttribute("isPublished", appDef.isPublished());
             return "console/apps/packageUploadSuccess";
         }
-    }    
-
-    @RequestMapping({"/desktop/marketplace/app"})
-    public String marketplaceApp(ModelMap model, @RequestParam(value = "url") String url) {
-        boolean trusted = false;
-        String trustedUrlsKey = "appCenter.link.marketplace.trusted";
-        String trustedUrls = ResourceBundleUtil.getMessage(trustedUrlsKey);
-        if (trustedUrls != null && !trustedUrls.isEmpty()) {
-            StringTokenizer st = new StringTokenizer(trustedUrls, ",");
-            while (st.hasMoreTokens()) {
-                String trustedUrl = st.nextToken().trim();
-                if (url.startsWith(trustedUrl)) {
-                    trusted = true;
-                    break;
-                }
-            }
-        }
-        
-        if (trusted) {
-            model.addAttribute("appUrl", url);
-        } else {
-            model.addAttribute("appUrl", "");
-        }
-        
-        return "desktop/marketplaceApp";
-    }
+    } 
     
     @RequestMapping({"/json/console/app/(*:appId)/(~:version)/userview/(*:userviewId)/json"})
     public void getUserviewJson(Writer writer, HttpServletResponse response, @RequestParam(value = "appId") String appId, @RequestParam(value = "version", required = false) String version, @RequestParam(value = "userviewId") String userviewId) throws IOException {
