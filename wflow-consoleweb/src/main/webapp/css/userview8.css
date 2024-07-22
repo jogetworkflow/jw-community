@@ -1996,6 +1996,9 @@ body.rtl .ContainerComponent {
     body.horizontal_menu.inline_menu .nav{
         flex-wrap: nowrap;
     }
+    body.horizontal_menu .nav {
+        align-items: center;
+    }
 }
 /*Priority Menu*/   
 
