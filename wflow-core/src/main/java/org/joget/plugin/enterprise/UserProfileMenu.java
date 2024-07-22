@@ -223,7 +223,7 @@ public class UserProfileMenu extends UserviewMenu {
         Collection<String> passwordErrors = new ArrayList<String>();
         
         //validate input length & value
-        String[] fields = new String[]{"firstName", "lastName", "email", "password", "confirmPassword", "oldPassword", "timeZone", "locale", "dateFormatUseEnglish"};
+        String[] fields = new String[]{"firstName", "lastName", "email", "timeZone", "locale", "dateFormatUseEnglish"};
         for (String f : fields) {
             String v = getRequestParameterString(f);
             if (v != null) {
