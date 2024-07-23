@@ -146,7 +146,8 @@
 .property-editor-container .property-editor-page-step-indicator{
     padding:0px 10px;
     color:#666666;
-    height:30px;
+    min-height:30px;
+    height:fit-content;
 }
 .property-editor-container .property-editor-page-step-indicator span {
     font-size:11px;
@@ -1406,6 +1407,15 @@ body:not(.right-panel-mode-window) .property-editor-container.narrow.wider .prop
     top: 6px;
     margin-left: 8px;
 }
+body.rtl .builder-view .property-type-selectbox .property-input {
+    display: flex;
+    flex-direction: row-reverse;
+    align-items: center;
+}
+body.rtl .builder-view .property-type-selectbox .property-input a.builderAddNew{
+    position: unset;
+    margin-right: 8px;
+}
 .pluginConfig .property-type-selectbox a.builderAddNew{
     top: 8px;
     margin-left: 8px;
@@ -1668,6 +1678,14 @@ body .ui-dialog .button_form.editor-panel-mode #main-body-header {
     .property-input select,
     .property-input textarea{
         max-width: 100%;
+    }
+    body.rtl .builder-view .builder-link a.openbuilder {
+        left: 45.5vw;
+        right: unset;
+    }
+    body:not(.rtl) .builder-view .builder-link a.openbuilder {
+        right: 45.5vw;
+        left:unset;
     }
 }
 
