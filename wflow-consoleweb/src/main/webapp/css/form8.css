@@ -122,6 +122,11 @@ body .subform-cell > .subform-container.has-frame, .form-cell > .subform-contain
     width: 100%;
     float: none !important;
 }
+/* For datepicker trigger and close field icons */
+.label-top .hasDatepicker + a, .label-top .hasDatepicker + a + a {
+    top: unset;
+    bottom: 7px;
+}
 .form-cell > label.label + *:not(.ui-screen-hidden),
 .subform-cell > label.label + *:not(.ui-screen-hidden),
 .form-cell > label.label + .ui-screen-hidden + *,
@@ -869,6 +874,9 @@ body.rtl .handsontable .htCore tr td:last-child {
 .calculationField_value {
     padding: 6px 10px 0 1px;
 }
+body.rtl .calculationField_value {
+    padding-right: 1px;
+}
 
 /* Multipaged form */
 .multiPagedForm,
@@ -1193,7 +1201,7 @@ body.rtl .handsontable .htCore tr td:last-child {
     border-color: #6c757d;
 }
 
-@media (max-width: 768px) {
+@media (max-width: 767px) {
     .form-cell > label.label,
     .subform-cell > label.label,
     .form-cell > label.label + *:not(.ui-screen-hidden),
@@ -1438,4 +1446,7 @@ body.rtl .label-top.subform-cell > label.label > i{
     .largeFontSize .label-left.subform-cell > label.label > i{
         bottom: -44px;
     }
+body.rtl .form-cell > label.label,
+body.rtl .subform-cell > label.label{
+    padding: 8px 0 0 10px;
 }

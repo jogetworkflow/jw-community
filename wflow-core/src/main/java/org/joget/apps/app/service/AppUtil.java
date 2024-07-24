@@ -134,6 +134,7 @@ public class AppUtil implements ApplicationContextAware {
     static ThreadLocal currentAppDefinition = new ThreadLocal();
     static ThreadLocal resetAppDefinition = new ThreadLocal();
     static ThreadLocal processAppDefinition = new ThreadLocal();
+    static ThreadLocal<Boolean> partialParsing = ThreadLocal.withInitial(() -> false);
     static String designerContextPath = "/jwdesigner";
 
     /**
@@ -476,6 +477,23 @@ public class AppUtil implements ApplicationContextAware {
     }
 
     /**
+     * Ties an partial parse flag to the current thread.
+     * @param isEnabled
+     * @throws BeansException
+     */
+    public static void allowPartialParsing(Boolean allow) throws BeansException {
+        partialParsing.set(allow);
+    }
+
+    /**
+     * Retrieve the partial parse flag for the current thread.
+     */
+    public static Boolean isPartialParsingAllowed() {
+        Boolean isEnabled = (Boolean) partialParsing.get();
+        return isEnabled;
+    }
+    
+    /**
      * Reads a resource from a plugin
      * @param pluginName
      * @param resourceUrl
@@ -571,7 +589,7 @@ public class AppUtil implements ApplicationContextAware {
         }
         return content;
     }
-
+ 
     /**
      * Used to parses Hash Variables found in the content and replace it to the Hash
      * Variable value
@@ -1416,7 +1434,7 @@ public class AppUtil implements ApplicationContextAware {
                                     FileDataSource fds = new FileDataSource(file);
                                     String name = MimeUtility.encodeText(file.getName(), "UTF-8", null);
                                     if (embed != null && "true".equalsIgnoreCase(embed)) {
-                                        email.embed(fds, name, name);
+                                        email.embed(fds, name, name.replaceAll("[^a-zA-Z0-9_.]", ""));
                                         inlineImages.add(file.getName());
                                     } else {
                                         email.attach(fds, name, "");
@@ -1507,7 +1525,12 @@ public class AppUtil implements ApplicationContextAware {
             if (!(html.contains("/web/client/app/") && html.contains("/form/download/"))) {
                 break;
             }
-            html = html.replaceAll("src=\"[^\"]*/web/client/app/"+StringUtil.escapeRegex(appId)+"/form/download/"+StringUtil.escapeRegex(formId)+"/"+StringUtil.escapeRegex(primaryKey)+"/"+StringUtil.escapeRegex(name)+"\\.\"", StringUtil.escapeRegex("src=\"cid:"+StringUtil.escapeString(name, StringUtil.TYPE_URL, null)+"\""));
+            try {
+                String escapedCid = MimeUtility.encodeText(name, "UTF-8", null).replaceAll("[^a-zA-Z0-9_.]", "");
+                html = html.replaceAll("src=\"[^\"]*/web/client/app/"+StringUtil.escapeRegex(appId)+"/form/download/"+StringUtil.escapeRegex(formId)+"/"+StringUtil.escapeRegex(primaryKey)+"/"+StringUtil.escapeRegex(name)+"\\.\"", StringUtil.escapeRegex("src=\"cid:"+escapedCid+"\""));
+            } catch (Exception e) {
+                LogUtil.error(AppUtil.class.getName(), e, name);
+            }
         }
         return html;
     }

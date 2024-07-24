@@ -345,6 +345,7 @@
                             CustomBuilder.saveUrl = '<c:out value="${saveUrl}"/>';
                             CustomBuilder.previewUrl = '<c:out value="${previewUrl}"/>';
                             CustomBuilder.contextPath = '${pageContext.request.contextPath}';
+                            _CustomBuilder.contextPath = '${pageContext.request.contextPath}';
                             CustomBuilder.appId = '<c:out value="${appDefinition.id}"/>';
                             CustomBuilder.appVersion = '<c:out value="${appDefinition.version}"/>';
                             CustomBuilder.appPath = '/<c:out value="${appDefinition.id}"/>/<c:out value="${appDefinition.version}"/>';

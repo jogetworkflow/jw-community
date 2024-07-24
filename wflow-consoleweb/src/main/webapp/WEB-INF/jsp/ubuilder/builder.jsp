@@ -31,7 +31,7 @@
             <c:set var="category" value=""/>
             <c:set var="pwaValidation" value=""/>
             <c:set var="type" value="component"/>
-            <c:set var="propertyOptions" value="${element.propertyOptions}"/>
+            <c:set var="propertyOptions" value="${PropertyUtil.injectHelpLink(element.helpLink, element.propertyOptions)}"/>
             <c:set var="template" value="${element.builderJavaScriptTemplate}"/>
             <c:if test="${empty propertyOptions}">
                 <c:set var="propertyOptions" value="''"/>

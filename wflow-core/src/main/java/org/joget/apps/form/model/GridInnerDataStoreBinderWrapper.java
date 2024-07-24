@@ -182,6 +182,12 @@ public class GridInnerDataStoreBinderWrapper extends FormBinder implements FormS
                         formService.recursiveExecuteFormStoreBinders(innerForm, e, rowFormData);
                     }
                 }
+                
+                //update form element data back to row
+                if (innerForm.getStoreBinder() != null) {
+                    FormRowSet childRows = rowFormData.getStoreBinderData(innerForm.getStoreBinder());
+                    r.putAll(childRows.get(0));
+                }
             } else {
                 rowFormData = new FormData();
                 rowFormData.setPrimaryKeyValue(r.getId());

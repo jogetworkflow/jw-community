@@ -42,7 +42,7 @@ AjaxComponent = {
      */
     overrideLinkEvent : function(element) {
         setTimeout(function(){
-            $(element).on("click", "a[href]:not(.off_ajax)", function(e){
+            $(element).on("click", 'a[href]:not(.off_ajax,[href^="#"])', function(e){
                 var a = $(this);
                 var href = $(a).attr("href");
                 var target = $(a).attr("target");

@@ -40,4 +40,51 @@ $(document).ready(function() {
     $('#loginForm > table > tbody > tr:nth-child(3) > td:nth-child(2) > input').val('Sign In');
 });
 
+// custom search
+$(document).ready(function () {
+    const renderCustomSearch = function () {
+        // prevent double render in case already rendered
+        if ($('div#customSearchSection').length === 0) {
+            $('body#home #home.main-body-content #filters_applist').hide();
+            const customSearchHtml =
+                '<div id="customSearchSection" class="closed">' +
+                '  <button id="customSearchButton" class="btn btn-secondary btn-sm button">Search</button>' +
+                '  <input id="customSearchInput" type="text" placeholder="Filter apps" />' +
+                '</div>';
+            $("body#home #home.main-body-content").before(customSearchHtml);
+            $("#customSearchInput").off("input").on("input", function () {
+                const input = this.value.trim().toLowerCase();
+                const apps = $("#dataList_applist .table-wrapper .cards.row").children();
+                if (input === "") {
+                    apps.show();
+                    return;
+                }
+                apps.each(function () {
+                    const $this = $(this);
+                    const name = $this.find(".card-title").text().trim().toLowerCase();
+                    const toggleCondition = name.includes(input) || name.replace(/[^\p{L}\p{N}]/gu, '').includes(input);
+                    $this.toggle(toggleCondition);
+                });
+            });
 
+            // set events and custom logic to handle animations
+            const customSearchSection = $('#customSearchSection');
+
+            $('#customSearchSection > #customSearchButton').on('click', function () {
+                customSearchSection.removeClass('closed').addClass('open');
+                customSearchSection.find('#customSearchInput').focus();
+            });
+
+            $('#customSearchSection > #customSearchInput').on('blur', function () {
+                if ($(this).val() === '') {
+                    customSearchSection.removeClass('open').addClass('closed');
+                } else {
+                    customSearchSection.removeClass('closed').addClass('open');
+                }
+            });
+        }
+    };
+
+    // attempt to render custom search on ajax navigation
+    $(document).on('page_loaded', renderCustomSearch);
+});

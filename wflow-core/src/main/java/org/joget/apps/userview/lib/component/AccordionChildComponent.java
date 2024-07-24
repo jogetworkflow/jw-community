@@ -48,14 +48,15 @@ public class AccordionChildComponent extends SimplePageComponent implements Hidd
 
     @Override
     public String render(String id, String cssClass, String style, String attr, boolean isBuilder) {
-        String show = "";
+        String show = "show in";
         String builderAttr = "";
         if (isBuilder) {
             attr += " data-cbuilder-subelement";
             builderAttr += " data-cbuilder-elements";
-            show = "show";
         } else {
-            show = ("true".equals(getPropertyString("expanded")))?"show":"";
+            if (!"true".equals(getPropertyString("expanded"))) {
+                show = "";
+            }
         }
         
         String parentId = "";
@@ -66,9 +67,9 @@ public class AccordionChildComponent extends SimplePageComponent implements Hidd
             }
         }
         
-        String html = "<div id=\""+id+"\" class=\"card\" "+attr+">";
-        html += "<button class=\"card-header\" id=\"heading-"+id+"\" tabindex=\"0\" data-toggle=\"collapse\" data-target=\"#body-"+id+"\" role=\"button\" aria-expanded=\""+("show".equals(show))+"\" aria-controls=\"body-"+id+"\">"+getPropertyString("label")+"</button>";
-        html += "<div id=\"body-"+id+"\" tabindex=\"0\" class=\"card-body collapse "+show+"\" data-parent=\"#pc-"+parentId+"\" "+builderAttr+">" + renderChildren() + "</div> "+ style + "</div>";
+        String html = "<div id=\""+id+"\" class=\"card panel accordion-group\" "+attr+">";
+        html += "<button class=\"card-header panel-heading accordion-heading accordion-toggle\" id=\"heading-"+id+"\" tabindex=\"0\" data-toggle=\"collapse\" data-target=\"#body-"+id+"\" data-parent=\"#pc-"+parentId+"\" role=\"button\" aria-expanded=\""+(!show.isEmpty())+"\" aria-controls=\"body-"+id+"\">"+getPropertyString("label")+"</button>";
+        html += "<div id=\"body-"+id+"\" tabindex=\"0\" class=\"card-body panel-collapse accordion-body accordion-inner collapse "+show+"\" data-parent=\"#pc-"+parentId+"\" "+builderAttr+">" + renderChildren() + "</div> "+ style + "</div>";
         
         return html;
     }

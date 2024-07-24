@@ -632,6 +632,7 @@ body #form-canvas .label {
 }
 body.rtl #form-canvas .label {
     padding: 8px 0px 0 10px;
+    text-align: right;
 }
 
 body #form-canvas .form-section, body #form-canvas .subform-section {

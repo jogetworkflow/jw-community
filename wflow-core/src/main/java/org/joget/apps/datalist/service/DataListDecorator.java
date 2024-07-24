@@ -329,7 +329,7 @@ public class DataListDecorator extends CheckboxTableDecorator {
                 targetString = "onclick=\"return dlPostAction(this, '" + StringUtil.escapeString(confirmation, StringUtil.TYPE_JAVASCIPT, null) + "')\"";
             } else {
                 if (target != null && target.trim().length() > 0) {
-                    targetString = " target=\"" + target + "\"";
+                    targetString = " target=\"" + StringUtil.escapeString(target, StringUtil.TYPE_HTML, null) + "\"";
                 }
                 if (confirmation != null && confirmation.trim().length() > 0) {
                     confirmation = StringUtil.stripAllHtmlTag(confirmation);
@@ -339,8 +339,8 @@ public class DataListDecorator extends CheckboxTableDecorator {
             if (StringUtil.stripAllHtmlTag(text).isEmpty()) {
                 arialLabel = " aria-label=\"link\"";
             }
-            link = "<a href=\"" + link + "\"" + targetString + confirmationString + arialLabel + " class=\""+cssClasses+"\">" + text + "</a>";
-            }
+            link = "<a href=\"" + StringUtil.escapeString(link, StringUtil.TYPE_HTML, null) + "\"" + targetString + confirmationString + arialLabel + " class=\""+StringUtil.escapeString(cssClasses, StringUtil.TYPE_HTML, null)+"\">" + text + "</a>";
+        }
         return link;
     }
 

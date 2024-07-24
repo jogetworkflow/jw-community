@@ -53,23 +53,24 @@
         UI.locale = "<c:out value="${currentLocale}"/>";
         UI.theme = "<c:out value="${theme}"/>";
         
-        if (window.self !== window.parent && window.parent.UI !== undefined
-                && window.parent.UI.locale !== undefined && window.parent.UI.locale !== ""
-                && window.parent.UI.locale !== UI.locale) {
-            if (confirm("<ui:msgEscJS key="general.label.languageSwitching"/>")) {
-                window.top.location.reload(true);
-            }
-        }
-        
         if(window.parent.UI.theme === ""){
             window.parent.UI.theme = "<c:out value="${theme}"/>";
         }
-
-        if (window.self !== window.parent && window.parent.UI !== undefined
-                && window.parent.UI.theme !== undefined && window.parent.UI.theme !== ""
-                && window.parent.UI.theme !== UI.theme) {
-            if (confirm("<ui:msgEscJS key="general.label.themeSwitching"/>")) {
-                window.parent.UI.theme = "<c:out value="${theme}"/>";
+        
+        //check theme or locale switching
+        var switchLocale = window.self !== window.parent && window.parent.UI !== undefined && window.parent.UI.locale !== undefined && window.parent.UI.locale !== "" && window.parent.UI.locale !== UI.locale;
+        var switchTheme = window.self !== window.parent && window.parent.UI !== undefined && window.parent.UI.theme !== undefined && window.parent.UI.theme !== "" && window.parent.UI.theme !== UI.theme;
+        if (switchLocale || switchTheme){
+            var msg;
+            if (switchLocale && switchTheme) {
+                msg = "<ui:msgEscJS key="general.label.languageAndThemeSwitching"/>";
+            } else if (switchLocale) {
+                msg = "<ui:msgEscJS key="general.label.languageSwitching"/>";
+            } else {
+                msg = "<ui:msgEscJS key="general.label.themeSwitching"/>";
+            }
+            
+            if (confirm(msg)) {
                 window.top.location.reload(true);
             }
         }

@@ -1,6 +1,15 @@
 (function($){
     $.fn.extend({
         numberField : function(o){
+            
+            // Default values for the options
+            o.format = o.format || "us";
+            o.numOfDecimal = o.numOfDecimal || 0;
+            o.incrementValue = o.incrementValue || 1;
+            o.decrementValue = o.decrementValue || 1;
+            o.prefix = o.prefix || "";
+            o.postfix = o.postfix || "";
+            
             var incrementDecrementValue = function(text, incrDecrValue) {
                 var sum = 0;
                 if (text !== "") {
