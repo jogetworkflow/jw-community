@@ -6,13 +6,13 @@ import java.io.IOException;
 
 /**
  * This interface enables an Identity Provider plugin to provide and self-manage "sub-IDs" as well as performing custom
- * logic for validating/verifying their "sub-IDs".
+ * logic for validating/verifying their "sub-IDs" on an existing account.
  * <br><br>
  *
- * An example plugin that might implement this interface is a passkeys
- * IdP plugin which allows each user to register multiple passkeys under one IdP plugin. This example plugin will be
- * required to perform its own validation & verification of each user's passkeys via the
- * {@link IdentityProviderPlugin#handleCallback(HttpServletRequest)} method.
+ * An example plugin that might implement this interface is a passkeys IdP plugin which allows each user to register
+ * multiple passkeys under one IdP plugin. This example plugin will be required to perform its own validation &
+ * verification of each user's passkeys via the {@link IdentityProviderPlugin#handleCallback(HttpServletRequest)} method.
+ * Additionally, user provisioning and automatic linking will be ignored by the Identity Provider Manager.
  * <br><br>
  *
  * Identity Provider plugins that implement this interface will have to perform all necessary actions that are
