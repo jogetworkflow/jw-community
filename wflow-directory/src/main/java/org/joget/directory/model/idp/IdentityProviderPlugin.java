@@ -54,13 +54,13 @@ public interface IdentityProviderPlugin extends Plugin {
     boolean isUserProvisioningEnabled();
 
     /**
-     * Get the password strategy for user provisioning.
-     * <p>
-     * The password strategy is used to determine how the manager generates the password for a new user.
-     *
-     * @return the password strategy configuration of the plugin
+     * Whether the provisioned user's profile is editable.
+     * In other words, whether the provisioned user is able to edit their profile.
+     * <br><br>
+     * Note: This setting only affects newly provisioned users. Previously provisioned users WILL NOT be affected.
+     * @return true if user is allowed to edit; false otherwise.
      */
-    String getUserProvisioningPasswordStrategy();
+    boolean isProvisionedUserProfileEditable();
 
     /**
      * Get policy for automatic identity provider linking

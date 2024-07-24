@@ -57,8 +57,8 @@ public abstract class AbstractIdentityProviderPlugin extends ExtDefaultPlugin im
     }
 
     @Override
-    public String getUserProvisioningPasswordStrategy() {
-        return getPropertyString("userProvisioningPasswordStrategy");
+    public boolean isProvisionedUserProfileEditable() {
+        return "true".equals(getPropertyString("editableUserProfile"));
     }
 
     @Override
