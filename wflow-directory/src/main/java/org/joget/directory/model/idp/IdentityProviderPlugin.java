@@ -1,6 +1,7 @@
 package org.joget.directory.model.idp;
 
 import org.joget.directory.model.User;
+import org.joget.plugin.base.Plugin;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -8,23 +9,26 @@ import javax.servlet.http.HttpServletRequest;
  * Provides identity provider plugin support in Joget.
  * Please extend {@link AbstractIdentityProviderPlugin} to begin implementing the plugin.
  */
-public interface IdentityProviderPlugin {
+public interface IdentityProviderPlugin extends Plugin {
 
     String getUuid();
 
     void setUuid(String uuid);
 
     /**
-     * Handles callback delegation from the identity provider manager
-     *
-     * @param callbackRequest the request received from the callback
-     * @return user object of the claimed user; {@code null} if no user or error
-     * @implSpec If the plugin determines that a user can be logged in,
-     * the returned user object should contain all the necessary information required to potentially provision the user.
+     * Handles callback delegation from the identity provider manager.
+     * <p>
+     * If the plugin determines that a user can be logged in, the returned user object should contain all the necessary
+     * information required to potentially provision the user.
+     * <p>
+     * If this plugin implements {@link CustomManagedIdentityProviderPlugin}, the user returned is expected to be a User
+     * object that exists within the Joget user directory. Failure to do so will result in undefined behavior.
      * <p>
      * This method should return {@code null} if the plugin determines that no user should be logged in
      * or if it encounters an error.
-     * </p>
+     *
+     * @param callbackRequest the request received from the callback
+     * @return user object of the claimed user; {@code null} if no user or error
      */
     User handleCallback(HttpServletRequest callbackRequest);
 
@@ -38,20 +42,10 @@ public interface IdentityProviderPlugin {
     String getAuthorizationEndpointUrl();
 
     /**
-     * Get the URL for identity provider to return authorization token to the server.
-     * <p>
-     * The "callbackUrl" property will be automatically injected the into the property options.
-     *
-     * @return a string representing the callback URL
-     */
-    String getCallbackUrl();
-
-    /**
      * Get policy for user provisioning
      * <p>
      * This policy determines if a user should be automatically created when the claimed user does not exist
      * in Joget's directory manager or if this IdP is not linked to any existing user.
-     * </p>
      *
      * @return {@code true} if enabled; {@code false} otherwise
      * @apiNote User provisioning can only be enabled if Joget is using a directory manager that can be modified by Joget.
@@ -63,7 +57,7 @@ public interface IdentityProviderPlugin {
      * Get the password strategy for user provisioning.
      * <p>
      * The password strategy is used to determine how the manager generates the password for a new user.
-     * </p>
+     *
      * @return the password strategy configuration of the plugin
      */
     String getUserProvisioningPasswordStrategy();
@@ -72,17 +66,31 @@ public interface IdentityProviderPlugin {
      * Get policy for automatic identity provider linking
      * <p>
      * This policy determines if the IdP should be automatically linked to the user when the following criteria is true:
-     *     <ul><li>Claimed email equals only one Joget user's email in directory manager</li></ul>
-     * </p>
+     * <ul>
+     *     <li>Claimed email equals only one Joget user's email in directory manager</li>
+     * </ul>
      *
      * @return {@code true} if enabled; {@code false} otherwise
      */
     boolean isAutomaticLinkingEnabled();
 
     /**
-     * Get the icon and text used for the login button on the login screen.
+     * Get the template used for the login button on the login screen.
      *
-     * @return a string for login button icon and label
+     * @return an {@link IdpLoginButtonTemplate} object
      */
-    String getLoginButtonIconLabel();
+    IdpLoginButtonTemplate getLoginButtonTemplate();
+
+    /**
+     * Handle custom unlinking user event. This method should return {@code true} if no custom unlinking is required.
+     * <p>
+     * This method will be called first before the Identity Provider Manager executes its own unlink procedure.
+     *
+     * @param username the username of the user who initiated the unlink event
+     * @param request  the request associated
+     * @return true if unlinking success; false otherwise
+     * @throws IdpPluginUnlinkException when an error occurs during unlinking. Prefer throwing exception instead of
+     *                                  returning false.
+     */
+    boolean onUnlink(String username, HttpServletRequest request) throws IdpPluginUnlinkException;
 }

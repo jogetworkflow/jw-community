@@ -1,11 +1,11 @@
 package org.joget.directory.model.mfa;
 
 import org.joget.directory.model.mfa.exception.MfaExecutionException;
+import org.joget.plugin.base.Plugin;
 
 import javax.servlet.http.HttpServletRequest;
-import java.util.Map;
 
-public interface MfaPlugin {
+public interface MfaPlugin extends Plugin {
 
     /**
      * Process MFA login request.

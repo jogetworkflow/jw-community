@@ -1,11 +1,10 @@
 package org.joget.directory.model.service;
 
 import org.joget.directory.model.User;
-import org.joget.plugin.base.Plugin;
 import org.joget.directory.model.idp.IdentityProviderPlugin;
 
 import javax.servlet.http.HttpServletRequest;
-import java.util.Map;
+import java.util.Collection;
 
 /**
  * Interface to provide external usage of private implementation via Spring beans.
@@ -33,14 +32,23 @@ public interface IdentityProviderManager {
 
     /**
      * Gets installed identity providers that are configured (IdPs which have their configuration saved in database)
-     * <p>
-     * This method will always return {@link Plugin}s that are of type {@link IdentityProviderPlugin}
      *
-     * @return a Map object that maps plugin uuid to plugin object
+     * @return a Collection of {@link IdentityProviderPlugin}
      */
-    Map<String, Plugin> getConfiguredIdentityProviderPlugins();
+    Collection<IdentityProviderPlugin> getConfiguredIdentityProviderPlugins();
 
+    /**
+     * Get HTML for login footer section.
+     *
+     * @return HTML string
+     */
     String getLoginFooterHtml();
 
+    /**
+     * Get HTML for profile footer section.
+     *
+     * @param user the user of the profile
+     * @return HTML string
+     */
     String getProfileFooterHtml(User user);
 }
