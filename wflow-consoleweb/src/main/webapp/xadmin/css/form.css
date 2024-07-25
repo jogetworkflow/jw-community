@@ -709,6 +709,49 @@ body #form-canvas .page-button-panel .button{
         margin-left: 150px;
     }    
 }
+body #form-canvas .label-top .selector_element {
+    margin-left: 40px;
+}
+body #form-canvas .label-top .selector_items {
+    margin-left: 0px;
+}
+@media screen and (min-width: 600px) {
+    body #form-canvas .label-top .selector_element .selector_items {
+        margin-left:0px;
+    }
+}
+@media screen and (max-width: 480px) {
+    body #form-canvas .label-top .selector_element {
+        margin-right:0px;
+        margin-left:0px !important;
+    }
+}
+body.rtl .label-top > .label {
+    width: 100%;
+    float: none;
+}
+@media screen and (max-width: 480px) {
+    body.rtl #form-canvas .label-top.form-cell .selector_element {
+        margin-right:0px !important;
+    }
+}
+@media screen and (min-width: 600px) {
+    body.rtl #form-canvas .selector_element .selector_items {
+        margin-right:150px;
+        margin-left: 0px;
+    }
+}
+body.rtl #form-canvas .label-top.form-cell .selector_element {
+    margin-right: 40px;
+}
+body.rtl #form-canvas .label-top.form-cell .selector_items {
+    margin-right: 0px !important;
+}
+
+body.rtl #form-canvas .selector_element .selector_item {
+    margin-right: 0px;
+    margin-left: 5px;
+}
 body #form-canvas .selector_element .selector_button {
     border-color: #5FB878;
     background-color: #5FB878;
