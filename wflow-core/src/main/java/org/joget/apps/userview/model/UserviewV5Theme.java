@@ -280,6 +280,9 @@ public abstract class UserviewV5Theme extends UserviewTheme {
 
                 html += "<script>\n" +
                                 "$(document).ready(function(){\n" +
+                                "  $('body').removeClass('rtl'); \n" +
+                                "  $('body').removeClass('dark-mode'); \n"+
+                                "  $('html').removeAttr('dir'); \n" +
                                 "  $('#loginButton').on('click', function(){\n" +
                                 "    $('input[name=\"submit\"]').click();\n" +
                                 "  })\n" +
