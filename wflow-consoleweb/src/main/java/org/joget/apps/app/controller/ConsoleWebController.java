@@ -3745,7 +3745,32 @@ public class ConsoleWebController {
     public String consoleBuilderList(ModelMap map, @RequestParam String appId, @RequestParam(required = false) String version) {
         String result = checkVersionExist(map, appId, version);
         if (result != null) {
-            return result;
+            Collection<AppDefinition> appDefList = appDefinitionDao.findVersions(appId, null, null, null, null);
+            TreeMap<Long, AppDefinition> appDefMap = new TreeMap<>();
+            if (!appDefList.isEmpty()) {
+                for (AppDefinition appDef: appDefList) {
+                    appDefMap.put(appDef.getVersion(), appDef);
+                }            
+            
+                if (!AppDevUtil.isGitDisabled()) {
+                // get app versions from Git
+                    try {
+                        AppDefinition appDef = appDefList.iterator().next();
+                        List<String> branches = AppDevUtil.getAppGitBranches(appDef);
+                        for (String branch: branches) {
+                            StringTokenizer st = new StringTokenizer(branch, "_");
+                            String newVersion = (st.countTokens() == 2) ? branch.substring(branch.indexOf("_")+1) : null;
+                            if (newVersion != null && !appDefMap.containsKey(Long.valueOf(newVersion)) && newVersion.equals(version)) {
+                                AppDefinition newAppDef = appService.createNewAppDefinitionVersion(appId, appDefinitionDao.getLatestVersion(appId)); 
+                            }                        
+                        }            
+                    } catch(Exception e) {
+                        LogUtil.error(getClass().getName(), e, e.getMessage());
+                    }
+                }
+            } else {
+                return result;
+            }        
         }
 
         AppDefinition appDef = appService.getAppDefinition(appId, version);
