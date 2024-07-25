@@ -17,7 +17,7 @@
     renderField : function() {
         
         var html = '<div class="template_editor_container" style="overflow:hidden;">';
-        html += '<div class="actions"><a class="choosetemplate btn button small" style="margin-left:0px;">@@userview.infotile.chooseTemplate@@</a> <a class="edittemplate btn button small">@@userview.infotile.editTemplate@@</a> <a style="display:none;" class="hideedit btn button small">@@userview.infotile.hideTemplateEditor@@</a><a class="reloadtemplate btn button small">@@userview.infotile.reloadTemplate@@</a> <div class="reloadMessage toast hide" style="position:fixed;z-index:300;top: 0px;right:50px;margin-top:150px;background-color:green;" role="alert" aria-live="assertive" aria-atomic="true" data-delay="2000"> <div class="toast-header"> <strong class="mr-auto">@@userview.infotile.reloadMessage@@</strong> <button type="button" class="ml-2 mb-1 close" data-dismiss="toast" aria-label="Close"> <span aria-hidden="true">&times;</span> </button> </div> </div></div>';
+        html += '<div class="actions"><a class="choosetemplate btn button small" style="margin-left:0px;margin-top:5px">@@userview.infotile.chooseTemplate@@</a> <a class="edittemplate btn button small" style="margin-top:5px">@@userview.infotile.editTemplate@@</a> <a style="display:none;margin-top:5px;" class="hideedit btn button small">@@userview.infotile.hideTemplateEditor@@</a><a class="reloadtemplate btn button small" style="margin-top:5px">@@userview.infotile.reloadTemplate@@</a> <div class="reloadMessage toast hide" style="position:fixed;z-index:300;top: 0px;right:50px;margin-top:150px;background-color:green;" role="alert" aria-live="assertive" aria-atomic="true" data-delay="2000"> <div class="toast-header"> <strong class="mr-auto">@@userview.infotile.reloadMessage@@</strong> <button type="button" class="ml-2 mb-1 close" data-dismiss="toast" aria-label="Close"> <span aria-hidden="true">&times;</span> </button> </div> </div></div>';
         html += '<div class="editor" style="margin-top:10px; display:none;"><pre id="' + this.id + '" name="' + this.id + '" class="ace_editor"></pre></div>';
         html += '<div class="sample_container" style="margin-top:10px; padding:10px; border:1px solid #ced4da; background:#fff; border-radius:5px; overflow: scroll;"><label>@@userview.infotile.sample@@</label><div class="sample_preview" style="position:relative;"></div></div>';
         html += '</div>';
@@ -39,9 +39,18 @@
             var dataControlField = $("#"+thisObj.id).closest(".property-input").parent().attr("property-name"); 
             $('body').on('focusout focusin', 'div[class^="property-editor-property-container"] div[id^="property_"][data-control_field="' + dataControlField + '"]:not([style*="display: none"]) input',function(event){
                     var scroll = $(this).closest(".property-editor-property-container").scrollTop()
+                    var container = $(this).parent().parent().siblings('[property-name="'+dataControlField+'"]')[0]
+                    
+                    //For repeater
+                    if($(this).parent().parent().attr('data-control_value').includes("repeat")){
+                        container = $(this).parent().parent().closest(".property-input").parent().siblings('[property-name="'+dataControlField+'"]')[0];
+                    }
+
+                    event.stopImmediatePropagation();
+
                     if (event.type === "focusin"){
                         //Check for image change
-                        if ($(this).attr("class")==="image" && ($(this).attr("data-value") !== $(this).val() && $(this).attr("data-value") !==  undefined)) {
+                        if ($(this).attr("class")==="image" && (($(this).attr("data-value") !== $(this).val() && $(this).attr("data-value") !==  undefined))) {
                             $(container).find('.reloadtemplate').click();
                             $(this).closest(".property-editor-property-container").scrollTop(scroll);
                         }
@@ -63,14 +72,22 @@
         $(container).find(".reloadtemplate").off("click");
         $(container).find(".reloadtemplate").on("click", function() {
             $(container).find(".sample_preview").html("");
+            var parent = $(container).parent().parent()
+           
             var dataControlField = $("#"+thisObj.id).closest(".property-input").parent().attr("property-name"); 
             
             var template = thisObj.codeeditor.getSession().getValue();
             var dict = {}   
             var arr = []
+            //Get the siblings
+            var siblings = $(parent).siblings()
+            //Take only the repeater
+            var repeater = siblings.filter('[property-name="repeat"]').first();
+            //Exclude repeater, and checkbox
+            var standardSiblings = siblings.filter(':visible').not('[property-name="repeat"]').filter('[data-control_field="template"]');
 
-            $('div[class^="property-editor-property-container"] div[id^="property_"][property-name="repeat"][data-control_field="' + dataControlField + '"] .repeater-row').each(function(){
-                $(this).find('.inputs-container div[id^="property_"][data-control_field="' + dataControlField + '"]:not([style*="display: none"])').each(function(){
+            repeater.find(".property-input .repeater-rows-container .repeater-row").each(function(){
+                $(this).find('.inputs .inputs-container div[class^=\"property_container\"]:not(.hidden)').each(function(){
                     var propertyName = $(this).attr('property-name');
 
                     if (propertyName === "icon"){
@@ -79,7 +96,7 @@
                         dict[propertyName] = $(this).find("input").val();
                     }
                 })
-                
+            
                 arr.push(dict);
                 dict = {}
             })
@@ -87,7 +104,7 @@
             template = thisObj.fillLoopVariables(template, arr, "");
 
             dict = {}
-            $('div[class^="property-editor-property-container"] div[id^="property_"][data-control_field="' + dataControlField + '"]:not([property-name="repeat"]):not([style*="display: none"]):not([data-control_value*="repeat"]) input').each(function(){
+            standardSiblings.find('.property-input input').each(function(){
                 var propertyName = $(this).closest('div[id^="property_"][data-control_field="' + dataControlField + '"]').attr('property-name');
                 if (propertyName === "icon"){
                     dict[propertyName] = "<i class=\"" + $(this).closest('div[id^="property_"][data-control_field="' + dataControlField + '"]').find('.value').children().attr('class') + "\"> </i>";
