@@ -1106,6 +1106,11 @@ body.horizontal_menu #header-info {
     body.horizontal_menu.dark-header #sidebar li.active:not(.menu)>a,
     body.horizontal_menu.dark-inline #sidebar li.active:not(.menu)>a {
         background-color: var(--theme-sidebar-active-link-bg, transparent);
+        border-radius: 0;
+    }
+    
+    body.horizontal_menu.dark-header #sidebar .sub-menu li.active:not(.menu) > a,
+    body.horizontal_menu.dark-inline #sidebar .sub-menu li.active:not(.menu) > a{
         border-radius: var(--global-borderRadius);
     }
 
@@ -1246,6 +1251,7 @@ body.horizontal_menu #header-info {
 
     body.horizontal_menu #content.page_content{
         min-height: calc(100vh - var(--global-footerHeight) - (var(--global-headerHeight) * 2));
+        padding-top: 8px;
     }
 
     body.horizontal_menu header.navbar .user-link a {
