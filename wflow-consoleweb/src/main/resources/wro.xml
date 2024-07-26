@@ -159,7 +159,14 @@
         <css>/css/form8.css</css>
         <css>/css/datalist8.css</css>
         <css>/css/userview8.css</css>
-    </group>    
+    </group> 
+     <group name="ajaxuniversal9.preload.min">
+        <css>/universal/lib/material-design-iconic-font/css/material-design-iconic-font.min.css</css>
+        <css>/ajaxuniversal/css/ajaxtheme9.css</css>
+        <css>/css/form9.css</css>
+        <css>/css/datalist9.css</css>
+        <css>/css/userview9.css</css>
+    </group>
     <group name="ajaxuniversal.min">
         <css>/universal/lib/waves/waves.min.css</css>
         <css>/css/jquery.toast.min.css</css>

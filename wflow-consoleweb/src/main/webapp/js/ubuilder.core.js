@@ -763,6 +763,16 @@ UserviewBuilder = {
                 }
             });
         }
+        let themeClassName = CustomBuilder.data.setting.properties.theme.className;
+        if (themeClassName.startsWith("org.joget.plugin.enterprise.BuilderTheme") && themeClassName !== "org.joget.plugin.enterprise.BuilderTheme") {
+            var lastIndex = themeClassName.lastIndexOf('.');
+            UserviewBuilder.getThemeBuilderJson(themeClassName.substring(lastIndex + 1), function (themeJson) {
+                var props = themeJson.theme.properties;
+                CustomBuilder.data.setting.properties.theme.properties = props;
+                $('#cbuilder-preview #cbuilder-json').val(JSON.stringify(CustomBuilder.data));
+                console.log(CustomBuilder.data.setting.properties.theme);
+            });
+        }
     },
     
     /*
@@ -1126,147 +1136,191 @@ UserviewBuilder = {
     },
     
     /*
+     * Make ajax call to retrieve theme builder properties
+     */
+    getThemeBuilderJson: function (themeID, callback) {
+        var jsonUrl = CustomBuilder.contextPath + '/web/json/app/' + CustomBuilder.appId + '/' + CustomBuilder.appVersion + '/plugin/org.joget.plugin.enterprise.ThemeBuilder/service?_action=loadThemeProperties&_id=' + themeID;
+        $.ajax({
+            type: "GET",
+            url: jsonUrl,
+            dataType: 'json',
+            success: function (data) {
+                callback(data);
+            },
+            error: function () {
+                callback(null);
+            }
+        });
+    },
+    
+    /*
      * Apply the theme style for header, welcome messge, sidebar, brand logo, brand name categories, breadcrumb and footer
      */
-    updateThemeStyle : function() {
-        var builder = CustomBuilder.Builder;
-        var element = builder.frameBody.find("#page");
-        var props = CustomBuilder.data.setting.properties.theme.properties;
-
-        if (UserviewBuilder.mode === "userview") {
-            builder.handleStylingProperties(element.find("header.navbar"), props, "header", "header.navbar");
-            builder.handleStylingProperties(element.find("#welcomeMessage"), props, "welcome-message", "#welcomeMessage");
-            builder.handleStylingProperties(element.find("#sidebar"), props, "sidebar", "#sidebar");
-            builder.handleStylingProperties(element.find("#category-container"), props, "categories", "#category-container");
-            builder.handleStylingProperties(element.find("footer"), props, "footer", "footer");
-            builder.handleStylingProperties(element.find(".breadcrumb"), props, "breadcrumb", ".breadcrumb");
-            builder.handleStylingProperties(element.find(".sidebar_brand #header-link"), props, "brand-name", ".sidebar_brand #header-link");
-            builder.handleStylingProperties(element.find(".sidebar_brand .logo_container img"), props, "brand-logo", ".sidebar_brand .logo_container img");
-            builder.handleStylingProperties(element.find("#navigation .user-menu > .mm-profile > a"), props, "usermenu", "#navigation .user-menu > .mm-profile > a");
-        }
-
-        element.find('> style[data-cbuilder-style="calculatedThemeStyle"]').remove();
-        if (props.dx8background !== undefined || props.dx8colorScheme !== undefined) {
-            var css = "<style data-cbuilder-style='calculatedThemeStyle'>:root{";
-            if (props.dx8colorScheme !== undefined  && props.dx8colorScheme !== "") {
-                var colors = props.dx8colorScheme.split(";");
-                for (var i =0; i < 6; i++) {
-                    if (colors[i] !== "") {
-                        css += "--theme-color"+(i+1)+":"+colors[i]+";";
+    updateThemeStyle: function() {
+        var handleProperties = function(props) {
+            var builder = CustomBuilder.Builder;
+            var element = builder.frameBody.find("#page");
+    
+            if (UserviewBuilder.mode === "userview") {
+                builder.handleStylingProperties(element.find("header.navbar"), props, "header", "header.navbar");
+                builder.handleStylingProperties(element.find("#welcomeMessage"), props, "welcome-message", "#welcomeMessage");
+                builder.handleStylingProperties(element.find("#sidebar"), props, "sidebar", "#sidebar");
+                builder.handleStylingProperties(element.find("#category-container"), props, "categories", "#category-container");
+                builder.handleStylingProperties(element.find("footer"), props, "footer", "footer");
+                builder.handleStylingProperties(element.find(".breadcrumb"), props, "breadcrumb", ".breadcrumb");
+                builder.handleStylingProperties(element.find(".sidebar_brand #header-link"), props, "brand-name", ".sidebar_brand #header-link");
+                builder.handleStylingProperties(element.find(".sidebar_brand .logo_container img"), props, "brand-logo", ".sidebar_brand .logo_container img");
+                builder.handleStylingProperties(element.find("#navigation .user-menu > .mm-profile > a"), props, "usermenu", "#navigation .user-menu > .mm-profile > a");
+            }
+    
+            element.find('> style[data-cbuilder-style="calculatedThemeStyle"]').remove();
+            if (props.dx8background !== undefined || props.dx8colorScheme !== undefined) {
+                var css = "<style data-cbuilder-style='calculatedThemeStyle'>:root{";
+                if (props.dx8colorScheme !== undefined && props.dx8colorScheme !== "") {
+                    var colors = props.dx8colorScheme.split(";");
+                    for (var i = 0; i < 6; i++) {
+                        if (colors[i] !== "") {
+                            css += "--theme-color" + (i + 1) + ":" + colors[i] + ";";
+                        }
                     }
                 }
-            }
-            if (props.dx8backgroundImage !== undefined  && props.dx8backgroundImage !== "") {
-                var bg = props.dx8backgroundImage;
-                if (bg.indexOf("#appResource.") !== -1) {
-                    bg = bg.replace('#appResource.', CustomBuilder.contextPath + "/web/app" + CustomBuilder.appPath + 'resources/');
-                    bg = bg.replace("#", "");
-                }
-                if (bg.indexOf("#request.contextPath#") !== -1 || bg.indexOf("#request.baseURL#")) {
-                    bg = bg.replace("#request.contextPath#", CustomBuilder.contextPath);
-                    bg = bg.replace("#request.baseURL#", CustomBuilder.contextPath);
-                }
-                css += "--theme-background-image:url('"+bg+");";
-            }
-            if (props.dx8background !== undefined  && props.dx8background !== "") {
-                css += "--theme-background:"+props.dx8background+";";
-            }
-            if (props.dx8contentbackground !== undefined  && props.dx8contentbackground !== "") {
-                css += "--theme-content-background:"+props.dx8contentbackground+";";
-            }
-            if (props.dx8headerColor !== undefined  && props.dx8headerColor !== "") {
-                css += "--theme-header:"+props.dx8headerColor+";";
-            }
-            if (props.dx8headerFontColor !== undefined  && props.dx8headerFontColor !== "") {
-                css += "--theme-header-font:"+props.dx8headerFontColor+";";
-            }
-            if (props.dx8navBackground !== undefined  && props.dx8navBackground !== "") {
-                css += "--theme-sidebar:"+props.dx8navBackground+";";
-            }
-            if (props.dx8navLinkBackground !== undefined  && props.dx8navLinkBackground !== "") {
-                css += "--theme-sidebar-link-bg:"+props.dx8navLinkBackground+";";
-            }
-            if (props.dx8navLinkColor !== undefined  && props.dx8navLinkColor !== "") {
-                css += "--theme-sidebar-link:"+props.dx8navLinkColor+";";
-            }
-            if (props.dx8navLinkIcon !== undefined  && props.dx8navLinkIcon !== "") {
-                css += "--theme-sidebar-icon:"+props.dx8navLinkIcon+";";
-            }
-            if (props.dx8navBadge !== undefined  && props.dx8navBadge !== "") {
-                css += "--theme-sidebar-badge:"+props.dx8navBadge+";";
-            }
-            if (props.dx8navBadgeText !== undefined  && props.dx8navBadgeText !== "") {
-                css += "--theme-sidebar-badge-text:"+props.dx8navBadgeText+";";
-            }
-            if (props.dx8navLinkIcon !== undefined  && props.dx8navLinkIcon !== "") {
-                css += "--theme-sidebar-icon:"+props.dx8navLinkIcon+";";
-            }
-            if (props.dx8navActiveLinkBackground !== undefined  && props.dx8navActiveLinkBackground !== "") {
-                css += "--theme-sidebar-active-link-bg:"+props.dx8navActiveLinkBackground+";";
-            }
-            if (props.dx8navActiveLinkColor !== undefined  && props.dx8navActiveLinkColor !== "") {
-                css += "--theme-sidebar-active-link:"+props.dx8navActiveLinkColor+";";
-            }
-            if (props.dx8navActiveIconColor !== undefined  && props.dx8navActiveIconColor !== "") {
-                css += "--theme-sidebar-active-icon:"+props.dx8navActiveIconColor+";";
-            }
-            if (props.dx8navScrollbarThumb !== undefined  && props.dx8navScrollbarThumb !== "") {
-                css += "--theme-nav-scrollbar-thumb:"+props.dx8navScrollbarThumb+";";
-            }
-            if (props.dx8buttonBackground !== undefined  && props.dx8buttonBackground !== "") {
-                css += "--theme-button-bg:"+props.dx8buttonBackground+";";
-            }
-            if (props.dx8buttonColor !== undefined  && props.dx8buttonColor !== "") {
-                css += "--theme-button:"+props.dx8buttonColor+";";
-            }
-            if (props.dx8primaryColor !== undefined  && props.dx8primaryColor !== "") {
-                css += "--theme-primary:"+props.dx8primaryColor+";";
-            }
-            if (props.dx8headingBgColor !== undefined  && props.dx8headingBgColor !== "") {
-                css += "--theme-heading-bg:"+props.dx8headingBgColor+";";
-            }
-            if (props.dx8headingFontColor !== undefined  && props.dx8headingFontColor !== "") {
-                css += "--theme-heading-color:"+props.dx8headingFontColor+";";
-            }
-            if (props.dx8fontColor !== undefined  && props.dx8fontColor !== "") {
-                css += "--theme-font-color:"+props.dx8fontColor+";";
-            }
-            if (props.dx8contentFontColor !== undefined  && props.dx8contentFontColor !== "") {
-                css += "--theme-content-color:"+props.dx8contentFontColor+";";
-            }
-            if (props.dx8footerBackground !== undefined  && props.dx8footerBackground !== "") {
-                css += "--theme-footer-bg:"+props.dx8footerBackground+";";
-            }
-            if (props.dx8footerColor !== undefined  && props.dx8footerColor !== "") {
-                css += "--theme-footer:"+props.dx8footerColor+";";
-            }
-            if (props.dx8linkColor !== undefined  && props.dx8linkColor !== "") {
-                css += "--theme-link:"+props.dx8linkColor+";";
-            }
-            if (props.dx8linkActiveColor !== undefined  && props.dx8linkActiveColor !== "") {
-                css += "--theme-link-active:"+props.dx8linkActiveColor+";";
-            }
-            css += "}</style>";
-            element.append(css);
-
-            //retrieve from theme generated style
-            var jsonStr = JSON.encode(CustomBuilder.data.setting.properties.theme);
-            CustomBuilder.cachedAjax({
-                type: "POST",
-                data: {"json": jsonStr },
-                url: CustomBuilder.contextPath + '/web/ubuilder/app/' + CustomBuilder.appId + '/' + CustomBuilder.appVersion + '/'+ CustomBuilder.data.properties.id +'/theme/css',
-                dataType : "text",
-                beforeSend: function (request) {
-                   request.setRequestHeader(ConnectionManager.tokenName, ConnectionManager.tokenValue);
-                },
-                success: function(response) {
-                    if (response !== undefined && response !== "") {
-                        element.find('> style[data-cbuilder-style="calculatedThemeStyle"]').remove();
-                        var css = "<style data-cbuilder-style='calculatedThemeStyle'>" + response + "</style>";
-                        element.append(css);
+                
+                if (props.dx8backgroundImage !== undefined && props.dx8backgroundImage !== "") {
+                    var bg = props.dx8backgroundImage;
+                    if (bg.indexOf("#appResource.") !== -1) {
+                        bg = bg.replace('#appResource.', CustomBuilder.contextPath + "/web/app" + CustomBuilder.appPath + 'resources/');
+                        bg = bg.replace("#", "");
                     }
+                    if (bg.indexOf("#request.contextPath#") !== -1 || bg.indexOf("#request.baseURL#") !== -1) {
+                        bg = bg.replace("#request.contextPath#", CustomBuilder.contextPath);
+                        bg = bg.replace("#request.baseURL#", CustomBuilder.contextPath);
+                    }
+                    css += "--theme-background-image:url('" + bg + "');";
                 }
+                if (props.dx8background !== undefined && props.dx8background !== "") {
+                    css += "--theme-background:" + props.dx8background + ";";
+                }
+                if (props.dx8contentbackground !== undefined && props.dx8contentbackground !== "") {
+                    css += "--theme-content-background:" + props.dx8contentbackground + ";";
+                }
+                if (props.dx8headerColor !== undefined && props.dx8headerColor !== "") {
+                    css += "--theme-header:" + props.dx8headerColor + ";";
+                }
+                if (props.dx8headerFontColor !== undefined && props.dx8headerFontColor !== "") {
+                    css += "--theme-header-font:" + props.dx8headerFontColor + ";";
+                }
+                if (props.dx8navBackground !== undefined && props.dx8navBackground !== "") {
+                    css += "--theme-sidebar:" + props.dx8navBackground + ";";
+                }
+                if (props.dx8navLinkBackground !== undefined && props.dx8navLinkBackground !== "") {
+                    css += "--theme-sidebar-link-bg:" + props.dx8navLinkBackground + ";";
+                }
+                if (props.dx8navLinkColor !== undefined && props.dx8navLinkColor !== "") {
+                    css += "--theme-sidebar-link:" + props.dx8navLinkColor + ";";
+                }
+                if (props.dx8navLinkIcon !== undefined && props.dx8navLinkIcon !== "") {
+                    css += "--theme-sidebar-icon:" + props.dx8navLinkIcon + ";";
+                }
+                if (props.dx8navBadge !== undefined && props.dx8navBadge !== "") {
+                    css += "--theme-sidebar-badge:" + props.dx8navBadge + ";";
+                }
+                if (props.dx8navBadgeText !== undefined && props.dx8navBadgeText !== "") {
+                    css += "--theme-sidebar-badge-text:" + props.dx8navBadgeText + ";";
+                }
+                if (props.dx8navLinkIcon !== undefined && props.dx8navLinkIcon !== "") {
+                    css += "--theme-sidebar-icon:" + props.dx8navLinkIcon + ";";
+                }
+                if (props.dx8navActiveLinkBackground !== undefined && props.dx8navActiveLinkBackground !== "") {
+                    css += "--theme-sidebar-active-link-bg:" + props.dx8navActiveLinkBackground + ";";
+                }
+                if (props.dx8navActiveLinkColor !== undefined && props.dx8navActiveLinkColor !== "") {
+                    css += "--theme-sidebar-active-link:" + props.dx8navActiveLinkColor + ";";
+                }
+                if (props.dx8navActiveIconColor !== undefined && props.dx8navActiveIconColor !== "") {
+                    css += "--theme-sidebar-active-icon:" + props.dx8navActiveIconColor + ";";
+                }
+                if (props.dx8navScrollbarThumb !== undefined && props.dx8navScrollbarThumb !== "") {
+                    css += "--theme-nav-scrollbar-thumb:" + props.dx8navScrollbarThumb + ";";
+                }
+                if (props.dx8buttonBackground !== undefined && props.dx8buttonBackground !== "") {
+                    css += "--theme-button-bg:" + props.dx8buttonBackground + ";";
+                }
+                if (props.dx8buttonColor !== undefined && props.dx8buttonColor !== "") {
+                    css += "--theme-button:" + props.dx8buttonColor + ";";
+                }
+                if (props.dx8primaryColor !== undefined && props.dx8primaryColor !== "") {
+                    css += "--theme-primary:" + props.dx8primaryColor + ";";
+                }
+                if (props.dx8headingBgColor !== undefined && props.dx8headingBgColor !== "") {
+                    css += "--theme-heading-bg:" + props.dx8headingBgColor + ";";
+                }
+                if (props.dx8headingFontColor !== undefined && props.dx8headingFontColor !== "") {
+                    css += "--theme-heading-color:" + props.dx8headingFontColor + ";";
+                }
+                if (props.dx8fontColor !== undefined && props.dx8fontColor !== "") {
+                    css += "--theme-font-color:" + props.dx8fontColor + ";";
+                }
+                if (props.dx8contentFontColor !== undefined && props.dx8contentFontColor !== "") {
+                    css += "--theme-content-color:" + props.dx8contentFontColor + ";";
+                }
+                if (props.dx8footerBackground !== undefined && props.dx8footerBackground !== "") {
+                    css += "--theme-footer-bg:" + props.dx8footerBackground + ";";
+                }
+                if (props.dx8footerColor !== undefined && props.dx8footerColor !== "") {
+                    css += "--theme-footer:" + props.dx8footerColor + ";";
+                }
+                if (props.dx8linkColor !== undefined && props.dx8linkColor !== "") {
+                    css += "--theme-link:" + props.dx8linkColor + ";";
+                }
+                if (props.dx8linkActiveColor !== undefined && props.dx8linkActiveColor !== "") {
+                    css += "--theme-link-active:" + props.dx8linkActiveColor + ";";
+                }
+
+                $.each(props, function(key, value) {
+                    // generate componet css
+                    if (key.startsWith("org.joget.tbuilder.lib")) {
+                        $.each(value.properties, function(innerKey, innerValue) {
+                            css += "--" + value.prefix + innerKey + ":" + innerValue + ";";
+                        });
+                    } else {
+                        css += "--" + key + ":" + value + ";";
+                    }
+                });
+                css += "}</style>";
+                element.append(css);
+    
+                //retrieve from theme generated style
+                var jsonStr = JSON.encode(CustomBuilder.data.setting.properties.theme);
+                CustomBuilder.cachedAjax({
+                    type: "POST",
+                    data: {"json": jsonStr },
+                    url: CustomBuilder.contextPath + '/web/ubuilder/app/' + CustomBuilder.appId + '/' + CustomBuilder.appVersion + '/'+ CustomBuilder.data.properties.id +'/theme/css',
+                    dataType : "text",
+                    beforeSend: function (request) {
+                        request.setRequestHeader(ConnectionManager.tokenName, ConnectionManager.tokenValue);
+                    },
+                    success: function(response) {
+                        if (response !== undefined && response !== "") {
+                            element.find('> style[data-cbuilder-style="calculatedThemeStyle"]').remove();
+                            var css = "<style data-cbuilder-style='calculatedThemeStyle'>" + response + "</style>";
+                            element.append(css);
+                        }
+                    }
+                });
+            }
+        };
+        let themeClassName = CustomBuilder.data.setting.properties.theme.className;
+        // Check if theme builder is used
+        if (themeClassName.startsWith("org.joget.plugin.enterprise.BuilderTheme") && themeClassName !== "org.joget.plugin.enterprise.BuilderTheme") {
+            var lastIndex = themeClassName.lastIndexOf('.');
+            // Get theme builder properties
+            UserviewBuilder.getThemeBuilderJson(themeClassName.substring(lastIndex + 1), function (themeJson) {
+                var props = themeJson.theme.properties;
+                handleProperties(props);
             });
+        } else {
+            var props = CustomBuilder.data.setting.properties.theme.properties;
+            handleProperties(props);
         }
     },
     

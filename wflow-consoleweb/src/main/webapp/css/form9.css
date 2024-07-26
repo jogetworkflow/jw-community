@@ -1,0 +1,1765 @@
+.form-container {
+    font-size: 14px;
+}
+
+.form-section {
+    position: relative;
+    min-width: 0;
+    word-wrap: break-word;
+    background-color: var(--jgt-card-colorBgContainer);
+    background-clip: border-box;
+    padding-bottom: 20px;
+    border: var(--jgt-card-lineWidth) var(--jgt-card-lineType) var(--jgt-card-colorBorderSecondary);
+    border-radius: var(--jgt-card-borderRadiusLG);
+}
+
+.subform-section {
+    position: relative;
+    min-width: 0;
+    word-wrap: break-word;
+    background-color: var(--jgt-card-colorBgContainer);
+    background-clip: border-box;
+    padding-bottom: 20px;
+    border: var(--jgt-card-lineWidth) var(--jgt-card-lineType) var(--jgt-card-colorBorderSecondary);
+    border-radius: var(--jgt-card-borderRadiusLG);
+}
+
+.form-column>.form-cell>.subform-container>.subform-section,
+.form-column>.subform-cell>.subform-container>.subform-section {
+    z-index: 2;
+}
+
+.form-section-title,
+.subform-section-title {
+    padding: 0 var(--jgt-card-padding);
+    margin-bottom: 0;
+    background-color: var(--jgt-card-headerBg);
+    border-radius: var(--jgt-card-borderRadiusLG) var(--jgt-card-borderRadiusLG) 0 0;
+    flex: 0 0 100%;
+    margin-bottom: 20px;
+    border-bottom: var(--jgt-card-lineWidth) var(--jgt-card-lineType) var(--jgt-card-colorBorderSecondary);
+    color: var(--jgt-card-colorTextHeading);
+    font-size: var(--jgt-card-headerFontSize);
+    height: var(--jgt-card-headerHeight);
+    line-height: var(--jgt-card-headerHeight);
+    font-weight: var(--jgt-card-fontWeightStrong);
+}
+
+.form-section-empty {
+    display: none !important;
+}
+
+.no_label>.form-section-title,
+.no_label>.subform-section-title {
+    display: none;
+}
+
+.form-section.no_label,
+.subform-section.no_label {
+    padding-top: 20px;
+}
+
+.form-section+.form-section:not(.no_label),
+.subform-section+.subform-section:not(.no_label) {
+    margin-top: 25px;
+}
+
+.form-section+.form-section.no_label:not(#section-actions),
+.subform-section+.subform-section.no_label:not(#section-actions) {
+    margin-top: -20px;
+    border-top: 0px;
+}
+
+.form-row>.form-column,
+.form-row>.subform-column {
+    padding-right: 20px;
+    padding-left: 20px;
+    padding-bottom: 20px;
+}
+
+.form-cell,
+.subform-cell {
+    position: relative;
+    display: block;
+    padding-left: var(--jgt-card-padding);
+    padding-right: var(--jgt-card-padding);
+}
+
+.form-cell:after,
+.subform-cell:after {
+    clear: both;
+    content: "";
+    display: block;
+}
+
+.form-column-label,
+.subform-column-label {
+    padding-left: 13px;
+    padding-right: 13px;
+}
+
+input[type=hidden]+.form-cell,
+.form-cell+.form-cell,
+.subform-cell+.subform-cell,
+.form-cell+.subform-cell,
+.subform-cell+.form-cell {
+    margin-top: var(--jgt-form-itemMarginBottom);
+}
+
+.form-cell+.form-cell.customHtml.no_label,
+.subform-cell+.subform-cell.customHtml.no_label,
+.form-cell+.subform-cell.customHtml.no_label,
+.subform-cell+.form-cell.customHtml.no_label {
+    margin-top: 0px;
+}
+
+.form-container .customHtml.no_label .form-cell-value,
+.form-container .customHtml.no_label .subform-cell-value {
+    min-height: 0px;
+    margin-bottom: 0px;
+}
+
+body .subform-cell>.subform-container.has-frame,
+.form-cell>.subform-container.has-frame {
+    width: 100%;
+}
+
+.form-cell>label.label,
+.subform-cell>label.label {
+    white-space: normal;
+    position: relative;
+    margin-bottom: 0px;
+    font-weight: var(--jgt-form-fontWeight);
+    width: calc(var(--jgt-form-labelWidth) - var(--jgt-form-labelMarginInlineEnd));
+    float: var(--jgt-form-labelFloat);
+    color: var(--jgt-form-colorText);
+    font-size: var(--jgt-form-labelFontSize);
+    line-height: var(--jgt-form-lineHeight);
+    height: var(--jgt-form-labelHeight);
+    
+}
+
+.form-cell:not(.full_width_field) > label.label,
+.subform-cell:not(.full_width_field) > label.label{
+    align-content: center;
+    text-align: var(--jgt-form-labelAlign);
+    overflow: unset;
+    white-space: unset;
+    margin-inline-end: var(--jgt-form-labelMarginInlineEnd);
+} 
+
+.rtl .form-cell>label.label,
+.rtl .subform-cell>label.label {
+    float: right;
+}
+
+.label-top.form-cell>label.label,
+.label-top.subform-cell>label.label {
+    width: 100%;
+    float: none !important;
+}
+
+.form-cell>label.label+*:not(.ui-screen-hidden),
+.subform-cell>label.label+*:not(.ui-screen-hidden),
+.form-cell>label.label+.ui-screen-hidden+*,
+.subform-cell>label.label+.ui-screen-hidden+* {
+    white-space: normal;
+    position: relative;
+    width: var(--jgt-form-fieldWidth);
+    float: var(--jgt-form-fieldFloat);
+}
+
+.rtl .form-cell>label.label+*:not(.ui-screen-hidden),
+.rtl .subform-cell>label.label+*:not(.ui-screen-hidden),
+.rtl .form-cell>label.label+.ui-screen-hidden+*,
+.rtl .subform-cell>label.label+.ui-screen-hidden+* {
+    float: right;
+}
+
+.form-cell>label.label+div.form-clear,
+.subform-cell>label.label+div.form-clear {
+    clear: both;
+    float: unset !important;
+    width: unset !important;
+}
+
+.label-top.form-cell>label.label+*:not(.ui-screen-hidden),
+.label-top.subform-cell>label.label+*:not(.ui-screen-hidden),
+.label-top.form-cell>label.label+.ui-screen-hidden+*,
+.label-top.subform-cell>label.label+.ui-screen-hidden+* {
+    width: 100%;
+    float: none !important;
+}
+
+@media(max-width:991px) and (min-width:768px) {
+
+    .tablet-label-top.form-cell>label.label,
+    .tablet-label-top.subform-cell>label.label {
+        width: 100%;
+        float: none !important;
+    }
+
+    .tablet-label-top.form-cell>label.label+*:not(.ui-screen-hidden),
+    .tablet-label-top.subform-cell>label.label+*:not(.ui-screen-hidden),
+    .tablet-label-top.form-cell>label.label+.ui-screen-hidden+*,
+    .tablet-label-top.subform-cell>label.label+.ui-screen-hidden+* {
+        width: 100%;
+        float: none !important;
+    }
+}
+
+.ui-screen-hidden {
+    display: none;
+}
+
+.form-cell-validator,
+.subform-cell-validator {
+    color: var(--jgt-form-labelRequiredMarkColor);
+}
+
+.full_width_field>label.label>.subform-cell-validator,
+.full_width_field>label.label>.form-cell-validator {
+    position: unset;
+}
+
+.form-cell-full {
+    width: 100% !important;
+}
+
+.form-column-horizontal,
+.subform-column-horizontal {
+    display: block;
+}
+
+.form-column-horizontal>.form-cell,
+.subform-column-horizontal>.subform-cell {
+    display: inline-block;
+}
+
+.form-column-horizontal>.form-cell+.form-cell,
+.subform-column-horizontal>.subform-cell+.subform-cell {
+    margin-top: 0px;
+}
+
+#section-actions {
+    border: 1px solid transparent;
+    box-shadow: none;
+    background-color: transparent;
+}
+
+#section-more-actions {
+    box-shadow: none;
+    background-color: transparent;
+}
+
+#section_upload {
+    box-shadow: none;
+}
+
+.form-section,
+.subform-section {
+    display: block;
+}
+
+.form-column,
+.subform-column {
+    float: left;
+}
+
+body #form-canvas {
+    margin: 0;
+}
+
+body #form-canvas .h1,
+body #form-canvas h1 {
+    font-size: 27px
+}
+
+body #form-canvas .h2,
+body #form-canvas h2 {
+    font-size: 22px
+}
+
+body #form-canvas .h3,
+body #form-canvas h3 {
+    font-size: 18px
+}
+
+body #form-canvas .h4,
+body #form-canvas h4 {
+    font-size: 16px
+}
+
+body #form-canvas .h5,
+body #form-canvas h5 {
+    font-size: 13px
+}
+
+body #form-canvas .h6,
+body #form-canvas h6 {
+    font-size: 12px
+}
+
+.form-cell table,
+.subform-cell table {
+    width: 100%;
+}
+
+legend,
+main #form-canvas .form-section-title span,
+main #form-canvas .subform-section-title span {
+    background: none;
+    font-size: 18px;
+}
+
+legend,
+body #form-canvas .form-section-title span,
+body #form-canvas .subform-section-title span {
+    text-shadow: none;
+    -moz-border-radius: 0px;
+    -webkit-border-radius: 0px;
+    font-weight: var(--jgt-card-fontWeightStrong);
+    font-size: 15px;
+    display: block;
+}
+
+
+body #form-canvas .form-section-title span i,
+body #form-canvas .subform-section-title span i{
+    padding-inline-end: var(--global-iconMarginInline);
+}
+
+input:not([type]),
+input[type=text],
+input[type=password],
+input[type=email],
+input[type=url],
+input[type=time],
+input[type=date],
+input[type=datetime],
+input[type=datetime-local],
+input[type=tel],
+input[type=number],
+input[type=search],
+select,
+.selector_element,
+textarea,
+.ql-container.ql-bubble,
+.chosen-container-multi .chosen-choices {
+    display: block;
+    width: 100%;
+    color: var(--jgt-input-colorText);
+    background-color: var(--jgt-input-colorBgContainer);
+    background-clip: padding-box;
+    border: var(--jgt-input-lineWidth) solid var(--jgt-input-colorBorder);
+    transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+    font-size: var(--jgt-input-inputFontSize);
+    padding-block: var(--jgt-input-paddingBlock);
+    padding-inline: var(--jgt-input-paddingInline);
+    height: var(--jgt-input-controlHeight);
+    line-height: var(--jgt-input-lineHeight);
+    border-radius: var(--jgt-input-borderRadius);
+}
+
+.selector_button{
+    height: var(--jgt-input-controlHeight) !important;
+    border-radius:0 var(--jgt-input-borderRadius) var(--jgt-input-borderRadius) 0 !important;
+}
+
+input:not([type]):focus:not([disabled]):not([readonly]),
+input[type=text]:focus:not([disabled]):not([readonly]),
+input[type=password]:focus:not([disabled]):not([readonly]),
+input[type=email]:focus:not([disabled]):not([readonly]),
+input[type=url]:focus:not([disabled]):not([readonly]),
+input[type=time]:focus:not([disabled]):not([readonly]),
+input[type=date]:focus:not([disabled]):not([readonly]),
+input[type=datetime]:focus:not([disabled]):not([readonly]),
+input[type=datetime-local]:focus:not([disabled]):not([readonly]),
+input[type=tel]:focus:not([disabled]):not([readonly]),
+input[type=number]:focus:not([disabled]):not([readonly]),
+input[type=search]:focus:not([disabled]):not([readonly]),
+select:focus:not([disabled]):not([readonly]),
+.selector_element:focus:not([disabled]):not([readonly]),
+textarea:focus:not([disabled]):not([readonly]),
+.ql-container.ql-bubble:focus:not([disabled]):not([readonly]),
+.chosen-container-multi .chosen-choices:focus:not([disabled]):not([readonly]) {
+    background-color: var(--jgt-input-activeBg);
+    border-color: var(--jgt-input-activeBorderColor);
+    box-shadow: var(--jgt-input-activeShadow);
+}
+
+input:not([type]):hover:not([disabled]):not([readonly]),
+input[type=text]:hover:not([disabled]):not([readonly]),
+input[type=password]:hover:not([disabled]):not([readonly]),
+input[type=email]:hover:not([disabled]):not([readonly]),
+input[type=url]:hover:not([disabled]):not([readonly]),
+input[type=time]:hover:not([disabled]):not([readonly]),
+input[type=date]:hover:not([disabled]):not([readonly]),
+input[type=datetime]:hover:not([disabled]):not([readonly]),
+input[type=datetime-local]:hover:not([disabled]):not([readonly]),
+input[type=tel]:hover:not([disabled]):not([readonly]),
+input[type=number]:hover:not([disabled]):not([readonly]),
+input[type=search]:hover:not([disabled]):not([readonly]),
+select:hover:not([disabled]):not([readonly]),
+.selector_element:hover:not([disabled]):not([readonly]),
+textarea:hover:not([disabled]):not([readonly]),
+.ql-container.ql-bubble:hover:not([disabled]):not([readonly]),
+.chosen-container-multi .chosen-choices:hover:not([disabled]):not([readonly]) {
+    background-color: var(--jgt-input-hoverBg);
+    border-color: var(--jgt-input-hoverBorderColor);
+}
+
+input:not([type])::placeholder,
+input[type=text]::placeholder,
+input[type=password]::placeholder,
+input[type=email]::placeholder,
+input[type=url]::placeholder,
+input[type=time]::placeholder,
+input[type=date]::placeholder,
+input[type=datetime]::placeholder,
+input[type=datetime-local]::placeholder,
+input[type=tel]::placeholder,
+input[type=number]::placeholder,
+input[type=search]::placeholder,
+select::placeholder,
+.selector_element::placeholder,
+textarea::placeholder,
+.ql-container.ql-bubble::placeholder,
+.chosen-container-multi .chosen-choices::placeholder {
+    color: var(--jgt-input-colorTextPlaceholder);
+}
+
+.ql-container.ql-bubble.focus {
+    outline: 1px auto;
+    outline-color: var(--theme-primary, var(--theme-color3, #007bff));
+}
+
+input[size] {
+    width: auto !important;
+}
+
+select[multiple] {
+    height: auto;
+}
+
+textarea {
+    height: auto;
+}
+
+body input[disabled],
+body input[readonly],
+body textarea[disabled],
+body textarea[readonly]{
+    cursor: not-allowed;
+}
+
+body input[disabled], 
+body textarea[disabled]{
+    background-color: var(--jgt-input-colorBgContainerDisabled);
+    color: var(--jgt-input-colorTextDisabled);
+}
+
+.form-container .form-cell-value,
+.form-container .subform-cell-value,
+.form-container .selector_element,
+.form-container .form-fileupload,
+.form-container .subform-fileupload,
+.form-container .grid,
+.form-container .spreadsheet_container {
+    min-height: 31px;
+}
+
+.form-container [class*=form-cell-value] {
+    padding: 6px 10px 0 1px;
+    float: left;
+    width: 70%;
+}
+
+.form-cell-value>label,
+.subform-cell-value>label {
+    display: block;
+    float: left;
+    width: 50%;
+}
+
+@media screen and (max-width:480px) {
+    .form-container [class*=form-cell-value] {
+        float: unset !important;
+        width: 100% !important;
+    }
+}
+
+.form-cell-value.fullWidth>label,
+.subform-cell-value.fullWidth>label {
+    width: auto !important;
+    float: unset !important;
+}
+
+.form-cell-value>label:last-child,
+.subform-cell-value>label:last-child {
+    margin-bottom: 0;
+}
+
+.form-cell-value>label>input,
+.subform-cell-value>label>input {
+    position: relative;
+    top: 2px;
+    height: 15px;
+    width: 15px;
+}
+
+div.pq-grid * {
+    font-size: 13px !important;
+}
+
+.form-cell .btn:not([class*="btn-"]) {
+    color: var(--jgt-btn-primaryColor);
+    background-color: var(--jgt-btn-colorPrimary);
+    border-color: var(--jgt-btn-colorPrimary);
+}
+
+#section-actions .form-cell {
+    padding-left: 2px;
+    padding-right: 2px;
+}
+
+.print-button {
+    float: right;
+}
+
+.hasDatepicker+a,
+.hasDatepicker+a+a {
+    position: absolute;
+    right: calc(8px + var(--jgt-card-padding));
+    top: 9px;
+    height: 18px;
+    width: 18px;
+    font-family: "Font Awesome 5 Free";
+    -moz-osx-font-smoothing: grayscale;
+    -webkit-font-smoothing: antialiased;
+    display: inline-block;
+    font-style: normal;
+    font-variant: normal;
+    text-rendering: auto;
+    line-height: 1;
+    font-size: 16px;
+    color: #ced4da;
+    cursor: pointer;
+}
+
+body.rtl .hasDatepicker+a,
+body.rtl .hasDatepicker+a+a {
+    left: 20px;
+    right: unset !important;
+}
+
+.hasDatepicker+a:before {
+    content: '\f073';
+}
+
+.hasDatepicker+a+a {
+    color: #f8d7da;
+    right: calc(30px + var(--jgt-card-padding));
+    top: 10px;
+    z-index: 1;
+}
+
+.datapicker-native.ui-screen-hidden.ios+.hasDatepicker+a+a {
+    z-index: 4;
+}
+
+.hasDatepicker+a+a:hover {
+    color: #e46772;
+    text-decoration: none;
+}
+
+body.rtl .hasDatepicker+a+a {
+    left: 42px;
+    right: unset !important;
+}
+
+.hasDatepicker+a+a:before {
+    content: '\f057';
+}
+
+.hasDatepicker+a>img {
+    display: none;
+}
+
+img.ui-datepicker-trigger {
+    pointer-events: none;
+}
+
+.datapicker-native.ui-screen-hidden {
+    display: block;
+    visibility: hidden;
+    width: 0px;
+    position: absolute;
+    left: 15px;
+    bottom: 0px;
+}
+
+body input.no-manual-input {
+    cursor: text;
+}
+
+.datapicker-native.ui-screen-hidden.ios {
+    right: 15px;
+    top: unset;
+    bottom: 0px;
+    z-index: 2;
+    opacity: 0;
+    width: auto;
+    visibility: unset;
+}
+
+.datapicker-native.ui-screen-hidden.ios input {
+    width: 100%;
+    -webkit-appearance: none;
+}
+
+.datapicker-native.ui-screen-hidden.ios.manual {
+    left: unset;
+    width: 25px;
+}
+
+.form-section.no_label>.form-column:nth-child(2)>.form-cell:first-child:last-child>.subform-container.no-frame:first-child,
+.form-section.no_label>.form-column:nth-child(2)>.subform-cell:first-child:last-child>.subform-container.no-frame:first-child,
+.subform-section.no_label>.subform-column>.subform-cell>.subform-container.no-frame {
+    margin-top: -20px;
+}
+
+.form-section+.form-section.no_label>.form-column:nth-child(2)>.form-cell:first-child:last-child>.subform-container.no-frame:first-child,
+.form-section+.form-section.no_label>.form-column:nth-child(2)>.subform-cell:first-child:last-child>.subform-container.no-frame:first-child {
+    margin-top: 25px;
+}
+
+.form-section.no_label>.form-column:nth-child(2):last-child>.form-cell:first-child:last-child>.subform-container.no-frame>.subform-section,
+.form-section.no_label>.form-column:nth-child(2):nth-last-child(2)>.subform-cell:first-child:last-child>.subform-container.no-frame>.subform-section {
+    border-radius: 2px;
+}
+
+.form-section+.form-section.no_label>.form-column:nth-child(2)>.form-cell:first-child:last-child>.subform-container.no-frame:first-child,
+.form-section.no_label>.form-column:nth-child(2):last-child>.form-cell:first-child:last-child>.subform-container.no-frame>.subform-section+.subform-section:not(.no_label),
+.form-section+.form-section.no_label>.form-column:nth-child(2)>.subform-cell:first-child:last-child>.subform-container.no-frame:first-child,
+.form-section.no_label>.form-column:nth-child(2):nth-last-child(2)>.subform-cell:first-child:last-child>.subform-container.no-frame>.subform-section+.subform-section:not(.no_label) {
+    z-index: 1;
+}
+
+.form-section+.form-section.no_label>.form-column:nth-child(2)>.form-cell:first-child:last-child>.subform-container.no-frame:first-child:before,
+.form-section+.form-section.no_label>.form-column:nth-child(2)>.form-cell:first-child:last-child>.subform-container.no-frame:first-child:after,
+.form-section.no_label>.form-column:nth-child(2):last-child>.form-cell:first-child:last-child>.subform-container.no-frame>.subform-section+.subform-section:not(.no_label):before,
+.form-section+.form-section.no_label>.form-column:nth-child(2)>.subform-cell:first-child:last-child>.subform-container.no-frame:first-child:before,
+.form-section+.form-section.no_label>.form-column:nth-child(2)>.subform-cell:first-child:last-child>.subform-container.no-frame:first-child:after,
+.form-section.no_label>.form-column:nth-child(2):nth-last-child(2)>.subform-cell:first-child:last-child>.subform-container.no-frame>.subform-section+.subform-section:not(.no_label):before {
+    content: "";
+    position: absolute;
+    height: 25px;
+    top: -25px;
+    left: 0px;
+    right: 0px;
+    background-color: var(--theme-background, var(--theme-color1, #f9fafb));
+    z-index: 0;
+}
+
+.form-section+.form-section.no_label>.form-column:nth-child(2)>.form-cell:first-child:last-child>.subform-container.no-frame:first-child:after,
+.form-section+.form-section.no_label>.form-column:nth-child(2)>.subform-cell:first-child:last-child>.subform-container.no-frame:first-child:after {
+    background-color: #fff;
+    left: 0px;
+    right: 0px;
+    top: -20px;
+    height: 25px;
+}
+
+.form-section+.form-section.no_label>.form-column:nth-child(2)>.form-cell:first-child:last-child>.subform-container.no-frame:first-child:before,
+.form-section+.form-section.no_label>.form-column:nth-child(2)>.subform-cell:first-child:last-child>.subform-container.no-frame:first-child:before {
+    top: 0px;
+}
+
+#content .form-section.no_label>.form-column:nth-child(2):last-child>.form-cell:first-child:last-child>.subform-container.no-frame>.subform-section+.subform-section:not(.no_label):before,
+#content .form-section.no_label>.form-column:nth-child(2):last-child>.subform-cell:first-child:last-child>.subform-container.no-frame>.subform-section+.subform-section:not(.no_label):before {
+    background-color: var(--theme-content-background, #ffffff);
+}
+
+.subform-container.has-frame {
+    border: 1px solid rgba(0, 0, 0, .06);
+    border-radius: 0.25rem;
+    padding: var(--jgt-card-padding);
+}
+
+.subform-container.no-frame {
+    margin-left: -15px;
+    margin-right: -15px;
+    margin-bottom: -20px;
+    flex: 0 0 calc(100% + 30px);
+}
+
+.subform-container.no-frame .subform-section+.subform-section:not(.no_label) .subform-section-title {
+    border-radius: calc(0.25rem - 1px) calc(0.25rem - 1px) 0 0;
+}
+
+.subform-section {
+    position: relative;
+}
+
+.selector_element {
+    display: block;
+    width: 100%;
+    padding: 0px 10px 6px;
+    min-height: 34px;
+    line-height: 1.5;
+    color: #495057;
+    background-color: #fff;
+    background-clip: padding-box;
+    border: 1px solid #ced4da;
+    border-radius: 0.25rem;
+    float: left;
+    transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+}
+
+.selector_element .selector_button,
+.selector_element .selector_button:hover {
+    height: 30px;
+    padding: 2px 12px !important;
+    line-height: 1.5;
+    color: #495057;
+    background-color: #e9ecef;
+    border: 1px solid #ced4da;
+    border-radius: .25rem;
+    -webkit-mask-image: none;
+    -webkit-box-shadow: none;
+    box-shadow: none;
+    font-size: inherit;
+    position: absolute;
+    top: -1px;
+    right: -1px;
+}
+
+.selector_element .selector_button:hover {
+    background-color: #ced4da;
+}
+
+.selector_element .selector_items {
+    display: block;
+    padding-right: 60px;
+}
+
+.selector_element .selector_items .selector_item {
+    display: inline-block;
+    background: #e9ecef;
+    margin: 6px 5px 0 0;
+    padding: 0 20px 0 5px;
+    position: relative;
+    border-radius: 3px;
+}
+
+.selector_element .selector_items .selector_item a {
+    position: absolute;
+    color: transparent;
+    width: 16px;
+    display: inline-block;
+    cursor: pointer;
+    right: 0px;
+}
+
+.selector_element .selector_items .selector_item a:after {
+    content: '\f00d';
+    font-family: "Font Awesome 5 Free";
+    -moz-osx-font-smoothing: grayscale;
+    -webkit-font-smoothing: antialiased;
+    display: inline-block;
+    font-style: normal;
+    font-variant: normal;
+    font-weight: 900;
+    text-rendering: auto;
+    line-height: 1;
+    position: absolute;
+    z-index: 1;
+    color: #ced4da;
+    top: 4px;
+    left: 0px;
+}
+
+.selector_element .selector_items .selector_item a:hover:after {
+    color: #dc3545;
+}
+
+.form-fileupload.dropzone {
+    border: var(--jgt-upload-lineWidth) var(--jgt-upload-lineType) var(--jgt-upload-colorBorder);
+    border-radius: var(--jgt-upload-borderRadiusLG);
+    transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+    font-weight: 400;
+    line-height: var(--jgt-upload-lineHeight);
+    color: var(--jgt-upload-colorText);
+    background-color: var(--jgt-upload-colorFillAlter);
+    background-clip: padding-box;
+    min-height: calc(var(--jgt-upload-controlHeightLG) * 2.55);
+}
+
+.form-fileupload.dropzone:hover{
+    border-color: var(--jgt-upload-colorPrimary);
+}
+
+.dropzone {
+    padding: 0px 20px !important;
+}
+
+.form-fileupload a.remove {
+    color: #f8d7da;
+}
+
+.form-fileupload a.remove:hover {
+    color: var(--jgt-upload-colorError);
+}
+
+.form-fileupload-value {
+    list-style: none;
+    padding: 0;
+}
+
+.form-fileupload-value li+li {
+    margin-top: 5px;
+}
+
+.form-fileupload-value li img {
+    border: 1px solid #ced4da;
+}
+
+.grid table {
+    width: 100%;
+}
+
+.grid table td {
+    vertical-align: top;
+}
+
+.grid table th,
+.grid table td {
+    border-top: 1px solid #ced4da !important;
+    border-bottom: 1px solid #ced4da;
+    margin: 0px;
+}
+
+.grid table th {
+    border-bottom: 2px solid #ced4da !important;
+}
+
+.grid table tr:hover td {
+    background: #e9ecef;
+}
+
+.grid table .grid-action-header,
+.grid table .grid-action-cell {
+    width: 100px;
+    text-align: right;
+}
+
+.grid table .grid-row-template {
+    display: none;
+}
+
+.grid table .grid-cell,
+.grid table .grid-cell form,
+.grid table .grid-cell[column_editable='yes'] {
+    display: block;
+}
+
+.grid table .grid-cell[column_editable='yes'].editable_empty {
+    color: gray;
+}
+
+.grid a.grid-action-add,
+.grid table td.grid-action-cell a {
+    display: inline-block;
+    font-family: "Font Awesome 5 Free";
+    -moz-osx-font-smoothing: grayscale;
+    -webkit-font-smoothing: antialiased;
+    display: inline-block;
+    font-style: normal;
+    font-variant: normal;
+    font-weight: 900;
+    text-rendering: auto;
+    color: #ced4da;
+    padding: 0 3px;
+}
+
+.grid .grid-action-add,
+.grid table tr:hover td.grid-action-cell a {
+    color: #0075ff !important;
+    opacity: 0.5;
+}
+
+.grid .grid-action-add:hover,
+.grid table tr:hover td.grid-action-cell a:hover {
+    opacity: 1;
+    text-decoration: none;
+}
+
+.grid table tr:hover td.grid-action-cell a.grid-action-delete {
+    color: #dc3545 !important;
+}
+
+.grid table tr:hover td.grid-action-cell a.disabled {
+    color: #ced4da !important;
+}
+
+.grid a.grid-action-add span,
+.grid table tr td.grid-action-cell a span {
+    display: none !important;
+}
+
+.grid table .grid-action-edit:after {
+    content: '\f304';
+}
+
+.grid table .grid-action-delete:after {
+    content: '\f00d';
+}
+
+.grid table .grid-action-moveup:after {
+    content: '\f077';
+}
+
+.grid table .grid-action-movedown:after {
+    content: '\f078';
+}
+
+.grid.readonly .grid-action-edit:after {
+    content: '\f15c';
+}
+
+.grid .grid-action-add:after {
+    content: '\f055';
+}
+
+.grid:not(.enableSorting) a.grid-action-moveup,
+.grid:not(.enableSorting) a.grid-action-movedown,
+.grid.readonly.enableSorting a.grid-action-moveup,
+.grid.readonly.enableSorting a.grid-action-movedown,
+.grid.readonly a.grid-action-add,
+.grid.readonly a.grid-action-delete,
+.grid.disabledAdd a.grid-action-add,
+.grid.disabledDelete a.grid-action-delete {
+    display: none;
+}
+
+.grid .pg-navigator {
+    text-align: right;
+    padding: 10px 0;
+    margin-bottom: 0;
+    color: #ced4da;
+}
+
+.grid .pg-navigator:hover {
+    color: #495057;
+}
+
+.grid .pg-navigator .pg-current {
+    font-weight: bold;
+}
+
+.grid table tr.pg-tr-hide {
+    display: none;
+}
+
+.grid table+.pg-navigator+.grid-action-add {
+    position: absolute;
+    bottom: 0px;
+}
+
+@media screen and (max-width:39.9375em) {
+    .grid table tr.grid-row {
+        border: 1px solid #ced4da;
+        display: block;
+    }
+
+    .grid table tbody tr:nth-child(2) {
+        border-radius: 2px 2px 0 0;
+    }
+
+    .grid table tbody tr:last-child {
+        border-radius: 0 0 2px 2px;
+    }
+
+    .grid table tbody tr:nth-child(2):last-child {
+        border-radius: 2px;
+    }
+
+    .grid table tr td {
+        border-top: 0;
+        border-bottom: 0;
+        float: none;
+    }
+
+    .grid table .grid-action-cell {
+        width: 100%;
+    }
+}
+
+.spreadsheet_container {
+    width: 100% !important;
+    height: 100%;
+}
+
+.htMobileEditorContainer {
+    width: 260px;
+    height: 112px;
+}
+
+.htMobileEditorContainer .positionControls {
+    right: -12px;
+    top: 48px;
+}
+
+.htMobileEditorContainer .inputs textarea {
+    height: 25px !important;
+    width: auto;
+    max-width: none;
+}
+
+.handsontable .htAutocompleteArrow,
+.handsontable .columnSorting::after {
+    font-family: sans-serif;
+}
+
+.spreadsheet_container,
+.spreadsheet {
+    width: 100%;
+    overflow: visible !important;
+    color: inherit;
+}
+
+.spreadsheet_container.resize {
+    overflow: hidden !important;
+    max-width: 100% !important;
+    opacity: 0.4;
+}
+
+.spreadsheet_container.resize .wtHolder {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+}
+
+.spreadsheet_container.resize .wtHolder::-webkit-scrollbar {
+    display: none;
+}
+
+.handsontable .file_delete {
+    color: #dc3545;
+    display: inline-block;
+    margin: 0 10px;
+    cursor: pointer;
+    opacity: 0.5;
+}
+
+.handsontable .file_delete:hover {
+    opacity: 1;
+}
+
+.handsontableInputHolder .handsontableEditor {
+    height: auto !important;
+    overflow: visible !important;
+    position: relative !important;
+    top: 0 !important;
+}
+
+.handsontableInputHolder .handsontableEditor .ht_master .wtHolder {
+    height: auto !important;
+    max-height: 230px;
+}
+
+.form-cell .handsontable table td,
+.form-cell .handsontable table th,
+.subform-cell .handsontable table td,
+.subform-cell .handsontable table th {
+    padding: 0 4px;
+}
+
+body.rtl .ht_clone_left,
+body.rtl .ht_clone_top,
+body.rtl .ht_clone_top_left_corner {
+    left: unset !important;
+    right: 0;
+}
+
+body.rtl .handsontableInputHolder textarea {
+    position: absolute;
+    left: 0
+}
+
+body.rtl .handsontable .htCore tr th:last-child,
+body.rtl .handsontable .htCore tr td:last-child {
+    border-left-width: 1px !important;
+}
+
+.spreadsheet .handsontable table td,
+.spreadsheet .handsontable table th {
+    border: 0px solid #ced4da !important;
+    border-bottom: 1px solid #ced4da !important;
+    border-right: 1px solid #ced4da !important;
+}
+
+.spreadsheet .handsontable.ht_clone_left table.htCore th,
+.spreadsheet .handsontable.ht_clone_top_left_corner table.htCore th {
+    border-left: 1px solid #ced4da !important;
+}
+
+.spreadsheet .handsontable.ht_clone_top table.htCore th,
+.spreadsheet .handsontable.ht_clone_top_left_corner table.htCore th {
+    border-top: 1px solid #ced4da !important;
+}
+
+.calculationField_value {
+    color: var(--jgt-input-colorText);
+    font-size: var(--jgt-input-inputFontSize);
+    padding-block: var(--jgt-input-paddingBlock);
+    padding-inline: var(--jgt-input-paddingInline);
+    height: var(--jgt-input-controlHeight);
+    line-height: var(--jgt-input-lineHeight);
+}
+
+.multiPagedForm,
+.multiPagedForm .mpf-container {
+    width: 100%;
+}
+
+.multiPagedForm .page-nav-panel ul {
+    padding: 0;
+}
+
+.multiPagedForm .page-nav-panel ul,
+.multiPagedForm .page-nav-panel li {
+    list-style: none;
+}
+
+.multiPagedForm .page-nav-panel .nav_item button {
+    border: var(--jgt-tab-lineType) 1px var(--jgt-tab-colorBorder);
+    border-top-left-radius: var(--jgt-tab-borderRadius);
+    border-top-right-radius: var(--jgt-tab-borderRadius);
+    background-color: var(--jgt-tab-cardBg);
+    color: var(--jgt-tab-itemColor);
+    height: var(--jgt-tab-cardHeight);
+    padding: var(--jgt-tab-cardPadding);
+    font-size: var(--jgt-tab-titleFontSize);
+    line-height: var(--jgt-tab-lineHeight);
+    font-weight: var(--jgt-tab-fontWeight);
+    margin-inline-end: var(--jgt-tab-cardGutter);
+    outline: none;
+}
+
+.multiPagedForm .page-nav-panel .nav_item button:hover {
+    border-color: var(--jgt-tab-colorBorder);
+    color: var(--jgt-tab-itemHoverColor);
+}
+
+.multiPagedForm .page-nav-panel .nav_item.current button {
+    color: var(--jgt-card-colorText);
+    background-color: var(--jgt-tab-colorBgContainer);
+    border-color: var(--jgt-tab-colorBorder) var(--jgt-tab-colorBorder) transparent;
+}
+
+.multiPagedForm.wizard  .page-nav-panel .nav_item button{
+    color: var(--jgt-wizard-colorTextDescription);
+    background-color: transparent;
+}
+
+.multiPagedForm.wizard .page-nav-panel .nav_item.current button{
+    color: var(--jgt-wizard-colorText);
+    background-color: transparent;
+    border-color: transparent;
+    font-size: var(--jgt-wizard-fontSize);
+    line-height: var(--jgt-wizard-lineHeight);
+}
+
+.multiPagedForm.wizard .page-nav-panel .nav_item button span {
+    line-height: var(--jgt-wizard-titleLineHeight);
+}
+
+.multiPagedForm .page-nav-panel.bottom {
+    display: none;
+}
+
+.multiPagedForm .page-nav-panel .nav_item.error button span {
+    color: red;
+}
+
+.multiPagedForm .page-button-panel {
+    text-align: right;
+    padding: 10px 15px;
+}
+
+.multiPagedForm .page-button-panel .btn {
+    padding: 5px 15px;
+    font-size: 90%;
+}
+
+.mpf-container .subform-section {
+    position: relative;
+    min-width: 0;
+    word-wrap: break-word;
+    background-color: #fff;
+    background-clip: border-box;
+    border: 1px solid rgba(0, 0, 0, .06);
+    border-radius: 0.25rem;
+    padding-bottom: 20px;
+}
+
+.subform-container.has-frame .subform-section-title,
+.mpf-container .subform-section .subform-section-title {
+    position: relative;
+}
+
+.subform-container.has-frame .subform-section-title:after,
+.mpf-container .subform-section .subform-section-title:after {
+    content: "";
+    position: absolute;
+    background: #fff;
+    opacity: 0.15;
+    top: 0;
+    left: 0;
+    right: 0px;
+    bottom: 0px;
+}
+
+.multiPagedForm.tab .page-nav-panel {
+    border-bottom: var(--jgt-tab-lineType) 1px var(--jgt-tab-colorBorder);
+    margin: var(--jgt-tab-horizontalMargin);
+}
+
+.multiPagedForm.tab .page-nav-panel .nav_item {
+    float: left;
+    margin-bottom: -1px;
+}
+
+@media(min-width:768px) {
+    .multiPagedForm.wizard .page-nav-panel {
+        text-align: center;
+        margin-bottom: 5px;
+        counter-reset: nav-item;
+    }
+
+    .multiPagedForm.wizard .page-nav-panel .nav_item {
+        display: inline-block;
+        position: relative;
+        padding: 0 15px;
+        cursor: pointer;
+    }
+
+    .multiPagedForm.wizard .page-nav-panel .nav_item::before {
+        counter-increment: nav-item;
+        content: counter(nav-item);
+        position: absolute;
+        left: calc(50% - 15px);
+        border-radius: var(--jgt-wizard-borderRadius);
+        width: var(--jgt-wizard-controlHeight);
+        height: var(--jgt-wizard-controlHeight);
+        padding-top: 5px;
+        text-align: center;
+        box-sizing: border-box;
+        color: var(--jgt-wizard-colorTextDescription);
+        border: var(--jgt-wizard-lineWidth) var(--jgt-wizard-lineType) var(--jgt-wizard-colorSplit);
+        font-size: var(--jgt-wizard-fontSize);
+        line-height: var(--jgt-wizard-lineHeight);
+    }
+
+    .multiPagedForm.wizard .page-nav-panel .nav_item::after {
+        content: "";
+        width: calc(50% - 40px);
+        position: absolute;
+        border-bottom: var(--jgt-wizard-lineWidth) var(--jgt-wizard-lineType) var(--jgt-wizard-colorSplit);
+        top: 15px;
+        right: -2px;
+    }
+
+    .multiPagedForm.wizard .page-nav-panel .nav_item:last-child::after {
+        display: none;
+    }
+
+    .multiPagedForm.wizard .page-nav-panel .nav_item button::after {
+        content: "";
+        width: calc(50% - 40px);
+        position: absolute;
+        border-bottom: var(--jgt-wizard-lineWidth) var(--jgt-wizard-lineType) var(--jgt-wizard-colorSplit);
+        top: 15px;
+        left: -2px;
+    }
+
+    .multiPagedForm.wizard .page-nav-panel .nav_item:first-child button::after {
+        display: none;
+    }
+
+    .multiPagedForm.wizard .page-nav-panel .nav_item.current::before {
+        color: var(--jgt-wizard-colorTextLightSolid);
+        box-shadow: none;
+        background: var(--jgt-wizard-colorPrimary);
+    }
+}
+
+.multiPagedForm.wizard .page-nav-panel button {
+    border: 0;
+    padding-top: 35px;
+}
+
+.rtl .multiPagedForm .page-button-panel {
+    text-align: left;
+}
+
+.rtl .multiPagedForm.tab .page-nav-panel .nav_item {
+    float: right;
+}
+
+.rtl .multiPagedForm.tab .page-nav-panel .nav_item button {
+    float: right;
+}
+
+.rtl .multiPagedForm.wizard .page-nav-panel .nav_item {
+    float: right;
+    padding-left: 15px;
+    padding-right: auto;
+}
+
+.rtl .multiPagedForm.wizard .page-nav-panel button {
+    float: right;
+}
+
+@media(max-width:767px) {
+    .multiPagedForm .page-nav-panel.bottom {
+        display: block;
+    }
+
+    .multiPagedForm .page-nav-panel ul {
+        padding: 0;
+        margin: 0;
+    }
+
+    .multiPagedForm .page-button-panel,
+    .multiPagedForm .page-nav-panel.top ul li.after,
+    .multiPagedForm .page-nav-panel.bottom ul li.current,
+    .multiPagedForm .page-nav-panel.bottom ul li.before,
+    .rtl .multiPagedForm .page-button-panel,
+    .rtl .multiPagedForm .page-nav-panel.top ul li.after,
+    .rtl .multiPagedForm .page-nav-panel.bottom ul li.current,
+    .rtl .multiPagedForm .page-nav-panel.bottom ul li.before {
+        display: none;
+    }
+
+    .multiPagedForm.wizard .page-nav-panel,
+    .multiPagedForm.tab .page-nav-panel {
+        border-bottom: 0px;
+        margin-bottom: 0px;
+    }
+
+    .multiPagedForm.wizard .page-nav-panel .nav_item,
+    .multiPagedForm.tab .page-nav-panel .nav_item,
+    .rtl .multiPagedForm.wizard .page-nav-panel .nav_item,
+    .rtl .multiPagedForm.tab .page-nav-panel .nav_item {
+        float: none;
+        display: block;
+        background: none;
+        padding-right: 0;
+    }
+
+    .multiPagedForm.wizard .page-nav-panel .nav_item button,
+    .multiPagedForm.tab .page-nav-panel .nav_item button,
+    .rtl .multiPagedForm.wizard .page-nav-panel .nav_item button,
+    .rtl .multiPagedForm.tab .page-nav-panel .nav_item button {
+        text-align: left;
+        float: none;
+        display: block;
+        width: 100%;
+        background: #f5f5f5;
+        border: #ddd solid 1px;
+        padding: 8px;
+        margin: 0;
+        margin-bottom: 3px;
+        -moz-border-radius: 5px 5px 5px 5px;
+        -webkit-border-radius: 5px 5px 5px 5px;
+        -khtml-border-radius: 5px 5px 5px 5px;
+        border-radius: 5px 5px 5px 5px;
+    }
+
+    .rtl .multiPagedForm.wizard .page-nav-panel .nav_item button,
+    .rtl .multiPagedForm.tab .page-nav-panel .nav_item button {
+        text-align: right;
+    }
+
+    .multiPagedForm.wizard .page-nav-panel .nav_item.current button:disabled,
+    .multiPagedForm.tab .page-nav-panel .nav_item.current button:disabled,
+    .multiPagedForm.wizard .page-nav-panel .nav_item.current button,
+    .multiPagedForm.tab .page-nav-panel .nav_item.current button {
+        background: #f5f5f5;
+        color: #000;
+        font-weight: bold;
+        margin-bottom: 0px;
+        padding-bottom: 8px;
+        -moz-border-radius: 5px 5px 0px 0px;
+        -webkit-border-radius: 5px 5px 0px 0px;
+        -khtml-border-radius: 5px 5px 0px 0px;
+        border-radius: 5px 5px 0px 0px;
+    }
+
+    .multiPagedForm .page-container {
+        border: #ddd solid 1px;
+        border-top: 0px;
+        padding: 5px;
+        border-radius: 0px 0px 5px 5px;
+        margin-bottom: 3px;
+    }
+
+    .multiPagedForm .page-container .page>.subform-cell {
+        padding-left: 0px;
+        padding-right: 0px;
+    }
+
+    .multiPagedForm .page-container .page>.subform-cell .mpf-container {
+        width: 100%;
+    }
+
+    .mpf-container .subform-section {
+        position: relative;
+        min-width: 0;
+        word-wrap: break-word;
+        background-color: transparent;
+        background-clip: border-box;
+        border: 0;
+        border-radius: 0.25rem;
+        padding-bottom: 20px;
+    }
+
+    .form-column,
+    .subform-column {
+        width: 100% !important;
+    }
+}
+
+.form-cell table:not([class]) td,
+.form-cell table:not([class]) th,
+.subform-cell table:not([class]) td,
+.subform-cell table:not([class]) th {
+    border: solid 1px silver;
+    margin: 0px;
+    padding: 3px;
+}
+
+.grid.adgrid {
+    width: 100%;
+    position: relative;
+}
+
+.grid.adgrid .pq-header-outer {
+    height: 25px !important;
+}
+
+.grid.adgrid .pq-grid-title {
+    display: none;
+}
+
+.grid.adgrid .ui-widget-content {
+    border: 1px solid #ced4da;
+    border-radius: 0px;
+}
+
+.grid.adgrid .ui-state-default,
+.grid.adgrid .ui-widget-content .ui-state-default,
+.grid.adgrid .ui-widget-header .ui-state-default {
+    border-color: #ced4da;
+    background: #f0f0f0;
+}
+
+.grid.adgrid .pq-grid td.pq-grid-col {
+    font-weight: 500;
+    color: #222;
+}
+
+.grid.adgrid .pq-grid-number-col {
+    border-bottom: 0 !important;
+}
+
+.grid.adgrid div.pq-grid-toolbar {
+    border-bottom: 0;
+    background: #f0f0f0;
+}
+
+.grid.adgrid div.pq-grid-toolbar .ui-icon {
+    display: inline-block;
+    vertical-align: sub;
+}
+
+.grid.adgrid .editor-cell {
+    position: absolute;
+    background: #f0f0f0;
+    border: 1px solid #ced4da;
+    border-radius: 2px;
+    padding: 5px;
+}
+
+.grid.adgrid .editor-cell .hasDatepicker+a {
+    right: 8px;
+    top: 14px;
+}
+
+.grid.adgrid .editor-cell .hasDatepicker+a+a {
+    right: 30px;
+    top: 14px;
+}
+
+.grid.adgrid .editor-cell .actions-buttons {
+    text-align: right;
+    margin-top: 5px;
+}
+
+.grid.adgrid .editor-cell .actions-buttons button {
+    margin-left: 2px;
+    font-size: 80%;
+    color: #fff;
+    background-color: #2196f3;
+    border-color: #2196f3;
+    border: 0;
+    border-radius: 2px;
+}
+
+.grid.adgrid .editor-cell .actions-buttons button.cancel {
+    background-color: #6c757d;
+    border-color: #6c757d;
+}
+
+@media(max-width:768px) {
+
+    .form-cell>label.label,
+    .subform-cell>label.label,
+    .form-cell>label.label+*:not(.ui-screen-hidden),
+    .subform-cell>label.label+*:not(.ui-screen-hidden),
+    .form-cell>label.label+.ui-screen-hidden+*,
+    .subform-cell>label.label+.ui-screen-hidden+* {
+        white-space: normal;
+        position: relative;
+        width: 100%;
+        float: none;
+        text-align: left !important;
+    }
+
+    .hasDatepicker+a {
+        top: unset;
+        bottom: 7px;
+    }
+
+    .hasDatepicker+a+a {
+        top: unset;
+        bottom: 6px;
+    }
+}
+
+@media screen and (max-width:39.9375em) {
+
+    .grid table td,
+    .grid table tr.grid-row+tr.grid-row {
+        border-top: 0 !important;
+    }
+
+    .grid table td .tablesaw-cell-label,
+    .grid table td .tablesaw-cell-content {
+        display: block;
+        width: 100%;
+    }
+}
+
+.form-edit-btn {
+    position: absolute !important;
+    right: 5px;
+}
+
+body.rtl .form-edit-btn {
+    right: auto;
+    left: 5px;
+}
+
+.form-edit-btn.top {
+    top: 5px;
+}
+
+.form-edit-btn.bottom {
+    bottom: 20px;
+}
+
+.comments_thread .comment {
+    width: 100% !important;
+    margin-top: 20px !important;
+}
+
+.subform_wrapper .subform-container.no-frame {
+    border: 0;
+    padding: 0;
+    margin-top: 0px;
+    margin-left: 0px;
+    margin-right: 0px;
+    margin-bottom: 0px;
+}
+
+.subform_repeater .repeater-action a {
+    height: 20px !important;
+    width: 20px !important;
+    border-radius: 50%;
+}
+
+.subform_repeater .subform_repeater_action button {
+    color: var(--jgt-btn-primaryColor);
+    background-color: var(--jgt-btn-colorPrimary);
+    outline: 0;
+    border-radius: .25rem;
+    border: 1px solid var(--jgt-btn-colorPrimary);
+    padding: 5px;
+}
+
+body.popupBody .form-section-title,
+body.popupBody .subform-section-title {
+    padding: 0.75rem 0.5rem;
+    margin-bottom: 0px;
+}
+
+body.popupBody .form-section,
+body.popupBody .form-section+.form-section {
+    box-shadow: none;
+}
+
+body.popupBody .form-section:first-of-type {
+    padding-top: 0px;
+}
+
+@media print {
+
+    .form-section+.form-section.no_label:not(#section-actions),
+    .subform-section+.subform-section.no_label:not(#section-actions) {
+        margin-top: 20px !important;
+        padding-top: 0px !important;
+    }
+}
+
+body.rtl .form-container [class*=form-cell-value] {
+    float: right;
+}
+
+body.rtl .ui-html.ql-editor,
+body.rtl table:not(.ui-datepicker-calendar) * {
+    text-align: right;
+}
+
+/* numeric field */
+.numeric_field_controls {display:inline-block; position:absolute;}
+.label-top .numeric_field_controls {right: 15px; bottom: 35px;}
+body.compact-mode .numeric_field_controls {top: -4px;}
+body.compact-mode .label-top .numeric_field_controls {top:auto; bottom: 32px;}
+body.rtl .label-top .numeric_field_controls {left: 25px; right: auto;}
+.numeric_field_control {position: absolute; top: 5px; right: 10px; font-size:10px; cursor: pointer;}
+.numeric_field_control img {width:12px; height:12px; max-width: fit-content; min-width: fit-content; max-height: fit-content; min-height: fit-content;}
+body.rtl .numeric_field_control {left:10px; right:auto;}
+.numeric_field_control.numeric_field_control_decr {top: 15px;} 
+@media (max-width: 768px) {
+    .numeric_field_controls {right: 15px; bottom: 35px;}
+    body.compact-mode .numeric_field_controls {top:auto; bottom: 32px;}
+    body.rtl .numeric_field_controls {left: 15px; right: auto;}
+}
+body.rtl .form-cell > label.label,
+body.rtl .subform-cell > label.label{
+    padding: 8px 0 0 10px;
+}
+.form-cell > label.label > i,
+.subform-cell > label.label > i,
+.label-left.form-cell > label.label > i,
+.label-left.subform-cell > label.label > i{
+    position: absolute;
+    color: var(--jgt-input-colorIcon);
+    background: var(--jgt-input-colorBorder);
+    box-sizing: border-box;
+    z-index: 1;
+    border-radius: calc(var(--jgt-input-borderRadius) - 1px) 0 0 calc(var(--jgt-input-borderRadius) - 1px);
+    width: 35px;
+    height: calc(var(--jgt-input-controlHeight) - 2px);
+    right: -51px;
+    top: 1px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+body.rtl .form-cell > label.label > i,
+body.rtl .subform-cell > label.label > i{
+    border-radius: 0 0.25rem 0.25rem 0;
+    left: -51px;
+    right: unset;
+}
+.form-cell > label.label:has(i) + *:not(.ui-screen-hidden),
+.subform-cell > label.label:has(i) + *:not(.ui-screen-hidden),
+.form-cell > label.label:has(i) + .ui-screen-hidden + *,
+.subform-cell > label.label:has(i) + .ui-screen-hidden + *{
+    padding-left: 45px;
+}   
+body.rtl .form-cell > label.label:has(i) + *:not(.ui-screen-hidden),
+body.rtl .subform-cell > label.label:has(i) + *:not(.ui-screen-hidden),
+body.rtl .form-cell > label.label:has(i) + .ui-screen-hidden + *,
+body.rtl .subform-cell > label.label:has(i) + .ui-screen-hidden + *{
+    padding-right: 45px;
+    padding-left: 12px;
+}
+.label-top .form-cell:not(.label-left) > label.label > i,
+.label-top .subform-cell:not(.label-left) > label.label > i{
+   right: unset;
+   bottom: -31px;
+   top: unset;
+   left: 1px;
+}
+body.rtl .label-top .form-cell:not(.label-left) > label.label > i,
+body.rtl .label-top .subform-cell:not(.label-left) > label.label > i{
+    left:unset;
+    right: 1px;
+}
+@media (max-width: 768px){
+    .form-cell > label.label > i,
+    .subform-cell > label.label > i,
+    .label-left.form-cell > label.label > i,
+    .label-left.subform-cell > label.label > i{
+        bottom: -35px;
+        right: unset;
+        top: unset;
+    }
+    body.rtl .form-cell > label.label > i,
+    body.rtl .subform-cell > label.label > i{
+        bottom: -35px;
+        right: 0;
+        top: unset;
+    }
+}
+.label-top.form-cell > label.label > i,
+.label-top.subform-cell > label.label > i{
+    bottom: -35px;
+    right: unset;
+    top: unset;
+}
+body.rtl .label-top.form-cell > label.label > i,
+body.rtl .label-top.subform-cell > label.label > i{
+    left: unset;
+}
+.mediumFontSize .label-top .form-cell:not(.label-left) > label.label > i,
+.mediumFontSize .label-top .subform-cell:not(.label-left) > label.label > i,
+.mediumFontSize .label-top.form-cell > label.label > i,
+.mediumFontSize .label-top.subform-cell > label.label > i{
+    bottom: -39.5px;
+}
+.largeFontSize .label-top .form-cell:not(.label-left) > label.label > i,
+.largeFontSize .label-top .subform-cell:not(.label-left) > label.label > i,
+.largeFontSize .label-top.form-cell > label.label > i,
+.largeFontSize .label-top.subform-cell > label.label > i{
+    bottom: -44px;
+}
+@media (max-width: 768px){
+    .mediumFontSize .form-cell > label.label > i,
+    .mediumFontSize .subform-cell > label.label > i,
+    .mediumFontSize .label-left.form-cell > label.label > i,
+    .mediumFontSize .label-left.subform-cell > label.label > i{
+        bottom: -39.5px;
+    }   
+    .largeFontSize .form-cell > label.label > i,
+    .largeFontSize .subform-cell > label.label > i,
+    .largeFontSize .label-left.form-cell > label.label > i,
+    .largeFontSize .label-left.subform-cell > label.label > i{
+        bottom: -44px;
+    }
+}

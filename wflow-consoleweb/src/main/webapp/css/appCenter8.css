@@ -1,6 +1,3 @@
-body #content.page_content{
-     padding: 85px 5%!important;
-}
 body.popupBody{
     color:#333 !important;
 }
@@ -15,6 +12,7 @@ body#login #loginForm{
 }
 .sidebar_brand{
     border-bottom: 0px !important;
+    height: 120px;
 }
 .sidebar_brand .logo_container {
     height: 75px;
@@ -37,6 +35,7 @@ body#login #loginForm{
 }
 #sidebar {
     width: 140px !important;
+    box-shadow: 0px 0px 80px 50px rgba(206, 213, 225, 0.12) !important;
 }
 #sidebar .nav > li > a {
     padding: 15px 15px !important;
@@ -48,7 +47,10 @@ body#login #loginForm{
 #sidebar .user-menu > li > a > small {
     padding: 0px 0 0 0px;
     text-align: center;
-    display: block;
+    display: none;
+}
+#sidebar .nav > li.mm-profile > ul > li > a {
+    padding-left: 15px !important;
 }
 #sidebar .user-menu > li > a > span {
     text-align:center;   
@@ -191,25 +193,23 @@ body.rtl #sidebar .nav > li > a > span:not(.badge) {
 
 #home{
     border: none !important;
-    background-color: #F5F8FA !important;
+    background-color: #f9f9f9 !important;
 }
 #home #pc-{
-    box-shadow: rgb(99 99 99 / 20%) 0px 2px 8px 0px;
     background-color: #fff !important;
     border-radius: 10px;
     background-image: url(../images/appCenterBanner.png);
     background-repeat: no-repeat;
     background-size: 100% 360px;
     margin-bottom: 50px;
+    background-color: #f9f9f9 !important;
 }
 body#home #main{
     overflow: hidden;
 }
-body#home #content.page_content{
-    padding:0;
-}
 #home #content.page_content {
     background-color: transparent !important;
+    padding: 0;
 }
 
 #home .viewForm-body-content{
@@ -237,6 +237,19 @@ body#home #content.page_content{
 #home .dataList tr.odd{
     background:transparent;
 }
+#customSearchInput{
+    margin: 0 10px;
+    position: relative;
+    height: 45px;
+    background-color: rgba(255, 255, 255, .2) !important;
+    color: #fff;
+    border: 0px;
+}
+
+#customSearchInput::placeholder {
+    color: #fff;
+  }
+
 #home #content.ajaxloading > main,
 #home #content.ajaxloading > div{
     opacity:0.25;
@@ -262,7 +275,6 @@ body#home #home_column .row{
     background-color: transparent !important;
 }
 #home_column{
-    margin-top: 35px !important;
     margin-right: 0px !important;
     margin-left: 0px !important;
 }
@@ -289,14 +301,24 @@ body#home #home_column .row{
 }
 
 #admin #content .InformationTileComponent {
-    border: none !important;
-    border-radius: 10px !important;
+    border: 1px solid #F1F1F4 !important;
+    border-radius: 0.625rem !important;
 }
 #admin #content .InformationTileComponent .card-footer{
     border-bottom-left-radius: 10px;
     border-bottom-right-radius: 10px;
 }
+#admin #content .card-header{
+    border-bottom: 0px;
+}
+#templates #content .main-body-content:not(.Dashboard){
+    padding: 0px;
+}
 
+#templates #dataList_list_appList  .table-wrapper .row{
+    margin-left: 0px;
+    margin-right: 0px;
+}
 #templates #content .card{
     border: none !important;
     margin: 5px;
@@ -308,12 +330,13 @@ body#home #home_column .row{
 #templates #content .main-body-content {
     background-color: transparent;
     border: 0;
+    box-shadow: none;
 }
 #templates #content main > [class*="-body-content"] > div > h2 {
     background-color:transparent;
 }
 #templates #content .card {
-  border-radius: 10px;
+  border-radius: 0.9rem;
   margin: 0 auto;
   width: 500px;
   max-width: 100%;
@@ -356,14 +379,17 @@ body#home #home_column .row{
 }
 #design_app .card {
     border:0 !important;
-    margin-bottom:15px;
 }
 #design_app .card .card-body {
     padding: 0px;
     min-height:400px;
 }
 #design_app .card .column_img > div {
-    border-radius:10px;
+    border-radius: 0.9rem;
+}
+#design_app .text-dark {
+    color: #343a40 !important;
+    color: unset !important;
 }
 #design_app .card .column_name {
     font-size:22px;
@@ -371,7 +397,7 @@ body#home #home_column .row{
     color:#000;
 }
 #design_app .card .column_desc {
-    max-height: 40px;
+    max-height:60px;
     overflow:hidden;
 }
 #design_app .card .card-body .card-actions {
@@ -383,12 +409,24 @@ body#home #home_column .row{
 }
 #design_app .card .card-body .card-actions a{
     flex: 1 1 100%;
+    padding: calc(.775rem + 1px) calc(1.5rem + 1px);
+    border-radius: 0.475rem;
 }
 #design_app #newTemplate.main-body-content {
     padding: 0 !important;
+    top: -30px;
+    position: relative;
+    box-shadow: none;
 }
 #design_app .dataList#dataList_list_newTemplate .card {
     margin-top:0 !important;
+}
+#design_app .dataList .table-wrapper{
+    padding-bottom: 0px;
+}
+
+#design_app #designAppSection .card{
+    box-shadow: none;
 }
 .community{
     background-size: 100px 100px !important;
@@ -409,6 +447,7 @@ html.adminBarShown {
 }
 body:not(.horizontal_menu) #navigation {
     width: 140px;
+    margin-left: 0;
 }
 #navigation{
     border-top: 0;
@@ -439,12 +478,6 @@ a.fs-4.text-dark.fw-bold.text-hover-primary.text-dark.lh-base.commuLabel {
 
 body.rtl #page {
     padding-right: 140px !important;
-}
-
-@media (max-width: 1279px) {
-    body.rtl #page {
-        padding-right: 0px !important;
-    }
 }
 
 header.navbar {
@@ -536,6 +569,14 @@ body .dataList#dataList_applist .appIcon{
 }
 body#login #loginForm{
     position: relative;
+    width: 100%;
+}
+body#login label {
+    display: none;
+}
+.login_form_logo_container .logo {
+    max-width: 100px;
+    margin-bottom: 50px;
 }
 body#login #page #content main{
     padding-left: 0%;
@@ -582,9 +623,26 @@ label{
     top: 23%;
 }
 body#login #loginForm table td input[type='submit'] {
-    background-color: #32ae93 !important;
+    background-color: #009265 !important;
     font-size: 16px !important;
     font-weight: 500 !important;
+}
+body#login #loginForm #j_username, body#login #loginForm #j_password {
+    border: 1px solid #DBDFE9 !important;
+    margin-bottom: 20px;
+}
+body#login #loginForm #j_username:focus, body#login #loginForm #j_password:focus {
+    background-color: var(--theme-field-background-color) !important;
+}
+body#login #loginForm #j_username::placeholder, body#login #loginForm #j_password::placeholder {
+    color: #99A1B7 !important;
+}
+.form-errors {
+    margin-bottom: 0;
+}
+#loginForm > div > h1 {
+    color: #071437;
+    font-weight: 500;
 }
 #login #page{
     max-width: 100%;
@@ -670,13 +728,233 @@ body:not(:has(#adminBar)) #home_column #home:has(#filters_applist){
 #dataList_applist form[name="form_applist"] .table-wrapper{
     min-height: 0px;
 }
+#sidebar .active > a:not(.dropdown), #sidebar .nav > li > ul > li.active > a:hover, #sidebar .active > a:not(.dropdown):hover{
+    border-radius: 0;
+}
+
+body#home:not(.embeded) #content .main-body-content:not(.Dashboard) {
+    padding: 0px;
+    background: transparent;
+    box-shadow: none;
+    border: 0px;
+}
+
+@media (min-width: 768px) {
+    #content.page_content:not(:has(.main-body-content.Dashboard)) {
+        max-width: 1920px;
+        margin-right: auto;
+        margin-left: auto;
+    }
+}
+
+body#design_app #content.page_content:not(:has(.main-body-content.Dashboard)){
+    padding-right: 20px;
+}
+
+#dataList_applist > form > div > div.cards.row > div > div > h5 > div{
+    box-shadow: rgba(17, 17, 26, 0.1) 0px 1px 0px;
+    border-radius: 20%;
+}
+#home #dataList_applist .card-icon:hover .card-actions a{
+    display:block !important;
+}
+#dialog .btn {
+    display: flex;
+    align-items: center;
+    margin-bottom: 10px;
+}
+
+#dialog .btn i {
+    margin: 12px 25px;
+    font-size: 26px;
+    margin-left: 10px;
+    height: 26px;
+    width: 26px;
+}
+#dialog .btn .fs-7{
+    font-size: 12px;
+}
+
+#dialog .btn .fs-3{
+    font-size: 16px;
+    font-weight: 500;
+    text-align: left;
+}
+
+#dialog .btn .d-flex {
+    display: flex;
+    flex-direction: column;
+    align-items: start;
+}
+
+.header-nav li.dropdown.inbox-notification{
+    display: none;
+}
+
+#homePageInbox .dropdown-menu,
+#homePageUserProfile .dropdown-menu{
+    display: block;
+    top: 0;
+    width: 100%;
+    position: relative;
+    float: none;
+    border: 0;
+    z-index: 0;
+    margin-bottom: 15px;
+    min-height: 43vh;
+}
+
+#homePageInbox .dropdown-menu.notifications .dropdown-menu-title{
+    padding: 12px 0px !important;
+    padding-bottom: 30px;
+    border-radius: 0.475rem !important;
+    margin-bottom: 0px;
+    background-color: transparent;
+    color: var(--theme-heading-color);
+}
+
+#homePageInbox .dropdown-menu.notifications .refresh {
+    bottom: 12px;
+    right: 15px;
+    color: #fff;
+}
+
+#homePageInbox .dropdown-menu.notifications li.task {
+    padding: 7px 16px;
+    margin-bottom: 5px;
+    border-radius: 0.475rem;
+}
+
+#homePageInbox .dropdown-menu a {
+    color: var(--theme-font-color);
+    border-radius: .475rem;
+    font-weight: 500;
+    text-decoration: none;
+}
+#homePageInbox .dropdown-menu a span.header, #homePageInbox .dropdown-menu a span.message {
+    padding-right: 80px;
+    width: 350px;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+    white-space: normal;
+    display: block;
+    position: relative;
+}
+
+#homePageInbox .dropdown-menu a span.header{
+    font-weight: 500;
+}
+
+#homePageInbox .dropdown-menu a:hover span.header{
+    color: #009265;
+}
+
+#homePageInbox .dropdown-menu a span.time {
+    position: absolute;
+    top: 10px;
+    right: 0px;
+    width: 90px;
+    white-space: normal;
+    text-align: right;
+    font-size: 12px;
+}
+#homePageInbox .dropdown-menu a span.message {
+    color: #99A1B7;
+    font-weight: 400;
+}
+#homePageInbox li.all-assignment {
+    border-bottom: 1px solid var(--theme-border-color);
+    border-top: 0;
+    margin-top: 0px;
+    padding: 0px !important;
+    padding-bottom: 15px !important;
+    position: absolute;
+    bottom: 0;
+    width: 100%;
+}
+#homePageInbox li.all-assignment .dropdown-menu-sub-footer{
+    display: block;
+    width: 100%;
+    text-align: center;
+    margin-top: 0px !important;
+}
+#homePageInbox .dropdown-menu-title h3 {
+    margin-bottom: 0px;
+}
+
+#home .fc .fc-col-header-cell-cushion {
+    padding: 2px 4px !important;
+}
+
+.page-heading{
+    display: none !important;
+}
+
+header.navbar {
+    position: absolute !important;
+    right: 0;
+    background: transparent !important;
+}
+
+#home .fc-toolbar button[class*=button], .fc-toolbar input[class*=button]{
+    padding: 6px 12px !important;
+    background-color: transparent;
+    color: var(--theme-font-color);
+    border: 0px;
+    box-shadow: none !important;
+}
+
+#home div.fc-header-toolbar.fc-toolbar.fc-toolbar-ltr > div:nth-child(2){
+    display: block;
+    width: 100%;
+    position: absolute;
+}
+
+#home div.fc-header-toolbar.fc-toolbar.fc-toolbar-ltr > div:nth-child(1){
+    text-align: right;
+    width: 100%;
+    display: block;
+}
+
+#home .fc .fc-toolbar-title {
+    font-size: 1.3em;
+}
+
+#home .fc .fc-toolbar.fc-header-toolbar {
+    margin-bottom: 0.5em;
+}
+
+#home td.fc-daygrid-day, #home .fc-col-header-cell, #home .fc-timegrid-col, 
+#home .table-bordered,
+#home .table-bordered td, #home .table-bordered th {
+    border: 0 !important;
+    border-radius: 0.475rem;
+}
+
+#home .fc .fc-daygrid-day-number {
+    width: 100%;
+    text-align: center;
+}
+
+#home .fc-today-button,
+#home .fc-dayGridMonth-button,
+#home .fc-timeGridWeek-button,
+#home .fc-timeGridDay-button{
+    display: none !important;
+}
+
+#sidebar .nav-tabs.user-menu {
+    display: block;
+    margin-top: 0px;
+    border-bottom: 0;
+}
 
 body.dark-mode#home{
     background-color: var(--theme-background) !important;
 }
 body.dark-mode#home #pc- {
     background-color: var(--theme-content-background) !important;
-    background-image: linear-gradient(to bottom, #1e1e2d, #2b2b40 100%) !important;
+    background-image: linear-gradient(to bottom, #1e1e2d, #2b2b40 100%), url(/jw/images/appCenterBanner.png);
 }
 body.dark-mode .dataList#dataList_applist .appIcon{
     background-color: var(--theme-background) !important;
