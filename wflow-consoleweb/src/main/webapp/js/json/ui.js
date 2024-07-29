@@ -232,60 +232,45 @@ UI = {
      * Function used for validate an email. 
      * Options to validate multiple email separated by semicolon (;)
      */
-    validateSingleEmail: function(email) {
-        var emailPattern = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
-        return emailPattern.test(email);
-    },
-    // Function to validate multiple emails
-    validateEmail: function(emails) {
-        var emailList = emails.split(';');
+    validateEmail: function(formSelector, emailSelector) {
+        var multiple = true;
+        var originalAppId = UI.userview_app_id;
         
-        for (var i = 0; i < emailList.length; i++) {
-            var email = emailList[i];
-            
-            // Check if there's a space after the semicolon
-            if (i > 0 && email.charAt(0) === ' ') {
-                email = email.substring(1);
-            }   
-            // Check if email has leading or trailing spaces
-            if (email !== email.trim()) {
-                return false;
-            }
-            // Validate the single email
-            if (!this.validateSingleEmail(email)) {
-                return false;
-            }
-        }
-        return true;
-    },
-    validateField: function(formSelector, emailSelectors) {
-        $(formSelector).on('submit', function(event) {
-            var isValid = true;
-            var originalAppId = UI.userview_app_id;
-
-            try {
-                if (UI.userview_app_id === '') {
-                    UI.userview_app_id = 'appcenter';
-                }
-                $(this).find(emailSelectors).each(function() {
-                    var email = $(this).val();
-                    if (email !== '' && !UI.validateEmail(email)) {
-                        isValid = false;
-                        $(this).focus();
-                        return false;
+        // Select the email input from the form
+        var email = $(emailSelector).val();
+        var callback = {
+            success: function(data) {
+                try {
+                    if (UI.userview_app_id === '') {
+                        UI.userview_app_id = 'appcenter';
                     }
-                });
-                if (!isValid) {
-                    event.preventDefault();
-                    UI.loadMsg(['app.edm.message.invalidEmailFormat'], function(messages) {
-                        alert(messages['app.edm.message.invalidEmailFormat']);
-                    });
-                    return false;
+                    
+                    var response = JSON.parse(data);
+
+                        if (email && !response.isValid) {
+                            UI.loadMsg(['app.edm.message.invalidEmailFormat'], function(messages) {
+                                alert(messages['app.edm.message.invalidEmailFormat']);
+                            });
+                            UI.unblockUI();
+                            return false;
+                        } else {
+                            // Submit the form if the email is valid
+                            $(formSelector)[0].submit();
+                        }
+                } finally {
+                    UI.userview_app_id = originalAppId;
                 }
-            } finally {
-                UI.userview_app_id = originalAppId;
-            }
-        });
+            },
+        };
+        
+        var params = {
+            email: email,
+            multiple: multiple
+        };
+        
+        ConnectionManager.post('/jw/web/api/validateEmail', callback, params);
+        
+        return false; // Prevent default form submission until email validation is done
     }
 };
 
