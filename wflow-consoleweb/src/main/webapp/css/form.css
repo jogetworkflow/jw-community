@@ -766,17 +766,43 @@ body.rtl #${elementParamName!}_multiPagedForm_${element.properties.elementUnique
 .selector_element {
     display: block;
 }
-body.rtl .selector_element {
+body.rtl .selector_item {
     float: right;
+}
+body.rtl .selector_items{
+    margin-left: 0%;
+    margin-right: 30%;
+}
+@media(max-width: 480px){
+    body.rtl .selector_items{
+        margin-right: 0%;
+    }
+}
+@media(max-width: 480px){
+    body.rtl .selector_element {
+        float: right;
+    }
 }
 .selector_items {
     display: block;
     margin: 5px 0px;
+    margin-left: 30%;
 }
 @media (max-width: 480px) {
     .selector_element {
         margin-left: 0%;
     }  
+}
+@media(max-width: 480px) {
+    .selector_items {
+        margin-left:0% !important;
+    }
+}
+.label-top .selector_items{
+    margin-left: 0%;
+}
+body.rtl .label-top .selector_items{
+    margin-right: 0%;
 }
 .selector_item {
     margin-right: 5px;
