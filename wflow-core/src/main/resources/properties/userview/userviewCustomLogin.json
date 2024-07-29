@@ -34,7 +34,7 @@
     "control_value": "^[\\s\\S]*\\{\\{title[\\||\\}]{2}[\\s\\S]*$",
     "control_use_regex": "true",
     "required" : "true",
-    "value": "@@userview.customlogin.title.value@@"
+    "value": "@@userview.customLogin.title.value@@"
 },
 {
     "name" : "customUsername",
@@ -42,7 +42,8 @@
     "type" : "textfield",
     "control_field": "template",
     "control_value": "^[\\s\\S]*\\{\\{customUsername[\\||\\}]{2}[\\s\\S]*$",
-    "control_use_regex": "true"
+    "control_use_regex": "true",
+    "value": "@@userview.customLogin.username.value@@"
 },
 {
     "name" : "customPassword",
@@ -50,7 +51,8 @@
     "type" : "textfield",
     "control_field": "template",
     "control_value": "^[\\s\\S]*\\{\\{customPassword[\\||\\}]{2}[\\s\\S]*$",
-    "control_use_regex": "true"
+    "control_use_regex": "true",
+    "value": "@@userview.customLogin.password.value@@"
 },
 {
     "name" : "icon",
@@ -69,7 +71,8 @@
     "control_field": "template",
     "control_value": "^[\\s\\S]*\\{\\{subtitle[\\||\\}]{2}[\\s\\S]*$",
     "control_use_regex": "true",
-    "value": "@@userview.customLogin.subtitle@@"
+    "value": "@@userview.customLogin.subtitle@@",
+    "value": "@@userview.customLogin.subtitle.value@@"
 },
 {
     "name" : "direction",
@@ -79,7 +82,8 @@
     "control_value": "^[\\s\\S]*\\{\\{direction[\\||\\}]{2}[\\s\\S]*$",
     "control_use_regex": "true",
     "required" : "true",
-    "value": "@@userview.customLogin.direction.value@@"
+    "value": "@@userview.customLogin.direction.value@@",
+    "description": "@@userview.customLogin.direction.description@@"
 },
 {
     "name" : "colorGradientOne",
@@ -178,7 +182,8 @@
     "type" : "textfield",
     "control_field": "template",
     "control_value": "^[\\s\\S]*\\{\\{btnText[\\||\\}]{2}[\\s\\S]*$",
-    "control_use_regex": "true"
+    "control_use_regex": "true",
+    "value": "@@userview.customLogin.button.value@@"
 },
 {
     "name" : "bgColor",
@@ -226,7 +231,8 @@
             "control_field": "template",
             "control_value": "^[\\s\\S]*\\{\\{repeat\\.title[\\||\\}]{2}[\\s\\S]*$",
             "control_use_regex": "true",
-            "required" : "true"
+            "required" : "true",
+            "value": "@@userview.customLogin.title.value@@"
         },{
             "name" : "titleColor",
             "label" : "@@userview.customLogin.titleColor@@",
@@ -250,7 +256,8 @@
             "type" : "textfield",
             "control_field": "template",
             "control_value": "^[\\s\\S]*\\{\\{repeat\\.customUsername[\\||\\}]{2}[\\s\\S]*$",
-            "control_use_regex": "true"
+            "control_use_regex": "true",
+            "value": "@@userview.customLogin.username.value@@"
         },
         {
             "name" : "customUsernameColor",
@@ -266,7 +273,8 @@
             "type" : "textfield",
             "control_field": "template",
             "control_value": "^[\\s\\S]*\\{\\{repeat\\.customPassword[\\||\\}]{2}[\\s\\S]*$",
-            "control_use_regex": "true"
+            "control_use_regex": "true",
+            "value": "@@userview.customLogin.password.value@@"
         },
         {
             "name" : "customPasswordColor",
@@ -293,7 +301,8 @@
             "control_field": "template",
             "control_value": "^[\\s\\S]*\\{\\{repeat\\.subtitle[\\||\\}]{2}[\\s\\S]*$",
             "control_use_regex": "true",
-            "value": "@@userview.customLogin.subtitle@@"
+            "value": "@@userview.customLogin.subtitle@@",
+            "value": "@@userview.customLogin.subtitle.value@@"
         },
         {
             "name" : "subtitleColor",
@@ -338,7 +347,8 @@
             "type" : "textfield",
             "control_field": "template",
             "control_value": "^[\\s\\S]*\\{\\{repeat\\.btnText[\\||\\}]{2}[\\s\\S]*$",
-            "control_use_regex": "true"
+            "control_use_regex": "true",
+            "value": "@@userview.customLogin.button.value@@"
         },
         {
             "name" : "btnTextColor",
