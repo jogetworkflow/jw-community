@@ -227,19 +227,13 @@
                         valid = false;
                     }
                 </#if>
-                if($("#email").val() != ""){
-                    if(!UI.validateEmail($("#email").val())){
-                        if(alertString != ""){
-                            alertString += '\n';
-                        }
-                        alertString += '@@app.edm.message.invalidEmailFormat@@';
-                        valid = false;
-                    }
+                if (!UI.validateEmail('#profile', '#email')) {
+                    valid = false;
                 }
 
                 if(valid){
                     $("form#profile").submit();
-                }else{
+                } else if(alertString !== ''){
                     alert(alertString);
                 }
             }

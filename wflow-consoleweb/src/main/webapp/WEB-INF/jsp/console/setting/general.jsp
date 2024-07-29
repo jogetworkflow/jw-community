@@ -603,7 +603,12 @@
     }
     
     $(document).ready(function() {
-        UI.validateField("form", "#smtpEmail");
+        $('form').on('submit', function(event) {
+            event.preventDefault(); // Prevent the form from submitting
+            var formSelector = this; // The form being submitted
+            var emailSelector = '#smtpEmail';
+            UI.validateEmail(formSelector, emailSelector);
+        });
     });
     
 </script>

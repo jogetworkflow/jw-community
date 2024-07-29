@@ -1476,7 +1476,7 @@ body .form-container [class*=form-cell-value]{
 }
 .InformationTileComponent .acSparkline-initialized,
 .InformationTileComponent a:not(.stretched-link),
-.InformationTileComponent button{
+.InformationTileComponent button, .InformationTileComponent .card-footer:has(a){
     position: relative;
     z-index: 20;
 }
@@ -1996,6 +1996,9 @@ body.rtl .ContainerComponent {
     }
     body.horizontal_menu.inline_menu .nav{
         flex-wrap: nowrap;
+    }
+    body.horizontal_menu .nav {
+        align-items: center;
     }
 }
 /*Priority Menu*/

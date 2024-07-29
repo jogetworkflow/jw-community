@@ -134,10 +134,7 @@ public class JsonApiUtil {
                 }
             }
             if (httpRequest != null) {
-                String referer = httpRequest.getHeader("referer");
-                if (referer == null || referer.isEmpty()) {
-                    referer = httpRequest.getRequestURL().toString();
-                }
+                String referer = httpRequest.getRequestURL().toString();
                 request.setHeader("referer", referer);
                 if ("true".equalsIgnoreCase(properties.get("copyCookies").toString())) {
                     request.setHeader("Cookie", httpRequest.getHeader("Cookie"));
