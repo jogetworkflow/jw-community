@@ -279,9 +279,11 @@ public abstract class UserviewV5Theme extends UserviewTheme {
                 html += infoTile.render("custom_login", "", style, "", false);
 
                 html += "<script>\n" +
+                                "$(window).on('page_loaded', function() {\r\n" + 
+                                "      $('body').removeClass('dark-mode'); " +
+                                "})\n" +
                                 "$(document).ready(function(){\n" +
                                 "  $('body').removeClass('rtl'); \n" +
-                                "  $('body').removeClass('dark-mode'); \n"+
                                 "  $('html').removeAttr('dir'); \n" +
                                 "  $('#loginButton').on('click', function(){\n" +
                                 "    $('input[name=\"submit\"]').click();\n" +
