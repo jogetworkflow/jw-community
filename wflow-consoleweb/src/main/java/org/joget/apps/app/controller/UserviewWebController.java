@@ -113,19 +113,13 @@ public class UserviewWebController {
             UserviewTheme theme = userviewObject.getSetting().getTheme();
             if (theme instanceof UserviewPwaTheme) {
                 // get theme hash for serviceworker to refresh the offline cache when theme updates
-                String themeJson = new JSONObject(json)
+                int themePropertyHashCode = new JSONObject(json)
                         .getJSONObject("setting")
                         .getJSONObject("properties")
                         .getJSONObject("theme")
-                        .toString();
-                String themeHash = "";
-                try {
-                    MessageDigest digest = MessageDigest.getInstance("SHA-256");
-                    themeHash = new String(Hex.encode(digest.digest(themeJson.getBytes())));
-                } catch (NoSuchAlgorithmException e) {
-                    throw new RuntimeException(e);
-                }
-                processer = new UserviewThemeProcesser(userviewObject, request, themeHash);
+                        .toMap()
+                        .hashCode();
+                processer = new UserviewThemeProcesser(userviewObject, request, String.valueOf(themePropertyHashCode));
             } else {
                 processer = new UserviewThemeProcesser(userviewObject, request);
             }

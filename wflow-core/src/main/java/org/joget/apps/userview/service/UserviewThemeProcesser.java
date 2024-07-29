@@ -253,9 +253,18 @@ public class UserviewThemeProcesser {
         data.put("content_container", getContentContainer(data));
 
         if (themeHash != null) {
-            String bodyInnerAfter = data.getOrDefault("body_inner_after", "").toString();
-            bodyInnerAfter += "<script>navigator.serviceWorker.controller.postMessage({themeHash:'" + themeHash + "'});</script>";
-            data.put("body_inner_after", bodyInnerAfter);
+            String headInnerBefore = data.getOrDefault("head_inner_before", "").toString();
+            headInnerBefore += "<script>\n" +
+                    "if (navigator.serviceWorker) {\n" +
+                    "  navigator.serviceWorker.ready.then((registration) => {\n" +
+                    "    const serviceWorker = registration.active;\n" +
+                    "    if (serviceWorker !== null || serviceWorker !== undefined) {\n" +
+                    "      registration.active.postMessage({themeHash:'" + themeHash + "'});\n" +
+                    "    }\n" +
+                    "  });\n" +
+                    "}\n" +
+                    "</script>";
+            data.put("head_inner_before", headInnerBefore);
         }
 
         return getLayout(data);

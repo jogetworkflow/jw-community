@@ -6,28 +6,27 @@ var userviewKey = '_';
 var homePageLink = '';
 var appCacheName = appUserviewId + "-" + version;
 var urlsToCache = [
-    contextPath + '/css/v7.css',
-    contextPath + '/css/console_custom.css',
-    contextPath + '/css/datalistBuilderView.css',
-    contextPath + '/js/fontawesome5/css/all.min.css',
-    contextPath + '/js/fontawesome5/fonts/fontawesome-webfont.ttf',
-    contextPath + '/js/fontawesome5/fonts/fontawesome-webfont.woff2',
-    contextPath + '/js/fontawesome5/webfonts/fa-brands-400.ttf',
-    contextPath + '/js/fontawesome5/webfonts/fa-brands-400.woff2',
-    contextPath + '/js/fontawesome5/webfonts/fa-regular-400.ttf',
-    contextPath + '/js/fontawesome5/webfonts/fa-regular-400.woff2',
-    contextPath + '/js/fontawesome5/webfonts/fa-solid-900.ttf',
-    contextPath + '/js/fontawesome5/webfonts/fa-solid-900.woff2',
-    contextPath + '/home/logo.png',
-    contextPath + '/js/footable/footable.core.min.css',
-    contextPath + '/js/footable/footable.min.js',
-    contextPath + '/js/footable/responsiveTable.js',
-    contextPath + '/js/footable/fonts/footable.ttf',
-    contextPath + '/js/footable/fonts/footable.woff',
+        contextPath + '/css/v7.css',
+        contextPath + '/css/console_custom.css',
+        contextPath + '/css/datalistBuilderView.css',
+        contextPath + '/js/fontawesome5/css/all.min.css',
+        contextPath + '/js/fontawesome5/fonts/fontawesome-webfont.ttf',
+        contextPath + '/js/fontawesome5/fonts/fontawesome-webfont.woff2',
+        contextPath + '/js/fontawesome5/webfonts/fa-brands-400.ttf',
+        contextPath + '/js/fontawesome5/webfonts/fa-brands-400.woff2',
+        contextPath + '/js/fontawesome5/webfonts/fa-regular-400.ttf',
+        contextPath + '/js/fontawesome5/webfonts/fa-regular-400.woff2',
+        contextPath + '/js/fontawesome5/webfonts/fa-solid-900.ttf',
+        contextPath + '/js/fontawesome5/webfonts/fa-solid-900.woff2',
+        contextPath + '/home/logo.png',
+        contextPath + '/js/footable/footable.core.min.css',
+        contextPath + '/js/footable/footable.min.js',
+        contextPath + '/js/footable/responsiveTable.js',
+        contextPath + '/js/footable/fonts/footable.ttf',
+        contextPath + '/js/footable/fonts/footable.woff',
     %s
 ];
 var template = '%s';
-var themeHash = '';
 
 var ROLE_ANONYMOUS = 'roleAnonymous';
 
@@ -70,56 +69,56 @@ function cacheUserview(){
     fetch(cacheApi, {
         credentials: 'include'
     })
-    .then(function(response) {
-        if (response.status !== 200) {
-            console.log("Not able to retrieve cache URLs");
-            return;
-        }
-        response.json().then(function(data) {
-            data = data.app;
+        .then(function(response) {
+            if (response.status !== 200) {
+                console.log("Not able to retrieve cache URLs");
+                return;
+            }
+            response.json().then(function(data) {
+                data = data.app;
 
-            caches.open(appCacheName)
-            .then(function (cache) {
-                var promises = [];
+                caches.open(appCacheName)
+                    .then(function (cache) {
+                        var promises = [];
 
-                data.push(getPath() + '/_/pwaoffline');
-                data.push(getPath() + '/_/offline');
-                data.push(homePageLink);
+                        data.push(getPath() + '/_/pwaoffline');
+                        data.push(getPath() + '/_/offline');
+                        data.push(homePageLink);
 
-                promises.push(
-                    //cache one by one to prevent duplicate url causing DOMexception
-                    data.map(function(url) {
-                        return caches.match(url).then(function(checkCache){
-                            //always re-cache pwaoffline and offline in case homePageLink changes (eg. after login)
-                            var addToCache = false;
+                        promises.push(
+                            //cache one by one to prevent duplicate url causing DOMexception
+                            data.map(function(url) {
+                                return caches.match(url).then(function(checkCache){
+                                    //always re-cache pwaoffline and offline in case homePageLink changes (eg. after login)
+                                    var addToCache = false;
 
-                            if(checkCache === undefined || url.indexOf('/pwaoffline') > -1 || url.indexOf('/offline') > -1){
-                                addToCache = true;
-                            }
+                                    if(checkCache === undefined || url.indexOf('/pwaoffline') > -1 || url.indexOf('/offline') > -1){
+                                        addToCache = true;
+                                    }
 
-                            if(addToCache){
-                                cache.addAll([url]).then(function() {
-                                    //console.log(url + " cached");
-                                }).catch(function(err) {
-                                    //ignore
-                                });
-                            }
-                        })
+                                    if(addToCache){
+                                        cache.addAll([url]).then(function() {
+                                            //console.log(url + " cached");
+                                        }).catch(function(err) {
+                                            //ignore
+                                        });
+                                    }
+                                })
+                            })
+                        )
+
+                        return Promise.all(promises).then(function() {
+                            console.log("URLs retrieved from API cached");
+                        });
                     })
-                )
-
-                return Promise.all(promises).then(function() {
-                    console.log("URLs retrieved from API cached");
-                });
-            })
-            .catch(function(error){
-                console.log('error caching', error, error.message);
+                    .catch(function(error){
+                        console.log('error caching', error, error.message);
+                    });
             });
+        })
+        .catch(function(err) {
+            console.log("Not able to retrieve cache URLs", err);
         });
-    })
-    .catch(function(err) {
-        console.log("Not able to retrieve cache URLs", err);
-    });
 }
 
 self.addEventListener('install', function (event) {
@@ -169,74 +168,74 @@ self.addEventListener('fetch', function (event) {
 
     event.respondWith(
         fetch(fetchRequest)
-        .then(function (response) {
-            //redirect links eg. /jw/home, userview root url, are of response.type 'opaqueredirect', and possibly response.status != 200
-            //it is generally not a good idea to cache redirection because the content (target of redirection) might be changed
-            //https://medium.com/@boopathi/service-workers-gotchas-44bec65eab3f
-            //but without this the top-right home button (/jw/home) will never be cached and will always show offline page when being accessed offline
-            //if (!response || response.status !== 200 || response.type !== 'basic' || event.request.method !== 'GET') {
-            if (!response || event.request.method !== 'GET') {
-                return response;
+            .then(function (response) {
+                //redirect links eg. /jw/home, userview root url, are of response.type 'opaqueredirect', and possibly response.status != 200
+                //it is generally not a good idea to cache redirection because the content (target of redirection) might be changed
+                //https://medium.com/@boopathi/service-workers-gotchas-44bec65eab3f
+                //but without this the top-right home button (/jw/home) will never be cached and will always show offline page when being accessed offline
+                //if (!response || response.status !== 200 || response.type !== 'basic' || event.request.method !== 'GET') {
+                if (!response || event.request.method !== 'GET') {
+                    return response;
 
-            } else {
-                if(fetchRequest.url.indexOf('/web/json/workflow/currentUsername') === -1
+                } else {
+                    if(fetchRequest.url.indexOf('/web/json/workflow/currentUsername') === -1
                         && fetchRequest.url.indexOf('/images/v3/cj.gif') === -1
                         && fetchRequest.url.indexOf('/images/favicon_uv.ico?m=testconnection') === -1){
-                    var responseToCache = response.clone();
-                    caches.open(cache)
-                        .then(function (cache) {
-                            cache.put(event.request, responseToCache);
-                        });
+                        var responseToCache = response.clone();
+                        caches.open(appCacheName)
+                            .then(function (cache) {
+                                cache.put(event.request, responseToCache);
+                            });
+                    }
                 }
-            }
 
-            return response;
-        })
-        .catch(function () {
-            if(event.request.method === 'POST' && formData !== null){
-                console.log('form POST failed, saving to indexedDB');
-
-                savePostRequest(event.request.clone().url, formUserviewAppId, formPageTitle, formData, formUsername);
-
-                //redirect instead
-                var response = Response.redirect(getPath() + '/_/pwaoffline', 302);
                 return response;
+            })
+            .catch(function () {
+                if(event.request.method === 'POST' && formData !== null){
+                    console.log('form POST failed, saving to indexedDB');
 
-            }else{
-                if(fetchRequest.url.indexOf('/images/favicon_uv.ico?m=testconnection') === -1){
-                    return new Promise(function(resolve, reject) {
-                        caches.match(fetchRequest.url, {ignoreVary: true}).then(async function(response){
-                            if(response === undefined){
-                                var offlineResponse = Response.redirect(self.registration.scope + '/_/offline', 302);
-                                resolve(offlineResponse);
-                            }else{
-                                if (template && template !== "") {
-                                    var isAjaxTheme = event.request.headers.get('__ajax_theme_loading');
-                                    if (isAjaxTheme === undefined || isAjaxTheme === null) {
-                                        var responseText = await response.clone().text();
-                                        var menuStartIndex = responseText.indexOf("ajaxtheme_loading_menus");
-                                        if (menuStartIndex !== -1) {
-                                            var titleStartIndex = responseText.indexOf("ajaxtheme_loading_title");
-                                            var contentStartIndex = responseText.indexOf("ajaxtheme_loading_content");
-                                            var title = responseText.substring(titleStartIndex + 34, menuStartIndex - 25);
-                                            var menus = responseText.substring(menuStartIndex + 25, contentStartIndex - 27);
-                                            var content = responseText.substring(contentStartIndex + 27, responseText.length - 40);
+                    savePostRequest(event.request.clone().url, formUserviewAppId, formPageTitle, formData, formUsername);
 
-                                            responseText = template.replace('{{TEMPLATE_TITLE}}', title);
-                                            responseText = responseText.replace('{{TEMPLATE_CONTENT}}', content);
-                                            responseText = responseText.replace('{{TEMPLATE_MENUS}}', menus);
+                    //redirect instead
+                    var response = Response.redirect(getPath() + '/_/pwaoffline', 302);
+                    return response;
 
-                                            response = new Response(responseText, response);
+                }else{
+                    if(fetchRequest.url.indexOf('/images/favicon_uv.ico?m=testconnection') === -1){
+                        return new Promise(function(resolve, reject) {
+                            caches.match(fetchRequest.url, {ignoreVary: true}).then(async function(response){
+                                if(response === undefined){
+                                    var offlineResponse = Response.redirect(self.registration.scope + '/_/offline', 302);
+                                    resolve(offlineResponse);
+                                }else{
+                                    if (template && template !== "") {
+                                        var isAjaxTheme = event.request.headers.get('__ajax_theme_loading');
+                                        if (isAjaxTheme === undefined || isAjaxTheme === null) {
+                                            var responseText = await response.clone().text();
+                                            var menuStartIndex = responseText.indexOf("ajaxtheme_loading_menus");
+                                            if (menuStartIndex !== -1) {
+                                                var titleStartIndex = responseText.indexOf("ajaxtheme_loading_title");
+                                                var contentStartIndex = responseText.indexOf("ajaxtheme_loading_content");
+                                                var title = responseText.substring(titleStartIndex + 34, menuStartIndex - 25);
+                                                var menus = responseText.substring(menuStartIndex + 25, contentStartIndex - 27);
+                                                var content = responseText.substring(contentStartIndex + 27, responseText.length - 40);
+
+                                                responseText = template.replace('{{TEMPLATE_TITLE}}', title);
+                                                responseText = responseText.replace('{{TEMPLATE_CONTENT}}', content);
+                                                responseText = responseText.replace('{{TEMPLATE_MENUS}}', menus);
+
+                                                response = new Response(responseText, response);
+                                            }
                                         }
                                     }
+                                    resolve(response);
                                 }
-                                resolve(response);
-                            }
-                        })
-                    });
+                            })
+                        });
+                    }
                 }
-            }
-        })
+            })
     );
 });
 
@@ -346,23 +345,23 @@ self.addEventListener('notificationclick', function (event) {
         type: 'window',
         includeUncontrolled: true
     })
-            .then((windowClients) => {
-                let matchingClient = null;
+        .then((windowClients) => {
+            let matchingClient = null;
 
-                for (let i = 0; i < windowClients.length; i++) {
-                    const windowClient = windowClients[i];
-                    if (windowClient.url === urlToOpen) {
-                        matchingClient = windowClient;
-                        break;
-                    }
+            for (let i = 0; i < windowClients.length; i++) {
+                const windowClient = windowClients[i];
+                if (windowClient.url === urlToOpen) {
+                    matchingClient = windowClient;
+                    break;
                 }
+            }
 
-                if (matchingClient) {
-                    return matchingClient.focus();
-                } else {
-                    return clients.openWindow(urlToOpen);
-                }
-            });
+            if (matchingClient) {
+                return matchingClient.focus();
+            } else {
+                return clients.openWindow(urlToOpen);
+            }
+        });
 
     event.waitUntil(promiseChain);
 
@@ -407,7 +406,7 @@ function postMessageToClients(msgObj){
     self.clients.matchAll().then(function(clients) {
         clients.forEach(function(client) {
             client.postMessage(msgObj)
-         })
+        })
     });
 }
 
@@ -492,7 +491,7 @@ function sendFormDataToServer(savedRequest){
                 var keysToIgnore = [];
                 for(var key in payload){
                     if((Array.isArray(payload[key]) && payload[key][0] instanceof File)
-                            || payload[key] instanceof File){
+                        || payload[key] instanceof File){
                         //check if {key}_path exists
                         if(payload[key + '_path'] !== undefined){
                             keysToIgnore.push(key + '_path');
@@ -709,17 +708,40 @@ self.addEventListener('message', function(event) {
         processStoredFormData();
     }
 
-    if (event.data.hasOwnProperty('themeHash') && themeHash !== event.data.themeHash) {
-        themeHash = event.data.themeHash;
-        caches.delete(appCacheName)
-            .then(deleted => {
-                if (deleted) {
-                    console.log('Theme updated: deleted offline cache');
-                } else {
-                    throw new Error('Theme updated');
+    if (event.data.hasOwnProperty('themeHash')) {
+        connectCacheDB((store) => {
+            const keyName = appUserviewId + '_themeHash';
+            const getRequest = store.get(keyName);
+            getRequest.onerror = () => {
+                console.error('Failed to retrieve themeHash from IndexedDB.');
+            };
+            getRequest.onsuccess = () => {
+                const savedThemeHash = getRequest.result;
+                const newThemeHash = event.data.themeHash;
+                if (!savedThemeHash || (savedThemeHash && savedThemeHash.themeHash !== newThemeHash)) {
+                    const putRequest = store.put({name: keyName, themeHash: newThemeHash});
+                    putRequest.onerror = () => {
+                        console.error('Failed to update themeHash to IndexedDB.');
+                    };
+                    putRequest.onsuccess = () => {
+                        // if themeHash not saved in DB or is somehow empty, means first time page load; don't clear cache.
+                        if (!savedThemeHash || (savedThemeHash && savedThemeHash.themeHash === '')) {
+                            return;
+                        }
+                        caches.delete(appCacheName)
+                            .then(deleted => {
+                                if (deleted) {
+                                    console.log('Theme updated: deleted offline cache');
+                                    cacheUserview();
+                                } else {
+                                    throw new Error('Theme updated');
+                                }
+                            })
+                            .catch(error => console.error(error, ': failed to delete offline cache'));
+                    };
                 }
-            })
-            .catch(error => console.error(error, ': failed to delete offline cache'));
+            }
+        }, 'readwrite');
     }
 
     if (event.data.hasOwnProperty('userviewKey')) {
