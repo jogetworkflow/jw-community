@@ -384,11 +384,6 @@
     cursor: pointer;
     height:32px;
 }
-.property-input > span.icon:has(+ input:focus-visible) > span{
-    border: 2px solid rgba(0, 0, 0, 0.8);
-    border-right: 0;
-    padding: 2px 6px 5px;
-}
 .property-input > span.icon > span > span.value{
     font-size: 15px;
 }
@@ -2644,4 +2639,9 @@ i.fa-sort, i.fa-sort-asc, i.fa-sort-desc{
     width: 100%;
     color: #495057;
     font-weight: 500;
+}
+.property-editor-container input[type=text]:focus{
+    outline: 2px solid rgba(0, 0, 0, 0.8);
+    box-shadow: none;
+    border: 1px solid transparent;
 }
