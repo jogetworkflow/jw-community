@@ -6,7 +6,7 @@
         <fmt:message key="console.setting.plugin.upload.label.title"/>
     </div>
 
-    <div id="main-body-content" style="text-align: left">
+    <div id="main-body-content" style="text-align: initial">
         <c:if test="${errorMessage != null}">
             <div class="form-errors">
                 ${errorMessage}
