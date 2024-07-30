@@ -376,15 +376,22 @@
 .property-input > span.icon > span{
     position: absolute;
     background: #ccc;
-    padding: 8px 8px 7px;
+    padding: 4px 8px 7px;
     box-sizing: border-box;
     z-index: 2;
     border-radius: 0.25rem 0 0 0.25rem;
     width: 45px;
     cursor: pointer;
-    height:31px;
+    height:32px;
 }
-
+.property-input > span.icon:has(+ input:focus-visible) > span{
+    border: 2px solid rgba(0, 0, 0, 0.8);
+    border-right: 0;
+    padding: 2px 6px 5px;
+}
+.property-input > span.icon > span > span.value{
+    font-size: 15px;
+}
 .property-input > span.icon > span > span.dropdown{
     position: absolute;
     right: 5px;
