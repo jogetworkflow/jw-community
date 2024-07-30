@@ -919,7 +919,7 @@ body.rtl .label-top.subform-cell > label.label > i{
     body.rtl .label-left.subform-cell > label.label > i{
         left: unset;
     }
-
+}
 /* datepicker */
 body.rtl #form-canvas .form-cell .label {
     text-align: right;
