@@ -27,6 +27,7 @@ var urlsToCache = [
     %s
 ];
 var template = '%s';
+const themeHash = '%s';
 
 var ROLE_ANONYMOUS = 'roleAnonymous';
 
@@ -706,42 +707,6 @@ self.addEventListener('message', function(event) {
     if (event.data.hasOwnProperty('sync')) {
         console.log('sync received');
         processStoredFormData();
-    }
-
-    if (event.data.hasOwnProperty('themeHash')) {
-        connectCacheDB((store) => {
-            const keyName = appUserviewId + '_themeHash';
-            const getRequest = store.get(keyName);
-            getRequest.onerror = () => {
-                console.error('Failed to retrieve themeHash from IndexedDB.');
-            };
-            getRequest.onsuccess = () => {
-                const savedThemeHash = getRequest.result;
-                const newThemeHash = event.data.themeHash;
-                if (!savedThemeHash || (savedThemeHash && savedThemeHash.themeHash !== newThemeHash)) {
-                    const putRequest = store.put({name: keyName, themeHash: newThemeHash});
-                    putRequest.onerror = () => {
-                        console.error('Failed to update themeHash to IndexedDB.');
-                    };
-                    putRequest.onsuccess = () => {
-                        // if themeHash not saved in DB or is somehow empty, means first time page load; don't clear cache.
-                        if (!savedThemeHash || (savedThemeHash && savedThemeHash.themeHash === '')) {
-                            return;
-                        }
-                        caches.delete(appCacheName)
-                            .then(deleted => {
-                                if (deleted) {
-                                    console.log('Theme updated: deleted offline cache');
-                                    cacheUserview();
-                                } else {
-                                    throw new Error('Theme updated');
-                                }
-                            })
-                            .catch(error => console.error(error, ': failed to delete offline cache'));
-                    };
-                }
-            }
-        }, 'readwrite');
     }
 
     if (event.data.hasOwnProperty('userviewKey')) {

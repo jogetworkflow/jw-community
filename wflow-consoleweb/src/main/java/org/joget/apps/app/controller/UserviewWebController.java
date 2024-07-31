@@ -111,18 +111,7 @@ public class UserviewWebController {
             Userview userviewObject = userviewService.createUserview(json, menuId, false, request.getContextPath(), request.getParameterMap(), key, embed);
             UserviewThemeProcesser processer;
             UserviewTheme theme = userviewObject.getSetting().getTheme();
-            if (theme instanceof UserviewPwaTheme) {
-                // get theme hash for serviceworker to refresh the offline cache when theme updates
-                int themePropertyHashCode = new JSONObject(json)
-                        .getJSONObject("setting")
-                        .getJSONObject("properties")
-                        .getJSONObject("theme")
-                        .toMap()
-                        .hashCode();
-                processer = new UserviewThemeProcesser(userviewObject, request, String.valueOf(themePropertyHashCode));
-            } else {
-                processer = new UserviewThemeProcesser(userviewObject, request);
-            }
+            processer = new UserviewThemeProcesser(userviewObject, request);
             map.addAttribute("userview", userviewObject);
             map.addAttribute("processer", processer);
             String view = processer.getView();

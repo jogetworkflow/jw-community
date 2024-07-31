@@ -31,10 +31,6 @@ public class UserviewThemeProcesser {
     Userview userview;
     UserviewV5Theme defaultTheme;
     UserviewV5Theme theme;
-    /**
-     * themeHash is used for refreshing the cache for PWA/offline mode
-     */
-    String themeHash;
     HttpServletRequest request;
     String redirectUrl = null;
     String alertMessage = null;
@@ -44,11 +40,6 @@ public class UserviewThemeProcesser {
     boolean isPwaUnavailablePage = false;
     boolean isQuickEditEnabled = AppUtil.isQuickEditEnabled();
 
-    public UserviewThemeProcesser(Userview userview, HttpServletRequest request, String themeHash) {
-        this(userview, request);
-        this.themeHash = themeHash;
-    }
-
     public UserviewThemeProcesser(Userview userview, HttpServletRequest request) {
         this.userview = userview;
         this.request = request;
@@ -57,14 +48,6 @@ public class UserviewThemeProcesser {
         if (!isAuthorized) {
             this.userview.setCurrent(null);
         }
-    }
-
-    public String getThemeHash() {
-        return themeHash;
-    }
-
-    public void setThemeHash(String themeHash) {
-        this.themeHash = themeHash;
     }
 
     public String getPreviewView() {
@@ -251,22 +234,6 @@ public class UserviewThemeProcesser {
         }
         data.put("joget_footer", getJogetFooter());
         data.put("content_container", getContentContainer(data));
-
-        if (themeHash != null) {
-            String headInnerBefore = data.getOrDefault("head_inner_before", "").toString();
-            headInnerBefore += "<script>\n" +
-                    "if (navigator.serviceWorker) {\n" +
-                    "  navigator.serviceWorker.ready.then((registration) => {\n" +
-                    "    const serviceWorker = registration.active;\n" +
-                    "    if (serviceWorker !== null || serviceWorker !== undefined) {\n" +
-                    "      registration.active.postMessage({themeHash:'" + themeHash + "'});\n" +
-                    "    }\n" +
-                    "  });\n" +
-                    "}\n" +
-                    "</script>";
-            data.put("head_inner_before", headInnerBefore);
-        }
-
         return getLayout(data);
     }
 
