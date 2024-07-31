@@ -1628,8 +1628,8 @@ public class ConsoleWebController {
                     AppDefinition appDef = appDefList.iterator().next();
                     List<String> branches = AppDevUtil.getAppGitBranches(appDef);
                     for (String branch: branches) {
-                        StringTokenizer st = new StringTokenizer(branch, "_");
-                        String version = (st.countTokens() == 2) ? branch.substring(branch.indexOf("_")+1) : null;
+                        int versionIndex = branch.lastIndexOf("_");
+                        String version = (versionIndex != -1) ? branch.substring(versionIndex + 1) : null;                      
                         if (version != null && !appDefMap.containsKey(Long.valueOf(version))) {
                             AppDefinition tempAppDef = AppDevUtil.createDummyAppDefinition(appId, Long.valueOf(version));
                             tempAppDef.setDescription("Git: " + branch);
@@ -3757,11 +3757,11 @@ public class ConsoleWebController {
                     try {
                         AppDefinition appDef = appDefList.iterator().next();
                         List<String> branches = AppDevUtil.getAppGitBranches(appDef);
-                        for (String branch: branches) {
-                            StringTokenizer st = new StringTokenizer(branch, "_");
-                            String newVersion = (st.countTokens() == 2) ? branch.substring(branch.indexOf("_")+1) : null;
+                        for (String branch: branches) {                     
+                            int versionIndex = branch.lastIndexOf("_");
+                            String newVersion = (versionIndex != -1) ? branch.substring(versionIndex + 1) : null;     
                             if (newVersion != null && !appDefMap.containsKey(Long.valueOf(newVersion)) && newVersion.equals(version)) {
-                                AppDefinition newAppDef = appService.createNewAppDefinitionVersion(appId, appDefinitionDao.getLatestVersion(appId)); 
+                                AppDefinition newAppDef = appService.createNewAppDefinitionVersion(appId, appDefinitionDao.getLatestVersion(appId));
                             }                        
                         }            
                     } catch(Exception e) {
