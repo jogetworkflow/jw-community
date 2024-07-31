@@ -300,6 +300,7 @@ public class UniversalTheme extends UserviewV5Theme implements UserviewPwaTheme,
         Object[] arguments = new Object[]{
                 request.getContextPath(),
                 appUserviewId,
+                ResourceBundleUtil.getMessage("build.number"),
                 urlsToCache,
                 getServiceWorkerTemplate(appId, userviewId, userviewKey),
                 themeHash

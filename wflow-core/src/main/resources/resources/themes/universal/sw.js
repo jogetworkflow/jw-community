@@ -5,6 +5,7 @@ var appUserviewId = '%s';
 var userviewKey = '_';
 var homePageLink = '';
 var appCacheName = appUserviewId + "-" + version;
+const buildNumber = '%s';
 var urlsToCache = [
         contextPath + '/css/v7.css',
         contextPath + '/css/console_custom.css',
@@ -21,7 +22,7 @@ var urlsToCache = [
         contextPath + '/home/logo.png',
         contextPath + '/js/footable/footable.core.min.css',
         contextPath + '/js/footable/footable.min.js',
-        contextPath + '/js/footable/responsiveTable.js',
+        contextPath + '/js/footable/responsiveTable.js?build=' + buildNumber,
         contextPath + '/js/footable/fonts/footable.ttf',
         contextPath + '/js/footable/fonts/footable.woff',
     %s
