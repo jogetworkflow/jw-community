@@ -17,6 +17,7 @@ import org.joget.apps.datalist.service.DataListService;
 import org.joget.apps.userview.lib.AjaxUniversalTheme;
 import org.joget.apps.userview.model.*;
 import org.joget.commons.util.LogUtil;
+import org.joget.commons.util.ResourceBundleUtil;
 import org.joget.commons.util.SecurityUtil;
 import org.joget.commons.util.SetupManager;
 import org.joget.directory.model.User;
@@ -345,7 +346,15 @@ public class UserviewUtil implements ApplicationContextAware, ServletContextAwar
             if (data != null && !data.isEmpty()) {
                 //check date
                 Long resourceLastModified = data.keySet().iterator().next();
-                if (lastModified.compareTo(resourceLastModified) != 0) {
+                String bn = ResourceBundleUtil.getMessage("build.number");
+                boolean hasOldBuild = false;
+                if (bn != null) {
+                    hasOldBuild = data.get(resourceLastModified)
+                            .stream()
+                            .filter(url -> url.contains("build="))
+                            .anyMatch(url -> !url.contains(bn));
+                }
+                if (lastModified.compareTo(resourceLastModified) != 0 || hasOldBuild) {
                     data = null;
                 } else {
                     return data.get(resourceLastModified);
