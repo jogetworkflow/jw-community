@@ -6980,6 +6980,10 @@ PropertyEditor.Type.SelectBox.prototype = {
                 updateLink();
             });
             updateLink();
+
+            //Move builderAddNew to inside chosen container
+            var $openBuilder = $("#" + field.id).parent().find(".openbuilder")
+            $openBuilder.appendTo($("#" + field.id).parent().find(".chosen-container"))
         }
         
         if ($("#" + field.id + "_input a.builderAddNew").length > 0) {
@@ -9172,6 +9176,10 @@ PropertyEditor.Type.ElementSelect.prototype = {
         $(field).change(function() {
             thisObj.renderPages();
         });
+
+        //Move helpLink inside the chosen container, so it can be positioned more consistently
+        var $helpLink = $("#" + this.id).parent().find(".elementHelplink")
+        $helpLink.appendTo($("#" + this.id).parent().find(".chosen-container"))
     },
     getContainerClass: function() {
         if (this.properties.url.indexOf('/getPropertyOptions')  !== -1) {
@@ -9691,6 +9699,11 @@ PropertyEditor.Type.ElementMultiSelect.prototype = {
             thisObj.renderPages($(field), $(row).data("collapse"));
             $(row).data("collapse", false);
         });
+
+        //Move helpLink inside the chosen container, so it can be positioned more consistently
+        var $helpLink = $(row).find(".inputs .inputs-container .elementHelplink")
+        $helpLink.appendTo($(row).find(".inputs .inputs-container .chosen-container"))
+
         this.updateRows();
     },
     deleteRow : function(button) {
