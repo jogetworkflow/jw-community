@@ -210,7 +210,7 @@ function themePageInit() {
         
         //open menu
         $("#sidebar-trigger").on("click", function() {
-            if ($("body").width() >= 1280) {
+            if (window.innerWidth >= 1280) {
                 $("body").toggleClass("sidebar-minimized");
             } else {
                 if (!$("body").hasClass("sidebar-toggled")) {

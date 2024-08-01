@@ -2,6 +2,7 @@ package org.joget.apps.app.dao;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -46,8 +47,15 @@ public class PackageDefinitionDaoImpl extends AbstractVersionedObjectDao<Package
 
     @Override
     public void saveOrUpdate(PackageDefinition packageDef) {   
+        // save date in db
+        Date date = new Date();
+        if (packageDef.getDateCreated() == null) {
+            packageDef.setDateCreated(date);
+        }
+        packageDef.setDateModified(date);
+        
         super.saveOrUpdate(packageDef);
-        appDefinitionDao.updateDateModified(packageDef.getAppDefinition());
+        appDefinitionDao.updateDateModified(packageDef.getAppDefinition(), date);
         
         if (!AppDevUtil.isGitDisabled() && !AppDevUtil.isImportApp()) {
             AppDefinition appDef = packageDef.getAppDefinition();

@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import net.sf.ehcache.Element;
+import org.hibernate.query.Query;
 import org.joget.commons.util.DynamicDataSourceManager;
 import org.joget.commons.util.LongTermCache;
 
@@ -67,6 +68,17 @@ public class ResourceBundleMessageDao extends AbstractSpringDao {
         } else {
             return (List<ResourceBundleMessage>) super.find(ENTITY_NAME, "", new Object[]{}, sort, desc, start, rows);
         }
+    }
+    
+    /**
+     * Return a list of locale having translated messages
+     * @return 
+     */
+    public Collection<String> getLocaleList() {
+        String query = "SELECT DISTINCT e.locale FROM " + ENTITY_NAME + " e";
+
+        Query q = findSession().createQuery(query);
+        return q.list();
     }
 
     public Long count(String condition, Object[] params) {

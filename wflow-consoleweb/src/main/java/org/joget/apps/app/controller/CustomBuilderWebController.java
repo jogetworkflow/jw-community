@@ -370,7 +370,7 @@ public class CustomBuilderWebController {
     
     @RequestMapping(value = "/console/app/(*:appId)/(~:appVersion)/cbuilder/(*:type)/save/(*:id)", method = RequestMethod.POST)
     @Transactional
-    public String save(Writer writer, HttpServletRequest request, HttpServletResponse response, @RequestParam("appId") String appId, @RequestParam(value = "appVersion", required = false) String appVersion, @RequestParam("id") String id, @RequestParam(value = "type") String type, @RequestParam("json") String json) throws Exception {
+    public String save(Writer writer, HttpServletRequest request, HttpServletResponse response, @RequestParam("appId") String appId, @RequestParam(value = "appVersion", required = false) String appVersion, @RequestParam("id") String id, @RequestParam(value = "type") String type, @RequestParam(value = "json", required = false) String json) throws Exception {
         CustomBuilder builder = CustomBuilderUtil.getBuilder(type);
         if (builder == null) {
             response.sendError(HttpServletResponse.SC_NOT_FOUND);
@@ -383,6 +383,9 @@ public class CustomBuilderWebController {
         if (page != null) {
             return page;
         }
+        
+        //retrieve from request body if the json is send in file
+        json = AppUtil.getSubmittedJsonDefinition(json);
 
         JSONObject jsonObject = new JSONObject();
 

@@ -2297,11 +2297,18 @@ table.diff tbody th{
 }
 #diff-indicator {
     position: fixed;
-    height: calc(100% - 120px);
+    height: calc(100% - 145px);
     right: 6px;
-    top: 65px;
+    top: 86px;
     width: 20px;
     overflow: hidden;
+}
+#diff-indicator > div {
+    position: relative;
+    width: 20px;
+    overflow: hidden;
+    background-repeat: repeat-x;
+    background-size: contain;
 }
 #i18nView .builder-view-body{
     padding: 20px 20px 0px;
@@ -2569,4 +2576,23 @@ body.right-panel-mode-window #right-panel-window-resize  {
     right: 0;
     margin-top: 150px;
     position: fixed;
+}
+.marketplace-link{
+    color: var(--blue);
+    background: transparent;
+    border: 0;
+    cursor: pointer;
+    padding: 8px 0px;
+    font-size: 12px;
+}
+a.marketplaceLink {
+    width: 100%;
+    padding: 0px 10px;
+    text-wrap: wrap;
+    text-align: center;
+    position: relative;
+    display: block;
+}
+.drag-elements-sidepane.sidepane li:has(a.marketplaceLink){
+    padding-bottom: 30px;
 }

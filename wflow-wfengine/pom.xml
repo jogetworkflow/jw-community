@@ -4,7 +4,7 @@
     <groupId>org.joget</groupId>
     <artifactId>wflow-wfengine</artifactId>
     <packaging>jar</packaging>
-    <version>8.0-SNAPSHOT</version>
+    <version>9.0-SNAPSHOT</version>
     <name>wflow-wfengine</name>
     <url>http://www.joget.org</url>
     <build>
@@ -44,7 +44,7 @@
         <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-test</artifactId>
-            <version>5.3.29</version>
+            <version>5.3.37</version>
             <scope>test</scope>
         </dependency>
         <dependency>

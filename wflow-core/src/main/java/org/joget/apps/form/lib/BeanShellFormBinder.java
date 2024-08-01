@@ -1,8 +1,8 @@
 package org.joget.apps.form.lib;
 
-import bsh.Interpreter;
 import java.util.HashMap;
 import java.util.Map;
+import org.joget.apps.app.service.AppPluginUtil;
 import org.joget.apps.app.service.AppUtil;
 import org.joget.apps.form.model.Element;
 import org.joget.apps.form.model.FormAjaxOptionsBinder;
@@ -16,7 +16,6 @@ import org.joget.apps.form.model.FormRowSet;
 import org.joget.apps.form.model.FormStoreBinder;
 import org.joget.apps.form.model.FormStoreElementBinder;
 import org.joget.apps.form.model.FormStoreMultiRowElementBinder;
-import org.joget.commons.util.LogUtil;
 import org.joget.commons.util.SecurityUtil;
 
 public class BeanShellFormBinder extends FormBinder implements FormLoadBinder, FormStoreBinder, FormLoadElementBinder, FormStoreElementBinder, FormLoadOptionsBinder, FormLoadMultiRowElementBinder, FormStoreMultiRowElementBinder, FormAjaxOptionsBinder {
@@ -73,23 +72,7 @@ public class BeanShellFormBinder extends FormBinder implements FormLoadBinder, F
     }
     
     protected FormRowSet executeScript(String script, Map properties, boolean throwException) throws RuntimeException {
-        Object result = null;
-        try {
-            Interpreter interpreter = new Interpreter();
-            interpreter.setClassLoader(getClass().getClassLoader());
-            for (Object key : properties.keySet()) {
-                interpreter.set(key.toString(), properties.get(key));
-            }
-            LogUtil.debug(getClass().getName(), "Executing script " + script);
-            result = interpreter.eval(script);
-            return (FormRowSet) result;
-        } catch (Exception e) {
-            LogUtil.error(getClass().getName(), e, "Error executing script");
-            if (throwException) {
-                throw new RuntimeException("Error executing script");
-            }
-        }
-        return null;
+        return (FormRowSet) AppPluginUtil.executeScript(script, properties, throwException);
     }
 
     public boolean useAjax() {

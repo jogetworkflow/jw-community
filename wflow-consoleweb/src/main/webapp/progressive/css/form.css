@@ -633,6 +633,7 @@ body #form-canvas .label {
 }
 body.rtl #form-canvas .label {
     padding: 8px 0px 0 10px;
+    text-align: right;
 }
 
 body #form-canvas .form-section, body #form-canvas .subform-section {
@@ -703,7 +704,7 @@ body .form-fileupload-value {
 body .chosen-container-multi .chosen-choices,
 body .chosen-container-single .chosen-single {
     border:0;
-    padding: 3px 0 27px;
+    padding: 3px 0 6px;
     box-shadow:none;
     border-radius: 0;
     border-bottom: 1px solid #B6B6B6;
@@ -730,7 +731,7 @@ body .chosen-container-single .chosen-single abbr {
 }
 
 body .chosen-container-single .chosen-single div {
-    top:4px;
+    top:0px;
 }
 
 body .chosen-container-single.chosen-with-drop .chosen-single {
@@ -1027,4 +1028,17 @@ body .grid-action-header, body td.grid-action-cell {
 .ql-container.ql-bubble.focus{
     border-bottom: 1px solid #727272;
     box-shadow: 0 1px 0 0 #727272;
+}
+.form-cell > label.label > i,
+.subform-cell > label.label > i,
+.label-left.form-cell > label.label > i,
+.label-left.subform-cell > label.label > i{
+    border-bottom: 1px solid #555;
+}
+.form-cell > label.label:has(+ input:focus-visible) > i,
+.subform-cell > label.label:has(+ input:focus-visible) > i,
+.form-cell > label.label:has(+ select:focus-visible) > i,
+.subform-cell > label.label:has(+ select:focus-visible) > i{
+    border-bottom: 1px solid #3f51b5;
+    box-shadow: 0 1px 0 0 #3f51b5;
 }

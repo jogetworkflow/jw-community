@@ -16,6 +16,7 @@ body[builder-theme='light']{
     --theme-active-color-1: #0069d9;
     --theme-active-color-2: #1677ff;
     --theme-link-color-1: #6c757d;
+    --theme-link-color-2: #AAAAAA;
 }
 
 body[builder-theme='dark']{
@@ -36,6 +37,7 @@ body[builder-theme='dark']{
     --theme-active-color-1: #0069d9;
     --theme-active-color-2: #009ef7;
     --theme-link-color-1: #6c757d;
+    --theme-link-color-2: #AAAAAA;
 }   
 /* Dark Theme CSS */
 body[builder-theme]#cbuilder .nav-tabs .nav-link.active, #cbuilder .nav-tabs .nav-item.show .nav-link {
@@ -1302,7 +1304,8 @@ body[builder-theme] .property-description {
 body[builder-theme] .tooltipster-sidetip.tooltipster-right .tooltipster-arrow-background{
     border-right-color: rgba(0, 0, 0, 0.85);
 }
-body[builder-theme] .property-editor-container .loaderIcon {
+body[builder-theme] .property-editor-container .loaderIcon,
+body[builder-theme] .drag-elements-sidepane .loaderIcon{
     color: #91caff;
 }
 body[builder-theme] .tooltipster-sidetip.tooltipster-right .tooltipster-arrow-border{
@@ -2081,7 +2084,6 @@ body[builder-theme] .form-row .form-input.withPrefix .prefix {
     border-right: 1px solid var(--theme-border-color-1);
     height: 32px;
     top: 0px;
-    left: 0px;
     border-radius: 0px;
     background-color: var(--theme-primary-color-3);
     border: 1px solid var(--theme-border-color-1);
@@ -2135,6 +2137,9 @@ body[builder-theme] #generator_container .list_content .more_info{
     color: var(--theme-label-color-2);
 }
 /* Dark Theme CSS */
+body[builder-theme='dark'] .dt-loading {
+    color: #fefefe;
+}
 body[builder-theme='dark'].popupBody{
     background-color: var(--theme-primary-color-1);
 }
@@ -2297,7 +2302,8 @@ body[builder-theme='dark'] *::-webkit-scrollbar-thumb {
 body[builder-theme='dark']#cbuilder #top-panel {
     background-color: var(--theme-primary-color-1);
 }
-body[builder-theme='dark'] .advanced-tools-toogle, body[builder-theme='dark'] .advanced-tools, body[builder-theme='dark'] .secondary-tools {
+body[builder-theme='dark'] .advanced-tools-toogle, body[builder-theme='dark'] .advanced-tools, body[builder-theme='dark'] .secondary-tools,
+body[builder-theme='dark'] .builder-type ul.overview_container li.overview_data{
     background: #000;
 }
 body[builder-theme='dark'] #main-button-group {
@@ -2945,6 +2951,15 @@ body[builder-theme='dark'] .item_usages_container .no_usage h3 {
 }
 body[builder-theme='dark'] #builder-menu-search input::placeholder{
     color: #ccc;
+}
+body[builder-theme='dark'] .grid_sorting_field {
+    background-color: var(--theme-primary-color-1);
+    border-color: var(--theme-border-color-1);
+}
+body[builder-theme='dark'] .sortingTable{
+    background-color: var(--theme-primary-color-3);
+    border-color: var(--theme-border-color-1);
+    color: var(--theme-label-color-1);
 }
 body[builder-theme] .nv-tags label {
     color: var(--theme-label-color-2);

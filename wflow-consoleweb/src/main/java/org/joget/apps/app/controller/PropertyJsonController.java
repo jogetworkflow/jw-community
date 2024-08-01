@@ -91,7 +91,6 @@ public class PropertyJsonController {
             } else {
                 clazz = Class.forName(className);
             }
-            
             Collection<Plugin> elementList = pluginManager.list(clazz);
             Map<String, String> empty = new HashMap<String, String>();
             empty.put("value", "");
@@ -105,6 +104,7 @@ public class PropertyJsonController {
                     Map<String, String> option = new HashMap<String, String>();
                     option.put("value", pClassName);
                     option.put("label", p.getI18nLabel());
+                    option.put("helplink", p.getHelpLink());
                     if (pwaValidation) {
                         if (p instanceof PwaOfflineValidation) {
                             option.put("pwaValidation", "checking");
@@ -132,6 +132,7 @@ public class PropertyJsonController {
                     list.add(option);
                 }
             }
+        
             Collections.sort(list, new Comparator() {
                 @Override
                 public int compare(Object objA, Object objB) {
@@ -146,6 +147,13 @@ public class PropertyJsonController {
                     }
                 }
             });
+        
+            Map<String, String> marketplaceOption = new HashMap<String, String>();
+            marketplaceOption.put("value", className);
+            marketplaceOption.put("label", ResourceBundleUtil.getMessage("cbuilder.seamless.marketplace.more.plugin"));
+            marketplaceOption.put("marketplace", "true");
+            list.add(marketplaceOption);
+            
             for (int i = 0; i < list.size(); i++) {
                 jsonArray.put(list.get(i));
             }
@@ -172,9 +180,6 @@ public class PropertyJsonController {
         } else if (element != null) {
             json = element.getPropertyOptions();
         }
-        if (element != null) {
-            json = PropertyUtil.injectHelpLink(((Plugin) element).getHelpLink(), json);
-        }
 
         writer.write(json);
     }
@@ -198,9 +203,6 @@ public class PropertyJsonController {
             json = FormUtil.injectBinderExtraProperties((FormBinder) element);
         } else if (element != null) {
             json = element.getPropertyOptions();
-        }
-        if (element != null) {
-            json = PropertyUtil.injectHelpLink(((Plugin) element).getHelpLink(), json);
         }
 
         writer.write(json);        

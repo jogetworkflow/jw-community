@@ -356,6 +356,15 @@
         }]
     },
     {
+        name : 'compactTheme',
+        label : '@@theme.ajaxUniversalTheme.compactTheme@@',
+        type : 'checkbox',
+        options : [{
+            value : 'true',
+            label : ''
+        }]
+    },
+    {
         name : 'enableResponsiveSwitch',
         label : '@@theme.progressive.enableResponsiveSwitch@@',
         type : 'checkbox',

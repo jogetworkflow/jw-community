@@ -68,6 +68,7 @@ import org.joget.commons.util.SecurityUtil;
 import org.joget.commons.util.StringUtil;
 import org.joget.directory.model.User;
 import org.joget.commons.util.TimeZoneUtil;
+import org.joget.commons.util.UuidGenerator;
 import org.joget.plugin.base.ApplicationPlugin;
 import org.joget.plugin.base.HiddenPlugin;
 import org.joget.plugin.base.MockRequest;
@@ -248,8 +249,8 @@ public class FormUtil implements ApplicationContextAware {
             // set element properties
             Map<String, Object> properties = FormUtil.parsePropertyFromJsonObject(obj);
             element.setProperties(properties);
-            element.setProperty(FormUtil.PROPERTY_ELEMENT_UNIQUE_KEY, FormUtil.getUniqueKey());
 
+            int index = 0;
             if (parent != null) {
                 element.setParent(parent);
                 // recurse into child elements
@@ -259,7 +260,9 @@ public class FormUtil implements ApplicationContextAware {
                     parent.setChildren(childElements);
                 }
                 childElements.add(element);
+                index = childElements.size();
             }
+            element.setUniqueKey(FormUtil.getElementUniqueKey(element, index));
             
             // recurse into child elements
             FormUtil.parseChildElementsFromJsonObject(obj, element);
@@ -1645,6 +1648,34 @@ public class FormUtil implements ApplicationContextAware {
      */
     public static boolean isHidden(Element element, FormData formData) {
         return element.isHidden(formData);
+    }
+    
+    /**
+     * Generate a consistent unique key for element based on its parent unique key 
+     * @param element
+     * @param index
+     * @return 
+     */
+    public static String getElementUniqueKey(Element element, int index) {
+        String uniqueKey = "";
+        if (element instanceof Section) { //for section, section may use same id accidentally
+            uniqueKey = Integer.toString(element.getPropertyString(FormUtil.PROPERTY_ID).hashCode()) + Integer.toString(index);
+        } else if (!element.getPropertyString(FormUtil.PROPERTY_ID).isEmpty()) {
+            uniqueKey = Integer.toString(element.getPropertyString(FormUtil.PROPERTY_ID).hashCode());
+        } else {
+            uniqueKey = Integer.toString(index); //for column or any container without id, use the index
+        }
+        
+        if (!(element instanceof Form)) {
+            if (element.getParent() != null) {
+                //prepend it with parent unique key, so same field id in different section will having different uniqueKey
+                uniqueKey = element.getParent().getPropertyString(PROPERTY_ELEMENT_UNIQUE_KEY) + uniqueKey;
+            } else {
+                //it is dynamic created element (from advanced grid), append a random hash
+                uniqueKey += UuidGenerator.getInstance().getUuid().hashCode();
+            }
+        }
+        return uniqueKey;
     }
     
     /**

@@ -1,6 +1,8 @@
 <%@ include file="/WEB-INF/jsp/includes/taglibs.jsp" %>
+<%@ page import="org.joget.apps.workflow.security.EnhancedWorkflowUserManager"%>
 <%@ page import="org.joget.apps.app.service.AppDevUtil"%>
 <c:set var="isGitDisabled" value="<%= AppDevUtil.isGitDisabled() %>"/>
+<c:set var="isCustomAppAdmin" value="<%= EnhancedWorkflowUserManager.isAppAdminRole() %>"/>
 
 <c:set var="appDef" scope="request" value="${appDefinition}"/>
 <c:set var="builderLabel" scope="request"><fmt:message key="abuilder.title"/></c:set>
@@ -56,15 +58,21 @@
 <c:set var="builderConfig" scope="request">
     {
         "builder" : {
+            "options" : {
+                "marketplaceUrl" : "<ui:msgEscJS key="appCenter.link.marketplace.url"/>"
+            },
             "callbacks" : {
                 "initBuilder" : "AppBuilder.initBuilder",
                 "unloadBuilder" : "AppBuilder.unloadBuilder",
                 "load" : "AppBuilder.load",
                 "getBuilderProperties" : "AppBuilder.getBuilderProperties",
                 "saveBuilderProperties" : "AppBuilder.saveBuilderProperties",
+                "builderSaved" : "AppBuilder.builderSaved",
                 "publishApp" : "AppBuilder.publishApp",
                 "unpublishApp" : "AppBuilder.unpublishApp",
-                "exportApp" : "AppBuilder.exportApp"
+                "exportApp" : "AppBuilder.exportApp",
+                "overviewViewBeforeClosed" : "AppBuilder.overviewViewBeforeClosed",
+                "overviewMapViewInit" : "AppBuilder.overviewMapViewInit"
             }
         },
         "advanced_tools" : {
@@ -82,6 +90,12 @@
             },
             "definition" : {
                 disabled : true
+            },
+            "i18n" : {
+                disabled : true
+            },
+            "xray" : {
+                 disabled : true
             }
         },
         "msg" : {
@@ -118,9 +132,11 @@
                 type : 'textfield'
             }
         ]
-    },
-    {
+    }
+    <c:if test="${!isCustomAppAdmin}">
+    ,{
         title: '<ui:msgEscJS key="console.app.dev.admin.settings"/>',
+        helplink: '<ui:msgEscJS key="console.app.dev.admin.settings.helplink"/>',
         properties : [
             {
                 name: 'orgId',
@@ -146,9 +162,11 @@
             }
         ]
     }
+    </c:if>
     <c:if test="${!isGitDisabled}">
     ,{
         title: '<ui:msgEscJS key="console.app.dev.git.configuration"/>',
+        helplink: '<ui:msgEscJS key="console.app.dev.git.configuration.helplink"/>',
         properties: [
             {
                 name: 'gitUri',

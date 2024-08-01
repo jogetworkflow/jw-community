@@ -98,8 +98,8 @@
                     //modify the date trigger
                     setTimeout(function(){
                         //for Arabic
-                        if($(element).next("img.ui-datepicker-trigger").length === 0 && $(element).prev("img.ui-datepicker-trigger").length !== 0){
-                            $(element).after($(element).prev('img.ui-datepicker-trigger'));
+                        if($(element).nextAll("img.ui-datepicker-trigger").length === 0 && $(element).prevAll("img.ui-datepicker-trigger").length !== 0){
+                            $(element).after($(element).prevAll('img.ui-datepicker-trigger'));
                         }
                         if($(element).next("img.ui-datepicker-trigger").length !== 0){
                             $(element).next("img.ui-datepicker-trigger").wrap("<a class=\"trigger\"></a>");

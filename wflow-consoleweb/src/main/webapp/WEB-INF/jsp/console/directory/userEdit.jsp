@@ -246,6 +246,13 @@
                     $(hidden).val("");
                 }
             });
+            
+            $('#createUser').on('submit', function(event) {
+                event.preventDefault(); // Prevent the form from submitting
+                var formSelector = this; // The form being submitted
+                var emailSelector = 'input[name="email"]'; 
+                UI.validateEmail(formSelector, emailSelector);
+            });
         });
 
         function validateField(){

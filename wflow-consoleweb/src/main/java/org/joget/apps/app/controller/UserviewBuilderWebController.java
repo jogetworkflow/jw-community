@@ -11,6 +11,7 @@ import java.util.List;
 import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import org.apache.commons.lang.StringUtils;
 import org.joget.apps.app.dao.BuilderDefinitionDao;
 import org.joget.apps.app.dao.UserviewDefinitionDao;
 import org.joget.apps.app.model.AppDefinition;
@@ -24,6 +25,7 @@ import org.joget.apps.userview.model.ExtElement;
 import org.joget.apps.userview.model.PageComponent;
 import org.joget.apps.userview.model.SupportBuilderColorConfig;
 import org.joget.apps.userview.model.Userview;
+import org.joget.apps.userview.model.UserviewBuilderPalette;
 import org.joget.apps.userview.model.UserviewCategory;
 import org.joget.apps.userview.model.UserviewMenu;
 import org.joget.apps.userview.model.UserviewPage;
@@ -37,9 +39,9 @@ import org.joget.commons.util.LogUtil;
 import org.joget.commons.util.SecurityUtil;
 import org.joget.commons.util.SetupManager;
 import org.joget.commons.util.StringUtil;
+import org.joget.plugin.base.DefaultPlugin;
 import org.joget.plugin.base.Plugin;
 import org.joget.plugin.base.PluginManager;
-import org.joget.plugin.enterprise.UniversalTheme;
 import org.joget.plugin.property.model.PropertyEditable;
 import org.joget.plugin.property.service.PropertyUtil;
 import org.json.JSONArray;
@@ -155,16 +157,85 @@ public class UserviewBuilderWebController {
 
         return "ubuilder/builder";
     }
+    
+    //Get UI palette elements
+    @RequestMapping("/console/app/(*:appId)/(~:appVersion)/userview/palette/(*:userviewId)")
+    public void getPaletteReload(Writer writer, ModelMap map, HttpServletRequest request, HttpServletResponse response,
+            @RequestParam("appId") String appId, @RequestParam(value = "appVersion", required = false) String appVersion,
+            @RequestParam("userviewId") String userviewId, @RequestParam(required = false) String json) throws Exception {
+        Map<String, Object> result = new HashMap<>();
+        AppDefinition appDef = appService.getAppDefinition(appId, appVersion);
+        AppUtil.setCurrentAppDefinition(appDef);
+
+        // get available elements from the plugin manager
+        Collection<Plugin> list = pluginManager.list(PageComponent.class);
+        List<Map<String, Object>> pluginList = new ArrayList<>();
+
+        // add elements to palette
+        for (Plugin plugin : list) {
+            JSONArray jsonArray = new JSONArray();
+            Map<String, Object> pluginObject = new HashMap<>();
+            pluginObject.put("className", plugin.getClass().getName());
+            pluginObject.put("i18nLabel", plugin.getI18nLabel());
+            pluginObject.put("developer", ((DefaultPlugin) plugin).getDeveloperMode());
+
+            if (plugin instanceof UserviewMenu) {
+                UserviewMenu menu = (UserviewMenu) plugin;
+                CachedUserviewMenu cachedMenu = new CachedUserviewMenu(menu);
+
+                pluginObject.put("defaultPropertyValues", cachedMenu.getDefaultPropertyValues());
+                pluginObject.put("category", cachedMenu.getCategory());
+                pluginObject.put("icon", cachedMenu.getIcon());
+                pluginObject.put("template", cachedMenu.getBuilderJavaScriptTemplate());
+                pluginObject.put("hidden", cachedMenu.isHiddenPlugin());
+                pluginObject.put("pwaValidationType", cachedMenu.getPwaValidationType());
+                pluginObject.put("type", "menu");
+                jsonArray = new JSONArray(cachedMenu.getPropertyOptions());
+                
+            } else if (plugin instanceof PageComponent) {
+                PageComponent component = (PageComponent) plugin;
+
+                pluginObject.put("defaultPropertyValues", component.getDefaultPropertyValues());
+                pluginObject.put("category", component.getCategory());
+                pluginObject.put("icon", component.getIcon());
+                pluginObject.put("template", component.getBuilderJavaScriptTemplate());
+                pluginObject.put("hidden", component.isHiddenPlugin());
+                pluginObject.put("pwaValidationType", component);
+                pluginObject.put("type", "component");
+                jsonArray = new JSONArray(component.getPropertyOptions());
+            }
+            JSONArray newPropertyOptions = new JSONArray();
+            for (int i = 0; i < jsonArray.length(); i++) {
+                JSONObject jsonObject = jsonArray.getJSONObject(i);
+                JSONObject newObject = new JSONObject();
+                PropertyUtil.recursivelyAddQuotes(newObject, jsonObject);
+                newPropertyOptions.put(newObject);
+            }
+            pluginObject.put("propertyOptions", newPropertyOptions.toString(2));
+            pluginList.add(pluginObject);
+        }
+
+        // sort based on categories
+        pluginList.sort(Comparator.comparing(m -> (Comparable<Object>) m.get("category")));
+        result.put("elements", pluginList);
+
+        JSONObject jsonObject = new JSONObject();
+        jsonObject.put("success", result);
+        jsonObject.write(writer);
+    }
 
     @RequestMapping(value = "/console/app/(*:appId)/(~:appVersion)/userview/builderSave/(*:userviewId)", method = RequestMethod.POST)
     @Transactional
-    public String save(Writer writer, @RequestParam("appId") String appId, @RequestParam(value = "appVersion", required = false) String appVersion, @RequestParam("userviewId") String userviewId, @RequestParam("json") String json) throws Exception {
+    public String save(Writer writer, @RequestParam("appId") String appId, @RequestParam(value = "appVersion", required = false) String appVersion, @RequestParam("userviewId") String userviewId, @RequestParam(value = "json", required = false) String json) throws Exception {
         // verify app version
         ConsoleWebPlugin consoleWebPlugin = (ConsoleWebPlugin)pluginManager.getPlugin(ConsoleWebPlugin.class.getName());
         String page = consoleWebPlugin.verifyAppVersion(appId, appVersion);
         if (page != null) {
             return page;
         }
+        
+        //retrieve from request body if the json is send in file
+        json = AppUtil.getSubmittedJsonDefinition(json);
 
         JSONObject jsonObject = new JSONObject();
 
@@ -227,7 +298,14 @@ public class UserviewBuilderWebController {
         if (element != null) {
             propertyOptions = PropertyUtil.injectHelpLink(((Plugin) element).getHelpLink(), element.getPropertyOptions());
             if (element instanceof UserviewTheme) {
-                String loginOptions = AppUtil.readPluginResource(DefaultTheme.class.getName(), "/properties/userview/userviewLogin.json", null, true, "message/userview/userviewLogin");
+                
+                //inject custom login template properties to login page properties if is v5 theme and above and InformationTileComponent available
+                String customLoginProperty = "";
+                if (element instanceof UserviewV5Theme && pluginManager.getPlugin("org.joget.plugin.enterprise.InformationTileComponent") != null) {
+                    customLoginProperty = AppUtil.readPluginResource(DefaultTheme.class.getName(), "/properties/userview/userviewCustomLogin.json", null, true, null);
+                }
+                
+                String loginOptions = AppUtil.readPluginResource(DefaultTheme.class.getName(), "/properties/userview/userviewLogin.json", new String[]{customLoginProperty}, true, "message/userview/userviewLogin");
                 propertyOptions = UserviewUtil.appendPropertyOptions(propertyOptions, loginOptions);
                 if (!(element instanceof UserviewV5Theme)) {
                     String mobileOptions = AppUtil.readPluginResource(DefaultTheme.class.getName(), "/properties/userview/userviewMobile.json", null, true, "message/userview/userviewMobile");
@@ -484,5 +562,16 @@ public class UserviewBuilderWebController {
         }
         String userviewJson = userview.getJson();
         writer.write(PropertyUtil.propertiesJsonLoadProcessing(userviewJson));
+    }
+    
+    @RequestMapping(value = "/console/app/(*:appId)/(~:appVersion)/userview/loginTemplateEditor", method = RequestMethod.GET)
+    public void loginTemplateEditor(HttpServletResponse response, @RequestParam("appId") String appId, @RequestParam(value = "appVersion", required = false) String appVersion) throws Exception {
+        String temp = AppUtil.readPluginResource("org.joget.apps.userview.lib.DefaultV5EmptyTheme", "/templates/loginTemplates.html", null, false, null);
+        String[] templates = temp.split("\\r?\\n\\r?\\n");
+        for (int i = 0; i < templates.length; i++) {
+            templates[i] = "\"" + StringUtil.escapeString(templates[i], StringUtil.TYPE_JSON, null) + "\"";
+        }
+
+        response.getWriter().write(AppUtil.readPluginResource("org.joget.apps.userview.lib.DefaultV5EmptyTheme", "/resources/js/templateEditor.js", new Object[]{StringUtils.join(templates, ", ")}, false, null));
     }
 }

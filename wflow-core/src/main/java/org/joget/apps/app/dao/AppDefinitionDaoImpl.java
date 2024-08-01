@@ -14,7 +14,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 import org.apache.commons.io.FileUtils;
-import org.apache.commons.io.filefilter.AbstractFileFilter;
+import org.apache.commons.io.filefilter.DirectoryFileFilter;
+import org.apache.commons.io.filefilter.FileFileFilter;
 import org.apache.commons.lang.ArrayUtils;
 import org.hibernate.query.Query;
 import org.hibernate.Session;
@@ -278,9 +279,14 @@ public class AppDefinitionDaoImpl extends AbstractVersionedObjectDao<AppDefiniti
 
     @Override
     public void updateDateModified(AppDefinition appDef) {
+        updateDateModified(appDef, new Date());
+    }
+    
+    @Override
+    public void updateDateModified(AppDefinition appDef, Date date) {
         Session session = findSession();
         Query query = session.createQuery("UPDATE "+ENTITY_NAME+" e SET e.dateModified = :dateModified WHERE e.id = :appID and e.version = :appVersion");
-        query.setParameter("dateModified", new Date());
+        query.setParameter("dateModified", date);
         query.setParameter("appID", appDef.getAppId());
         query.setParameter("appVersion", appDef.getVersion());
         query.executeUpdate();
@@ -598,7 +604,7 @@ public class AppDefinitionDaoImpl extends AbstractVersionedObjectDao<AppDefiniti
             if (pluginDir.exists()) {
                 // find all plugin files
                 final String[] extensions = new String[] { "jar" };
-                Iterator<File> fileIterator = FileUtils.iterateFiles(pluginDir, new AbstractFileFilter() {
+                Iterator<File> fileIterator = FileUtils.iterateFiles(pluginDir, new FileFileFilter() {
                     @Override
                     public boolean accept(File file) {
                         String path = file.getName();
@@ -606,7 +612,7 @@ public class AppDefinitionDaoImpl extends AbstractVersionedObjectDao<AppDefiniti
                         String ext = (dotIndex >= 0) ? path.substring(dotIndex + 1) : path;
                         return ArrayUtils.contains(extensions, ext);
                     }
-                }, new AbstractFileFilter() {
+                }, new DirectoryFileFilter() {
                     @Override
                     public boolean accept(File dir, String name) {
                         return true;

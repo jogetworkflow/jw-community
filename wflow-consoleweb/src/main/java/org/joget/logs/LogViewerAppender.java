@@ -24,6 +24,7 @@ import org.apache.http.client.HttpRequestRetryHandler;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.methods.HttpRequestBase;
 import org.apache.http.conn.ConnectTimeoutException;
+import org.apache.http.conn.HttpHostConnectException;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
@@ -396,6 +397,11 @@ public class LogViewerAppender extends AbstractAppender {
     protected static void sendMessage(final String node, final String appId) {
         final String key = node + ":" + HostManager.getCurrentProfile() + ":" + appId;
         
+        //check if there is request object to continue
+        if (WorkflowUtil.getHttpServletRequest() == null) {
+            return;
+        }
+        
         if (unreachableNodes.contains(node)) {
             messages.remove(key);
             processingMessage.remove(key);
@@ -440,7 +446,7 @@ public class LogViewerAppender extends AbstractAppender {
                                 updateJsonIPWhitelist(currentNode);
 
                                 String broadcastURL = "http://" + nodeIp + ":" + httpRequest.getLocalPort() + "/jw/web/json/log/broadcast?";
-
+                                
                                 broadcastURL = StringUtil.addParamsToUrl(broadcastURL, "node", currentNode);
                                 broadcastURL = StringUtil.addParamsToUrl(broadcastURL, "profile", HostManager.getCurrentProfile());
                                 broadcastURL = StringUtil.addParamsToUrl(broadcastURL, "appId", appId);
@@ -463,7 +469,7 @@ public class LogViewerAppender extends AbstractAppender {
                                 e.printStackTrace();
 
                                 //remove from server list when the server is not reachable
-                                if (e instanceof ConnectTimeoutException || e instanceof ConnectException) {
+                                if (e instanceof ConnectTimeoutException || e instanceof ConnectException || e instanceof HttpHostConnectException) {
                                     unreachableNodes.add(node);
                                 }
                             } finally {

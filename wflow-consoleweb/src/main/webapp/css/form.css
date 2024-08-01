@@ -189,6 +189,12 @@
     clear: none;
     margin-right: 3px;
 }
+.rtl .form-column-horizontal .form-cell,
+.rtl .form-column-horizontal .subform-cell {
+    float: right;
+    margin-left: 3px;
+    margin-right: 0;
+}
 .form-fileupload {
     float: left;
 }
@@ -198,6 +204,9 @@
 .form-cell-value, .subform-cell-value {
     float: left;
     width: 70%;
+}
+.rtl .form-cell-value, .rtl .subform-cell-value {
+    float: right;
 }
 .form-cell-value, .subform-cell-value, .form-cell-value span, .subform-cell-value span, .grid-cell{
     overflow-wrap: break-word;
@@ -290,7 +299,7 @@
     .form-cell .label, .subform-cell .label {
         width:auto;
         max-width: 90%;
-        float:none;
+        float:none !important;
     }
     .form-container textarea, .form-container input[type="text"], .form-container input[type="password"], .form-container input[type="datetime"], .form-container input[type="datetime-local"], .form-container input[type="date"], .form-container input[type="month"], .form-container input[type="time"], .form-container input[type="week"], .form-container input[type="number"], .form-container input[type="email"], .form-container input[type="url"], .form-container input[type="search"], .form-container input[type="tel"], .form-container input[type="color"], .form-container .form-cell-value{
         max-width: 90%;
@@ -405,6 +414,9 @@ ul.form-fileupload-value li a {display: inline-block;}
 /* grid */
 .cgrid table {
     width: 100%;
+}
+.grid td {
+    vertical-align: top;
 }
 .grid th, .grid td {
     border: solid 1px silver;
@@ -753,11 +765,44 @@ body.rtl #${elementParamName!}_multiPagedForm_${element.properties.elementUnique
 /* Popup select box */
 .selector_element {
     display: block;
-    margin-left: 30%;
+}
+body.rtl .selector_item {
+    float: right;
+}
+body.rtl .selector_items{
+    margin-left: 0%;
+    margin-right: 30%;
+}
+@media(max-width: 480px){
+    body.rtl .selector_items{
+        margin-right: 0%;
+    }
+}
+@media(max-width: 480px){
+    body.rtl .selector_element {
+        float: right;
+    }
 }
 .selector_items {
     display: block;
     margin: 5px 0px;
+    margin-left: 30%;
+}
+@media (max-width: 480px) {
+    .selector_element {
+        margin-left: 0%;
+    }  
+}
+@media(max-width: 480px) {
+    .selector_items {
+        margin-left:0% !important;
+    }
+}
+.label-top .selector_items{
+    margin-left: 0%;
+}
+body.rtl .label-top .selector_items{
+    margin-right: 0%;
 }
 .selector_item {
     margin-right: 5px;
@@ -820,4 +865,95 @@ body.rtl .form-edit-btn{
 .comments_thread .comment {
     width: 100% !important;
     margin-top: 20px !important;
+}
+
+/* numeric field */
+.numeric_field_controls {display:inline-block; position:absolute; top: -1px;}
+.label-top .numeric_field_controls {right: 0px; bottom: 50px; top:auto;}
+body.rtl .label-top .numeric_field_controls {left: 0px; right: auto;}
+.numeric_field_control {position: absolute; top: 5px; right: 10px; font-size:10px; cursor: pointer;}
+.numeric_field_control img {width:12px; height:12px; max-width: fit-content; min-width: fit-content; max-height: fit-content; min-height: fit-content;}
+body.rtl .numeric_field_control {left:10px; right:auto;}
+.numeric_field_control.numeric_field_control_decr {top: 15px;} 
+@media (max-width: 768px) {
+    .numeric_field_controls {bottom: 50px; top:auto;}
+    body.rtl .numeric_field_controls {right: auto;}
+}
+
+/* datepicker */
+body.rtl #form-canvas .form-cell .label {
+    text-align: right;
+}
+.form-cell:has(.datapicker-native) img.ui-datepicker-trigger{
+    display: none;
+}
+.label-top:has(.datapicker-native) input {
+    max-width: 100%;
+}
+.form-cell > label.label > i,
+.subform-cell > label.label > i,
+.label-left.form-cell > label.label > i,
+.label-left.subform-cell > label.label > i{
+    position: absolute;
+    background: #ccc;
+    box-sizing: border-box;
+    z-index: 1;
+    width: 35px;
+    height: 30px;
+    right: -35px;
+    top: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+body.rtl .form-cell > label.label > i,
+body.rtl .subform-cell > label.label > i{
+    left: -35px;
+    right: unset;
+}
+.form-cell > label.label:has(i) + *:not(.ui-screen-hidden),
+.subform-cell > label.label:has(i) + *:not(.ui-screen-hidden),
+.form-cell > label.label:has(i) + .ui-screen-hidden + *,
+.subform-cell > label.label:has(i) + .ui-screen-hidden + *{
+    padding-left: 40px;
+}   
+body.rtl .form-cell > label.label:has(i) + *:not(.ui-screen-hidden),
+body.rtl .subform-cell > label.label:has(i) + *:not(.ui-screen-hidden),
+body.rtl .form-cell > label.label:has(i) + .ui-screen-hidden + *,
+body.rtl .subform-cell > label.label:has(i) + .ui-screen-hidden + *{
+    padding-right: 40px;
+    padding-left: 12px;
+}
+.label-top .form-cell:not(.label-left) > label.label > i,
+.label-top .subform-cell:not(.label-left) > label.label > i{
+   right: unset;
+   bottom: -35px;
+   top: unset;
+}
+body.rtl .label-top .form-cell:not(.label-left) > label.label > i,
+body.rtl .label-top .subform-cell:not(.label-left) > label.label > i{
+    left:unset;
+}
+.label-top.form-cell > label.label > i,
+.label-top.subform-cell > label.label > i{
+    bottom: -35px;
+    right: unset;
+    top: unset;
+}
+body.rtl .label-top.form-cell > label.label > i,
+body.rtl .label-top.subform-cell > label.label > i{
+    left: unset;
+}
+@media (max-width: 480px) {
+    .form-cell > label.label > i, .subform-cell > label.label > i, .label-left.form-cell > label.label > i, .label-left.subform-cell > label.label > i {
+        right: unset;
+        top: unset;
+        bottom: -35px;
+    }
+    body.rtl .form-cell > label.label > i,
+    body.rtl .subform-cell > label.label > i,
+    body.rtl .label-left.form-cell > label.label > i,
+    body.rtl .label-left.subform-cell > label.label > i{
+        left: unset;
+    }
 }

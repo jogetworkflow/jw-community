@@ -963,7 +963,7 @@ ProcessBuilder = {
                     delete transitionXpdlObj['Condition'];
                 }
 
-                if (transition.properties.type === 'CONDITION' && transition.properties.conditions !== undefined && transition.properties.conditions.length > 0) {
+                if (transition.properties.conditionHelper === "yes" && transition.properties.conditions !== undefined && transition.properties.conditions.length > 0) {
                     var conditionsJson = JSON.encode(transition.properties.conditions);
                     extendedAttribute.push({
                         "-Name": "PBUILDER_TRANSITION_CONDITIONS",
@@ -1273,12 +1273,20 @@ ProcessBuilder = {
                 
                 //deadline
                 if (activity.properties.deadlines !== undefined && activity.properties.deadlines.length > 0) {
+                    var actDeadline = ProcessBuilder.getArray(xpdlObj, 'Deadline');
                     var deadlines = [];
                     for (var d in activity.properties.deadlines) {
                         var deadline = activity.properties.deadlines[d];
-                        var dObj = {
-                            '-Execution' : deadline.execution
-                        };
+                        
+                        //use the existing obj to update is available
+                        var dObj;
+                        if (d < actDeadline.length) {
+                            dObj = actDeadline[d];
+                        } else {
+                            var dObj = {};
+                        }
+                        
+                        dObj['-Execution'] = deadline.execution;
                         
                         // determine condition
                         var deadlineCondition;
@@ -1429,7 +1437,9 @@ ProcessBuilder = {
                     ProcessBuilder.setArray(transitionRestriction['Split'], "TransitionRefs", "TransitionRef", transitionRefs);
                 } else {
                     activity.properties.split = "";
-                    delete transitionRestriction['Split'];
+                    if (transitionRestriction['Split'] !== undefined && transitionRestriction['Split']['-self-closing'] === undefined) {
+                        delete transitionRestriction['Split'];
+                    }
                 }
                 var targetConnSet = ProcessBuilder.jsPlumb.getConnections({target: $(actElement)});
                 if (targetConnSet.length > 1) {
@@ -1446,7 +1456,9 @@ ProcessBuilder = {
                     }
                 } else {
                     activity.properties.join = "";
-                    delete transitionRestriction['Join'];
+                    if (transitionRestriction['Join'] !== undefined && transitionRestriction['Join']['-self-closing'] === undefined) {
+                        delete transitionRestriction['Join'];
+                    }
                 }
                 if (activity.properties.split === "" && activity.properties.join === "") {
                     delete xpdlObj['TransitionRestrictions'];
@@ -3884,7 +3896,7 @@ ProcessBuilder = {
                         var options = [{label : '', value : ''}];
                         var plugins = ProcessBuilder.availableParticipantPlugin;
                         for(var e in plugins){
-                            options.push({label : UI.escapeHTML(plugins[e].label), value : e});
+                            options.push({label : UI.escapeHTML(plugins[e].label), value : e, helplink : plugins[e].helplink});
                         }
                         return options;
                     },
@@ -3908,6 +3920,7 @@ ProcessBuilder = {
         var def = [
             {
                 title: get_cbuilder_msg("pbuilder.label.configureMapping"),
+                helplink: get_cbuilder_msg("pbuilder.label.activityMapping.helplink"),
                 properties: [{
                     name: 'mapping_act_type',
                     label: get_cbuilder_msg("cbuilder.type"),
@@ -3980,7 +3993,7 @@ ProcessBuilder = {
                     var options = [{label : '', value : ''}];
                     var plugins = ProcessBuilder.availableAssignmentFormModifier;
                     for(var e in plugins){
-                        options.push({label : UI.escapeHTML(plugins[e]), value : e});
+                        options.push({label : UI.escapeHTML(plugins[e].label), value : e, helplink : plugins[e].helplink});
                     }
                     return options;
                 },
@@ -4015,7 +4028,7 @@ ProcessBuilder = {
                         var options = [{label : '', value : ''}];
                         var plugins = ProcessBuilder.availableDecisionPlugin;
                         for(var e in plugins){
-                            options.push({label : UI.escapeHTML(plugins[e].label), value : e});
+                            options.push({label : UI.escapeHTML(plugins[e].label), value : e, helplink : plugins[e].helplink});
                         }
                         return options;
                     },
@@ -4096,7 +4109,7 @@ ProcessBuilder = {
                     var options = [{label : '', value : ''}];
                     var plugins = ProcessBuilder.availableStartProcessFormModifier;
                     for(var e in plugins){
-                        options.push({label : UI.escapeHTML(plugins[e]), value : e});
+                        options.push({label : UI.escapeHTML(plugins[e].label), value : e, helplink : plugins[e].helplink});
                     }
                     return options;
                 },
@@ -4233,7 +4246,7 @@ ProcessBuilder = {
                 ProcessBuilder.availableAssignmentFormModifier = {};
                 for (e in returnedData) {
                     if (returnedData[e].value !== "") {
-                        ProcessBuilder.availableAssignmentFormModifier[returnedData[e].value] = returnedData[e].label;
+                        ProcessBuilder.availableAssignmentFormModifier[returnedData[e].value] = returnedData[e];
                     }
                 }
                 wait.resolve();
@@ -4254,7 +4267,7 @@ ProcessBuilder = {
                 ProcessBuilder.availableStartProcessFormModifier = {};
                 for (e in returnedData) {
                     if (returnedData[e].value !== "") {
-                        ProcessBuilder.availableStartProcessFormModifier[returnedData[e].value] = returnedData[e].label;
+                        ProcessBuilder.availableStartProcessFormModifier[returnedData[e].value] = returnedData[e];
                     }
                 }
                 wait.resolve();
@@ -4618,9 +4631,9 @@ ProcessBuilder = {
                     && elementObj.properties.mapping_act_modifier["className"] !== "") {
                 var label = '<span class="missing-plugin">' + elementObj.properties.mapping_act_modifier["className"] + " (" + get_advtool_msg('dependency.tree.Missing.Plugin') + ")</span>";
                 if (elementObj.className === "activity" && ProcessBuilder.availableAssignmentFormModifier[elementObj.properties.mapping_act_modifier["className"]] !== undefined) {
-                    label = ProcessBuilder.availableAssignmentFormModifier[elementObj.properties.mapping_act_modifier["className"]];
+                    label = ProcessBuilder.availableAssignmentFormModifier[elementObj.properties.mapping_act_modifier["className"]].label;
                 } else if (elementObj.className === "start" && ProcessBuilder.availableStartProcessFormModifier[elementObj.properties.mapping_act_modifier["className"]] !== undefined) {
-                    label = ProcessBuilder.availableStartProcessFormModifier[elementObj.properties.mapping_act_modifier["className"]]
+                    label = ProcessBuilder.availableStartProcessFormModifier[elementObj.properties.mapping_act_modifier["className"]].label;
                 }
                 $(dl).append('<dt><i class="las la-plug" title="'+get_cbuilder_msg('pbuilder.label.moreSettings')+'"></i></dt><dd>'+label+'</dd>');
             }
@@ -4736,26 +4749,63 @@ ProcessBuilder = {
         $(view).addClass("ace_fullpage");
         $(view).html('');
         $(view).append('<pre id="xpdl_definition" style="height:100%"></pre><div class="sticky-buttons"><button class="upload-btn btn button btn-secondary">'+get_cbuilder_msg('pbuilder.label.uploadXpdl')+'</button> <button class="update-btn btn button btn-secondary">'+get_cbuilder_msg('cbuilder.update')+'</button></div>');
+
+        codeeditor = CodeMirror(document.getElementById("xpdl_definition"), {
+            lineNumbers: true,
+            mode: "text",
+            autoRefresh:true,
+            matchBrackets: true,
+            theme: "default",
+            gutters: ["CodeMirror-lint-markers", "CodeMirror-linenumbers", "CodeMirror-foldgutter"],
+            lint: true,
+            autoCloseTags: true,
+            autoCloseBrackets: true,
+            foldGutter: true,
+            lint: true,
+            lineWrapping: true,
+            highlightSelectionMatches: {annotateScrollbar: true, minChars: 1},
+            extraKeys: {
+                "Ctrl-F": function(cm) {
+                  cm.execCommand("replace")
+                  $('#xpdl_definition').find(".CodeMirror-advanced-dialog").css({position:"fixed", zIndex:"2147483647", top: $("body #top-panel").outerHeight() + "px", left:"calc(80% - 320px)", display: 'block'})
+                  $('#xpdl_definition').find(".CodeMirror-advanced-dialog").draggable({containment:'parent'})
+                },
+                "Ctrl-=": function(cm) {
+                  cm.increaseFontSize();
+                },
+                "Ctrl--": function(cm) {
+                  cm.decreaseFontSize();
+                },
+                "Ctrl-/": function(cm) {
+                  cm.toggleComment()
+                }
+              }
+          });
+
+        //Set Mode
+        codeeditor.setOption("mode", "xml");
         
-        var editor = ace.edit("xpdl_definition");
-        editor.$blockScrolling = Infinity;
+        //Make the replace appear
+        codeeditor.execCommand("replace");
+
+        //Set dark theme if dark theme mode is activated
         if ($('body').attr('builder-theme') === "dark") {
-            editor.setTheme("ace/theme/vibrant_ink");
-        } else {
-            editor.setTheme("ace/theme/textmate");
+            codeeditor.setOption("theme", "ayu-mirage");
         }
-        editor.getSession().setTabSize(4);
-        editor.getSession().setMode("ace/mode/xml");
-        editor.setAutoScrollEditorIntoView(true);
-        editor.getSession().setValue(ProcessBuilder.toXpdl());
-        editor.resize();
+
+        //Set height
+        $('#xpdl_definition').find(".CodeMirror-advanced-dialog").css({display: 'none'})
+        $("#xpdl_definition").find(".CodeMirror").css({"height":"auto"});
+        $('#xpdl_definition').find(".CodeMirror-scroll").css({"maxHeight":"100%", "minHeight":"100%"});
+
+        codeeditor.setValue(ProcessBuilder.toXpdl())
         
         $(view).find("button.update-btn").on("click", function() {
             var btn = this;
             var text = $(this).text();
             $(this).attr("disabled", true);
             
-            ProcessBuilder.updateJsonFromXpdl(editor.getSession().getValue(), function(){
+            ProcessBuilder.updateJsonFromXpdl(codeeditor.getValue(), function(){
                 $(btn).text(get_advtool_msg('adv.tool.updated'));
                 setTimeout(function(){
                     $(btn).text(text);
@@ -4767,8 +4817,8 @@ ProcessBuilder = {
         $(view).find("button.upload-btn").on("click", function() {
             JPopup.show("uploadXpdlDialog", CustomBuilder.contextPath + '/web/console/app'+CustomBuilder.appPath+'/package/upload', {}, "");
         });
-    },   
-        
+    },  
+    
     /*
      * escape unsafe char in xml attr value
      */                
@@ -4785,7 +4835,7 @@ ProcessBuilder = {
                 case '"': return '&quot;';
             }
         });
-    },        
+    },    
         
     /*
      * Convert object to xml
@@ -4804,7 +4854,7 @@ ProcessBuilder = {
             }
         }
         
-        if (typeof obj === "object") {
+        if (typeof obj === "object" && !(obj instanceof String)) {
             for (var prop in obj) {
                 if (prop === "-self-closing") {
                     selfClosing = obj['-self-closing'];
@@ -4829,7 +4879,7 @@ ProcessBuilder = {
         if (name !== "") {
             if (selfClosing) {
                 xml = space + "<" + name + attrs + "/>\n";
-            } else if (typeof obj !== "object") {
+            } else if (typeof obj !== "object" || obj instanceof String) {
                 xml = space + "<" + name + ">" + body + "</" + name + ">\n";
             } else {
                 xml = space + "<" + name + attrs + ">\n" + body + space + "</" + name + ">\n";
@@ -4868,13 +4918,18 @@ ProcessBuilder = {
      * Update json def based on xpdl
      */
     updateJsonFromXpdl : function(xpdl, callback) {
+        var xpdlFile = new Blob([xpdl], {type : 'text/plain'});
+        var params = new FormData();
+        params.append("xpdlFile", xpdlFile);
+        
         $.ajax({
             type: "POST",
-            data: {
-                "xpdl": xpdl
-            },
+            data: params,
             url: CustomBuilder.contextPath + '/web/console/app'+CustomBuilder.appPath+'/process/builder/xpdlJson',
             dataType : "json",
+            cache: false,
+            processData: false,
+            contentType: false,
             beforeSend: function (request) {
                 request.setRequestHeader(ConnectionManager.tokenName, ConnectionManager.tokenValue);
             },
@@ -4884,7 +4939,8 @@ ProcessBuilder = {
                         var data = eval(response);
                         if (data !== null && data["Package"] !== undefined) {
                             CustomBuilder.data.xpdl["Package"] = data["Package"];
-                            CustomBuilder.loadJson(CustomBuilder.getJson(), true); //update through loadJson addToUndo to make sure package id does not change.
+                            var json = JSON.encode(CustomBuilder.data);
+                            CustomBuilder.loadJson(json, true); //update through loadJson addToUndo to make sure package id does not change.
                         }
                     } catch (err) {}
                 }  
@@ -5075,8 +5131,126 @@ ProcessBuilder = {
         }
     },
             
-    builderSaved : function() {
+    builderSaved : function(data) {
         ProcessBuilder.updateAdvancedView();
+        
+        ProcessBuilder.showProcessMigrationChecker(data);
+    },
+            
+    builderSaveFailed : function(data) {
+        ProcessBuilder.showProcessMigrationChecker(data);
+    },
+      
+    /**
+     * Show a message to block the save button if there is process migration in progress. Unblock when it is done.
+     */                
+    showProcessMigrationChecker: function(data) {
+        if (data.processMigration) {
+            if ($("#processMigrationLoader").length === 0) {
+                $("#save-btn").parent().append('<div id="processMigrationLoader" class="alert alert-warning"><i class="las la-circle-notch fa-spin"></i> '+get_cbuilder_msg("pbuilder.migrationInProgress")+'</div>');
+            }  
+            
+            //add a progress checker
+            var checker = function() {
+                $("#save-btn").attr("disabled", "disabled");
+                
+                $.ajax({ 
+                    type: "POST", 
+                    url: CustomBuilder.contextPath + '/web/json/console/app/' + CustomBuilder.appId + '/' + CustomBuilder.appVersion + '/process/builder/processUpdateCheck',
+                    cache: false,
+                    processData: false,
+                    contentType: false,
+                    beforeSend: function (request) {
+                       request.setRequestHeader(ConnectionManager.tokenName, ConnectionManager.tokenValue);
+                    },
+                    success:function(data) {
+                        if (data.processMigration) {
+                            setTimeout(function(){
+                                checker();
+                            }, 5000);
+                        } else {
+                            $("#processMigrationLoader").remove();
+                            $("#save-btn").removeAttr("disabled");
+                        }
+                    }
+                });
+            };
+            
+            setTimeout(function(){
+                checker();
+            }, 3500);
+        }
+    },        
+     
+    /*
+     * Prepare the selector based on overview path parameter
+     */
+    getOverviewPathElementSelector : function(data, path) {
+        var selector = "";
+        var propertiesPath = path;
+        
+        if (path.indexOf("xpdl.") === 0) {
+            var xpdl = CustomBuilder.data.xpdl['Package'];
+            var xpdlProcesses = ProcessBuilder.getArray(xpdl['WorkflowProcesses']['WorkflowProcess']);
+            
+            var index = 0;
+            if (propertiesPath.indexOf('WorkflowProcess[') !== -1) {
+                index = parseInt(propertiesPath.substring(propertiesPath.indexOf('WorkflowProcess[') + 16, propertiesPath.indexOf('].')));
+                propertiesPath = propertiesPath.substring(propertiesPath.indexOf('].') + 1);
+            }
+            var xpdlProcess = xpdlProcesses[index];
+            
+            if (path.indexOf(".Activity[") !== -1) { //is activity node
+                var xpdlActivities = ProcessBuilder.getArray(xpdlProcess['Activities'], 'Activity');
+                
+                //find activity
+                index = parseInt(propertiesPath.substring(propertiesPath.indexOf('.Activity[') + 10, propertiesPath.indexOf('].')));
+                propertiesPath = propertiesPath.substring(propertiesPath.indexOf('].') + 1);
+                var xpdlActivity = xpdlActivities[index];
+                
+                selector = "#" + xpdlActivity['-Id'];
+            } else if (path.indexOf(".Transition[") !== -1) { //is transition
+                var xpdlTransitions = ProcessBuilder.getArray(xpdlProcess['Transitions'], 'Transition');
+                
+                //find transition
+                index = parseInt(propertiesPath.substring(propertiesPath.indexOf('.Transition[') + 12, propertiesPath.indexOf('].')));
+                propertiesPath = propertiesPath.substring(propertiesPath.indexOf('].') + 1);
+                var xpdlTransition = xpdlTransitions[index];
+                
+                selector = "#" + xpdlTransition['-Id'];
+            } else { //is edit process
+                setTimeout(function(){
+                    $("#process-edit-btn").trigger("click");
+                }, 1);
+            
+                return ["", propertiesPath];
+            }
+            
+            //show properties tab
+            setTimeout(function(){
+                $("#element-properties-tab-link a").trigger("click");
+            }, 1);
+            
+        } else { //it is mapping
+            var temp = path.split("::");
+            var id = temp[1].substring(0, temp[1].indexOf("."));
+            propertiesPath = temp[1].substring(temp[1].indexOf(".") + 12);
+            
+            if (id === "processStartWhiteList") {
+                selector = '[data-cbuilder-classname="start"]';
+            } else if (path.indexOf("participants.") !== -1) {
+                selector = "#participant_" + id;
+            } else {
+                selector = "#" + id;
+            }
+            
+            //show mapping tab
+            setTimeout(function(){
+                $("#style-properties-tab-link a").trigger("click");
+            }, 1);
+        }
+        
+        return [selector, propertiesPath];
     },
     
     showAdvancedInfo : function() {

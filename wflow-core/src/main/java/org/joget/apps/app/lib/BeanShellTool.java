@@ -1,11 +1,10 @@
 package org.joget.apps.app.lib;
 
-import bsh.Interpreter;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
+import org.joget.apps.app.service.AppPluginUtil;
 import org.joget.apps.app.service.AppUtil;
-import org.joget.commons.util.LogUtil;
 import org.joget.plugin.base.ApplicationPlugin;
 import org.joget.plugin.base.ExtDefaultPlugin;
 import org.joget.workflow.model.ParticipantPlugin;
@@ -57,20 +56,7 @@ public class BeanShellTool extends ExtDefaultPlugin implements ApplicationPlugin
     }
 
     protected Object executeScript(String script, Map properties) {
-        Object result = null;
-        try {
-            Interpreter interpreter = new Interpreter();
-            interpreter.setClassLoader(getClass().getClassLoader());
-            for (Object key : properties.keySet()) {
-                interpreter.set(key.toString(), properties.get(key));
-            }
-            LogUtil.debug(getClass().getName(), "Executing script " + script);
-            result = interpreter.eval(script);
-            return result;
-        } catch (Exception e) {
-            LogUtil.error(getClass().getName(), e, "Error executing script");
-            return null;
-        }
+        return AppPluginUtil.executeScript(script, properties);
     }
     
     @Override

@@ -4,6 +4,9 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Map;
+import javax.sql.DataSource;
+import org.apache.commons.beanutils.BeanUtils;
+import org.joget.apps.app.service.AppUtil;
 import org.joget.plugin.base.ExtDefaultPlugin;
 import org.joget.workflow.util.WorkflowUtil;
 
@@ -15,6 +18,7 @@ public abstract class DataListBinderDefault extends ExtDefaultPlugin implements 
     public static final String USERVIEW_KEY_SYNTAX = "#userviewKey#";
     private DataList datalist;
     protected DataListInboxSetting inboxSetting;
+    protected String driver;
 
     public DataList getDatalist() {
         return datalist;
@@ -155,11 +159,28 @@ public abstract class DataListBinderDefault extends ExtDefaultPlugin implements 
                     values.add(inboxSetting.getUsername());
                 }
             }
+            
+            if (getDriver().equals("org.postgresql.Driver")) {
+                conds += " AND ass.IsValid IS TRUE";
+            } else {
+                conds += " AND ass.IsValid = 1";
+            }
+            
             queryObj.setOperator("AND");
             queryObj.setQuery(conds);
             queryObj.setValues(values.toArray(new String[0]));
             return queryObj;
         }
         return null;
+    }
+    
+    protected String getDriver() {
+        if (driver == null) {
+            try {
+                DataSource ds = (DataSource) AppUtil.getApplicationContext().getBean("setupDataSource");
+                driver = BeanUtils.getProperty(ds, "driverClassName");
+            } catch (Exception e) {}
+        } 
+        return driver;
     }
 }

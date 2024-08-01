@@ -73,6 +73,7 @@
         <css>/js/font-awesome/css/font-awesome.min.css</css>
     </group>
     <group name="bootstrap_responsive_commons">
+        <css>/js/bootstrap/css/bootstrap.custom.css</css>
         <css>/js/bootstrap/css/bootstrap.min.css</css>
         <css>/js/bootstrap/css/bootstrap-responsive.min.css</css>
         <css>/js/font-awesome/css/font-awesome.min.css</css>
@@ -81,6 +82,7 @@
     <group name="universal.preload.min">
         <css>/css/form.css</css>
         <css>/css/datalistBuilderView.css</css>
+        <css>/js/bootstrap/css/bootstrap.custom.css</css>
         <css>/js/bootstrap3/css/bootstrap.min.css</css>
         <css>/css/userview_v5.css</css>
         <css>/universal/lib/material-design-iconic-font/css/material-design-iconic-font.min.css</css>
@@ -102,10 +104,12 @@
         <js>/js/ajax-component.js</js>
         <js>/js/ajax-menus-count.js</js>
         <js>/pwa.js</js>
+        <js>/js/priorityMenu.js</js>
     </group>
     <group name="progressive.preload.min">
         <css>/css/form.css</css>
         <css>/css/datalistBuilderView.css</css>
+        <css>/js/bootstrap/css/bootstrap.custom.css</css>
         <css>/js/bootstrap3/css/bootstrap.min.css</css>
         <css>/css/userview_v5.css</css>
         <css>/progressive/css/form.css</css>
@@ -127,6 +131,7 @@
         <js>/js/ajax-component.js</js>
         <js>/js/ajax-menus-count.js</js>
         <js>/pwa.js</js>
+        <js>/js/priorityMenu.js</js>
     </group>
     <group name="xadmin.min">
         <css>/css/form.css</css>
@@ -171,7 +176,8 @@
         <js>/js/ajax-component.js</js>
         <js>/js/ajax-menus-count.js</js>
         <js>/pwa.js</js>
-    </group> 
+        <js>/js/priorityMenu.js</js>
+    </group>
     <group name="quill">
         <css>/js/quill/quill.bubble.css</css>
         <css>/js/quill/quill.snow.css</css>
@@ -181,10 +187,14 @@
         <js>/js/quill/image-upload.min.js</js>
         <js>/js/quill/image-resize.min.js</js>
         <js>/js/quill/quill.switch.js</js>
-    </group>  
+    </group>
     <group name="darkTheme">
         <css>/css/darkTheme.css</css>
         <js>/js/darkTheme.js</js>
+    </group>
+    <group name="compactTheme">
+        <css>/css/compactTheme.css</css>
+        <js>/js/compactTheme.js</js>
     </group> 
     <group name="dx8ColorAdmin.min">
         <css>classpath:resources/css/dx8ColorAdminTheme.css</css>
@@ -193,4 +203,68 @@
         <css>/fonts/Roboto/css/font.css</css>
         <css>classpath:resources/css/dx8ColorAdminTheme.css</css>
     </group>    
+    <group name="codeMirror.min">
+        <!-- Required dependencies -->
+        <js>/js/codemirror/lib/codemirror.js</js>
+        <js>/js/codemirror/addon/display/panel.js</js>
+        <js>/js/codemirror/addon/display/autorefresh.js</js>
+
+        <!-- For the modes -->
+        <js>/js/codemirror/mode/javascript/javascript.js</js>
+        <js>/js/codemirror/mode/xml/xml.js</js>
+        <js>/js/codemirror/mode/css/css.js</js>
+        <js>/js/codemirror/mode/htmlmixed/htmlmixed.js</js>
+        <js>/js/codemirror/mode/clike/clike.js</js>
+
+        <!-- Fontsize -->
+        <js>/js/codemirror/addon/display/fontSize.js</js>
+
+        <!-- Comment -->
+        <js>/js/codemirror/addon/comment/comment.js</js>
+        <js>/js/codemirror/addon/comment/continuecomment.js</js>
+
+        <!-- Fullscreen -->
+        <js>/js/codemirror/addon/display/fullscreen.js</js>
+
+        <!-- Lint related addons, it provides a way to display errors and warnings in your editor -->
+        <js>/js/codemirror/addon/lint/lint.js</js>
+        <js>/js/codemirror/addon/lint/htmlmixed-lint.js</js>
+        <js>/js/codemirror/addon/lint/javascript-lint.js</js>
+        <js>/js/codemirror/addon/lint/css-lint.js</js>
+        <js>/js/codemirror/addon/lint/json-lint.js</js>
+
+        <!-- Enable code hint. Works together witht he lint addons -->
+        <js>/js/codemirror/addon/hint/jshint.js</js>
+        <js>/js/codemirror/addon/hint/htmlhint.js</js>
+        <js>/js/codemirror/addon/hint/csslint.js</js>
+        <js>/js/codemirror/addon/hint/jsonlint.js</js>
+
+        <!-- Match Brackets, close tags, close brackets, -->
+        <js>/js/codemirror/addon/edit/matchbrackets.js</js>
+        <js>/js/codemirror/addon/edit/closetag.js</js>
+        <js>/js/codemirror/addon/fold/xml-fold.js</js>
+        <js>/js/codemirror/addon/edit/closebrackets.js</js>
+        <js>/js/codemirror/addon/advanced_dialog/advanced-dialog.js</js>
+
+        <!-- Search related addon, these are the dependencies that make search possible -->
+        <js>/js/codemirror/addon/search/searchcursor.js</js>
+        <js>/js/codemirror/addon/revised_search/revised-search.js</js>
+        <js>/js/codemirror/addon/search/jump-to-line.js</js>
+        <js>/js/codemirror/addon/search/match-highlighter.js</js>
+        <js>/js/codemirror/addon/scroll/annotatescrollbar.js</js>
+        <js>/js/codemirror/addon/search/matchesonscrollbar.js</js>
+
+        <!-- Fold addons, these give users the ability to fold the code -->
+        <js>/js/codemirror/addon/fold/foldcode.js</js>
+        <js>/js/codemirror/addon/fold/foldgutter.js</js>
+
+        <!-- CSS for Codemirror5 -->
+        <css>/js/codemirror/lib/codemirror.css</css>
+        <css>/js/codemirror/theme/ayu-mirage.css</css>
+        <css>/js/codemirror/addon/display/fullscreen.css</css>
+        <css>/js/codemirror/addon/lint/lint.css</css>
+        <css>/js/codemirror/addon/advanced_dialog/dialog.css</css>
+        <css>/js/codemirror/addon/search/matchesonscrollbar.css</css>
+        <css>/js/codemirror/addon/fold/foldgutter.css</css>
+    </group>  
 </groups> 

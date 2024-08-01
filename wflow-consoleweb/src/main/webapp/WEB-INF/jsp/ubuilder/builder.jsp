@@ -31,7 +31,7 @@
             <c:set var="category" value=""/>
             <c:set var="pwaValidation" value=""/>
             <c:set var="type" value="component"/>
-            <c:set var="propertyOptions" value="${element.propertyOptions}"/>
+            <c:set var="propertyOptions" value="${PropertyUtil.injectHelpLink(element.helpLink, element.propertyOptions)}"/>
             <c:set var="template" value="${element.builderJavaScriptTemplate}"/>
             <c:if test="${empty propertyOptions}">
                 <c:set var="propertyOptions" value="''"/>
@@ -111,7 +111,8 @@
             "options" : {
                 "getDefinitionUrl" : "${pageContext.request.contextPath}/web/json/console/app/${appId}/${appVersion}/userview/builder/${userview.id}/json",
                 "rightPropertyPanel" : true,
-                "defaultBuilder" : true
+                "defaultBuilder" : true,
+                "marketplacePaletteClass" : "org.joget.apps.userview.model.UserviewMenu"
             },
             "callbacks" : {
                 "initBuilder" : "UserviewBuilder.initBuilder",
@@ -125,7 +126,9 @@
                 "previewViewInit" : "UserviewBuilder.previewViewInit",
                 "previewViewBeforeClosed" : "UserviewBuilder.previewViewBeforeClosed",
                 "screenshotViewInit" : "UserviewBuilder.screenshotViewInit",
-                "builderSaved" : "UserviewBuilder.builderSaved"
+                "builderSaved" : "UserviewBuilder.builderSaved",
+                "getOverviewPathElementSelector" : "UserviewBuilder.getOverviewPathElementSelector",
+                "marketplaceReloadPalette" : "UserviewBuilder.marketplaceReloadPalette"
             }
         },
         "advanced_tools" : {

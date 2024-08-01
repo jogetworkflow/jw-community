@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html ${html_attributes!} lang="${language!}">
+<html ${html_attributes!} lang="${language!}" <#if right_to_left!false>dir="rtl"</#if>>
     ${html_inner_before!}
     <head>
         ${head_inner_before!}

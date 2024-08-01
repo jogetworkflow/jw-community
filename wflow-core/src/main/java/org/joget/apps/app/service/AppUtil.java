@@ -1,7 +1,10 @@
 package org.joget.apps.app.service;
 
+import com.github.underscore.lodash.U;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.Writer;
 import java.lang.reflect.Field;
 import java.net.URI;
@@ -58,12 +61,14 @@ import org.joget.apps.app.model.DatalistDefinition;
 import org.joget.apps.app.model.FormDefinition;
 import org.joget.apps.app.model.HashVariablePlugin;
 import org.joget.apps.app.model.Message;
+import org.joget.apps.app.model.PackageActivityForm;
 import org.joget.apps.app.model.PackageActivityPlugin;
 import org.joget.apps.app.model.PackageDefinition;
 import org.joget.apps.app.model.PackageParticipant;
 import org.joget.apps.app.model.PluginDefaultProperties;
 import org.joget.apps.app.model.UserReplacement;
 import org.joget.apps.app.model.UserviewDefinition;
+import org.joget.apps.form.lib.DefaultFormBinder;
 import org.joget.apps.form.model.Element;
 import org.joget.apps.form.model.Form;
 import org.joget.apps.form.model.FormData;
@@ -75,6 +80,8 @@ import org.joget.apps.userview.model.UserviewV5Theme;
 import org.joget.apps.userview.service.UserviewService;
 import org.joget.commons.spring.model.Setting;
 import org.joget.commons.util.DistributedIdGenerator;
+import org.joget.commons.util.FileLimitException;
+import org.joget.commons.util.FileStore;
 import org.joget.commons.util.LogUtil;
 import org.joget.commons.util.ResourceBundleUtil;
 import org.joget.commons.util.SecurityUtil;
@@ -106,7 +113,12 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.ClassUtils;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.util.HtmlUtils;
+import com.github.underscore.lodash.U;
+import java.io.ByteArrayOutputStream;
+import java.io.InputStream;
+import org.joget.apps.form.lib.DefaultFormBinder;
 
 /**
  * Utility methods is used by App in runtime
@@ -126,6 +138,7 @@ public class AppUtil implements ApplicationContextAware {
     static ThreadLocal currentAppDefinition = new ThreadLocal();
     static ThreadLocal resetAppDefinition = new ThreadLocal();
     static ThreadLocal processAppDefinition = new ThreadLocal();
+    static ThreadLocal<Boolean> partialParsing = ThreadLocal.withInitial(() -> false);
     static String designerContextPath = "/jwdesigner";
 
     /**
@@ -424,7 +437,7 @@ public class AppUtil implements ApplicationContextAware {
      * @return Language code
      */
     public static String getAppLanguage() {
-        return LocaleContextHolder.getLocale().getLanguage();
+        return StringUtil.stripAllHtmlTag(LocaleContextHolder.getLocale().getLanguage());
     }
     
     /**
@@ -432,7 +445,7 @@ public class AppUtil implements ApplicationContextAware {
      * @return timezone id
      */
     public static String getAppTimezone() {
-        return LocaleContextHolder.getTimeZone().getID();
+        return StringUtil.stripAllHtmlTag(LocaleContextHolder.getTimeZone().getID());
     }
     
     /**
@@ -467,6 +480,23 @@ public class AppUtil implements ApplicationContextAware {
         return url;
     }
 
+    /**
+     * Ties an partial parse flag to the current thread.
+     * @param isEnabled
+     * @throws BeansException
+     */
+    public static void allowPartialParsing(Boolean allow) throws BeansException {
+        partialParsing.set(allow);
+    }
+
+    /**
+     * Retrieve the partial parse flag for the current thread.
+     */
+    public static Boolean isPartialParsingAllowed() {
+        Boolean isEnabled = (Boolean) partialParsing.get();
+        return isEnabled;
+    }
+    
     /**
      * Reads a resource from a plugin
      * @param pluginName
@@ -563,7 +593,7 @@ public class AppUtil implements ApplicationContextAware {
         }
         return content;
     }
-
+ 
     /**
      * Used to parses Hash Variables found in the content and replace it to the Hash
      * Variable value
@@ -1073,8 +1103,7 @@ public class AppUtil implements ApplicationContextAware {
                             data.put("params", request.getParameterMap());
                             data.put("context_path", request.getContextPath());
                             data.put("build_number", ResourceBundleUtil.getMessage("build.number"));
-                            String rightToLeft = WorkflowUtil.getSystemSetupValue("rightToLeft");
-                            data.put("right_to_left", "true".equalsIgnoreCase(rightToLeft));
+                            data.put("right_to_left", isRTL());
                             String locale = AppUtil.getAppLocale();
                             data.put("locale", locale);
                             data.put("is_popup_view", true);
@@ -1409,7 +1438,7 @@ public class AppUtil implements ApplicationContextAware {
                                     FileDataSource fds = new FileDataSource(file);
                                     String name = MimeUtility.encodeText(file.getName(), "UTF-8", null);
                                     if (embed != null && "true".equalsIgnoreCase(embed)) {
-                                        email.embed(fds, name, name);
+                                        email.embed(fds, name, name.replaceAll("[^a-zA-Z0-9_.]", ""));
                                         inlineImages.add(file.getName());
                                     } else {
                                         email.attach(fds, name, "");
@@ -1500,7 +1529,12 @@ public class AppUtil implements ApplicationContextAware {
             if (!(html.contains("/web/client/app/") && html.contains("/form/download/"))) {
                 break;
             }
-            html = html.replaceAll("src=\"[^\"]*/web/client/app/"+StringUtil.escapeRegex(appId)+"/form/download/"+StringUtil.escapeRegex(formId)+"/"+StringUtil.escapeRegex(primaryKey)+"/"+StringUtil.escapeRegex(name)+"\\.\"", StringUtil.escapeRegex("src=\"cid:"+StringUtil.escapeString(name, StringUtil.TYPE_URL, null)+"\""));
+            try {
+                String escapedCid = MimeUtility.encodeText(name, "UTF-8", null).replaceAll("[^a-zA-Z0-9_.]", "");
+                html = html.replaceAll("src=\"[^\"]*/web/client/app/"+StringUtil.escapeRegex(appId)+"/form/download/"+StringUtil.escapeRegex(formId)+"/"+StringUtil.escapeRegex(primaryKey)+"/"+StringUtil.escapeRegex(name)+"\\.\"", StringUtil.escapeRegex("src=\"cid:"+escapedCid+"\""));
+            } catch (Exception e) {
+                LogUtil.error(AppUtil.class.getName(), e, name);
+            }
         }
         return html;
     }
@@ -1714,9 +1748,11 @@ public class AppUtil implements ApplicationContextAware {
     }
     
     public static List<String> findMissingPlugins(AppDefinition appDef) {
-        long start = System.nanoTime();
-        
-        List<String> missingPlugins = new ArrayList<String>();
+        return findCustomPlugins(appDef, true, true);
+    }
+    
+    public static List<String> findCustomPlugins(AppDefinition appDef, Boolean isMissing, Boolean toMarketPlaceLink) {
+        List<String> foundPlugins = new ArrayList<String>();
         
         if (appDef == null) {
             appDef = AppUtil.getCurrentAppDefinition();
@@ -1765,12 +1801,18 @@ public class AppUtil implements ApplicationContextAware {
         // get plugins list
         PluginManager pluginManager = (PluginManager)AppUtil.getApplicationContext().getBean("pluginManager");
         Collection<Plugin> pluginList = pluginManager.list(null);
+        Collection<Plugin> osgiPluginList = pluginManager.listOsgiPlugin(null);
         Set<String> plugins = new HashSet<String>();
+        Set<String> osgiplugins = new HashSet<String>();
 
         // look for plugins used in any definition file
         for (Plugin plugin: pluginList) {
             String pluginClassName = ClassUtils.getUserClass(plugin).getName();
             plugins.add(pluginClassName);
+        }
+        for (Plugin plugin: osgiPluginList) {
+            String pluginClassName = ClassUtils.getUserClass(plugin).getName();
+            osgiplugins.add(pluginClassName);
         }
         
         //find "className": "" 
@@ -1791,16 +1833,19 @@ public class AppUtil implements ApplicationContextAware {
         found.remove("org.joget.apps.userview.model.UserviewPermission");
         
         for (String p : found) {
-            if (p.contains(".") && !plugins.contains(p)) {
-                missingPlugins.add(p);
+            if (p.contains(".") && 
+                    ((!isMissing && osgiplugins.contains(p)) || //exist but it is osgi
+                    (isMissing && !plugins.contains(p)))) { //not exist
+                foundPlugins.add(p);
             }
         }
         
-        missingPlugins = MarketplaceUtil.pluginClassToMarketplaceLink(missingPlugins);
+        if (toMarketPlaceLink) {
+            foundPlugins = MarketplaceUtil.pluginClassToMarketplaceLink(foundPlugins);
+            Collections.sort(foundPlugins);
+        }
         
-        Collections.sort(missingPlugins);
-        
-        return missingPlugins;
+        return foundPlugins;
     }
     
     /**
@@ -1998,5 +2043,177 @@ public class AppUtil implements ApplicationContextAware {
             value = value.replaceAll(pattern, StringUtil.escapeRegex(runningNumber));
         }
         return value;
+    }
+    
+    /**
+     * Check to retrieve JSON from multipart file in POST body if json is null or empty
+     * @param json
+     * @return 
+     */
+    public static String getSubmittedJsonDefinition(String json) {
+        if (json == null || json.isEmpty()) {
+            // get json file in POST body
+            MultipartFile jsonFile = null;
+            try {
+                jsonFile = FileStore.getFile("jsonFile");
+            } catch (FileLimitException e) {
+                LogUtil.warn(AppUtil.class.getName(), ResourceBundleUtil.getMessage("general.error.fileSizeTooLarge", new Object[]{FileStore.getFileSizeLimit()}));
+            }
+            
+            if (jsonFile != null) {
+                try {
+                    json =  new String(jsonFile.getBytes(), "UTF-8");
+                } catch (IOException e) {
+                    LogUtil.error(AppUtil.class.getName(), e, "Fail to retrieve submitted JSON definition");
+                }
+            }
+        }
+        
+        return json;
+    }
+    
+    public static String getXpdlAndMappingJson(AppDefinition appDef) {
+        return getXpdlAndMappingJsonObj(appDef).toString();
+    }
+    
+    public static JSONObject getXpdlAndMappingJsonObj(AppDefinition appDef) {
+        JSONObject jsonDef = new JSONObject();
+        
+        try {
+            String xpdl = getXpdl(appDef);
+            if (xpdl != null && !xpdl.isEmpty()) {
+                String xpdlJson = U.xmlToJson(xpdl);
+                jsonDef.put("xpdl", new JSONObject(xpdlJson));
+            }
+            
+            PackageDefinition packageDefinition = appDef.getPackageDefinition();
+            if (packageDefinition != null) {
+                Map<String, PackageActivityForm> activityFormMap = packageDefinition.getPackageActivityFormMap();
+                JSONObject activityForms = new JSONObject();
+                if (activityFormMap != null && !activityFormMap.isEmpty()) {
+                    for (String k : activityFormMap.keySet()) {
+                        JSONObject o = new JSONObject();
+                        PackageActivityForm f = activityFormMap.get(k);
+
+                        populateActivityForm(o, f);
+                        activityForms.put(k, o);
+                    }
+                }
+                jsonDef.put("activityForms", activityForms);
+
+                Map<String, PackageActivityPlugin> activityMap = packageDefinition.getPackageActivityPluginMap();
+                JSONObject activityPlugins = new JSONObject();
+                if (activityMap != null && !activityMap.isEmpty()) {
+                    for (String k : activityMap.keySet()) {
+                        JSONObject o = new JSONObject();
+                        PackageActivityPlugin p = activityMap.get(k);
+
+                        populateActivityPlugin(o, p);
+                        activityPlugins.put(k, o);
+                    }
+                }
+                jsonDef.put("activityPlugins", activityPlugins);
+
+                Map<String, PackageParticipant> participantMap = packageDefinition.getPackageParticipantMap();
+                JSONObject participants = new JSONObject();
+                if (participantMap != null && !participantMap.isEmpty()) {
+                    for (String k : participantMap.keySet()) {
+                        JSONObject o = new JSONObject();
+                        PackageParticipant p = participantMap.get(k);
+
+                        populateParticipant(o, p);
+                        participants.put(k, o);
+                    }
+                }
+                jsonDef.put("participants", participants);
+            } else {
+                jsonDef.put("activityForms", new JSONObject());
+                jsonDef.put("activityPlugins", new JSONObject());
+                jsonDef.put("participants", new JSONObject());
+            }
+            
+        } catch (Exception e) {
+            LogUtil.error(AppUtil.class.getName(), e, "");
+        }
+        
+        return jsonDef;
+    }
+
+    protected static String getXpdl(AppDefinition appDef) {
+        try {
+            PackageDefinition packageDef = appDef.getPackageDefinition();
+            String xpdl = null;
+            if (packageDef != null) {
+                WorkflowManager workflowManager = (WorkflowManager) AppUtil.getApplicationContext().getBean("workflowManager");
+                byte[] content = workflowManager.getPackageContent(packageDef.getId(), packageDef.getVersion().toString());
+                if (content != null) {
+                    xpdl = new String(content, "UTF-8");
+                }
+            }
+            
+            if (xpdl == null) {
+                // read default xpdl
+                InputStream input = null;
+                ByteArrayOutputStream out = new ByteArrayOutputStream();
+                try {
+                    // get resource input stream
+                    String url = "/org/joget/apps/app/model/default.xpdl";
+                    
+                    PluginManager pluginManager = (PluginManager) AppUtil.getApplicationContext().getBean("pluginManager");
+                    input = pluginManager.getPluginResource(DefaultFormBinder.class.getName(), url);
+                    if (input != null) {
+                        // write output
+                        byte[] bbuf = new byte[65536];
+                        int length = 0;
+                        while ((input != null) && ((length = input.read(bbuf)) != -1)) {
+                            out.write(bbuf, 0, length);
+                        }
+                        // form xpdl
+                        xpdl = new String(out.toByteArray(), "UTF-8");
+
+                        // replace package ID and name
+                        xpdl = xpdl.replace("${packageId}", StringUtil.escapeString(appDef.getId(), StringUtil.TYPE_XML, null));
+                        xpdl = xpdl.replace("${packageName}", StringUtil.escapeString(appDef.getName(), StringUtil.TYPE_XML, null));
+                        return xpdl;
+                    }
+                } finally {
+                    if (input != null) {
+                        input.close();
+                    }
+                }
+            }
+            return xpdl;
+        } catch (Exception e) {
+            LogUtil.error(AppUtil.class.getName(), e, "");
+        }
+        return null;
+    }
+    
+    protected static void populateActivityForm(JSONObject o, PackageActivityForm f) throws JSONException {
+        o.put("formId", f.getFormId());
+        o.put("formUrl", f.getFormUrl());
+        o.put("formIFrameStyle", f.getFormIFrameStyle());
+        o.put("disableSaveAsDraft", f.getDisableSaveAsDraft());
+        o.put("autoContinue", f.isAutoContinue());
+        o.put("type", (f.getType() != null)?f.getType():PackageActivityForm.ACTIVITY_FORM_TYPE_SINGLE);
+    }
+    
+    protected static void populateActivityPlugin(JSONObject o, PackageActivityPlugin p) throws JSONException {
+        o.put("className", p.getPluginName());
+        if (p.getPluginProperties() != null && !p.getPluginProperties().isEmpty()) {
+            o.put("properties", new JSONObject(p.getPluginProperties()));
+        } else {
+            o.put("properties", new JSONObject());
+        }
+    }
+    
+    protected static void populateParticipant(JSONObject o, PackageParticipant p) throws JSONException {
+        o.put("type", p.getType());
+        o.put("value", p.getValue());
+        if (p.getPluginProperties() != null && !p.getPluginProperties().isEmpty()) {
+            o.put("properties", new JSONObject(p.getPluginProperties()));
+        } else {
+            o.put("properties", new JSONObject());
+        }
     }
 }

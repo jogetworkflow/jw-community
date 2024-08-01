@@ -130,11 +130,12 @@ public class FormDefinitionDaoImpl extends AbstractAppVersionedObjectDao<FormDef
     @Override
     public boolean add(FormDefinition object) {
         // save in db
-        object.setDateCreated(new Date());
-        object.setDateModified(new Date());
+        Date date = new Date();
+        object.setDateCreated(date);
+        object.setDateModified(date);
         
         boolean result = super.add(object);
-        appDefinitionDao.updateDateModified(object.getAppDefinition());
+        appDefinitionDao.updateDateModified(object.getAppDefinition(), date);
 
         if (!AppDevUtil.isGitDisabled()) {
             // save json
@@ -158,7 +159,7 @@ public class FormDefinitionDaoImpl extends AbstractAppVersionedObjectDao<FormDef
         object.setDateModified(new Date());
         
         boolean result = super.update(object);
-        appDefinitionDao.updateDateModified(object.getAppDefinition());
+        appDefinitionDao.updateDateModified(object.getAppDefinition(), object.getDateModified());
 
         if (!AppDevUtil.isGitDisabled()) {
             // save json

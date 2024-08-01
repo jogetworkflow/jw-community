@@ -44,6 +44,10 @@ import org.joget.workflow.model.service.WorkflowManager;
 import org.joget.workflow.model.service.WorkflowUserManager;
 import org.joget.workflow.util.WorkflowUtil;
 import org.json.JSONObject;
+import org.apache.commons.lang3.StringUtils;
+
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class UniversalTheme extends UserviewV5Theme implements UserviewPwaTheme, PluginWebSupport {
     protected final static String PROFILE = "_ja_profile"; 
@@ -328,6 +332,10 @@ public class UniversalTheme extends UserviewV5Theme implements UserviewPwaTheme,
     @Override
     public String getJsCssLib(Map<String, Object> data) {
         String path = data.get("context_path") + "/" + getPathName();
+        
+        if(getPropertyString("customLogin").equalsIgnoreCase("true") && !getPropertyString("template").isEmpty() && (Boolean) data.get("is_login_page")){
+            return super.getJsCssLib(data);
+        }
 
         String jsCssLink = "";
         jsCssLink += "<link href=\"" + data.get("context_path") + "/wro/" + getPathName() + ".preload.min.css" + "\" rel=\"stylesheet\" />\n";
@@ -1127,7 +1135,7 @@ public class UniversalTheme extends UserviewV5Theme implements UserviewPwaTheme,
 
     public void webService(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         String action = request.getParameter("_a");
-
+        
         if ("getAssignment".equals(action)) {
             try {
                 String appId = request.getParameter("appId");

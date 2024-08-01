@@ -125,13 +125,16 @@ public class DatalistBuilderWebController {
 
     @RequestMapping(value = "/console/app/(*:appId)/(~:version)/datalist/builderSave/(*:id)", method = RequestMethod.POST)
     @Transactional
-    public String save(Writer writer, @RequestParam("appId") String appId, @RequestParam(value = "version", required = false) String version, @RequestParam("id") String id, @RequestParam("json") String json) throws Exception {
+    public String save(Writer writer, @RequestParam("appId") String appId, @RequestParam(value = "version", required = false) String version, @RequestParam("id") String id, @RequestParam(value = "json", required = false) String json) throws Exception {
         // verify app license
         ConsoleWebPlugin consoleWebPlugin = (ConsoleWebPlugin)pluginManager.getPlugin(ConsoleWebPlugin.class.getName());
         String page = consoleWebPlugin.verifyAppVersion(appId, version);
         if (page != null) {
             return page;
         }
+        
+        //retrieve from request body if the json is send in file
+        json = AppUtil.getSubmittedJsonDefinition(json);
 
         AppDefinition appDef = appService.getAppDefinition(appId, version);
         DatalistDefinition datalist = datalistDefinitionDao.loadById(id, appDef);

@@ -17,6 +17,9 @@ import java.io.UnsupportedEncodingException;
 import java.io.Writer;
 import java.net.URISyntaxException;
 import java.net.URLDecoder;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -74,6 +77,7 @@ import org.joget.apps.app.model.ProcessFormModifier;
 import org.joget.apps.app.model.StartProcessFormModifier;
 import org.joget.apps.app.model.UserviewDefinition;
 import org.joget.apps.form.dao.FormDataDao;
+import org.joget.apps.form.dao.FormDataDaoImpl;
 import org.joget.apps.form.lib.LinkButton;
 import org.joget.apps.form.lib.SaveAsDraftButton;
 import org.joget.apps.form.lib.SubmitButton;
@@ -96,6 +100,7 @@ import org.joget.apps.userview.model.UserviewSetting;
 import org.joget.apps.userview.service.UserviewService;
 import org.joget.apps.workflow.lib.AssignmentCompleteButton;
 import org.joget.commons.util.DynamicDataSourceManager;
+import org.joget.commons.util.FileManager;
 import org.joget.commons.util.HostManager;
 import org.joget.commons.util.LogUtil;
 import org.joget.commons.util.ResourceBundleUtil;
@@ -178,6 +183,7 @@ public class AppServiceImpl implements AppService {
     //----- Workflow use cases ------
     
     final protected Map<String, String> processMigration = new HashMap<String, String>();
+    private final static String PROCESS_MIGRATION_PATH = "app_migration" + File.separator;
 
     /**
      * Retrieves the workflow process definition for a specific app version.
@@ -1293,16 +1299,7 @@ public class AppServiceImpl implements AppService {
                     replacement.put("/userview/"+copy.getAppId()+"/", "/userview/"+escapedAppId+"/");
                     replacement.put("app_fd_" + copy.getAppId() + "_pd", "app_fd_" + escapedAppId + "_pd"); //for process enhancement process data table
                     
-                    String prefix = "";
-                    //find table prefix in environment
-                    if (copy.getEnvironmentVariableList() != null) {
-                        for (EnvironmentVariable env : copy.getEnvironmentVariableList()) {
-                            if (env.getId().equals("table_prefix")) {
-                                prefix = env.getValue();
-                                break;
-                            }
-                        }
-                    }
+                    String prefix = findCommonTablePrefix(copy);
                         
                     Map<String, String> templateReplace = new LinkedHashMap<String, String>();
                     JSONObject templateConfig = AppUtil.getAppTemplateConfig(copy);
@@ -1478,16 +1475,7 @@ public class AppServiceImpl implements AppService {
                 replacement.put("/userview/"+zipApp.getAppId()+"/", "/userview/"+appDefinition.getAppId()+"/");
                 replacement.put("app_fd_" + zipApp.getAppId() + "_pd", "app_fd_" + appDefinition.getAppId() + "_pd"); //for process enhancement process data table
                 
-                String prefix = "";
-                //find table prefix in environment
-                if (zipApp.getEnvironmentVariableList() != null) {
-                    for (EnvironmentVariable env : zipApp.getEnvironmentVariableList()) {
-                        if (env.getId().equals("table_prefix")) {
-                            prefix = env.getValue();
-                            break;
-                        }
-                    }
-                }
+                String prefix = findCommonTablePrefix(zipApp);
                 
                 Map<String, String> templateReplace = new LinkedHashMap<String, String>();
                 if (templateConfig != null) {
@@ -2614,7 +2602,7 @@ public class AppServiceImpl implements AppService {
         try {
             byte[] appData = getAppDataXmlFromZip(zip);
             byte[] xpdl = getXpdlFromZip(zip);
-            
+
             //for backward compatible
             Map<String, String> replacement = new HashMap<String, String>();
             replacement.put("<!--disableSaveAsDraft>", "<disableSaveAsDraft>");
@@ -2631,10 +2619,10 @@ public class AppServiceImpl implements AppService {
 
             RegistryMatcher m = new RegistryMatcher();
             m.bind(Date.class, new CustomDateFormatTransformer());
-                    
+
             Serializer serializer = new Persister(m);
             AppDefinition appDef = serializer.read(AppDefinition.class, new ByteArrayInputStream(appData), false);
-
+            
             long appVersion = appDefinitionDao.getLatestVersion(appDef.getAppId());
 
             //Store appDef
@@ -2660,11 +2648,142 @@ public class AppServiceImpl implements AppService {
                 }
             }
             
+            if (request != null && request.getParameterValues("autoInstallUpdatePlugins") != null) {
+                MarketplaceUtil.autoInstallUpdatePlugins(newAppDef);
+            }
+            
             return newAppDef;
         } catch (ImportAppException e) {
             throw e;
         } catch (Exception e) {
             LogUtil.error(getClass().getName(), e, "");
+        }
+        return null;
+    }
+    
+    /**
+     * Checking the zip file is containing the git src
+     * @param zip
+     * @return 
+     */
+    @Override
+    public boolean isGitSrcZip(byte[] zip) {
+        //search for appConfig.xml file in zip
+        try (ZipInputStream in = new ZipInputStream(new ByteArrayInputStream(zip))) {
+            ZipEntry entry = null;
+
+            while ((entry = in.getNextEntry()) != null) {
+                if (entry.getName().contains("appConfig.xml")) {
+                    return true;
+                }
+            }
+        } catch (Exception e) {
+            LogUtil.error(AppServiceImpl.class.getName(), e, "");
+        }
+        
+        return false;
+    }
+    
+    /**
+     * Import App Definition from git src in zip file
+     * @param zip
+     * @return
+     */
+    @Override
+    @Transactional
+    public AppDefinition importAppDefFromGitSrc(byte[] zip) throws ImportAppException {
+        File temp = new File(FileManager.getBaseDirectory() + UuidGenerator.getInstance().getUuid());
+        try {
+            //unzip all files to temp dir
+            byte[] buffer = new byte[1024];
+            File appDefFile = null;
+
+            // Create output directory if it doesn't exist
+            if (!temp.exists()) {
+                temp.mkdirs();
+            }
+
+            try (ZipInputStream zis = new ZipInputStream(new ByteArrayInputStream(zip))) {
+                ZipEntry zipEntry = zis.getNextEntry();
+                while (zipEntry != null) {
+                    String fileName = zipEntry.getName();
+                    if (!fileName.contains(File.separator + ".")) {
+                        File newFile = new File(temp.getAbsolutePath() + File.separator + fileName);
+                        if (zipEntry.isDirectory()) {
+                            newFile.mkdirs();
+                        } else {
+                            // Create all non-existent parent directories for the file
+                            new File(newFile.getParent()).mkdirs();
+
+                            // Write the file content
+                            try (FileOutputStream fos = new FileOutputStream(newFile)) {
+                                int len;
+                                while ((len = zis.read(buffer)) > 0) {
+                                    fos.write(buffer, 0, len);
+                                }
+                            }
+                            
+                            if (zipEntry.getName().contains("appDefinition.xml")) {
+                                appDefFile = newFile;
+                            }
+                        }
+                    }
+                    zipEntry = zis.getNextEntry();
+                }
+            }
+            
+            if (appDefFile != null) {
+                AppDefinition appDef = null;
+                
+                //get appId and appVersion
+                try (FileInputStream fis = new FileInputStream(appDefFile)) {
+                    RegistryMatcher m = new RegistryMatcher();
+                    m.bind(Date.class, new CustomDateFormatTransformer());
+                    Serializer serializer = new Persister(m);
+                    appDef = serializer.read(AppDefinition.class, fis, false);
+                }
+                if (appDef != null) {
+                    long appVersion = appDefinitionDao.getLatestVersion(appDef.getAppId());
+                    long newAppVersion = appVersion + 1;
+                    
+                    AppDefinition newAppDef = new AppDefinition();
+                    newAppDef.setAppId(appDef.getAppId());
+                    newAppDef.setVersion(newAppVersion);
+                    newAppDef.setLicense(appDef.getLicense());
+                    
+                    AppDevUtil.setImportApp(true);
+                    
+                    //create new app def in db
+                    appDefinitionDao.saveOrUpdate(newAppDef);
+                    
+                    //copy git src
+                    File destDir = new File(AppDevUtil.getAppDevBaseDirectory(), AppDevUtil.getAppGitDirectory(newAppDef));
+                    FileUtils.deleteQuietly(destDir); //delete it if already exist
+                    destDir.mkdirs();
+                    FileUtils.copyDirectory(appDefFile.getParentFile(), destDir);
+                    
+                    //copy resources
+                    AppDevUtil.copyDirectory(newAppDef);
+                    
+                    //sync it and return the app def
+                    AppDefinition tempAppDef = appDefinitionDao.syncAppDefinition(newAppDef.getAppId(), newAppDef.getVersion());
+                    
+                    //handle install/update marketplace plugins
+                    HttpServletRequest request = WorkflowUtil.getHttpServletRequest();
+                    if (request != null && request.getParameterValues("autoInstallUpdatePlugins") == null) {
+                        MarketplaceUtil.autoInstallUpdatePlugins(newAppDef);
+                    }
+                    
+                    return tempAppDef;
+                }
+            }
+        } catch (ImportAppException e) {
+            throw e;
+        } catch (Exception e) {
+            LogUtil.error(getClass().getName(), e, "");
+        } finally {
+            FileUtils.deleteQuietly(temp); //remove the temp folder
+            AppDevUtil.setImportApp(null);
         }
         return null;
     }
@@ -2730,21 +2849,25 @@ public class AppServiceImpl implements AppService {
         Thread backgroundThread = new Thread(new Runnable() {
 
             public void run() {
-                HostManager.setCurrentProfile(profile);
-                AppUtil.setCurrentAppDefinition(appDef);
-                workflowUserManager.setCurrentThreadUser(currentUser);
-                
-                processMigration.put(profile + "::" + packageId + "::" + fromVersion, toVersion.toString());
-                
-                LogUtil.info(getClass().getName(), "Updating running processes for " + packageId + " from " + fromVersion + " to " + toVersion.toString());
-                
-                Collection<String> runningProcessList = workflowAssignmentDao.getMigrateProcessInstances(packageId + "#" + fromVersion); 
+                try {
+                    HostManager.setCurrentProfile(profile);
+                    AppUtil.setCurrentAppDefinition(appDef);
+                    workflowUserManager.setCurrentThreadUser(currentUser);
 
-                migrateProcessInstance(runningProcessList, profile, packageId, fromVersion.toString(), toVersion.toString());
+                    processMigration.put(profile + "::" + appDef.getAppId() + "_" + appDef.getVersion() + "::" + fromVersion, toVersion.toString());
                 
-                processMigration.remove(profile + "::" + packageId + "::" + fromVersion);
-                LogUtil.info(getClass().getName(), "Completed updating running processes for " + packageId + " from " + fromVersion + " to " + toVersion.toString());
-                removeUnusedXpdl(profile, packageId);
+                    LogUtil.info(getClass().getName(), "Updating running processes for " + packageId + " from " + fromVersion + " to " + toVersion.toString());
+
+                    Collection<String> runningProcessList = workflowAssignmentDao.getMigrateProcessInstances(packageId + "#" + fromVersion); 
+
+                    migrateProcessInstance(runningProcessList, profile, packageId, fromVersion.toString(), toVersion.toString());
+
+                    processMigration.remove(profile + "::" + appDef.getAppId() + "_" + appDef.getVersion() + "::" + fromVersion);
+                    LogUtil.info(getClass().getName(), "Completed updating running processes for " + packageId + " from " + fromVersion + " to " + toVersion.toString());
+                    removeUnusedXpdl(profile, packageId);
+                } finally {
+                    tryReleaseProcessUpdate(appDef);
+                }
             }
         });
         backgroundThread.setDaemon(false);
@@ -2756,6 +2879,7 @@ public class AppServiceImpl implements AppService {
             return;
         }
         
+        AppDefinition appDef = AppUtil.getCurrentAppDefinition();
         String newVersion = toVersion;
         
         Collection<String> processInstanceNeedReview = new ArrayList<String>();
@@ -2774,10 +2898,10 @@ public class AppServiceImpl implements AppService {
                 LogUtil.error(getClass().getName(), e, "Error updating Process Instance ID " + processId);
             }
 
-            if (processMigration.containsKey(profile + "::" + packageId + "::" + newVersion)) {
-                String tempVersion = processMigration.get(profile + "::" + packageId + "::" + newVersion);
+            if (processMigration.containsKey(profile + "::" + appDef.getAppId() + "_" + appDef.getVersion() + "::" + newVersion)) {
+                String tempVersion = processMigration.get(profile + "::" + appDef.getAppId() + "_" + appDef.getVersion() + "::" + newVersion);
                 if (fromVersion != null) {
-                    processMigration.put(profile + "::" + packageId + "::" + fromVersion, tempVersion);
+                    processMigration.put(profile + "::" + appDef.getAppId() + "_" + appDef.getVersion() + "::" + fromVersion, tempVersion);
                 }
                 LogUtil.info(getClass().getName(), "New update found when updating running processes for " + packageId + " from " + fromVersion + " to " + newVersion + ". Continue update remaining running processes to " + tempVersion);
                 newVersion = tempVersion;
@@ -2794,20 +2918,20 @@ public class AppServiceImpl implements AppService {
         for (WorkflowProcess p : existingProcesses) {
             versions.add(p.getVersion());
         }
-        
+
         //removed version of latest package used by each app version
         Collection<Long> allPackageVersion = packageDefinitionDao.getPackageVersions(packageId);
         for (Long l : allPackageVersion) {
             versions.remove(l.toString());
         }
-        
+
         //removed version of package used by all existing assignment
         Set<String> usedVersion = workflowAssignmentDao.getUsedVersion(packageId);
         for (String id : usedVersion) {
             String[] part = id.split("#");
             versions.remove(part[1]);
         }
-        
+
         for (String v : versions) {
             if (!processMigration.containsKey(profile + "::" + packageId + "::" + v)) {
                 try {
@@ -2818,7 +2942,7 @@ public class AppServiceImpl implements AppService {
                 }
             }
         }
-    } 
+    }
 
     /**
      * Import an app definition object and XPDL content into the system.
@@ -2951,7 +3075,8 @@ public class AppServiceImpl implements AppService {
                     if (CustomFormDataTableUtil.TYPE.equals(o.getType())) {
                         try {
                             String dummyKey = "xyz123";
-                            formDataDao.loadWithoutTransaction(o.getId(), o.getId(), dummyKey);
+                            String tableName = o.getId().substring(FormDataDaoImpl.FORM_PREFIX_TABLE_NAME.length());
+                            formDataDao.loadWithoutTransaction(tableName, tableName, dummyKey);
                         } catch (Exception e) {
                             LogUtil.error(getClass().getName(), e, "");
                         }
@@ -3734,5 +3859,102 @@ public class AppServiceImpl implements AppService {
         }
         
         return messages;
+    }
+    
+    /**
+     * Find the table prefix from env variable or compare all table name
+     * @param appDef
+     * @return 
+     */
+    protected String findCommonTablePrefix(AppDefinition appDef) {
+        String prefix = "";
+        //find table prefix in environment
+        if (appDef.getEnvironmentVariableList() != null) {
+            for (EnvironmentVariable env : appDef.getEnvironmentVariableList()) {
+                if (env.getId().equals("table_prefix")) {
+                    prefix = env.getValue();
+                    break;
+                }
+            }
+        }
+        if (prefix.isEmpty()) {
+            List<String> tableNameList = (List<String>) formDefinitionDao.getTableNameList(appDef);
+            if (tableNameList != null && !tableNameList.isEmpty()) {
+                
+                String firstString = tableNameList.get(0);
+                int length = firstString.length();
+                
+                for (int i = 0; i < length; i++) {
+                    char c = firstString.charAt(i);
+                    for (int j = 1; j < tableNameList.size(); j++) {
+                        String compare = tableNameList.get(j);
+                        if (i >= compare.length() || compare.charAt(i) != c) {
+                            prefix = firstString.substring(0, i);
+                            break;
+                        }
+                    }
+                    if (!prefix.isEmpty()) {
+                        break; //prefix is already found
+                    }
+                }
+            }
+        }
+        return prefix;
+    }
+    
+    /**
+     * Lock and processing process update & process instance migration
+     * @param appDef
+     * @return 
+     */
+    public boolean lockProcessUpdate(AppDefinition appDef) {
+        try {
+            String key = SecurityUtil.normalizedFileName(appDef.getAppId() + "_" + appDef.getVersion().toString() + ".lock");
+            Path path = Paths.get(SetupManager.getBaseDirectory() + PROCESS_MIGRATION_PATH + key);
+            Files.createDirectories(path.getParent());
+
+            if (!Files.exists(path)) {
+                Files.createFile(path);
+                return true;
+            }
+        } catch (Exception e) {
+            LogUtil.warn(AppServiceImpl.class.getName(), "Fail to acquire lock for " + appDef.getAppId() + "_" + appDef.getVersion().toString() + ". Will retry again.");
+        }
+        return false;
+    }
+    
+    /**
+     * Release the lock after done process update and process instance migration
+     * @param appDef 
+     */
+    public void tryReleaseProcessUpdate(AppDefinition appDef) {
+        //should not release when process migration is running
+        String checker = DynamicDataSourceManager.getCurrentProfile() + "::" + appDef.getAppId() + "_" + appDef.getVersion() + "::";
+        for (String key : processMigration.keySet()) {
+            if (key.startsWith(checker)) {
+                return;
+            }
+        }
+        
+        //remove the file to release lock
+        try {
+            String key = SecurityUtil.normalizedFileName(appDef.getAppId() + "_" + appDef.getVersion().toString() + ".lock");
+            Path path = Paths.get(SetupManager.getBaseDirectory() + PROCESS_MIGRATION_PATH + key);
+            if (Files.exists(path)) {
+                Files.deleteIfExists(path);
+            }
+        } catch (Exception e) {
+            LogUtil.info(AppServiceImpl.class.getName(), e.getMessage());
+        }  
+    }
+    
+    /**
+     * Check there is process update & process instance migration
+     * @param appDef 
+     */
+    public boolean hasProcessUpdate(AppDefinition appDef) {
+        String key = SecurityUtil.normalizedFileName(appDef.getAppId() + "_" + appDef.getVersion().toString() + ".lock");
+        Path path = Paths.get(SetupManager.getBaseDirectory() + PROCESS_MIGRATION_PATH + key);
+        return Files.exists(path);
     }
 }

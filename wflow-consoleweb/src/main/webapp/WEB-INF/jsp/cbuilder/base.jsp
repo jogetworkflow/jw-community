@@ -15,7 +15,7 @@
 <c:choose>
     <c:when test="${isAjaxRender eq 'true'}">
         <c:set var="name" scope="request">
-            <c:out value="${appDefinition.name}" /> v<c:out value="${appDefinition.version}"/><c:if test="${!empty builderDef}">: <span class="item_name"><c:out value="${builderDef.name}"/></span></c:if> <c:if test="${appDefinition.published}"></span><small class="published">(<fmt:message key="console.app.common.label.published"/>)</small></c:if>
+            <span><c:out value="${appDefinition.name}" /> v<c:out value="${appDefinition.version}"/><c:if test="${!empty builderDef}">: <span class="item_name"><c:out value="${builderDef.name}"/></span></c:if> <c:if test="${appDefinition.published}"></span><small class="published">(<fmt:message key="console.app.common.label.published"/>)</small></c:if>
         </c:set>
         <c:set var="script" scope="request">
             ${fn:replace(builderJS, '<script', '<script data-cbuilder-script')}
@@ -215,6 +215,7 @@
                                     </div>
                                     <div class="drag-elements-sidepane sidepane">
                                         <div>
+                                            <div class="ajaxLoader" style="display: none;"><div class="loaderIcon"><i class="fas fa-spinner fa-spin fa-4x"></i></div></div>
                                             <ul class="components-list clearfix" data-type="leftpanel">
                                             </ul>
                                         </div>
@@ -345,6 +346,7 @@
                             CustomBuilder.saveUrl = '<c:out value="${saveUrl}"/>';
                             CustomBuilder.previewUrl = '<c:out value="${previewUrl}"/>';
                             CustomBuilder.contextPath = '${pageContext.request.contextPath}';
+                            _CustomBuilder.contextPath = '${pageContext.request.contextPath}';
                             CustomBuilder.appId = '<c:out value="${appDefinition.id}"/>';
                             CustomBuilder.appVersion = '<c:out value="${appDefinition.version}"/>';
                             CustomBuilder.appPath = '/<c:out value="${appDefinition.id}"/>/<c:out value="${appDefinition.version}"/>';

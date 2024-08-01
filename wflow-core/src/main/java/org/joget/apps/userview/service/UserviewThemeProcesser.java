@@ -161,8 +161,7 @@ public class UserviewThemeProcesser {
         }
         data.put("context_path", request.getContextPath());
         data.put("build_number", ResourceBundleUtil.getMessage("build.number"));
-        String rightToLeft = WorkflowUtil.getSystemSetupValue("rightToLeft");
-        data.put("right_to_left", "true".equalsIgnoreCase(rightToLeft));
+        data.put("right_to_left", AppUtil.isRTL());
         String builderTheme = WorkflowUtil.getSystemSetupValue("systemTheme");
         data.put("builderTheme", builderTheme);
         String locale = AppUtil.getAppLocale();
@@ -171,7 +170,7 @@ public class UserviewThemeProcesser {
         data.put("language", language);
         data.put("embed", "true".equalsIgnoreCase(userview.getParamString("embed")));
         data.put("body_id", getBodyId());
-        data.put("body_classes", getBodyClasses(rightToLeft, locale));
+        data.put("body_classes", getBodyClasses(locale));
         data.put("base_link", request.getContextPath() + getBaseLink());
         data.put("home_page_link", request.getContextPath() + getHomePageLink());
         data.put("title", getTitle());
@@ -373,10 +372,10 @@ public class UserviewThemeProcesser {
         return bodyId;
     }
 
-    public String getBodyClasses(String rightToLeft, String locale) {
+    public String getBodyClasses(String locale) {
         String classes = "";
         classes += ("true".equalsIgnoreCase(userview.getParamString("embed"))) ? "embeded " : "";
-        classes += ("true".equalsIgnoreCase(rightToLeft) || locale.startsWith("ar")) ? "rtl " : "";
+        classes += AppUtil.isRTL() ? "rtl " : "";
         classes += locale;
         return classes;
     }

@@ -11,9 +11,14 @@ UserviewBuilder = {
     initBuilder: function (callback) {
         $('#builderToolbar').prepend('<button id="save-content-btn" class="btn btn-success" style="display:none;"><i class="las la-undo"></i> '+get_cbuilder_msg('ubuilder.doneEditContentLayout')+'</button>');
         
-        $('#builderToolbar').off("click");
-        $('#builderToolbar').on("click", function() {
+        $('#save-content-btn').off("click");
+        $('#save-content-btn').on("click", function() {
             UserviewBuilder.mode = "userview";
+            if (!$("#design-btn").hasClass("active-view")) {
+                setTimeout(function(){
+                    $("#design-btn").trigger("click");
+                }, 1);
+            }
             UserviewBuilder.load(CustomBuilder.data);
         });
         
@@ -643,8 +648,42 @@ UserviewBuilder = {
      * Load and render data, called from CustomBuilder.loadJson
      */
     load: function (data) {
+        
+        //handle overview path in edit page components
+        if (CustomBuilder.overviewPath !== null && CustomBuilder.overviewPath !== undefined 
+                && CustomBuilder.overviewPath !== "" && CustomBuilder.overviewPath.indexOf(".referencePage.") !== -1) {
+            UserviewBuilder.mode = "page";
+            
+            //get menu data from path
+            var menuPath = CustomBuilder.overviewPath.substring(0, CustomBuilder.overviewPath.indexOf(".referencePage."));
+            var splitpath = menuPath.split(".");
+            UserviewBuilder.selectedMenu = CustomBuilder.data;
+            for (var i in splitpath) {
+                try {
+                    var index = null;
+                    var property = splitpath[i];
+                    if (property.indexOf('[') !== -1) {
+                        index = parseInt(property.substring(property.indexOf('[') + 1, property.indexOf(']')));
+                        property = property.substring(0, property.indexOf('['));
+                    }
+                    
+                    UserviewBuilder.selectedMenu = CustomBuilder.Builder.getObjectByProperty(UserviewBuilder.selectedMenu, property, index);
+                } catch (err) {
+                    if (console && console.error) {
+                        console.error(err);
+                    }
+                }
+            }
+            
+            CustomBuilder.overviewPath = CustomBuilder.overviewPath.substring(CustomBuilder.overviewPath.indexOf(".referencePage.") + 15);
+            console.log(CustomBuilder.overviewPath);
+        }
+        
+        
         $("body").removeClass("page-component-editor");
         if (UserviewBuilder.mode === "page") {
+            CustomBuilder.config.builder.options['marketplacePaletteClass'] = "org.joget.apps.userview.model.PageComponent";
+            
             if (UserviewBuilder.selectedMenu !== undefined && UserviewBuilder.selectedMenu !== null) {
                 var self = CustomBuilder.Builder;
 
@@ -676,6 +715,8 @@ UserviewBuilder = {
                 
             UserviewBuilder.loadContentPage();
         } else {
+            CustomBuilder.config.builder.options['marketplacePaletteClass'] = "org.joget.apps.userview.model.UserviewMenu";
+            
             //hide viewport buttons & set to desktop size
             $("#top-panel .responsive-buttons").hide();
             CustomBuilder.viewport("desktop");
@@ -937,13 +978,12 @@ UserviewBuilder = {
                 if (elementObj.properties.label === undefined) {
                     elementObj.properties.label = component.label;
                 }
-                
                 UserviewBuilder.renderElementAjax(element, elementObj, component, callback, "menu");
                 if (UserviewBuilder.selectedMenu !== null && UserviewBuilder.selectedMenu.properties.id === elementObj.properties.id) {
                     UserviewBuilder.showMenuSnapshot();
                 }
             }
-        } else {
+        } else { 
             if (elementObj.className === "org.joget.apps.userview.model.UserviewPage") {
                 UserviewBuilder.renderUserviewPage(element, elementObj, component, callback);
             } else if (elementObj.className === "menu-component") {
@@ -1272,6 +1312,18 @@ UserviewBuilder = {
      */
     getAjaxEventPropertyOptions : function (elementOptions) {
         var props = $.extend(true, [], elementOptions);
+        
+        //remove menu label which useless when render as component, also change menu id label to id
+        for (var i in props) {
+            for (var r in props[i].properties) {         
+                if (props[i].properties[r].name === "label") {
+                    props[i].properties[r].type = 'hidden';
+                } else if (props[i].properties[r].name === "customId") {
+                    props[i].properties[r].label = get_cbuilder_msg('cbuilder.id');
+                }
+            }
+            break;
+        }
         
         props.push({
             title: get_cbuilder_msg("ubuilder.ajaxAndEvents"),
@@ -2277,6 +2329,28 @@ UserviewBuilder = {
         $('#cbuilder-preview').attr("target", "preview-screenshot-iframe");
         $('#cbuilder-preview').submit();
     },
+     
+    /*
+     * Prepare the selector based on overview path parameter
+     */
+    getOverviewPathElementSelector : function(data, path) {
+        var selector = "";
+        var propertiesPath = path;
+        
+        if (path.indexOf("setting.") === 0) {
+            //it is properties page
+            setTimeout(function(){
+                $("#properties-btn").trigger("click");
+            }, 1);
+            
+            //remove setting.properties
+            propertiesPath = propertiesPath.substring(19);
+
+            return ["", propertiesPath];
+        }
+        
+        return CustomBuilder.Builder.getOverviewPathElementSelector(data, path);
+    },
     
     /*
      * save a screenshot after builder saved
@@ -2298,6 +2372,35 @@ UserviewBuilder = {
                 }
             })
         }, true);
+    },
+      
+    /*
+     * Reload the palette after new plugin is installed
+     */  
+    marketplaceReloadPalette : function() {
+        var url = CustomBuilder.contextPath + '/web/console/app/' + CustomBuilder.appId + '/' + CustomBuilder.appVersion + '/' + CustomBuilder.builderType + '/palette/' + CustomBuilder.id;
+        CustomBuilder.Builder.reloadPalette(url, function(element) {
+            try {
+                element.metadata = {
+                    builderTemplate: eval("[" + element.template + "]")[0],
+                    developer: element.developer,
+                    pwaValidation: element.pwaValidationType,
+                    type: element.type
+                };
+
+                if (element.type !== "menu") {
+                    element.category = get_cbuilder_msg("ubuilder.pageComponents");
+                } else {
+                    element.category = get_cbuilder_msg("ubuilder.pageComponents") + ";" + element.category;
+                }
+            } catch (err) {
+                if (console && console.log) {
+                    console.log("Error initializing " + element.className + " : " + err);
+                }
+            }
+            
+            return element;
+        });
     },
       
     /*

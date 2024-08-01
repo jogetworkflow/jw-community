@@ -100,6 +100,10 @@ div#header-name img {
     text-transform: uppercase;
     text-decoration: none;
     vertical-align: top;
+    max-width: 390px;  
+    text-overflow: ellipsis;    
+    white-space: nowrap;    
+    overflow: hidden;
 }
 
 .hi-trigger {
@@ -384,7 +388,6 @@ body.embeded #content > main {
     position: fixed;
     height: calc(100% - 65px);
     top: 65px;
-    left:-1px;
     -webkit-transition: all;
     -o-transition: all;
     transition: all;
@@ -911,7 +914,7 @@ body.rtl #sidebar li ul>li>a > span:first-child{
         padding-right: 20px;
     }  
     body.horizontal_menu #sidebar {
-        width: 100vw;
+        width: 100%;
         position: relative;
         height:auto;
         top:0;
@@ -921,7 +924,7 @@ body.rtl #sidebar li ul>li>a > span:first-child{
         padding: 0 20px 4px;
     }
     body.horizontal_menu.inline_menu #sidebar{
-        width: auto;
+        width: calc( 95vw - 720px);
         display: inline-block;
         font-size:13px;
         box-shadow:none;
@@ -1033,6 +1036,10 @@ body.rtl #sidebar li ul>li>a > span:first-child{
     }
     body.horizontal_menu #main .systemAlert + .row-fluid {
         margin-top: 40px;
+    }
+    body.horizontal_menu.inline_menu div#header-name img {
+        position: relative;
+        top: -15px;
     }
 }
 @media (max-width:767px) {
@@ -1394,6 +1401,23 @@ body .dataList .pagelinks .pc.last:before{
     content: "\f101";
 }
 
+body.rtl .dataList span.pagelinks:not(.rtl) .pc.first-disabled:before,
+body.rtl .dataList span.pagelinks:not(.rtl) .pc.first:before{
+    content:"\f101";
+}
+body.rtl .dataList span.pagelinks:not(.rtl) .pc.prev-disabled:before,
+body.rtl .dataList span.pagelinks:not(.rtl) .pc.prev:before{
+    content:"\f105";
+}
+body.rtl .dataList span.pagelinks:not(.rtl) .pc.next-disabled:before,
+body.rtl .dataList span.pagelinks:not(.rtl) .pc.next:before{
+    content:"\f104";
+}
+body.rtl .dataList span.pagelinks:not(.rtl) .pc.last-disabled:before,
+body.rtl .dataList span.pagelinks:not(.rtl) .pc.last:before{
+    content:"\f100";
+}
+
 body .dataList .pagelinks .pc.first-disabled,
 body .dataList .pagelinks .pc.prev-disabled,
 body .dataList .pagelinks .pc.next-disabled,
@@ -1577,7 +1601,6 @@ body#welcome:not(#login) #content > main > .ui-html {
     position: fixed;
     height: calc(100% - 65px);
     top: 65px;
-    left: -1px;
     -webkit-transition: all;
     -o-transition: all;
     transition: all;
@@ -1769,3 +1792,61 @@ body:not(#login) #content > main > .datalist-body-content:not(.quickEdit) {
     font-size: 17px !important;
     line-height: 20px !important;
 }
+/*Priority Menu*/
+@media (min-width: 768px){
+    ul#moreSubMenu li > ul{
+        display: none!important;
+        position: absolute;
+    }
+    body.horizontal_menu #sidebar li#menu-more{
+        cursor: pointer;
+        padding: 11px;
+        margin-top: 1px;
+    }
+    ul#moreSubMenu.sub-menu > li > ul > li > a {
+        display: block;
+        padding: 10px 15px 10px 15px;
+        font-size: 13px;
+    }
+    ul#moreSubMenu.sub-menu > li:hover> ul{
+        top: -1px;
+        width: auto;
+        right: 100%;
+        visibility: visible;
+    }
+    ul#moreSubMenu.sub-menu > li > ul{
+        visibility: hidden;
+    }
+    body.horizontal_menu ul#moreSubMenu.sub-menu > li > a.dropdown:before {
+        right: 15px;
+    }
+    ul#moreSubMenu.sub-menu > li:hover{
+        position: relative;
+    }
+    ul#moreSubMenu.sub-menu{
+        overflow: unset!important;
+        max-height: none!important;
+        right: 0;
+        top: 41px;
+    }
+    body.horizontal_menu #sidebar .nav {
+        flex-wrap: nowrap;
+        display: flex;
+        align-items: baseline;
+    }
+    #category-container > li {
+        flex: 0 0 auto;
+    }
+    body.horizontal_menu #sidebar ul#moreSubMenu li > ul > li{
+        display: block;
+    }
+    body.horizontal_menu .navbar {
+        white-space: nowrap;
+    }
+}
+@media (min-width:768px) and (max-width:1279px) {
+    body.horizontal_menu.inline_menu #sidebar {
+        width: calc(85vw - 720px);
+    }
+}
+/*Priority Menu*/ 

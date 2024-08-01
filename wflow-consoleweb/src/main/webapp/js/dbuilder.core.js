@@ -305,7 +305,12 @@ DatalistBuilder = {
             
         var selectedELSelector = "";
         var selectedElIndex = 0;
-        if (self.subSelectedEl) {
+        
+        if (CustomBuilder.overviewPath !== null && CustomBuilder.overviewPath !== undefined && CustomBuilder.overviewPath !== "") {
+            //handle overview tool navigation path 
+            [selectedELSelector, CustomBuilder.overviewPropertiesPath] = DatalistBuilder.getOverviewPathElementSelector(data, CustomBuilder.overviewPath);
+            CustomBuilder.overviewPath = null;
+        } else if (self.subSelectedEl) {
             selectedELSelector = '[data-cbuilder-select="'+ $(self.subSelectedEl).data("cbuilder-select") +'"]';
             selectedElIndex = self.frameBody.find(selectedELSelector).index(self.subSelectedEl);
         } else if (self.selectedEl) {
@@ -425,6 +430,9 @@ DatalistBuilder = {
                     }
                     
                     if ($(element).length > 0) {
+                        //set highlighted El for the element like list row or card which only exist for styling
+                        CustomBuilder.Builder.highlightEl = element;
+                        
                         self.selectNode(element);
                     }
                 }
@@ -2452,7 +2460,7 @@ DatalistBuilder = {
                         type: 'elementselect',
                         options_ajax : '[CONTEXT_PATH]/web/property/json/getElements?classname=org.joget.apps.datalist.model.DataListTemplate',
                         options_extra : [
-                            {value : '', label : get_cbuilder_msg('dbuilder.classicTable')}
+                            {value : '', label : get_cbuilder_msg('dbuilder.classicTable'), helplink :'https://dev.joget.org/community/display/DX8/Table+-+Classic'}
                         ],
                         url : '[CONTEXT_PATH]/web/property/json' + CustomBuilder.appPath + '/getPropertyOptions'
                     },
@@ -3302,6 +3310,86 @@ DatalistBuilder = {
         }
         return tempArray;
     },
+    
+    /*
+     * Prepare the selector based on overview path parameter
+     */
+    getOverviewPathElementSelector : function(data, path) {
+        //check is data page
+        var binderIndex = path.indexOf("binder.");
+        if (binderIndex === 0) {
+            setTimeout(function(){
+                $("#binder-btn").trigger("click");
+            }, 1);
+            
+            return ["", path];
+        } else if (path.indexOf(".") === -1) { //it is not a properties of inner object
+            if (path.indexOf("-style-") !== -1) {
+                //find the element like list row or card which only exist for styling
+                var prefix = path.substring(0, path.indexOf("-style-"));
+                return ['[data-cbuilder-style*="\''+prefix+'\'"]', path];
+            } else {
+                //it is properties page
+                setTimeout(function(){
+                    $("#properties-btn").trigger("click");
+                }, 1);
+
+                return ["", path];
+            }
+        }
+        
+        return DatalistBuilder.buildSelectorByPath(data, path);
+    },
+    
+    /**
+     * Utility method to build selector based on overview path
+     */
+    buildSelectorByPath: function(obj, path) {
+        var selector = "";
+        var propertiesPath = "";
+        if (obj !== null && obj !== undefined 
+                && path !== null && path !== undefined && path !== "") {
+            propertiesPath = path;
+            var splitpath = path.split(".");
+            var currentObj = obj;
+            
+            //remove processed path from propertiesPath
+            propertiesPath = propertiesPath.substring(splitpath[0].length + 1);
+            
+            try {
+                var index = null;
+                var property = splitpath[0];
+                if (property.indexOf('[') !== -1) {
+                    index = parseInt(property.substring(property.indexOf('[') + 1, property.indexOf(']')));
+                    property = property.substring(0, property.indexOf('['));
+                }
+
+                currentObj = CustomBuilder.Builder.getObjectByProperty(currentObj, property, index);
+
+                if (currentObj !== null) {
+                    selector = '[data-cbuilder-id="'+currentObj.id+'"]';
+                }
+            } catch (err) {
+                if (console && console.error) {
+                    console.error(err);
+                }
+            }
+        }
+        
+        if (propertiesPath.indexOf('style-') !== -1) {
+            //show styling tab
+            setTimeout(function(){
+                $("#style-properties-tab-link a").trigger("click");
+            }, 1);
+        } else {
+            //show properties tab
+            setTimeout(function(){
+                $("#element-properties-tab-link a").trigger("click");
+            }, 1);
+        }
+        
+        return [selector, propertiesPath];
+    },
       
     /*
      * remove dynamically added items    
@@ -3438,6 +3526,15 @@ DatalistBuilder = {
                 }
             }
         }
+    },
+      
+    /*
+     * Reload the palette after new plugin is installed
+     */  
+    marketplaceReloadPalette : function() {
+        //use back existing script to reload palette
+        var deferreds = [];
+        DatalistBuilder.initActionList(deferreds);
     },
             
     /*

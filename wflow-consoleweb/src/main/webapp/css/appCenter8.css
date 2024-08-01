@@ -197,7 +197,7 @@ body.rtl #sidebar .nav > li > a > span:not(.badge) {
     box-shadow: rgb(99 99 99 / 20%) 0px 2px 8px 0px;
     background-color: #fff !important;
     border-radius: 10px;
-    background-image: url(/jw/images/appCenterBanner.png);
+    background-image: url(../images/appCenterBanner.png);
     background-repeat: no-repeat;
     background-size: 100% 360px;
     margin-bottom: 50px;
@@ -371,7 +371,7 @@ body#home #home_column .row{
     color:#000;
 }
 #design_app .card .column_desc {
-    max-height:60px;
+    max-height: 40px;
     overflow:hidden;
 }
 #design_app .card .card-body .card-actions {
@@ -441,6 +441,12 @@ body.rtl #page {
     padding-right: 140px !important;
 }
 
+@media (max-width: 1279px) {
+    body.rtl #page {
+        padding-right: 0px !important;
+    }
+}
+
 header.navbar {
     width: calc(100% - 140px);
 }
@@ -461,9 +467,6 @@ body .dataList#dataList_applist .appIcon{
     #clock,#date, #assignment_msg > a, #assignment_msg > h3{
         display: none !important;
     }
-    #home_column #home {
-        margin-top:30px;
-    }
 }
 @media (max-width: 680px){
     #clock, #date{
@@ -481,7 +484,6 @@ body .dataList#dataList_applist .appIcon{
         overflow:visible;
         overflow-y: visible;
         padding-bottom:20px;
-        margin-top: -70px;
     }
     body#home #main{
         height: 100vh;
@@ -646,13 +648,35 @@ body #content > main > div > div.d-flex.flex-lg-row-fluid.w-lg-50.bgi-size-cover
 body#design_app #tutorial_section{
     display: none;
 }
+body#home #filters_applist > div{
+    margin-bottom: 5px;
+}
+body#home #d-1331669-fn_apps_name{
+    width: 150px !important;
+}
+body#home #filters_applist > div > span:nth-child(3){
+    margin-left: 2px;
+}
+body#home #filters_applist > div > span:nth-child(3) > input, #customSearchSection > #customSearchButton {
+    -webkit-backdrop-filter: blur(10px);
+    backdrop-filter: blur(10px);
+    background-color: rgba(255, 255, 255, 0.5);
+    color: #495057;
+    font-weight: 500 !important;
+}
+body:not(:has(#adminBar)) #home_column #home:has(#filters_applist){
+    margin-top: -25px;
+}
+#dataList_applist form[name="form_applist"] .table-wrapper{
+    min-height: 0px;
+}
 
 body.dark-mode#home{
     background-color: var(--theme-background) !important;
 }
 body.dark-mode#home #pc- {
     background-color: var(--theme-content-background) !important;
-    background-image: linear-gradient(to bottom, #1e1e2d, #2b2b40 100%), url(/jw/images/appCenterBanner.png);
+    background-image: linear-gradient(to bottom, #1e1e2d, #2b2b40 100%) !important;
 }
 body.dark-mode .dataList#dataList_applist .appIcon{
     background-color: var(--theme-background) !important;
@@ -689,5 +713,55 @@ body.dark-mode main-body-submessage{
     color: var(--theme-font-color, #fff);
 }
 body.dark-mode #pc-AED245A047CB49A6405198CF2B1AFCE7{
-     border-color: var(--theme-border-color) !important;
+    border-color: var(--theme-border-color) !important;
 }
+body.dark-mode  .dataList#dataList_applist .column_2 {
+    color: var(--theme-field-font-color) !important;
+}
+
+/* START custom search styles */
+#customSearchSection {
+    margin: 0 1.8rem;
+    display: flex;
+    justify-content: flex-end;
+}
+
+#customSearchInput,
+#customSearchButton {
+    transition: all 0.3s ease;
+}
+
+#customSearchSection.closed #customSearchInput {
+    width: 0;
+    padding: 0;
+    opacity: 0;
+}
+
+#customSearchSection.closed #customSearchButton {
+    opacity: 1;
+}
+
+#customSearchSection.open #customSearchInput {
+    width: 250px;
+    opacity: 1;
+}
+
+#customSearchSection.open #customSearchButton {
+    opacity: 0;
+}
+
+@media (max-width: 767px) {
+    #customSearchSection {
+        margin: 1rem 1.8rem 0;
+    }
+
+    #customSearchSection.closed #customSearchButton, #customSearchSection.open #customSearchButton {
+        display: none;
+    }
+    #customSearchSection.closed #customSearchInput, #customSearchSection.open #customSearchInput {
+        width: 100%;
+        padding: 6px 12px;
+        opacity: 1;
+    }
+}
+/* END custom search styles */

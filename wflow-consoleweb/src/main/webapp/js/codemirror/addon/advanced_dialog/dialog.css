@@ -1,0 +1,127 @@
+.CodeMirror-advanced-dialog {
+    position: sticky;
+    top: 0;
+    background: inherit;
+    padding-left: 2px;
+    overflow: hidden;
+    border: 1px solid var(--theme-border-color-1, #cbcbcb);
+    z-index: 10;
+    background-color: var(--theme-primary-color-1, #ddd);
+    color: var(--theme-label-color-1);
+    height: 40px;
+    width: 225px;
+    margin-left: auto;
+    border-radius: 5px;
+}
+
+.CodeMirror-advanced-dialog input {
+    border: none;
+    outline: none;
+    background: transparent;
+    width: 80%;
+    color: inherit;
+    font-family: monospace;
+}
+
+.CodeMirror-advanced-dialog button {
+    font-size: 90% !important;
+    margin-right: 0px !important;
+}
+
+.CodeMirror-advanced-dialog .buttons {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+}
+
+.CodeMirror-advanced-dialog .collapse-button {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    border-color: transparent !important;
+}
+
+.CodeMirror-advanced-dialog .row {
+    flex-direction: column;
+    margin-bottom: 10px;
+    margin-left: 20px;
+    margin-top: 10px;
+    width: 300px;
+    position: absolute;
+    top: 0px;
+}
+
+.CodeMirror-advanced-dialog .find-part {
+    display: flex;
+    font-size: 12px;
+    margin-right: 15px;
+    position: absolute;
+    top: 0px;
+}
+
+.CodeMirror-advanced-dialog .find-part #find-input {
+    display: flex;
+    flex: 1;
+}
+
+.CodeMirror-advanced-dialog .find-part .find-actions {
+    display: flex;
+    align-items: center;
+    height: 22px;
+    min-width: 135px;
+    font-size: x-small;
+}
+
+.CodeMirror-advanced-dialog .find-part .find-actions button {
+    width: 17px;
+    padding: 0;
+    height: 25px;
+    margin-bottom: 0px !important;
+}
+
+.CodeMirror-advanced-dialog button {
+    background-color: var(--theme-button-bgcolor-1, inherit);
+    color: inherit;
+    border-color: transparent !important;
+}
+
+.CodeMirror-advanced-dialog .search-box {
+    display: flex;
+    width: 100%;
+    align-items: center;
+}
+
+.CodeMirror-advanced-dialog label {
+    flex: 0 0 100px;
+}
+
+.CodeMirror-advanced-dialog input[type="text"] {
+    display: inline-block;
+    border: 1px solid #ced4da;
+    margin-bottom: 5px;
+    margin-right: 5px;
+    height: 22px;
+    flex: 1 1 auto;
+    background-color: #fff;
+    margin-top: 0px !important;
+}
+
+.CodeMirror-search-hint {
+    display: block;
+    position: absolute;
+    top: 20px;
+    left: 1px;
+    font-style: italic;
+    flex: 0 0 100%;
+}
+
+.CodeMirror-search-count {
+    width: 20%;
+    min-width: 50px;
+    max-width: 50px;
+    white-space: normal;
+}
+
+.buttons button {
+    margin: 5px 5px;
+}

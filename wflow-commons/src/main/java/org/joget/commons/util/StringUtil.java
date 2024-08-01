@@ -20,7 +20,7 @@ import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import org.apache.commons.lang.StringEscapeUtils;
-import org.apache.commons.validator.EmailValidator;
+import org.apache.commons.validator.routines.EmailValidator;
 import org.json.simple.JSONObject;
 import org.jsoup.Jsoup;
 import org.jsoup.safety.Safelist;
@@ -466,6 +466,7 @@ public class StringUtil {
             } else if (TYPE_URL.equals(f)) {
                 try {
                     inStr = URLEncoder.encode(inStr, "UTF-8");
+                    inStr = inStr.replaceAll(StringUtil.escapeRegex("+"), StringUtil.escapeRegex("%20"));
                 } catch (Exception e) {/* ignored */}
             } else if (TYPE_NL2BR.equals(f)) {
                 inStr = inStr.replaceAll("(\r\n|\n)", "<br class=\"nl2br\" />");
@@ -1042,6 +1043,11 @@ public class StringUtil {
      * @return 
      */
     public static boolean validateEmail(String email, boolean multiple) {
+        // Check for leading or trailing spaces in the entire email string
+        if (!email.equals(email.trim())) {
+            return false;
+        }
+         
         String[] emails;
         if (multiple) {
             emails = email.split(";");
@@ -1049,7 +1055,7 @@ public class StringUtil {
             emails = new String[]{email};
         }
         
-        EmailValidator validator = EmailValidator.getInstance();
+        EmailValidator validator = EmailValidator.getInstance(true);
         
         boolean valid = true;
         for (String e : emails) {

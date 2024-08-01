@@ -22,6 +22,7 @@
         <ul id="main-action-buttons">
             <li><button onclick="messageCreate()"><fmt:message key="console.setting.message.create.label"/></button></li>
             <li><button onclick="importPOFile()"><fmt:message key="console.setting.message.import.label"/></button></li>
+            <li><button onclick="exportPOFile()"><fmt:message key="console.setting.message.export.label"/></button></li>
         </ul>
     </div>
     <div id="main-body">
@@ -69,6 +70,7 @@
 
     <ui:popupdialog var="popupDialog" src="${pageContext.request.contextPath}/web/console/setting/message/create"/>
     <ui:popupdialog var="importPopupDialog" src="${pageContext.request.contextPath}/web/console/setting/message/import"/>
+    <ui:popupdialog var="exportPopupDialog" src="${pageContext.request.contextPath}/web/console/setting/message/export"/>
 
     function messageCreate(dummy){
         popupDialog.init();
@@ -78,9 +80,14 @@
         importPopupDialog.init();
     }
 
+    function exportPOFile(){
+        exportPopupDialog.init();
+    }
+
     function closeDialog() {
         popupDialog.close();
         importPopupDialog.close();
+        exportPopupDialog.close();
     }
 
     function messageDelete(selectedList){

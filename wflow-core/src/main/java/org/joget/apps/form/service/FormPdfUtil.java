@@ -329,10 +329,11 @@ public class FormPdfUtil {
      */
     public static String formPdfCss() {
         String style = "";
-        style += ".form-section, .subform-section {position: relative;overflow: hidden;margin-bottom: 10px;}";
+        style += ".form-section, .subform-section {position: relative;overflow: hidden;margin-bottom: 10px; border:0 !important;}";
+        style += ".form-section-title, .subform-section-title {padding:0px;}";
         style += ".form-section-title span, .subform-section-title span {padding: 10px;margin-bottom: 10px;font-weight: bold;font-size: 16px;background: #efefef;display: block;}";
         style += ".form-column, .subform-column {position: relative;float: left;min-height: 20px;}";
-        style += ".form-cell, .subform-cell {position: relative;min-height: 15px;color: black;clear: left;padding:3px 0px;}";
+        style += ".form-cell, .subform-cell {position: relative;min-height: 15px;color: black;clear: left;padding:3px 0px; margin-top: 0px !important;}";
         style += ".form-cell > .label, .subform-cell > .label {width: 40%;display: block;float: left;font-weight:bold;}";
         style += "table {clear:both;}";
         style += "p {margin:5px 0;}";
@@ -346,8 +347,9 @@ public class FormPdfUtil {
         style += ".form-cell-value label, .subform-cell-value label {display: block;float: left;width: 50%;}";
         style += "ul.form-cell-value, ul.subform-cell-value {padding:0; list-style-type:none;}";
         style += "th.grid-action-header, td.grid-action-cell { display: none !important;}";
-        style += ".subform-container.no-frame{border: 0; padding: 0; margin-top:10px; }";
+        style += ".subform-container.no-frame{border: 0; padding: 0; margin-top:10px; margin-left:0; margin-right:0;}";
         style += ".subform-container.no-frame, .subform-container.no-frame .subform-section { background: transparent;}";
+        style += ".subform-container.no-frame:before, .subform-container.no-frame:after{display:none;}";
         style += ".richtexteditor { float:left;}";
         return style;
     }

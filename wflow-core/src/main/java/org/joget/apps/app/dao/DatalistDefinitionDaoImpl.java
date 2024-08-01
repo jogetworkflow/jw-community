@@ -90,11 +90,12 @@ public class DatalistDefinitionDaoImpl extends AbstractAppVersionedObjectDao<Dat
 
     @Override
     public boolean add(DatalistDefinition object) {// save in db
-        object.setDateCreated(new Date());
-        object.setDateModified(new Date());
+        Date date = new Date();
+        object.setDateCreated(date);
+        object.setDateModified(date);
         
         boolean result = super.add(object);
-        appDefinitionDao.updateDateModified(object.getAppDefinition());
+        appDefinitionDao.updateDateModified(object.getAppDefinition(), date);
         
         if (!AppDevUtil.isGitDisabled()) {
             // save json
@@ -116,7 +117,7 @@ public class DatalistDefinitionDaoImpl extends AbstractAppVersionedObjectDao<Dat
         object.setDateModified(new Date());
         
         boolean result = super.update(object);
-        appDefinitionDao.updateDateModified(object.getAppDefinition());
+        appDefinitionDao.updateDateModified(object.getAppDefinition(), object.getDateModified());
 
         if (!AppDevUtil.isGitDisabled()) {
             // save json

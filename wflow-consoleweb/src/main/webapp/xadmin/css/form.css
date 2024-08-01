@@ -118,7 +118,7 @@ body .form fieldset.has-legend legend{
 body #form-canvas #section-actions{
     margin-top: 15px;
     border:0px;
-    padding-left: 150px;
+    padding-left: 0;
     margin-bottom: 15px;
 }
 body #form-canvas #section-actions .form-cell {
@@ -571,7 +571,7 @@ body .filter-cell select:not([class^="ui-"]){
 }
 body.rtl .filter-cell select:not([class^="ui-"]){
   padding-left: 30px;
-  padding-right: 0;
+  padding-right: 10px;
 }
   
 body select:not([class^="ui-"]):disabled {
@@ -592,6 +592,8 @@ body .chosen-container-multi .chosen-choices{
     border:1px solid #e6e6e6;
     background-image: none !important;
     box-shadow: none !important;
+    padding: 0px 10px 6px 10px !important;
+    margin-bottom: 0px !important;
 }
 body .chosen-container-multi.chosen-container-active .chosen-choices{
     border:1px solid #5FB878;
@@ -599,10 +601,15 @@ body .chosen-container-multi.chosen-container-active .chosen-choices{
 body .chosen-container-multi .chosen-choices li.search-choice {
     background-image: none !important;
     box-shadow: none !important;
-}
-body .chosen-container-multi .chosen-choices li.search-choice{
     background-color: #e6e6e6;
     border-color: #e6e6e6;
+    margin: 6px 5px 0px 0px !important;
+}
+body.rtl .chosen-container-multi .chosen-choices li.search-choice {
+    margin: 6px 0px 0px 5px !important;
+}
+body .chosen-container-multi .chosen-choices li.search-field input {
+    min-height: auto;
 }
 body .chosen-container .chosen-results li.highlighted {
     background-image: none !important;
@@ -622,6 +629,9 @@ body .chosen-container-single .chosen-single{
 }
 #content .chosen-container ol, #content .chosen-container ul {
     padding-left:0px;
+}
+body.rtl #content .chosen-container ol, body.rtl #content .chosen-container ul {
+    padding-right:0px;
 }
 #content .chosen-container li {
     list-style:none;
@@ -658,7 +668,7 @@ body.rtl .filter-cell input.hasDatepicker {
     padding-right: auto;
 }
 body .hasDatepicker + a + .close-icon:after {
-    top: 0px;
+    bottom: auto;
     margin-left: 25px;
     margin-top: 8px;
 }
@@ -693,9 +703,54 @@ body #form-canvas .page-button-panel .button{
     border-radius: 2px;
 }
 
-/* popup select */
-body #form-canvas .selector_element{    
-    margin-left: 150px;
+/* Popup select box */
+@media screen and (min-width: 600px) {
+    body #form-canvas .selector_element .selector_items {
+        margin-left: 150px;
+    }    
+}
+body #form-canvas .label-top .selector_element {
+    margin-left: 40px;
+}
+body #form-canvas .label-top .selector_items {
+    margin-left: 0px;
+}
+@media screen and (min-width: 600px) {
+    body #form-canvas .label-top .selector_element .selector_items {
+        margin-left:0px;
+    }
+}
+@media screen and (max-width: 480px) {
+    body #form-canvas .label-top .selector_element {
+        margin-right:0px;
+        margin-left:0px !important;
+    }
+}
+body.rtl .label-top > .label {
+    width: 100%;
+    float: none;
+}
+@media screen and (max-width: 480px) {
+    body.rtl #form-canvas .label-top.form-cell .selector_element {
+        margin-right:0px !important;
+    }
+}
+@media screen and (min-width: 600px) {
+    body.rtl #form-canvas .selector_element .selector_items {
+        margin-right:150px;
+        margin-left: 0px;
+    }
+}
+body.rtl #form-canvas .label-top.form-cell .selector_element {
+    margin-right: 40px;
+}
+body.rtl #form-canvas .label-top.form-cell .selector_items {
+    margin-right: 0px !important;
+}
+
+body.rtl #form-canvas .selector_element .selector_item {
+    margin-right: 0px;
+    margin-left: 5px;
 }
 body #form-canvas .selector_element .selector_button {
     border-color: #5FB878;
@@ -944,6 +999,17 @@ body .handsontable input, .handsontable textarea{
     body #form-canvas .hasDatepicker{
         width: calc(100% - 42px);
     }
+    body.rtl #form-canvas div.form-cell .label {
+        text-align: right;
+    }
+    body.rtl #form-canvas .hasDatepicker + a {
+        left: 16px;
+        top: 32px;
+    }
+    body.rtl #form-canvas .hasDatepicker + a + a:after {
+        left: -22px;
+        top: 32px;
+    }
 }
 
 .form-edit-btn{
@@ -957,4 +1023,108 @@ body.rtl .form-edit-btn{
 }
 .form-edit-btn.bottom{
     bottom: 31px;
+}
+
+/* numeric field */
+.numeric_field_controls {top: -8px;}
+.label-top .numeric_field_controls {bottom: 53px; top: auto;}
+@media (max-width: 768px) {
+    .numeric_field_controls {bottom: auto; top: -8px; right: auto;}
+}
+@media (max-width: 480px) {
+    .numeric_field_controls {bottom: 53px; top: auto;}
+}
+
+body #form-canvas .form-cell label.label:has(i), body #form-canvas .subform-cell label.label:has(i) {
+    position: relative;
+}
+.form-cell > label.label > i,
+.subform-cell > label.label > i,
+.label-left.form-cell > label.label > i,
+.label-left.subform-cell > label.label > i{
+    border: 1px solid #e6e6e6;
+    border-radius: 2px 0 0 2px;
+    transition: all 0.3s;
+}
+body.rtl .form-cell > label.label > i,
+body.rtl .subform-cell > label.label > i,
+body.rtl .label-left.form-cell > label.label > i,
+body.rtl .label-left.subform-cell > label.label > i{
+    border-radius: 0 2px 2px 0;
+}
+.label-top.form-cell > label.label > i,
+.label-top.subform-cell > label.label > i{
+    bottom: -36px;
+}
+.label-top .form-cell:not(.label-left) > label.label > i,
+.label-top .subform-cell:not(.label-left) > label.label > i{
+   bottom: -36px;
+}
+.form-cell > label.label:has(+ input:focus) > i,
+.subform-cell > label.label:has(+ input:focus) > i,
+.form-cell > label.label:has(+ select:focus) > i,
+.subform-cell > label.label:has(+ select:focus) > i{
+    border-top-color: rgb(26, 35, 126);
+    border-bottom-color: rgb(26, 35, 126);
+    border-left-color: rgb(26, 35, 126);
+}
+body.rtl .form-cell > label.label:has(+ input:focus) > i,
+body.rtl .subform-cell > label.label:has(+ input:focus) > i,
+body.rtl .form-cell > label.label:has(+ select:focus) > i,
+body.rtl .subform-cell > label.label:has(+ select:focus) > i{
+    border-right-color: rgb(26, 35, 126);
+    border-left-color: #e6e6e6;
+}
+@media (max-width: 480px) {
+    .form-cell > label.label > i,
+    .subform-cell > label.label > i,
+    .label-left.form-cell > label.label > i,
+    .label-left.subform-cell > label.label > i{
+        right: unset;
+        top: unset;
+        bottom: -36px;
+    }
+    body.rtl .form-cell > label.label > i,
+    body.rtl .subform-cell > label.label > i {
+        left: unset;
+        right: 0;
+    }
+}
+@media (min-width: 480px){
+    .form-cell:not(.label-top) > label.label:has(i) + *:not(.ui-screen-hidden),
+    .subform-cell:not(.label-top) > label.label:has(i) + *:not(.ui-screen-hidden),
+    .form-cell:not(.label-top) > label.label:has(i) + .ui-screen-hidden + *,
+    .subform-cell:not(.label-top) > label.label:has(i) + .ui-screen-hidden + *{
+        width: 50%;
+    }
+}
+
+/* fields with top-aligned label */
+body #form-canvas .label-top .label {
+    text-align: left;
+}
+body #form-canvas .label-top .hasDatepicker {
+    width: calc(100% - 42px);
+}
+
+/*
+ *  Higher specificity by targeting <form> and .form-cell class to overwrite the
+ *  "body.rtl #form-canvas .form-cell .label" CSS declaration from xadmin/css/custom.css
+ *  due to wro.xml including custom.css after this form.css
+ */
+body.rtl #form-canvas form.label-top .label,
+body.rtl #form-canvas .label-top.form-cell .label {
+    text-align: right;
+}
+
+/*
+ *  Fixes the "X" and "Calendar" field buttons for datepicker are misaligned when in RTL
+ */
+body.rtl .label-top input.hasDatepicker {
+    float: none !important;
+}
+
+/* targeting the misaligned form "save" buttons */
+.form-column-horizontal .form-cell, .form-column-horizontal .subform-cell {
+    float: none;
 }

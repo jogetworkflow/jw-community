@@ -1,15 +1,19 @@
 package org.joget.apps.app.controller;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.io.Writer;
 import java.net.URLEncoder;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Set;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -28,6 +32,7 @@ import org.joget.apps.form.model.Column;
 import org.joget.apps.form.model.Element;
 import org.joget.apps.form.model.Form;
 import org.joget.apps.form.model.FormBuilderPalette;
+import org.joget.apps.form.model.FormBuilderPaletteElement;
 import org.joget.apps.form.model.FormData;
 import org.joget.apps.form.model.FormRow;
 import org.joget.apps.form.model.FormRowSet;
@@ -39,7 +44,10 @@ import org.joget.apps.form.service.FormService;
 import org.joget.apps.form.service.FormUtil;
 import org.joget.commons.util.SecurityUtil;
 import org.joget.commons.util.SetupManager;
+import org.joget.plugin.base.DefaultPlugin;
+import org.joget.plugin.base.Plugin;
 import org.joget.plugin.base.PluginManager;
+import org.joget.plugin.property.model.PropertyEditable;
 import org.joget.plugin.property.service.PropertyUtil;
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -148,15 +156,66 @@ public class FormBuilderWebController {
         return "fbuilder/formBuilder";
     }
     
+    
+    //Get form palette elements
+    @RequestMapping("/console/app/(*:appId)/(~:version)/form/palette/(*:formId)")
+    public void getPaletteReload(Writer writer, ModelMap model, HttpServletResponse response, @RequestParam("appId") String appId, @RequestParam(value = "version", required = false) String version, @RequestParam("formId") String formId, @RequestParam(required = false) String json) {
+        Map<String, Object> result = new HashMap<>();
+        AppDefinition appDef = appService.getAppDefinition(appId, version);
+        AppUtil.setCurrentAppDefinition(appDef);
+
+        Collection<Plugin> list = pluginManager.list(FormBuilderPaletteElement.class);
+        List<Map<String, Object>> pluginList = new ArrayList<>();
+
+        // add plugin to palette
+        for (Plugin plugin : list) {
+            Map<String, Object> pluginObject = new HashMap<>();
+            pluginObject.put("className", plugin.getClass().getName());
+            pluginObject.put("i18nLabel", plugin.getI18nLabel());
+            pluginObject.put("developer", ((DefaultPlugin) plugin).getDeveloperMode());
+            
+            PropertyEditable elementProperty = (PropertyEditable) plugin;
+            JSONArray jsonArray = new JSONArray(elementProperty.getPropertyOptions());
+            JSONArray newPropertyOptions = new JSONArray();
+            for (int i = 0; i < jsonArray.length(); i++) {
+                JSONObject jsonObject = jsonArray.getJSONObject(i);
+                JSONObject newObject = new JSONObject();
+                // Recursively add or keep double quotes around keys
+                PropertyUtil.recursivelyAddQuotes(newObject, jsonObject);
+                newPropertyOptions.put(newObject);
+            }
+            pluginObject.put("propertyOptions", newPropertyOptions.toString(2));
+            
+            if (plugin instanceof FormBuilderPaletteElement) {
+                FormBuilderPaletteElement formBuilderElement = (FormBuilderPaletteElement) plugin;
+                pluginObject.put("defaultPropertyValues", formBuilderElement.getDefaultPropertyValues());
+                pluginObject.put("category", formBuilderElement.getFormBuilderCategory());
+                pluginObject.put("icon", formBuilderElement.getFormBuilderIcon());
+                pluginObject.put("template", formBuilderElement.getFormBuilderTemplate());
+            }
+            pluginList.add(pluginObject);
+        }
+        //sort the list based on category
+        pluginList.sort(Comparator.comparing(m -> (Comparable<Object>) m.get("category")));
+        result.put("elements", pluginList);
+        
+        JSONObject jsonObject = new JSONObject();
+        jsonObject.put("success", result);
+        jsonObject.write(writer);
+    }
+
     @RequestMapping(value = "/fbuilder/app/(*:appId)/(~:appVersion)/form/(*:formId)/save", method = RequestMethod.POST)
     @Transactional
-    public String save(Writer writer, @RequestParam("appId") String appId, @RequestParam(value = "appVersion", required = false) String version, @RequestParam("formId") String formId, @RequestParam("json") String json) throws Exception {
+    public String save(Writer writer, @RequestParam("appId") String appId, @RequestParam(value = "appVersion", required = false) String version, @RequestParam("formId") String formId, @RequestParam(value = "json", required = false) String json) throws Exception {
         // verify app license
         ConsoleWebPlugin consoleWebPlugin = (ConsoleWebPlugin)pluginManager.getPlugin(ConsoleWebPlugin.class.getName());
         String page = consoleWebPlugin.verifyAppVersion(appId, version);
         if (page != null) {
             return page;
         }
+        
+        //retrieve from request body if the json is send in file
+        json = AppUtil.getSubmittedJsonDefinition(json);
 
         AppDefinition appDef = appService.getAppDefinition(appId, version);
         // load existing form definition and update fields
@@ -378,6 +437,8 @@ public class FormBuilderWebController {
                 //should use the original request param map instead of the one modified by other form processing in form data. Retrieve it again from request 
                 FormData newFormData = new FormData();
                 newFormData = formService.retrieveFormDataFromRequest(newFormData, request);
+                //merge the data just in case there is new request parameter added for primary key of subform
+                formService.mergeProcessedRequestParams(newFormData, formData);
                 Map<String, String[]> requestParams = newFormData.getRequestParams();
                 if (requestParams != null && !requestParams.isEmpty()) {
                     requestParams.remove("_json");

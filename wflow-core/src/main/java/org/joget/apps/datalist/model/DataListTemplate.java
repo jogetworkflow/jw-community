@@ -105,6 +105,7 @@ public abstract class DataListTemplate extends ExtDefaultPlugin implements Prope
         String pageNav = listHelper.getPageNavigationBar(href, getDatalist().getDataListEncodedParamName("p"));
         
         String exportLinks = "";
+        String templatePagelinks = "template_pagelinks";
         if (!getDatalist().getNoExport()) {
             if (MediaTypeEnum.getSize() == 4) {
                 MediaTypeEnum.registerMediaType("pdf");
@@ -130,9 +131,11 @@ public abstract class DataListTemplate extends ExtDefaultPlugin implements Prope
                 }
             }
             exportLinks = MessageFormat.format(props.getExportBanner(), new String[]{exportLinks});
+        } else {
+            templatePagelinks += " noExportLinks";
         }
         
-        return "<div class=\"template_pagelinks\">" + pageNav + exportLinks + "</div>";
+        return "<div class=\""+ templatePagelinks +"\">" + pageNav + exportLinks + "</div>";
     }
     
     public String fillTemplateProps(String template) {

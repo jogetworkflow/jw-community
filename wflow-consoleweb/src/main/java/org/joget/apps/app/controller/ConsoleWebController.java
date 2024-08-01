@@ -42,6 +42,7 @@ import org.joget.apps.app.dao.PluginDefaultPropertiesDao;
 import org.joget.apps.app.dao.UserviewDefinitionDao;
 import org.joget.apps.app.dao.DatalistDefinitionDao;
 import org.joget.apps.app.model.AppDefinition;
+import org.joget.apps.app.model.AppOverviewTool;
 import org.joget.apps.app.model.AppResource;
 import org.joget.apps.app.model.BuilderDefinition;
 import org.joget.apps.app.model.CreateAppOption;
@@ -60,6 +61,7 @@ import org.joget.apps.app.model.ImportAppException;
 import org.joget.apps.app.model.ProcessFormModifier;
 import org.joget.apps.app.model.StartProcessFormModifier;
 import org.joget.apps.app.service.AppDevUtil;
+import org.joget.apps.app.service.AppOverviewUtil;
 import org.joget.apps.app.service.AppResourceUtil;
 import org.joget.apps.app.service.AppService;
 import org.joget.apps.app.service.AppUtil;
@@ -154,6 +156,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.LocaleResolver;
 import org.springframework.web.util.HtmlUtils;
+
 @Controller
 public class ConsoleWebController {
 
@@ -225,7 +228,7 @@ public class ConsoleWebController {
     AuditTrailManager auditTrailManager;
     @Autowired
     WorkflowAssignmentDao workflowAssignmentDao;
-
+    
     @RequestMapping({"/index", "/", "/home"})
     public String index() {
         String landingPage = WorkflowUtil.getSystemSetupValue("landingPage");
@@ -1838,7 +1841,12 @@ public class ConsoleWebController {
         AppDefinition appDef = null;
         try {
             if (appZip != null) {
-                appDef = appService.importApp(appZip.getBytes());
+                byte[] bytes = appZip.getBytes();
+                if (appService.isGitSrcZip(bytes)) {
+                    appDef = appService.importAppDefFromGitSrc(bytes);
+                } else {
+                    appDef = appService.importApp(bytes);
+                }
             }
         } catch (ImportAppException e) {
             errors.add(e.getMessage());
@@ -3796,6 +3804,32 @@ public class ConsoleWebController {
         
         AppUtil.writeJson(writer, jsonObject, callback);
     }
+    
+    @RequestMapping("/json/console/app/(*:appId)/(~:version)/builders/overview")
+    public void consoleBuilderOverview(Writer writer, @RequestParam String appId, @RequestParam(required = false) String version, @RequestParam(value = "callback", required = false) String callback) throws IOException, JSONException {
+        AppDefinition appDef = appService.getAppDefinition(appId, version);
+        
+        if (appDef != null) {
+            writer.write(AppOverviewUtil.getOverview(appDef));
+        }
+    }
+    
+    @RequestMapping("/json/console/app/(*:appId)/(~:version)/builders/overviewTools")
+    public void consoleBuilderOverviewTools(Writer writer, @RequestParam String appId, @RequestParam(required = false) String version, @RequestParam(value = "callback", required = false) String callback) throws IOException, JSONException {
+        Map<String, AppOverviewTool> tools = AppOverviewUtil.getTools();
+        
+        JSONArray jsonArr = new JSONArray();
+        for (AppOverviewTool tool : tools.values()) {
+            JSONObject obj = new JSONObject();
+            obj.put("icon", tool.getIcon());
+            obj.put("label", tool.getI18nLabel());
+            obj.put("className", tool.getClassName());
+            
+            jsonArr.put(obj);
+        }
+        
+        AppUtil.writeJson(writer, jsonArr, callback);
+    }
 
     protected void checkAppPublishedVersion(AppDefinition appDef) {
         String appId = appDef.getId();
@@ -4100,6 +4134,29 @@ public class ConsoleWebController {
         } catch (Exception e) {
             //ignore
         }
+        jsonArray = sortJSONArray(jsonArray, "label", false);
+        AppUtil.writeJson(writer, jsonArray, callback);
+    }
+    
+    @RequestMapping("/json/console/app/(*:appId)/(~:version)/userview/category/options")
+    public void consoleUserviewCategoryOptionsJson(Writer writer, @RequestParam(value = "appId") String appId, @RequestParam(value = "version", required = false) String version, @RequestParam(value = "callback", required = false) String callback, @RequestParam(value = "userviewId", required = false) String userviewId) throws IOException, JSONException {
+        JSONArray jsonArray = new JSONArray();
+        Map blank = new HashMap();
+        blank.put("value", "");
+        blank.put("label", "");
+        jsonArray.put(blank);
+        
+        Map<String, String> i = userviewService.getAllCategory(appId, version, userviewId);
+        for (Map.Entry<String, String> entry : i.entrySet()) {
+            Object key = entry.getKey();
+            Object value = entry.getValue();
+            
+            blank = new HashMap();
+            blank.put("value", key);
+            blank.put("label", value);
+            jsonArray.put(blank);
+        }
+        
         jsonArray = sortJSONArray(jsonArray, "label", false);
         AppUtil.writeJson(writer, jsonArray, callback);
     }
@@ -4591,6 +4648,8 @@ public class ConsoleWebController {
 
     @RequestMapping(value = "/console/setting/general/submit", method = RequestMethod.POST)
     public String consoleSettingGeneralSubmit(HttpServletRequest request, ModelMap map) {
+        boolean localeChanged = false;
+        
         List<String> settingsIsNotNull = new ArrayList<String>();
 
         List<String> booleanSettingsList = new ArrayList<String>();
@@ -4639,6 +4698,12 @@ public class ConsoleWebController {
                     setting.setValue(SecurityUtil.encrypt(paramValue));
                 }
             } else {
+                
+                //check for locale changes
+                if ("systemLocale".equals(paramName) && !paramValue.equals(setting.getValue())) {
+                    localeChanged = true;
+                }
+                
                 setting.setValue(paramValue);
             }
             
@@ -4668,7 +4733,12 @@ public class ConsoleWebController {
 
         //clear all caches & update the settings
         setupManager.clearCache();
-        ((LocalLocaleResolver) localeResolver).reset(request);
+        
+        //only reset the locale when setting changed
+        if (localeChanged) {
+            ((LocalLocaleResolver) localeResolver).reset(request);
+        }
+        
         if (refreshPlugins) {
             pluginManager.refresh();
         } else {
@@ -4988,6 +5058,46 @@ public class ConsoleWebController {
     public String consoleSettingMessage(ModelMap map) {
         map.addAttribute("localeList", getSortedLocalList());
         return "console/setting/message";
+    }
+
+    @RequestMapping("/console/setting/message/export")
+    public String consoleSettingMessageExport(ModelMap map) {
+        map.addAttribute("localeList", rbmDao.getLocaleList());
+
+        ResourceBundleMessage message = new ResourceBundleMessage();
+        map.addAttribute("message", message);
+        return "console/setting/messageExport";
+    }
+
+    @RequestMapping(value = "/console/setting/message/export/submit", method = RequestMethod.POST)
+    public String consoleSettingMessageExportSubmit(ModelMap map, HttpServletResponse response, @RequestParam("locale") String locale) throws IOException {
+        Collection<String> locales = rbmDao.getLocaleList();
+        
+        if (locale == null || locale.isEmpty() || !locales.contains(locale)) {
+            Collection<String> errors = new ArrayList<>();
+            errors.add(ResourceBundleUtil.getMessage("console.setting.message.export.error"));
+            map.addAttribute("errors", errors);
+            
+            return "console/setting/messageExport";
+        } else {
+            ServletOutputStream output = null;
+            try {
+                locale = SecurityUtil.validateStringInput(locale);
+                String filename = locale + ".po";
+                response.setContentType("text/plain; charset=utf-8");
+                response.addHeader("Content-Disposition", "attachment; filename=" + filename);
+                output = response.getOutputStream();
+                ResourceBundleUtil.exportPO(locale, output);
+            } catch (Exception ex) {
+                LogUtil.error(getClass().getName(), ex, "");
+            } finally {
+                if (output != null) {
+                    output.flush();
+                }
+            }
+            
+            return "console/dialogClose";
+        }
     }
 
     @RequestMapping("/console/setting/message/create")
@@ -5957,32 +6067,7 @@ public class ConsoleWebController {
             map.addAttribute("isPublished", appDef.isPublished());
             return "console/apps/packageUploadSuccess";
         }
-    }    
-
-    @RequestMapping({"/desktop/marketplace/app"})
-    public String marketplaceApp(ModelMap model, @RequestParam(value = "url") String url) {
-        boolean trusted = false;
-        String trustedUrlsKey = "appCenter.link.marketplace.trusted";
-        String trustedUrls = ResourceBundleUtil.getMessage(trustedUrlsKey);
-        if (trustedUrls != null && !trustedUrls.isEmpty()) {
-            StringTokenizer st = new StringTokenizer(trustedUrls, ",");
-            while (st.hasMoreTokens()) {
-                String trustedUrl = st.nextToken().trim();
-                if (url.startsWith(trustedUrl)) {
-                    trusted = true;
-                    break;
-                }
-            }
-        }
-        
-        if (trusted) {
-            model.addAttribute("appUrl", url);
-        } else {
-            model.addAttribute("appUrl", "");
-        }
-        
-        return "desktop/marketplaceApp";
-    }
+    } 
     
     @RequestMapping({"/json/console/app/(*:appId)/(~:version)/userview/(*:userviewId)/json"})
     public void getUserviewJson(Writer writer, HttpServletResponse response, @RequestParam(value = "appId") String appId, @RequestParam(value = "version", required = false) String version, @RequestParam(value = "userviewId") String userviewId) throws IOException {
@@ -6259,7 +6344,7 @@ public class ConsoleWebController {
     }
     
     @RequestMapping(value = "/console/app/(*:appId)/(~:version)/dev/submit", method = RequestMethod.POST)
-    public void consoleDevSubmit(Writer writer, String id, @RequestParam String appId, @RequestParam(required = false) String version, @RequestParam(required = false) String json) throws JSONException, IOException {
+    public void consoleDevSubmit(Writer writer, String id, @RequestParam String appId, @RequestParam(required = false) String version, @RequestParam(value = "json", required = false) String json) throws JSONException, IOException {
         AppDefinition appDef = appService.getAppDefinition(appId, version);
         
         String oldProperties = "{}";  
@@ -6283,6 +6368,9 @@ public class ConsoleWebController {
         }
         
         try {
+            //retrieve from request body if the json is send in file
+            json = AppUtil.getSubmittedJsonDefinition(json);
+
             json = PropertyUtil.propertiesJsonStoreProcessing(oldProperties, json);
             Properties appProps = new Properties();
             JSONObject jsonObject = new JSONObject(json);
@@ -6424,6 +6512,23 @@ public class ConsoleWebController {
             } finally {
                 HostManager.resetProfile();
             }
+        }
+    }
+    
+    /**
+    * Validates an email address and returns the result as a JSON response.
+    * This method handles POST requests to the "/api/validateEmail" endpoint. 
+    * It utilizes the StringUtil.validateEmail method to validate the provided email address. 
+    */
+    @RequestMapping(value = "/api/validateEmail", method = RequestMethod.POST)
+    public void validateEmail(HttpServletRequest request, HttpServletResponse response, @RequestParam("email") String email, @RequestParam(value = "multiple", required = false) boolean multiple) {
+        try {
+            boolean isValid = StringUtil.validateEmail(email, multiple);
+            response.setContentType("application/json");
+            response.setCharacterEncoding("UTF-8");
+            response.getWriter().write("{\"isValid\": " + isValid + "}");
+        } catch (IOException e) {
+            e.printStackTrace();
         }
     }
 }

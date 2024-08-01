@@ -19,6 +19,7 @@ import org.joget.directory.model.Group;
 import org.joget.workflow.model.WorkflowAssignment;
 import org.joget.workflow.model.WorkflowProcess;
 import org.joget.workflow.model.WorkflowProcessResult;
+import org.json.JSONObject;
 import org.springframework.web.multipart.MultipartFile;
 
 /**
@@ -730,4 +731,37 @@ public interface AppService {
      * @return 
      */
     public Collection<AppDefinition> getUnprotectedAppList();
+    
+    /**
+     * Checking the zip file is containing the git src
+     * @param zip
+     * @return 
+     */
+    public boolean isGitSrcZip(byte[] zip);
+    
+    /**
+     * Import App Definition from git src in zip file
+     * @param zip
+     * @return 
+     */
+    public AppDefinition importAppDefFromGitSrc(byte[] zip);
+    
+    /**
+     * Lock and processing process update & process instance migration
+     * @param appDef
+     * @return 
+     */
+    public boolean lockProcessUpdate(AppDefinition appDef);
+    
+    /**
+     * Release the lock after done process update and process instance migration
+     * @param appDef 
+     */
+    public void tryReleaseProcessUpdate(AppDefinition appDef);
+    
+    /**
+     * Check there is process update & process instance migration
+     * @param appDef 
+     */
+    public boolean hasProcessUpdate(AppDefinition appDef);
 }

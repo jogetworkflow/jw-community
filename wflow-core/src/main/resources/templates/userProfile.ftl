@@ -227,10 +227,13 @@
                         valid = false;
                     }
                 </#if>
+                if (!UI.validateEmail('#profile', '#email')) {
+                    valid = false;
+                }
 
                 if(valid){
                     $("form#profile").submit();
-                }else{
+                } else if(alertString !== ''){
                     alert(alertString);
                 }
             }

@@ -79,10 +79,11 @@ public class Form extends Element implements FormBuilderEditable, FormContainer 
                     }
                 }
                 
+                //if the meta original id is not null (it is submission) and form has errors, keep using meta original id even it is empty
                 if (formData.getRequestParameter(FormUtil.FORM_META_ORIGINAL_ID) != null &&
-                        !formData.getRequestParameter(FormUtil.FORM_META_ORIGINAL_ID).isEmpty()) {
+                        !formData.getFormErrors().isEmpty()) {
                     setFormMeta(FormUtil.FORM_META_ORIGINAL_ID, new String[]{formData.getRequestParameter(FormUtil.FORM_META_ORIGINAL_ID)});
-                } else if (primaryKey != null) {
+                } else if (primaryKey != null) { //reach here and below if it is load or after submission with no error
                     setFormMeta(FormUtil.FORM_META_ORIGINAL_ID, new String[]{primaryKey});
                 } else {
                     setFormMeta(FormUtil.FORM_META_ORIGINAL_ID, new String[]{""});
@@ -99,10 +100,11 @@ public class Form extends Element implements FormBuilderEditable, FormContainer 
                 }
             } else {
                 String uniqueId = getCustomParameterName();
+                //if the meta original id is not null (it is submission) and form has errors, keep using meta original id even it is empty
                 if (formData.getRequestParameter(uniqueId + FormUtil.FORM_META_ORIGINAL_ID) != null &&
-                        !formData.getRequestParameter(uniqueId + FormUtil.FORM_META_ORIGINAL_ID).isEmpty()) {
+                        !formData.getFormErrors().isEmpty()) {
                     setFormMeta(uniqueId + FormUtil.FORM_META_ORIGINAL_ID, new String[]{formData.getRequestParameter(uniqueId + FormUtil.FORM_META_ORIGINAL_ID)});
-                } else if (primaryKey != null) {
+                } else if (primaryKey != null) { //reach here and below if it is load or after submission with no error
                     setFormMeta(uniqueId + FormUtil.FORM_META_ORIGINAL_ID, new String[]{primaryKey});
                 } else {
                     setFormMeta(uniqueId + FormUtil.FORM_META_ORIGINAL_ID, new String[]{""});
@@ -246,13 +248,23 @@ public class Form extends Element implements FormBuilderEditable, FormContainer 
     }
     
     @Override
+    public String decorateWithBuilderProperties(String html, FormData formData) {
+        if (getParent() != null) {
+            return html; //skip for subform
+        } else {
+            return super.decorateWithBuilderProperties(html, formData);
+        }
+    }
+    
+    @Override
     public Map<String, String> getElementStyles(String styleClass, Map<String, String> attrs) {
         Map<String, String> styles = super.getElementStyles(styleClass, attrs);
         
-        //section default styles
+        //form & section default styles
         if (getParent() == null) {
-            String[] keys = new String[]{"section-", "section-header-", "section-fieldLabel-", "section-fieldInput-"};
+            String[] keys = new String[]{"", "section-", "section-header-", "section-fieldLabel-", "section-fieldInput-"};
             String[] cssClass = new String[] {
+                "." + styleClass,
                 "." + styleClass + " .form-section, ." + styleClass + " .subform-section",
                 "." + styleClass + " .form-section .form-section-title, ." + styleClass + " .subform-section .subform-section-title",
                 "." + styleClass + " .form-cell > label.label, ." + styleClass + " .subform-cell > label.label",
@@ -261,6 +273,7 @@ public class Form extends Element implements FormBuilderEditable, FormContainer 
                     "." + styleClass + " .form-cell > label.label + div.form-clear + *, ." + styleClass + " .subform-cell > label.label + div.form-clear + * "
             };
             String[] cssHoverClass = new String[] {
+                "." + styleClass + ":hover",
                 "." + styleClass + " .form-section:hover, .{{styleClass}} .subform-section:hover",
                 "." + styleClass + " .form-section:hover .form-section-title, ." + styleClass + " .subform-section:hover .subform-section-title",
                 "." + styleClass + " .form-cell:hover > label.label, ." + styleClass + " .subform-cell:hover > label.label",
@@ -292,20 +305,18 @@ public class Form extends Element implements FormBuilderEditable, FormContainer 
             } 
             
             if ("label-top".equals(getPropertyString("css-label-position"))) {
-                styles.put("DESKTOP", styles.get("DESKTOP") + " ." + styleClass +" .form-cell > label.label, ." + styleClass + ".subform-cell > label.label, " + 
-                        " ." + styleClass +" .form-cell > label.label + *:not(.ui-screen-hidden), ." + styleClass + ".subform-cell > label.label + *:not(.ui-screen-hidden), " +
-                        " ." + styleClass +" .form-cell > label.label + .ui-screen-hidden + *, ." + styleClass + ".subform-cell > label.label + .ui-screen-hidden + * " +
+                styles.put("DESKTOP", styles.get("DESKTOP") + " ." + styleClass +" .form-cell:not(.label-left) > label.label, ." + styleClass + " .subform-cell:not(.label-left) > label.label, " + 
+                        " ." + styleClass +" .form-cell:not(.label-left) > label.label + *:not(.ui-screen-hidden), ." + styleClass + " .subform-cell:not(.label-left) > label.label + *:not(.ui-screen-hidden), " +
+                        " ." + styleClass +" .form-cell:not(.label-left) > label.label + .ui-screen-hidden + *, ." + styleClass + " .subform-cell:not(.label-left) > label.label + .ui-screen-hidden + * " +
                         " {width: 100%; float: none;} ");
             }
             if ("tablet-label-top".equals(getPropertyString("css-tablet-label-position"))) {
-                styles.put("TABLET", styles.get("TABLET") + " ." + styleClass +" .form-cell > label.label, ." + styleClass + ".subform-cell > label.label, " + 
-                        " ." + styleClass +" .form-cell > label.label + *:not(.ui-screen-hidden), ." + styleClass + ".subform-cell > label.label + *:not(.ui-screen-hidden), " +
-                        " ." + styleClass +" .form-cell > label.label + .ui-screen-hidden + *, ." + styleClass + ".subform-cell > label.label + .ui-screen-hidden + * " +
+                styles.put("TABLET", styles.get("TABLET") + " ." + styleClass +" .form-cell:not(.tablet-label-top) > label.label, ." + styleClass + " .subform-cell:not(.tablet-label-top) > label.label, " + 
+                        " ." + styleClass +" .form-cell:not(.tablet-label-top) > label.label + *:not(.ui-screen-hidden), ." + styleClass + " .subform-cell:not(.tablet-label-top) > label.label + *:not(.ui-screen-hidden), " +
+                        " ." + styleClass +" .form-cell:not(.tablet-label-top) > label.label + .ui-screen-hidden + *, ." + styleClass + " .subform-cell:not(.tablet-label-top) > label.label + .ui-screen-hidden + * " +
                         " {width: 100%; float: none;} ");
             }
         }
-        
-        
         
         return styles;
     }

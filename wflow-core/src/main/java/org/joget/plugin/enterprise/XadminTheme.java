@@ -84,6 +84,10 @@ public class XadminTheme extends UniversalTheme {
     public String getJsCssLib(Map<String, Object> data) {
         String path = data.get("context_path").toString();
         String jsCssLink = "";
+        
+        if(getPropertyString("customLogin").equalsIgnoreCase("true") && !getPropertyString("template").isEmpty() && (Boolean) data.get("is_login_page")){
+            return super.getJsCssLib(data);
+        }
 
         jsCssLink += "<link rel=\"stylesheet\" href=\""+path+"/wro/xadmin.min.css\">\n";
         jsCssLink += "<script>loadCSS(\"" + data.get("context_path") + "/xadmin/css/font.css" + "\")</script>\n";
@@ -567,6 +571,11 @@ public class XadminTheme extends UniversalTheme {
     @Override
     public String getLoginForm(Map<String, Object> data) {
         data.put("hide_nav", true);
+
+        if (getPropertyString("customLogin").equalsIgnoreCase("true") && !getPropertyString("template").isEmpty()){
+            return super.getLoginForm(data);            
+        }
+
         if (!getPropertyString("logo").isEmpty()) {
             data.put("logo", "<img class=\"logo\" alt=\"logo\" src=\""+getPropertyString("logo")+"\" />");
         }
@@ -588,6 +597,7 @@ public class XadminTheme extends UniversalTheme {
                 data.put("login_form_after", this.userview.getSetting().getPropertyString("loginPageBottom"));
             }
         }
+
         return UserviewUtil.getTemplate(this, data, "/templates/xadmin/login.ftl");
     }
     
@@ -632,7 +642,7 @@ public class XadminTheme extends UniversalTheme {
             html += "<a><cite>" + ResourceBundleUtil.getMessage("ubuilder.pageNotFound") + "</cite></a>";
         }
         
-        html += "</span><a class=\"layui-btn layui-btn-small\" style=\"line-height:1.6em;margin-top:4px;float:right\" onclick=\"location.reload()\" title=\""+ResourceBundleUtil.getMessage("general.method.label.refresh")+"\"><i class=\"layui-icon layui-icon-refresh\" style=\"line-height:30px\"></i></a></div>";
+        html += "</span><a class=\"layui-btn layui-btn-small\" style=\"line-height:1.6em;margin-top:4px;\" onclick=\"location.reload()\" title=\""+ResourceBundleUtil.getMessage("general.method.label.refresh")+"\"><i class=\"layui-icon layui-icon-refresh\" style=\"line-height:30px\"></i></a></div>";
         return html;
     }
     
@@ -648,7 +658,8 @@ public class XadminTheme extends UniversalTheme {
         } else {
             icon = "<i class=\"iconfont left-nav-li\" lay-tips=\""+StringUtil.stripAllHtmlTag(label)+"\">&#xe6b4;</i>";
         }
-        return icon + "<cite>" + label + "</cite><i class=\"iconfont nav_right\">&#xe697;</i>";
+        String navRightIcon = AppUtil.isRTL() ? "&#xe6a7;" : "&#xe697;";
+        return icon + "<cite>" + label + "</cite><i class=\"iconfont nav_right\">"+navRightIcon+"</i>";
     }
     
     @Override
@@ -732,7 +743,8 @@ public class XadminTheme extends UniversalTheme {
     
     @Override
     public String getCustomHomepage() {
-        if (isIndex() && userview.getCurrent() == null) {
+        boolean hasPermission = getUserview().getSetting().isIsAuthorize();
+        if (isIndex() && hasPermission && userview.getCurrent() == null) { //only do this when having permission, else it won't redirect to login page correctly
             UserviewMenu dummy = new HtmlPage();
             dummy.setProperties(new HashMap<String, Object>());
             dummy.setProperty("id", "_index");
