@@ -10895,8 +10895,10 @@ PropertyEditor.Type.ColorScheme.prototype = {
                     $(selector).find(".color-input input").val("");
                     $(selector).find(".color-input").hide();
                     $(selector).find(".color_values colorgroup, .color_values color").removeClass("editing");
-                }
 
+                    thisObj.reloadColorPickers();
+                }
+                
                 $(selector).toggleClass("showEditor");
             });
         }
@@ -10916,10 +10918,65 @@ PropertyEditor.Type.ColorScheme.prototype = {
         this.isDataReady = true;
     },
     renderValue : function() {
+        var thisObj = this;
         var selector = $("#" + this.id + "_scheme_selector");
         if ($(selector).find("li.selected").length > 0) {
             $(selector).find(".color_values colorgroup").remove();
             $(selector).find(".color_values").prepend($(selector).find("li.selected").html());
+
+            thisObj.reloadColorPickers();
+        }
+    },
+    reloadColorPickers : function(){
+        var thisObj = this;
+        var selector = $("#" + this.id + "_scheme_selector");
+        if(thisObj.properties.name == "dx8colorScheme"){
+            var parentContainer = $(selector).closest('[property-name="'+thisObj.properties.name+'"]');
+            var parentSiblings = $(parentContainer).siblings()
+            
+            //Theme color 1 elements
+            var color = $(selector).find(".color_values colorgroup").css("background-color");
+            $(parentSiblings).filter('[property-name="dx8background"], [property-name="dx8footerBackground"]').each(function(){
+                $(this).find(".property-input input").val(color)
+                $(this).find(".property-input input").css("background-color", color)
+            })
+
+            var colorChildren = $(selector).find(".color_values colorgroup").children()
+
+            //Theme color 2 elements
+            color = $(colorChildren.eq(0)).css("background-color");
+            $(parentSiblings).filter('[property-name="dx8headingFontColor"], [property-name="dx8headerFontColor"], [property-name="dx8linkColor"], [property-name="dx8navBadgeText"], [property-name="dx8navLinkColor"]').each(function(){
+                $(this).find(".property-input input").val(color)
+                $(this).find(".property-input input").css("background-color", color)
+            })
+
+            //Theme color 3 elements
+            color = $(colorChildren.eq(1)).css("background-color");
+            $(parentSiblings).filter('[property-name="dx8navActiveLinkColor"], [property-name="dx8navActiveIconColor"], [property-name="dx8linkActiveColor"], [property-name="dx8navActiveIconColor"], [property-name="dx8navLinkIcon"]').each(function(){
+                $(this).find(".property-input input").val(color)
+                $(this).find(".property-input input").css("background-color", color)
+            })
+
+            //Theme color 4 elements
+            color = $(colorChildren.eq(2)).css("background-color");
+            $(parentSiblings).filter('[property-name="dx8navBadge"], [property-name="dx8linkColor"]').each(function(){
+                $(this).find(".property-input input").val(color)
+                $(this).find(".property-input input").css("background-color", color)
+            })
+
+            //Theme color 5 elements
+            color = $(colorChildren.eq(3)).css("background-color");
+            $(parentSiblings).filter('[property-name="dx8navLinkBackground"], [property-name="dx8navBackground"], [property-name="dx8headerColor"], [property-name="dx8navActiveLinkBackground"]').each(function(){
+                $(this).find(".property-input input").val(color)
+                $(this).find(".property-input input").css("background-color", color)
+            })
+
+            //Theme color 6 elements
+            color = $(colorChildren.eq(4)).css("background-color");
+            $(parentSiblings).filter('[property-name="dx8navLinkBackground"], [property-name="dx8navBackground"], [property-name="dx8headerColor"], [property-name="dx8navActiveLinkBackground"]').each(function(){
+                $(this).find(".property-input input").val(color)
+                $(this).find(".property-input input").css("background-color", color)
+            })
         }
     }
 };
