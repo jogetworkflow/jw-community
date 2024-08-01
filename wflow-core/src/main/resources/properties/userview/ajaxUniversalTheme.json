@@ -30,7 +30,7 @@
         name : 'dx8colorScheme',
         label : '@@ubuilder.colorScheme@@',
         type : 'colorscheme',
-        value : '#f9fafb;#3b4348;#03a9f4;#6ecefb;#ffffff;#ffffff'
+        value : '#e9e9e9;linear-gradient(45deg, #ccc 25%, transparent 25%, transparent 75%, #ccc 75%, #ccc);linear-gradient(45deg, #ccc 25%, transparent 25%, transparent 75%, #ccc 75%, #ccc);linear-gradient(45deg, #ccc 25%, transparent 25%, transparent 75%, #ccc 75%, #ccc);linear-gradient(45deg, #ccc 25%, transparent 25%, transparent 75%, #ccc 75%, #ccc);linear-gradient(45deg, #ccc 25%, transparent 25%, transparent 75%, #ccc 75%, #ccc)'
     },
     {
         name : 'dx8backgroundImage',
