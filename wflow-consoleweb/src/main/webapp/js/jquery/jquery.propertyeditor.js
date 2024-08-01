@@ -6421,7 +6421,10 @@ PropertyEditor.Type.Color.prototype = {
         if (this.value.indexOf("#") === 0) {
             this.value = this.value.toUpperCase();
         }
-        return '<input class="jscolor" type="text" id="' + this.id + '" name="' + this.id + '"' + ' value="' + PropertyEditor.Util.escapeHtmlTag(this.value) + '"/>';
+        if(this.properties.value !== "undefined"){
+            defaultColor = ' defaultcolor="'+this.properties.value+'"';
+        }
+        return '<input class="jscolor" type="text" id="' + this.id + '" name="' + this.id + '"' + ' value="' + PropertyEditor.Util.escapeHtmlTag(this.value) + '"'+ defaultColor +'/>';
     },
     initScripting: function() {
         try {
@@ -10744,6 +10747,7 @@ PropertyEditor.Type.ColorScheme = function() {};
 PropertyEditor.Type.ColorScheme.prototype = {
     shortname: "colorscheme",
     schemeOptions : [
+        "#e9e9e9;linear-gradient(45deg, #ccc 25%, transparent 25%, transparent 75%, #ccc 75%, #ccc);linear-gradient(45deg, #ccc 25%, transparent 25%, transparent 75%, #ccc 75%, #ccc);linear-gradient(45deg, #ccc 25%, transparent 25%, transparent 75%, #ccc 75%, #ccc);linear-gradient(45deg, #ccc 25%, transparent 25%, transparent 75%, #ccc 75%, #ccc);linear-gradient(45deg, #ccc 25%, transparent 25%, transparent 75%, #ccc 75%, #ccc)",
         "#e9e9e9;#FFFFFF;#996C67;#291715;#c41c00;#ff5722",
         "#e9e9e9;#FFFFFF;#D3B8B9;#774B4E;#d32f2f;#9a0007",
         "#e9e9e9;#FFFFFF;#C1ADB8;#2a8ffb;#2a0814;#e72a6d",
@@ -10933,6 +10937,14 @@ PropertyEditor.Type.ColorScheme.prototype = {
         if(thisObj.properties.name == "dx8colorScheme"){
             var parentContainer = $(selector).closest('[property-name="'+thisObj.properties.name+'"]');
             var parentSiblings = $(parentContainer).siblings()
+
+            if ($(selector).find("ul").children().eq(0).hasClass("selected")){
+                parentSiblings.filter('.property-type-color').each(function(){
+                    $(this).find(".property-input input").val($(this).find(".property-input input").attr('defaultcolor'))
+                    $(this).find(".property-input input").css("background-color", $(this).find(".property-input input").attr('defaultcolor'))
+                })
+                return
+            }
             
             //Theme color 1 elements
             var color = $(selector).find(".color_values colorgroup").css("background-color");
