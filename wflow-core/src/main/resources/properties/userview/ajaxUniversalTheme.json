@@ -48,127 +48,152 @@
     {
         name : 'dx8background',
         label : '@@ubuilder.background@@',
-        type : 'color'
+        type : 'color',
+        value : '#f0f2f5'
     },
     {
         name : 'dx8contentbackground',
         label : '@@ubuilder.contentBackground@@',
-        type : 'color'
+        type : 'color',
+        value : '#FFFFFF'
     },
     {
         name : 'dx8headerColor',
         label : '@@ubuilder.headerColor@@',
-        type : 'color'
+        type : 'color',
+        value : '#FFFFFF'
     },
     {
         name : 'dx8headerFontColor',
         label : '@@ubuilder.headerFontColor@@',
-        type : 'color'
+        type : 'color',
+        value : 'rgba(0, 0, 0, 0.88)'
     },
     {
         name : 'dx8navBackground',
         label : '@@ubuilder.navBackground@@',
-        type : 'color'
+        type : 'color',
+        value : '#FFFFFF'
     },
     {
         name : 'dx8navLinkBackground',
         label : '@@ubuilder.navLinkBackground@@',
-        type : 'color'
+        type : 'color',
+        value : '#FFFFFF'
     },
     {
         name : 'dx8navLinkColor',
         label : '@@ubuilder.navLinkColor@@',
-        type : 'color'
+        type : 'color',
+        value : 'rgba(0, 0, 0, 0.88)'
     },
     {
         name : 'dx8navLinkIcon',
         label : '@@ubuilder.navLinkIcon@@',
-        type : 'color'
+        type : 'color',
+        value : 'rgba(0, 0, 0, 0.88)'
     },
     {
         name : 'dx8navActiveLinkBackground',
         label : '@@ubuilder.navActiveLinkBackground@@',
-        type : 'color'
+        type : 'color',
+        value : '#E6F4FF'
     },
     {
         name : 'dx8navActiveLinkColor',
         label : '@@ubuilder.navActiveLinkColor@@',
-        type : 'color'
+        type : 'color',
+        value : '#1677FF'
     },
     {
         name : 'dx8navActiveIconColor',
         label : '@@ubuilder.navActiveIconColor@@',
-        type : 'color'
+        type : 'color',
+        value : '#1677FF'
     },
     {
         name : 'dx8navBadge',
         label : '@@ubuilder.navBadge@@',
-        type : 'color'
+        type : 'color',
+        value : '#1677FF'
     },
     {
         name : 'dx8navBadgeText',
         label : '@@ubuilder.navBadgeText@@',
-        type : 'color'
+        type : 'color',
+        value : '#FFFFFF'
     },
     {
         name : 'dx8navScrollbarThumb',
         label : '@@ubuilder.navScrollbarThumb@@',
-        type : 'color'
+        type : 'color',
+        value : '#C4C4C4'
     },
     {
         name : 'dx8buttonBackground',
         label : '@@ubuilder.buttonBackground@@',
-        type : 'color'
+        type : 'color',
+        value : '#1677FF'
     },
     {
         name : 'dx8buttonColor',
         label : '@@ubuilder.buttonColor@@',
-        type : 'color'
+        type : 'color',
+        value : '#FFFFFF'
     },
     {
         name : 'dx8primaryColor',
         label : '@@ubuilder.primaryColor@@',
-        type : 'color'
+        type : 'color',
+        value : '#1677FF'
     },
     {
         name : 'dx8headingBgColor',
         label : '@@ubuilder.headingBgColor@@',
-        type : 'color'
+        type : 'color',
+        value : '#FFFFFF'
     },
     {
         name : 'dx8headingFontColor',
         label : '@@ubuilder.headingFontColor@@',
-        type : 'color'
+        type : 'color',
+        value : 'rgba(0, 0, 0, 0.88)'
     },
     {
         name : 'dx8fontColor',
         label : '@@ubuilder.fontColor@@',
-        type : 'color'
+        type : 'color',
+        value : 'rgba(0, 0, 0, 0.88)'
     },
     {
         name : 'dx8contentFontColor',
         label : '@@ubuilder.contentFontColor@@',
-        type : 'color'
+        type : 'color',
+        value : 'rgba(0, 0, 0, 0.88)'
     },
     {
         name : 'dx8linkColor',
         label : '@@ubuilder.linkColor@@',
-        type : 'color'
+        type : 'color',
+        value : '#1677FF'
     },
     {
         name : 'dx8linkActiveColor',
         label : '@@ubuilder.linkActiveColor@@',
-        type : 'color'
+        type : 'color',
+        value : '#69B1FF'
     },
     {
         name : 'dx8footerBackground',
         label : '@@ubuilder.footerBackground@@',
-        type : 'color'
+        type : 'color',
+        value : '#F0F2F5'
     },
     {
         name : 'dx8footerColor',
         label : '@@ubuilder.footerColor@@',
-        type : 'color'
+        type : 'color',
+        value : 'rgba(0, 0, 0, 0.88)'
     }]
 },
 {
