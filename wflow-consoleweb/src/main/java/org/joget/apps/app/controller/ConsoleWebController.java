@@ -30,6 +30,8 @@ import org.apache.commons.collections.map.ListOrderedMap;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.commons.lang.StringUtils;
+import org.eclipse.jgit.api.Git;
+import org.eclipse.jgit.merge.MergeStrategy;
 import static org.joget.apps.app.controller.UserviewWebController.isBackendLicense;
 import org.joget.apps.app.dao.AppDefinitionDao;
 import org.joget.apps.app.dao.AppResourceDao;
@@ -61,6 +63,10 @@ import org.joget.apps.app.model.ImportAppException;
 import org.joget.apps.app.model.ProcessFormModifier;
 import org.joget.apps.app.model.StartProcessFormModifier;
 import org.joget.apps.app.service.AppDevUtil;
+import static org.joget.apps.app.service.AppDevUtil.PROPERTY_GIT_PASSWORD;
+import static org.joget.apps.app.service.AppDevUtil.PROPERTY_GIT_URI;
+import static org.joget.apps.app.service.AppDevUtil.PROPERTY_GIT_USERNAME;
+import static org.joget.apps.app.service.AppDevUtil.getAppGitDirectory;
 import org.joget.apps.app.service.AppOverviewUtil;
 import org.joget.apps.app.service.AppResourceUtil;
 import org.joget.apps.app.service.AppService;
@@ -3743,7 +3749,8 @@ public class ConsoleWebController {
     
     @RequestMapping("/console/app/(*:appId)/(~:version)/builders")
     public String consoleBuilderList(ModelMap map, @RequestParam String appId, @RequestParam(required = false) String version) {
-        String result = checkVersionExist(map, appId, version);
+        String result = checkVersionExist(map, appId, version);       
+        String baseDir = AppDevUtil.getAppDevBaseDirectory();       
         if (result != null) {
             Collection<AppDefinition> appDefList = appDefinitionDao.findVersions(appId, null, null, null, null);
             TreeMap<Long, AppDefinition> appDefMap = new TreeMap<>();
@@ -3754,8 +3761,18 @@ public class ConsoleWebController {
             
                 if (!AppDevUtil.isGitDisabled()) {
                 // get app versions from Git
-                    try {
-                        AppDefinition appDef = appDefList.iterator().next();
+                    try {                                              
+                        AppDefinition appDef = appDefList.iterator().next();                         
+                        String projectDirName = getAppGitDirectory(appDef);
+                        File projectDir = AppDevUtil.dirSetup(baseDir, projectDirName);
+                        Git localGit = AppDevUtil.gitInit(projectDir);
+  
+                        Properties prop = AppDevUtil.getAppDevProperties(appDef);
+                        String gitUri = prop.getProperty(PROPERTY_GIT_URI);
+                        String gitUsername = prop.getProperty(PROPERTY_GIT_USERNAME);
+                        String gitPassword = prop.getProperty(PROPERTY_GIT_PASSWORD);
+                                                            
+                        AppDevUtil.gitFetchMerge(projectDir,localGit, gitUri, gitUsername,gitPassword, MergeStrategy.RECURSIVE, appDef);
                         List<String> branches = AppDevUtil.getAppGitBranches(appDef);
                         for (String branch: branches) {                     
                             int versionIndex = branch.lastIndexOf("_");
