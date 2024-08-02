@@ -1309,6 +1309,10 @@ body.rtl .property-input > span.icon > span > span.dropdown{
     font-size: 12px;
     z-index: 1;
 }
+.rtl .css-styles-container .style-group > i.delete_action{
+    left: 35px;
+    right: auto;
+}
 .css-styles-container .style-group > i.delete_action:hover{
     color:red;
 }
@@ -1340,6 +1344,9 @@ body.rtl .property-input > span.icon > span > span.dropdown{
 .property-editor-container.narrow .property-input {
     width: 100%;
     float: none;
+}
+.rtl .property-editor-container.narrow .property-input{
+    direction: rtl;
 }
 .property-editor-container.narrow:not(.wider) input:not([type]),
 .property-editor-container.narrow:not(.wider) input[type=text],
@@ -1501,6 +1508,9 @@ html .property-editor-container input[disabled] {
     min-width: 0;
     border-radius: 0.25rem 0 0 0.25rem;
 }
+.rtl .property-editor-container input[type=number].withUnitSlector {
+    border-radius: 0 0.25rem 0.25rem 0;
+}
 .property-editor-container input[type=number].withUnitSlector.autoUnit{
     display: none;
 }
@@ -1509,6 +1519,9 @@ html .property-editor-container input[disabled] {
     width: 70px;
     min-width: 0;
     border-radius: 0 0.25rem 0.25rem 0;
+}
+.rtl .property-editor-container input[type=number].withUnitSlector + select{
+    border-radius: 0.25rem 0 0 0.25rem;
 }
 .property-editor-container input[type=number].withUnitSlector.autoUnit + select{
     width: 200px;
@@ -1523,6 +1536,9 @@ html .property-editor-container input[disabled] {
 }
 .property-type-iconbuttons .btn-group label:nth-child(2) {
     border-radius: 0.2rem 0 0 0.2rem;
+}
+.rtl .property-type-iconbuttons .btn-group label:nth-child(2) {
+    border-radius: 0 0.2rem 0.2rem 0;
 }
 .ui-screen-hidden{
     display: none !important;
@@ -1963,6 +1979,11 @@ body .ui-dialog .button_form.editor-panel-mode #main-body-header {
     background: transparent;
     color: #fff;
     right: 10px;
+}
+.rtl .editor-panel-mode.narrow:not(.wider) .property-grid .property-input .property-type-grid-row-header:after,
+.rtl .css-styles-container .style-group > h6:after {
+    left: 10px;
+    right: auto;
 }
 .editor-panel-mode.narrow:not(.wider) .property-grid .property-input .property-type-grid-row-header.collapsed:after,
 .css-styles-container .style-group > h6.collapsed:after{

@@ -10621,6 +10621,10 @@ PropertyEditor.Type.CssStyle.prototype = {
             });
         };
         
+        if (UI.rtl) {
+            $("#" + this.id).find(".add_new_style").addClass("chosen-rtl");
+        }
+        
         $("#" + this.id).find(".add_new_style").chosen({ width: "100%", placeholder_text: get_peditor_msg("style.addNew") })
         .off('chosen:showing_dropdown.updatelabel chosen:hiding_dropdown.updatelabel chosen:ready.updatelabel chosen:updated.updatelabel change.updatelabel keyup.updatelabel')
         .on('chosen:showing_dropdown.updatelabel chosen:hiding_dropdown.updatelabel chosen:ready.updatelabel chosen:updated.updatelabel change.updatelabel keyup.updatelabel', function() {
