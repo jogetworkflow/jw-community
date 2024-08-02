@@ -144,7 +144,7 @@ AjaxComponent = {
         });
         
         //handle dynamic size elements locate in show/hide element
-        $(element).find('[data-toggle="collapse"').off("click.btn-collapse").on("click.btn-collapse", function(){
+        $(element).find('[data-toggle="collapse"]').off("click.btn-collapse").on("click.btn-collapse", function(){
             //use timeout to wait for it fully expand
             setTimeout(function(){
                 $(window).trigger("resize");
