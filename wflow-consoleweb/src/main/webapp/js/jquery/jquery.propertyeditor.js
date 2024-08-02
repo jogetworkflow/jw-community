@@ -10744,6 +10744,9 @@ PropertyEditor.Type.ColorScheme = function() {};
 PropertyEditor.Type.ColorScheme.prototype = {
     shortname: "colorscheme",
     schemeOptions : [
+        "#f0f2f5;rgba(0, 0, 0, 0.88);#656565;#1677FF;#FFFFFF;#FFFFFF",
+        "#F5F7FA;#656565;#23B7E5;#27C24C;#FFFFFF;#23B7E5",
+        "#DEE2E6;#808080;#FFFFFF;#00ACAC;#20252A;#FFFFFF",
         "#e9e9e9;#FFFFFF;#996C67;#291715;#c41c00;#ff5722",
         "#e9e9e9;#FFFFFF;#D3B8B9;#774B4E;#d32f2f;#9a0007",
         "#e9e9e9;#FFFFFF;#C1ADB8;#2a8ffb;#2a0814;#e72a6d",

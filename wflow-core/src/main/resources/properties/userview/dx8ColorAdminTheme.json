@@ -30,7 +30,7 @@
         name : 'dx8colorScheme',
         label : '@@ubuilder.colorScheme@@',
         type : 'colorscheme',
-        value : '#e9e9e9;#FFFFFF;#AABEB2;#00652D;#00796b;#004c40'
+        value : '#DEE2E6;#808080;#FFFFFF;#00ACAC;#20252A;#FFFFFF'
     },
     {
         name : 'dx8backgroundImage',
