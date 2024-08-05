@@ -1,6 +1,7 @@
 package org.joget.apps.userview.lib;
 
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -409,7 +410,12 @@ public class RunProcess extends UserviewMenu implements PluginWebSupport, PwaOff
                     }
                     return;
                 } else {
-                    processStarted(startForm, formData);
+                    if ("Pending".equals(result.getStatus())) {
+                        setAlertMessage(ResourceBundleUtil.getMessage("client.app.run.process.label.asyncLoading"));                
+                    } else {
+                        setAlertMessage(getPropertyString("messageShowAfterComplete"));                        
+                    }
+                    processStarted(startForm, formData, result.getProcess().getInstanceId());
                 }
             }
         }
@@ -488,7 +494,9 @@ public class RunProcess extends UserviewMenu implements PluginWebSupport, PwaOff
                     formResult = appService.completeAssignmentForm(form, assignment, formData, variableMap);
 
                     Map<String, String> errors = formResult.getFormErrors();
-                    if (!formResult.getStay() && (errors == null || errors.isEmpty()) && activityForm.isAutoContinue()) {
+                    if ("pending".equals(formResult.getFormResult(AssignmentCompleteButton.DEFAULT_ID))) {
+                        setAlertMessage(ResourceBundleUtil.getMessage("client.app.run.process.label.asyncLoading"));                
+                    } else if (!formResult.getStay() && (errors == null || errors.isEmpty()) && activityForm.isAutoContinue()) {
                         setAlertMessage(getPropertyString("messageShowAfterComplete"));
                         // redirect to next activity if available
                         WorkflowAssignment nextActivity = workflowManager.getNextAssignmentByCurrentAssignment(assignment);
@@ -530,7 +538,7 @@ public class RunProcess extends UserviewMenu implements PluginWebSupport, PwaOff
                         } else {
                             redirectTarget = getPropertyString("redirectTarget");
                         }
-                        setRedirectUrlToWindow(getRedirectUrl(form, formResult), redirectTarget);
+                        setRedirectUrlToWindow(getRedirectUrl(form, formResult, processId), redirectTarget);
                     } else {
                         setProperty("view", "assignmentUpdated");
                     }
@@ -576,8 +584,7 @@ public class RunProcess extends UserviewMenu implements PluginWebSupport, PwaOff
         }
     }
 
-    private void processStarted(Form form, FormData formData) {
-        setAlertMessage(getPropertyString("messageShowAfterComplete"));
+    private void processStarted(Form form, FormData formData, String processId) {
         if ("reload".equals(getPropertyString("actionAfterSaved"))) {
             setRedirectUrlToWindow("SCRIPT_RELOAD_PARENT", getPropertyString("afterSavedReloadTarget"));
         } else if (getPropertyString("redirectUrlAfterComplete") != null && !getPropertyString("redirectUrlAfterComplete").isEmpty()) {
@@ -588,16 +595,27 @@ public class RunProcess extends UserviewMenu implements PluginWebSupport, PwaOff
             } else {
                 redirectTarget = getPropertyString("redirectTarget");
             }
-            setRedirectUrlToWindow(getRedirectUrl(form, formData), redirectTarget);
+            
+            setRedirectUrlToWindow(getRedirectUrl(form, formData, processId), redirectTarget);
         } else {
             setProperty("headerTitle", "Process Started");
             setProperty("view", "processStarted");
         }
     }
     
-    protected String getRedirectUrl(Form form, FormData formData) {
+    protected String getRedirectUrl(Form form, FormData formData, String processId) {
         // determine redirect URL
         String redirectUrl = getPropertyString("redirectUrlAfterComplete");
+        
+        // set process instance ID request parameter in the redirect URL, so that the ID 
+        // can be retrieved in case the process creation is still running asynchronously in the background.
+        if (redirectUrl != null && redirectUrl.trim().length() > 0 && processId != null) {
+            try {
+                redirectUrl = StringUtil.addParamsToUrl(redirectUrl, "processId", URLEncoder.encode(processId, "UTF-8"));
+            } catch (UnsupportedEncodingException ex) {
+                // ignore
+            }
+        }       
 
         if (form != null && formData != null && redirectUrl != null && redirectUrl.trim().length() > 0 && getPropertyString("fieldPassover") != null && getPropertyString("fieldPassover").trim().length() > 0) {
             String passoverFieldName = getPropertyString("fieldPassover");

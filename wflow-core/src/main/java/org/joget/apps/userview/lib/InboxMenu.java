@@ -488,7 +488,9 @@ public class InboxMenu extends UserviewMenu implements PluginWebSupport, PwaOffl
             
             Map<String, String> errors = formData.getFormErrors();
             
-            if (!formData.getStay() && (errors == null || errors.isEmpty()) && activityForm.isAutoContinue()) {
+            if ("pending".equals(formData.getFormResult(AssignmentCompleteButton.DEFAULT_ID))) {
+                setAlertMessage(ResourceBundleUtil.getMessage("client.app.run.process.label.asyncLoading"));                
+            } else if (!formData.getStay() && (errors == null || errors.isEmpty()) && activityForm.isAutoContinue()) {
                 // redirect to next activity if available
                 WorkflowAssignment nextActivity = workflowManager.getNextAssignmentByCurrentAssignment(assignment);
                 if (nextActivity != null) { 
