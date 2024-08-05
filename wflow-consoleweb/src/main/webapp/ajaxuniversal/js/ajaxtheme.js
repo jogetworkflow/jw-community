@@ -194,10 +194,72 @@ AjaxUniversalTheme = {
                 }
             });
         }
+    },
+    
+    /* flag to indicate whether async loading is in progress */
+    asyncLoadingInProgress: false,
+
+    asyncLoading: async function(interval=3000) {
+        if (AjaxUniversalTheme.asyncLoadingInProgress) {
+            // ignore if async loading is already in progress
+            return;
+        }
+        AjaxUniversalTheme.asyncLoadingInProgress = true;
+        console.log("asyncLoading: " + interval + "ms");
+
+        // generic poll function
+        const poll = async function(fn, fnCondition, ms) {
+            let result = null;
+            while (fnCondition(result)) {
+                result = await fn();
+                await wait(ms);
+            }
+            AjaxUniversalTheme.asyncLoadingInProgress = false;
+            return result;
+        };
+        
+        // generic wait function
+        const wait = function(ms=3000) {
+            console.log("wait: " + ms);
+            return new Promise(resolve => {
+                setTimeout(resolve, ms);
+            });
+        };
+        
+        // function to use AjaxComponent to fetch URL
+        let fetchUrl = () => {
+            let loadingDiv = $("#content.page_content .async-loading");            
+            let container = loadingDiv.parent().first();
+            let url = window.location.href;
+            if (container.length > 0) {
+                console.log("fetchUrl: " + url);
+                AjaxComponent.call(container, url, "GET", null);
+            }
+        };
+        
+        // function to check condition for polling
+        let validate = () => {
+            // async-loading class exists in content means that async loading is still in progress
+            let loading = $("#content.page_content .async-loading").length !== 0;
+            return loading;
+        };
+        
+        // poll until async loading is complete
+        await poll(fetchUrl, validate, interval);
+    },
+
+    /* start async loading checking */
+    triggerAsyncLoading: function(interval=3000) {
+        $("body").off("page_loaded.asyncLoading");
+        $("body").on("page_loaded.asyncLoading", function() {
+            setTimeout(function() {
+                AjaxUniversalTheme.asyncLoading(interval);
+            }, interval);
+        });
     }
 };
 
 $(function(){
-    AjaxUniversalTheme.init($("body"));
+    AjaxUniversalTheme.init($("body"));   
 });
 

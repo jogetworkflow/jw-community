@@ -12,6 +12,12 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.StringTokenizer;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import org.hibernate.Cache;
@@ -19,6 +25,7 @@ import org.hibernate.SessionFactory;
 import org.joget.commons.util.DynamicDataSourceManager;
 import org.joget.commons.util.FileStore;
 import org.joget.commons.util.HostManager;
+import org.joget.commons.util.PluginThread;
 import org.joget.commons.util.SecurityUtil;
 import org.joget.directory.model.service.DirectoryUtil;
 import org.joget.workflow.model.dao.WorkflowHelper;
@@ -28,6 +35,8 @@ import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.TransactionStatus;
+import org.springframework.transaction.support.TransactionTemplate;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 
@@ -452,6 +461,62 @@ public class WorkflowUtil implements ApplicationContextAware {
         if (cache != null) {
             cache.evictAllRegions();
         }        
+    }
+
+    /**
+     * Execute a Callable task asynchronously with a timeout.
+     * Note: Ideally this method should be located in PluginThread in wflow-commons, but it is placed here because of the dependency to WorkflowUserManager.
+     * @param <T>
+     * @param task
+     * @param timeout
+     * @return
+     * @throws TimeoutException
+     * @throws InterruptedException
+     * @throws ExecutionException 
+     */
+    public static <T> T executeAsync(Callable<T> task, long timeout) throws TimeoutException, InterruptedException, ExecutionException {
+        T result = null;
+        // get executor service
+        ExecutorService asyncExecutorService = PluginThread.getAsyncExecutorService();
+        
+        try {
+            if (timeout <= 0) {
+                // no timeout configured, execute task synchronously within the same thread
+                try {
+                    return task.call();
+                } catch (Exception ex) {
+                    throw new RuntimeException(ex);
+                }
+            }
+            
+            // execute task asynchronously with a timeout
+            final WorkflowUserManager wum = (WorkflowUserManager)WorkflowUtil.getApplicationContext().getBean("workflowUserManager");
+            final String currentUser = wum.getCurrentUsername();
+            Future<T> future = asyncExecutorService.submit(() -> {
+                // execute within new transaction, otherwise data will not be available to other threads
+                TransactionTemplate transactionTemplateRequiresNew = (TransactionTemplate)WorkflowUtil.getApplicationContext().getBean("transactionTemplateRequiresNew");
+                return transactionTemplateRequiresNew.execute((TransactionStatus status) -> {
+                    // set current user in thread
+                    wum.setCurrentThreadUser(currentUser);
+                    try {
+                        // execute callable task
+                        return task.call();
+                    } catch (Exception ex) {
+                        LogUtil.error(WorkflowUtil.class.getName(), ex, "executeAsync error: " + ex.getMessage());
+                        throw new RuntimeException(ex);
+                    }
+                });        
+            });
+            try {
+                result = (timeout > 0) ? future.get(timeout, TimeUnit.MILLISECONDS) : future.get();
+            } catch(TimeoutException te) {
+                LogUtil.debug(PluginThread.class.getName(), "Timeout executeAsyc for " + task);
+                throw te;
+            }       
+        } finally {
+            asyncExecutorService.shutdown();
+        }
+        return result;
     }
     
 }
