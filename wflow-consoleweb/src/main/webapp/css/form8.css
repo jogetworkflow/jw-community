@@ -1399,7 +1399,7 @@ body.rtl .label-top .form-cell:not(.label-left) > label.label > i,
 body.rtl .label-top .subform-cell:not(.label-left) > label.label > i{
     left:unset;
 }
-@media (max-width: 768px){
+@media (max-width: 767px){
     .form-cell > label.label > i,
     .subform-cell > label.label > i,
     .label-left.form-cell > label.label > i,
@@ -1437,7 +1437,7 @@ body.rtl .label-top.subform-cell > label.label > i{
 .largeFontSize .label-top.subform-cell > label.label > i{
     bottom: -44px;
 }
-@media (max-width: 768px){
+@media (max-width: 767px){
     .mediumFontSize .form-cell > label.label > i,
     .mediumFontSize .subform-cell > label.label > i,
     .mediumFontSize .label-left.form-cell > label.label > i,
@@ -1450,4 +1450,8 @@ body.rtl .label-top.subform-cell > label.label > i{
     .largeFontSize .label-left.subform-cell > label.label > i{
         bottom: -44px;
     }
+}
+body.rtl .form-cell > label.label,
+body.rtl .subform-cell > label.label{
+    padding: 8px 0 0 10px;
 }
