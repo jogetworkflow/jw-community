@@ -42,6 +42,7 @@ import org.apache.http.impl.client.BasicCookieStore;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.impl.client.HttpClients;
+import org.apache.http.impl.client.LaxRedirectStrategy;
 import org.apache.http.impl.cookie.BasicClientCookie;
 import org.apache.http.ssl.SSLContextBuilder;
 import org.jsoup.nodes.Document;
@@ -515,6 +516,7 @@ public class StringUtil {
                     InputStream is = null;
                     try {
                         HttpClientBuilder httpClientBuilder = HttpClients.custom();
+                        httpClientBuilder.setRedirectStrategy(new LaxRedirectStrategy());
                         HttpGet get = new HttpGet(src);
 
                         CookieStore cookieStore = new BasicCookieStore(); 
