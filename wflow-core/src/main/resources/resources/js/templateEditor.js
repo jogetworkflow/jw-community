@@ -36,36 +36,72 @@
         });
 
         $(document).ready(function(){
-            var dataControlField = $("#"+thisObj.id).closest(".property-input").parent().attr("property-name"); 
-            $('body').on('focusout focusin', 'div[class^="property-editor-property-container"] div[id^="property_"][data-control_field="' + dataControlField + '"]:not([style*="display: none"]) input',function(event){
-                    var scroll = $(this).closest(".property-editor-property-container").scrollTop()
-                    var container = $(this).parent().parent().siblings('[property-name="'+dataControlField+'"]')[0]
+            const container = $("#" + thisObj.id).closest('.template_editor_container');
+
+            function handleChange(event){
+                var scroll = $(container).closest(".property-editor-property-container").scrollTop()
+
+                //Doesnt have scrollbar
+                if (!($(container).closest(".property-editor-property-container").get(0).scrollHeight > $(container).closest(".property-editor-property-container").get(0).clientHeight)){
+                    scroll = $(container).closest(".property-editor-pages").scrollTop();
+                }
+
+                if (event.type === "focusin"){
+                    //Check for image change
+                    if ($(this).attr("class")==="image" && (($(this).attr("data-value") !== $(this).val() && $(this).attr("data-value") !==  undefined))) {
+                        $(container).find('.reloadtemplate').click();
+                        
+                        if (!($(container).closest(".property-editor-property-container").get(0).scrollHeight > $(container).closest(".property-editor-property-container").get(0).clientHeight)){
+                            $(container).closest(".property-editor-pages").scrollTop(scroll);
+                        }else{
+                            $(container).closest(".property-editor-property-container").scrollTop(scroll);
+                        }
+                    }
+
+                    //Save initial value for checking
+                    $(this).attr("data-value", $(this).val());
+                }
+                else {                  
+                    //Only reload template once the value has been changed
+                    if (($(this).attr("data-value") !== $(this).val() && !$(this).hasClass("la-check")) || ($(this).hasClass("la-check") && $(this).data('colorValue') === "none")){
+                        $(container).find('.reloadtemplate').click();
+                    }
                     
-                    //For repeater
-                    if($(this).parent().parent().attr('data-control_value').includes("repeat")){
-                        container = $(this).parent().parent().closest(".property-input").parent().siblings('[property-name="'+dataControlField+'"]')[0];
+                    if (!($(container).closest(".property-editor-property-container").get(0).scrollHeight > $(container).closest(".property-editor-property-container").get(0).clientHeight)){
+                        $(container).closest(".property-editor-pages").scrollTop(scroll);
+                    }else{
+                        $(container).closest(".property-editor-property-container").scrollTop(scroll);
                     }
+                }
+            }
 
-                    event.stopImmediatePropagation();
+            var parent = $(container).parent().parent()
 
-                    if (event.type === "focusin"){
-                        //Check for image change
-                        if ($(this).attr("class")==="image" && (($(this).attr("data-value") !== $(this).val() && $(this).attr("data-value") !==  undefined))) {
-                            $(container).find('.reloadtemplate').click();
-                            $(this).closest(".property-editor-property-container").scrollTop(scroll);
-                        }
+            //Get the siblings
+            var siblings = $(parent).siblings()
+            //Take only the repeater
+            var repeater = siblings.filter('[property-name="repeat"]').first();
+            //Exclude repeater, and checkbox
+            var standardSiblings = siblings.not('[property-name="repeat"]').not('[property-name="icon"]').filter('[data-control_field="template"]');
+            //Icon
+            var icon = siblings.filter('[property-name="icon"]')
+            
+            repeater.off("focusin focusout", ".property-input .repeater-rows-container .repeater-row .inputs .inputs-container div[class^=\"property_container\"]:not(.hidden)[property-name!=\"icon\"] input", handleChange).on("focusin focusout", ".property-input .repeater-rows-container .repeater-row .inputs .inputs-container div[class^=\"property_container\"]:not(.hidden)[property-name!=\"icon\"] input", handleChange)
+            
+            repeater.off("click.handleChange", ".property-input .repeater-rows-container .repeater-row .inputs .inputs-container div[class^=\"property_container\"]:not(.hidden)[property-name=\"icon\"] .la.la-check", handleChange).on("click.handleChange", ".property-input .repeater-rows-container .repeater-row .inputs .inputs-container div[class^=\"property_container\"]:not(.hidden)[property-name=\"icon\"] .la.la-check", function(event){
+                $(this).data('colorValue', $(this).siblings('.color_value').css('display'))
+                setTimeout(function() {
+                    handleChange.call(this, event);
+                }.bind(this), 1000);
+            })
 
-                        //Save initial value for checking
-                        $(this).attr("data-value", $(this).val());
-                    }
-                    else {                        
-                        //Only reload template once the value has been changed
-                        if ($(this).attr("data-value") !== $(this).val()){
-                            $(container).find('.reloadtemplate').click();
-                        }
-                     
-                        $(this).closest(".property-editor-property-container").scrollTop(scroll);
-                    }
+            standardSiblings.find(".property-input input").off("focusin focusout", handleChange).on("focusin focusout", handleChange)
+
+            icon.off("click.handleChange", ".la.la-check").on("click.handleChange", ".la.la-check", function(event){
+                $(this).data('colorValue', $(this).siblings('.color_value').css('display'))
+                setTimeout(function() {
+                    handleChange.call(this, event);
+                }.bind(this), 1000);
             })
         })
 
@@ -91,9 +127,13 @@
                     var propertyName = $(this).attr('property-name');
 
                     if (propertyName === "icon"){
-                        dict[propertyName] = "<i class=\"" +$(this).find('.value').children()[0].html() + "\"> </i>"
+                        dict[propertyName] = $(this).find('.value i').prop("outerHTML");
                     }else if ($(this).find("input").val() !== ""){
                         dict[propertyName] = $(this).find("input").val();
+
+                        if (propertyName === "direction"){
+                            dict[propertyName] = dict[propertyName].toString() + "deg";    
+                        }
                     }
                 })
             
@@ -107,10 +147,14 @@
             standardSiblings.find('.property-input input').each(function(){
                 var propertyName = $(this).closest('div[id^="property_"][data-control_field="' + dataControlField + '"]').attr('property-name');
                 if (propertyName === "icon"){
-                    dict[propertyName] = "<i class=\"" + $(this).closest('div[id^="property_"][data-control_field="' + dataControlField + '"]').find('.value').children().attr('class') + "\"> </i>";
+                    dict[propertyName] = $(this).closest('div[id^="property_"][data-control_field="' + dataControlField + '"]').find('.value i').prop('outerHTML');
                 }
                 else if ($(this).val() !== ""){
                     dict[propertyName] = $(this).val();
+
+                    if (propertyName === "direction"){
+                        dict[propertyName] = dict[propertyName].toString() + "deg"    
+                    }
                 }
             })
 
