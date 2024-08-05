@@ -100,8 +100,8 @@ public abstract class HashVariableSupportedMap<K,V> extends HashMap<K,V> {
     @Override
     public Set<K> keySet() {
         Set<K> keySet = new HashSet<K>();
-        keySet.addAll(initialMap.keySet());
-        keySet.addAll(super.keySet());
+        keySet.addAll(new HashSet(initialMap.keySet()));
+        keySet.addAll(new HashSet(super.keySet()));
         return keySet;
     }
     

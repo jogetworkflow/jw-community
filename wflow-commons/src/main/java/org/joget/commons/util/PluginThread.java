@@ -10,9 +10,13 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.Enumeration;
 import java.util.HashMap;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.TreeMap;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import javax.servlet.AsyncContext;
 import javax.servlet.DispatcherType;
 import javax.servlet.RequestDispatcher;
@@ -23,6 +27,7 @@ import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletRequestWrapper;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import javax.servlet.http.Part;
@@ -36,6 +41,21 @@ public final class PluginThread extends Thread {
     
     private final String profile;
     private HttpServletRequest request;
+    private HttpServletResponse response;
+    
+    /**
+     * Default timeout for async request in milliseconds, 0 to disable.
+     */
+    public static long DEFAULT_ASYNC_REQUEST_TIMEOUT = 0;
+    
+    /**
+     * Timeout for async request in milliseconds, 0 to disable
+     * e.g. -Dwflow.asyncRequestTimeout=3000
+     * Need to also set Tomcat configuration property 
+     * -Dorg.apache.catalina.connector.RECYCLE_FACADES=false
+     * to prevent exception "The request object has been recycled and is no longer associated with this facade".
+     */
+    public static String SYSTEM_PROPERTY_ASYNC_REQUEST_TIMEOUT = "wflow.asyncRequestTimeout";
     
     public PluginThread(Runnable r) {
         super(r);
@@ -46,12 +66,25 @@ public final class PluginThread extends Thread {
         } catch (IllegalStateException e) {
         }
         if (sra != null) {
-            request = new PluginThreadHttpRequest(sra.getRequest());
+            HttpServletRequest origRequest = sra.getRequest();
+            String servletContextClassName = origRequest.getServletContext().getClass().getName();
+
+            // The Servlet specification requires applications to only wrap the request/response using wrapper classes 
+            // that extend from the ServletRequestWrapper and ServletResponseWrapper classes.
+            // This is enforced by some app servers like JBoss EAP.
+            if (servletContextClassName.contains("catalina")) {
+                // for tomcat
+                request = new HttpServletRequestWrapper(new PluginThreadHttpRequest(origRequest));
+            } else {
+                // for other application servers
+                request = new HttpServletRequestWrapper(origRequest);
+            }
+            response = sra.getResponse();
         } else {
             request = null;
-        }
+        }  
     }
-    
+        
     private void setProfile() {
         HostManager.setCurrentProfile(profile);
     }
@@ -61,19 +94,73 @@ public final class PluginThread extends Thread {
         setProfile();
         
         if (request != null) {
-            RequestContextHolder.setRequestAttributes(new ServletRequestAttributes(request));
+            RequestContextHolder.setRequestAttributes(new ServletRequestAttributes(request, response));
         }
-        
-        super.run();
-        
-        if (request != null) {
-            RequestContextHolder.resetRequestAttributes();
-            request = null;
-        }
+        try {
+            super.run();
+        } finally {
+            if (request != null) {
+                RequestContextHolder.resetRequestAttributes();
+                request = null;
+            }
+        }        
     }
     
     /**
-     * A dummy request to copy the current HTTP request data to use by request hash variable in plugin thread
+     * Returns an asynchronous executor service to run in a background thread.
+     * @return 
+     */
+    public static ExecutorService getAsyncExecutorService() {
+        ExecutorService asyncExecutorService = Executors.newSingleThreadExecutor((Runnable r) -> {
+            Thread t = new PluginThread(r);
+            t.setDaemon(false);
+            return t;
+        });
+        return asyncExecutorService;
+    }
+    
+    /**
+     * Returns the configured timeout for asynchronous request calls based on the system property wflow.asyncRequestTimeout.
+     * Zero disables the timeout and makes the call synchronous.
+     * NOTE: For Tomcat 9.0.90 onwards, need to set the system property -Dorg.apache.catalina.connector.RECYCLE_FACADES=false
+     * to prevent exception "java.lang.IllegalStateException: The request object has been recycled and is no longer associated with this facade"
+     * @return 
+     */
+    public static long getAsyncRequestTimeout() {
+        // check for supported app servers
+        HttpServletRequest request = null;
+        try {
+            request = ((ServletRequestAttributes) RequestContextHolder.currentRequestAttributes()).getRequest();
+        } catch(IllegalStateException e) {
+            // ignore if servlet request is not available, e.g. when triggered from a deadline            
+        }
+        if (request != null) {
+            String servletContextClassName = request.getServletContext().getClass().getName();
+            if (!servletContextClassName.contains("catalina")) {
+                // unsupported app server, disable async
+                return 0L;
+            }
+        } else {
+            // request not available, disable async
+            return 0L;
+        }
+        
+        // get timeout setting from system property, default to DEFAULT_ASYNC_REQUEST_TIMEOUT.
+        // TODO: can be enhanced to read from the System Settings
+        long timeout = DEFAULT_ASYNC_REQUEST_TIMEOUT;
+        String timeoutStr = System.getProperty(SYSTEM_PROPERTY_ASYNC_REQUEST_TIMEOUT);
+        if (timeoutStr != null) {
+            try {
+                timeout = Long.parseLong(timeoutStr);
+            } catch (NumberFormatException e) {
+                // ignore
+            }
+        }
+        return timeout;
+    }
+    
+    /**
+     * A dummy request to copy the current HTTP request data to use by request hash variable in plugin thread.
      */
     public final class PluginThreadHttpRequest implements HttpServletRequest {
         
@@ -98,7 +185,10 @@ public final class PluginThread extends Thread {
         private String localAddr;
         private String localName;
         private int localPort;
-        
+        private HttpSession session;
+        private ServletContext servletContext;
+        private DispatcherType dispatcherType;
+
         public PluginThreadHttpRequest(HttpServletRequest request) {
             this.method = request.getMethod();
             this.pathInfo = request.getPathInfo();
@@ -109,7 +199,7 @@ public final class PluginThread extends Thread {
             this.requestURL = request.getRequestURL();
             this.servletPath = request.getServletPath();
             this.characterEncoding = request.getCharacterEncoding();
-            this.parameterMap = Collections.unmodifiableMap(request.getParameterMap());
+            this.parameterMap = new TreeMap<>(request.getParameterMap());
             this.protocol = request.getProtocol();
             this.schema = request.getScheme();
             this.serverName = request.getServerName();
@@ -119,6 +209,9 @@ public final class PluginThread extends Thread {
             this.localPort = request.getLocalPort();
             this.locale = request.getLocale();
             this.remoteAddr = request.getRemoteAddr();
+            this.servletContext = request.getServletContext();
+            this.dispatcherType = request.getDispatcherType();
+            this.session = request.getSession();
             
             // Copy all the headers from the original request to the new request
             Enumeration<String> headerNames = request.getHeaderNames();
@@ -268,12 +361,12 @@ public final class PluginThread extends Thread {
 
         @Override
         public HttpSession getSession(boolean create) {
-            return null;
+            return session;
         }
 
         @Override
         public HttpSession getSession() {
-            return null;
+            return session;
         }
 
         @Override
@@ -333,7 +426,7 @@ public final class PluginThread extends Thread {
 
         @Override
         public Enumeration<String> getAttributeNames() {
-            return Collections.enumeration(attributes.keySet());
+            return Collections.enumeration(new LinkedHashSet<>(attributes.keySet()));
         }
 
         @Override
@@ -382,7 +475,7 @@ public final class PluginThread extends Thread {
 
         @Override
         public Map<String, String[]> getParameterMap() {
-            return parameterMap;
+            return new TreeMap<>(parameterMap);
         }
 
         @Override
@@ -422,12 +515,12 @@ public final class PluginThread extends Thread {
 
         @Override
         public void setAttribute(String name, Object o) {
-            
+            attributes.put(name, o);
         }
 
         @Override
         public void removeAttribute(String name) {
-            
+            attributes.remove(name);
         }
 
         @Override
@@ -447,7 +540,7 @@ public final class PluginThread extends Thread {
 
         @Override
         public RequestDispatcher getRequestDispatcher(String path) {
-            return null;
+            return request.getRequestDispatcher(path);
         }
 
         @Override
@@ -462,22 +555,22 @@ public final class PluginThread extends Thread {
 
         @Override
         public String getLocalName() {
-            return this.localName;
+            return null;
         }
 
         @Override
         public String getLocalAddr() {
-            return this.localAddr;
+            return null;
         }
 
         @Override
         public int getLocalPort() {
-            return this.localPort;
+            return 0;
         }
 
         @Override
         public ServletContext getServletContext() {
-            return null;
+            return this.servletContext;
         }
 
         @Override
@@ -507,7 +600,7 @@ public final class PluginThread extends Thread {
 
         @Override
         public DispatcherType getDispatcherType() {
-            return null;
+            return dispatcherType;
         }
     }
 }

@@ -1,20 +1,38 @@
 package org.joget.apps.userview.model;
 
+import java.text.SimpleDateFormat;
 import java.util.Collection;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeoutException;
+import javax.cache.Cache;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
+import org.apache.ignite.Ignite;
+import org.apache.ignite.configuration.CacheConfiguration;
+import org.joget.apps.app.model.AppDefinition;
 import org.joget.apps.app.service.AppUtil;
+import org.joget.apps.userview.lib.AjaxUniversalTheme;
 import org.joget.apps.userview.service.UserviewCache;
+import org.joget.commons.ignite.IgniteCacheManager;
+import org.joget.commons.util.LogUtil;
+import org.joget.commons.util.PluginThread;
+import org.joget.commons.util.ResourceBundleUtil;
+import org.joget.commons.util.SecurityUtil;
 import org.joget.plugin.base.PluginProperty;
 import org.joget.plugin.property.service.PropertyUtil;
+import org.joget.workflow.util.WorkflowUtil;
 import org.osgi.framework.BundleContext;
 
 public class CachedUserviewMenu extends UserviewMenu {
 
     private UserviewMenu delegate;
     private static Map<String, String> defaultPropertyValues = new HashMap<String, String>();
-
+    private static Cache userviewMenuCache;
+    
     public CachedUserviewMenu() {
     }
     
@@ -22,6 +40,10 @@ public class CachedUserviewMenu extends UserviewMenu {
         this.delegate = delegate;
     }
 
+    public UserviewMenu getDelegate() {
+        return this.delegate;
+    }
+    
     /**
      * Return plugin label. This value will be used when a Resource Bundle
      * Message Key "<i>plugin.className</i>.pluginlabel" is not found by getI18nLabel() method.
@@ -476,11 +498,110 @@ public class CachedUserviewMenu extends UserviewMenu {
         } else {
             String content = UserviewCache.getCachedContent(delegate, UserviewCache.CACHE_TYPE_PAGE);
             if (content == null) {
-                content = delegate.render();
-                UserviewCache.setCachedContent(delegate, UserviewCache.CACHE_TYPE_PAGE, content);
+                Cache menuAsyncCache = getUserviewMenuAsyncCache();
+                HttpServletRequest request = WorkflowUtil.getHttpServletRequest();
+                boolean isAjaxTheme = getUserview().getSetting().getTheme() instanceof AjaxUniversalTheme;
+
+                // check for cache availability, ajax theme and GET request for async request support
+                if (menuAsyncCache == null || !isAjaxTheme || !"GET".equals(request.getMethod())) {
+                    // cache not available, default rendering
+                    content = delegate.render();
+                    UserviewCache.setCachedContent(delegate, UserviewCache.CACHE_TYPE_PAGE, content);
+                } else {
+                    // use cache to store content asynchronously if required
+                    HttpSession session = request.getSession();
+                    String sessionId = (session != null) ? session.getId() : null;
+                    String cacheKey = UserviewCache.getCacheKey(delegate, UserviewCache.CACHE_TYPE_PAGE, null) + ":" + sessionId;
+                    String loadingInProgressContent = getAsyncLoadingInProgressContent();
+                    try {
+
+                        // lookup from cache
+                        content = (String)menuAsyncCache.get(cacheKey);
+                        if (content != null && !content.isEmpty()) {
+                            if (!loadingInProgressContent.equals(content)) {
+                                // loading not in progress anymore, remove from cache so that subsequent calls will refresh
+                                menuAsyncCache.remove(cacheKey);
+                            }
+                            return content;
+                        }
+
+                        // remove existing cached content
+                        menuAsyncCache.remove(cacheKey);
+
+                        // load content asynchronously
+                        LogUtil.debug(getClass().getName(), "Loading async content for " + cacheKey);
+                        long timeout = PluginThread.getAsyncRequestTimeout();
+                        AppDefinition appDef = AppUtil.getCurrentAppDefinition();
+                        content = WorkflowUtil.executeAsync(() -> {
+                            // set current appDef in thread
+                            AppUtil.setCurrentAppDefinition(appDef);
+                            
+                            // call actual userview menu to render
+                            String newContent = delegate.render();
+                            
+                            // add cache timestamp to content
+                            newContent += getAsyncTimestampContent();
+                            UserviewCache.setCachedContent(delegate, UserviewCache.CACHE_TYPE_PAGE, newContent);
+
+                            // store in cache
+                            menuAsyncCache.put(cacheKey, newContent);
+                            LogUtil.debug(getClass().getName(), "Loaded async content for " + cacheKey);
+                            return newContent;
+                        }, timeout);                    
+                    } catch (TimeoutException e) {
+                        // timed out, return pending content
+                        content = loadingInProgressContent;
+                        menuAsyncCache.put(cacheKey, content);
+                    } catch (InterruptedException | ExecutionException e) {
+                        // don't cache if exception encountered
+                        menuAsyncCache.remove(cacheKey);
+                    } catch (Exception e) {
+                        // don't cache if exception encountered
+                        menuAsyncCache.remove(cacheKey);
+                    }
+                }
             }
             return content;
         }
+    }
+
+    /**
+     * Return content to render when async loading is in progress.
+     * @return 
+     */
+    protected String getAsyncLoadingInProgressContent() {
+        String loadingInProgressScript = "<script>$(function() { AjaxUniversalTheme.triggerAsyncLoading() })</script>";
+        String loadingInProgressContent = "<div class=\"async-loading\">" + ResourceBundleUtil.getMessage("theme.ajaxUniversalTheme.asyncLoading") + loadingInProgressScript + "</div>";
+        return loadingInProgressContent;
+    }
+
+    /**
+     * Return content to show async timestamp.
+     * @return 
+     */
+    protected String getAsyncTimestampContent() {
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss a");
+        String timestamp = sdf.format(new Date());
+        String timestampContent = "<div class=\"async-timestamp\">" + timestamp + "</div>";
+        return timestampContent;
+    }
+    
+    /**
+     * Get the userview menu cache as a singleton object.
+     * @return 
+     */
+    public static Cache getUserviewMenuAsyncCache() {        
+        if (userviewMenuCache == null) {
+            Ignite ignite = IgniteCacheManager.getIgnite();
+            if (ignite != null) {
+                String regionName = "userview-menu-region";
+                CacheConfiguration cacheConfiguration = (CacheConfiguration)SecurityUtil.getApplicationContext().getBean("igniteAtomicCache");
+                cacheConfiguration.setName(regionName);
+                IgniteCacheManager.setCacheMode(cacheConfiguration);
+                userviewMenuCache = ignite.getOrCreateCache(cacheConfiguration);
+            }        
+        }
+        return userviewMenuCache;
     }
     
     @Override
