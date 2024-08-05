@@ -71,13 +71,12 @@
     "control_field": "template",
     "control_value": "^[\\s\\S]*\\{\\{subtitle[\\||\\}]{2}[\\s\\S]*$",
     "control_use_regex": "true",
-    "value": "@@userview.customLogin.subtitle@@",
-    "value": "@@userview.customLogin.subtitle.value@@"
+    "value": "@@userview.customLogin.subtitle@@"
 },
 {
     "name" : "direction",
     "label" : "@@userview.customLogin.direction@@",
-    "type" : "textfield",
+    "type" : "number",
     "control_field": "template",
     "control_value": "^[\\s\\S]*\\{\\{direction[\\||\\}]{2}[\\s\\S]*$",
     "control_use_regex": "true",
@@ -301,8 +300,7 @@
             "control_field": "template",
             "control_value": "^[\\s\\S]*\\{\\{repeat\\.subtitle[\\||\\}]{2}[\\s\\S]*$",
             "control_use_regex": "true",
-            "value": "@@userview.customLogin.subtitle@@",
-            "value": "@@userview.customLogin.subtitle.value@@"
+            "value": "@@userview.customLogin.subtitle@@"
         },
         {
             "name" : "subtitleColor",
