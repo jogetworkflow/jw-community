@@ -76,14 +76,14 @@ public interface WorkflowManager {
      * Complete an assignment (for the current user) based on the activity instance ID.
      * @param activityId 
      */
-    void assignmentComplete(String activityId);
+    String assignmentComplete(String activityId);
 
     /**
      * Complete an assignment (for the current user) while setting workflow variable values
      * @param activityId
      * @param variableMap 
      */
-    void assignmentComplete(String activityId, Map<String, String> variableMap);
+    String assignmentComplete(String activityId, Map<String, String> variableMap);
 
     /**
      * Force completes an activity

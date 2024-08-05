@@ -919,11 +919,11 @@ public class WorkflowJsonController {
             }
 
             Map<String, String> workflowVariableMap = AppUtil.retrieveVariableDataFromRequest(request);
-            workflowManager.assignmentComplete(activityId, workflowVariableMap);
+            String result = workflowManager.assignmentComplete(activityId, workflowVariableMap);
             LogUtil.info(getClass().getName(), "Assignment " + activityId + " completed");
             JSONObject jsonObject = new JSONObject();
             jsonObject.accumulate("assignment", assignment.getAssigneeId());
-            jsonObject.accumulate("status", "completed");
+            jsonObject.accumulate("status", result);
             jsonObject.accumulate("processId", processId);
             jsonObject.accumulate("activityId", activityId);
 

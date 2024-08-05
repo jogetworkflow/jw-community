@@ -510,7 +510,8 @@ public class AppServiceImpl implements AppService {
                     }
 
                     // complete assignment
-                    workflowManager.assignmentComplete(activityId, workflowVariableMap);
+                    String result = workflowManager.assignmentComplete(activityId, workflowVariableMap);
+                    formData.addFormResult(AssignmentCompleteButton.DEFAULT_ID, result);
                 }
             }
         }
@@ -582,7 +583,8 @@ public class AppServiceImpl implements AppService {
                     }
 
                     // complete assignment
-                    workflowManager.assignmentComplete(activityId, workflowVariableMap);
+                    String result = workflowManager.assignmentComplete(activityId, workflowVariableMap);
+                    formData.addFormResult(AssignmentCompleteButton.DEFAULT_ID, result);
                 }
             }
         }
