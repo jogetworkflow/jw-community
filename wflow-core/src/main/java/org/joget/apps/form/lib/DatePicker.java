@@ -21,6 +21,7 @@ import org.joget.apps.form.model.FormRowSet;
 import org.joget.apps.form.service.FormUtil;
 import org.joget.apps.userview.model.PwaOfflineResources;
 import org.joget.commons.util.DateUtil;
+import org.joget.commons.util.LogUtil;
 import org.joget.commons.util.ResourceBundleUtil;
 import org.joget.commons.util.SetupManager;
 import org.joget.commons.util.TimeZoneUtil;
@@ -344,7 +345,18 @@ public class DatePicker extends Element implements FormBuilderPaletteElement, Pw
             
             String type = getPropertyString("currentDateAs");
             if (!type.isEmpty()) {
-                String formattedCompare = TimeZoneUtil.convertToTimeZone(new Date(), null, displayFormat);
+                String formattedCompare = TimeZoneUtil.convertToTimeZone(new Date(), null, displayFormat);               
+                if (!getLocale().isEmpty() && !getLocale().startsWith("en")) {
+                    try {
+                        SimpleDateFormat localeDateFormat = new SimpleDateFormat("MM/dd/yyyy hh:mm a", new Locale(getLocale()));
+                        Date date = localeDateFormat.parse(formattedCompare);
+                        SimpleDateFormat englishDateFormat = new SimpleDateFormat("MM/dd/yyyy hh:mm a", Locale.ENGLISH);                      
+                        formattedCompare = englishDateFormat.format(date);
+                    } catch (Exception e) {
+                        LogUtil.error(DatePicker.class.getName(), e, e.getMessage());
+                    }
+                }
+                
                 String start, end;
                 if ("minDate".equals(type)) {
                     start = formattedCompare;
@@ -353,7 +365,7 @@ public class DatePicker extends Element implements FormBuilderPaletteElement, Pw
                     start = formattedValue;
                     end = formattedCompare;
                 }
-                
+                    
                 if (!DateUtil.compare(start, end , displayFormat) && !formattedCompare.equals(formattedValue)) {
                     valid = false;
                     
