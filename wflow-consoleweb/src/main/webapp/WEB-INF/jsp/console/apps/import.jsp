@@ -31,7 +31,7 @@
                     <a href="#" id="showAdvancedInfo" onclick="showAdvancedInfo();return false"><fmt:message key="console.app.import.label.showAdvancedOptions"/></a>
                     <a href="#" style="display: none" id="hideAdvancedInfo" onclick="hideAdvancedInfo();return false"><fmt:message key="console.app.import.label.hideAdvancedOptions"/></a>
                 </div>
-                <div id="advancedView" style="display:none">
+                <div id="advancedView" class="no-label" style="display:none">
                     <div class="form-row">                
                         <span class="form-input">
                             <label for="overrideEnvVariable">

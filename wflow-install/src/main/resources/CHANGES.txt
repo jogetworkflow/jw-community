@@ -2,6 +2,24 @@ Joget DX COMMUNITY
 ====================
 For more information, please refer to https://community.joget.org
 
+8.1.3
+=====
+522435d8e Fixed: wflow-consoleweb - DX8 Theme - RTL label position top issue. @8.1-SNAPSHOT
+b951d6d1a Fixed: wflow-consoleweb - Form - Label position top issue. @8.1-SNAPSHOT
+accf1d884 Fixed: wflow-consoleweb - X-Admin Theme - Fixed calculation field value top label rtl issue @8.1-SNAPSHOT
+070165560 Fixed: wflow-core - JSON Tool - FIxed string extraction logic error for subkey. @8.1-SNAPSHOT
+ffd7bdc49 Modified: wflow-core - AppUtil/RequestParameterHashVariable - Added method to set and get partial parse flag. T4118 @8.1-SNAPSHOT
+ec6f58728 Fixed: wflow-consoleweb - Color Picker - Color always reset to white.  @8.1-SNAPSHOT
+e90d2e920 Fixed: wflow-core - Grid - Store Binder of child element unable to update value in row data. @8.1-SNAPSHOT
+ab44753fe Fixed: wflow-consoleweb - Form Builder - The prefix overlaps the table name in RTL. T4518 @8.1-SNAPSHOT
+e6d2c22a8 Fixed: wflow-core - FormPdfUtil - Report HTML of report builder is not same with PDF due to DX 8 theme style. T4153 @8.1-SNAPSHOT
+84639385d Fixed: wflow-core - Form - Regression of b6fbea30. T4521 @8.1-SNAPSHOT
+d810aae31 Fixed: wflow-core - List - Action link & button HTML attributes are not escape correctly. @7.0-SNAPSHOT
+9890f9b3b Fixed: User Profile - Long password & password contains html tag may fail validation. T4515 @8.1-SNAPSHOT
+4639b2b00 Fixed: wflow-core - Import App - Extra prefix on form data tables after import when table indexes are used. T4482 @8.1-SNAPSHOT
+7f953c7d1 Fixed: jw-community - Security - Upgrade Apache Tomcat to 9.0.90 for CVE-2024-34750. @8.1-SNAPSHOT
+2efb49fef Fixed: wflow-core - List Inbox - Not working with PostgreSQL. T4497 @7.0-SNAPSHOT
+
 8.1.2
 =====
 1e093147d Modified: wflow-consoleweb - UI - Updated help links @8.1-SNAPSHOT
