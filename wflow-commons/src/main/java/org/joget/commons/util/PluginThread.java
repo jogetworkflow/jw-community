@@ -1,5 +1,6 @@
 package org.joget.commons.util;
 
+import io.undertow.servlet.handlers.ServletRequestContext;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
@@ -42,6 +43,7 @@ public final class PluginThread extends Thread {
     private final String profile;
     private HttpServletRequest request;
     private HttpServletResponse response;
+    private ServletRequestContext servletRequestContext;
     
     /**
      * Default timeout for async request in milliseconds, 0 to disable.
@@ -78,6 +80,10 @@ public final class PluginThread extends Thread {
             } else {
                 // for other application servers
                 request = new HttpServletRequestWrapper(origRequest);
+                if (servletContextClassName.contains("undertow")) {
+                    // required for jboss eap and wildfly
+                    servletRequestContext = ServletRequestContext.current();
+                }
             }
             response = sra.getResponse();
         } else {
@@ -96,12 +102,18 @@ public final class PluginThread extends Thread {
         if (request != null) {
             RequestContextHolder.setRequestAttributes(new ServletRequestAttributes(request, response));
         }
+        if (servletRequestContext != null) {
+            ServletRequestContext.setCurrentRequestContext(servletRequestContext);
+        }
         try {
             super.run();
         } finally {
             if (request != null) {
                 RequestContextHolder.resetRequestAttributes();
                 request = null;
+            }
+            if (servletRequestContext != null) {
+                ServletRequestContext.clearCurrentServletAttachments();
             }
         }        
     }
@@ -136,7 +148,7 @@ public final class PluginThread extends Thread {
         }
         if (request != null) {
             String servletContextClassName = request.getServletContext().getClass().getName();
-            if (!servletContextClassName.contains("catalina")) {
+            if (!servletContextClassName.contains("catalina") && !servletContextClassName.contains("undertow")) {
                 // unsupported app server, disable async
                 return 0L;
             }
