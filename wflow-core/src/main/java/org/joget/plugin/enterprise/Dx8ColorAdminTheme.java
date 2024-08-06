@@ -45,4 +45,26 @@ public class Dx8ColorAdminTheme extends AjaxUniversalTheme {
     public String getPropertyOptions() {
         return AppUtil.readPluginResource(getClass().getName(), "/properties/userview/dx8ColorAdminTheme.json", null, true, null);
     }
+
+    @Override
+    protected String generateColorDesign() {
+        String color = "--header-default-bgcolor:#ffffff;";
+        color += "--header-button-default-color: #20252a;";
+        color += "--header-link-default-color: #20252a;";
+
+        //For sidebar
+        color += "--sidebar-default-bgcolor:#2D353C;";
+        color += "--sidebar-menu-default-bgcolor:#2D353C;";
+        color += "--sidebar-menu-default-color:#FFFFFF;";
+        color += "--sidebar-icon-default-color:#ffffff;";
+
+        color += "--sidebar-active-link-default-bgcolor:#20252a;";
+        color += "--sidebar-active-link-default-color:#FFFFFF;";
+        color += "--sidebar-active-icon-default-color:#00ACAC;";
+        color += "--sidebar-badge-default-bgcolor: #00ACAC;";
+        color += "--sidebar-badge-default-color: #FFFFFF;";
+        color += "--sidebar-scrollbar-thumb-default-color: #999999;";
+
+        return color;
+    }
 }

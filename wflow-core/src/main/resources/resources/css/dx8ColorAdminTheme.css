@@ -51,7 +51,7 @@ header.navbar .inbox-notification .dropdown-toggle:after{
 #sidebar .nav > li:not(.active) > a:hover,
 #sidebar .nav > li > ul > li > a:hover,
 #sidebar .nav > li > ul > li.active > a{
-    background: var(--theme-sidebar-link-bg, transparent) !important; 
+    background: var(--theme-sidebar-link-bg, var(--sidebar-menu-default-bgcolor, transparent)) !important; 
 }
 #sidebar .nav > li.active > a,
 #sidebar .nav > li > ul > li.active > a{
@@ -68,11 +68,11 @@ header.navbar .inbox-notification .dropdown-toggle:after{
     opacity: 0.8;
 }
 body:not(.horizontal_menu) #sidebar .nav > li.active > ul{
-    background: var(--theme-sidebar-active-link-bg, transparent) !important;
+    background: var(--theme-sidebar-active-link-bg, var(--sidebar-active-link-default-bgcolor, transparent)) !important;
     margin-top: 0px;
 }
 body:not(.horizontal_menu) #sidebar .nav > li > ul {
-    background: var(--theme-sidebar-link-bg, transparent) !important;
+    background: var(--theme-sidebar-link-bg, var(--sidebar-menu-default-bgcolor, transparent)) !important;
 }
 #sidebar .badge{
     border-radius: 3px; 
