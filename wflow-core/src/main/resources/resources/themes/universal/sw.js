@@ -154,9 +154,8 @@ self.addEventListener('install', function (event) {
 
                         return Promise.all(promises);
                     })
+                cacheUserview();
             })
-
-
     );
 });
 
