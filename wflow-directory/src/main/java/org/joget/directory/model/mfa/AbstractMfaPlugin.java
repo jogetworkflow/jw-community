@@ -3,7 +3,7 @@ package org.joget.directory.model.mfa;
 import org.joget.plugin.base.ExtDefaultPlugin;
 import org.joget.plugin.property.model.PropertyEditable;
 
-public abstract class AbstractMfaPlugin extends ExtDefaultPlugin implements MfaPlugin, PropertyEditable {
+public abstract class AbstractMfaPlugin extends ExtDefaultPlugin implements MfaPlugin {
 
     @Override
     public String getLabel() {

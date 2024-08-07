@@ -13,7 +13,7 @@ import javax.servlet.http.HttpServletRequest;
  * <p>
  * It is also possible to implement {@link IdentityProviderPlugin} interface without extending this class.
  */
-public abstract class AbstractIdentityProviderPlugin extends ExtDefaultPlugin implements IdentityProviderPlugin, PropertyEditable {
+public abstract class AbstractIdentityProviderPlugin extends ExtDefaultPlugin implements IdentityProviderPlugin {
 
     private String uuid;
 

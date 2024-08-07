@@ -33,7 +33,7 @@ import java.io.IOException;
  *
  * The plugin's managed service UI can be accessed via this URL:
  * <pre>/&lt;context_path&gt;/web/idp/&lt;plugin_uuid&gt;/managedService</pre>
- * and subsequently, the URL provided by {@link IdentityProviderPlugin#getAuthorizationEndpointUrl()} will be ignored.
+ * and subsequently, the URL provided by {@link IdentityProviderPlugin#getAuthorizationEndpoint()} will be ignored.
  * <br><br>
  *
  * The contents of the popup must be controlled by the plugin via the
