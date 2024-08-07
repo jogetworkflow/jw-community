@@ -12,16 +12,6 @@ import java.util.Collection;
 public interface IdentityProviderManager {
 
     /**
-     * Get the authorization endpoint URL from the specified plugin.
-     * <p>
-     * This URL is the page where the user logs in to the identity provider.
-     *
-     * @param pluginUuid the UUID of the plugin instance
-     * @return a string representation of the URL
-     */
-    String getAuthorizationEndpointUrl(String pluginUuid);
-
-    /**
      * To handle the login callback from the controller and delegates it to the specified plugin
      *
      * @param pluginUuid   the delegated plugin UUID
