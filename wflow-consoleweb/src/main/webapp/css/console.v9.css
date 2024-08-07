@@ -6,6 +6,15 @@
     --base-font-color: #404040;
     --item-subtitle: #005281;
 }
+body {
+    padding: 0;
+    margin: 0;
+    font-family: Arial,sans-serif;
+    font-size: 14px;
+    line-height: normal;
+    color: #535353;
+    background: #fff;
+}
 ol, ul {
     margin: 0;
     padding: 0;
@@ -183,7 +192,6 @@ button:hover, .btn:hover {
     color: var(--base-font-color);
 }
 #nav-title p {
-    margin: 1rem 0;
-    text-align: center;
+    margin: 1em 0;
 }
 /* END Temporary fix to override v7.css styles */
