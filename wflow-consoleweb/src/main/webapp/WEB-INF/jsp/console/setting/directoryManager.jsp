@@ -5,7 +5,6 @@
 
 <commons:header />
 <link rel="stylesheet" href="${pageContext.request.contextPath}/js/bootstrap4/css/bootstrap.min.css">
-<script src="${pageContext.request.contextPath}/js/bootstrap4/js/bootstrap.bundle.min.js" type="text/javascript"></script>
 <link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/css/console.v9.css"/>
 <div id="nav">
     <div id="nav-title">
@@ -49,62 +48,6 @@
         <c:if test="${isEnterprise}">
             <jsp:include page="idpMfa.jsp" flush="true"/>
         </c:if>
-<%--        <div id="connectorSetup">--%>
-<%--            <div class="main-body-row">--%>
-<%--                <div class="row-content">--%>
-<%--                        <fmt:message key="console.setting.directory.label.directoryManagerImpl"/>--%>
-<%--                        <dl>--%>
-<%--                            <dt><fmt:message key="console.setting.directory.label.currentPluginClassName"/></dt>--%>
-<%--                            <c:choose>--%>
-<%--                                <c:when test="${!empty overriddenDmClassName}">--%>
-<%--                                    <dd><c:out value="${overriddenDmClassName}"/>&nbsp;</dd>--%>
-<%--                                    <dt><fmt:message key="console.setting.directory.label.currentPluginName"/></dt>--%>
-<%--                                    <dd><c:out value="${directoryManagerName}"/>&nbsp;</dd>--%>
-<%--                                </c:when>--%>
-<%--                                <c:otherwise>--%>
-<%--                                    <dd><fmt:message key="console.setting.directory.label.defaultPlugin"/>&nbsp;</dd>--%>
-<%--                                    <dt><fmt:message key="console.setting.directory.label.currentPluginName"/></dt>--%>
-<%--                                    <dd>&nbsp;</dd>--%>
-<%--                                </c:otherwise>--%>
-<%--                            </c:choose>--%>
-<%--                            <dt>&nbsp;</dt>--%>
-<%--                            <dd>--%>
-<%--                                <c:if test="${!empty overriddenDmClassName}">--%>
-<%--                                    <c:if test="${!isOverridden}">--%>
-<%--                                        <button type="button" class="smallbutton" onclick="removeDirectoryManagerImpl()"><fmt:message key="console.setting.directory.label.removePlugin"/></button>--%>
-<%--                                    </c:if>--%>
-<%--                                    <button type="button" class="smallbutton" onclick="configDirectoryManagerImpl('${overriddenDmClassName}')"><fmt:message key="general.method.label.configPlugin"/></button>--%>
-<%--                                </c:if>--%>
-<%--                            </dd>--%>
-<%--                        </dl>--%>
-<%--                </div>--%>
-<%--            </div>--%>
-<%--            <div class="main-body-row">--%>
-<%--                <div class="row-content">--%>
-<%--                    <dl>--%>
-<%--                        <dt><fmt:message key="console.setting.directory.label.selectPlugin"/></dt>--%>
-<%--                        <dd>--%>
-<%--                            <c:if test="${!empty directoryManagerPluginList}">--%>
-<%--                                <select name="directoryManagerImpl" id="directoryManagerImpl">--%>
-<%--                                    <c:forEach items="${directoryManagerPluginList}" var="plugin">--%>
-<%--                                        <c:set var="pluginName" value="<%= ClassUtils.getUserClass(pageContext.findAttribute(\"plugin\")).getName() %>"/>--%>
-<%--                                        <c:if test="${pluginName ne overriddenDmClassName}">--%>
-<%--                                            <option value="<c:out value="${pluginName}"/>"><c:out value="${plugin.i18nLabel}"/> - <c:out value="${plugin.version}"/></option>--%>
-<%--                                        </c:if>--%>
-<%--                                    </c:forEach>--%>
-<%--                                </select>--%>
-<%--                                <div>--%>
-<%--                                    <button type="button" class="smallbutton" onclick="selectDirectoryManagerImpl()"><fmt:message key="general.method.label.select"/></button>--%>
-<%--                                </div>--%>
-<%--                            </c:if>--%>
-<%--                            <c:if test="${empty directoryManagerPluginList}">--%>
-<%--                                <fmt:message key="console.setting.directory.label.noPlugin"/>--%>
-<%--                            </c:if>--%>
-<%--                        </dd>--%>
-<%--                    </dl>--%>
-<%--                </div>--%>
-<%--            </div>--%>
-<%--        </div>--%>
     </div>
 </div>
 
