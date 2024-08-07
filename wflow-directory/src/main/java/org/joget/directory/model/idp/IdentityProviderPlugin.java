@@ -33,13 +33,13 @@ public interface IdentityProviderPlugin extends Plugin {
     User handleCallback(HttpServletRequest callbackRequest);
 
     /**
-     * Get the identity provider's authorization endpoint URL
+     * Get the identity provider's authorization endpoint
      * <p>
-     * This URL should be the page where the user logs in to the identity provider.
+     * This should be the URL of the page where the user logs in to the identity provider.
      *
-     * @return a string representing the authorization endpoint URL
+     * @return a string representing the authorization endpoint
      */
-    String getAuthorizationEndpointUrl();
+    String getAuthorizationEndpoint();
 
     /**
      * Get policy for user provisioning

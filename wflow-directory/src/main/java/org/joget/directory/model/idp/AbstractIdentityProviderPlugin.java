@@ -47,8 +47,8 @@ public abstract class AbstractIdentityProviderPlugin extends ExtDefaultPlugin im
     }
 
     @Override
-    public String getAuthorizationEndpointUrl() {
-        return getPropertyString("authEndpointUrl");
+    public String getAuthorizationEndpoint() {
+        return getPropertyString("authEndpoint");
     }
 
     @Override
