@@ -87,13 +87,12 @@ import org.joget.commons.spring.model.ResourceBundleMessage;
 import org.joget.commons.spring.model.ResourceBundleMessageDao;
 import org.joget.commons.spring.model.Setting;
 import org.joget.commons.util.TimeZoneUtil;
-import org.joget.directory.model.service.IdentityProviderManager;
+import org.joget.directory.model.service.*;
 import org.joget.directory.model.Department;
 import org.joget.directory.model.Employment;
 import org.joget.directory.model.Group;
 import org.joget.directory.model.Role;
 import org.joget.directory.model.User;
-import org.joget.directory.model.service.ExtDirectoryManager;
 import org.joget.plugin.base.Plugin;
 import org.joget.plugin.base.PluginManager;
 import org.joget.workflow.model.WorkflowActivity;
@@ -124,9 +123,6 @@ import org.joget.directory.dao.UserDao;
 import org.joget.directory.dao.UserMetaDataDao;
 import org.joget.directory.model.Grade;
 import org.joget.directory.model.Organization;
-import org.joget.directory.model.service.DirectoryManagerPlugin;
-import org.joget.directory.model.service.DirectoryUtil;
-import org.joget.directory.model.service.UserSecurity;
 import org.joget.logs.LogViewerAppender;
 import org.joget.plugin.property.model.PropertyEditable;
 import org.joget.plugin.property.service.PropertyUtil;
@@ -4891,7 +4887,18 @@ public class ConsoleWebController {
     }
 
     @RequestMapping(value = "/console/setting/directoryManagerImpl/config/submit", method = RequestMethod.POST)
-    public String consoleSettingDirectoryManagerImplConfigSubmit(ModelMap map, @RequestParam("id") String id, @RequestParam(value = "pluginProperties", required = false) String pluginProperties, HttpServletRequest request) {
+    public String consoleSettingDirectoryManagerImplConfigSubmit(ModelMap map, @RequestParam("id") String id, @RequestParam(value = "pluginProperties", required = false) String pluginProperties, HttpServletRequest request, HttpServletResponse response) throws IOException {
+        if ("default".equals(id)) {
+            try {
+                consoleSettingDirectoryManagerImplRemove();
+                response.setStatus(HttpServletResponse.SC_OK);
+            } catch (Exception e) {
+                LogUtil.error(getClass().getName(), e, "Error changing directory manager to default.");
+                response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+            }
+            return null;
+        }
+
         Plugin plugin = (Plugin) pluginManager.getPlugin(id);
 
         String settingName = "";

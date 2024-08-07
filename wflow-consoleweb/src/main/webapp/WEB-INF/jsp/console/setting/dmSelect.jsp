@@ -1,9 +1,9 @@
 <%@ include file="/WEB-INF/jsp/includes/taglibs.jsp" %>
 
+<commons:popupHeader />
 <div id="main-body-header">
     <fmt:message key="console.setting.directory.label.list.choose"/>
 </div>
-<commons:popupHeader bodyCssClass=" builder-popup" builderTheme="${theme}"/>
 <div id="main-body-content">
     <ui:jsontable url="${pageContext.request.contextPath}/web/console/setting/directoryManagerImpl/list"
                   var="JsonDataTable"
@@ -29,9 +29,22 @@
         const defaultDmRow = $('table#pluginList tr#rowdefault');
         if (defaultDmRow.length > 0) {
             defaultDmRow.on('click', function (e) {
-                if (!confirm("<fmt:message key="console.setting.directory.label.changeToDefaultPluginConfirm"/>")) {
-                    e.stopPropagation();
+                if (confirm("<fmt:message key="console.setting.directory.label.changeToDefaultPluginConfirm"/>")) {
+                    const callback = {
+                        success: () => {
+                            if (parent !== self) {
+                                parent.location.reload();
+                            } else {
+                                location.reload();
+                            }
+                        },
+                        error: () => {
+                            alert('<fmt:message key="console.setting.directory.label.changeToDefaultError"/>');
+                        },
+                    };
+                    ConnectionManager.post('${pageContext.request.contextPath}/web/console/setting/directoryManagerImpl/config/submit', callback, {id: 'default'});
                 }
+                e.stopPropagation();
             });
             observer.disconnect();
         }
@@ -42,23 +55,4 @@
         $('#JsonDataTable_pluginList-search').hide();
     });
 </script>
-<%--<div id="dm-select">--%>
-<%--    <c:if test="${!empty directoryManagerPluginList}">--%>
-<%--    <label for="directoryManagerImpl"><fmt:message key="console.setting.directory.label.directoryManagerImpl"/></label>--%>
-<%--    <select name="directoryManagerImpl" id="directoryManagerImpl">--%>
-<%--        <option value="default">Default</option>--%>
-<%--        <c:forEach items="${directoryManagerPluginList}" var="plugin">--%>
-<%--            <c:set var="pluginName" value="<%= ClassUtils.getUserClass(pageContext.findAttribute(\"plugin\")).getName() %>"/>--%>
-<%--            <option value="<c:out value="${pluginName}"/>"><c:out value="${plugin.i18nLabel}"/> - <c:out value="${plugin.version}"/></option>--%>
-<%--        </c:forEach>--%>
-<%--    </select>--%>
-<%--    <div>--%>
-<%--        <button type="button" class="smallbutton" onclick="configDirectoryManagerImpl('${overriddenDmClassName}')"><fmt:message key="general.method.label.select"/></button>--%>
-<%--    </div>--%>
-<%--    </c:if>--%>
-<%--    <script>--%>
-<%--        function configDirectoryManagerImpl(){--%>
-<%--            location.href = "${pageContext.request.contextPath}/web/console/setting/directoryManagerImpl/config?directoryManagerImpl=" + $('#directoryManagerImpl').val();--%>
-<%--        }--%>
-<%--    </script>--%>
-<%--</div>--%>
+<commons:popupFooter />
