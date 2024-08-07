@@ -163,14 +163,14 @@ public class DirectoryUtil implements ApplicationContextAware {
 
         // Get profile footer from IdP Manager
         Object identityProviderManager = getApplicationContext().getBean("identityProviderManager");
-        if (identityProviderManager != null) {
+        if (identityProviderManager instanceof IdentityProviderManager) {
             String idpProfileFooter = ((IdentityProviderManager) identityProviderManager).getProfileFooterHtml(user);
-            sb.append(idpProfileFooter == null ? "" : idpProfileFooter);
+            sb.append(idpProfileFooter);
         }
 
         // Get profile footer from MFA Manager
         Object mfaManager = getApplicationContext().getBean("mfaManager");
-        if (mfaManager != null) {
+        if (mfaManager instanceof MfaManager) {
             String mfaProfileFooter = ((MfaManager) mfaManager).getProfileFooterHtml(user);
             sb.append(mfaProfileFooter);
         }
