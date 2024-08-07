@@ -538,6 +538,36 @@ body label > input[type=checkbox]:disabled + i:after {
     color:#fff;
 }
 
+body .table-wrapper .cardLayout .select_checkbox label {
+    position: absolute;
+    display: block;
+    width: 106%;
+    height: 130px;
+    top: -10px;
+    left: -10px;
+    transform: translateX(0%);
+    margin-top: 0px;
+}
+
+body .table-wrapper .cardLayout .select_checkbox label > [type="checkbox"] + i, 
+body .table-wrapper .cardLayout label > input[type=checkbox] + i {
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    z-index: 1;
+    background-color: rgba(0, 0, 0, 0.1);
+    border-radius: 5px;
+    overflow: hidden;
+    cursor: pointer;
+    display: block;
+     box-sizing: content-box;
+    width: 100%;
+    height: 110px;
+    border-color: transparent;
+}
+
 /* Select Field
    ========================================================================== */
 body select:not([class^="ui-"]),
