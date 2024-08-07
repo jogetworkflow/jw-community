@@ -3884,7 +3884,7 @@ ProcessBuilder = {
                         var options = [{label : '', value : ''}];
                         var plugins = ProcessBuilder.availableParticipantPlugin;
                         for(var e in plugins){
-                            options.push({label : UI.escapeHTML(plugins[e].label), value : e});
+                            options.push({label : UI.escapeHTML(plugins[e].label), value : e, helplink : plugins[e].helplink});
                         }
                         return options;
                     },
@@ -3908,6 +3908,7 @@ ProcessBuilder = {
         var def = [
             {
                 title: get_cbuilder_msg("pbuilder.label.configureMapping"),
+                helplink: get_cbuilder_msg("pbuilder.label.activityMapping.helplink"),
                 properties: [{
                     name: 'mapping_act_type',
                     label: get_cbuilder_msg("cbuilder.type"),
@@ -3980,7 +3981,7 @@ ProcessBuilder = {
                     var options = [{label : '', value : ''}];
                     var plugins = ProcessBuilder.availableAssignmentFormModifier;
                     for(var e in plugins){
-                        options.push({label : UI.escapeHTML(plugins[e]), value : e});
+                        options.push({label : UI.escapeHTML(plugins[e].label), value : e, helplink : plugins[e].helplink});
                     }
                     return options;
                 },
@@ -4015,7 +4016,7 @@ ProcessBuilder = {
                         var options = [{label : '', value : ''}];
                         var plugins = ProcessBuilder.availableDecisionPlugin;
                         for(var e in plugins){
-                            options.push({label : UI.escapeHTML(plugins[e].label), value : e});
+                            options.push({label : UI.escapeHTML(plugins[e].label), value : e, helplink : plugins[e].helplink});
                         }
                         return options;
                     },
@@ -4096,7 +4097,7 @@ ProcessBuilder = {
                     var options = [{label : '', value : ''}];
                     var plugins = ProcessBuilder.availableStartProcessFormModifier;
                     for(var e in plugins){
-                        options.push({label : UI.escapeHTML(plugins[e]), value : e});
+                        options.push({label : UI.escapeHTML(plugins[e].label), value : e, helplink : plugins[e].helplink});
                     }
                     return options;
                 },
@@ -4233,7 +4234,7 @@ ProcessBuilder = {
                 ProcessBuilder.availableAssignmentFormModifier = {};
                 for (e in returnedData) {
                     if (returnedData[e].value !== "") {
-                        ProcessBuilder.availableAssignmentFormModifier[returnedData[e].value] = returnedData[e].label;
+                        ProcessBuilder.availableAssignmentFormModifier[returnedData[e].value] = returnedData[e];
                     }
                 }
                 wait.resolve();
@@ -4254,7 +4255,7 @@ ProcessBuilder = {
                 ProcessBuilder.availableStartProcessFormModifier = {};
                 for (e in returnedData) {
                     if (returnedData[e].value !== "") {
-                        ProcessBuilder.availableStartProcessFormModifier[returnedData[e].value] = returnedData[e].label;
+                        ProcessBuilder.availableStartProcessFormModifier[returnedData[e].value] = returnedData[e];
                     }
                 }
                 wait.resolve();
@@ -4618,9 +4619,9 @@ ProcessBuilder = {
                     && elementObj.properties.mapping_act_modifier["className"] !== "") {
                 var label = '<span class="missing-plugin">' + elementObj.properties.mapping_act_modifier["className"] + " (" + get_advtool_msg('dependency.tree.Missing.Plugin') + ")</span>";
                 if (elementObj.className === "activity" && ProcessBuilder.availableAssignmentFormModifier[elementObj.properties.mapping_act_modifier["className"]] !== undefined) {
-                    label = ProcessBuilder.availableAssignmentFormModifier[elementObj.properties.mapping_act_modifier["className"]];
+                    label = ProcessBuilder.availableAssignmentFormModifier[elementObj.properties.mapping_act_modifier["className"]].label;
                 } else if (elementObj.className === "start" && ProcessBuilder.availableStartProcessFormModifier[elementObj.properties.mapping_act_modifier["className"]] !== undefined) {
-                    label = ProcessBuilder.availableStartProcessFormModifier[elementObj.properties.mapping_act_modifier["className"]]
+                    label = ProcessBuilder.availableStartProcessFormModifier[elementObj.properties.mapping_act_modifier["className"]].label;
                 }
                 $(dl).append('<dt><i class="las la-plug" title="'+get_cbuilder_msg('pbuilder.label.moreSettings')+'"></i></dt><dd>'+label+'</dd>');
             }
@@ -5081,9 +5082,56 @@ ProcessBuilder = {
         }
     },
             
-    builderSaved : function() {
+    builderSaved : function(data) {
         ProcessBuilder.updateAdvancedView();
+        
+        ProcessBuilder.showProcessMigrationChecker(data);
     },
+            
+    builderSaveFailed : function(data) {
+        ProcessBuilder.showProcessMigrationChecker(data);
+    },
+      
+    /**
+     * Show a message to block the save button if there is process migration in progress. Unblock when it is done.
+     */                
+    showProcessMigrationChecker: function(data) {
+        if (data.processMigration) {
+            if ($("#processMigrationLoader").length === 0) {
+                $("#save-btn").parent().append('<div id="processMigrationLoader" class="alert alert-warning"><i class="las la-circle-notch fa-spin"></i> '+get_cbuilder_msg("pbuilder.migrationInProgress")+'</div>');
+            }  
+            
+            //add a progress checker
+            var checker = function() {
+                $("#save-btn").attr("disabled", "disabled");
+                
+                $.ajax({ 
+                    type: "POST", 
+                    url: CustomBuilder.contextPath + '/web/json/console/app/' + CustomBuilder.appId + '/' + CustomBuilder.appVersion + '/process/builder/processUpdateCheck',
+                    cache: false,
+                    processData: false,
+                    contentType: false,
+                    beforeSend: function (request) {
+                       request.setRequestHeader(ConnectionManager.tokenName, ConnectionManager.tokenValue);
+                    },
+                    success:function(data) {
+                        if (data.processMigration) {
+                            setTimeout(function(){
+                                checker();
+                            }, 5000);
+                        } else {
+                            $("#processMigrationLoader").remove();
+                            $("#save-btn").removeAttr("disabled");
+                        }
+                    }
+                });
+            };
+            
+            setTimeout(function(){
+                checker();
+            }, 3500);
+        }
+    },        
      
     /*
      * Prepare the selector based on overview path parameter

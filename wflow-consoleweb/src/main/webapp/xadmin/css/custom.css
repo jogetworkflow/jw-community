@@ -5437,6 +5437,7 @@ body.rtl .editor-cell input[type=tel],
 body.rtl .editor-cell input[type=number], 
 body.rtl .editor-cell input[type=search], 
 body.rtl .editor-cell textarea,
+body.rtl .label-top.form-cell .calculationField_value,
 body.rtl .sigPad,
 body.rtl .editor-cell select:not([class^=ui]){
     float: right !important;
@@ -5969,6 +5970,14 @@ body.rtl #form-canvas .subform-cell .label {
     padding-left: 15px;
 }
 
+@media (max-width: 480px) {
+    body.rtl .form .form-row > label,
+    body.rtl #form-canvas .form-cell .label,
+    body.rtl #form-canvas .subform-cell .label {
+        text-align: right;      
+    }
+}
+
 body.rtl .form .form-buttons {
     padding-left: 15px;
     padding-right: 170px;
@@ -6018,4 +6027,10 @@ body.rtl .ContainerComponent {
 }
 html.adminBarShown {
     padding-bottom: 0px;
+}
+@media(max-width: 480px) {
+    /* field label */
+    body.rtl #form-canvas .form-cell .label {
+        text-align: right;
+    }
 }

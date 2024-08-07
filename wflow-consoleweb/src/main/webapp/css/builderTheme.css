@@ -2081,7 +2081,6 @@ body[builder-theme] .form-row .form-input.withPrefix .prefix {
     border-right: 1px solid var(--theme-border-color-1);
     height: 32px;
     top: 0px;
-    left: 0px;
     border-radius: 0px;
     background-color: var(--theme-primary-color-3);
     border: 1px solid var(--theme-border-color-1);

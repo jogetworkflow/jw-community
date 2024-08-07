@@ -225,7 +225,8 @@
                         <c:otherwise>
                             showCancelButton: false,
                         </c:otherwise>    
-                    </c:choose>        
+                    </c:choose>
+                    helplink: '${plugin.helpLink}',    
                     saveCallback: savePlugin,
                     saveButtonLabel: '<c:choose><c:when test="${!empty submitLabel}"><ui:msgEscJS key="${submitLabel}"/></c:when><c:otherwise><ui:msgEscJS key="general.method.label.submit"/></c:otherwise></c:choose>',
                     cancelButtonLabel: '<c:choose><c:when test="${!empty cancelLabel}"><ui:msgEscJS key="${cancelLabel}"/></c:when><c:otherwise><ui:msgEscJS key="general.method.label.cancel"/></c:otherwise></c:choose>',

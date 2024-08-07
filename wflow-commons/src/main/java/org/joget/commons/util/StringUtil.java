@@ -20,7 +20,7 @@ import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import org.apache.commons.lang.StringEscapeUtils;
-import org.apache.commons.validator.EmailValidator;
+import org.apache.commons.validator.routines.EmailValidator;
 import org.json.simple.JSONObject;
 import org.jsoup.Jsoup;
 import org.jsoup.safety.Safelist;
@@ -42,6 +42,7 @@ import org.apache.http.impl.client.BasicCookieStore;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.impl.client.HttpClients;
+import org.apache.http.impl.client.LaxRedirectStrategy;
 import org.apache.http.impl.cookie.BasicClientCookie;
 import org.apache.http.ssl.SSLContextBuilder;
 import org.jsoup.nodes.Document;
@@ -466,6 +467,7 @@ public class StringUtil {
             } else if (TYPE_URL.equals(f)) {
                 try {
                     inStr = URLEncoder.encode(inStr, "UTF-8");
+                    inStr = inStr.replaceAll(StringUtil.escapeRegex("+"), StringUtil.escapeRegex("%20"));
                 } catch (Exception e) {/* ignored */}
             } else if (TYPE_NL2BR.equals(f)) {
                 inStr = inStr.replaceAll("(\r\n|\n)", "<br class=\"nl2br\" />");
@@ -514,6 +516,7 @@ public class StringUtil {
                     InputStream is = null;
                     try {
                         HttpClientBuilder httpClientBuilder = HttpClients.custom();
+                        httpClientBuilder.setRedirectStrategy(new LaxRedirectStrategy());
                         HttpGet get = new HttpGet(src);
 
                         CookieStore cookieStore = new BasicCookieStore(); 
@@ -1054,7 +1057,7 @@ public class StringUtil {
             emails = new String[]{email};
         }
         
-        EmailValidator validator = EmailValidator.getInstance();
+        EmailValidator validator = EmailValidator.getInstance(true);
         
         boolean valid = true;
         for (String e : emails) {

@@ -133,6 +133,7 @@
     <c:if test="${!isCustomAppAdmin}">
     ,{
         title: '<ui:msgEscJS key="console.app.dev.admin.settings"/>',
+        helplink: '<ui:msgEscJS key="console.app.dev.admin.settings.helplink"/>',
         properties : [
             {
                 name: 'orgId',
@@ -162,6 +163,7 @@
     <c:if test="${!isGitDisabled}">
     ,{
         title: '<ui:msgEscJS key="console.app.dev.git.configuration"/>',
+        helplink: '<ui:msgEscJS key="console.app.dev.git.configuration.helplink"/>',
         properties: [
             {
                 name: 'gitUri',

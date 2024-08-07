@@ -119,20 +119,23 @@
     }
     %s,
     {
-        "name" : "addEmptyOption",
-        "label" : "@@form.defaultformoptionbinder.addEmptyOption@@",
-        "type" : "checkbox",
-        "value" : "true",
-        "options" : [{
-            "value" : "true",
-            "label" : ""
-        }]
-    },
-    {
         "name" : "emptyDependencyValueCheck",
         "label" : "@@app.jsontool.emptyDependencyValueCheck@@",
         "type" : "checkbox",
         "value" : "false",
+        "options" : [{
+            "value" : "true",
+            "label" : ""
+        }],
+        "control_field": "useAjax",
+        "control_value": "true",
+        "control_use_regex": "false"
+    },
+    {
+        "name" : "addEmptyOption",
+        "label" : "@@form.defaultformoptionbinder.addEmptyOption@@",
+        "type" : "checkbox",
+        "value" : "true",
         "options" : [{
             "value" : "true",
             "label" : ""

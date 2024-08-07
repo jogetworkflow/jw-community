@@ -16,6 +16,7 @@ import org.apache.http.impl.client.BasicCookieStore;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.impl.client.HttpClients;
+import org.apache.http.impl.client.LaxRedirectStrategy;
 import org.apache.http.impl.cookie.BasicClientCookie;
 import org.apache.http.ssl.SSLContextBuilder;
 import org.bouncycastle.util.encoders.Base64;
@@ -68,6 +69,7 @@ public class CustomITexResourceLoaderUserAgent extends ITextUserAgent {
                 InputStream is = null;
                 try {
                     HttpClientBuilder httpClientBuilder = HttpClients.custom();
+                    httpClientBuilder.setRedirectStrategy(new LaxRedirectStrategy());
                     HttpGet get = new HttpGet(uri);
 
                     CookieStore cookieStore = new BasicCookieStore(); 
