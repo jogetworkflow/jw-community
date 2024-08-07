@@ -770,7 +770,6 @@ UserviewBuilder = {
                 var props = themeJson.theme.properties;
                 CustomBuilder.data.setting.properties.theme.properties = props;
                 $('#cbuilder-preview #cbuilder-json').val(JSON.stringify(CustomBuilder.data));
-                console.log(CustomBuilder.data.setting.properties.theme);
             });
         }
     },
@@ -1282,8 +1281,6 @@ UserviewBuilder = {
                         $.each(value.properties, function(innerKey, innerValue) {
                             css += "--" + value.prefix + innerKey + ":" + innerValue + ";";
                         });
-                    } else {
-                        css += "--" + key + ":" + value + ";";
                     }
                 });
                 css += "}</style>";
