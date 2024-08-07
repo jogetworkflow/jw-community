@@ -302,7 +302,7 @@ public class UserviewBuilderWebController {
                 
                 //inject custom login template properties to login page properties if is v5 theme and above and InformationTileComponent available
                 String customLoginProperty = "";
-                if (element instanceof UserviewV5Theme && pluginManager.getPlugin("org.joget.plugin.enterprise.InformationTileComponent") != null) {
+                if (element instanceof UserviewV5Theme && !element.getClassName().startsWith("org.joget.plugin.enterprise.BuilderTheme") && pluginManager.getPlugin("org.joget.plugin.enterprise.InformationTileComponent") != null) {
                     customLoginProperty = AppUtil.readPluginResource(DefaultTheme.class.getName(), "/properties/userview/userviewCustomLogin.json", null, true, null);
                 }
                 
