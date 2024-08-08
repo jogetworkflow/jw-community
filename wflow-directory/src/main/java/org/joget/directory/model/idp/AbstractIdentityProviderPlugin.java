@@ -1,9 +1,8 @@
 package org.joget.directory.model.idp;
 
 import org.joget.commons.util.StringUtil;
-import org.joget.directory.model.service.IdentityProviderUtil;
+import org.joget.directory.model.service.IdpMfaUtil;
 import org.joget.plugin.base.ExtDefaultPlugin;
-import org.joget.plugin.property.model.PropertyEditable;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -33,7 +32,7 @@ public abstract class AbstractIdentityProviderPlugin extends ExtDefaultPlugin im
      * @return a string representing the callback URL
      */
     public String getCallbackUrl(HttpServletRequest request) {
-        return IdentityProviderUtil.getCallbackUrl(request, getUuid());
+        return IdpMfaUtil.getCallbackUrl(request, getUuid());
     }
 
     @Override

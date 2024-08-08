@@ -7,7 +7,7 @@ import org.springframework.security.web.savedrequest.SavedRequest;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-public class IdentityProviderUtil {
+public class IdpMfaUtil {
 
     /**
      * Gets the callback URL of the IdP plugin. The callback URL has a fixed syntax and this method should be used to
