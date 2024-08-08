@@ -101,6 +101,7 @@
         <security:intercept-url pattern="/web/idp/*/managedService" access="ROLE_ADMIN, ROLE_APPADMIN, ROLE_USER, ROLE_ANONYMOUS" />
         <security:intercept-url pattern="/web/mfa" access="ROLE_ADMIN, ROLE_APPADMIN, ROLE_USER, ROLE_ANONYMOUS" />
         <security:intercept-url pattern="/web/mfa/*" access="ROLE_ADMIN, ROLE_APPADMIN, ROLE_USER, ROLE_ANONYMOUS" />
+        <security:intercept-url pattern="/web/mfa/link/*" access="ROLE_ADMIN, ROLE_APPADMIN, ROLE_USER" />
         <security:intercept-url pattern="/web/mfa/unlink/*" access="ROLE_ADMIN, ROLE_APPADMIN, ROLE_USER" />
         <security:intercept-url pattern="/web/mfa/admin/**" access="ROLE_ADMIN" />
         <security:logout logout-url="/j_spring_security_logout" logout-success-url="/web/login"/>
