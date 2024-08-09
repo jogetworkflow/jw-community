@@ -214,7 +214,7 @@ header.navbar .dropdown-menu a span.time{
     box-shadow: 2px 0 8px 0 rgba(29,35,41,.05);
 }
 
-/*Sidebar Horizontal Menu*/
+/*Sidebar Horizontal Menu */
 @media screen and (max-width:768px){
     body.rtl.horizontal_menu #sidebar{
         right: 0px;
@@ -242,6 +242,70 @@ header.navbar .dropdown-menu a span.time{
     body.rtl.horizontal_menu #sidebar li a.dropdown:after {
         left: 15px;
         right: unset !important;
+    }
+
+    body.rtl.horizontal_menu #sidebar .nav > li > ul > li > a {
+        padding: 10px 65px 10px 15px;
+    }
+
+    body.rtl.horizontal_menu #sidebar .nav > li > ul {
+        padding-right: 0px;
+    }
+
+    body.rtl.horizontal_menu #sidebar .nav > li > ul > li > a > span:first-child {
+        padding-left: 10px; 
+        padding-right: 0px;
+    }
+
+    body.rtl.horizontal_menu #sidebar .nav > li > a {
+        padding: 5px 15px;
+    }
+
+    body.rtl.horizontal_menu #sidebar .nav > li > a > span > i:first-child {
+        left: unset;
+        right: 0;
+    }
+
+    body.rtl.horizontal_menu #sidebar .badge {
+        text-align: center;
+        float: left;
+    }
+}
+
+/* Horizontal Menu above 768px RTL*/
+@media screen and (min-width:768px){
+    body.rtl.horizontal_menu #sidebar .badge {
+        text-align: center;
+        float: left;
+    }
+
+    body.rtl.horizontal_menu #sidebar .nav > li > ul > li > a,
+    body.rtl.horizontal_menu #sidebar .nav > li > a.dropdown{
+        direction: rtl;
+        text-align: right;
+    }
+
+    body.rtl.horizontal_menu #sidebar .nav > li > ul > li > a {
+        padding-right: 0px;
+    }
+
+    body.rtl.horizontal_menu #sidebar .nav > li > ul > li > a.dropdown:after {
+        left: 8px;
+        right:unset;
+    }
+
+    body.rtl.horizontal_menu #sidebar .nav > li > a.dropdown:after {
+        left:0px;
+        right:unset;
+    }
+
+    body.rtl.horizontal_menu #sidebar ul#moreSubMenu.sub-menu > li > ul > li > a {
+        direction: rtl;
+        text-align: right;
+    }
+
+    body.horizontal_menu #sidebar .nav > li > a.dropdown {
+        padding:5px 15px;
     }
 }
 
