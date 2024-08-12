@@ -6984,6 +6984,10 @@ PropertyEditor.Type.SelectBox.prototype = {
             //Move builderAddNew to inside chosen container
             var $openBuilder = $("#" + field.id).parent().find(".openbuilder")
             $openBuilder.appendTo($("#" + field.id).parent().find(".chosen-container"))
+            $openBuilder.on("click.chosen", function(event){
+                var url = $(this).attr('href');
+                window.open(url, '_blank');
+            })
         }
         
         if ($("#" + field.id + "_input a.builderAddNew").length > 0) {
@@ -9180,6 +9184,10 @@ PropertyEditor.Type.ElementSelect.prototype = {
         //Move helpLink inside the chosen container, so it can be positioned more consistently
         var $helpLink = $("#" + this.id).parent().find(".elementHelplink")
         $helpLink.appendTo($("#" + this.id).parent().find(".chosen-container"))
+        $helpLink.on("click.chosen", function(event){
+            var url = $(this).attr('href');
+            window.open(url, '_blank');
+        })
     },
     getContainerClass: function() {
         if (this.properties.url.indexOf('/getPropertyOptions')  !== -1) {
@@ -9703,6 +9711,10 @@ PropertyEditor.Type.ElementMultiSelect.prototype = {
         //Move helpLink inside the chosen container, so it can be positioned more consistently
         var $helpLink = $(row).find(".inputs .inputs-container .elementHelplink")
         $helpLink.appendTo($(row).find(".inputs .inputs-container .chosen-container"))
+        $helpLink.on("click.chosen", function(event){
+            var url = $(this).attr('href');
+            window.open(url, '_blank');
+        })
 
         this.updateRows();
     },
