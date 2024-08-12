@@ -296,11 +296,14 @@ public class UniversalTheme extends UserviewV5Theme implements UserviewPwaTheme,
         HttpServletRequest request = WorkflowUtil.getHttpServletRequest();
         
         String appUserviewId = appId + "-" + userviewId;
+        String themeHash = getPropertyString("themeHash");
         Object[] arguments = new Object[]{
-            request.getContextPath(),
-            appUserviewId,
-            urlsToCache,
-            getServiceWorkerTemplate(appId, userviewId, userviewKey)
+                request.getContextPath(),
+                appUserviewId,
+                ResourceBundleUtil.getMessage("build.number"),
+                urlsToCache,
+                getServiceWorkerTemplate(appId, userviewId, userviewKey),
+                themeHash
         };
         
         String js = AppUtil.readPluginResource(getClass().getName(), "/resources/themes/universal/sw.js", arguments, false, "");

@@ -4,29 +4,31 @@ var contextPath = '%s';
 var appUserviewId = '%s';
 var userviewKey = '_';
 var homePageLink = '';
-var cache = appUserviewId + "-" + version;
+var appCacheName = appUserviewId + "-" + version;
+const buildNumber = '%s';
 var urlsToCache = [
-    contextPath + '/css/v7.css',
-    contextPath + '/css/console_custom.css',
-    contextPath + '/css/datalistBuilderView.css',
-    contextPath + '/js/fontawesome5/css/all.min.css',
-    contextPath + '/js/fontawesome5/fonts/fontawesome-webfont.ttf',
-    contextPath + '/js/fontawesome5/fonts/fontawesome-webfont.woff2',
-    contextPath + '/js/fontawesome5/webfonts/fa-brands-400.ttf',
-    contextPath + '/js/fontawesome5/webfonts/fa-brands-400.woff2',
-    contextPath + '/js/fontawesome5/webfonts/fa-regular-400.ttf',
-    contextPath + '/js/fontawesome5/webfonts/fa-regular-400.woff2',
-    contextPath + '/js/fontawesome5/webfonts/fa-solid-900.ttf',
-    contextPath + '/js/fontawesome5/webfonts/fa-solid-900.woff2',
-    contextPath + '/home/logo.png',
-    contextPath + '/js/footable/footable.core.min.css',
-    contextPath + '/js/footable/footable.min.js',
-    contextPath + '/js/footable/responsiveTable.js',
-    contextPath + '/js/footable/fonts/footable.ttf',
-    contextPath + '/js/footable/fonts/footable.woff',
+        contextPath + '/css/v7.css',
+        contextPath + '/css/console_custom.css',
+        contextPath + '/css/datalistBuilderView.css',
+        contextPath + '/js/fontawesome5/css/all.min.css',
+        contextPath + '/js/fontawesome5/fonts/fontawesome-webfont.ttf',
+        contextPath + '/js/fontawesome5/fonts/fontawesome-webfont.woff2',
+        contextPath + '/js/fontawesome5/webfonts/fa-brands-400.ttf',
+        contextPath + '/js/fontawesome5/webfonts/fa-brands-400.woff2',
+        contextPath + '/js/fontawesome5/webfonts/fa-regular-400.ttf',
+        contextPath + '/js/fontawesome5/webfonts/fa-regular-400.woff2',
+        contextPath + '/js/fontawesome5/webfonts/fa-solid-900.ttf',
+        contextPath + '/js/fontawesome5/webfonts/fa-solid-900.woff2',
+        contextPath + '/home/logo.png',
+        contextPath + '/js/footable/footable.core.min.css',
+        contextPath + '/js/footable/footable.min.js',
+        contextPath + '/js/footable/responsiveTable.js?build=' + buildNumber,
+        contextPath + '/js/footable/fonts/footable.ttf',
+        contextPath + '/js/footable/fonts/footable.woff',
     %s
 ];
 var template = '%s';
+const themeHash = '%s';
 
 var ROLE_ANONYMOUS = 'roleAnonymous';
 
@@ -66,68 +68,68 @@ function cacheUserview(){
     //const cacheApi = fetchRequest.url.substring(0, fetchRequest.url.lastIndexOf("/")) + "/cacheUrls";
     const cacheApi = getPath() + '/' + userviewKey + "/cacheUrls";
     console.log("Retrieve urls to cache by API (" + cacheApi + ")");
-    fetch(cacheApi, {  
-        credentials: 'include'  
+    fetch(cacheApi, {
+        credentials: 'include'
     })
-    .then(function(response) {
-        if (response.status !== 200) {
-            console.log("Not able to retrieve cache URLs");
-            return;
-        }
-        response.json().then(function(data) {
-            data = data.app;
-            
-            caches.open(cache)
-            .then(function (cache) {
-                var promises = [];
+        .then(function(response) {
+            if (response.status !== 200) {
+                console.log("Not able to retrieve cache URLs");
+                return;
+            }
+            response.json().then(function(data) {
+                data = data.app;
 
-                data.push(getPath() + '/_/pwaoffline');
-                data.push(getPath() + '/_/offline');
-                data.push(homePageLink);
-               
-                promises.push(
-                    //cache one by one to prevent duplicate url causing DOMexception
-                    data.map(function(url) {
-                        return caches.match(url).then(function(checkCache){
-                            //always re-cache pwaoffline and offline in case homePageLink changes (eg. after login)
-                            var addToCache = false;
+                caches.open(appCacheName)
+                    .then(function (cache) {
+                        var promises = [];
 
-                            if(checkCache === undefined || url.indexOf('/pwaoffline') > -1 || url.indexOf('/offline') > -1){
-                                addToCache = true;
-                            }
+                        data.push(getPath() + '/_/pwaoffline');
+                        data.push(getPath() + '/_/offline');
+                        data.push(homePageLink);
 
-                            if(addToCache){
-                                cache.addAll([url]).then(function() {
-                                    //console.log(url + " cached");
-                                }).catch(function(err) {
-                                    //ignore
-                                });
-                            }
-                        })
+                        promises.push(
+                            //cache one by one to prevent duplicate url causing DOMexception
+                            data.map(function(url) {
+                                return caches.match(url).then(function(checkCache){
+                                    //always re-cache pwaoffline and offline in case homePageLink changes (eg. after login)
+                                    var addToCache = false;
+
+                                    if(checkCache === undefined || url.indexOf('/pwaoffline') > -1 || url.indexOf('/offline') > -1){
+                                        addToCache = true;
+                                    }
+
+                                    if(addToCache){
+                                        cache.addAll([url]).then(function() {
+                                            //console.log(url + " cached");
+                                        }).catch(function(err) {
+                                            //ignore
+                                        });
+                                    }
+                                })
+                            })
+                        )
+
+                        return Promise.all(promises).then(function() {
+                            console.log("URLs retrieved from API cached");
+                        });
                     })
-                )
-                
-                return Promise.all(promises).then(function() {
-                    console.log("URLs retrieved from API cached");
-                });
-            })
-            .catch(function(error){
-                console.log('error caching', error, error.message);
+                    .catch(function(error){
+                        console.log('error caching', error, error.message);
+                    });
             });
+        })
+        .catch(function(err) {
+            console.log("Not able to retrieve cache URLs", err);
         });
-    })
-    .catch(function(err) {
-        console.log("Not able to retrieve cache URLs", err);
-    });
 }
 
 self.addEventListener('install', function (event) {
     console.log('SW install event');
     self.skipWaiting();
     event.waitUntil(
-        caches.delete(cache)
+        caches.delete(appCacheName)
             .then(function(){
-                caches.open(cache)
+                caches.open(appCacheName)
                     .then(function (cache) {
                         var promises = [];
 
@@ -152,9 +154,8 @@ self.addEventListener('install', function (event) {
 
                         return Promise.all(promises);
                     })
+                cacheUserview();
             })
-
-                
     );
 });
 
@@ -168,74 +169,74 @@ self.addEventListener('fetch', function (event) {
 
     event.respondWith(
         fetch(fetchRequest)
-        .then(function (response) {
-            //redirect links eg. /jw/home, userview root url, are of response.type 'opaqueredirect', and possibly response.status != 200
-            //it is generally not a good idea to cache redirection because the content (target of redirection) might be changed
-            //https://medium.com/@boopathi/service-workers-gotchas-44bec65eab3f
-            //but without this the top-right home button (/jw/home) will never be cached and will always show offline page when being accessed offline
-            //if (!response || response.status !== 200 || response.type !== 'basic' || event.request.method !== 'GET') {
-            if (!response || event.request.method !== 'GET') {
-                return response;
+            .then(function (response) {
+                //redirect links eg. /jw/home, userview root url, are of response.type 'opaqueredirect', and possibly response.status != 200
+                //it is generally not a good idea to cache redirection because the content (target of redirection) might be changed
+                //https://medium.com/@boopathi/service-workers-gotchas-44bec65eab3f
+                //but without this the top-right home button (/jw/home) will never be cached and will always show offline page when being accessed offline
+                //if (!response || response.status !== 200 || response.type !== 'basic' || event.request.method !== 'GET') {
+                if (!response || event.request.method !== 'GET') {
+                    return response;
 
-            } else {
-                if(fetchRequest.url.indexOf('/web/json/workflow/currentUsername') === -1 
+                } else {
+                    if(fetchRequest.url.indexOf('/web/json/workflow/currentUsername') === -1
                         && fetchRequest.url.indexOf('/images/v3/cj.gif') === -1
                         && fetchRequest.url.indexOf('/images/favicon_uv.ico?m=testconnection') === -1){
-                    var responseToCache = response.clone();
-                    caches.open(cache)
-                        .then(function (cache) {
-                            cache.put(event.request, responseToCache);
-                        });
+                        var responseToCache = response.clone();
+                        caches.open(appCacheName)
+                            .then(function (cache) {
+                                cache.put(event.request, responseToCache);
+                            });
+                    }
                 }
-            }
-            
-            return response;
-        })
-        .catch(function () {
-            if(event.request.method === 'POST' && formData !== null){
-                console.log('form POST failed, saving to indexedDB');
-                
-                savePostRequest(event.request.clone().url, formUserviewAppId, formPageTitle, formData, formUsername);
 
-                //redirect instead
-                var response = Response.redirect(getPath() + '/_/pwaoffline', 302);
                 return response;
+            })
+            .catch(function () {
+                if(event.request.method === 'POST' && formData !== null){
+                    console.log('form POST failed, saving to indexedDB');
 
-            }else{
-                if(fetchRequest.url.indexOf('/images/favicon_uv.ico?m=testconnection') === -1){
-                    return new Promise(function(resolve, reject) {
-                        caches.match(fetchRequest.url, {ignoreVary: true}).then(async function(response){
-                            if(response === undefined){
-                                var offlineResponse = Response.redirect(self.registration.scope + '/_/offline', 302);
-                                resolve(offlineResponse);
-                            }else{
-                                if (template && template !== "") {
-                                    var isAjaxTheme = event.request.headers.get('__ajax_theme_loading');
-                                    if (isAjaxTheme === undefined || isAjaxTheme === null) {
-                                        var responseText = await response.clone().text();
-                                        var menuStartIndex = responseText.indexOf("ajaxtheme_loading_menus");
-                                        if (menuStartIndex !== -1) {
-                                            var titleStartIndex = responseText.indexOf("ajaxtheme_loading_title");
-                                            var contentStartIndex = responseText.indexOf("ajaxtheme_loading_content");
-                                            var title = responseText.substring(titleStartIndex + 34, menuStartIndex - 25);
-                                            var menus = responseText.substring(menuStartIndex + 25, contentStartIndex - 27);
-                                            var content = responseText.substring(contentStartIndex + 27, responseText.length - 40);
+                    savePostRequest(event.request.clone().url, formUserviewAppId, formPageTitle, formData, formUsername);
 
-                                            responseText = template.replace('{{TEMPLATE_TITLE}}', title);
-                                            responseText = responseText.replace('{{TEMPLATE_CONTENT}}', content);
-                                            responseText = responseText.replace('{{TEMPLATE_MENUS}}', menus);
+                    //redirect instead
+                    var response = Response.redirect(getPath() + '/_/pwaoffline', 302);
+                    return response;
 
-                                            response = new Response(responseText, response);
+                }else{
+                    if(fetchRequest.url.indexOf('/images/favicon_uv.ico?m=testconnection') === -1){
+                        return new Promise(function(resolve, reject) {
+                            caches.match(fetchRequest.url, {ignoreVary: true}).then(async function(response){
+                                if(response === undefined){
+                                    var offlineResponse = Response.redirect(self.registration.scope + '/_/offline', 302);
+                                    resolve(offlineResponse);
+                                }else{
+                                    if (template && template !== "") {
+                                        var isAjaxTheme = event.request.headers.get('__ajax_theme_loading');
+                                        if (isAjaxTheme === undefined || isAjaxTheme === null) {
+                                            var responseText = await response.clone().text();
+                                            var menuStartIndex = responseText.indexOf("ajaxtheme_loading_menus");
+                                            if (menuStartIndex !== -1) {
+                                                var titleStartIndex = responseText.indexOf("ajaxtheme_loading_title");
+                                                var contentStartIndex = responseText.indexOf("ajaxtheme_loading_content");
+                                                var title = responseText.substring(titleStartIndex + 34, menuStartIndex - 25);
+                                                var menus = responseText.substring(menuStartIndex + 25, contentStartIndex - 27);
+                                                var content = responseText.substring(contentStartIndex + 27, responseText.length - 40);
+
+                                                responseText = template.replace('{{TEMPLATE_TITLE}}', title);
+                                                responseText = responseText.replace('{{TEMPLATE_CONTENT}}', content);
+                                                responseText = responseText.replace('{{TEMPLATE_MENUS}}', menus);
+
+                                                response = new Response(responseText, response);
+                                            }
                                         }
                                     }
+                                    resolve(response);
                                 }
-                                resolve(response);
-                            }
-                        })
-                    }); 
+                            })
+                        });
+                    }
                 }
-            }
-        })
+            })
     );
 });
 
@@ -278,7 +279,7 @@ self.addEventListener('push', function (event) {
     if (typeof badge === "undefined") {
         badge = contextPath + '/images/v3/logo.png';
     }
-    
+
     event.waitUntil(new Promise(function(resolve, reject) {
         connectCacheDB(function(store){
             var request = store.get("serviceWorkerList");
@@ -319,7 +320,7 @@ self.addEventListener('push', function (event) {
 
                 if (show) {
                     var notification = self.registration.showNotification(title, options);
-                    
+
                     notification.then(function(result) {
                         resolve(result);
                     }, function(err) {
@@ -329,7 +330,7 @@ self.addEventListener('push', function (event) {
                     reject("");
                 }
             };
-        }, 'readonly');    
+        }, 'readonly');
     }));
 });
 
@@ -345,23 +346,23 @@ self.addEventListener('notificationclick', function (event) {
         type: 'window',
         includeUncontrolled: true
     })
-            .then((windowClients) => {
-                let matchingClient = null;
+        .then((windowClients) => {
+            let matchingClient = null;
 
-                for (let i = 0; i < windowClients.length; i++) {
-                    const windowClient = windowClients[i];
-                    if (windowClient.url === urlToOpen) {
-                        matchingClient = windowClient;
-                        break;
-                    }
+            for (let i = 0; i < windowClients.length; i++) {
+                const windowClient = windowClients[i];
+                if (windowClient.url === urlToOpen) {
+                    matchingClient = windowClient;
+                    break;
                 }
+            }
 
-                if (matchingClient) {
-                    return matchingClient.focus();
-                } else {
-                    return clients.openWindow(urlToOpen);
-                }
-            });
+            if (matchingClient) {
+                return matchingClient.focus();
+            } else {
+                return clients.openWindow(urlToOpen);
+            }
+        });
 
     event.waitUntil(promiseChain);
 
@@ -406,7 +407,7 @@ function postMessageToClients(msgObj){
     self.clients.matchAll().then(function(clients) {
         clients.forEach(function(client) {
             client.postMessage(msgObj)
-         })
+        })
     });
 }
 
@@ -459,7 +460,7 @@ function savePostRequest(url, userviewAppId, title, payload, username) {
         status: STATUS_PENDING,
         method: 'POST'
     });
-    
+
     request.onsuccess = function (event) {
         console.log('a new record has been added to indexedb');
         formData = null;
@@ -472,7 +473,7 @@ function savePostRequest(url, userviewAppId, title, payload, username) {
 
 function sendFormDataToServer(savedRequest){
     console.log('sendFormDataToServer', savedRequest);
-    
+
     return new Promise(function(resolve, reject) {
         if(savedRequest.status === STATUS_FORM_ERROR){
             reject();
@@ -491,7 +492,7 @@ function sendFormDataToServer(savedRequest){
                 var keysToIgnore = [];
                 for(var key in payload){
                     if((Array.isArray(payload[key]) && payload[key][0] instanceof File)
-                            || payload[key] instanceof File){
+                        || payload[key] instanceof File){
                         //check if {key}_path exists
                         if(payload[key + '_path'] !== undefined){
                             keysToIgnore.push(key + '_path');
@@ -540,12 +541,12 @@ function sendFormDataToServer(savedRequest){
 
                                     savedRequest.status = STATUS_FORM_ERROR;
                                     getObjectStore(FORM_DB_STORE_NAME, 'readwrite').put(savedRequest);
-                                    
+
                                     reject();
-                                    
+
                                 }else{
                                     getObjectStore(FORM_DB_STORE_NAME, 'readwrite').delete(savedRequest.id);
-                                    
+
                                     resolve();
                                 }
                             })
@@ -555,7 +556,7 @@ function sendFormDataToServer(savedRequest){
                     }else{
                         savedRequest.status = STATUS_FAILED;
                         getObjectStore(FORM_DB_STORE_NAME, 'readwrite').put(savedRequest);
-                        
+
                         reject();
                     }
                 }).catch(function (error) {
@@ -568,8 +569,8 @@ function sendFormDataToServer(savedRequest){
                 })
             })
     });
-    
-        
+
+
 }
 
 function processStoredFormData() {
@@ -577,7 +578,7 @@ function processStoredFormData() {
         //console.log('processStoredFormData is syncing, ignoring...');
         return;
     }
-    
+
     isSyncing = true;
 
     //delay to make sure already online
@@ -593,7 +594,7 @@ function processStoredFormData() {
 
                 req.onsuccess = async function(event) {
                     var cursor = event.target.result;
-                    
+
                     if (cursor) {
                         savedRequests.push(cursor.value);
                         cursor.continue();
@@ -632,7 +633,7 @@ function processStoredFormData() {
                         }else{
                             //proceed to send the data
                             var promises = [];
-                            
+
                             for(let savedRequest of savedRequests) {
                                 /*
                                 if(savedRequest.status !== STATUS_FORM_ERROR){
@@ -641,16 +642,16 @@ function processStoredFormData() {
                                 */
                                 promises.push(sendFormDataToServer(savedRequest));
                             }
-                            
+
                             Promise.allSettled(promises).then(function(results){
                                 var hasFailedRequest = false;
-                                
+
                                 results.forEach(function(result){
                                     if(result.status === 'rejected'){
                                         hasFailedRequest = true;
                                     }
                                 });
-                                
+
                                 if(hasFailedRequest){
                                     //show syncFailed notification
                                     postMessageToClients({
@@ -664,7 +665,7 @@ function processStoredFormData() {
                                         })
                                     }
                                 }
-                                
+
                                 isSyncing = false;
                             });
 
@@ -679,7 +680,7 @@ function processStoredFormData() {
                 console.log('error getting username', error);
             });
     }, 10000);
-        
+
 }
 
 function connectCacheDB(f, mode) {
@@ -694,9 +695,9 @@ function connectCacheDB(f, mode) {
     };
     request.onupgradeneeded = function(e){
         var db = e.currentTarget.result;
-        
+
         if(!db.objectStoreNames.contains(CACHE_DB_STORE_NAME)) {
-            db.createObjectStore(CACHE_DB_STORE_NAME, {keyPath: "name"});  
+            db.createObjectStore(CACHE_DB_STORE_NAME, {keyPath: "name"});
         }
         connectCacheDB(f, mode);
     };
@@ -707,14 +708,14 @@ self.addEventListener('message', function(event) {
         console.log('sync received');
         processStoredFormData();
     }
-    
+
     if (event.data.hasOwnProperty('userviewKey')) {
         console.log('userviewKey received');
         userviewKey = event.data.userviewKey;
         homePageLink = event.data.homePageLink;
         cacheUserview();
     }
-    
+
     if (event.data.hasOwnProperty('formData')) {
         console.log('formData received');
         formPageTitle = event.data.formPageTitle;
@@ -722,7 +723,7 @@ self.addEventListener('message', function(event) {
         formUserviewAppId = event.data.formUserviewAppId;
         formUsername = event.data.formUsername;
     }
-    
+
     if (event.data.hasOwnProperty('serviceWorkerList')) {
         console.log("serviceWorkerList received");
         connectCacheDB(function(store){
