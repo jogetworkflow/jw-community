@@ -2,34 +2,11 @@ package org.joget.apps.userview.service;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
-import java.io.File;
-import java.io.StringWriter;
-import java.io.UnsupportedEncodingException;
-import java.net.URLEncoder;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
-import javax.servlet.RequestDispatcher;
-import javax.servlet.ServletContext;
-import javax.servlet.ServletRequest;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpServletResponseWrapper;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.StringEscapeUtils;
 import org.directwebremoting.util.SwallowingHttpServletResponse;
 import org.joget.apps.app.dao.UserviewDefinitionDao;
-import org.joget.apps.app.model.AppDefinition;
-import org.joget.apps.app.model.BuilderDefinition;
-import org.joget.apps.app.model.DatalistDefinition;
-import org.joget.apps.app.model.FormDefinition;
-import org.joget.apps.app.model.PackageActivityPlugin;
-import org.joget.apps.app.model.PackageDefinition;
-import org.joget.apps.app.model.UserviewDefinition;
+import org.joget.apps.app.model.*;
 import org.joget.apps.app.service.AppService;
 import org.joget.apps.app.service.AppUtil;
 import org.joget.apps.datalist.model.DataList;
@@ -38,18 +15,11 @@ import org.joget.apps.datalist.model.DataListCollection;
 import org.joget.apps.datalist.model.DataListColumn;
 import org.joget.apps.datalist.service.DataListService;
 import org.joget.apps.userview.lib.AjaxUniversalTheme;
-import org.joget.apps.userview.model.Permission;
-import org.joget.apps.userview.model.PwaOfflineResources;
-import org.joget.apps.userview.model.Userview;
-import org.joget.apps.userview.model.UserviewCategory;
-import org.joget.apps.userview.model.UserviewMenu;
-import org.joget.apps.userview.model.UserviewPwaTheme;
-import org.joget.apps.userview.model.UserviewSetting;
-import org.joget.apps.userview.model.UserviewTheme;
+import org.joget.apps.userview.model.*;
 import org.joget.commons.util.LogUtil;
+import org.joget.commons.util.ResourceBundleUtil;
 import org.joget.commons.util.SecurityUtil;
 import org.joget.commons.util.SetupManager;
-import org.joget.commons.util.StringUtil;
 import org.joget.directory.model.User;
 import org.joget.plugin.base.Plugin;
 import org.joget.plugin.base.PluginManager;
@@ -63,6 +33,18 @@ import org.springframework.context.ApplicationContextAware;
 import org.springframework.stereotype.Service;
 import org.springframework.util.ClassUtils;
 import org.springframework.web.context.ServletContextAware;
+
+import javax.servlet.RequestDispatcher;
+import javax.servlet.ServletContext;
+import javax.servlet.ServletRequest;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpServletResponseWrapper;
+import java.io.File;
+import java.io.StringWriter;
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
+import java.util.*;
 
 /**
  * Utility methods used by userview for rendering
@@ -296,6 +278,7 @@ public class UserviewUtil implements ApplicationContextAware, ServletContextAwar
             UserviewDefinition userviewDef = userviewDefinitionDao.loadById(userviewId, appDef);
             if (userviewDef != null) {
                 String json = userviewDef.getJson();
+                JSONObject userviewJsonObj = new JSONObject(json);
                 UserviewSetting userviewSetting = userviewService.getUserviewSetting(appDef, json);
                 UserviewTheme theme = userviewSetting.getTheme();
                 if (theme instanceof AjaxUniversalTheme) {
@@ -313,8 +296,7 @@ public class UserviewUtil implements ApplicationContextAware, ServletContextAwar
 
                     try {
                         //set userview properties
-                        JSONObject userviewObj = new JSONObject(json);
-                        userview.setProperties(PropertyUtil.getProperties(userviewObj.getJSONObject("properties")));
+                        userview.setProperties(PropertyUtil.getProperties(userviewJsonObj.getJSONObject("properties")));
 
                         userview.setCategories(new ArrayList<UserviewCategory>());
                     } catch (Exception ex) {
@@ -325,6 +307,13 @@ public class UserviewUtil implements ApplicationContextAware, ServletContextAwar
                     theme.setUserview(userview);
                 }
                 if (theme instanceof UserviewPwaTheme) {
+                    int themeHash = userviewJsonObj
+                            .getJSONObject("setting")
+                            .getJSONObject("properties")
+                            .getJSONObject("theme")
+                            .toMap()
+                            .hashCode();
+                    theme.setProperty("themeHash", themeHash);
                     serviceWorkerJs = ((UserviewPwaTheme)theme).getServiceWorker(appId, userviewId, userviewKey);
                 }
             }
@@ -357,7 +346,15 @@ public class UserviewUtil implements ApplicationContextAware, ServletContextAwar
             if (data != null && !data.isEmpty()) {
                 //check date
                 Long resourceLastModified = data.keySet().iterator().next();
-                if (lastModified.compareTo(resourceLastModified) != 0) {
+                String bn = ResourceBundleUtil.getMessage("build.number");
+                boolean hasOldBuild = false;
+                if (bn != null) {
+                    hasOldBuild = data.get(resourceLastModified)
+                            .stream()
+                            .filter(url -> url.contains("build="))
+                            .anyMatch(url -> !url.contains(bn));
+                }
+                if (lastModified.compareTo(resourceLastModified) != 0 || hasOldBuild) {
                     data = null;
                 } else {
                     return data.get(resourceLastModified);
@@ -369,7 +366,7 @@ public class UserviewUtil implements ApplicationContextAware, ServletContextAwar
                 
                 PluginManager pluginManager = (PluginManager)AppUtil.getApplicationContext().getBean("pluginManager");
                 Collection<Plugin> pluginList = pluginManager.list(PwaOfflineResources.class);
-                
+
                 if (pluginList != null && !pluginList.isEmpty()) {
                     String concatAppDef = "";
                     if (appDef.getFormDefinitionList() != null) {
