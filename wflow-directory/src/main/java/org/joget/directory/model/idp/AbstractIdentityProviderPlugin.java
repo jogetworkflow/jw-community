@@ -32,7 +32,7 @@ public abstract class AbstractIdentityProviderPlugin extends ExtDefaultPlugin im
      * @return a string representing the callback URL
      */
     public String getCallbackUrl(HttpServletRequest request) {
-        return IdpMfaUtil.getCallbackUrl(request, getUuid());
+        return IdpMfaUtil.getIdpCallbackUrl(request, getUuid());
     }
 
     @Override

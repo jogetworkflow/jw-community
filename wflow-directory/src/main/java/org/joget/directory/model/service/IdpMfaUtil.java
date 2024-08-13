@@ -17,7 +17,7 @@ public class IdpMfaUtil {
      * @param pluginUuid the UUID string to identify the plugin
      * @return a string representing the callback URL
      */
-    public static String getCallbackUrl(HttpServletRequest request, String pluginUuid) {
+    public static String getIdpCallbackUrl(HttpServletRequest request, String pluginUuid) {
         String callbackUrl = request.getScheme() + "://" + request.getServerName();
         if (request.getServerPort() != 80 && request.getServerPort() != 443) {
             callbackUrl += ":" + request.getServerPort();
