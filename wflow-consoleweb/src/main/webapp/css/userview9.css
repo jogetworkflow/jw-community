@@ -1488,6 +1488,7 @@ body#login {
 
 body#login #page #content.page_content {
     height: 100vh;
+    max-width: 100vw;
     padding: 0;
 }
 

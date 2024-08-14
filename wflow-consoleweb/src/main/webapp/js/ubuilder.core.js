@@ -549,6 +549,17 @@ UserviewBuilder = {
     saveBuilderProperties : function(container, properties) {
         delete properties.userviewId;
         
+        //remove all theme builder configurations when switching themes from theme builder
+        var orgTheme = CustomBuilder.data.setting.properties.theme;
+        if(orgTheme.className.startsWith("org.joget.plugin.enterprise.BuilderTheme") && orgTheme.className !== "org.joget.plugin.enterprise.BuilderTheme"){
+            var orgProperty = orgTheme.properties;
+            for (var property in orgProperty) {
+                if(property.startsWith("org.joget.theme.lib")){
+                    delete orgProperty[property];
+                }
+            }
+        }
+        
         properties.theme.properties = $.extend(CustomBuilder.data.setting.properties.theme.properties, properties.theme.properties);
         $.extend(CustomBuilder.data.setting.properties, properties);
         CustomBuilder.update();
@@ -1277,7 +1288,7 @@ UserviewBuilder = {
 
                 $.each(props, function(key, value) {
                     // generate componet css
-                    if (key.startsWith("org.joget.tbuilder.lib")) {
+                    if (key.startsWith("org.joget.tbuilder.lib") && key !== 'org.joget.theme.lib.LoginPageComponent') {
                         $.each(value.properties, function(innerKey, innerValue) {
                             css += "--" + value.prefix + innerKey + ":" + innerValue + ";";
                         });
