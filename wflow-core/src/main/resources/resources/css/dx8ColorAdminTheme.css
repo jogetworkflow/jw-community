@@ -30,7 +30,7 @@ header.navbar .inbox-notification .dropdown-toggle:after{
     box-shadow: none;
 }
 .sidebar_brand{
-    background-color: var(--theme-header, var(--theme-color6, #fff));
+    background-color: var(--theme-header,  #fff);
     border-bottom: 1px solid rgba(0,0,0,.0625); 
     box-shadow: 0 1px 1px rgba(0, 0, 0, 0.14)
 }
