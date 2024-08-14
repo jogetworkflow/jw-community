@@ -5537,9 +5537,15 @@ a {
     padding-right: 0;
     box-sizing: border-box;
 }
+@media (max-width: 767px) {
+    .container-fluid.mobile-stack-columns .col{
+        flex: 0 0 100% !important;
+        max-width: 100% !important;
+    }
+}
 .InformationTileComponent .acSparkline-initialized,
 .InformationTileComponent a:not(.stretched-link),
-.InformationTileComponent button{
+.InformationTileComponent button, .InformationTileComponent .card-footer:has(a){
     position: relative;
     z-index: 20;
 }
