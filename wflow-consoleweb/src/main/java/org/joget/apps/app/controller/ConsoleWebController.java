@@ -3758,7 +3758,7 @@ public class ConsoleWebController {
                 for (AppDefinition appDef: appDefList) {
                     appDefMap.put(appDef.getVersion(), appDef);
                 }            
-                            
+            
                 if (!AppDevUtil.isGitDisabled()) {
                 // get app versions from Git
                     try {                                              
@@ -3772,7 +3772,7 @@ public class ConsoleWebController {
                         String gitUsername = prop.getProperty(PROPERTY_GIT_USERNAME);
                         String gitPassword = prop.getProperty(PROPERTY_GIT_PASSWORD);
                                                             
-                        AppDevUtil.gitFetchMerge(projectDir,localGit, gitUri, gitUsername,gitPassword, MergeStrategy.OURS, appDef);
+                        AppDevUtil.gitFetchMerge(projectDir,localGit, gitUri, gitUsername,gitPassword, MergeStrategy.RECURSIVE, appDef);
                         List<String> branches = AppDevUtil.getAppGitBranches(appDef);
                         for (String branch: branches) {                     
                             int versionIndex = branch.lastIndexOf("_");
