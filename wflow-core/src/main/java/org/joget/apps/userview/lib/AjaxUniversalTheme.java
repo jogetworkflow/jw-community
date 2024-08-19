@@ -313,30 +313,8 @@ public class AjaxUniversalTheme extends UniversalTheme implements SupportBuilder
         return "#FFFFFF";
     }
     
-    protected String generateColorDesign() {  
-        String color = "";
-
-        if (!getPropertyString("dx8colorScheme").isEmpty()){
-            String[] colors = getPropertyString("dx8colorScheme").split(";");
-            if ( (colors[5].equalsIgnoreCase("rgb(255, 255, 255)") ||  colors[5].equalsIgnoreCase("#FFFFFF")) && colors[5].equalsIgnoreCase(colors[4])){
-                color += "--header-button-default-color:#3b4348;";
-                color += "--header-link-default-color:#3b4348;";
-                color += "--sidebar-brand-default-color:#3b4348;";
-                color += "--sidebar-menu-default-color:#3b4348;";
-                color += "--sidebar-icon-default-color:#3b4348;";
-            }else{
-                color += "--header-button-default-color:#FFFFFF;";
-                color += "--header-link-default-color:#FFFFFF;";
-                color += "--sidebar-brand-default-color:#FFFFFF;";
-                color += "--sidebar-menu-default-color:#FFFFFF;";
-                color += "--sidebar-icon-default-color:#FFFFFF;";
-            }
-            color += "--sidebar-icon-default-color:"+colors[2]+";";
-            color += "--sidebar-active-link-default-color:"+colors[2]+";";
-            color += "--sidebar-active-icon-default-color:"+colors[2]+";";
-        }          
-    
-        return color;
+    protected String generateColorDesign() {       
+        return "";
     }
 
     @Override
@@ -345,7 +323,7 @@ public class AjaxUniversalTheme extends UniversalTheme implements SupportBuilder
 
         //Get the primary color deigns to maintain the same feel
         css += generateColorDesign();
-
+        
         if (!getPropertyString("dx8colorScheme").isEmpty()) {
             String[] colors = getPropertyString("dx8colorScheme").split(";");
             for (int i=0; i < colors.length; i++) {
