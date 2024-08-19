@@ -155,7 +155,7 @@ body .subform-cell > .subform-container.has-frame, .form-cell > .subform-contain
     width: 100%;
     float: none !important;
 }
-@media (max-width: 991px) and (min-width : 768px) {
+@media screen and (max-width: 991px) and (min-width : 768px) {
     .tablet-label-top.form-cell > label.label,
     .tablet-label-top.subform-cell > label.label{
         width: 100%;
@@ -1121,9 +1121,6 @@ body.rtl .calculationField_value {
         border-radius: 0.25rem;
         padding-bottom: 20px;
     }
-    .form-column, .subform-column{
-        width:100% !important;
-    }
 }
 
 .form-cell table:not([class]) td, .form-cell table:not([class]) th, .subform-cell table:not([class]) td, .subform-cell table:not([class]) th {
@@ -1201,7 +1198,7 @@ body.rtl .calculationField_value {
     border-color: #6c757d;
 }
 
-@media (max-width: 767px) {
+@media screen and (max-width: 767px) {
     .form-cell > label.label,
     .subform-cell > label.label,
     .form-cell > label.label + *:not(.ui-screen-hidden),
@@ -1220,6 +1217,10 @@ body.rtl .calculationField_value {
     .hasDatepicker + a + a{
         top: unset;
         bottom: 6px;
+    }
+
+    .form-column, .subform-column{
+        width:100% !important;
     }
 }
 @media screen and (max-width: 39.9375em) {
@@ -1399,7 +1400,7 @@ body.rtl .label-top .form-cell:not(.label-left) > label.label > i,
 body.rtl .label-top .subform-cell:not(.label-left) > label.label > i{
     left:unset;
 }
-@media (max-width: 768px){
+@media (max-width: 767px){
     .form-cell > label.label > i,
     .subform-cell > label.label > i,
     .label-left.form-cell > label.label > i,
@@ -1437,7 +1438,7 @@ body.rtl .label-top.subform-cell > label.label > i{
 .largeFontSize .label-top.subform-cell > label.label > i{
     bottom: -44px;
 }
-@media (max-width: 768px){
+@media (max-width: 767px){
     .mediumFontSize .form-cell > label.label > i,
     .mediumFontSize .subform-cell > label.label > i,
     .mediumFontSize .label-left.form-cell > label.label > i,
@@ -1450,4 +1451,8 @@ body.rtl .label-top.subform-cell > label.label > i{
     .largeFontSize .label-left.subform-cell > label.label > i{
         bottom: -44px;
     }
+}
+body.rtl .form-cell > label.label,
+body.rtl .subform-cell > label.label{
+    padding: 8px 0 0 10px;
 }

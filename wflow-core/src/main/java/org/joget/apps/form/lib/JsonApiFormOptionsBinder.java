@@ -88,10 +88,12 @@ public class JsonApiFormOptionsBinder extends FormBinder implements FormLoadOpti
         }
         
         Map<String,Object> results = null;
-        if (!"true".equals(getPropertyString("emptyDependencyValueCheck")) || (values != null && values.length > 0 && !values[0].isEmpty())) {
+        if (!"true".equals(getPropertyString("useAjax")) ||
+                !"true".equals(getPropertyString("emptyDependencyValueCheck")) || (values != null && values.length > 0 && !values[0].isEmpty())) {
             results = JsonApiUtil.callApi(getProperties(), params);
         }
 
+        //TODO: grouping to support multi dependency fields
         if (results != null) {
             String idField = getPropertyString("idColumn");
             String labelField = getPropertyString("labelColumn");
@@ -114,6 +116,20 @@ public class JsonApiFormOptionsBinder extends FormBinder implements FormLoadOpti
             
             if (data != null) {
                 recursiveAddOptions(data, options, idField, null, labelField, null, groupingField, null, name);
+            }
+            
+            //auto handle the dependency for AJAX in case the JSON API does not support filter
+            if (!options.isEmpty() && "true".equals(getPropertyString("useAjax")) && !groupingField.isEmpty()
+                    && values != null && values.length > 0 && !values[0].isEmpty()) {
+                
+                FormRowSet temp = new FormRowSet();
+                for (FormRow r : options) {
+                    String grouping = r.getProperty(FormUtil.PROPERTY_GROUPING);
+                    if (grouping != null && grouping.equals(values[0])) {
+                        temp.add(r);
+                    }
+                }
+                options = temp;
             }
         }
         

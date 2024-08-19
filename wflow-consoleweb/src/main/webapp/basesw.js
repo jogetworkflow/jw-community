@@ -39,7 +39,11 @@ self.addEventListener('install', function(event) {
 
 self.addEventListener('fetch', function(event) {
     // ignore web console and presence URLs
-    if (event.request.url.indexOf('/web/console/') > 0 || event.request.url.indexOf('/web/json/console/') > 0 || event.request.url.indexOf('/web/presence') > 0) {
+    if (event.request.url.indexOf('/web/console/') > 0
+        || event.request.url.indexOf('/web/json/console/') > 0
+        || event.request.url.indexOf('/web/presence') > 0
+        || event.request.url.indexOf('/web/userview') > 0
+    ) {
         return;
     }
     
