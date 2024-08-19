@@ -11,7 +11,7 @@ import org.apache.commons.lang3.tuple.Pair;
 public class SessionToken implements Token, Serializable {
 
     private String masterToken;
-    private Map<String, PageTokenValue> pageTokens;
+    private Map<String, PageTokenValue> pageTokens = new ConcurrentHashMap<>();
 
     @Override
     public String getMasterToken() {
