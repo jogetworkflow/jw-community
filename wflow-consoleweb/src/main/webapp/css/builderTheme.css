@@ -795,19 +795,23 @@ body[builder-theme] .permission_view .permission_rule .name {
     font-weight: 500;
 }
 
-@media screen and (min-width:1701px) {
+@media screen and (min-width:1695px) {
     body[builder-theme] #builders > div:nth-child(n+6){border-top:1px solid var(--theme-border-color-1);}
 }
-@media screen and (min-width:2111px) {
+@media screen and (min-width:2105px) {
+    body[builder-theme] #builders > div:nth-child(n+6){border-top:0;}
     body[builder-theme] #builders > div:nth-child(n+7){border-top:1px solid var(--theme-border-color-1);}
 }
-@media screen and (min-width:2521px) {
+@media screen and (min-width:2515px) {
+    body[builder-theme] #builders > div:nth-child(n+7){border-top:0;}
     body[builder-theme] #builders > div:nth-child(n+8){border-top:1px solid var(--theme-border-color-1);}
 }
-@media screen and (min-width:2931px) {
+@media screen and (min-width:2925px) {
+    body[builder-theme] #builders > div:nth-child(n+8){border-top:0;}
     body[builder-theme] #builders > div:nth-child(n+9){border-top:1px solid var(--theme-border-color-1);}
 }
 @media screen and (min-width:3335px) {
+    body[builder-theme] #builders > div:nth-child(n+9){border-top:0;}
     body[builder-theme] #builders > div:nth-child(n+10){border-top:1px solid var(--theme-border-color-1);}
 }
 body[builder-theme] .property-editor-container{
@@ -2199,22 +2203,27 @@ body[builder-theme='dark'] #builders-seperator > span {
     border-left: 1px solid var(--theme-border-color-1);
     position: absolute;
 }
-@media screen and (max-width:1290px) {
+@media screen and (max-width:1285px) {
     body[builder-theme='dark'] #builders > div:nth-child(n+4){border-top:1px solid var(--theme-border-color-1); padding-top: 20px !important;}
 }
-@media screen and (min-width:1701px) {
+@media screen and (min-width:1695px) {
+    body[builder-theme='dark'] #builders > div:nth-child(n+5){border-top:0; padding-top: 0px !important;}
     body[builder-theme='dark'] #builders > div:nth-child(n+6){border-top:1px solid var(--theme-border-color-1); padding-top: 20px !important;}
 }
-@media screen and (min-width:2111px) {
+@media screen and (min-width:2105px) {
+    body[builder-theme='dark'] #builders > div:nth-child(n+6){border-top:0; padding-top: 0px !important;}
     body[builder-theme='dark'] #builders > div:nth-child(n+7){border-top:1px solid var(--theme-border-color-1); padding-top: 20px !important;}
 }
-@media screen and (min-width:2521px) {
+@media screen and (min-width:2515px) {
+    body[builder-theme='dark'] #builders > div:nth-child(n+7){border-top:0; padding-top: 0px !important;}
     body[builder-theme='dark'] #builders > div:nth-child(n+8){border-top:1px solid var(--theme-border-color-1); padding-top: 20px !important;}
 }
-@media screen and (min-width:2931px) {
+@media screen and (min-width:2925px) {
+    body[builder-theme='dark'] #builders > div:nth-child(n+8){border-top:0; padding-top: 0px !important;}
     body[builder-theme='dark'] #builders > div:nth-child(n+9){border-top:1px solid var(--theme-border-color-1); padding-top: 20px !important;}
 }
 @media screen and (min-width:3335px) {
+    body[builder-theme='dark'] #builders > div:nth-child(n+9){border-top:0; padding-top: 0px !important;}
     body[builder-theme='dark'] #builders > div:nth-child(n+10){border-top:1px solid var(--theme-border-color-1); padding-top: 20px !important;}
 }
 body[builder-theme='dark'] .builder-title .addnew {
