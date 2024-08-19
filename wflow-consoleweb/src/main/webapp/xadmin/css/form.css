@@ -538,6 +538,22 @@ body label > input[type=checkbox]:disabled + i:after {
     color:#fff;
 }
 
+.dataList.size_sm > form > .table-wrapper > table.responsivetable > tbody > tr > td.select_checkbox > label > i,
+.dataList.size_sm > .table-wrapper > table.responsivetable > tbody > tr > td.select_checkbox > label > i {
+    width: 100%;
+    height: 100%;
+    border-color: transparent;
+}
+
+.dataList.size_sm > form > .table-wrapper > table.responsivetable > tbody > tr > td.select_checkbox > label{
+    position: static;
+    transform: none;
+}
+
+.dataList.size_sm > form > .table-wrapper > table.responsivetable > tbody > tr > td.select_checkbox{
+    position: static;
+}
+
 /* Select Field
    ========================================================================== */
 body select:not([class^="ui-"]),
