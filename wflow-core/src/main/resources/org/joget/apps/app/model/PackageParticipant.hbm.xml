@@ -2,6 +2,7 @@
 <!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN" "http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
 <hibernate-mapping>
     <class entity-name="PackageParticipant" name="org.joget.apps.app.model.PackageParticipant" table="app_package_participant">
+        <cache usage="nonstrict-read-write" /> 
         <composite-id>
             <key-property column="processDefId" name="processDefId" type="string"/>
             <key-property column="participantId" name="participantId" type="string"/>
@@ -14,7 +15,7 @@
         <property name="type" type="string"/>
         <property name="value" type="text"/>
         <property name="pluginProperties" type="text"/>
-        <many-to-one entity-name="PackageDefinition" insert="false" name="packageDefinition" not-null="true" update="false">
+        <many-to-one entity-name="PackageDefinition" insert="false" name="packageDefinition" not-null="true" update="false" lazy="proxy">
             <column name="packageId"/>
             <column name="packageVersion"/>
         </many-to-one>

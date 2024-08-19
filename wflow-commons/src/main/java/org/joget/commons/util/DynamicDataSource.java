@@ -6,6 +6,7 @@ import java.util.Map;
 import java.util.Properties;
 import org.apache.commons.beanutils.BeanUtils;
 import org.apache.tomcat.jdbc.pool.XADataSource;
+import org.joget.commons.ignite.IgniteCacheManager;
 
 public class DynamicDataSource extends XADataSource {
 
@@ -14,6 +15,11 @@ public class DynamicDataSource extends XADataSource {
     public static final String PASSWORD = "Password";
     public static final String DRIVER = "Driver";
     private String datasourceName;
+    private IgniteCacheManager igniteCacheManager;
+    
+    public void setIgniteCacheManager(IgniteCacheManager igniteCacheManager) {
+        this.igniteCacheManager = igniteCacheManager;
+    }
     
     @Override
     public Connection getConnection() throws SQLException {
@@ -34,6 +40,13 @@ public class DynamicDataSource extends XADataSource {
         }
 
         if (!getUrl().equals(tempUrl)) {
+            if (getUrl() != null && !getUrl().isEmpty()) {
+                // clear cache
+                if (igniteCacheManager != null) {
+                    igniteCacheManager.clearAll();
+                }                        
+            }
+            
             //close old datasource
             super.close();
 

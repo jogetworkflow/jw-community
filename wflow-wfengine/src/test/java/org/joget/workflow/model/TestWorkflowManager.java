@@ -303,7 +303,7 @@ public class TestWorkflowManager {
         Assert.assertEquals(1, activities.size());
         
         System.out.println(">>> getClosedActivitiesList by admin username");
-        activities = workflowManager.getClosedActivitiesList(null, null, null, null, "admin", null, null, null, null, null);
+        activities = workflowManager.getClosedActivitiesList(packageId, null, null, null, "admin", null, null, null, null, null);
         Assert.assertEquals(0, activities.size());
         
         System.out.println(">>> getClosedActivitiesListSize by packageId");
@@ -355,7 +355,7 @@ public class TestWorkflowManager {
         Assert.assertEquals(1, count);
         
         System.out.println(">>> getClosedActivitiesListSize by admin username");
-        count = workflowManager.getClosedActivitiesListSize(null, null, null, null, "admin", null);
+        count = workflowManager.getClosedActivitiesListSize(packageId, null, null, null, "admin", null);
         Assert.assertEquals(0, count);
     }
 

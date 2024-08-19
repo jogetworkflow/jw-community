@@ -22,7 +22,7 @@
     </bean>
 
     <!-- DynamicDataSourceManager will have its property set via @Autowired -->
-    <bean id="staticInitOfDynamicDataSourceManager" class="org.joget.commons.util.DynamicDataSourceManager" depends-on="btmConfig">
+    <bean id="staticInitOfDynamicDataSourceManager" class="org.joget.commons.util.DynamicDataSourceManager" depends-on="btmConfig,igniteCacheManager">
     	<constructor-arg ref="profilePropertyManager"/>
         <property name="cache" ref="dynamicDataSourceManagerCache"/>
     </bean>
@@ -84,6 +84,7 @@
         <property name="maxWait" value="10000" />
         <property name="datasourceName" value="workflow" />
         <property name="jdbcInterceptors" value="org.apache.tomcat.jdbc.pool.interceptor.ConnectionState" />
+        <property name="igniteCacheManager" ref="igniteCacheManager" />
     </bean>
     <!--
     <bean id="setupDataSource" class="org.springframework.jndi.JndiObjectFactoryBean">
@@ -112,6 +113,11 @@
                 <prop key="hibernate.transaction.coordinator_class">jdbc</prop>
                 <prop key="hibernate.transaction.jta.platform">org.hibernate.service.jta.platform.internal.BitronixJtaPlatform</prop>
                 <prop key="hibernate.connection.release_mode">after_transaction</prop>
+                <prop key="hibernate.cache.use_second_level_cache">false</prop> 
+                <prop key="hibernate.cache.use_query_cache">false</prop> 
+                <prop key="hibernate.generate_statistics">false</prop>
+                <prop key="hibernate.cache.region.factory_class">org.joget.commons.ignite.IgniteHibernateRegionFactory</prop>
+                <prop key="org.apache.ignite.hibernate.ignite_instance_name">ignite-grid</prop>
             </props>
         </property>
     </bean>
@@ -171,5 +177,6 @@
     
     <bean id="fileManager" class="org.joget.commons.util.FileManager" depends-on="setupManager">
     </bean>
-    
+
+    <import resource="classpath:igniteCacheApplicationContext.xml" />
 </beans>

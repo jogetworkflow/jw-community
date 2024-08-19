@@ -57,6 +57,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Set;
 import java.util.TreeMap;
+import java.util.concurrent.TimeoutException;
 import javax.transaction.TransactionManager;
 import org.apache.commons.collections.SequencedHashMap;
 import org.apache.commons.lang.StringEscapeUtils;
@@ -3171,6 +3172,21 @@ public class WorkflowManagerImpl implements WorkflowManager {
     }
 
     /**
+     * Returns the configured timeout for asynchronous process calls.
+     * Zero disables the timeout and makes the call synchronous.
+     * @param processDefId
+     * @param processId
+     * @param activityId
+     * @return 
+     */
+    public long getProcessAsyncTimeout(String processDefId, String processId, String activityId) {
+        // TODO: can be enhanced to use fine-grained timeout e.g. configured in the Process Builder
+        // get system async request timeout
+        long timeout = PluginThread.getAsyncRequestTimeout();
+        return timeout;
+    }
+    
+    /**
      * Generic method to start a process with various options
      * @param processDefId The process definition ID of the process to start
      * @param processId The process instance ID of a current running process to start
@@ -3180,15 +3196,52 @@ public class WorkflowManagerImpl implements WorkflowManager {
      * @param startManually Set to true to prevent beginning activities from being started.
      * @return
      */
+    @Override
     public WorkflowProcessResult processStart(String processDefId, String processId, Map<String, String> variables, String startProcUsername, String parentProcessId, boolean startManually) {
-        processDefId = getConvertedLatestProcessDefId(processDefId);
+        WorkflowProcessResult result = new WorkflowProcessResult();
+        final WorkflowProcessResult taskResult = result;
+        try {
+            // create process instance in separate transaction first so that it will be accessible in a different thread
+            TransactionTemplate transactionTemplateRequiresNew = (TransactionTemplate)WorkflowUtil.getApplicationContext().getBean("transactionTemplateRequiresNew");
+            transactionTemplateRequiresNew.execute((TransactionStatus transactionStatus) -> processCreate(processDefId, processId, variables, startProcUsername, parentProcessId, taskResult));
+        
+            if (!startManually) {
+                final String startUser = startProcUsername;
+                final String startProcessDefId = processDefId;
+                final String startProcessId = result.getProcess().getInstanceId();
 
+                // start process asynchronously with a timeout
+                try {
+                    long timeout = getProcessAsyncTimeout(processDefId, processId, null);
+                    result = WorkflowUtil.executeAsync(() -> processStartImmediately(startUser, startProcessDefId, startProcessId, taskResult), timeout);
+                } catch(TimeoutException te) {
+                    result.setStatus("Pending");
+                    LogUtil.info(getClass().getName(), "Timeout processStartImmediately for " + startProcessId);
+                }
+
+            }
+        } catch (Exception ex) {
+            LogUtil.error(getClass().getName(), ex, "");
+        }
+        return result;
+    }
+
+    /**
+     * Create process instance without actually starting it yet.
+     * @param processDefId
+     * @param processId
+     * @param variables
+     * @param startProcUsername
+     * @param parentProcessId
+     * @param result
+     * @return 
+     */
+    protected WorkflowProcessResult processCreate(String processDefId, String processId, Map<String, String> variables, String startProcUsername, String parentProcessId, WorkflowProcessResult result) {
+        processDefId = getConvertedLatestProcessDefId(processDefId);
+        String processInstanceId;
         SharkConnection sc = null;
 
-        WorkflowProcessResult result = new WorkflowProcessResult();
-        WorkflowProcess processStarted = new WorkflowProcess();
-        Collection<WorkflowActivity> activitiesStarted = new ArrayList<WorkflowActivity>();
-        String processInstanceId = "";
+        final WorkflowProcess processStarted = new WorkflowProcess();
         try {
 
             if (startProcUsername != null && startProcUsername.trim().length() > 0) {
@@ -3247,30 +3300,60 @@ public class WorkflowManagerImpl implements WorkflowManager {
                 internalAddWorkflowProcessLink(parentProcessId, processInstanceId);
             }
 
-            if (!startManually) {
-                wfProcess.start();
-            }
-
             // set started process in result
             processStarted.setId(processDefId);
             processStarted.setInstanceId(processInstanceId);
             result.setProcess(processStarted);
             result.setParentProcessId(parentProcessId);
 
-            //redirect to assignment view accordingly
-            if (wfProcess != null && !startManually) {
-                Shark shark = Shark.getInstance();
-                AdminMisc admin = shark.getAdminMisc();
-                WMSessionHandle sessionHandle = sc.getSessionHandle();
+     
+        } catch (Exception ex) {
+            LogUtil.error(getClass().getName(), ex, "");
+        } finally {
+            try {
+                disconnect(sc);
+            } catch (Exception e) {
+                LogUtil.error(getClass().getName(), e, "");
+            }
+        }
+        return result;
+    }
+    
+    /**
+     * Start a process immediately in the current thread.
+     * @param startProcUsername
+     * @param processDefId
+     * @param processId
+     * @param result
+     * @return 
+     */
+    public WorkflowProcessResult processStartImmediately(String startProcUsername, String processDefId, String processId, WorkflowProcessResult result) {
+        SharkConnection sc = null;
 
-                XPDLBrowser xpdl = shark.getXPDLBrowser();
-                WfActivity[] activityList = wfProcess.get_sequence_step(0);
-                WorkflowActivity activity = getNextActivity(sessionHandle, mgr, admin, xpdl, wfProcess.key(), activityList);
-                
-                if (activity != null) {
-                    activitiesStarted.add(activity);
-                    result.setActivities(activitiesStarted);
-                }
+        try {
+            if (startProcUsername != null && startProcUsername.trim().length() > 0) {
+                sc = connect(startProcUsername);
+            } else {
+                sc = connect();
+            }
+
+            WfProcessMgr mgr = sc.getProcessMgr(processDefId);
+            WfProcess wfProcess = sc.getProcess(processId);
+            wfProcess.start();
+
+            //redirect to assignment view accordingly
+            Shark shark = Shark.getInstance();
+            AdminMisc admin = shark.getAdminMisc();
+            WMSessionHandle sessionHandle = sc.getSessionHandle();
+
+            XPDLBrowser xpdl = shark.getXPDLBrowser();
+            WfActivity[] activityList = wfProcess.get_sequence_step(0);
+            WorkflowActivity activity = getNextActivity(sessionHandle, mgr, admin, xpdl, wfProcess.key(), activityList);
+
+            if (activity != null) {
+                Collection<WorkflowActivity> activitiesStarted = new ArrayList<WorkflowActivity>();
+                activitiesStarted.add(activity);
+                result.setActivities(activitiesStarted);
             }
         } catch (Exception ex) {
             LogUtil.error(getClass().getName(), ex, "");
@@ -4213,15 +4296,43 @@ public class WorkflowManagerImpl implements WorkflowManager {
     /**
      * Complete an assignment (for the current user) based on the activity instance ID.
      * @param activityId
+     * @return
      */
-    public void assignmentComplete(String activityId) {
+    @Override
+    public String assignmentComplete(String activityId) {
+        String result = null;
+        
+        // create assignment instance first
+        WfAssignment wfa = assignmentCompleteInit(activityId);
 
+        // start activity completion asynchronously with a timeout
+        try {
+            WfProcess process = wfa.activity().container();
+            long timeout = getProcessAsyncTimeout(process.manager().name(), process.key(), activityId);            
+            WorkflowUtil.executeAsync(() -> assignmentCompleteImmediately(wfa), timeout);
+            result = "completed";
+        } catch(TimeoutException te) {
+            result = "pending";
+            LogUtil.info(getClass().getName(), "Timeout assignmentCompleteImmediately for " + activityId);
+        } catch(Exception e) {
+            LogUtil.error(getClass().getName(), e, "");            
+        }
+        return result;
+    }
+    
+    /**
+     * Create activity instance.
+     * @param activityId
+     * @return 
+     */
+    protected WfAssignment assignmentCompleteInit(String activityId) {
+        WfAssignment wfa = null;
         SharkConnection sc = null;
 
         try {
             sc = connect();
 
-            WfAssignment wfa = getSharkAssignment(sc, activityId);
+            wfa = getSharkAssignment(sc, activityId);
             
             String username = getWorkflowUserManager().getCurrentUsername();
             WfResource assignee = wfa.assignee();
@@ -4236,8 +4347,6 @@ public class WorkflowManagerImpl implements WorkflowManager {
                 WorkflowUtil.addAuditTrail(this.getClass().getName(), "assignmentReassignUser", activityId, new Class[]{activityId.getClass()}, new Object[]{activityId}, null);
             }
             
-            wfa.activity().complete();
-
         } catch (Exception ex) {
             LogUtil.error(getClass().getName(), ex, "");
         } finally {
@@ -4247,19 +4356,47 @@ public class WorkflowManagerImpl implements WorkflowManager {
                 LogUtil.error(getClass().getName(), e, "");
             }
         }
+        return wfa;
+    }
+    
+    /**
+     * Complete an assignment immediately in the current thread.
+     * @param wfa
+     * @return
+     */
+    protected boolean assignmentCompleteImmediately(WfAssignment wfa) {
+        boolean result = false;
+        SharkConnection sc = null;
+
+        try {
+            sc = connect();
+            wfa.activity().complete();
+            result = true;            
+        } catch (Exception ex) {
+            LogUtil.error(getClass().getName(), ex, "");
+        } finally {
+            try {
+                disconnect(sc);
+            } catch (Exception e) {
+                LogUtil.error(getClass().getName(), e, "");
+            }
+        }
+        return result;
     }
 
     /**
      * Complete an assignment (for the current user) while setting workflow variable values
      * @param activityId
      * @param variableMap key=variable name and value=variable value.
+     * @return
      */
-    public void assignmentComplete(String activityId, Map<String, String> variableMap) {
+    @Override
+    public String assignmentComplete(String activityId, Map<String, String> variableMap) {
         // set workflow variables
         assignmentVariables(activityId, variableMap);
 
         // complete assignment
-        assignmentComplete(activityId);
+        return assignmentComplete(activityId);
     }
     
     /**

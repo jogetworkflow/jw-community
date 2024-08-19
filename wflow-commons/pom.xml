@@ -13,8 +13,8 @@
                 <artifactId>maven-compiler-plugin</artifactId>
                 <version>2.0.2</version>
                 <configuration>
-                    <source>1.7</source>
-                    <target>1.7</target>
+                    <source>1.8</source>
+                    <target>1.8</target>
                 </configuration>
             </plugin>
         </plugins>
@@ -310,6 +310,11 @@
             <version>9.0.90</version>
         </dependency>      
         <dependency>
+            <groupId>io.undertow</groupId>
+            <artifactId>undertow-servlet</artifactId>
+            <version>2.2.33.Final</version>
+        </dependency>
+        <dependency>
             <groupId>org.joget</groupId>
             <artifactId>wflow-jdbc</artifactId>
             <version>${project.version}</version>
@@ -361,7 +366,38 @@
             <version>2.18.0</version>
             <type>jar</type>
         </dependency>
+        <dependency>
+          <groupId>org.apache.ignite</groupId>
+          <artifactId>ignite-core</artifactId>
+          <version>2.16.0</version>
+        </dependency>
+        <dependency>
+          <groupId>org.apache.ignite</groupId>
+          <artifactId>ignite-log4j2</artifactId>
+          <version>2.16.0</version>
+        </dependency>
+        <dependency>
+          <groupId>org.apache.ignite</groupId>
+          <artifactId>ignite-kubernetes</artifactId>
+          <version>2.16.0</version>
+        </dependency>
+        <dependency>
+          <groupId>org.apache.ignite</groupId>
+          <artifactId>ignite-hibernate-ext</artifactId>
+          <version>5.3.0</version>
+        </dependency>
+        <dependency>
+            <groupId>com.github.jsqlparser</groupId>
+            <artifactId>jsqlparser</artifactId>
+            <version>4.9</version>
+        </dependency>
     </dependencies>
+    <repositories>
+        <repository>
+            <id>sakai</id>
+            <url>https://source.sakaiproject.org/maven2/</url>
+        </repository>
+    </repositories>
     <distributionManagement>
         <repository>
             <id>internal</id>
