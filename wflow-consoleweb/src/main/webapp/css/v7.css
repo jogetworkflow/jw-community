@@ -14,7 +14,7 @@ ul, li{
     padding:0;
     list-style: none;
 }
-a {
+.nav-link, a {
     color: #394249;
     text-decoration: none;
     cursor: pointer;

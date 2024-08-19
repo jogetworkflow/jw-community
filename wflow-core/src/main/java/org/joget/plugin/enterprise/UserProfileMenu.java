@@ -24,11 +24,10 @@ import org.joget.commons.util.StringUtil;
 import org.joget.commons.util.TimeZoneUtil;
 import org.joget.directory.dao.UserDao;
 import org.joget.directory.dao.UserMetaDataDao;
+import org.joget.directory.model.mfa.exception.MfaRequiredException;
+import org.joget.directory.model.service.*;
 import org.joget.directory.model.User;
 import org.joget.directory.model.UserMetaData;
-import org.joget.directory.model.service.DirectoryUtil;
-import org.joget.directory.model.service.ExtDirectoryManager;
-import org.joget.directory.model.service.UserSecurity;
 import org.joget.plugin.base.PluginManager;
 import org.joget.workflow.model.service.WorkflowUserManager;
 import org.joget.workflow.util.WorkflowUtil;
@@ -192,13 +191,20 @@ public class UserProfileMenu extends UserviewMenu {
         setProperty("nonWesternDigitLocale", StringUtils.join(nonWesternDigitLocale, ";"));
         setProperty("enableUserLocale", enableUserLocale);
         setProperty("localeStringList", localeStringList);
-        
+
+        StringBuilder sbProfileFooter = new StringBuilder();
+
+        // Get profile footer from DirectoryUtil
+        String profileFormFooter = DirectoryUtil.getProfileFormFooter(user);
+        sbProfileFooter.append(profileFormFooter);
+
         UserSecurity us = DirectoryUtil.getUserSecurity();
         if (us != null) {
             setProperty("policies", us.passwordPolicies());
-            setProperty("userProfileFooter", us.getUserProfileFooter(user));
+            sbProfileFooter.append(us.getUserProfileFooter(user));
         }
-        
+
+        setProperty("userProfileFooter", sbProfileFooter.toString());
         String url = getUrl() + "?action=submit";
         setProperty("actionUrl", url);
     }
@@ -258,7 +264,9 @@ public class UserProfileMenu extends UserviewMenu {
                         if (directoryManager.authenticate(currentUser.getUsername(), getRequestParameterString("oldPassword"))) {
                             authenticated = true;
                         }
-                    } catch (Exception e) { }
+                    } catch (MfaRequiredException e) {
+                        authenticated = true;
+                    } catch (Exception ignored) {}
                 }
             }
         

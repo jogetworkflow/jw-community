@@ -1,0 +1,197 @@
+:root {
+    --primary-accent: #e7ecf4;
+    --primary-accent-hover: #cdd4df;
+    --primary-accent-active: #bbc1cc;
+    --secondary-accent: #e7ecf4;
+    --base-font-color: #404040;
+    --item-subtitle: #005281;
+}
+body {
+    padding: 0;
+    margin: 0;
+    font-family: Arial,sans-serif;
+    font-size: 14px;
+    line-height: normal;
+    color: #535353;
+    background: #fff;
+}
+ol, ul {
+    margin: 0;
+    padding: 0;
+}
+li {
+    list-style-type: none;
+}
+button:before, .btn:before {
+    background: transparent;
+}
+#page-title {
+    width: 100%;
+}
+#page-container {
+    display: flex;
+    width: 100%;
+    height: 100vh;
+}
+#page-nav {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    padding: 1rem 1rem;
+    min-width: 250px;
+    max-width: 350px;
+    font-weight: 600;
+    overflow-y: auto;
+    scrollbar-width: thin;
+    border-right: 1px solid rgb(from var(--base-font-color) r g b / .25);
+}
+#page-nav h1 {
+    font-weight: bold;
+    font-size: 1.8rem;
+    padding: 1rem;
+}
+#page-nav a {
+    display: block;
+    color: var(--base-font-color);
+    text-decoration: none;
+    padding: 1rem 1rem;
+}
+#page-nav li {
+    transition: all 0.15s;
+    border-radius: 10px;
+}
+#page-nav li:hover {
+    background-color: var(--primary-accent-hover);
+}
+.nav-icon {
+    margin-right: 0.5rem
+}
+#main-body {
+    display: flex;
+    flex-direction: column;
+    overflow-y: auto;
+    color: var(--base-font-color);
+    background-color: #fff;
+    flex: 3;
+    max-width: 800px;
+}
+.section {
+    margin: 2rem 2rem 1rem 2rem;
+}
+.section-header {
+    display: flex;
+    margin: 0 0 0.5rem;
+    justify-content: space-between;
+    align-items: center;
+}
+.section-title {
+    font-weight: 600;
+    text-transform: none;
+}
+.section-list-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin: 1rem 0 0 0;
+}
+.section-list-item-title {
+    font-size: 1.2rem;
+}
+.section-list-item-content {
+    line-height: 1.2;
+}
+.content-title {
+    display: block;
+    font-size: 1.2rem;
+    font-weight: 400;
+}
+.content-title > .inline-icon {
+    margin-left: 0.25rem;
+    margin-right: 0.5rem;
+}
+.content-subtitle {
+    display: block;
+    font-size: 0.8rem;
+    color: var(--item-subtitle);
+}
+.section-list-item-actions {
+    display: flex;
+}
+.section-list-item-actions > button {
+    font-size: small;
+    font-weight: 600;
+    text-align: center;
+    max-width: 250px;
+    margin: 0 3px;
+}
+.section-list-item-actions > .btn-icon {
+    width: 2.5rem;
+    height: 2.5rem;
+    border-radius: 50%;
+    padding: 3px 5px;
+    color: var(--base-font-color);
+}
+.button-action-main {
+    border-radius: 10px;
+    background-color: var(--primary-accent);
+    margin: 0;
+    padding: 0.25rem 1rem;
+    cursor: pointer;
+    user-select: none;
+    transition: all 0.15s;
+    box-sizing: border-box;
+    border: 2px solid transparent;
+    text-align: justify;
+    min-width: fit-content;
+    width: 100%;
+    color: var(--base-font-color);
+}
+.button-action-main:hover, .btn-icon:hover {
+    background-color: var(--primary-accent-hover);
+}
+.button-action-main:focus, .btn-icon:focus {
+    outline: none;
+    box-shadow: 0 0 0 .2rem rgb(from var(--base-font-color) r g b / .25);
+}
+.button-action-main:active, .btn-icon:active {
+    background-color: var(--primary-accent-active);
+}
+.button-action-main .section-list-item-content {
+    margin: 0 1rem;
+}
+.button-list-add {
+    display: flex;
+    align-items: center;
+    padding: 1rem;
+}
+.button-list-add .content-title {
+    font-weight: 600;
+}
+.section-actions {
+    display: flex;
+    align-items: center;
+}
+.section-actions > * {
+    margin: 0 5px
+}
+
+/* START Temporary fix to override v7.css styles */
+button:before, .btn:before {
+    background: transparent;
+}
+button:focus, .btn:focus {
+    background-color: var(--primary-accent-active) !important;
+}
+button:focus:not(:active), .btn:focus:not(:active) {
+    background-color: var(--primary-accent) !important;
+}
+.section-list-item-actions .btn-icon:focus:not(:active) {
+    background-color: transparent !important;
+}
+button:hover, .btn:hover {
+    color: var(--base-font-color);
+}
+#nav-title p {
+    margin: 1em 0;
+}
+/* END Temporary fix to override v7.css styles */
