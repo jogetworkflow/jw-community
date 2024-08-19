@@ -5797,7 +5797,7 @@ footer {
 }
 .InformationTileComponent .acSparkline-initialized,
 .InformationTileComponent a:not(.stretched-link),
-.InformationTileComponent button{
+.InformationTileComponent button, .InformationTileComponent .card-footer:has(a){
     position: relative;
     z-index: 20;
 }

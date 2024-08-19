@@ -1760,6 +1760,10 @@ body #ui-datepicker-div {
     #adminBar #environmentName{
         display: none;
     }
+
+    header.navbar, footer {
+        display: none;
+    }
 }
 
 @media screen and (max-width:680px) {
