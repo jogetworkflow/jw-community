@@ -15,6 +15,7 @@ import org.apache.commons.lang.StringUtils;
 import org.joget.apps.app.dao.BuilderDefinitionDao;
 import org.joget.apps.app.dao.UserviewDefinitionDao;
 import org.joget.apps.app.model.AppDefinition;
+import org.joget.apps.app.model.BuilderDefinition;
 import org.joget.apps.app.model.UserviewDefinition;
 import org.joget.apps.app.service.AppService;
 import org.joget.apps.app.service.AppUtil;
@@ -526,10 +527,28 @@ public class UserviewBuilderWebController {
 
         try {
             JSONObject jObj = new JSONObject(tempJson);
-            UserviewTheme theme = (UserviewTheme) pluginManager.getPlugin(jObj.getString("className"));
-            
+            String className = jObj.getString("className");
+            JSONObject properties = jObj.getJSONObject("properties");
+            //check if theme builder is used
+            if (className.startsWith("org.joget.plugin.enterprise.BuilderTheme") && !className.equalsIgnoreCase("org.joget.plugin.enterprise.BuilderTheme")) {
+                int lastIndex = className.lastIndexOf('.');
+                //seperate the className to get theme builder ID
+                if (lastIndex != -1) {
+                    String id = className.substring(lastIndex + 1);
+                    className = className.substring(0, lastIndex);
+                    
+                    BuilderDefinitionDao dao = (BuilderDefinitionDao) AppUtil.getApplicationContext().getBean("builderDefinitionDao");
+                    BuilderDefinition def = dao.loadById(id, appDef);
+
+                    if (def != null) {
+                        properties = new JSONObject(def.getJson());
+                        properties = properties.getJSONObject("theme").getJSONObject("properties");
+                    }
+                }
+            }
+            UserviewTheme theme = (UserviewTheme) pluginManager.getPlugin(className);
             if (theme != null && theme instanceof UserviewV5Theme && theme instanceof SupportBuilderColorConfig) {
-                theme.setProperties(PropertyUtil.getProperties(jObj.getJSONObject("properties")));
+                theme.setProperties(PropertyUtil.getProperties(properties));
             
                 Map requestParameters = userviewService.convertRequestParamMap(request.getParameterMap());
                 requestParameters.put("contextPath", request.getContextPath());
