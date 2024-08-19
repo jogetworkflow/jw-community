@@ -4,6 +4,7 @@ import io.undertow.servlet.handlers.ServletRequestContext;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
+import java.lang.reflect.Field;
 import java.security.Principal;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -25,6 +26,7 @@ import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 import javax.servlet.ServletInputStream;
 import javax.servlet.ServletRequest;
+import javax.servlet.ServletRequestWrapper;
 import javax.servlet.ServletResponse;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
@@ -32,6 +34,7 @@ import javax.servlet.http.HttpServletRequestWrapper;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import javax.servlet.http.Part;
+import org.apache.commons.lang3.reflect.MethodUtils;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 
@@ -43,7 +46,8 @@ public final class PluginThread extends Thread {
     private final String profile;
     private HttpServletRequest request;
     private HttpServletResponse response;
-    private ServletRequestContext servletRequestContext;
+    private ServletRequestContext servletRequestContext; // for jboss eap and wildfly
+    private Object internalRequest; // for websphere liberty IRequest https://github.com/OpenLiberty/open-liberty/blob/gm-24.0.0.7/dev/com.ibm.ws.webcontainer/src/com/ibm/websphere/servlet/request/IRequest.java
     
     /**
      * Default timeout for async request in milliseconds, 0 to disable.
@@ -77,6 +81,24 @@ public final class PluginThread extends Thread {
             if (servletContextClassName.contains("catalina")) {
                 // for tomcat
                 request = new HttpServletRequestWrapper(new PluginThreadHttpRequest(origRequest));
+            } else if (servletContextClassName.contains("ibm.ws.webcontainer")) {
+                // for websphere liberty
+                try {
+                    ServletRequest wrappedRequest = getWrappedRequest(origRequest);
+                    
+                    // clone request using clone() method (https://github.com/OpenLiberty/open-liberty/blob/gm-24.0.0.7/dev/com.ibm.ws.webcontainer/src/com/ibm/ws/webcontainer/srt/SRTServletRequest.java#L1512)
+                    // requires commons-lang3 upgrade to 3.15.0 for bug in version 3.12.0 https://issues.apache.org/jira/browse/LANG-1694
+                    HttpServletRequest clonedRequest = (HttpServletRequest)MethodUtils.invokeMethod(wrappedRequest, true, "clone");
+                    request = new HttpServletRequestWrapper(clonedRequest);
+
+                    // obtain internal _request for later initialization (https://github.com/OpenLiberty/open-liberty/blob/gm-24.0.0.7/dev/com.ibm.ws.webcontainer/src/com/ibm/ws/webcontainer/srt/SRTServletRequest.java#L180)
+                    Field field = wrappedRequest.getClass().getSuperclass().getSuperclass().getDeclaredField("_request");
+                    field.setAccessible(true);
+                    internalRequest = field.get(wrappedRequest);
+                } catch (Exception ex) {
+                    LogUtil.warn(getClass().getName(), ex.toString());
+                }
+                
             } else {
                 // for other application servers
                 request = new HttpServletRequestWrapper(origRequest);
@@ -101,8 +123,19 @@ public final class PluginThread extends Thread {
         
         if (request != null) {
             RequestContextHolder.setRequestAttributes(new ServletRequestAttributes(request, response));
+            
+            ServletRequest wrappedRequest = getWrappedRequest(request);
+            if (internalRequest != null && wrappedRequest.getClass().getName().contains("SRTServletRequest")) {
+                // for websphere liberty, initialize request using initForNextRequest (https://github.com/OpenLiberty/open-liberty/blob/gm-24.0.0.7/dev/com.ibm.ws.webcontainer/src/com/ibm/ws/webcontainer/srt/SRTServletRequest.java#L320)
+                try {
+                    MethodUtils.invokeMethod(wrappedRequest, true, "initForNextRequest", new Object[] { internalRequest });
+                } catch (Exception ex) {
+                    LogUtil.warn(getClass().getName(), ex.toString());
+                }
+            }
         }
         if (servletRequestContext != null) {
+            // for jboss eap and wildfly
             ServletRequestContext.setCurrentRequestContext(servletRequestContext);
         }
         try {
@@ -116,6 +149,18 @@ public final class PluginThread extends Thread {
                 ServletRequestContext.clearCurrentServletAttachments();
             }
         }        
+    }
+
+    /**
+     * Return the original request within servlet request wrappers.
+     * @param req
+     * @return 
+     */
+    protected ServletRequest getWrappedRequest(ServletRequest req) {
+        while (req instanceof ServletRequestWrapper) {
+            req = ((ServletRequestWrapper)req).getRequest();
+        }
+        return req;
     }
     
     /**
@@ -148,9 +193,11 @@ public final class PluginThread extends Thread {
         }
         if (request != null) {
             String servletContextClassName = request.getServletContext().getClass().getName();
-            if (!servletContextClassName.contains("catalina") && !servletContextClassName.contains("undertow")) {
+            if (!servletContextClassName.contains("catalina") // tomcat
+                    && !servletContextClassName.contains("undertow") // jboss eap and wildfly
+                    && !servletContextClassName.contains("ibm.ws.webcontainer")) { // websphere liberty
                 // unsupported app server, disable async
-                return 0L;
+                return 0L; 
             }
         } else {
             // request not available, disable async
