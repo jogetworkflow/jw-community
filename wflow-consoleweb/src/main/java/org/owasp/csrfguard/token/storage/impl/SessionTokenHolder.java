@@ -22,12 +22,18 @@ public class SessionTokenHolder implements TokenHolder {
     @Override
     public String createMasterTokenIfAbsent(final String sessionKey, final Supplier<String> valueSupplier) {
         Token token = getToken(sessionKey);
+        if (token.getMasterToken() == null) {
+            token.setMasterToken(valueSupplier.get());
+        }
         return token.getMasterToken();
     }
 
     @Override
     public String createPageTokenIfAbsent(final String sessionKey, final String resourceUri, final Supplier<String> valueSupplier) {
         final Token token = getToken(sessionKey);
+        if (token.getMasterToken() == null) {
+            token.setMasterToken(valueSupplier.get());
+        }
         return token.setPageTokenIfAbsent(resourceUri, valueSupplier);
     }
 
@@ -35,7 +41,7 @@ public class SessionTokenHolder implements TokenHolder {
     public Token getToken(final String sessionKey) {
         HttpServletRequest request = WorkflowUtil.getHttpServletRequest();
         if (request != null) {
-            HttpSession session = request.getSession(false);
+            HttpSession session = request.getSession(true);
             if (session != null) {
                 Token token = (Token) session.getAttribute(CSRF_TOKEN_VALUE);
                 
