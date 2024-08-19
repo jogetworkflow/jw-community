@@ -67,6 +67,7 @@ import static org.joget.apps.app.service.AppDevUtil.PROPERTY_GIT_PASSWORD;
 import static org.joget.apps.app.service.AppDevUtil.PROPERTY_GIT_URI;
 import static org.joget.apps.app.service.AppDevUtil.PROPERTY_GIT_USERNAME;
 import static org.joget.apps.app.service.AppDevUtil.getAppGitDirectory;
+import static org.joget.apps.app.service.AppDevUtil.getGitBranchName;
 import org.joget.apps.app.service.AppOverviewUtil;
 import org.joget.apps.app.service.AppResourceUtil;
 import org.joget.apps.app.service.AppService;
@@ -3762,7 +3763,8 @@ public class ConsoleWebController {
                 if (!AppDevUtil.isGitDisabled()) {
                 // get app versions from Git
                     try {                                              
-                        AppDefinition appDef = appDefList.iterator().next();                         
+                        AppDefinition appDef = appDefList.iterator().next();  
+                        String gitBranch = getGitBranchName(appDef);
                         String projectDirName = getAppGitDirectory(appDef);
                         File projectDir = AppDevUtil.dirSetup(baseDir, projectDirName);
                         Git localGit = AppDevUtil.gitInit(projectDir);
@@ -3772,13 +3774,15 @@ public class ConsoleWebController {
                         String gitUsername = prop.getProperty(PROPERTY_GIT_USERNAME);
                         String gitPassword = prop.getProperty(PROPERTY_GIT_PASSWORD);
                                                             
-                        AppDevUtil.gitFetchMerge(projectDir,localGit, gitUri, gitUsername,gitPassword, MergeStrategy.RECURSIVE, appDef);
+                        AppDevUtil.gitAddRemote(localGit, gitUri);
+                        AppDevUtil.gitPull(projectDir, localGit, gitBranch, gitUri, gitUsername, gitPassword, MergeStrategy.RECURSIVE, appDef);
                         List<String> branches = AppDevUtil.getAppGitBranches(appDef);
                         for (String branch: branches) {                     
                             int versionIndex = branch.lastIndexOf("_");
                             String newVersion = (versionIndex != -1) ? branch.substring(versionIndex + 1) : null;     
                             if (newVersion != null && !appDefMap.containsKey(Long.valueOf(newVersion)) && newVersion.equals(version)) {
                                 AppDefinition newAppDef = appService.createNewAppDefinitionVersion(appId, appDefinitionDao.getLatestVersion(appId));
+                                AppDevUtil.gitPushLocal(appDef, localGit, projectDir);
                             }                        
                         }            
                     } catch(Exception e) {
