@@ -10841,9 +10841,9 @@ PropertyEditor.Type.ColorScheme.prototype = {
         }
         //Deep copy schemeOptions, so any modification(s) will not affect its original value
         //Add the value into the colorscheme option
-        if (this.value !== ""){
+        if (this.properties.value !== ""){
             schemeOptions =  JSON.parse(JSON.stringify(schemeOptions))
-            schemeOptions.unshift(this.value);
+            schemeOptions.unshift(this.properties.value);
         }
         $.each(schemeOptions, function(i, option) {
             var selected = "";
