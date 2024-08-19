@@ -12,6 +12,8 @@
     width: 225px;
     margin-left: auto;
     border-radius: 5px;
+    direction: ltr;
+    text-align: left;
 }
 
 .CodeMirror-advanced-dialog input {
@@ -21,6 +23,8 @@
     width: 80%;
     color: inherit;
     font-family: monospace;
+    float: left !important;
+    text-align: left !important;
 }
 
 .CodeMirror-advanced-dialog button {
