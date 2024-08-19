@@ -1451,6 +1451,18 @@ body.rtl .label-top.subform-cell > label.label > i{
     .largeFontSize .label-left.subform-cell > label.label > i{
         bottom: -44px;
     }
+    body.rtl.mediumFontSize .form-cell > label.label > i,
+    body.rtl.mediumFontSize .subform-cell > label.label > i,
+    body.rtl.mediumFontSize .label-left.form-cell > label.label > i,
+    body.rtl.mediumFontSize .label-left.subform-cell > label.label > i{
+        bottom: -39.5px;
+    }
+    body.rtl.largeFontSize .form-cell > label.label > i,
+    body.rtl.largeFontSize .subform-cell > label.label > i,
+    body.rtl.largeFontSize .label-left.form-cell > label.label > i,
+    body.rtl.largeFontSize .label-left.subform-cell > label.label > i{
+        bottom: -44px;
+    }
 }
 body.rtl .form-cell > label.label,
 body.rtl .subform-cell > label.label{
