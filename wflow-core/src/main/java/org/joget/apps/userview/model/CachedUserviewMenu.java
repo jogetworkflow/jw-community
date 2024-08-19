@@ -524,7 +524,7 @@ public class CachedUserviewMenu extends UserviewMenu {
                             }
                             return content;
                         }
-
+                        
                         // remove existing cached content
                         menuAsyncCache.remove(cacheKey);
 
@@ -540,7 +540,10 @@ public class CachedUserviewMenu extends UserviewMenu {
                             String newContent = delegate.render();
                             
                             // add cache timestamp to content
-                            newContent += getAsyncTimestampContent();
+                            String currentContent = (String)menuAsyncCache.get(cacheKey);
+                            if (loadingInProgressContent.equals(currentContent)) {
+                                newContent += getAsyncTimestampContent();
+                            }
                             UserviewCache.setCachedContent(delegate, UserviewCache.CACHE_TYPE_PAGE, newContent);
 
                             // store in cache
