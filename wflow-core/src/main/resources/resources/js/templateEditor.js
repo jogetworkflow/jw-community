@@ -39,7 +39,7 @@
             const container = $("#" + thisObj.id).closest('.template_editor_container');
 
             function handleChange(event){
-                var scroll = $(container).closest(".property-editor-property-container").scrollTop()
+                var scroll = $(container).closest(".property-editor-property-container").scrollTop();
 
                 //Doesnt have scrollbar
                 if (!($(container).closest(".property-editor-property-container").get(0).scrollHeight > $(container).closest(".property-editor-property-container").get(0).clientHeight)){
@@ -75,48 +75,48 @@
                 }
             }
 
-            var parent = $(container).parent().parent()
+            var parent = $(container).parent().parent();
 
             //Get the siblings
-            var siblings = $(parent).siblings()
+            var siblings = $(parent).siblings();
             //Take only the repeater
             var repeater = siblings.filter('[property-name="repeat"]').first();
             //Exclude repeater, and checkbox
             var standardSiblings = siblings.not('[property-name="repeat"]').not('[property-name="icon"]').filter('[data-control_field="template"]');
             //Icon
-            var icon = siblings.filter('[property-name="icon"]')
+            var icon = siblings.filter('[property-name="icon"]');
             
-            repeater.off("focusin focusout", ".property-input .repeater-rows-container .repeater-row .inputs .inputs-container div[class^=\"property_container\"]:not(.hidden)[property-name!=\"icon\"] input", handleChange).on("focusin focusout", ".property-input .repeater-rows-container .repeater-row .inputs .inputs-container div[class^=\"property_container\"]:not(.hidden)[property-name!=\"icon\"] input", handleChange)
+            repeater.off("focusin focusout", ".property-input .repeater-rows-container .repeater-row .inputs .inputs-container div[class^=\"property_container\"]:not(.hidden)[property-name!=\"icon\"] input", handleChange).on("focusin focusout", ".property-input .repeater-rows-container .repeater-row .inputs .inputs-container div[class^=\"property_container\"]:not(.hidden)[property-name!=\"icon\"] input", handleChange);
             
             repeater.off("click.handleChange", ".property-input .repeater-rows-container .repeater-row .inputs .inputs-container div[class^=\"property_container\"]:not(.hidden)[property-name=\"icon\"] .la.la-check", handleChange).on("click.handleChange", ".property-input .repeater-rows-container .repeater-row .inputs .inputs-container div[class^=\"property_container\"]:not(.hidden)[property-name=\"icon\"] .la.la-check", function(event){
-                $(this).data('colorValue', $(this).siblings('.color_value').css('display'))
+                $(this).data('colorValue', $(this).siblings('.color_value').css('display'));
                 setTimeout(function() {
                     handleChange.call(this, event);
                 }.bind(this), 1000);
-            })
+            });
 
             standardSiblings.find(".property-input input").off("focusin focusout", handleChange).on("focusin focusout", handleChange)
 
             icon.off("click.handleChange", ".la.la-check").on("click.handleChange", ".la.la-check", function(event){
-                $(this).data('colorValue', $(this).siblings('.color_value').css('display'))
+                $(this).data('colorValue', $(this).siblings('.color_value').css('display'));
                 setTimeout(function() {
                     handleChange.call(this, event);
                 }.bind(this), 1000);
             })
-        })
+        });
 
         $(container).find(".reloadtemplate").off("click");
         $(container).find(".reloadtemplate").on("click", function() {
             $(container).find(".sample_preview").html("");
-            var parent = $(container).parent().parent()
+            var parent = $(container).parent().parent();
            
             var dataControlField = $("#"+thisObj.id).closest(".property-input").parent().attr("property-name"); 
             
             var template = thisObj.codeeditor.getSession().getValue();
-            var dict = {}   
-            var arr = []
+            var dict = {};
+            var arr = [];
             //Get the siblings
-            var siblings = $(parent).siblings()
+            var siblings = $(parent).siblings();
             //Take only the repeater
             var repeater = siblings.filter('[property-name="repeat"]').first();
             //Exclude repeater, and checkbox
@@ -138,12 +138,12 @@
                 })
             
                 arr.push(dict);
-                dict = {}
+                dict = {};
             })
 
             template = thisObj.fillLoopVariables(template, arr, "");
 
-            dict = {}
+            dict = {};
             standardSiblings.find('.property-input input').each(function(){
                 var propertyName = $(this).closest('div[id^="property_"][data-control_field="' + dataControlField + '"]').attr('property-name');
                 if (propertyName === "icon"){
@@ -153,7 +153,7 @@
                     dict[propertyName] = $(this).val();
 
                     if (propertyName === "direction"){
-                        dict[propertyName] = dict[propertyName].toString() + "deg"    
+                        dict[propertyName] = dict[propertyName].toString() + "deg";
                     }
                 }
             })
