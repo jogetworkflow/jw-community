@@ -4,6 +4,9 @@
 #form-canvas .label {
     color: #535353;
 }
+body.rtl #form-canvas .form-cell label.label{
+    margin-right:0rem;
+}
 #form-canvas {
     font-size: 13px;
     display: block;
