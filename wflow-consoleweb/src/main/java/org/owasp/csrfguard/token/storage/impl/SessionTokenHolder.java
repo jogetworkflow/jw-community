@@ -41,7 +41,7 @@ public class SessionTokenHolder implements TokenHolder {
     public Token getToken(final String sessionKey) {
         HttpServletRequest request = WorkflowUtil.getHttpServletRequest();
         if (request != null) {
-            HttpSession session = request.getSession(true);
+            HttpSession session = request.getSession(false);
             if (session != null) {
                 Token token = (Token) session.getAttribute(CSRF_TOKEN_VALUE);
                 
