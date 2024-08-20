@@ -250,17 +250,41 @@
 
         function validateField(){
             var valid = true;
+            var originalAppId = UI.userview_app_id;
             var alertString = "";
             if($("[name=password]").val() != $("[name=confirmPassword]").val()){
                 alertString += '<ui:msgEscJS key="console.directory.user.error.label.passwordNotMatch"/>';
                 valid = false;
             }
 
-            if(valid){
-                $("#createUser").submit();
-            }else{
-                alert(alertString);
-            }
+            UI.validateEmail('#email', true, function(isValid) {
+                if (!isValid) {
+                    if (alertString != "") {
+                        alertString += '\n';
+                    }
+                    try {
+                        if (UI.userview_app_id === '') {
+                            UI.userview_app_id = 'appcenter';
+                        }
+
+                        UI.loadMsg(['app.edm.message.invalidEmailFormat'], function(messages) {
+                            alert(messages['app.edm.message.invalidEmailFormat']);
+                        });
+                        valid = false;
+                        UI.unblockUI();
+
+                    } finally {
+                        UI.userview_app_id = originalAppId;
+                    }
+                }
+
+                // Submit the form if everything is valid
+                if (valid) {
+                    $("#createUser").submit();
+                } else if(alertString !== '') {
+                    alert(alertString);
+                }
+            });
         }
 
         function loadDepartmentAndGradeOption(){
