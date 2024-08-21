@@ -32,6 +32,10 @@
         margin-right: 5px;
         margin-top: 2px;
     }
+    .rtl #plugin-container>article>div.card-footer>div.card-meta.card-meta--views>i {
+        margin-left: 5px;
+        margin-right: auto;
+    }
     #main-body-header .header-title {
         font-size: 21px;
         text-transform: none;
@@ -49,12 +53,22 @@
         margin-right: 60px;
         font-weight: 500;
     }
+    .rtl #selectContainer {
+        float: left;
+        margin-left: 60px;
+        margin-right: auto;
+    }
     .loginMarketplace {
         color: #fff;
         font-size: 30px;
         display: inline-block;
         float: right;
         margin-right: 30px;
+    }
+    .rtl .loginMarketplace {
+        float: left;
+        margin-left: 30px;
+        margin-right: auto;
     }
     .loginMarketplace span{
         font-size: 18px;
@@ -69,14 +83,23 @@
     .loginMarketplace + #selectContainer{
         margin-right: 10px;
     }
+    .rtl .loginMarketplace + #selectContainer{
+        margin-left: 10px;
+        margin-right: auto;
+    }
     #searchPlugin {
-        width: 400px;
+        width: 250px;
         border-radius: 0px;
         height: 35px;
         background-color: var(--theme-primary-color-3, #fff);
         float: right;
         margin-right: 10px;
         font-weight: 500;
+    }
+    .rtl #searchPlugin {
+        float: left;
+        margin-left: 10px;
+        margin-right: auto;
     }
     body .page-header {
         padding: 1px 50px 0px;
@@ -123,6 +146,9 @@
     #plugin-container.installed > *:not(.installed){
         display: none;
     }
+    #plugin-container .card.search_hidden{
+        display: none !important;
+    }
     #plugin-container>article>div.card-header>a:nth-child(1) {
         padding: 0;
     }
@@ -135,6 +161,7 @@
         transition: 0.15s ease-in;
         margin-right: 20px;
         width: calc(25% - 20px);
+        min-width: 240px;
         margin-bottom: 20px;
         border: 1px solid var(--theme-border-color-1, #F1F1F4);
         box-shadow: 0px 3px 4px 0px rgba(0, 0, 0, 0.03);
@@ -161,7 +188,6 @@
         font-weight: 600;
         font-size: 16px;
         line-height: 1.35;
-        padding-right: 1rem;
         text-decoration: none;
         color: var(--theme-label-color-2, #071437);
         will-change: transform;
