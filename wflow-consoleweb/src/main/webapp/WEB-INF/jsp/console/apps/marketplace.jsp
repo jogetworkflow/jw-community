@@ -349,7 +349,8 @@
                         parent.CustomBuilder.Builder.reloadPaletteOrProperties(selectedValue);
                         var app = JSON.parse(data);
                         if (app.pluginName) {
-                            $("[data-id='installplugin_" + id + "']").closest(".card").removeClass("available").removeClass("update").addClass("installed");
+                            $("[data-id='installplugin_" + id + "']").closest(".card").removeClass("available").removeClass("update").addClass("installed")
+                                    .find(".currentVersion").remove();
                             updateTabs();
                             alert('<ui:msgEscJS key="appCenter.label.appInstalled"/>');
                         } else {
@@ -508,7 +509,7 @@
                                     </figure>
                                     <div class="card-header">
                                         <div class="meta">
-                                            <a href="`+card.url+`" target="_blank"><h3>` + card.name + `</h3> <span class="version"><i class="fas fa-code-branch"></i> `+card.version+ (card.update?(' ('+card.installed+')'):'') + `</span></a>
+                                            <a href="`+card.url+`" target="_blank"><h3>` + card.name + `</h3> <span class="version"><i class="fas fa-code-branch"></i> `+card.version+ (card.update?(' <span class="currentVersion">('+card.installed+')</span>'):'') + `</span></a>
                                             <p class="desc">` + removeHtml(card.brief) + `</p>
                                         </div>
                                         <button data-id="installplugin_` + card.id + `" onclick="installPlugin('` + card.id + `')" class="icon-button">
