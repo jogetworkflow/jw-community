@@ -2203,7 +2203,7 @@ body[builder-theme='dark'] #builders-seperator > span {
     border-left: 1px solid var(--theme-border-color-1);
     position: absolute;
 }
-@media screen and (max-width:1285px) {
+@media screen and (max-width:1284px) {
     body[builder-theme='dark'] #builders > div:nth-child(n+4){border-top:1px solid var(--theme-border-color-1); padding-top: 20px !important;}
 }
 @media screen and (min-width:1695px) {
