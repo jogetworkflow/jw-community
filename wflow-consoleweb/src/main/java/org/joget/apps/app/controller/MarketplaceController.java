@@ -196,6 +196,7 @@ public class MarketplaceController {
             Setting marketplaceAuth = new Setting();
             marketplaceAuth.setProperty("marketplaceAuth");
             marketplaceAuth.setValue("");
+            model.addAttribute("isAnonymous", "true");
 
             setupManager.saveSetting(marketplaceAuth);
         } else if (username != null && password != null) {
