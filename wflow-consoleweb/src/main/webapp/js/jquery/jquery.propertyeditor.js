@@ -7667,19 +7667,19 @@ PropertyEditor.Type.Grid.prototype = {
         
         var div = $("#" + this.id + '_input');
         if ($(div).find(".switch_button").length === 0) {
-            $(div).append('<a class="switch_button" style="display: block; position: absolute; top: -24px; right: 25px; font-size: 125%;" title="'+get_peditor_msg('peditor.switchCsv')+'"><i class="las la-file-csv"></i></a>');
+            $(div).append('<a class="switch_button" title="'+get_peditor_msg('peditor.switchCsv')+'"><i class="las la-file-csv"></i></a>');
             
             $(div).find(".switch_button").off('click')
                 .on('click', function(){
-                    $(div).find("> *").hide();
-                    $(div).append('<div class="csv_container"><div class="property-input-error csv_error_message" style="display:none">'+get_peditor_msg('peditor.invalidCsvFormat')+'</div><textarea id="' + thisObj.id + '_textarea" class="csv_field" style="width:100%;line-height:1.8;margin-bottom:5px;"></textarea><p>'+get_peditor_msg('peditor.switchCsvMsg')+'<br/><button class="switchUpdate btn btn-sm btn-secondary">'+get_peditor_msg('peditor.update')+'</button> <button class="switchCancel btn btn-sm btn-text">'+get_peditor_msg('peditor.cancel')+'</button></p></div>');
+                    $(div).find("> *").addClass('ui-screen-hidden');
+                    $(div).append('<div class="csv_container"><div class="property-input-error csv_error_message" style="display:none">'+get_peditor_msg('peditor.invalidCsvFormat')+'</div><textarea id="' + thisObj.id + '_textarea" class="csv_field" style="width:100%;line-height:1.8;margin-bottom:5px;"></textarea><p><span class="info-text">'+get_peditor_msg('peditor.switchCsvMsg')+'</span><br/><button class="switchUpdate btn btn-sm btn-secondary">'+get_peditor_msg('peditor.update')+'</button> <button class="switchCancel btn btn-sm btn-outline-secondary">'+get_peditor_msg('peditor.cancel')+'</button></p></div>');
                     $(div).find('.csv_field').val(thisObj.convertToCsv(thisObj.getData()));
                     
                     //cancel button
                     $(div).find('.switchCancel').off('click')
                         .on('click', function(){
                             $(div).find(".csv_container").remove();
-                            $(div).find("> *").show();
+                            $(div).find("> *").removeClass('ui-screen-hidden');
                             return false;
                         });
                         

@@ -2602,6 +2602,30 @@ i.fa-sort, i.fa-sort-asc, i.fa-sort-desc{
     top: -24px;
     right: 0;
 }
+.rtl .editor-panel-mode.narrow:not(.wider) .grid_sorting_container {
+    left: 0;
+    right: unset;
+}
+.switch_button{
+    display: block;
+    position: absolute;
+    left: -24px;
+    font-size: 125%;
+    top: 4px;
+}
+.rtl .switch_button{
+    left:unset;
+    right: -24px;
+}
+.editor-panel-mode.narrow .switch_button{
+    right:25px;
+    left: unset;
+    top: -24px; 
+}
+.rtl .editor-panel-mode.narrow .switch_button{
+    left:25px;
+    right: unset !important;
+}
 .grid_sorting_config {
     font-size: 16px;
     cursor: pointer;

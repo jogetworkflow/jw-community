@@ -3043,3 +3043,6 @@ body[builder-theme] .api-container .plugin-label .errorMsg {
 body[builder-theme] .api-container .element-operations .operation {
     font-size: 14px;
 }
+body[builder-theme] .info-text{
+    color: var(--theme-input-color-1);
+}
