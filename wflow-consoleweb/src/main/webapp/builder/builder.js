@@ -479,6 +479,13 @@
             $("#preview-btn").hide();
         }
         
+        //check touch device
+        if('ontouchstart' in document.documentElement) {
+            $("body").addClass("touch_screen");
+        } else {
+            $("body").removeClass("touch_screen");
+        }
+        
         $("body").addClass("property-editor-right-panel");
         
         //use for old builder implementation like api builder & report builder
@@ -7631,8 +7638,11 @@ _CustomBuilder.Builder = {
         var self = CustomBuilder.Builder;
         
         var reload = self.reloadPropertiesCache(pluginCategory);
-
-        if (!reload) {
+        
+        //reload permission
+        if (pluginCategory.indexOf("Permission") !== -1) {
+            CustomBuilder.initPermissionList(CustomBuilder.config.advanced_tools.permission.permission_plugin);
+        } else if (!reload) {
             CustomBuilder.callback(CustomBuilder.config.builder.callbacks["marketplaceReloadPalette"]);
         }
     },

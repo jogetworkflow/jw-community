@@ -78,7 +78,8 @@
                 "listViewerViewBeforeClosed" : "ProcessBuilder.listViewerViewBeforeClosed",
                 "saveEditProperties" : "ProcessBuilder.saveEditProperties",
                 "builderSaved" : "ProcessBuilder.builderSaved",
-                "getOverviewPathElementSelector" : "ProcessBuilder.getOverviewPathElementSelector"
+                "getOverviewPathElementSelector" : "ProcessBuilder.getOverviewPathElementSelector",
+                "marketplaceReloadPalette" : "ProcessBuilder.marketplaceReloadPalette"
             },
             "properties" : {
                 "packageVersion" : "${packageVersion}"
