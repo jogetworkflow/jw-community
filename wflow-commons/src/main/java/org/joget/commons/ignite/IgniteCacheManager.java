@@ -1,5 +1,6 @@
 package org.joget.commons.ignite;
 
+import java.io.File;
 import java.util.Arrays;
 import java.util.Collection;
 import org.apache.ignite.Ignite;
@@ -65,7 +66,7 @@ public class IgniteCacheManager {
     public static void initIgniteCache(IgniteConfiguration igniteCfg) {
         if (!HostManager.isVirtualHostEnabled() && IgniteCacheManager.isIgniteCacheEnabled()) {
             // set ignite work directory
-            String workDirectory = SetupManager.getBaseDirectory() + "/ignite/work";
+            String workDirectory = new File(new File(SetupManager.getBaseDirectory()).getAbsolutePath(), "/ignite/work").getAbsolutePath();
             igniteCfg.setWorkDirectory(workDirectory);
             
             // detect environment
