@@ -379,7 +379,7 @@ public class SessionFactoryOptionsBuilder implements SessionFactoryOptions {
 		this.omitJoinOfSuperclassTablesEnabled = cfgService.getSetting( OMIT_JOIN_OF_SUPERCLASS_TABLES, BOOLEAN, true );
 
 		final RegionFactory regionFactory = serviceRegistry.getService( RegionFactory.class );
-		if ( !NoCachingRegionFactory.class.isInstance( regionFactory ) && IgniteCacheManager.isStarted() ) { // CUSTOM: check for Ignite cache availability
+                if ( !NoCachingRegionFactory.class.isInstance( regionFactory ) && IgniteCacheManager.isStarted() ) { // CUSTOM: check for Ignite cache availability
 			this.secondLevelCacheEnabled = cfgService.getSetting( USE_SECOND_LEVEL_CACHE, BOOLEAN, true );
 			this.queryCacheEnabled = cfgService.getSetting( USE_QUERY_CACHE, BOOLEAN, false );
 			this.timestampsCacheFactory = strategySelector.resolveDefaultableStrategy(
