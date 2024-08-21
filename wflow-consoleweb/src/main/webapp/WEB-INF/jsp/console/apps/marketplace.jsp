@@ -322,12 +322,11 @@
 <script>
     var buildeType = '<c:out value="${type}" escapeXml="true" />';
     var pluginType = '<c:out value="${pluginType}" escapeXml="true" />';
-    $(document).keypress(function (event) {
-        if (event.which === 13) {
-            searchPlugin();
-        }
-    });
     
+    jQuery.expr[':'].Contains = function(a,i,m){ 
+        return (a.textContent || a.innerText || "").toUpperCase().indexOf(m[3].toUpperCase())>=0; 
+    };
+
     /*
      * Load login page
      */
@@ -375,13 +374,7 @@
 
     //show plugins based on selected category
     function selectedCategory() {
-        searchPlugin();
-    }
-
-    //search plugin based on the search value
-    var searchPlugin = function () {
         $('#plugin-container').addClass('ajaxloading');
-        var searhText = $('#searchPlugin').val();
         var selected = $('#pluginCategory').find(':selected');
         var selectedClasses = $(selected).val();
         var selectedValue = $(selected).text();
@@ -390,7 +383,7 @@
         if (selectedClasses !== "all" && selectedClasses !== "undefined") {
             setTitle(selectedValue + ' ');
             
-            getPluginList(searhText, [selectedValue], [selectedClasses]);
+            getPluginList([selectedValue], [selectedClasses]);
         } else {
             setTitle(getBuilderLabel());
             
@@ -403,8 +396,23 @@
                 }
             });
             
-            getPluginList(searhText, searchCategories, searchClasses);
+            getPluginList(searchCategories, searchClasses);
         }
+    }
+
+    //search plugin based on the search value
+    var searchPlugin = function () {
+        var searhText = $('#searchPlugin').val();
+        
+        if(searhText !== "") { 
+            $("#plugin-container").find(".card .meta:not(:Contains(" + searhText + "))").closest(".card").addClass("search_hidden");
+            $("#plugin-container").find(".card .meta:Contains(" + searhText + ")").closest(".card").removeClass("search_hidden");
+        } else { 
+            $("#plugin-container").find(".card").removeClass("search_hidden");
+        }
+        
+        //update tabs
+        updateTabs();
     };
 
     // get builder label from parent builder
@@ -475,13 +483,10 @@
         }
     };
 
-    //render list of plugins in card based on category and search value
-    var getPluginList = function (searhText, categories, classes) {
+    //render list of plugins in card based on category
+    var getPluginList = function (categories, classes) {
         var url = "${pageContext.request.contextPath}/web/json/marketplace/plugin/list";
         var data = {};
-        if (searhText !== '') {
-            data['search'] = searhText;
-        }
         
         if (categories !== null && categories !== undefined && categories.length > 0) {
             data['categories'] = categories.join(';');
@@ -524,8 +529,7 @@
                     });
                 }
                 
-                //update tabs
-                updateTabs();
+                searchPlugin();
                     
                 $('#plugin-container').removeClass('ajaxloading');
             },
@@ -540,32 +544,44 @@
         $('#plugin-container .no_result').remove();
                   
         //available
-        if ($("#plugin-container .card.available").length > 0) {
+        if ($("#plugin-container .card.available:not(.search_hidden)").length > 0) {
             $("#plugins-tabs [ref='available']").removeAttr("disabled");
         } else {
             $('#plugin-container').append('<p class="no_result available"><ui:msgEscJS key="appCenter.link.marketplace.noResult"/></p>');
         }
-        $("#plugins-tabs [ref='available'] .jgt-badge").text($("#plugin-container .card.available").length);
+        $("#plugins-tabs [ref='available'] .jgt-badge").text($("#plugin-container .card.available:not(.search_hidden)").length);
         
         //update
-        if ($("#plugin-container .card.update").length > 0) {
+        if ($("#plugin-container .card.update:not(.search_hidden)").length > 0) {
             $("#plugins-tabs [ref='update']").removeAttr("disabled");
         } else {
             $('#plugin-container').append('<p class="no_result update"><ui:msgEscJS key="appCenter.link.marketplace.noResult"/></p>');
         }
-        $("#plugins-tabs [ref='update'] .jgt-badge").text($("#plugin-container .card.update").length);
+        $("#plugins-tabs [ref='update'] .jgt-badge").text($("#plugin-container .card.update:visible").length);
         
         //installed
-        if ($("#plugin-container .card.installed").length > 0) {
+        if ($("#plugin-container .card.installed:not(.search_hidden)").length > 0) {
             $("#plugins-tabs [ref='installed']").removeAttr("disabled");
         } else {
             $('#plugin-container').append('<p class="no_result installed"><ui:msgEscJS key="appCenter.link.marketplace.noResult"/></p>');
         }
-        $("#plugins-tabs [ref='installed'] .jgt-badge").text($("#plugin-container .card.installed").length);
+        $("#plugins-tabs [ref='installed'] .jgt-badge").text($("#plugin-container .card.installed:not(.search_hidden)").length);
     }
     $(document).ready(function () {
         $('#plugin-container').addClass('ajaxloading');
         getPluginCategories(pluginType);
+        
+        var timer;
+        $("#searchPlugin").off("change").off("keyup").on("change",function () { 
+            searchPlugin();
+            return false; 
+        }).on("keyup", function () {
+            if (timer) clearTimeout(timer);
+            var $this = $(this);
+            timer = setTimeout(function() {
+                $this.change(); 
+            }, 50);
+        });
         
         $(".jgt-tabs a").off("click").on("click", function(){
             $(".jgt-tabs li").removeClass("selected");
