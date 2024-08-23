@@ -83,4 +83,13 @@ public abstract class AbstractIdentityProviderPlugin extends ExtDefaultPlugin im
     public String getClassName() {
         return getClass().getName();
     }
+
+    @Override
+    public boolean onUnlink(String username, HttpServletRequest request) throws IdpPluginUnlinkException {
+        return true;
+    }
+
+    @Override
+    public void onLogout(HttpSession session) throws IdpLogoutException {
+    }
 }
