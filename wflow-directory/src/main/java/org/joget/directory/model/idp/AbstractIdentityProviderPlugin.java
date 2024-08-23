@@ -5,6 +5,7 @@ import org.joget.directory.model.service.IdpMfaUtil;
 import org.joget.plugin.base.ExtDefaultPlugin;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
 
 /**
  * It is recommended that {@link IdentityProviderPlugin} implementations extend this class
@@ -81,5 +82,14 @@ public abstract class AbstractIdentityProviderPlugin extends ExtDefaultPlugin im
     @Override
     public String getClassName() {
         return getClass().getName();
+    }
+
+    @Override
+    public boolean onUnlink(String username, HttpServletRequest request) throws IdpPluginUnlinkException {
+        return true;
+    }
+
+    @Override
+    public void onLogout(HttpSession session) throws IdpLogoutException {
     }
 }

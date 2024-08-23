@@ -43,40 +43,41 @@ public final class UserAuthenticationService {
      * Method to log in user programmatically
      *
      * @param user the user to be logged in
+     * @return true if successfully logged in; false otherwise
      * @see <a href="https://dev.joget.org/community/display/DX8/Single+Sign+On+-+SSO#SingleSignOnSSO-LoginanUserProgrammatically">
      * Joget KB: Single Sign On - SSO
      * </a>
      */
     public boolean loginUser(User user) {
-        String username = "";
+        String username = user.getUsername();
         HttpServletRequest request = WorkflowUtil.getHttpServletRequest();
+        if (request == null) {
+            LogUtil.warn(getClass().getName(), "Unable to log in user " + username + " because request is null.");
+            return false;
+        }
         try {
             // Generate an authentication token
             WorkflowUserDetails userDetail = new WorkflowUserDetails(user);
-            username = userDetail.getUsername();
             UsernamePasswordAuthenticationToken auth = new UsernamePasswordAuthenticationToken(username, userDetail.getPassword(), userDetail.getAuthorities());
             auth.setDetails(userDetail);
+
+            // Change session ID to avoid session fixation vulnerability
+            HttpSession oldSession = request.getSession(false);
+            String oldSessionId = oldSession == null ? "" : oldSession.getId();
+            String newSessionId = request.changeSessionId();
+            if (oldSessionId.equals(newSessionId)) {
+                LogUtil.warn(getClass().getName(), "Unable to change session ID, cannot log in user.");
+                return false;
+            }
 
             // Login the user
             SecurityContextHolder.getContext().setAuthentication(auth);
             workflowUserManager.setCurrentThreadUser(user);
 
-            // Generate new session to avoid session fixation vulnerability
-            HttpSession session = request.getSession(false);
-            if (session != null) {
-                SavedRequest savedRequest = (SavedRequest) session.getAttribute("SPRING_SECURITY_SAVED_REQUEST");
-                session.invalidate();
-                session = request.getSession(true);
-                if (savedRequest != null) {
-                    session.setAttribute("SPRING_SECURITY_SAVED_REQUEST", savedRequest);
-                }
-            }
-
             // Add audit trail
             loginAuditTrailLogging(true, username, request);
 
         } catch (Exception e) {
-            loginAuditTrailLogging(false, username, request);
             LogUtil.error(UserAuthenticationService.class.getName(), e, "Failed to login");
             return false;
         }
@@ -113,6 +114,7 @@ public final class UserAuthenticationService {
         UserDetails details = new WorkflowUserDetails(user);
         UsernamePasswordAuthenticationToken token = new UsernamePasswordAuthenticationToken(username, password, details.getAuthorities());
         token.setDetails(details);
+        workflowUserManager.setCurrentThreadUser(user);
         return new AuthenticationTokenWrapper(token);
     }
 
