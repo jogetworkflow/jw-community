@@ -390,6 +390,9 @@ DatalistBuilder = {
             for (var i in CustomBuilder.data.filters) {
                 var data = CustomBuilder.data.filters[i];
                 
+                //update the filter param
+                data.filterParamName = CustomBuilder.config.builder.options.filterParam + data.name;
+                
                 var component = self.parseDataToComponent(data);
                 var temp = $('<span></span>');
                 self.frameBody.find(".filters").append(temp);

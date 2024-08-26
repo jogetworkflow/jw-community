@@ -1040,3 +1040,22 @@ body .grid-action-header, body td.grid-action-cell {
     border-bottom: 1px solid #3f51b5;
     box-shadow: 0 1px 0 0 #3f51b5;
 }
+@media(min-width: 480px) {
+    body .form-container .selector_items {
+        margin-left:0px !important;
+    }
+}
+@media(min-width: 480px) {
+    body.rtl .form-container .selector_items {
+        margin-right:0px !important;
+    }
+}
+body .form-container .label-top .selector_element,
+body .form-container .label-top .selector_items{
+    margin-left: 0%;
+}
+
+body.rtl .form-container .label-top .selector_element,
+body.rtl .form-container .label-top .selector_items{
+    margin-right: 0%;
+}
