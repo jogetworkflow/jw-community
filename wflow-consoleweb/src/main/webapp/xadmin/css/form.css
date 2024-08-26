@@ -721,9 +721,31 @@ body #form-canvas .page-button-panel .button{
 
 /* Popup select box */
 @media screen and (min-width: 600px) {
-    body #form-canvas .selector_element .selector_items {
+    body #form-canvas .selector_element {
         margin-left: 150px;
-    }    
+    }
+}
+body #form-canvas .selector_items{
+    margin-left: 0px;
+}
+body.rtl #form-canvas .selector_item{
+    margin-left: 5px;
+    margin-right: 0px;
+}
+@media screen and (min-width: 480px) {
+    body.rtl #form-canvas .selector_items {
+        margin-right:0px !important;
+    }
+}
+@media screen and (min-width: 600px) {
+    body.rtl #form-canvas .selector_element {
+        margin-right:150px;
+        margin-left: 0px;
+    }
+}
+body.rtl .label-top > .label {
+    width: 100%;
+    float: none;
 }
 body #form-canvas .label-top .selector_element {
     margin-left: 40px;
@@ -738,23 +760,8 @@ body #form-canvas .label-top .selector_items {
 }
 @media screen and (max-width: 480px) {
     body #form-canvas .label-top .selector_element {
-        margin-right:0px;
         margin-left:0px !important;
-    }
-}
-body.rtl .label-top > .label {
-    width: 100%;
-    float: none;
-}
-@media screen and (max-width: 480px) {
-    body.rtl #form-canvas .label-top.form-cell .selector_element {
-        margin-right:0px !important;
-    }
-}
-@media screen and (min-width: 600px) {
-    body.rtl #form-canvas .selector_element .selector_items {
-        margin-right:150px;
-        margin-left: 0px;
+        margin-right:0px;
     }
 }
 body.rtl #form-canvas .label-top.form-cell .selector_element {
@@ -763,10 +770,10 @@ body.rtl #form-canvas .label-top.form-cell .selector_element {
 body.rtl #form-canvas .label-top.form-cell .selector_items {
     margin-right: 0px !important;
 }
-
-body.rtl #form-canvas .selector_element .selector_item {
-    margin-right: 0px;
-    margin-left: 5px;
+@media screen and (max-width: 480px) {
+    body.rtl #form-canvas .label-top.form-cell .selector_element {
+        margin-right:0px !important;
+    }
 }
 body #form-canvas .selector_element .selector_button {
     border-color: #5FB878;

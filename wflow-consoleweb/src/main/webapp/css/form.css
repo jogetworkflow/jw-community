@@ -4,6 +4,9 @@
 #form-canvas .label {
     color: #535353;
 }
+body.rtl #form-canvas .form-cell label.label{
+    margin-right:0rem;
+}
 #form-canvas {
     font-size: 13px;
     display: block;
@@ -765,44 +768,56 @@ body.rtl #${elementParamName!}_multiPagedForm_${element.properties.elementUnique
 /* Popup select box */
 .selector_element {
     display: block;
+    margin-left: 30%;
+}
+.selector_items {
+    display: block;
+    margin: 5px 15px;
+}
+@media screen and (max-width: 480px) {
+    .selector_element,
+    .selector_items {
+        margin-left: 0% !important;
+    }
+}
+body.rtl .selector_element {
+    display: block;
+    margin-right: 30%;
+    margin-left: 0%;
 }
 body.rtl .selector_item {
     float: right;
 }
-body.rtl .selector_items{
-    margin-left: 0%;
-    margin-right: 30%;
-}
-@media(max-width: 480px){
-    body.rtl .selector_items{
+@media screen and (max-width: 480px) {
+    body.rtl .selector_items {
         margin-right: 0%;
     }
-}
-@media(max-width: 480px){
+    body.rtl .selector_item {
+        margin-right: 0%;
+        margin-left: 5px;
+    }
     body.rtl .selector_element {
         float: right;
-    }
-}
-.selector_items {
-    display: block;
-    margin: 5px 0px;
-    margin-left: 30%;
-}
-@media (max-width: 480px) {
-    .selector_element {
         margin-left: 0%;
-    }  
-}
-@media(max-width: 480px) {
-    .selector_items {
-        margin-left:0% !important;
+        margin-right:0% !important;
     }
 }
+@media screen and (min-width: 480px) {
+    body.rtl .selector_items {
+        margin-right:10px !important;
+    }
+}
+.label-top .selector_element,
 .label-top .selector_items{
     margin-left: 0%;
 }
-body.rtl .label-top .selector_items{
+body.rtl .label-top .selector_element {
     margin-right: 0%;
+}
+body.rtl .label-top .selector_items,
+body.rtl .label-top .selector_item{
+    margin-right:0px !important;
+    margin-left: 5px;
 }
 .selector_item {
     margin-right: 5px;
