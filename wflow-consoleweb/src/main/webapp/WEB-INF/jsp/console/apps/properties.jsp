@@ -106,6 +106,11 @@
             $('#JsonDataTable_searchTerm').hide();
             $('#JsonDataTable1_searchTerm').hide();
         
+            //reset to 0 first before refresh
+            $("#pluginList2").on("refresh", function(){
+                $(".update_count").text("(0)");
+            });
+            
             //update the count when table done loading
             $("#pluginList2").on("success", function(){
                 $(".update_count").text("(" + JsonDataTable.flexiGrid[0].p.total + ")");
@@ -142,9 +147,6 @@
                     UI.unblockUI(); 
                     JsonDataTable.refresh();
                     JsonDataTable1.refresh();
-                    
-                    //reset to 0 first
-                    $(".update_count").text("(0)");
                 });
             }
         }

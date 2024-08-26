@@ -370,8 +370,11 @@ public class MarketplaceUtil {
                         if (found) {
                             //check for plugin installed or update available
                             String[] nameVersion = retrieveNameAndVersion(obj.getString("fileName"));
-                            if (nameVersion != null && installedPlugins.containsKey(nameVersion[0])) {
+                            if (nameVersion != null && (installedPlugins.containsKey(nameVersion[0]) || installedPlugins.containsKey(nameVersion[0].replaceAll("_", "-")))) {
                                 String version = (String) installedPlugins.get(nameVersion[0]);
+                                if (version == null) {
+                                    version = (String) installedPlugins.get(nameVersion[0].replaceAll("_", "-"));
+                                }
                                 if (compareVersion(version,nameVersion[1]) < 0) {
                                     needUpdate.add(obj.getString("id"));
                                 }
@@ -693,8 +696,11 @@ public class MarketplaceUtil {
                     
                     //check for plugin installed or update available
                     String[] nameVersion = retrieveNameAndVersion(clone.getString("fileName"));
-                    if (nameVersion != null && installedPlugins.containsKey(nameVersion[0])) {
+                    if (nameVersion != null && (installedPlugins.containsKey(nameVersion[0]) || installedPlugins.containsKey(nameVersion[0].replaceAll("_", "-")))) {
                         String version = (String) installedPlugins.get(nameVersion[0]);
+                        if (version == null) {
+                            version = (String) installedPlugins.get(nameVersion[0].replaceAll("_", "-"));
+                        }
                         clone.put("installed", version);
                         if (compareVersion(version,nameVersion[1]) < 0) {
                             clone.put("update", true);
@@ -763,8 +769,11 @@ public class MarketplaceUtil {
                     
                     //check for plugin installed 
                     String[] nameVersion = retrieveNameAndVersion(obj.getString("fileName"));
-                    if (nameVersion != null && installedPlugins.containsKey(nameVersion[0])) {
+                    if (nameVersion != null && (installedPlugins.containsKey(nameVersion[0]) || installedPlugins.containsKey(nameVersion[0].replaceAll("_", "-")))) {
                         Map bundle = (Map) installedPlugins.get(nameVersion[0]);
+                        if (bundle == null) {
+                            bundle = (Map) installedPlugins.get(nameVersion[0].replaceAll("_", "-"));
+                        }
                         bundle.put("id", obj.getString("id"));
                         bundle.put("latestVersion", nameVersion[1]);
                         bundle.put("url", marketPlaceUrl+"/jw/web/userview/mp/mpp/_/vad?id="+obj.getString("id"));
@@ -813,7 +822,7 @@ public class MarketplaceUtil {
                         }
                     }
 
-                    if (counter >= start && counter < start + rows) {
+                    if (start == null || rows == null || (counter >= start && counter < start + rows)) {
                         arr.put(bundle);
                     }
                     counter++;

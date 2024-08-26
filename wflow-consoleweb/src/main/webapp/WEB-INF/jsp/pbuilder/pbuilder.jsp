@@ -80,7 +80,8 @@
                 "saveEditProperties" : "ProcessBuilder.saveEditProperties",
                 "builderSaved" : "ProcessBuilder.builderSaved",
                 "builderSaveFailed" : "ProcessBuilder.builderSaveFailed",
-                "getOverviewPathElementSelector" : "ProcessBuilder.getOverviewPathElementSelector"
+                "getOverviewPathElementSelector" : "ProcessBuilder.getOverviewPathElementSelector",
+                "marketplaceReloadPalette" : "ProcessBuilder.marketplaceReloadPalette"
             },
             "properties" : {
                 "packageVersion" : "${packageVersion}"

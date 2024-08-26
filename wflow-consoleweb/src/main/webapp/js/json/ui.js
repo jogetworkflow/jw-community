@@ -855,6 +855,8 @@ JsonTable.prototype = {
             newUrl += "?";
         }
         newUrl += "&_=" + new Date().valueOf().toString();
+        
+        $("#" + thisObject.divToUpdate).trigger("refresh");
 
         this.flexiGrid.flexReload({
             url: newUrl

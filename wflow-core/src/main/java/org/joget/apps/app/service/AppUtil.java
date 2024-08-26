@@ -1850,7 +1850,7 @@ public class AppUtil implements ApplicationContextAware {
         
         return foundPlugins;
     }
-    
+        
     /**
      * Retrieve the app template config based on app id & version
      * @param appId

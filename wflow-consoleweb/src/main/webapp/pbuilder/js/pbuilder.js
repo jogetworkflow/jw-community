@@ -104,13 +104,9 @@ ProcessBuilder = {
                 
             });
             
+            ProcessBuilder.cachePlugins(deferreds);
             ProcessBuilder.getMultiToolsProps(deferreds);
-            ProcessBuilder.getAssignmentFormModifier(deferreds);
-            ProcessBuilder.getStartProcessFormModifier(deferreds);
-            ProcessBuilder.getTools(deferreds);
-            ProcessBuilder.getDecisionPlugin(deferreds);
             ProcessBuilder.getForms(deferreds);
-            ProcessBuilder.getParticipants(deferreds);
             
             wait.resolve();
             
@@ -120,6 +116,14 @@ ProcessBuilder = {
                 }
             });
         });
+    },
+    
+    cachePlugins : function(deferreds) {
+        ProcessBuilder.getAssignmentFormModifier(deferreds);
+        ProcessBuilder.getStartProcessFormModifier(deferreds);
+        ProcessBuilder.getTools(deferreds);
+        ProcessBuilder.getDecisionPlugin(deferreds);
+        ProcessBuilder.getParticipants(deferreds);
     },
     
     /*
@@ -3892,14 +3896,7 @@ ProcessBuilder = {
                     label: get_cbuilder_msg("pbuilder.label.plugin"),
                     type : 'elementselect',
                     required : 'True',
-                    options_callback : function(props, values) {
-                        var options = [{label : '', value : ''}];
-                        var plugins = ProcessBuilder.availableParticipantPlugin;
-                        for(var e in plugins){
-                            options.push({label : UI.escapeHTML(plugins[e].label), value : e, helplink : plugins[e].helplink});
-                        }
-                        return options;
-                    },
+                    options_ajax : CustomBuilder.contextPath + '/web/property/json/getElements?classname=org.joget.workflow.model.ParticipantPlugin',
                     url : CustomBuilder.contextPath + '/web/property/json'+CustomBuilder.appPath+'/getPropertyOptions',
                     control_field: 'mapping_par_type',
                     control_value: 'plugin',
@@ -3989,14 +3986,7 @@ ProcessBuilder = {
                 name: 'mapping_act_modifier',
                 label: get_cbuilder_msg("pbuilder.label.moreSettings"),
                 type : 'elementselect',
-                options_callback : function(props, values) {
-                    var options = [{label : '', value : ''}];
-                    var plugins = ProcessBuilder.availableAssignmentFormModifier;
-                    for(var e in plugins){
-                        options.push({label : UI.escapeHTML(plugins[e].label), value : e, helplink : plugins[e].helplink});
-                    }
-                    return options;
-                },
+                options_ajax : CustomBuilder.contextPath + '/web/property/json/getElements?classname=org.joget.apps.app.model.ProcessFormModifier',
                 url : CustomBuilder.contextPath + '/web/property/json'+CustomBuilder.appPath+'/getPropertyOptions'
             });
         }
@@ -4024,14 +4014,7 @@ ProcessBuilder = {
                     name: 'mapping_act_plugin',
                     label: get_cbuilder_msg("pbuilder.label.plugin"),
                     type : 'elementselect',
-                    options_callback : function(props, values) {
-                        var options = [{label : '', value : ''}];
-                        var plugins = ProcessBuilder.availableDecisionPlugin;
-                        for(var e in plugins){
-                            options.push({label : UI.escapeHTML(plugins[e].label), value : e, helplink : plugins[e].helplink});
-                        }
-                        return options;
-                    },
+                    options_ajax : CustomBuilder.contextPath + '/web/property/json/getElements?classname=org.joget.workflow.model.DecisionPlugin',
                     url : CustomBuilder.contextPath + '/web/property/json'+CustomBuilder.appPath+'/getPropertyOptions'
                 }]
             }
@@ -4105,14 +4088,7 @@ ProcessBuilder = {
                 name: 'mapping_act_modifier',
                 label: get_cbuilder_msg("pbuilder.label.moreSettings"),
                 type : 'elementselect',
-                options_callback : function(props, values) {
-                    var options = [{label : '', value : ''}];
-                    var plugins = ProcessBuilder.availableStartProcessFormModifier;
-                    for(var e in plugins){
-                        options.push({label : UI.escapeHTML(plugins[e].label), value : e, helplink : plugins[e].helplink});
-                    }
-                    return options;
-                },
+                options_ajax : '[CONTEXT_PATH]/web/property/json/getElements?classname=org.joget.apps.app.model.StartProcessFormModifier',
                 url : CustomBuilder.contextPath + '/web/property/json'+CustomBuilder.appPath+'/getPropertyOptions'
             });
         }
@@ -5261,5 +5237,13 @@ ProcessBuilder = {
     hideAdvancedInfo : function() {
         $('#advancedView').slideToggle('slow');
         $('#hideAdvancedInfo').hide();
+    },
+      
+    /*
+     * Reload the cached plugins list
+     */  
+    marketplaceReloadPalette : function() {
+        var deferreds = [];
+        ProcessBuilder.cachePlugins(deferreds);
     }
 };
