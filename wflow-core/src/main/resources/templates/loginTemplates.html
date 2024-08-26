@@ -12,10 +12,13 @@
     align-items: center;
     justify-content: center;
     padding-right: 25px;
+    padding-left: 25px;
   }
   .login-form-1 form {
     width: 100%;
     max-width: 400px;
+    float: unset !important;
+    text-align:left !important;
   }
   .login-image-1 {
     flex: 1;
@@ -30,27 +33,33 @@
   }
   .login-form-1 .form-group .form-label{
     font-size: 12px !important;
-    color: #b3b3b3 !important;
   }
   .login-form-1 .form-group input{
     border: none !important;
     font-size:20px !important;
-    color: {{formColor||#495057}} !important;
     background-color:transparent !important;
-    padding: 0px 0px !important;
+    padding: 0px 10px !important;
+    float: unset !important;
+    text-align:left !important;
+  }
+  .login-form-1 input#customUsername::placeholder{
+    color: {{usernamePlaceholderColor||#000}} !important;
+  }
+  .login-form-1 input#customPassword::placeholder{
+    color: {{passwordPlaceholderColor||#000}} !important;
   }
 </style>
 <div class="container-fluid login-container-1">
 <div class="login-form-1">
   <form>
-    <h2 class="mb-1" style="color:{{titleColor||inherit}}">{{title||Sign In}}</h2>
+    <h2 class="mb-1" style="color:{{titleColor||#495057}}">{{title||Sign In}}</h2>
     <p class="mb-4" style="color:{{subtitleColor||#b3b3b3}}">{{subtitle||Welcome back!}}</p>
     <div class="form-group my-0">
-      <label for="username" class="form-label" style="color:{{formColor||black}};">{{customUsername||@@ubuilder.login.username@@}}</label>
+      <label for="username" class="form-label" style="color:{{customUsernameColor||black}};">{{customUsername||@@ubuilder.login.username@@}}</label>
       <input type="text" class="form-control w-100" id="customUsername" placeholder="Username">
     </div>
     <div class="form-group mb-3">
-      <label for="password" class="form-label" style="color:{{formColor||black}};">{{customPassword||@@ubuilder.login.password@@}}</label>
+      <label for="password" class="form-label" style="color:{{customPasswordColor||black}};">{{customPassword||@@ubuilder.login.password@@}}</label>
       <input type="password" class="form-control w-100" id="customPassword" placeholder="Password">
     </div>
     <button type="button" class="btn btn-primary w-100" id="loginButton" style="height:54px;background-color:{{btnColor||#007bff}};border:none;color:{{btnTextColor||#fff}}">{{btnText||Login}}</button>
@@ -78,7 +87,7 @@
       left: 0;
       width: 100%;
       height: 100%;
-      background: -webkit-linear-gradient(bottom,#005bea,#00c6fb);
+      background: -webkit-linear-gradient({{direction||bottom}},{{colorGradientOne||#005bea}},{{colorGradientTwo||#00c6fb}});
       opacity: 0.9;
       pointer-events: none; 
     }
@@ -93,11 +102,12 @@
     border:none;
   }
   .login-form-2 button {
-      background-color: {{btnColor||#333}} !important;
-      border:none;
-      height:50px;
-      border-radius: 25px;
-      font-weight: 700 !important;
+    background-color: {{btnColor||#333}} !important;
+    border:none !important;
+    height:50px !important;
+    border-radius: 25px !important;
+    font-weight: 700 !important;
+    color: {{btnTextColor||#fff}} !important;
   }
   .login-card-2 {
     padding: 20px;
@@ -119,7 +129,10 @@
     height: 50px !important;
     border-radius:25px !important;
     font-size:15px!important;
-    color: {{formColor||#333}} !important;
+    float: unset !important;
+    text-align:left !important;
+    background-color: #fff !important;
+    border: none !important;
   }
   .login-card-2 form input::placeholder{
     color: #333 !important;
@@ -129,17 +142,23 @@
     color: rgba(0,91,234,0.6) !important;
     transition-duration: 1s;
   }
+  .login-card-2 input#customUsername::placeholder{
+    color: {{usernamePlaceholderColor||#333}} !important;
+  }
+  .login-card-2 input#customPassword::placeholder{
+    color: {{passwordPlaceholderColor||#333}} !important;
+  }
 </style>
 <div class="container-fluid login-container-2">
   <div class="card login-form-2 login-card-2">
     <form>
       <h2 class="mb-4 text-center" style="color:{{titleColor||#fff}}; font-weight: 900">{{title||Enter your credentials}}</h2>
       <div class="mb-3 input-container-2">
-        <input type="text" class="form-control w-100" id="customUsername" placeholder="{{customUsername||@@ubuilder.login.username@@}}">
+        <input type="text" class="form-control w-100" id="customUsername" style="color:{{customUsernameColor||#333}}" placeholder="{{customUsername||@@ubuilder.login.username@@}}">
         <i class="fa fa-user icon-2"></i>
       </div>
       <div class="mb-3 input-container-2">
-        <input type="password" class="form-control w-100" id="customPassword" placeholder="{{customPassword||@@ubuilder.login.password@@}}">
+        <input type="password" class="form-control w-100" id="customPassword" style="color:{{customPasswordColor||#333}}" placeholder="{{customPassword||@@ubuilder.login.password@@}}">
         <i class="fas fa-lock icon-2"></i>
       </div>
       <button type="button" class="btn btn-primary w-100" id="loginButton">{{btnText||Login}}</button>
@@ -163,7 +182,8 @@
     left: 50% !important;
     transform: translate(-50%, -50%) !important;
     border: 2px solid rgba(255,255,255,0.1);;
-    width: 100% !important;
+    width: 80% !important;
+    min-width: 200px !important;
     max-width: 400px !important;
     background: {{cardColor||rgba(255,255,255,0.13);}} !important;
     border-radius: 16px !important;
@@ -172,6 +192,8 @@
   }
   .login-form-3 form{
     width: 100% !important;
+    float: unset !important;
+    text-align:left !important;
   }
   .login-form-3 button {
     background-color: {{btnColor||##007bff}} !important;
@@ -187,7 +209,6 @@
   .login-card-3 label{
     font-size: 16px !important;
     font-weight: 500 !important;
-    color: {{formColor||#fff}} !important;
   }
   .login-card-3 input{
     font-size: 14px !important;
@@ -195,10 +216,14 @@
     border: none !important;
     background-color: rgba(255,255,255,0.07) !important;
     height: 50px !important;
-    color: {{formColor||#fff}} !important;
+    float: unset !important;
+    text-align:left !important;
   }
-  .login-card-3 input::placeholder{
-    color: {{formColor||#fff}} !important;
+  .login-card-3 input#customUsername::placeholder{
+    color: {{usernamePlaceholderColor||#fff}} !important;
+  }
+  .login-card-3 input#customPassword::placeholder{
+    color: {{passwordPlaceholderColor||#fff}} !important;
   }
 </style>
 <div class="container-fluid login-container-3">
@@ -206,11 +231,11 @@
     <form>
       <h2 class="mb-4 text-center" style="color:{{titleColor||#fff}}">{{title||Login Here}}</h2>
       <div class="mb-3">
-        <label for="username" class="form-label">{{customUsername||@@ubuilder.login.username@@}}</label>
+        <label for="username" class="form-label" style="color:{{customUsernameColor||#fff}}">{{customUsername||@@ubuilder.login.username@@}}</label>
         <input type="text" class="form-control w-100" id="customUsername" placeholder="Username">
       </div>
       <div class="mb-3">
-        <label for="password" class="form-label">{{customPassword||@@ubuilder.login.password@@}}</label>
+        <label for="password" class="form-label" style="color:{{customPasswordColor||#fff}}">{{customPassword||@@ubuilder.login.password@@}}</label>
         <input type="password" class="form-control w-100" id="customPassword" placeholder="Password">
       </div>
       <button type="button" class="btn btn-primary w-100" id="loginButton">{{btnText||Login}}</button>
@@ -221,9 +246,6 @@
 
 <!--{sampleWidth: '100%', tags: 'columns'}-->
 <style>
-  :root {
-    --customColor: {{formColor||black}}
-  }
   .login-container-4 {
     display: flex !important;
     height: 100% !important;
@@ -245,11 +267,12 @@
     margin-bottom: 1rem !important;
   }
   .login-form-4 input {
-    border: 1px solid rgba(0, 0, 0, 0.1);
+    border: 1px solid rgba(0, 0, 0, 0.1) !important;
     background: rgba(255,255,255,0.1) !important;
     padding-right: 40px !important;
     height: 48px !important;
-    color:{{formColor||black}} !important;
+    float: unset !important;
+    text-align:left !important;
   }
   .login-form-4 button {
     color: {{btnTextColor||#fff}} !important;
@@ -267,10 +290,18 @@
   .login-form-4 form {
     padding: 3rem !important;
     width: 50% !important;
+    float: unset !important;
+    text-align:left !important;
   }  
   .login-form-4 form label {
     text-transform: uppercase !important;
   } 
+  .login-form-4 input#customUsername::placeholder{
+    color: {{usernamePlaceholderColor||#fff}} !important;
+  }
+  .login-form-4 input#customPassword::placeholder{
+    color: {{passwordPlaceholderColor||#fff}} !important;
+  }
   @media only screen and (max-width: 768px) {
     .login-form-4 form {
         width:100% !important;
@@ -285,11 +316,11 @@
                 <div class="img"></div>
                 <form style="padding: 3rem;">
                     <h2 class="mb-4" style="color:{{titleColor||#000}};font-weight:400">{{title||Sign in}}</h2>
-                    <label style="color:{{formColor||black}};font-weight:700">{{customUsername||@@ubuilder.login.username@@}}</label>
+                    <label style="color:{{customUsernameColor||black}};font-weight:700">{{customUsername||@@ubuilder.login.username@@}}</label>
                     <div class="mb-3 input-container-4">
                       <input type="text" class="form-control w-100" id="customUsername" placeholder="Username">
                     </div>
-                    <label style="color:{{formColor||black}};font-weight:700">{{customPassword||@@ubuilder.login.password@@}}</label>
+                    <label style="color:{{customPasswordColor||black}};font-weight:700">{{customPassword||@@ubuilder.login.password@@}}</label>
                     <div class="mb-3 input-container-4">
                       <input type="password" class="form-control w-100" id="customPassword" placeholder="Password">
                     </div>
@@ -331,19 +362,28 @@
     height:50px !important;
     border-radius: 25px !important;
     background-color: rgba(0, 0, 0, 0.05) !important;
+    float: unset !important;
+    border-color: #fff !important;
+    padding: 2px 10px !important;
+    text-align:left !important;
   }
-  .login-form-5 input::placeholder {
-    color: rgba(0, 0, 0, 0.5) !important;
+  .login-form-5 form {
+    float: unset !important;
+    text-align:left !important;
   }
   .login-form-5 label {
     font-size: 12px !important;
   }
   .login-form-5 form button {
     border-radius: 25px !important;
-    border-color: {{btnColor||#0067FF}};
-    background-color: {{btnColor||#0067FF}};
+    border-color: {{btnColor||#0067FF}} !important;
+    background-color: {{btnColor||#0067FF}} !important;
     border: none;
     height: 48px !important;
+  }
+  .car-5 .carousel-indicators button.active{
+    background-color: #808080;
+    border: 1px solid #fff;
   }
   .car-5 .carousel-inner img {
     width: 100%;
@@ -371,19 +411,25 @@
     bottom: 0px !important;
     left:0px !important;
   }
+  .login-form-5 input#customUsername::placeholder{
+    color: {{usernamePlaceholderColor||#fff}} !important;
+  }
+  .login-form-5 input#customPassword::placeholder{
+    color: {{passwordPlaceholderColor||#fff}} !important;
+  }
 </style>
 <div class="container-fluid login-container-5">
       <div class="login-form-5">
         <div class="row h-100" style="margin:0">
           <div class="col-sm-12 col-md-6 p-4 p-lg-5 d-flex align-items-center justify-content-center h-100">
             <form style="width:100%;">
-              <h2 class="mb-4" style="{{titleColor||#000000}}; font-weight:200;">{{title||Login}}</h2>
+              <h2 class="mb-4" style="color:{{titleColor||#000000}}; font-weight:200;">{{title||Login}}</h2>
               <div class="mb-3 input-container-5">
-                <label style="{{formColor||#000}}">{{customUsername||@@ubuilder.login.username@@}}</label>
+                <label style="color:{{customUsernameColor||#000}}">{{customUsername||@@ubuilder.login.username@@}}</label>
                 <input type="text" class="form-control w-100" id="customUsername" placeholder="Username">
               </div>
               <div class="mb-3 input-container-5">
-                <label style="{{formColor||#000}}">{{customPassword||@@ubuilder.login.password@@}}</label>
+                <label style="color:{{customPasswordColor||#000}}">{{customPassword||@@ubuilder.login.password@@}}</label>
                 <input type="password" class="form-control w-100" id="customPassword" placeholder="Password">
               </div>
               <button type="button" class="btn btn-primary w-100" id="loginButton">{{btnText||Login}}</button>
