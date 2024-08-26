@@ -5,6 +5,7 @@ import org.joget.plugin.base.Plugin;
 import org.joget.plugin.property.model.PropertyEditable;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
 
 /**
  * Provides identity provider plugin support in Joget.
@@ -27,6 +28,14 @@ public interface IdentityProviderPlugin extends Plugin, PropertyEditable {
      * <p>
      * This method should return {@code null} if the plugin determines that no user should be logged in
      * or if it encounters an error.
+     * <p>
+     * If the IdP supports Single Log Out (SLO) functionality, any data required to log the user out can be stored in
+     * the session of the {@code callbackRequest} parameter using {@link HttpServletRequest#getSession()}. The logout
+     * data can be accessed later in {@link #onLogout(HttpSession)}.
+     * <p>
+     * Please note that the object to be stored in the session must
+     * implement the {@link java.io.Serializable} interface so that it can be synchronized to other app servers in a
+     * scaled/distributed environment.
      *
      * @param callbackRequest the request received from the callback
      * @return user object of the claimed user; {@code null} if no user or error
@@ -94,4 +103,12 @@ public interface IdentityProviderPlugin extends Plugin, PropertyEditable {
      *                                  returning false.
      */
     boolean onUnlink(String username, HttpServletRequest request) throws IdpPluginUnlinkException;
+
+    /**
+     * Handle custom user logout events. This method is useful for logging out of the IdP when a user logs out of Joget.
+     *
+     * @param session the session of the current user
+     * @throws IdpLogoutException when any errors occurred during logout
+     */
+    void onLogout(HttpSession session) throws IdpLogoutException;
 }
