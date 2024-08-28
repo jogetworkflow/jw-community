@@ -3782,7 +3782,6 @@ public class ConsoleWebController {
                             String newVersion = (versionIndex != -1) ? branch.substring(versionIndex + 1) : null;     
                             if (newVersion != null && !appDefMap.containsKey(Long.valueOf(newVersion)) && newVersion.equals(version)) {
                                 AppDefinition newAppDef = appService.createNewAppDefinitionVersion(appId, appDefinitionDao.getLatestVersion(appId));
-                                AppDevUtil.gitPushLocal(appDef, localGit, projectDir);
                             }                        
                         }            
                     } catch(Exception e) {
