@@ -176,6 +176,10 @@
                     "flex-direction": "column"
                 })
 
+                if ($("body").hasClass("rtl")) {
+                    label.css({"text-align":"right"})
+                }
+
                 $(node).css({
                     "background-color":"rgb(255, 250, 143)"
                 })
