@@ -44,7 +44,7 @@
     </div>
     <div id="main-body">
         <div id="generalSetup">
-            <form method="post" class="blockui" action="${pageContext.request.contextPath}/web/console/setting/general/submit">
+            <form method="post" id="generalSettings" class="blockui" action="${pageContext.request.contextPath}/web/console/setting/general/submit">
             <jsp:include page="/web/json/plugin/org.joget.apps.ext.ConsoleWebPlugin/service?spot=settings" />
             <div class="main-body-content-subheader">
                 <span><fmt:message key="console.setting.general.header.uiSetting"/></span>
@@ -603,7 +603,7 @@
     }
     $(document).ready(function() {
         // Override the form submission to validate the SMTP email
-        $("form").submit(function(event) {
+        $("#generalSettings").submit(function(event) {
             event.preventDefault(); // Prevent default form submission
             validateSMTPEmail();
         });
@@ -634,7 +634,7 @@
 
             // Submit the form if everything is valid
             if (valid) {
-                $("form").unbind('submit').submit(); // Re-enable form submission and submit
+                $("#generalSettings").off('submit').submit(); // Re-enable form submission and submit
             }
         });
     }

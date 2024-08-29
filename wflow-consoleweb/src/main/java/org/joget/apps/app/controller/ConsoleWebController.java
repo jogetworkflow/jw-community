@@ -6489,7 +6489,7 @@ public class ConsoleWebController {
             response.setCharacterEncoding("UTF-8");
             response.getWriter().write("{\"isValid\": " + isValid + "}");
         } catch (IOException e) {
-            e.printStackTrace();
+            LogUtil.error(getClass().getName(), e, "Error occurred while validating email.");
         }
     }
 }
