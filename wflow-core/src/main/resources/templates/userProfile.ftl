@@ -34,6 +34,12 @@
         width:40%;
     }
 
+    @media (max-width: 767px){
+        .form-row label {
+            flex: 0 0 100% !important;
+        }
+    }
+
     .form-row .form-input {
         display:inline-block;
         padding:0.25em;
