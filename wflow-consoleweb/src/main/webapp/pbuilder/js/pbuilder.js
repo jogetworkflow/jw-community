@@ -3395,7 +3395,7 @@ ProcessBuilder = {
                 ProcessBuilder.jsPlumb.setSuspendDrawing(true);
                 ProcessBuilder.jsPlumb.recalculateOffsets(self.frameBody.find(".process"));
                 ProcessBuilder.jsPlumb.setSuspendDrawing(false, true);
-                
+                ProcessBuilder.jsPlumb.repaintEverything(); // Ensure everything is repainted
                 ProcessBuilder.refreshTimeout = null;
             }, 30);
         }
