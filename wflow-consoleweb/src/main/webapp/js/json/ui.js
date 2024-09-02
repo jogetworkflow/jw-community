@@ -228,49 +228,30 @@ UI = {
             }
         }
     },
-    /*
-     * Function used for validate an email. 
-     * Options to validate multiple email separated by semicolon (;)
-     */
-    validateEmail: function(formSelector, emailSelector) {
-        var multiple = true;
-        var originalAppId = UI.userview_app_id;
-        
-        // Select the email input from the form
+    validateEmail: function(emailSelector, multiple, callback) {    
+        // Select the email input
         var email = $(emailSelector).val();
-        var callback = {
+
+        var internalCallback = {
             success: function(data) {
-                try {
-                    if (UI.userview_app_id === '') {
-                        UI.userview_app_id = 'appcenter';
-                    }
-                    
                     var response = JSON.parse(data);
 
-                        if (email && !response.isValid) {
-                            UI.loadMsg(['app.edm.message.invalidEmailFormat'], function(messages) {
-                                alert(messages['app.edm.message.invalidEmailFormat']);
-                            });
-                            UI.unblockUI();
-                            return false;
-                        } else {
-                            // Submit the form if the email is valid
-                            $(formSelector)[0].submit();
-                        }
-                } finally {
-                    UI.userview_app_id = originalAppId;
-                }
+                    if (email && !response.isValid) {
+                        callback(false); // Call the callback with false if the email is invalid
+                    } else {
+                        callback(true); // Call the callback with true if the email is valid
+                    }
             },
         };
-        
+
         var params = {
             email: email,
-            multiple: multiple
+            multiple: multiple // Set the multiple parameter dynamically
         };
-        
-        ConnectionManager.post('/jw/web/api/validateEmail', callback, params);
-        
-        return false; // Prevent default form submission until email validation is done
+
+        ConnectionManager.post('/jw/web/api/validateEmail', internalCallback, params);
+
+        return false; // Prevent default behavior
     }
 };
 
