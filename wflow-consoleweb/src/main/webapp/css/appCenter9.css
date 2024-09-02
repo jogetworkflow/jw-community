@@ -994,4 +994,42 @@ body.rtl .page-heading{
 body.rtl .breadcrumb{
     direction: rtl;
 }
+body.rtl #sidebar .user-menu>li>a>span{
+    padding-left: 0px !important;
+    padding-right: 49px !important;
+}
+body.sidebar-minimized.rtl:not(.horizontal_menu) #sidebar .user-menu>li>a>img {
+    right: 8px;
+}
+body.rtl#admin .InformationTileComponent .float-right {
+    float: none !important;
+}
+body.rtl#admin .InformationTileComponent .pt-3.pb-2 .mb-1 span{
+    float: right !important;
+}
+body.rtl #navigation li.mm-profile.user-link small{
+    float: none !important;
+    display: block;
+    width: 100%;
+    text-align: right;
+}
+body.rtl .header-nav a.btn i{
+    padding-left: 5px;
+    padding-right: 0px;
+}
+@media (min-width: 1280px) {
+    body.sidebar-minimized.rtl #sidebar .nav>li>a {
+        padding-left: 10px;
+        padding-right: 10px;
+    }
+    body.sidebar-minimized.rtl #sidebar .user-menu>li>a>span,
+    body.sidebar-minimized.rtl #sidebar .user-menu>li>a>small {
+        padding-left: 0px !important;
+        padding-right: 70px !important;
+    }
+    body.sidebar-minimized.rtl #sidebar .nav>li>ul>li>a, 
+    body.sidebar-minimized.rtl ul#moreSubMenu.sub-menu>li>ul>li>a {
+        padding: 0px 15px 0px 0px;
+    }
+}
 /* END custom search styles */
