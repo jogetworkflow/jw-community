@@ -12,6 +12,7 @@
         <property name="backups" value="1"/>
         <property name="atomicityMode" value="ATOMIC"/>
         <property name="writeSynchronizationMode" value="PRIMARY_SYNC"/>
+        <property name="statisticsEnabled" value="true"/>
     </bean>
 
     <!-- Basic configuration for transactional cache. -->
@@ -20,6 +21,7 @@
         <property name="backups" value="1"/>
         <property name="atomicityMode" value="TRANSACTIONAL"/>
         <property name="writeSynchronizationMode" value="PRIMARY_SYNC"/>
+        <property name="statisticsEnabled" value="true"/>
     </bean>
 
     <!-- Transaction manager factory -->
@@ -53,13 +55,14 @@
             <bean class="org.apache.ignite.configuration.DataStorageConfiguration">
                 <property name="defaultDataRegionConfiguration">
                     <bean class="org.apache.ignite.configuration.DataRegionConfiguration">
-                        <property name="name" value="Default_Region"/>
                         <!--
+                        <property name="name" value="default"/>
                         <property name="initialSize" value="#{20 * 1024 * 1024}"/>
                         <property name="maxSize" value="#{500 * 1024 * 1024}"/>
                         -->
                         <property name="pageEvictionMode" value="RANDOM_2_LRU"/>
                         <property name="persistenceEnabled" value="false"/>
+                        <property name="metricsEnabled" value="true"/>
                     </bean>
                 </property>
             </bean>
@@ -74,7 +77,7 @@
                     </bean>
                 </property>
             </bean>
-        </property>                
+        </property>
     </bean>
     
     <bean id="igniteCacheManager" class="org.joget.commons.ignite.IgniteCacheManager">

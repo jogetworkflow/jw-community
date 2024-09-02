@@ -42,6 +42,7 @@ public class IgniteCacheManager {
     public static final String SYSTEM_PROPERTY_IGNITE_PAIRED_CONNECTIONS = "wflow.ignitePairedConnections";
     public static final String SYSTEM_PROPERTY_IGNITE_NODE_CONNECTIONS = "wflow.igniteNodeConnections";
     public static final String SYSTEM_PROPERTY_IGNITE_NEAR_CACHE = "wflow.igniteNearCache";
+    public static final String SYSTEM_PROPERTY_IGNITE_DATA_REGION_MAX_SIZE = "wflow.igniteDataRegionMaxSize";
     private static boolean started = false;
     static IgniteConfiguration igniteCfg;
 
@@ -149,7 +150,21 @@ public class IgniteCacheManager {
                 igniteCfg.setCommunicationSpi(commSpi);
                 LogUtil.info(IgniteCacheManager.class.getName(), "Using Ignite with " + nodeConnections + " connections per node");
             }
-            IgniteCacheManager.igniteCfg = igniteCfg;            
+            IgniteCacheManager.igniteCfg = igniteCfg;       
+            
+            // set data region max size (default is 20% of total RAM) https://ignite.apache.org/docs/2.16.0/memory-configuration/data-regions
+            String dataRegionMaxSizeInMb = System.getProperty(SYSTEM_PROPERTY_IGNITE_DATA_REGION_MAX_SIZE);
+            if (dataRegionMaxSizeInMb != null) {
+                try {
+                    long dataRegionMaxSize = Long.parseLong(dataRegionMaxSizeInMb) * 1024 * 1024;
+                    if (dataRegionMaxSize > 0) {
+                        igniteCfg.getDataStorageConfiguration().getDefaultDataRegionConfiguration().setMaxSize(dataRegionMaxSize);
+                        LogUtil.info(IgniteCacheManager.class.getName(), "Using Ignite data region max size " + dataRegionMaxSizeInMb + " MB");
+                    }
+                } catch(NumberFormatException e) {
+                    // ignore
+                }
+            }
             
             // start cluster
             Ignite ignite = Ignition.getOrStart(igniteCfg);
