@@ -46,12 +46,12 @@ body#login #loginForm{
     margin-top: 20px;
 }
 #sidebar .user-menu > li > a > small {
-    padding: 0px 0 0 0px;
+    padding: 0px 0 0 0px !important;
     text-align: center;
     display: block;
 }
 #sidebar .user-menu > li > a > span {
-    text-align:center;   
+    text-align:center !important;   
 }
 #sidebar .user-menu > li > a > img {
     margin-left: 39px;
@@ -71,7 +71,7 @@ body.rtl #sidebar .nav > li > ul > li > a{
     min-height: 0px;
     padding: 0px 0 0px 0px !important;
 }
-body.rtl #sidebar .nav > li > a > span:not(.badge) {
+body.rtl #sidebar .nav > li > a > span:not(.badge), body.rtl #navigation li.mm-profile.user-link small {
     float: none !important;
 }
 #sidebar .nav-tabs.user-menu {

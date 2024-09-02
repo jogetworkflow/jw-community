@@ -82,7 +82,7 @@ header.navbar {
 }
 header.navbar .container-fluid{
     flex-direction:row;
-    padding: 12px 20px 12px 20px;
+    padding: 12px 20px 12px 60px;
 }
 body.rtl:not(.horizontal_menu) header.navbar .container-fluid{
     padding: 12px 60px 12px 20px !important;
@@ -226,17 +226,16 @@ header.navbar .dropdown-menu a span.time{
         padding-right:0px;
     }
 
+    body.rtl.horizontal_menu header.navbar .container-fluid {
+        padding: 12px 60px 12px 20px !important;
+    }
+
     body.rtl.horizontal_menu #sidebar .nav > li > a > span:not(.badge) {
         padding: 6px 50px 6px 20px;
     }
 
     body.rtl.horizontal_menu #sidebar ul#category-container {
         padding-right: 0px;
-    }
-
-    body.rtl.horizontal_menu #sidebar .user-menu > li > a > span {
-        padding-top: 6px !important;
-        transform: translateY(0%)
     }
 
     body.rtl.horizontal_menu #sidebar li a.dropdown:after {
@@ -423,6 +422,7 @@ body.rtl:not(.horizontal_menu) #sidebar .category > a > span:not(.badge){
     position: relative;
     display: block;
     white-space: pre-line;
+    word-wrap: break-word;
 }
 body.rtl:not(.horizontal_menu) #sidebar .nav > li > a > span:not(.badge) {
     padding: 6px 50px 6px 20px;
@@ -601,14 +601,10 @@ body.rtl:not(.horizontal_menu) #sidebar .user-menu > li > a > img {
     min-height: 0;
 }
 
-body:not(.rtl) #sidebar .user-menu > li > a > span{
-    /* Make the span centered in*/
-    padding-top:0px !important;
-    transform: translateY(50%)
-}
-
 #sidebar .user-menu > li > a > small{
     padding: 0 49px 0 49px;
+    word-wrap: break-word;
+    display:block;
 }
 #sidebar .nav-tabs.user-menu{
     border-bottom: 1px solid rgba(0,0,0,.0625);
@@ -2036,7 +2032,6 @@ body[builder-theme] #content main {
     padding: 75px 20px 20px;
 }
 body.rtl #navigation li.mm-profile.user-link small {
-    float: right;
     padding-right: 49px;
 }
 body.rtl .accordion>.card>.card-header {
