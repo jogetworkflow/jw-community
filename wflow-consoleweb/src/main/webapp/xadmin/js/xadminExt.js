@@ -254,6 +254,19 @@
                 });
             }
         });
+
+        //Handle iframe print
+        $(document).on("keydown", function(event) {
+            if (event.ctrlKey && event.keyCode === 80) {
+                event.preventDefault();
+                // Check if `this` is an iframe document
+                if (window.self !== window.top) {
+                    window.print(); 
+                } else {
+                    $("div.layui-show > iframe")[0].contentWindow.print();
+                }
+            }
+        });
     });
     
     function setCookie(cvalue) {
