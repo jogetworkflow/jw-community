@@ -62,6 +62,16 @@ body.rtl .form-row .form-input{
     margin-left: 0px;
     margin-right: 240px;
 }
+body.popupBody.rtl{
+    text-align: initial;
+}
+body.popupBody.rtl form#createApp .form-row label, body.popupBody.rtl form .form-row label[for="appZip"]{
+    margin-left: 0px;
+}
+body.popupBody.rtl form#createApp .form-row .form-input, body.popupBody.rtl form .form-row label[for="appZip"] ~ .form-input,
+body.popupBody.rtl form #advancedView.no-label .form-row .form-input {
+    margin-right: 0px;
+}
 body.rtl select:not([class^="ui-"]){
     padding-right: 2px;
     padding-left: 25px;

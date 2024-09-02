@@ -242,12 +242,17 @@ public class AppPluginUtil implements ApplicationContextAware {
     static Map<String, Map<String, String>> styleCache = Collections.synchronizedMap(new LRUMap<>(1000));
 
     static String generateStyleCacheKey(Map properties, String prefix) {
+        return generateStyleCacheKey(properties, prefix, false);
+    }
+    
+    static String generateStyleCacheKey(Map properties, String prefix, Boolean isInnerAttr) {
         String cacheKey = prefix + "::";
         for (Object keyObj: properties.keySet()) {
             String key = keyObj.toString();
             
             // should only cache style related value, else when no prefix, it parsed all hash variable unnecessary
-            if (key.startsWith(prefix+"css-") || key.startsWith(prefix+"attr-") || key.startsWith(prefix+"style-")) { 
+            //If it is inner attribute of style & attributes, then it should always go through all
+            if (isInnerAttr || (key.startsWith(prefix+"css-") || key.startsWith(prefix+"attr-") || key.startsWith(prefix+"style-"))) { 
                 Object val = properties.get(keyObj);
                 String strVal = "";
                 if (val != null) {
@@ -256,14 +261,14 @@ public class AppPluginUtil implements ApplicationContextAware {
                         for (Object el: (Object[])val) {
                             if (el instanceof Map) {
                                 // recurse into map                            
-                                strVal = generateStyleCacheKey((Map)el, prefix);                            
+                                strVal += generateStyleCacheKey((Map)el, prefix, true);                            
                             } else {
-                                strVal = Arrays.toString((Object[])el);
+                                strVal += el.toString();
                             }
                         }
                     } else if (val instanceof Map) {
                         // recurse into map 
-                        strVal = generateStyleCacheKey((Map)val, prefix);
+                        strVal = generateStyleCacheKey((Map)val, prefix, true);
                     } else {
                         strVal = val.toString();
                     }
@@ -271,6 +276,7 @@ public class AppPluginUtil implements ApplicationContextAware {
                 cacheKey += key + "="+ strVal + ";";
             }
         }
+        
         String hashedCacheKey = StringUtil.md5Base16Utf8(cacheKey); // hash to minimize memory usage
         return hashedCacheKey;
     }
