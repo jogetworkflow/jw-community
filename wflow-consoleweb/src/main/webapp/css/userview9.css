@@ -1250,7 +1250,7 @@ body.horizontal_menu #header-info {
     }
 
     body.horizontal_menu #content.page_content{
-        min-height: calc(100vh - var(--global-footerHeight) - (var(--global-headerHeight) * 2));
+        min-height: calc(100vh - var(--global-footerHeight) - var(--global-headerHeight) - var(--global-headerHeight));
         padding-top: 8px;
     }
 

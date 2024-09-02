@@ -550,11 +550,10 @@ UserviewBuilder = {
         delete properties.userviewId;
         
         //remove all theme builder configurations when switching themes from theme builder
-        var orgTheme = CustomBuilder.data.setting.properties.theme;
-        if(orgTheme.className.startsWith("org.joget.plugin.enterprise.BuilderTheme") && orgTheme.className !== "org.joget.plugin.enterprise.BuilderTheme"){
-            var orgProperty = orgTheme.properties;
+        if (UserviewBuilder.isThemeBuilder()) {
+            var orgProperty = CustomBuilder.data.setting.properties.theme.properties;
             for (var property in orgProperty) {
-                if(property.startsWith("org.joget.theme.lib")){
+                if (property.startsWith("org.joget.theme.lib")) {
                     delete orgProperty[property];
                 }
             }
@@ -575,6 +574,7 @@ UserviewBuilder = {
         userviewElement.find('[data-cbuilder-classname="userview-breadcrumb"]').data("data", {className: "userview-breadcrumb", properties: combinedProperties});
         userviewElement.find('[data-cbuilder-classname="userview-footer"]').data("data", {className: "userview-footer", properties: combinedProperties});
         
+        UserviewBuilder.updateThemeStyleSheet();
         UserviewBuilder.updateThemeStyle();
     },
     
@@ -774,8 +774,8 @@ UserviewBuilder = {
                 }
             });
         }
-        let themeClassName = CustomBuilder.data.setting.properties.theme.className;
-        if (themeClassName.startsWith("org.joget.plugin.enterprise.BuilderTheme") && themeClassName !== "org.joget.plugin.enterprise.BuilderTheme") {
+        if (UserviewBuilder.isThemeBuilder()){
+            let themeClassName = CustomBuilder.data.setting.properties.theme.className;
             var lastIndex = themeClassName.lastIndexOf('.');
             UserviewBuilder.getThemeBuilderJson(themeClassName.substring(lastIndex + 1), function (themeJson) {
                 var props = themeJson.theme.properties;
@@ -1143,7 +1143,8 @@ UserviewBuilder = {
         });
         
         $(element).replaceWith(userviewElement);
-        
+
+        UserviewBuilder.updateThemeStyleSheet();
         UserviewBuilder.updateThemeStyle();
         callback(userviewElement);
     },
@@ -1314,15 +1315,27 @@ UserviewBuilder = {
                         if (response !== undefined && response !== "") {
                             element.find('> style[data-cbuilder-style="calculatedThemeStyle"]').remove();
                             var css = "<style data-cbuilder-style='calculatedThemeStyle'>" + response + "</style>";
+                            if (UserviewBuilder.isThemeBuilder()) {
+                                var screenshotFrameBody = $(UserviewBuilder.screenshotFrame.contentWindow.document).find("body");
+                                if ($("#iframe_screenshot").contents().find('link[data-datalist-style]').length) {
+                                    screenshotFrameBody.find('> style[data-cbuilder-style="calculatedThemeStyle"]').remove();
+                                    screenshotFrameBody.append(css);
+                                } else {
+                                    $("#iframe_screenshot").on('load', function () {
+                                        screenshotFrameBody.find('> style[data-cbuilder-style="calculatedThemeStyle"]').remove();
+                                        screenshotFrameBody.append(css);
+                                    });
+                                }
+                            }
                             element.append(css);
                         }
                     }
                 });
             }
-        };
-        let themeClassName = CustomBuilder.data.setting.properties.theme.className;
+        };       
         // Check if theme builder is used
-        if (themeClassName.startsWith("org.joget.plugin.enterprise.BuilderTheme") && themeClassName !== "org.joget.plugin.enterprise.BuilderTheme") {
+        if (UserviewBuilder.isThemeBuilder()) {
+            let themeClassName = CustomBuilder.data.setting.properties.theme.className;
             var lastIndex = themeClassName.lastIndexOf('.');
             // Get theme builder properties
             UserviewBuilder.getThemeBuilderJson(themeClassName.substring(lastIndex + 1), function (themeJson) {
@@ -1332,6 +1345,79 @@ UserviewBuilder = {
         } else {
             var props = CustomBuilder.data.setting.properties.theme.properties;
             handleProperties(props);
+        }
+    },
+    
+    /*
+     * used to switch stylesheet between version 8 and 9. Called from UserviewBuilder.updateThemeStyleSheet() & UserviewBuilder.renderUserview()
+     */
+    updateThemeStyleSheet: function () {
+        if (UserviewBuilder.isThemeBuilder()) {
+            const dx8Styles = {
+                'datalist': CustomBuilder.contextPath + '/css/datalist9.css',
+                'form': CustomBuilder.contextPath + '/css/form9.css',
+                'userview': CustomBuilder.contextPath + '/css/userview9.css',
+                'ubuilder': CustomBuilder.contextPath + '/css/ubuilder.css'
+            };
+
+            UserviewBuilder.updateIframeStyles('#iframe1', dx8Styles, true);
+            if ($("#iframe_screenshot").contents().find('link[data-datalist-style]').length) {
+                UserviewBuilder.updateIframeStyles("#iframe_screenshot", dx8Styles, true);
+            } else {
+                $("#iframe_screenshot").on('load', function () {
+                    UserviewBuilder.updateIframeStyles(this, dx8Styles, true);
+                });
+            }
+        } else {
+            const dx9Styles = {
+                'datalist': CustomBuilder.contextPath + '/css/datalist8.css',
+                'form': CustomBuilder.contextPath + '/css/form8.css',
+                'userview': CustomBuilder.contextPath + '/css/userview8.css',
+                'ubuilder': CustomBuilder.contextPath + '/css/ubuilder.css'
+            };
+
+            UserviewBuilder.updateIframeStyles('#iframe1', dx9Styles, false);
+            if ($("#iframe_screenshot").contents().find('link[data-datalist-style]').length) {
+                UserviewBuilder.updateIframeStyles("#iframe_screenshot", dx9Styles, false);
+            } else {
+                $("#iframe_screenshot").on('load', function () {
+                    UserviewBuilder.updateIframeStyles(this, dx9Styles, false);
+                });
+            }
+        }
+        UserviewBuilder.screenshots = {};
+    },
+    
+    /*
+     * used to check if the Theme Builder is being used
+     */
+    isThemeBuilder: function () {
+        var themeClassName = CustomBuilder.data.setting.properties.theme.className;
+        if(themeClassName.startsWith("org.joget.plugin.enterprise.BuilderTheme") && themeClassName !== "org.joget.plugin.enterprise.BuilderTheme"){
+            return true;
+        } else {
+            return false;
+        }
+    },
+    
+    /*
+     * used to update the theme stylesheet in the iframe. Called from UserviewBuilder.updateThemeStyleSheet
+     */
+    updateIframeStyles: function (iframeSelector, customStyles, isThemeBuilder) {
+        const iframe = $(iframeSelector);
+        const iframeDoc = iframe.contents();
+
+        // Update existing styles
+        Object.keys(customStyles).forEach((key) => {
+            iframeDoc.find(`link[data-${key}-style]`).attr('href', customStyles[key]);
+        });
+
+        if (isThemeBuilder) {
+            // Append new stylesheet
+            iframeDoc.find('head').append('<link data-theme-style href="' + CustomBuilder.contextPath + '/plugin/org.joget.plugin.enterprise.BuilderTheme/theme/base/builderBaseTheme.css" rel="stylesheet" />');
+        } else {
+            // Append new stylesheet
+            iframeDoc.find('head').find('link[data-theme-style]').remove();
         }
     },
     
