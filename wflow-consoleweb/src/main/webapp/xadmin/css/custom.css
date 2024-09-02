@@ -1306,6 +1306,10 @@
     padding: 1.25rem
 }
 
+div.InformationTileComponent .card-body {
+    padding: 2rem;
+}
+
 .card-title {
     margin-bottom: .75rem
 }

@@ -34,6 +34,12 @@
         width:40%;
     }
 
+    @media (max-width: 767px){
+        .form-row label {
+            flex: 0 0 100% !important;
+        }
+    }
+
     .form-row .form-input {
         display:inline-block;
         padding:0.25em;
@@ -230,12 +236,23 @@
                 if (!UI.validateEmail('#profile', '#email')) {
                     valid = false;
                 }
+                
+                UI.validateEmail('#email', true, function(isValid) {
+                    if (!isValid) {
+                        if (alertString != "") {
+                            alertString += '\n';
+                        }
+                        alertString += '@@app.edm.message.invalidEmailFormat@@';
+                        valid = false;
+                    }
 
-                if(valid){
-                    $("form#profile").submit();
-                } else if(alertString !== ''){
-                    alert(alertString);
-                }
+                    // Submit the form if everything is valid
+                    if (valid) {
+                        $("form#profile").submit();
+                    }else{
+                        alert(alertString);
+                    }
+                });
             }
 
             // show/hide the field based on current locale and the chosen locale

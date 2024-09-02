@@ -1,9 +1,6 @@
 package org.joget.apps.userview.lib;
 
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import javax.servlet.http.HttpServletRequest;
 import net.sf.ehcache.Cache;
 import net.sf.ehcache.Element;
@@ -446,7 +443,14 @@ public class AjaxUniversalTheme extends UniversalTheme implements SupportBuilder
     @Override
     public String getServiceWorkerTemplate(String appId, String userviewId, String userviewKey) {
         // read template from cache
-        String key = "serviceWorkerTemplate:"+appId+":"+userviewId+":"+userviewKey;
+        String themeHash = getPropertyString("themeHash");
+        StringJoiner sj = new StringJoiner(":")
+                .add("serviceWorkerTemplate")
+                .add(appId)
+                .add(userviewId)
+                .add(userviewKey)
+                .add(themeHash);
+        String key = sj.toString();
         String html = "";
         Cache cache = (Cache) AppUtil.getApplicationContext().getBean("cssCache");
         if (cache != null) {

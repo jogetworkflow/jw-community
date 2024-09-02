@@ -91,6 +91,7 @@
         <security:intercept-url pattern="/web/console/profile/submit" access="ROLE_ADMIN, ROLE_APPADMIN, ROLE_USER"/>
         <security:intercept-url pattern="/web/console/profile/subscription" access="ROLE_ADMIN, ROLE_APPADMIN, ROLE_USER"/>
         <security:intercept-url pattern="/web/console/home" access="ROLE_ADMIN, ROLE_APPADMIN, ROLE_USER"/>
+        <security:intercept-url pattern="/web/api/validateEmail" access="ROLE_ADMIN, ROLE_APPADMIN, ROLE_USER"/>
 
         <!-- Login, logout and app center -->
         <security:intercept-url pattern="/web/desktop" access="IS_AUTHENTICATED_ANONYMOUSLY"/>    
