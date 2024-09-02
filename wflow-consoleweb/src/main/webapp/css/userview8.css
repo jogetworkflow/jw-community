@@ -1983,6 +1983,7 @@ body.popupBody #section-actions .form-cell, body.popupBody .dataList .actions{
     padding: 15px 15px;
     border-top: 1px solid #e9ecef;
     text-align: right;
+    z-index: 10;
 }
 body.rtl.popupBody #section-actions .form-cell, body.rtl.popupBody .dataList .actions {
     text-align: left;
