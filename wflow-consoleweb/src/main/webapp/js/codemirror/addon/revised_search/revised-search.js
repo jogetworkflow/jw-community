@@ -44,13 +44,18 @@
     return cm.state.search || (cm.state.search = new SearchState());
   };
 
-  var queryCaseInsensitive = function queryCaseInsensitive(query) {
-    return typeof query == "string" && query == query.toLowerCase();
-  };
+  var queryCaseSensitive = function queryCaseSensitive(query, bool) {
+    //If case sensitive is true
+    if (bool){
+        return typeof query == "string" && query == query.toLowerCase();
+    }else {
+        return typeof query == "string";
+    }
+};
 
   var getSearchCursor = function getSearchCursor(cm, query, pos) {
     // Heuristic: if the query string is all lowercase, do a case insensitive search.
-    return cm.getSearchCursor(parseQuery(query), pos, queryCaseInsensitive(query));
+    return cm.getSearchCursor(parseQuery(query), pos, queryCaseSensitive(query, false));
   };
 
   var parseString = function parseString(string) {
@@ -82,15 +87,15 @@
     if (!query || query === '') return;
     state.queryText = query;
     state.query = parseQuery(query);
-    cm.removeOverlay(state.overlay, queryCaseInsensitive(state.query));
-    state.overlay = searchOverlay(state.query, queryCaseInsensitive(state.query));
+    cm.removeOverlay(state.overlay, queryCaseSensitive(state.query, false));
+    state.overlay = searchOverlay(state.query, queryCaseSensitive(state.query, false));
     cm.addOverlay(state.overlay);
     if (cm.showMatchesOnScrollbar) {
       if (state.annotate) {
         state.annotate.clear();
         state.annotate = null;
       }
-      state.annotate = cm.showMatchesOnScrollbar(state.query, queryCaseInsensitive(state.query));
+      state.annotate = cm.showMatchesOnScrollbar(state.query, queryCaseSensitive(state.query, false));
     }
   };
 

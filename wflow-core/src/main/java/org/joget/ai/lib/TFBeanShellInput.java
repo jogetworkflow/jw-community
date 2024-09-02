@@ -132,7 +132,17 @@ public class TFBeanShellInput implements TensorFlowInput {
                         "            return node;\r\n" + //
                         "        };";
         script += "$(row).find(\".code-editor\").on('keydown', function(event) {\n" +
-                    "            if (event.key === \"F1\" && codeeditor.getOption(\"fullScreen\")) {\n" +
+                    "            if (event.keyCode == 90 && event.ctrlKey){\n" +
+                    "               codeeditor.execCommand(\"undo\") \n" +
+                    "               event.preventDefault();\n" +
+                    "               event.stopPropagation();\n" +
+                    "               }\n" +
+                    "            else if (event.keyCode == 89 && event.ctrlKey){\n" +
+                    "               codeeditor.execCommand(\"redo\") \n" +
+                    "               event.preventDefault();\n" +
+                    "               event.stopPropagation();\n" +
+                    "               }\n" +
+                    "            else if (event.key === \"F1\" && !codeeditor.getOption(\"fullScreen\")) {\n" +
                     "                event.preventDefault();\n" +
                     "                if (panels[panelId]) {\n" +
                     "                    //Resets height\n" +

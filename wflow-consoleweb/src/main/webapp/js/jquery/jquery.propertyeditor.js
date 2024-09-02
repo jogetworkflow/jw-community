@@ -9209,9 +9209,20 @@ PropertyEditor.Type.CodeEditor.prototype = {
         }
 
         //Detect keydown for specific actions, such as f12 to toggle full screen mode, escape
-        //to exit full scree mode, and F1 to toggle help panel
+        //to exit full screen mode, and F1 to toggle help panel
+        //and Undo and Redo
         $('#' + this.id).on('keydown', function(event) {
-            if (event.key === "F1" && !thisObj.codeeditor.getOption("fullScreen")) {
+            if (event.keyCode == 90 && event.ctrlKey){
+                thisObj.codeeditor.execCommand("undo")
+                event.preventDefault();
+                event.stopPropagation();
+            }
+            else if (event.keyCode == 89 && event.ctrlKey){
+                thisObj.codeeditor.execCommand("redo")
+                event.preventDefault();
+                event.stopPropagation();
+            }
+            else if (event.key === "F1" && !thisObj.codeeditor.getOption("fullScreen")) {
                 if (panels[panelId]) {
                     //Resets height
                     thisObj.codeeditor.setSize(null, $("#" + thisObj.id).find(".CodeMirror").height()-1)

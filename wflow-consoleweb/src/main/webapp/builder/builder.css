@@ -1277,6 +1277,9 @@ div.section, .header > ol {
 #cbuilder.quick-nav-shown .builder-view {
     left: 30px;
 }
+body[builder-theme] #cbuilder.quick-nav-shown .builder-view {
+    left: 40px;
+}
 .builder-view-header h3 {
     font-size: 24px;
     color: #007bff;

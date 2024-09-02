@@ -99,10 +99,8 @@
             //Make the replace appear
             codeeditor.execCommand("replace");
             
-            //Set height
+            //Set up dialog
             $('#value_editor').find(".CodeMirror-advanced-dialog").css({display: 'none'})
-            $('#value_editor').find(".CodeMirror").css({"height":"auto", "minHeight": "175px"})
-            $('#value_editor').find(".CodeMirror-scroll").css({"maxHeight":"100%", "minHeight":"175px"});
 
             //Set dark theme if dark theme mode is activated
             if ($('body').attr('builder-theme') === "dark") {
@@ -112,7 +110,20 @@
             //Detect keydown for specific actions, such as f12 to toggle full screen mode, escape
             //to exit full scree mode, and F1 to toggle help panel
             $('#value_editor').on('keydown', function(event) {
-                if (event.key === 'F12' || (event.key === 'Escape' && codeeditor.getOption("fullScreen"))){
+                if (event.key === "F1" && !codeeditor.getOption("fullScreen")) {
+                    if (panels[panelId]) {
+                        //Resets height
+                        codeeditor.setSize(null, $("#value_editor").find(".CodeMirror").height()-1)
+                        panels[panelId].clear();
+                        delete panels[panelId];
+                        resetHeight();
+                    } else {
+                        addPanel("top");
+                        resetHeight();
+                    }
+                    event.preventDefault();
+                }
+                else if (event.key === 'F12' || (event.key === 'Escape' && codeeditor.getOption("fullScreen"))){
                     event.preventDefault();
                     if (codeeditor.getOption("fullScreen")) {
                         codeeditor.setOption("fullScreen", false);
@@ -137,6 +148,62 @@
             codeeditor.on('change', function(){
                 textarea.val(codeeditor.getValue());
             });
+
+            var panels = {};
+            var panelId = "";
+
+            function makePanel(where) {
+                var node = document.createElement("div");
+                var label, div, msg;
+
+                node.id = "panel-value_editor";
+                node.className = "panel " + where;
+                
+                div = $("<div>");
+                msg = '<ui:msgEscJS key="console.codemirror.helpMessage"/>';
+                msg.split(" | ").forEach(el =>{
+                    div.append($("<span>").text(el))
+                })
+
+                label = div.appendTo(node);
+
+                label.css({
+                    "color": "black",
+                    "font-size": "12px",
+                    "padding": "5px 10px",
+                    "font-weight":"bold",
+                    "display": "flex",
+                    "flex-direction": "column"
+                })
+
+                if ($("body").hasClass("rtl")) {
+                    label.css({"text-align":"right"})
+                }
+
+                $(node).css({
+                    "background-color":"rgb(255, 250, 143)"
+                })
+
+                return node;
+            };
+
+            function resetHeight(){
+                //Make CodeMirror unscrollable, and height follows the code written 
+                $("#value_editor").find(".CodeMirror").css({"height":"auto", "minHeight":"175px"});
+                $("#value_editor").find(".CodeMirror-scroll").css({"maxHeight":"auto", "minHeight":"175px", "height": "auto"});
+            }
+
+            function addPanel(where) {
+                var node = makePanel(where);
+                panelId = "panel-value_editor";
+                panels[panelId] = codeeditor.addPanel(node, {position: where, stable: true});
+            }
+            
+            var tooltip = $(" <i class=\"fas fa-info-circle\"></i>").attr('title', '<ui:msgEscJS key="console.codemirror.tooltipTitle"/>');
+
+            $("#value_editor").siblings("label").append(tooltip);
+
+            resetHeight();
         });
         function closeDialog() {
             if (parent && parent.PopupDialog.closeDialog) {
