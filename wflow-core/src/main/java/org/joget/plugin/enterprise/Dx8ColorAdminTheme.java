@@ -51,6 +51,7 @@ public class Dx8ColorAdminTheme extends AjaxUniversalTheme {
         //The css variables below are unique to Angle Theme, and Color Admin Theme alone
         //as specific customizations are needed to make it look apart from the other two DX8 Themes
         String colorScheme = getPropertyString("dx8colorScheme");
+        String[] colors = colorScheme.split(";");
 
         String color = "--header-default-bgcolor:#ffffff;";
         color += "--header-link-default-color:#20252A;";
@@ -64,6 +65,7 @@ public class Dx8ColorAdminTheme extends AjaxUniversalTheme {
             color += "--sidebar-icon-default-color:#20252A;";
             color += "--sidebar-active-link-default-color:#20252A;";
         }else {
+            color += "--sidebar-default-bgcolor:"+colors[5]+";";
             color += "--sidebar-menu-default-color:#ffffff;";
             color += "--sidebar-icon-default-color:#ffffff;";
             color += "--sidebar-active-link-default-color:#ffffff;";
@@ -71,8 +73,6 @@ public class Dx8ColorAdminTheme extends AjaxUniversalTheme {
         color += "--sidebar-active-icon-default-color:#00ACAC;";
 
         if (!colorScheme.isEmpty()) {
-            String[] colors = colorScheme.split(";");
-            
             for (int i=0; i < colors.length; i++) {
                 if (!colors[i].isEmpty()) {
                     color += "--dx8theme-color"+(i+1)+":"+colors[i]+ ";";
