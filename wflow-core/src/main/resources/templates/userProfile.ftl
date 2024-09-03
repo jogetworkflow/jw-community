@@ -233,10 +233,7 @@
                         valid = false;
                     }
                 </#if>
-                if (!UI.validateEmail('#profile', '#email')) {
-                    valid = false;
-                }
-                
+
                 UI.validateEmail('#email', true, function(isValid) {
                     if (!isValid) {
                         if (alertString != "") {
