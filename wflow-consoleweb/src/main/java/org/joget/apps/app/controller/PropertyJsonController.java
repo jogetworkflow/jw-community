@@ -147,7 +147,7 @@ public class PropertyJsonController {
                     for (BuilderDefinition def : builderDefinitionList) {
                         Map<String, String> option = new HashMap<String, String>();
                         option.put("value", "org.joget.plugin.enterprise.BuilderTheme." + def.getId());
-                        option.put("label", def.getName());
+                        option.put("label", ResourceBundleUtil.getMessage("tbuilder.builder.name") + " - " + def.getName());
                         list.add(option);
                     }
                 }
