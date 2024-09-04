@@ -431,7 +431,7 @@ public class WorkflowUtil implements ApplicationContextAware {
         HttpServletRequest request = WorkflowUtil.getHttpServletRequest();
         if (request != null) {
             String attributeName = REQUEST_CACHE_KEY_PREFIX + key;
-            cachedObject = request.getAttribute(attributeName);            
+            cachedObject = request.getAttribute(attributeName);     
         }
         return cachedObject;
     }
@@ -440,7 +440,7 @@ public class WorkflowUtil implements ApplicationContextAware {
         HttpServletRequest request = WorkflowUtil.getHttpServletRequest();
         if (request != null) {
             String attributeName = REQUEST_CACHE_KEY_PREFIX + key;
-            request.setAttribute(attributeName, value);            
+            request.setAttribute(attributeName, value);  
         }        
     }
     
