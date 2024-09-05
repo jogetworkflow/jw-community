@@ -201,7 +201,7 @@
             
             var tooltip = $(" <i class=\"fas fa-info-circle\"></i>").attr('title', '<ui:msgEscJS key="console.codemirror.tooltipTitle"/>');
 
-            $("#value_editor").siblings("label").append(tooltip);
+            $("#value_editor").siblings("label").append(" ").append(tooltip);
 
             resetHeight();
         });
