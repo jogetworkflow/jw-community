@@ -8936,6 +8936,7 @@ PropertyEditor.Type.CodeEditor.prototype = {
             autoRefresh:true,
             gutters: ["CodeMirror-lint-markers", "CodeMirror-linenumbers", "CodeMirror-foldgutter"],
             lint: true,
+            historyEventDelay: 100,
             autoCloseTags: true,
             autoCloseBrackets: true,
             foldGutter: true,
