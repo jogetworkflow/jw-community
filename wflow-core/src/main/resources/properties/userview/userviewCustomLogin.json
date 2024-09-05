@@ -76,7 +76,7 @@
 {
     "name" : "direction",
     "label" : "@@userview.customLogin.direction@@",
-    "type" : "number",
+    "type" : "textfield",
     "control_field": "template",
     "control_value": "^[\\s\\S]*\\{\\{direction[\\||\\}]{2}[\\s\\S]*$",
     "control_use_regex": "true",
@@ -144,11 +144,19 @@
     "control_use_regex": "true"
 },
 {
-    "name" : "usernamePlaceholderColor",
-    "label" : "@@userview.customLogin.usernamePlaceholderColor@@",
+    "name" : "usernamePlaceholder",
+    "label" : "@@userview.customLogin.usernamePlaceholder@@",
+    "type" : "textfield",
+    "control_field": "template",
+    "control_value": "^[\\s\\S]*\\{\\{usernamePlaceholder[\\||\\}]{2}[\\s\\S]*$",
+    "control_use_regex": "true"
+},
+{
+    "name" : "usernameFieldColor",
+    "label" : "@@userview.customLogin.usernameFieldColor@@",
     "type" : "color",
     "control_field": "template",
-    "control_value": "^[\\s\\S]*\\{\\{usernamePlaceholderColor[\\||\\}]{2}[\\s\\S]*$",
+    "control_value": "^[\\s\\S]*\\{\\{usernameFieldColor[\\||\\}]{2}[\\s\\S]*$",
     "control_use_regex": "true"
 },
 {
@@ -160,11 +168,19 @@
     "control_use_regex": "true"
 },
 {
-    "name" : "passwordPlaceholderColor",
-    "label" : "@@userview.customLogin.passwordPlaceholderColor@@",
+    "name" : "passwordPlaceholder",
+    "label" : "@@userview.customLogin.passwordPlaceholder@@",
+    "type" : "textfield",
+    "control_field": "template",
+    "control_value": "^[\\s\\S]*\\{\\{passwordPlaceholder[\\||\\}]{2}[\\s\\S]*$",
+    "control_use_regex": "true"
+},
+{
+    "name" : "passwordFieldColor",
+    "label" : "@@userview.customLogin.passwordFieldColor@@",
     "type" : "color",
     "control_field": "template",
-    "control_value": "^[\\s\\S]*\\{\\{passwordPlaceholderColor[\\||\\}]{2}[\\s\\S]*$",
+    "control_value": "^[\\s\\S]*\\{\\{passwordFieldColor[\\||\\}]{2}[\\s\\S]*$",
     "control_use_regex": "true"
 },
 {
