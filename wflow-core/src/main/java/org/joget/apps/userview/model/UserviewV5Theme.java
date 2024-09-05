@@ -299,8 +299,16 @@ public abstract class UserviewV5Theme extends UserviewTheme {
                                 "      $('#loginButton').click();\n" +
                                 "    }\n" +
                                 "  }); \n" +
-                                "$(\"body#login #main > div\").css({maxWidth: \"100%\"})\n"; 
-                
+                                "$(\"body#login #main > div\").css({maxWidth: \"100%\"})\n"+
+                                "$(\"html\").css({\n" + //
+                                "    \"-ms-overflow-style\": \"none\",\n" + //
+                                "    \"scrollbar-width\": \"none\",\n" + //
+                                "})\n" + //
+                                "$('<style>' +\n" + //
+                                "  'html::-webkit-scrollbar { width: 0px; }' +\n" + //
+                                "  'html::-webkit-scrollbar-thumb { background: transparent; }' +\n" + //
+                                "  '</style>').appendTo('head');";
+
                 //Handle login footer
                 String footerContent = DirectoryUtil.getLoginFormFooter();
                 footerContent = footerContent.replace("</script>", "<\\/script>");
