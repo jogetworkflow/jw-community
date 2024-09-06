@@ -555,6 +555,13 @@ public class CachedUserviewMenu extends UserviewMenu {
                         // timed out, return pending content
                         content = loadingInProgressContent;
                         menuAsyncCache.put(cacheKey, content);
+                        
+                        // add slight delay to prevent blank response in JBoss EAP
+                        try {
+                            Thread.sleep(100);
+                        } catch(InterruptedException ie) {
+                            // ignore
+                        }
                     } catch (InterruptedException | ExecutionException e) {
                         // don't cache if exception encountered
                         menuAsyncCache.remove(cacheKey);
