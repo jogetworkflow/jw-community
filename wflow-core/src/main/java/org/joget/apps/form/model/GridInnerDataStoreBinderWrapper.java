@@ -173,6 +173,13 @@ public class GridInnerDataStoreBinderWrapper extends FormBinder implements FormS
                     rowFormData.setPrimaryKeyValue(r.getId());
                 }
                 
+                //set the data to load binder, else readonly field can't store correctly.
+                if (innerForm.getLoadBinder() != null) {
+                    FormRowSet tempSet = new FormRowSet();
+                    tempSet.add(r);
+                    rowFormData.setLoadBinderData(innerForm.getLoadBinder(), tempSet);
+                }
+                
                 //format data
                 FormUtil.executeElementFormatData(innerForm, rowFormData);
                 

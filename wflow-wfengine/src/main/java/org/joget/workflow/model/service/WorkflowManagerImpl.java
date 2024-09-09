@@ -2493,6 +2493,10 @@ public class WorkflowManagerImpl implements WorkflowManager {
                 Map var = new HashMap();
                 var.put(variableId, variableValue);
                 wfActivity.set_result(var);
+                
+                // clear cache 
+                WorkflowUtil.writeRequestCache("processId_" + wfActivity.container().key(), null);
+                WorkflowUtil.writeRequestCache("activityId_" + activityInstanceId, null);
             }
 
 
@@ -2553,6 +2557,10 @@ public class WorkflowManagerImpl implements WorkflowManager {
                     
                     wfActivity.set_result(temp);
                 }
+                
+                // clear cache 
+                WorkflowUtil.writeRequestCache("processId_" + wfActivity.container().key(), null);
+                WorkflowUtil.writeRequestCache("activityId_" + activityInstanceId, null);
             }
         } catch (Exception ex) {
             LogUtil.warn(getClass().getName(), ex.getMessage());
@@ -2572,7 +2580,7 @@ public class WorkflowManagerImpl implements WorkflowManager {
      * @param variableValue
      */
     public void processVariable(String processInstanceId, String variableId, Object variableValue) {
-
+        
         SharkConnection sc = null;
 
         try {
@@ -2602,6 +2610,9 @@ public class WorkflowManagerImpl implements WorkflowManager {
                 Map processContext = wfProcess.process_context();
                 processContext.put(variableId, variableValue);
                 wfProcess.set_process_context(processContext);
+
+                //clear cache
+                WorkflowUtil.writeRequestCache("processId_" + processInstanceId, null);
             }
 
         } catch (Exception ex) {
@@ -2621,7 +2632,7 @@ public class WorkflowManagerImpl implements WorkflowManager {
      * @param variables
      */
     public void processVariables(String processInstanceId, Map<String, String> variables) {
-
+        
         SharkConnection sc = null;
 
         try {
@@ -2659,6 +2670,9 @@ public class WorkflowManagerImpl implements WorkflowManager {
                         LogUtil.warn(getClass().getName(), e.getMessage());
                     }
                 }
+
+                //clear cache
+                WorkflowUtil.writeRequestCache("processId_" + processInstanceId, null);
             }
 
         } catch (Exception ex) {
