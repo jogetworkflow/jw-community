@@ -130,10 +130,6 @@
                         dict[propertyName] = $(this).find('.value i').prop("outerHTML");
                     }else if ($(this).find("input").val() !== ""){
                         dict[propertyName] = $(this).find("input").val();
-
-                        if (propertyName === "direction"){
-                            dict[propertyName] = dict[propertyName].toString() + "deg";    
-                        }
                     }
                 })
             
@@ -151,10 +147,6 @@
                 }
                 else if ($(this).val() !== ""){
                     dict[propertyName] = $(this).val();
-
-                    if (propertyName === "direction"){
-                        dict[propertyName] = dict[propertyName].toString() + "deg";
-                    }
                 }
             })
 
