@@ -3529,6 +3529,7 @@
         container.after('<span class="seperator"></span><ul class="app_tools"></ul>');
         
         var appTools = $("#builder-menu > ul.app_tools");
+        appTools.find("#marketplace-btn").parent().remove();
         if ($('body').hasClass('default-builder')){
             appTools.append('<li><a title="Get add-ons" id="marketplace-btn" onclick="CustomBuilder.Builder.loadSeamlessMarketplace()" data-cbuilder-view="marketplace"><i class="las la-plus"></i></a></li>');
         }
