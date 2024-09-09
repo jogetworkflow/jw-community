@@ -3,6 +3,18 @@ Joget DX 7 COMMUNITY
 For more information, please refer to 
 https://dev.joget.org/community/display/DX7/Joget+DX+7+Knowledge+Base
 
+CHANGES IN 7.1.46
+=================
+d810aae31 Fixed: wflow-core - List - Action link & button HTML attributes are not escape correctly. @7.0-SNAPSHOT
+4639b2b00 Fixed: wflow-core - Import App - Extra prefix on form data tables after import when table indexes are used. T4482 @8.1-SNAPSHOT
+846cb7022 Fixed: jw-community - Security - Upgrade Apache Tomcat to 9.0.90 for CVE-2024-34750. @7.0-SNAPSHOT
+2efb49fef Fixed: wflow-core - List Inbox - Not working with PostgreSQL. T4497 @7.0-SNAPSHOT
+05ce58554 Fixed: jw-community - Security - Update BouncyCastle to 1.78.1, Spring Framework to 5.3.37 & Spring Security to 5.8.12. @7.1-SNAPSHOT
+b854e5ed2 Fixed: wflow-commons - String Util - Space is escaped to '+' char instead of '%20'. T4239 @7.0-SNAPSHOT
+633505ef8 Fixed: wflow-core - Security - Update BouncyCastle to 1.78.1. @7.0-SNAPSHOT
+c6c22f0df Fixed: wflow-core - Email Tool - Inline attachment CID should not contains space and special chars. @7.0-SNAPSHOT
+89c6375bc Fixed: wflow-consoleweb - Security - CSRF does not check on login page. T4385 @7.0-SNAPSHOT
+
 CHANGES IN 7.1.45
 =================
 edcc0f382 Fixed: wflow-consoleweb - Security - Remove version info from public page. T4081 @7.0-SNAPSHOT
