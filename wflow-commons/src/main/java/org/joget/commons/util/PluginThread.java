@@ -138,6 +138,12 @@ public final class PluginThread extends Thread {
             Enumeration<String> attributeNames = request.getAttributeNames();
             while (attributeNames.hasMoreElements()) {
                 String attributeName = attributeNames.nextElement();
+                
+                //skip cache attribute for process, no way to clear it after plugin thread created
+                if (attributeName.startsWith("RequestCacheKey_processId_") || attributeName.startsWith("RequestCacheKey_activityId_")) {
+                    continue;
+                }
+                
                 Object attributeValue = request.getAttribute(attributeName);
                 attributes.put(attributeName, attributeValue);
             }
