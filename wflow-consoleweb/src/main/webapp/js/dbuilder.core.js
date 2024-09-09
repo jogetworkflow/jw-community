@@ -2876,6 +2876,9 @@ DatalistBuilder = {
                             options.push({label : UI.escapeHTML(action.label), value : action.className});
                         }
                     }
+                    
+                    //adding marketplace link
+                    options.push({label : get_cbuilder_msg('cbuilder.seamless.marketplace.more.plugin'), value : 'org.joget.apps.datalist.model.DataListAction', marketplace: "true"});
         
                     return options;
                 },
@@ -3535,6 +3538,18 @@ DatalistBuilder = {
         //use back existing script to reload palette
         var deferreds = [];
         DatalistBuilder.initActionList(deferreds);
+        
+        $.when.apply($, deferreds).then(function() {
+            //reload column action field
+            $(".property-editor-container").each(function(){
+                var thisEditor = $(this);
+                $(thisEditor).find(".element-select-field[name$='_action']").each(function(){
+                    var field = $(this).data("field");
+                    PropertyEditor.Util.retrieveOptionsFromCallback(field, field.properties);
+                    field.handleAjaxOptions(field.properties.options);
+                });
+            });
+        });
     },
             
     /*
