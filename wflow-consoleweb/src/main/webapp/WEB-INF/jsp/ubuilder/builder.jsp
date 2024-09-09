@@ -23,12 +23,12 @@
                     console.log("Error initializing ${element.className} : " + err);
                 }
             }
+        CustomBuilder.createPaletteCategory('<ui:msgEscJS key="ubuilder.pageComponents"/>', "", "page_components_palette");
         <c:forEach items="${categories}" var="category">
             CustomBuilder.createPaletteCategory('<c:out value='${fn:replace(category, "\'", "\\\\\'")}' escapeXml='false'/>');
-        </c:forEach>
-        CustomBuilder.createPaletteCategory('<ui:msgEscJS key="ubuilder.pageComponents"/>', "", "page_components_palette");    
+        </c:forEach>    
         <c:forEach items="${pageComponent}" var="element">
-            <c:set var="category" value=""/>
+            <c:set var="category"><ui:msgEscJS key="ubuilder.pageComponents"/></c:set>
             <c:set var="pwaValidation" value=""/>
             <c:set var="type" value="component"/>
             <c:set var="propertyOptions" value="${element.propertyOptions}"/>
@@ -39,11 +39,18 @@
             <c:if test="${element.isUiMenu()}">
                 <c:set var="type" value="menu"/>   
                 <c:set var="pwaValidation" value="'pwaValidation' : '${element.pwaValidationType}', "/>    
-                <c:set var="category" value='${category};${fn:replace(element.category, "\'", "\\\\\'")}'/>
+                <c:choose>    
+                    <c:when test="${element.category eq 'Marketplace'}">
+                        <c:set var="category" value='${fn:replace(element.category, "\'", "\\\\\'")}'/>
+                    </c:when>  
+                    <c:otherwise>
+                        <c:set var="category" value='${category};${fn:replace(element.category, "\'", "\\\\\'")}'/>
+                    </c:otherwise>    
+                </c:choose>   
             </c:if>
             try {
                 <c:set var="initScript"> 
-                    CustomBuilder.initPaletteElement('<ui:msgEscJS key="ubuilder.pageComponents"/>${category}', '${element.className}', '<c:out value='${fn:replace(element.i18nLabel, "\'", "\\\\\'")}' escapeXml='false'/>', '<ui:escape value='${element.icon}' format='javascript'/>', ${propertyOptions}, '<ui:escape value='${element.defaultPropertyValues}' format='javascript'/>', !${element.isHiddenPlugin()}, "", {${pwaValidation} 'developer_mode' : '<ui:escape value='${element.developerMode}' format='javascript'/>', 'type' : '${type}', 'builderTemplate' : ${template}}); 
+                    CustomBuilder.initPaletteElement('${category}', '${element.className}', '<c:out value='${fn:replace(element.i18nLabel, "\'", "\\\\\'")}' escapeXml='false'/>', '<ui:escape value='${element.icon}' format='javascript'/>', ${propertyOptions}, '<ui:escape value='${element.defaultPropertyValues}' format='javascript'/>', !${element.isHiddenPlugin()}, "", {${pwaValidation} 'developer_mode' : '<ui:escape value='${element.developerMode}' format='javascript'/>', 'type' : '${type}', 'builderTemplate' : ${template}}); 
                 </c:set>
                 <c:set var="initScript"><ui:escape value="${initScript}" format="javascript"/></c:set>
                 eval("${initScript}");    
