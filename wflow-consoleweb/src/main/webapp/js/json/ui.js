@@ -667,6 +667,8 @@ JsonTable.prototype = {
         }
 
         var dataPreProcess = function(jsonObject) {
+            $("#" + thisObject.divToUpdate).trigger("refresh");
+            
             //custom pre-processor
             if(thisObject.customPreProcessor)
                 jsonObject = thisObject.customPreProcessor(jsonObject);
@@ -836,8 +838,6 @@ JsonTable.prototype = {
             newUrl += "?";
         }
         newUrl += "&_=" + new Date().valueOf().toString();
-        
-        $("#" + thisObject.divToUpdate).trigger("refresh");
 
         this.flexiGrid.flexReload({
             url: newUrl

@@ -471,8 +471,19 @@ public class PluginManager implements ApplicationContextAware {
                     String filename = bundle.getLocation();
                     filename = filename.substring(filename.lastIndexOf(File.separator) + 1);
                     
-                    //the bundle version may converted the 8.0-BETA to 8.0.0.BETA, read it from properties
-                    if (!filename.contains(version)) {
+                    if (!filename.contains(name) && !filename.contains(version)) { //need to be same with Marketplace
+                        // Remove the extension (.jar) first
+                        String withoutExtension = filename.substring(0, filename.lastIndexOf("."));
+
+                        // Split based on the first occurrence of a digit
+                        String[] parts = withoutExtension.split("-(?=\\d)", 2); 
+
+                        if (parts.length == 2) {
+                            name = parts[0];  
+                            version = parts[1];  
+                        }
+                    } else if (!filename.contains(version)) {
+                        //the bundle version may converted the 8.0-BETA to 8.0.0.BETA, read it from properties
                         String path = bundle.getSymbolicName();
                         path = path.substring(0, path.lastIndexOf(".")) + "/" + path.substring(path.lastIndexOf(".") + 1);
                         URL resourceUrl = bundle.getResource("META-INF/maven/"+path+"/pom.properties");
@@ -493,7 +504,7 @@ public class PluginManager implements ApplicationContextAware {
                     }
                     
                     if (getVersionOnly) {
-                        bundles.put(dic.get("Bundle-Name"), version);
+                        bundles.put(name, version);
                     } else {
                         Map<String, String> data = new HashMap<String, String>();
                         
@@ -503,7 +514,7 @@ public class PluginManager implements ApplicationContextAware {
                         data.put("description", dic.get("Joget-Description") != null?dic.get("Joget-Description"):"");
                         data.put("pluginClass", ClassUtils.getUserClass(p).getName()); //just add 1 for easy locate the bundle later
                         
-                        bundles.put(dic.get("Bundle-Name"), data);
+                        bundles.put(name, data);
                     }
                     
                     checked.add(bundle.getSymbolicName());

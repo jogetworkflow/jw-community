@@ -267,7 +267,7 @@
         margin-right: 0.25em;
     }
     #plugin-container .card .card-header .installing {
-        margin-left: 5px;
+        margin:0 5px;
     }
     #plugin-container.ajaxloading{
         min-height: 85%;
@@ -303,7 +303,7 @@
     }
     .jgt-badge{
         background: var(--theme-active-color-1, #0069d9);
-        color: var(--theme-label-color-1, #ffffff);
+        color: #ffffff;
         display: inline-block;
         min-width: 18px;
         text-align: center;
@@ -584,7 +584,7 @@
         } else {
             $('#plugin-container').append('<p class="no_result update"><ui:msgEscJS key="appCenter.link.marketplace.noResult"/></p>');
         }
-        $("#plugins-tabs [ref='update'] .jgt-badge").text($("#plugin-container .card.update:visible").length);
+        $("#plugins-tabs [ref='update'] .jgt-badge").text($("#plugin-container .card.update:not(.search_hidden)").length);
         
         //installed
         if ($("#plugin-container .card.installed:not(.search_hidden)").length > 0) {

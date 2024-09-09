@@ -795,7 +795,7 @@ UserviewBuilder = {
         $("body").addClass("page-component-editor");
         $("#save-content-btn").removeClass("hasChange");
         
-        $(".components-list > li").hide();
+        $(".components-list > li:not([data-section='components-Marketplace'])").hide();
         $("[data-section].page_components_palette").show();
         
         var menu = UserviewBuilder.selectedMenu;
@@ -2539,10 +2539,12 @@ UserviewBuilder = {
                     type: element.type
                 };
 
-                if (element.type !== "menu") {
-                    element.category = get_cbuilder_msg("ubuilder.pageComponents");
-                } else {
-                    element.category = get_cbuilder_msg("ubuilder.pageComponents") + ";" + element.category;
+                if (element.category !== 'Marketplace') {
+                    if (element.type !== "menu") {
+                        element.category = get_cbuilder_msg("ubuilder.pageComponents");
+                    } else {
+                        element.category = get_cbuilder_msg("ubuilder.pageComponents") + ";" + element.category;
+                    }
                 }
             } catch (err) {
                 if (console && console.log) {

@@ -175,45 +175,49 @@ public class UserviewBuilderWebController {
         // add elements to palette
         for (Plugin plugin : list) {
             JSONArray jsonArray = new JSONArray();
-            Map<String, Object> pluginObject = new HashMap<>();
-            pluginObject.put("className", plugin.getClass().getName());
-            pluginObject.put("i18nLabel", plugin.getI18nLabel());
-            pluginObject.put("developer", ((DefaultPlugin) plugin).getDeveloperMode());
+            try {
+                Map<String, Object> pluginObject = new HashMap<>();
+                pluginObject.put("className", plugin.getClass().getName());
+                pluginObject.put("i18nLabel", plugin.getI18nLabel());
+                pluginObject.put("developer", ((DefaultPlugin) plugin).getDeveloperMode());
 
-            if (plugin instanceof UserviewMenu) {
-                UserviewMenu menu = (UserviewMenu) plugin;
-                CachedUserviewMenu cachedMenu = new CachedUserviewMenu(menu);
+                if (plugin instanceof UserviewMenu) {
+                    UserviewMenu menu = (UserviewMenu) plugin;
+                    CachedUserviewMenu cachedMenu = new CachedUserviewMenu(menu);
 
-                pluginObject.put("defaultPropertyValues", cachedMenu.getDefaultPropertyValues());
-                pluginObject.put("category", cachedMenu.getCategory());
-                pluginObject.put("icon", cachedMenu.getIcon());
-                pluginObject.put("template", cachedMenu.getBuilderJavaScriptTemplate());
-                pluginObject.put("hidden", cachedMenu.isHiddenPlugin());
-                pluginObject.put("pwaValidationType", cachedMenu.getPwaValidationType());
-                pluginObject.put("type", "menu");
-                jsonArray = new JSONArray(cachedMenu.getPropertyOptions());
-                
-            } else if (plugin instanceof PageComponent) {
-                PageComponent component = (PageComponent) plugin;
+                    pluginObject.put("defaultPropertyValues", cachedMenu.getDefaultPropertyValues());
+                    pluginObject.put("category", cachedMenu.getCategory());
+                    pluginObject.put("icon", cachedMenu.getIcon());
+                    pluginObject.put("template", cachedMenu.getBuilderJavaScriptTemplate());
+                    pluginObject.put("hidden", cachedMenu.isHiddenPlugin());
+                    pluginObject.put("pwaValidationType", cachedMenu.getPwaValidationType());
+                    pluginObject.put("type", "menu");
+                    jsonArray = new JSONArray(cachedMenu.getPropertyOptions());
 
-                pluginObject.put("defaultPropertyValues", component.getDefaultPropertyValues());
-                pluginObject.put("category", component.getCategory());
-                pluginObject.put("icon", component.getIcon());
-                pluginObject.put("template", component.getBuilderJavaScriptTemplate());
-                pluginObject.put("hidden", component.isHiddenPlugin());
-                pluginObject.put("pwaValidationType", component);
-                pluginObject.put("type", "component");
-                jsonArray = new JSONArray(component.getPropertyOptions());
+                } else if (plugin instanceof PageComponent) {
+                    PageComponent component = (PageComponent) plugin;
+
+                    pluginObject.put("defaultPropertyValues", component.getDefaultPropertyValues());
+                    pluginObject.put("category", component.getCategory());
+                    pluginObject.put("icon", component.getIcon());
+                    pluginObject.put("template", component.getBuilderJavaScriptTemplate());
+                    pluginObject.put("hidden", component.isHiddenPlugin());
+                    pluginObject.put("pwaValidationType", component);
+                    pluginObject.put("type", "component");
+                    jsonArray = new JSONArray(component.getPropertyOptions());
+                }
+                JSONArray newPropertyOptions = new JSONArray();
+                for (int i = 0; i < jsonArray.length(); i++) {
+                    JSONObject jsonObject = jsonArray.getJSONObject(i);
+                    JSONObject newObject = new JSONObject();
+                    PropertyUtil.recursivelyAddQuotes(newObject, jsonObject);
+                    newPropertyOptions.put(newObject);
+                }
+                pluginObject.put("propertyOptions", newPropertyOptions.toString(2));
+                pluginList.add(pluginObject);
+            } catch (Exception e) {
+                LogUtil.warn(UserviewBuilderWebController.class.getName(), plugin.getI18nLabel() + " can't load correctly with exception : " + e.getMessage());
             }
-            JSONArray newPropertyOptions = new JSONArray();
-            for (int i = 0; i < jsonArray.length(); i++) {
-                JSONObject jsonObject = jsonArray.getJSONObject(i);
-                JSONObject newObject = new JSONObject();
-                PropertyUtil.recursivelyAddQuotes(newObject, jsonObject);
-                newPropertyOptions.put(newObject);
-            }
-            pluginObject.put("propertyOptions", newPropertyOptions.toString(2));
-            pluginList.add(pluginObject);
         }
 
         // sort based on categories
