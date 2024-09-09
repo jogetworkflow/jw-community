@@ -58,6 +58,7 @@ public class TFBeanShellInput implements TensorFlowInput {
                         "            autoRefresh:true,\n" +
                         "            gutters: [\"CodeMirror-lint-markers\", \"CodeMirror-linenumbers\", \"CodeMirror-foldgutter\"],\n" +
                         "            lint: true,\n" +
+                        "            historyEventDelay: 100,\n"+
                         "            autoCloseTags: true,\n" +
                         "            autoCloseBrackets: true,\n" +
                         "            foldGutter: true,\n" +

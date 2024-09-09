@@ -63,6 +63,7 @@
                 theme: "default",
                 gutters: ["CodeMirror-lint-markers", "CodeMirror-linenumbers", "CodeMirror-foldgutter"],
                 lint: true,
+                historyEventDelay: 100,
                 autoCloseTags: true,
                 autoCloseBrackets: true,
                 foldGutter: true,
@@ -198,7 +199,7 @@
             
             var tooltip = $(" <i class=\"fas fa-info-circle\"></i>").attr('title', '<ui:msgEscJS key="console.codemirror.tooltipTitle"/>');
 
-            $("#value_editor").siblings("label").append(tooltip);
+            $("#value_editor").siblings("label").append(" ").append(tooltip);
 
             resetHeight();
         });

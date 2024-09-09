@@ -64,6 +64,7 @@
                 autoRefresh:true,
                 matchBrackets: true,
                 theme: "default",
+                historyEventDelay: 100,
                 gutters: ["CodeMirror-lint-markers", "CodeMirror-linenumbers", "CodeMirror-foldgutter"],
                 lint: true,
                 autoCloseTags: true,
