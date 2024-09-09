@@ -6,11 +6,11 @@
     position: relative;
     min-width: 0;
     word-wrap: break-word;
-    background-color: var(--jgt-card-colorBgContainer);
+    background-color: var(--jgt-form-colorBgContainer);
     background-clip: border-box;
-    padding-bottom: 20px;
-    border: var(--jgt-card-lineWidth) var(--jgt-card-lineType) var(--jgt-card-colorBorderSecondary);
-    border-radius: var(--jgt-card-borderRadiusLG);
+    padding-bottom: var(--jgt-form-sectionPaddingBottom);
+    border: var(--jgt-form-lineWidth) var(--jgt-form-lineType) var(--jgt-form-colorBorder);
+    border-radius: var(--jgt-form-borderRadiusLG);
 }
 
 .subform-section {
@@ -31,18 +31,17 @@
 
 .form-section-title,
 .subform-section-title {
-    padding: 0 var(--jgt-card-padding);
-    margin-bottom: 0;
-    background-color: var(--jgt-card-headerBg);
-    border-radius: var(--jgt-card-borderRadiusLG) var(--jgt-card-borderRadiusLG) 0 0;
+    padding: 0 var(--jgt-form-headerPaddingInline);
+    background-color: var(--jgt-form-headerBg);
+    border-radius: var(--jgt-form-borderRadiusLG) var(--jgt-form-borderRadiusLG) 0 0;
     flex: 0 0 100%;
     margin-bottom: 20px;
-    border-bottom: var(--jgt-card-lineWidth) var(--jgt-card-lineType) var(--jgt-card-colorBorderSecondary);
-    color: var(--jgt-card-colorTextHeading);
-    font-size: var(--jgt-card-headerFontSize);
-    height: var(--jgt-card-headerHeight);
-    line-height: var(--jgt-card-headerHeight);
-    font-weight: var(--jgt-card-fontWeightStrong);
+    border-bottom: var(--jgt-form-lineWidth) var(--jgt-form-lineType) var(--jgt-form-colorBorder);
+    color: var(--jgt-form-colorTextHeading);
+    font-size: var(--jgt-form-headerFontSize);
+    height: var(--jgt-form-headerHeight);
+    line-height: var(--jgt-form-headerHeight);
+    font-weight: var(--jgt-form-headerFontWeight);
 }
 
 .form-section-empty {
@@ -318,8 +317,8 @@ body #form-canvas .subform-section-title span {
     text-shadow: none;
     -moz-border-radius: 0px;
     -webkit-border-radius: 0px;
-    font-weight: var(--jgt-card-fontWeightStrong);
-    font-size: 15px;
+    font-weight: var(--jgt-form-headerFontWeight);
+    font-size: var(--jgt-form-headerFontSize);
     display: block;
 }
 
