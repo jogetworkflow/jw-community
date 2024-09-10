@@ -298,9 +298,7 @@ body#home #home_column .row .p-2{
 }
 #design_app .card .card-body .card-actions a{
     flex: 1 1 100%;
-    padding: 0px !important;
     border-radius: 0.475rem;
-    line-height: var(--jgt-btn-controlHeight);
 }
 #design_app #newTemplate.main-body-content {
     padding: 0 !important;
@@ -438,7 +436,7 @@ a.fs-4.text-dark.fw-bold.text-hover-primary.text-dark.lh-base.commuLabel {
         position: relative;
     }
     body#home #content.page_content {
-        padding-top: 15px;
+        padding-top: 0px !important;
     }
     body#home header.navbar.active{
         background-color: transparent !important;
@@ -909,11 +907,26 @@ body.dark-sidebar header.navbar.active{
     top: 3px;
 }
 #bannerLabel{
-    margin-left: 8px;
+    margin-left: 5px;
 }
 .appCenterLabel{
     font-size: 26px;
     font-weight: 600;
+}
+.page-heading{
+    padding-left: 0px;
+}
+body#home .more-action{
+    position: relative;
+    right: -10px;
+}
+body#home.rtl .more-action{
+    position: relative;
+    right: unset;
+    left: -5px;
+}
+header.navbar .container-fluid{
+    padding-right: 25px;
 }
 @media (min-width: 1280px) {
     body.rtl.sidebar-minimized #page {
@@ -921,10 +934,29 @@ body.dark-sidebar header.navbar.active{
         padding-left: unset !important;
     }
 }
-.page-heading{
-    padding-left: 0px;
-}
 
+@media (max-width: 1024px) {
+    body#home #content.page_content{
+        padding-inline: 0px !important;
+        padding-top: var(--global-headerHeight);
+    }
+    body#home.dark-sidebar header.navbar {
+        background-image: linear-gradient(90deg, #0B3932, #0E4A40);
+        background-color: #0B3932 !important;
+    }
+    body#home .line-wrap .line{
+        background: #fff;
+    }
+    body#home .header-nav a.btn {
+        color: #fff;
+    }
+    body#home #bannerImage{
+        border-radius: 0px !important;
+    }
+    body#home #homeContent{
+        padding-inline: 40px;
+    }
+}
 @media (max-width: 991px) {
     .builder-style-67a8e69e-2285-4ee2-9e2d-e23dd82d65fd {
         padding-bottom: 16px !important;
@@ -984,6 +1016,10 @@ body.rtl .addNew{
 body.rtl .taskReminder{
     margin-right: 5px;
 }
+body.rtl .taskReminder .badge{
+    right: unset;
+    left: 3px;
+}
 body.rtl .page-heading{
     padding-right: 4px;
 }
@@ -1010,6 +1046,7 @@ body.rtl #navigation li.mm-profile.user-link small{
     text-align: right;
 }
 body.rtl .header-nav a.btn i{
+    padding-left: 5px;
     padding-right: 0px;
 }
 body.rtl .addNew.dropdown .dropdown-menu a{
