@@ -353,10 +353,6 @@ a.fs-4.text-dark.fw-bold.text-hover-primary.text-dark.lh-base.commuLabel {
     border-radius: 10px !important;
 }
 
-.dataList span.pagelinks{
-    width: 100%;
-}
-
 @media (max-width: 450px) {
     #clock,#date, #assignment_msg > a, #assignment_msg > h3{
         display: none !important;
