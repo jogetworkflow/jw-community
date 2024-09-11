@@ -11,12 +11,12 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import org.joget.apps.datalist.model.DataListInboxSetting;
+import org.joget.apps.datalist.model.InboxFilterQueryObject;
 import org.joget.commons.util.PagedList;
 import org.joget.workflow.model.WorkflowPackage;
 import org.joget.workflow.model.WorkflowProcessLink;
 import org.joget.workflow.model.WorkflowProcessResult;
-import org.joget.workflow.shark.migrate.model.MigrateActivity;
-import org.joget.workflow.shark.migrate.model.MigrateProcess;
 
 /**
  * Service methods to interact with workflow engine
@@ -24,6 +24,7 @@ import org.joget.workflow.shark.migrate.model.MigrateProcess;
  */
 public interface WorkflowManager {
     public static String LATEST = "latest";
+    public static final String ARCHIVE_SETTING = "archive_processing_status";
 
     /**
      * Set the workflow variable based on an activity instance ID.
@@ -964,13 +965,6 @@ public interface WorkflowManager {
      * Internal method used to recover stuck tool activities due to improper shutdown
      */
     void internalRecoverStuckToolActivities();
-    
-    /**
-     * Internal method used to updates workflow variable and deadline of migrated process instance
-     * @param process
-     * @param acts
-     */
-    void internalUpdateMigratedProcess(MigrateProcess process, Collection<MigrateActivity> acts);
 
     /**
      * Gets the parent process instance id of a process instance
@@ -1102,4 +1096,20 @@ public interface WorkflowManager {
      * To migrate process data to history tables
      */
     public void internalMigrateProcessHistories();
+    
+    /**
+     * To set setting of inbox optimization
+     * @param setting
+     * @return 
+     */
+    public DataListInboxSetting processInboxSetting(DataListInboxSetting setting);
+    
+    /**
+     * Build condition for inbox optimization based on setting
+     * @param setting
+     * @param query
+     * @param driver
+     * @return 
+     */
+    public InboxFilterQueryObject buildInboxCondition(DataListInboxSetting setting, InboxFilterQueryObject query, String driver);
 }

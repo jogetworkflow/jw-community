@@ -74,6 +74,8 @@ import org.enhydra.shark.api.common.AssignmentFilterBuilder;
 import org.enhydra.shark.instancepersistence.data.ProcessStateDO;
 import org.enhydra.shark.instancepersistence.data.ProcessStateQuery;
 import org.enhydra.shark.xpdl.XMLUtil;
+import org.joget.apps.datalist.model.DataListInboxSetting;
+import org.joget.apps.datalist.model.InboxFilterQueryObject;
 import org.joget.commons.spring.model.Setting;
 import org.joget.commons.util.DynamicDataSourceManager;
 import org.joget.commons.util.HostManager;
@@ -87,7 +89,9 @@ import org.joget.workflow.shark.migrate.model.MigrateActivity;
 import org.joget.workflow.shark.migrate.model.MigrateProcess;
 import org.joget.workflow.shark.model.SharkActivityHistory;
 import org.joget.workflow.shark.model.SharkProcessHistory;
-import org.joget.workflow.shark.model.dao.WorkflowAssignmentDao;
+import org.joget.workflow.shark.model.dao.SharkWorkflowAssignmentDao;
+import org.joget.workflow.model.dao.WorkflowAssignmentDao;
+import org.joget.workflow.model.service.WorkflowManager;
 import org.joget.workflow.util.DeadlineThreadManager;
 import org.json.JSONObject;
 import org.springframework.context.ApplicationContext;
@@ -109,7 +113,6 @@ public class WorkflowManagerImpl implements WorkflowManager {
     private WorkflowAssignmentDao workflowAssignmentDao;
     private Map processStateMap;
     private String previousProfile;
-    public static final String ARCHIVE_SETTING = "archive_processing_status";
     
     private static ThreadLocal migrationAssignmentUserList = new ThreadLocal() {
         @Override
@@ -5387,7 +5390,6 @@ public class WorkflowManagerImpl implements WorkflowManager {
      * @param process
      * @param acts
      */
-    @Override
     public void internalUpdateMigratedProcess(MigrateProcess process, Collection<MigrateActivity> acts) {
         SharkConnection sc = null;
 
@@ -6231,7 +6233,7 @@ public class WorkflowManagerImpl implements WorkflowManager {
             history.setProcessName(WorkflowUtil.processVariable(history.getProcessName(), null, ass));
         }
 
-        workflowAssignmentDao.saveProcessHistory(history);
+        ((SharkWorkflowAssignmentDao) workflowAssignmentDao).saveProcessHistory(history);
 
         List activitiesList = process.getAllActivities(sessionHandle);
         for (int k = 0; k < activitiesList.size(); ++k) {
@@ -6381,7 +6383,7 @@ public class WorkflowManagerImpl implements WorkflowManager {
                 aHistory.setActivityName(WorkflowUtil.processVariable(aHistory.getActivityName(), null, ass));
             }
             
-            workflowAssignmentDao.saveActivityHistory(aHistory);
+            ((SharkWorkflowAssignmentDao) workflowAssignmentDao).saveActivityHistory(aHistory);
         }
     }
     
@@ -6393,7 +6395,7 @@ public class WorkflowManagerImpl implements WorkflowManager {
         String mode = setupManager.getSettingValue("deleteProcessOnCompletion");
         if ("archive".equals(mode)) {
             final SetupDao setupDao = (SetupDao) WorkflowUtil.getApplicationContext().getBean("setupDao");
-            Collection<Setting> result = setupDao.find("WHERE property = ?", new String[]{ARCHIVE_SETTING}, null, null, null, null);
+            Collection<Setting> result = setupDao.find("WHERE property = ?", new String[]{WorkflowManager.ARCHIVE_SETTING}, null, null, null, null);
             final Setting status = (result.isEmpty()) ? null : result.iterator().next();
             
             if (status == null || status.getValue().contains("PAUSE")) {
@@ -6447,13 +6449,13 @@ public class WorkflowManagerImpl implements WorkflowManager {
                 WorkflowAssignmentDao assDao = (WorkflowAssignmentDao) WorkflowUtil.getApplicationContext().getBean("workflowAssignmentDao");
                 
                 //create a status in setting table to show progress
-                Collection<Setting> result = setupDao.find("WHERE property = ?", new String[]{ARCHIVE_SETTING}, null, null, null, null);
+                Collection<Setting> result = setupDao.find("WHERE property = ?", new String[]{WorkflowManager.ARCHIVE_SETTING}, null, null, null, null);
                 Setting status = (result.isEmpty()) ? null : result.iterator().next();
 
                 JSONObject statusObj = null;
                 if (status == null) {
                     status = new Setting();
-                    status.setProperty(ARCHIVE_SETTING);
+                    status.setProperty(WorkflowManager.ARCHIVE_SETTING);
 
                     statusObj = new JSONObject();
                     //get total completed process instances
@@ -6508,7 +6510,7 @@ public class WorkflowManagerImpl implements WorkflowManager {
                                 LogUtil.debug(WorkflowManagerImpl.class.getName(), "Migrated " + pIds.size() + " processes. " + pIds.toString());
                                 
                                 //retrieve the value again to update completed count, in case there is status changed
-                                result = setupDao.find("WHERE property = ?", new String[]{ARCHIVE_SETTING}, null, null, null, null);
+                                result = setupDao.find("WHERE property = ?", new String[]{WorkflowManager.ARCHIVE_SETTING}, null, null, null, null);
                                 status = (result.isEmpty()) ? null : result.iterator().next();
                                 try {
                                     statusObj = new JSONObject(status.getValue());
@@ -6558,5 +6560,104 @@ public class WorkflowManagerImpl implements WorkflowManager {
         });
          
         return result;
+    }
+    
+    @Override
+    public DataListInboxSetting processInboxSetting(DataListInboxSetting setting) {
+        return setting;
+    }
+    
+    @Override
+    public InboxFilterQueryObject buildInboxCondition(DataListInboxSetting inboxSetting, InboxFilterQueryObject queryObj, String driver) {
+        Collection<String> values = new ArrayList<String>();
+            
+        String conds = "";
+        if (inboxSetting.getActvityDefIds() != null && inboxSetting.getActvityDefIds().length > 0) {
+            String prefix = "_";
+            String actIdConds = "";
+            if (inboxSetting.getAppId() != null && !inboxSetting.getAppId().isEmpty()) {
+                prefix += inboxSetting.getAppId() + "_";
+            }
+            if (inboxSetting.getProcessDefId() != null && !inboxSetting.getProcessDefId().isEmpty()) {
+                prefix += inboxSetting.getProcessDefId() + "_";
+            }
+            for (String actId : inboxSetting.getActvityDefIds()) {
+                if (!actIdConds.isEmpty()) {
+                    actIdConds += " OR ";
+                }
+                actIdConds += "ass.ActivityId LIKE ?";
+                values.add("%"+prefix+actId);
+            }
+            conds += " AND ("+actIdConds+") ";
+        } else {
+            String value = "";
+            if (inboxSetting.getAppId() != null && !inboxSetting.getAppId().isEmpty()) {
+                value = inboxSetting.getAppId() + "#%";
+            }
+            if (inboxSetting.getProcessDefId() != null && !inboxSetting.getProcessDefId().isEmpty()) {
+                if (value.isEmpty()) {
+                    value = "%";
+                }
+                value += "#" + inboxSetting.getProcessDefId();
+            }
+            if (!value.isEmpty()) {
+                conds += " AND ass.ActivityProcessDefName LIKE ?";
+                values.add(value);
+            }
+        }
+
+        if (inboxSetting.getUsername() != null && !inboxSetting.getUsername().isEmpty()) {
+            Map<String, Collection<String>> replacementUsers = WorkflowUtil.getReplacementUsers(inboxSetting.getUsername());
+
+            //handle task dalegation
+            if (replacementUsers == null || replacementUsers.isEmpty()) {
+                conds += " AND ass.ResourceId = ?";
+                values.add(inboxSetting.getUsername());
+            } else {
+                String temCond = "";
+                for (String u : replacementUsers.keySet()) {
+                    String replaceCond = "";
+                    Collection<String> processes = replacementUsers.get(u);
+                    for (String p : processes) {
+                        String[] tempPid = p.split(":");  //appId:processId
+                        if (tempPid.length > 0 && !tempPid[0].isEmpty()) {
+                            if (!replaceCond.isEmpty()) {
+                                replaceCond += " OR ";
+                            }
+                            String value = tempPid[0] + "#%";
+                            if (tempPid.length > 1 && !tempPid[1].isEmpty()) {
+                                value += "#" + tempPid[1];
+                            }
+                            replaceCond += "ass.ActivityProcessDefName LIKE ?";
+                            values.add(value);
+                        }
+                    }
+
+                    if (!temCond.isEmpty()) {
+                        temCond += "OR ";
+                    }
+                    if (!replaceCond.isEmpty()) {
+                        replaceCond = "(" + replaceCond + ") AND "; //appId & processId matching
+                    }
+                    temCond += "(" + replaceCond + "ass.ResourceId = ?)"; //processIds belong to the replacement user
+                    values.add(u);
+                }
+
+                conds += " AND (("+temCond+") OR ass.ResourceId = ?)"; //or the current user
+                values.add(inboxSetting.getUsername());
+            }
+        }
+
+        if (driver.equals("org.postgresql.Driver")) {
+            conds += " AND ass.IsValid IS TRUE";
+        } else {
+            conds += " AND ass.IsValid = 1";
+        }
+
+        queryObj.setOperator("AND");
+        queryObj.setQuery(conds);
+        queryObj.setValues(values.toArray(new String[0]));
+        
+        return queryObj;
     }
 }

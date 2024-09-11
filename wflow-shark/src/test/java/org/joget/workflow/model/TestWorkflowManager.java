@@ -1,6 +1,5 @@
 package org.joget.workflow.model;
 
-import org.joget.commons.util.LogUtil;
 import org.joget.workflow.model.service.WorkflowManager;
 import java.io.BufferedReader;
 import java.io.FileNotFoundException;
@@ -8,7 +7,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.Collection;
 import java.util.Map;
-import org.joget.workflow.shark.model.dao.WorkflowAssignmentDao;
+import org.joget.workflow.model.dao.WorkflowAssignmentDao;
 import org.junit.Test;
 import org.junit.Assert;
 import org.junit.runner.RunWith;
@@ -19,7 +18,7 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.transaction.annotation.Transactional;
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(locations = {"classpath:testWfengineApplicationContext.xml"})
+@ContextConfiguration(locations = {"classpath:testSharkApplicationContext.xml"})
 public class TestWorkflowManager {
 
     public TestWorkflowManager() {

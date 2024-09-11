@@ -136,10 +136,9 @@ import org.joget.logs.LogViewerAppender;
 import org.joget.plugin.property.model.PropertyEditable;
 import org.joget.plugin.property.service.PropertyUtil;
 import org.joget.workflow.model.WorkflowProcessLink;
+import org.joget.workflow.model.dao.WorkflowAssignmentDao;
 import org.joget.workflow.model.service.WorkflowManager;
-import org.joget.workflow.model.service.WorkflowManagerImpl;
 import org.joget.workflow.model.service.WorkflowUserManager;
-import org.joget.workflow.shark.model.dao.WorkflowAssignmentDao;
 import org.joget.workflow.util.WorkflowUtil;
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -5514,7 +5513,7 @@ public class ConsoleWebController {
         } else if ("pause".equals(mode)) {
             //not using setupManager due to the value is cached
             SetupDao setupDao = (SetupDao) WorkflowUtil.getApplicationContext().getBean("setupDao");
-            Collection<Setting> result = setupDao.find("WHERE property = ?", new String[]{WorkflowManagerImpl.ARCHIVE_SETTING}, null, null, null, null);
+            Collection<Setting> result = setupDao.find("WHERE property = ?", new String[]{WorkflowManager.ARCHIVE_SETTING}, null, null, null, null);
             Setting status = (result.isEmpty()) ? null : result.iterator().next();
            
             if (status != null) {
