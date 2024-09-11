@@ -40,7 +40,6 @@ import org.joget.plugin.base.PluginManager;
 import org.joget.plugin.property.service.PropertyUtil;
 import org.joget.workflow.model.WorkflowProcess;
 import org.joget.workflow.model.service.WorkflowManager;
-import org.joget.workflow.util.XpdlImageUtil;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -53,6 +52,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 @Controller
 public class ProcessBuilderWebController {
+    public static final String IMAGE_EXTENSION = ".png";
 
     @Autowired
     AppService appService;    
@@ -465,7 +465,7 @@ public class ProcessBuilderWebController {
                 byte[] decodedBytes = Base64.decodeBase64(imageBase64.getBytes());        
 
                 // save into image file
-                String filename = processDefId + XpdlImageUtil.IMAGE_EXTENSION;
+                String filename = processDefId + IMAGE_EXTENSION;
                 String path = SetupManager.getBaseDirectory() + File.separator + "app_xpdlImages" + File.separator + appId;
                 new File(path).mkdirs();
                 BufferedImage image = ImageIO.read(new ByteArrayInputStream(decodedBytes));
@@ -506,7 +506,7 @@ public class ProcessBuilderWebController {
             graphics2D.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BILINEAR);
             graphics2D.drawImage(image, 0, 0, thumbWidth, thumbHeight, null);
 
-            out = new BufferedOutputStream(new FileOutputStream(path + File.separator + "thumb-" + processDefId + XpdlImageUtil.IMAGE_EXTENSION));
+            out = new BufferedOutputStream(new FileOutputStream(path + File.separator + "thumb-" + processDefId + IMAGE_EXTENSION));
             ImageIO.write(thumbImage, "png", out);
 
             out.flush();

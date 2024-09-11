@@ -1,0 +1,138 @@
+<?xml version="1.0" encoding="windows-1252"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:p="http://www.springframework.org/schema/p"
+       xmlns:aop="http://www.springframework.org/schema/aop"
+       xmlns:tx="http://www.springframework.org/schema/tx"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.5.xsd
+       http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-2.5.xsd
+       http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-2.5.xsd
+              http://www.springframework.org/schema/context
+       http://www.springframework.org/schema/context/spring-context-2.5.xsd">
+    
+    <bean id="deadlineThreadManager" class="org.joget.workflow.shark.SharkDeadlineThreadManager">
+    </bean>
+    
+    <bean id="workflowManager" class="org.joget.workflow.model.service.WorkflowManagerImpl">
+        <constructor-arg><ref bean="setupDataSource" /></constructor-arg>
+        <constructor-arg><ref bean="transactionManager" /></constructor-arg>
+        <property name="workflowUserManager" ref="workflowUserManager"/>
+        <property name="workflowAssignmentDao" ref="workflowAssignmentDao"/>
+        <property name="setupManager" ref="setupManager"/>
+        <property name="workflowProcessLinkDao" ref="workflowProcessLinkDao"/>
+    </bean>
+
+    <!-- Hibernate SessionFactory -->
+    <bean id="workflowSessionFactory" class="org.springframework.orm.hibernate5.LocalSessionFactoryBean">
+        <qualifier value="workflow"/>
+        <property name="dataSource" ref="setupDataSource"/>
+        <property name="mappingResources">
+            <list>
+                <value>/org/joget/workflow/model/WorkflowProcessLink.hbm.xml</value>
+                <value>/org/joget/workflow/shark/model/SharkAssignment.hbm.xml</value>
+                <value>/org/joget/workflow/shark/model/SharkActivity.hbm.xml</value>
+                <value>/org/joget/workflow/shark/model/SharkProcess.hbm.xml</value>
+                <value>/org/joget/workflow/shark/model/SharkActivityState.hbm.xml</value>
+                <value>/org/joget/workflow/shark/model/SharkProcessState.hbm.xml</value>
+                <value>/org/joget/workflow/shark/model/ActivityPersistenceObject.hbm.xml</value>
+                <value>/org/joget/workflow/shark/model/DeadlinePersistenceObject.hbm.xml</value>
+                <value>/org/joget/workflow/shark/migrate/model/MigrateActivity.hbm.xml</value>
+                <value>/org/joget/workflow/shark/migrate/model/MigrateAssignment.hbm.xml</value>
+                <value>/org/joget/workflow/shark/migrate/model/MigrateProcess.hbm.xml</value>
+                <value>/org/joget/workflow/shark/migrate/model/MigrateProcessDefinition.hbm.xml</value>
+                <value>/org/joget/workflow/model/WorkflowProcessLinkHistory.hbm.xml</value>
+                <value>/org/joget/workflow/shark/model/SharkActivityHistory.hbm.xml</value>
+                <value>/org/joget/workflow/shark/model/SharkProcessHistory.hbm.xml</value>
+            </list>
+        </property>
+        <property name="hibernateProperties">
+            <props>
+                <prop key="hibernate.hbm2ddl.auto">none</prop>
+                <prop key="hibernate.show_sql">false</prop>
+                <prop key="hibernate.enable_lazy_load_no_trans">true</prop>
+                <prop key="hibernate.allow_update_outside_transaction">true</prop>
+                <prop key="hibernate.transaction.coordinator_class">jdbc</prop>
+                <prop key="hibernate.transaction.jta.platform">org.hibernate.service.jta.platform.internal.BitronixJtaPlatform</prop>
+                <prop key="hibernate.connection.release_mode">after_transaction</prop>
+                <prop key="hibernate.query.plan_cache_max_size">2048</prop>
+                <prop key="hibernate.query.plan_parameter_metadata_max_size">128</prop>
+                <prop key="hibernate.cache.use_second_level_cache">true</prop> 
+                <prop key="hibernate.cache.use_query_cache">true</prop> 
+                <prop key="hibernate.generate_statistics">true</prop>
+                <prop key="hibernate.cache.region.factory_class">org.joget.commons.ignite.IgniteHibernateRegionFactory</prop>
+                <prop key="org.apache.ignite.hibernate.ignite_instance_name">ignite-grid</prop>
+            </props>
+        </property>
+    </bean> 
+    
+    <!-- Hibernate SessionFactory added redundantly to create index & schema -->
+    <bean id="sharkWorkflowUpdateSessionFactory" class="org.springframework.orm.hibernate4.LocalSessionFactoryBean">
+        <qualifier value="workflow"/>
+        <property name="dataSource" ref="setupDataSource"/>
+        <property name="mappingResources">
+            <list>
+                <value>/org/joget/workflow/model/WorkflowProcessLink.hbm.xml</value>
+                <value>/org/joget/workflow/model/WorkflowProcessLinkHistory.hbm.xml</value>
+                <value>/org/joget/workflow/shark/model/SharkActivityHistory.hbm.xml</value>
+                <value>/org/joget/workflow/shark/model/SharkProcessHistory.hbm.xml</value>
+            </list>
+        </property>
+        <property name="hibernateProperties">
+            <props>
+                <prop key="hibernate.hbm2ddl.auto">update</prop>
+                <prop key="hibernate.show_sql">false</prop>
+                <prop key="hibernate.transaction.jta.platform">org.hibernate.service.jta.platform.internal.BitronixJtaPlatform</prop>
+                <prop key="hibernate.connection.release_mode">after_transaction</prop>
+                <prop key="hibernate.query.plan_cache_max_size">16</prop>
+                <prop key="hibernate.query.plan_parameter_metadata_max_size">128</prop>
+            </props>
+        </property>
+    </bean>
+    
+    <bean id="sharkIdSessionFactory" class="org.springframework.orm.hibernate4.LocalSessionFactoryBean">
+        <qualifier value="sharkId"/>
+        <property name="dataSource" ref="setupDataSource"/>
+        <property name="mappingResources">
+            <list>
+                <value>/org/joget/workflow/shark/model/SharkObjectId.hbm.xml</value>
+                <value>/org/joget/workflow/shark/model/SharkCounter.hbm.xml</value>
+            </list>
+        </property>
+        <property name="hibernateProperties">
+            <props>
+                <prop key="hibernate.hbm2ddl.auto">none</prop>
+                <prop key="hibernate.show_sql">false</prop>
+                <prop key="hibernate.enable_lazy_load_no_trans">true</prop>
+                <prop key="hibernate.allow_update_outside_transaction">true</prop>
+                <prop key="hibernate.transaction.coordinator_class">jdbc</prop>
+                <prop key="hibernate.transaction.jta.platform">org.hibernate.service.jta.platform.internal.BitronixJtaPlatform</prop>
+                <prop key="hibernate.connection.release_mode">after_transaction</prop>
+                <prop key="hibernate.query.plan_cache_max_size">2048</prop>
+                <prop key="hibernate.query.plan_parameter_metadata_max_size">128</prop>
+                <prop key="hibernate.cache.use_second_level_cache">false</prop> 
+                <prop key="hibernate.cache.use_query_cache">false</prop> 
+                <prop key="hibernate.generate_statistics">true</prop>
+                <prop key="hibernate.cache.region.factory_class">org.joget.commons.ignite.IgniteHibernateRegionFactory</prop>
+                <prop key="org.apache.ignite.hibernate.ignite_instance_name">ignite-grid</prop>
+            </props>
+        </property>
+    </bean>
+
+    <bean id="workflowAssignmentDao" class="org.joget.workflow.shark.model.dao.SharkWorkflowAssignmentDao">
+        <property name="sessionFactory" ref="workflowSessionFactory"/>
+        <property name="workflowProcessLinkDao" ref="workflowProcessLinkDao"/>
+    </bean>
+    
+    <bean id="deadlineDao" class="org.joget.workflow.shark.model.dao.DeadlineDao">
+        <property name="sessionFactory" ref="workflowSessionFactory"/>
+    </bean>
+    
+    <bean id="sharkObjectIdDao" class="org.joget.workflow.shark.model.dao.SharkObjectIdDao">
+        <property name="sessionFactory" ref="sharkIdSessionFactory"/>
+    </bean>
+    
+    <bean id="sharkCounterDao" class="org.joget.workflow.shark.model.dao.SharkCounterDao">
+        <property name="sessionFactory" ref="sharkIdSessionFactory"/>
+    </bean>
+</beans>

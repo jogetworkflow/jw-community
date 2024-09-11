@@ -32,7 +32,7 @@ import org.joget.workflow.shark.model.SharkCounter;
 import org.joget.workflow.shark.model.SharkObjectId;
 import org.joget.workflow.shark.model.dao.SharkCounterDao;
 import org.joget.workflow.shark.model.dao.SharkObjectIdDao;
-import org.joget.workflow.shark.model.dao.WorkflowAssignmentDao;
+import org.joget.workflow.shark.model.dao.SharkWorkflowAssignmentDao;
 import org.joget.workflow.util.WorkflowUtil;
 
 
@@ -58,7 +58,7 @@ public class SharkUtilitiesAspect {
             Object[] args = pjp.getArgs();
             String actId = (String) args[3];
             if (actId != null) {
-                WorkflowAssignmentDao dao = (WorkflowAssignmentDao) WorkflowUtil.getApplicationContext().getBean("workflowAssignmentDao");
+                SharkWorkflowAssignmentDao dao = (SharkWorkflowAssignmentDao) WorkflowUtil.getApplicationContext().getBean("workflowAssignmentDao");
                 MigrateActivity act = dao.getActivityProcessDefId(actId);
 
                 String pkgId = WorkflowUtil.getProcessDefPackageId(act.getProcessDefId());

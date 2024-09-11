@@ -43,7 +43,7 @@ import org.joget.commons.util.LogUtil;
 import org.joget.workflow.shark.migrate.model.MigrateActivity;
 import org.joget.workflow.shark.model.CustomDeadlinePersistenceObject;
 import org.joget.workflow.shark.model.dao.DeadlineDao;
-import org.joget.workflow.shark.model.dao.WorkflowAssignmentDao;
+import org.joget.workflow.shark.model.dao.SharkWorkflowAssignmentDao;
 import org.joget.workflow.util.WorkflowUtil;
 
 public class CustomWfActivityImpl extends WfActivityImpl {
@@ -138,7 +138,7 @@ public class CustomWfActivityImpl extends WfActivityImpl {
             this.activityDefinition = SharkUtilities.getActivityDefinition(shandle, this,  getProcessDefinition(shandle));
         }
         if (this.activityDefinition == null) {
-            WorkflowAssignmentDao dao = (WorkflowAssignmentDao) WorkflowUtil.getApplicationContext().getBean("workflowAssignmentDao");
+            SharkWorkflowAssignmentDao dao = (SharkWorkflowAssignmentDao) WorkflowUtil.getApplicationContext().getBean("workflowAssignmentDao");
             MigrateActivity act = dao.getActivityProcessDefId(this.key);
             
             String pkgId = WorkflowUtil.getProcessDefPackageId(act.getProcessDefId());
