@@ -550,7 +550,11 @@ public class CachedUserviewMenu extends UserviewMenu {
                             menuAsyncCache.put(cacheKey, newContent);
                             LogUtil.debug(getClass().getName(), "Loaded async content for " + cacheKey);
                             return newContent;
-                        }, timeout);                    
+                        }, timeout);
+                        if (!loadingInProgressContent.equals(content)) {
+                            // loading not in progress anymore, remove from cache
+                            menuAsyncCache.remove(cacheKey);
+                        }
                     } catch (TimeoutException e) {
                         // timed out, return pending content
                         content = loadingInProgressContent;
