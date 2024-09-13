@@ -21,6 +21,8 @@ import org.enhydra.shark.xpdl.XMLComplexElement;
 import org.enhydra.shark.xpdl.XMLInterface;
 import org.enhydra.shark.xpdl.XMLInterfaceForJDK13;
 import org.enhydra.shark.xpdl.elements.Package;
+import org.hibernate.Cache;
+import org.hibernate.SessionFactory;
 import org.joget.commons.util.DynamicDataSourceManager;
 import org.joget.commons.util.LogUtil;
 import org.joget.workflow.model.dao.WorkflowHelper;
@@ -471,4 +473,28 @@ public class SharkUtilitiesAspect {
             throw new ObjectIdAllocationError("Failed to allocate counter for "+objectName+".");
         }
     }
+        
+    @Pointcut("execution(* org.joget.workflow.model.service.WorkflowManager.*(..)) && !(execution(* org.joget..*.get*(..)) || execution(* org.joget..*.set*(..)) || execution(* org.joget..*.is*(..)) || execution(* org.joget..*.internal*(..)) || execution(* org.joget..*.*connect*(..)) || execution(* org.joget..*.*Variable*(..)))")
+    private void clearWorkflowSessionFactoryCacheMethods() {
+    }
+
+    /**
+     * Clear the workflow session query cache for non-getter, setter and internal methods to prevent returning stale assignments.
+     * @param pjp
+     * @return
+     * @throws Throwable 
+     */
+    @Around("org.enhydra.shark.SharkUtilitiesAspect.clearWorkflowSessionFactoryCacheMethods()")
+    public Object clearWorkflowSessionFactoryCache(ProceedingJoinPoint pjp) throws Throwable {
+        Object result = pjp.proceed();
+        
+        // clear the workflow session query cache
+        SessionFactory sessionFactory = (SessionFactory)WorkflowUtil.getApplicationContext().getBean("workflowSessionFactory");
+        Cache cache = sessionFactory.getCache();
+        if (cache != null) {
+            cache.evictQueryRegions();
+        }
+        return result;
+    }
+
 }
