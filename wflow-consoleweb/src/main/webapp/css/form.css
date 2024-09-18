@@ -804,7 +804,7 @@ body.rtl .selector_item {
 }
 @media screen and (min-width: 480px) {
     body.rtl .selector_items {
-        margin-right:10px !important;
+        margin-right:-5px !important;
     }
 }
 .label-top .selector_element,
