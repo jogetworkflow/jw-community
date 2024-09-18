@@ -785,6 +785,14 @@ body.dark-mode  .dataList#dataList_applist .column_2 {
         max-width: 20%;
     }
 }
+@media (max-width: 1280px) {
+    #design_app .card .card-body .card-actions {
+        flex-direction: column;
+    }
+    #design_app .card .card-body .card-actions a{
+        margin: 0px !important;
+    }
+}
 
 @media (min-width: 1280px) {
     body.sidebar-minimized #sidebar {
@@ -1012,10 +1020,6 @@ body.rtl .addNew{
 body.rtl .taskReminder{
     margin-right: 5px;
 }
-body.rtl .taskReminder .badge{
-    right: unset;
-    left: 3px;
-}
 body.rtl .page-heading{
     padding-right: 4px;
 }
@@ -1042,7 +1046,6 @@ body.rtl #navigation li.mm-profile.user-link small{
     text-align: right;
 }
 body.rtl .header-nav a.btn i{
-    padding-left: 5px;
     padding-right: 0px;
 }
 body.rtl .addNew.dropdown .dropdown-menu a{
