@@ -27,7 +27,7 @@
                     <span class="form-input"><form:select path="locale" cssErrorClass="form-input-error"><form:options items="${localeList}"/></form:select></span>
                 </div>
                 <div class="form-row">
-                    <label for="field1"><fmt:message key="console.setting.message.common.label.message"/></label>
+                    <label for="field1"><fmt:message key="console.setting.message.common.label.message"/> <span class="mandatory">*</span></label>
                     <span class="form-input"><form:textarea path="message" cssErrorClass="form-input-error" /></span>
                 </div>
             </fieldset>
