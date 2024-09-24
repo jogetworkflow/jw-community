@@ -362,6 +362,17 @@
                 }
             }
         });
+        
+        if ($("#filters_${dataListId}").hasClass("filter_form")){
+            let filtercells = $('#filters_${dataListId} .filter-cell:not(:has(.btn))');
+            let allHidden = filtercells.length > 0 && filtercells.filter('.hidden-filter').length === filtercells.length;
+            if (allHidden) {
+                $("#filters_${dataListId}.filter_form").css({
+                    'display': 'none'
+                });   
+            }
+        }
+        
     });
     function toggleAll(element) {
         var table = $(element).closest("table");
