@@ -410,6 +410,7 @@
             }
         });
         
+
         if('${checkboxPosition}' !== 'no'){
             if('${selectionType}' === 'single'){
                 $("form[name='form_${dataListId}'] tbody .select_radio input[type='radio']").each(function() {
@@ -419,6 +420,16 @@
                 $("form[name='form_${dataListId}'] tbody .select_checkbox input[type='checkbox']").each(function() {
                     $(this).attr('title', $(this).val());
                 });
+            }
+        }
+
+        if ($("#filters_${dataListId}").hasClass("filter_form")){
+            let filtercells = $('#filters_${dataListId} .filter-cell:not(:has(.btn))');
+            let allHidden = filtercells.length > 0 && filtercells.filter('.hidden-filter').length === filtercells.length;
+            if (allHidden) {
+                $("#filters_${dataListId}.filter_form").css({
+                    'display': 'none'
+                });   
             }
         }
     });

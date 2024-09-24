@@ -270,6 +270,7 @@ public class UserviewService {
                 } else {
                     userviewPermission = true;
                 }
+                setting.setIsAuthorize(userviewPermission);
             } catch (Exception e) {
                 LogUtil.debug(getClass().getName(), "set permission error.");
             }
