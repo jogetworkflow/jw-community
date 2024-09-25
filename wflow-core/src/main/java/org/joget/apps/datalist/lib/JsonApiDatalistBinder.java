@@ -728,7 +728,7 @@ public class JsonApiDatalistBinder extends DataListBinderDefault {
         param.put("size", (recordSize == null)?"":Integer.toString(recordSize));
         param.put("rows", (recordSize == null)?"":Integer.toString(recordSize));
         param.put("start", Integer.toString(start));
-        param.put("end", Integer.toString(Integer.valueOf((String)param.get("start")) + Integer.valueOf((String)param.get("size"))));
+        param.put("end", (recordSize == null)?"":(Integer.toString(Integer.valueOf((String)param.get("start")) + Integer.valueOf((String)param.get("size")))));
         param.put("order", "false".equals(param.get("desc"))?"acs":"desc");
         param.put("orderUppercase", param.get("order").toUpperCase());
         
