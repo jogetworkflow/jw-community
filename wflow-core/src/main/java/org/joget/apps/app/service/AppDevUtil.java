@@ -118,7 +118,9 @@ public class AppDevUtil {
     static ThreadLocal backgroundSync = new ThreadLocal();
     
     private static final boolean GIT_DISABLED;
-
+    private static Set<String> prevFileNames = null;
+    private static int prevFileCount = -1;
+    
     static {
         GIT_DISABLED = "true".equalsIgnoreCase(System.getProperty("git.disabled"));
         if (GIT_DISABLED) {
@@ -1621,6 +1623,7 @@ public class AppDevUtil {
         Properties appProps = AppDevUtil.getAppDevProperties(appDef);
         String appAutoSync = appProps.getProperty(PROPERTY_GIT_CONFIG_AUTO_SYNC);
         Date appLastModifiedDate = appDef.getDateModified();
+        boolean isAppModified = isAppModified(appDef);
         if (appLastModifiedDate != null) {
             Calendar lastModifiedCal = Calendar.getInstance();
             lastModifiedCal.setTime(appLastModifiedDate);
@@ -1628,7 +1631,7 @@ public class AppDevUtil {
             appLastModifiedDate = lastModifiedCal.getTime();            
         }
         //latestDate is null when git folder is empty, should not sync in that case.
-        if ("true".equals(appAutoSync) && latestDate != null && (appLastModifiedDate == null || latestDate.after(appLastModifiedDate))) {
+        if ("true".equals(appAutoSync) && latestDate != null && (appLastModifiedDate == null || latestDate.after(appLastModifiedDate) || isAppModified)) {
             LogUtil.info(AppDevUtil.class.getName(), "Change detected (" + latestDate + " vs " + appLastModifiedDate + "), init sync for app " + appDef);
             // sync app
             updatedAppDef = appDefinitionDao.syncAppDefinition(appDef.getAppId(), appDef.getVersion());
@@ -1700,6 +1703,26 @@ public class AppDevUtil {
             setBackgroundSync(null);
         }
     }
+   
+    public static boolean isAppModified(AppDefinition appDef) throws IOException, GitAPIException, URISyntaxException {
+        File dir = AppDevUtil.fileGetFileObject(appDef, ".", false);
+        if (dir != null && dir.isDirectory()) {
+            Collection<File> files = FileUtils.listFiles(dir, new String[]{"json", "xml", "xpdl", "jar"}, true);
+            Set<String> currentFileNames = new HashSet<>();
+            for (File file : files) {
+                currentFileNames.add(file.getAbsolutePath());
+            }
+            int currentFileCount = currentFileNames.size();
+
+            // Check if file count or file names have changed
+            if (prevFileCount == -1 || prevFileCount != currentFileCount || !currentFileNames.equals(prevFileNames)) {
+                prevFileNames = currentFileNames;
+                prevFileCount = currentFileCount;
+                return true; 
+            }
+        }
+        return false; 
+     }
 
     public static AppDefinition createDummyAppDefinition(String appId, Long appVersion) {
         // validate appId
