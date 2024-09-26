@@ -3,6 +3,11 @@ Joget DX 7 COMMUNITY
 For more information, please refer to 
 https://dev.joget.org/community/display/DX7/Joget+DX+7+Knowledge+Base
 
+CHANGES IN 7.1.47
+=================
+8b455eb48 Modified: jw-community - Security - Update Spring Framework to 5.3.39 for CVE-2024-38808. @7.1-SNAPSHOT
+383de31ea Fixed: wflow-core - Date Picker - Fixed arabic date validation error. T4598 @7.0-SNAPSHOT
+
 CHANGES IN 7.1.46
 =================
 d810aae31 Fixed: wflow-core - List - Action link & button HTML attributes are not escape correctly. @7.0-SNAPSHOT
