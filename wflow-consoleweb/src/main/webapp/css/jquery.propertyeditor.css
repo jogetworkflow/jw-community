@@ -2665,3 +2665,15 @@ i.fa-sort, i.fa-sort-asc, i.fa-sort-desc{
     color: #495057;
     font-weight: 500;
 }
+.rtl .property-input > span.icon > span{
+    right: 0;
+    border-radius: 0 0.25rem 0.25rem 0;
+}
+.rtl .property-input > span.icon .property-icon-picker{
+    left:unset;
+    right: 0;
+}
+.rtl .property-input > span.icon + input{
+    padding-right: 50px;
+    padding-left: 12px !important;
+}
