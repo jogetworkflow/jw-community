@@ -1045,11 +1045,6 @@ body .grid-action-header, body td.grid-action-cell {
         margin-left:0px !important;
     }
 }
-@media(min-width: 480px) {
-    body.rtl .form-container .selector_items {
-        margin-right:0px !important;
-    }
-}
 body .form-container .label-top .selector_element,
 body .form-container .label-top .selector_items{
     margin-left: 0%;

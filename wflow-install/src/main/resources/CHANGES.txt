@@ -2,6 +2,26 @@ Joget DX COMMUNITY
 ====================
 For more information, please refer to https://community.joget.org
 
+8.1.5
+=====
+d7d0ac7da Modified: wflow-consoleweb - App Composer - Distortion on certain screen size. @8.1-SNAPSHOT
+e65a6c982 Fixed: wflow-consoleweb - X-admin theme - Fixed cannot make multiple selections and submit the selections for the pop-up select box in the mobile view. @8.1-SNAPSHOT
+7f3a8710a Fixed: wflow-consoleweb - Process Builder - Fixed transition arrows go haywire if process is complex. @8.1-SNAPSHOT
+604775b2c Fixed: wflow-consoleweb - UI builder - Fixed builder can't edit when menu template rendering throw exception. @8.1-SNAPSHOT
+2f0df208b Fixed: wflow-consoleweb - DX8 Themes - Fixed popup select options are blocking the submit button in smaller screen. @8.1-SNAPSHOT
+6714eb9d2 Fixed: wflow-consoleweb - Header Misalignment - Fixed the login button misalignment issue @8.1-SNAPSHOT
+54a4b576d Fixed: wflow-consoleweb - Builders - Fixed RTL issues. @8.1-SNAPSHOT
+07ec433ea Fixed: wflow-consoleweb - Color Picker - Fixed an issue where color picker in the last row of a repeater field resets to the color of the newly added row @8.1-SNAPSHOT
+498c21e1a Fixed: wflow-consoleweb - CSRF - Token value is store in memory which does not support clustering environment. @8.1-SNAPSHOT
+9f990db2a Modified: jw-enterprise - Security - Update TinyMCE to 7.3.0. CVE-2024-38357 CVE-2024-38356 @8.1-SNAPSHOT
+aba5e15ad Fixed: wflow-consoleweb - UI Component - Dynamic size component does not display correctly in show/hide component. T4688 @8.1-SNAPSHOT
+71573d9a1 Fixed: wflow-consoleweb - List Builder - URL Request Parameter is displayed wrongly on a cloned list. @8.1-SNAPSHOT
+400e054cc Fixed: wflow-consoleweb - Process Builder - Browser hang after update mapping. T4801 @8.1-SNAPSHOT
+422177630 Fixed: wflow-core - User Notification - Hash Variable does not parse correctly. T4756 @8.1-SNAPSHOT
+fdd5966a7 Fixed: wflow-wfengine - Process - Cache causing variable can't store and retrieve correctly and tool missing issue. T4778 T4822 T4823 @8.1-SNAPSHOT
+cf5cd39eb Fixed: wflow-core - Form Grid - Regression of e90d2e92. Causing readonly value can't store correctly. @8.1-SNAPSHOT
+8b455eb48 Modified: jw-community - Security - Update Spring Framework to 5.3.39 for CVE-2024-38808. @7.1-SNAPSHOT
+
 8.1.4
 =====
 fa8b4e7f0 Fixed: wflow-consoleweb - UI - RTL Issue for App Import, Create New App, and Plugin Upload. @8.1-SNAPSHOT
