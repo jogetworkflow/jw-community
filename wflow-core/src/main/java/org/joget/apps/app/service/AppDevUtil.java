@@ -1715,7 +1715,7 @@ public class AppDevUtil {
             int currentFileCount = currentFileNames.size();
 
             // Check if file count or file names have changed
-            if (prevFileCount == -1 || prevFileCount != currentFileCount || !currentFileNames.equals(prevFileNames)) {
+            if (prevFileCount == -1 || prevFileCount != currentFileCount || (currentFileNames != null && !currentFileNames.equals(prevFileNames))) {
                 prevFileNames = currentFileNames;
                 prevFileCount = currentFileCount;
                 return true; 
