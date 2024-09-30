@@ -28,7 +28,7 @@
                 </div>
                 <div class="form-row">
                     <label for="field1"><fmt:message key="console.setting.message.common.label.message"/></label>
-                    <span class="form-input"><form:textarea path="message" cssErrorClass="form-input-error" /></span>
+                    <span class="form-input"><form:textarea path="message" cssErrorClass="form-input-error" /><span style="position: absolute;padding: 0 4px 0 4px;"> *</span></span>
                 </div>
             </fieldset>
             <div class="form-buttons">
