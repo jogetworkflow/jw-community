@@ -259,12 +259,18 @@
         $(document).on("keydown", function(event) {
             if (event.ctrlKey && event.keyCode === 80) {
                 event.preventDefault();
-                // Check if `this` is an iframe document
+                const iframe = $("div.layui-show > iframe").eq(0);
+
+                // Check if current window is the iframe window
                 if (window.self !== window.top) {
-                    window.print(); 
-                } else {
-                    $("div.layui-show > iframe")[0].contentWindow.print();
-                }
+                    window.print();
+                } else if (iframe.length > 0) {
+                    // If an iframe is present, use its content window to print
+                    iframe[0].contentWindow.print();
+                } else if ($("body").hasClass("inner-frame")) {
+                    // If no iframe is present and the current window is the actual frame
+                    window.print();
+                }                
             }
         });
     });
