@@ -5553,6 +5553,11 @@ a {
     position: relative;
     z-index: 20;
 }
+div.InformationTileComponent {
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    box-sizing: border-box;
+}
 .accordion {
     margin-bottom: 10px;
 }
