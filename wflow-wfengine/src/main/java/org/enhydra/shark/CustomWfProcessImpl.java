@@ -64,7 +64,7 @@ public class CustomWfProcessImpl extends WfProcessImpl {
                 this.newActivityToFollowedTransitions.put(ajhs, currentTrans);
             }
 
-            this.activityToFollowedTransitions.put(ajhs, new Integer(0));
+            this.activityToFollowedTransitions.put(ajhs, 0);
 
             persistActivityToFollowedTransitions(shandle);
 
@@ -72,7 +72,7 @@ public class CustomWfProcessImpl extends WfProcessImpl {
             
             this.activityCache.clear(); //Customise: clear cache so that the remaining open activities is update
         } else {
-            this.activityToFollowedTransitions.put(ajhs, new Integer(followed + 1));
+            this.activityToFollowedTransitions.put(ajhs, (followed + 1));
             Set currentTrans = (Set) this.newActivityToFollowedTransitions.get(ajhs);
             if (currentTrans == null) {
                 currentTrans = new HashSet();
@@ -179,7 +179,7 @@ public class CustomWfProcessImpl extends WfProcessImpl {
             String condType = condition.getType();
             if (condType.equals("OTHERWISE")) {
                 otherwiseTransition = trans;
-                boolean handleOtherwiseTransitionLast = new Boolean(SharkEngineManager.getInstance().getCallbackUtilities().getProperty("SharkKernel.handleOtherwiseTransitionLast", "false")).booleanValue();
+                boolean handleOtherwiseTransitionLast = Boolean.parseBoolean(SharkEngineManager.getInstance().getCallbackUtilities().getProperty("SharkKernel.handleOtherwiseTransitionLast", "false"));
 
                 if ((!isAndSplit) && (!handleOtherwiseTransitionLast)) {
                     break;

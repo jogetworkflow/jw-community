@@ -1,17 +1,16 @@
 package org.joget.commons.util;
 
 import java.io.File;
-import javax.servlet.http.HttpServletRequest;
-import org.springframework.core.io.FileSystemResource;
+import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.util.Assert;
 import org.springframework.web.multipart.MultipartException;
 import org.springframework.web.multipart.MultipartHttpServletRequest;
-import org.springframework.web.multipart.commons.CommonsMultipartResolver;
+import org.springframework.web.multipart.support.StandardServletMultipartResolver;
 
-public class JogetCommonsMultipartResolver extends CommonsMultipartResolver {
+public class JogetCommonsMultipartResolver extends StandardServletMultipartResolver {
     
     @Override
-    public MultipartHttpServletRequest resolveMultipart(final HttpServletRequest request) throws MultipartException {
+    public MultipartHttpServletRequest resolveMultipart(HttpServletRequest request) throws MultipartException {
         Assert.notNull(request, "Request must not be null");
         
         try {
@@ -25,7 +24,7 @@ public class JogetCommonsMultipartResolver extends CommonsMultipartResolver {
                     uploadTempDir.mkdir();
                 }
 
-                setUploadTempDir(new FileSystemResource(uploadTempDir));
+//                setUploadTempDir(new FileSystemResource(uploadTempDir));
             }
         } catch (Exception e) {
             LogUtil.error(JogetCommonsMultipartResolver.class.getName(), e, "");

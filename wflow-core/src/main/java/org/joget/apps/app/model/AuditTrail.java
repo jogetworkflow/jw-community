@@ -1,9 +1,10 @@
 package org.joget.apps.app.model;
 
+import java.io.Serializable;
 import java.util.Date;
 import org.joget.commons.spring.model.Auditable;
 
-public class AuditTrail {
+public class AuditTrail implements Serializable {
 
     private String id;
     private String username;

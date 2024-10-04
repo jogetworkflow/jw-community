@@ -166,7 +166,7 @@ public abstract class AbstractVersionedObjectDao<T extends AbstractVersionedObje
         q.setCacheable(true);
         q.setParameter(1, id);
         Long value = (Long) q.list().get(0);
-        return (value != null) ? value.longValue() : new Long(0);
+        return (value != null) ? value : 0;
     }
 
     /**
@@ -283,7 +283,7 @@ public abstract class AbstractVersionedObjectDao<T extends AbstractVersionedObje
      */
     public Long countVersions(String id) {
         if (id == null || id.trim().isEmpty()) {
-            return new Long(0);
+            return Long.valueOf(0);
         }
         String condition = " where id=?";
         Object[] params = {id};

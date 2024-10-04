@@ -1,9 +1,8 @@
 package org.joget.apps.app.dao;
 
-import java.util.ArrayList;
-import java.util.List;
-import net.sf.ehcache.Cache;
-import net.sf.ehcache.Element;
+import java.util.Iterator;
+import javax.cache.Cache;
+import javax.cache.CacheManager;
 import org.joget.apps.app.model.AppDefinition;
 import org.joget.commons.util.DynamicDataSourceManager;
 import org.joget.commons.util.LogUtil;
@@ -11,27 +10,30 @@ import org.joget.commons.util.LogUtil;
 public class AppDefCache {
     private Cache cache;
     
-    public void setCacheObject(Cache cache) {
-        this.cache = cache;
+    public void setCacheManager(CacheManager cacheManager) {
+        this.cache = cacheManager.getCache("org.joget.cache.FLU_CACHE");
     }
     
-    public Element get(String key, AppDefinition appDef) {
-        Element element = null;
-        element = cache.get(key);
-        Long lastModified = null;
-        if (appDef.getDateModified() != null) {
-            lastModified = appDef.getDateModified().getTime();
+    public Object get(String key, AppDefinition appDef) {
+        Object value = null;
+        CacheElement element = (CacheElement)cache.get(key);
+        if (element != null) {
+            Long lastModified = null;
+            if (appDef.getDateModified() != null) {
+                lastModified = appDef.getDateModified().getTime();
+            }
+            if (lastModified != null && element.creationTime < lastModified) {
+                cache.remove(key);
+                LogUtil.debug(AppDefCache.class.getName(), key + " need to refresh.");
+            } else {
+                value = element.value;
+            }
         }
-        if (element != null && lastModified != null && element.getCreationTime() < lastModified) {
-            cache.remove(key);
-            LogUtil.debug(AppDefCache.class.getName(), key + " need to refresh.");
-            element = null;
-        }
-        return element;
+        return value;
     }
     
     public void remove(String key, AppDefinition appDef) {
-        Element element = cache.get(key);
+        CacheElement element = (CacheElement)cache.get(key);
         if (element != null) {
              cache.remove(key);
              LogUtil.debug(AppDefCache.class.getName(), key + " is removed.");
@@ -40,20 +42,31 @@ public class AppDefCache {
     
     public void removeAll(AppDefinition appDef) {
         String cacheKey = DynamicDataSourceManager.getCurrentProfile()+"_"+appDef.getAppId()+"_"+appDef.getVersion().toString()+"_";
-        
-        List<String> keys = new ArrayList<String>();
-        keys.addAll(cache.getKeys());
-        
-        for (String k : keys) {
-            if (k.startsWith(cacheKey)) {
-                cache.remove(k);
+        for (Iterator i=cache.iterator(); i.hasNext();) {
+            Cache.Entry entry = (Cache.Entry)i.next();
+            if (entry.getKey().toString().startsWith(cacheKey)) {
+                i.remove();
             }
         }
         LogUtil.debug(AppDefCache.class.getName(), "All caches with `"+cacheKey+"` prefix are removed.");
     }
     
-    public void put(Element element, AppDefinition appDef) {
-        cache.put(element);
-        LogUtil.debug(AppDefCache.class.getName(), element.getObjectKey() + " is refreshed.");
+    public void put(String key, Object value, AppDefinition appDef) {
+        CacheElement element = new CacheElement(key, value, System.currentTimeMillis());
+        cache.put(key, element);
+        LogUtil.debug(AppDefCache.class.getName(), key + " is refreshed.");
     }
+
+    class CacheElement {
+        String key;
+        Object value;
+        long creationTime;
+        
+        public CacheElement(String key, Object value, long creationTime) {
+            this.key = key;
+            this.value = value;
+            this.creationTime = creationTime;
+        }
+    }
+
 }

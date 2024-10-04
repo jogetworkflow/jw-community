@@ -50,12 +50,9 @@ public class RoleDaoImpl extends AbstractSpringDao implements RoleDao {
 
     public Role getRoleByName(String name) {
         try {
-            Role role = new Role();
-            role.setName(name);
-            List roles = findByExample("Role", role);
-
-            if (roles.size() > 0) {
-                return (Role) roles.get(0);
+            Collection roles = find("Role", "WHERE name=?1", new String[] {name}, null, null, 0, 1);
+            if (!roles.isEmpty()) {
+                return (Role) roles.iterator().next();
             }
         } catch (Exception e) {
             LogUtil.error(RoleDaoImpl.class.getName(), e, "Get Role By Name Error!");

@@ -1,11 +1,9 @@
 package org.joget.apps.app.dao;
 
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
-import net.sf.ehcache.Element;
 import org.hibernate.query.Query;
 import org.joget.apps.app.model.AppDefinition;
 import org.joget.apps.app.model.FormDefinition;
@@ -109,21 +107,20 @@ public class FormDefinitionDaoImpl extends AbstractAppVersionedObjectDao<FormDef
     @Override
     public FormDefinition loadById(String id, AppDefinition appDefinition) {
         String cacheKey = getCacheKey(id, appDefinition.getAppId(), appDefinition.getVersion());
-        Element element = cache.get(cacheKey, appDefinition);
+        FormDefinition formDefinition = (FormDefinition)cache.get(cacheKey, appDefinition);
 
-        if (element == null) {
+        if (formDefinition == null) {
             FormDefinition formDef = load(id, appDefinition);
 
             if (formDef != null) {
                 if (shouldEvict(appDefinition)) {
                     findSession().evict(formDef);
                 }
-                element = new Element(cacheKey, (Serializable) formDef);
-                cache.put(element, appDefinition);
+                cache.put(cacheKey, formDefinition, appDefinition);
             }
             return formDef;
         } else {
-            return (FormDefinition) element.getValue();
+            return formDefinition;
         }
     }
     

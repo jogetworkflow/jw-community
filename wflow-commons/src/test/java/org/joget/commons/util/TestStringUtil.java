@@ -15,8 +15,8 @@ public class TestStringUtil {
         String original = "\\*+[](){}$.?^|";
         String escaped = "\\\\\\*\\+\\[\\]\\(\\)\\{\\}\\$\\.\\?\\^\\|";
         
-        Assert.isTrue(escaped.equals(StringUtil.escapeString(original, StringUtil.TYPE_REGEX, null)));
-        Assert.isTrue(original.equals(StringUtil.unescapeString(escaped, StringUtil.TYPE_REGEX, null)));
+        Assert.isTrue(escaped.equals(StringUtil.escapeString(original, StringUtil.TYPE_REGEX, null)), "false");
+        Assert.isTrue(original.equals(StringUtil.unescapeString(escaped, StringUtil.TYPE_REGEX, null)), "false");
     }
     
     @Test
@@ -24,8 +24,8 @@ public class TestStringUtil {
         String original = "this is a string with ' & \"";
         String escaped = "this is a string with ' & \\\"";
         
-        Assert.isTrue(escaped.equals(StringUtil.escapeString(original, StringUtil.TYPE_JSON, null)));
-        Assert.isTrue(original.equals(StringUtil.unescapeString(escaped, StringUtil.TYPE_JSON, null)));
+        Assert.isTrue(escaped.equals(StringUtil.escapeString(original, StringUtil.TYPE_JSON, null)), "false");
+        Assert.isTrue(original.equals(StringUtil.unescapeString(escaped, StringUtil.TYPE_JSON, null)), "false");
     }
     
     @Test
@@ -33,8 +33,8 @@ public class TestStringUtil {
         String original = "";
         String escaped = "";
         
-        Assert.isTrue(escaped.equals(StringUtil.escapeString(original, StringUtil.TYPE_JAVASCIPT, null)));
-        Assert.isTrue(original.equals(StringUtil.unescapeString(escaped, StringUtil.TYPE_JAVASCIPT, null)));
+        Assert.isTrue(escaped.equals(StringUtil.escapeString(original, StringUtil.TYPE_JAVASCIPT, null)), "false");
+        Assert.isTrue(original.equals(StringUtil.unescapeString(escaped, StringUtil.TYPE_JAVASCIPT, null)), "false");
     }
     
     @Test
@@ -42,8 +42,8 @@ public class TestStringUtil {
         String original = "<i class=\"far fa-dot-circle\"></i> test";
         String escaped = "&lt;i class=&quot;far fa-dot-circle&quot;&gt;&lt;/i&gt; test";
         
-        Assert.isTrue(escaped.equals(StringUtil.escapeString(original, StringUtil.TYPE_HTML, null)));
-        Assert.isTrue(original.equals(StringUtil.unescapeString(escaped, StringUtil.TYPE_HTML, null)));
+        Assert.isTrue(escaped.equals(StringUtil.escapeString(original, StringUtil.TYPE_HTML, null)), "false");
+        Assert.isTrue(original.equals(StringUtil.unescapeString(escaped, StringUtil.TYPE_HTML, null)), "false");
     }
     
     @Test
@@ -51,8 +51,8 @@ public class TestStringUtil {
         String original = "<name attr=\"attrvalue\">test</name>";
         String escaped = "&lt;name attr=&quot;attrvalue&quot;&gt;test&lt;/name&gt;";
         
-        Assert.isTrue(escaped.equals(StringUtil.escapeString(original, StringUtil.TYPE_XML, null)));
-        Assert.isTrue(original.equals(StringUtil.unescapeString(escaped, StringUtil.TYPE_XML, null)));
+        Assert.isTrue(escaped.equals(StringUtil.escapeString(original, StringUtil.TYPE_XML, null)), "false");
+        Assert.isTrue(original.equals(StringUtil.unescapeString(escaped, StringUtil.TYPE_XML, null)), "false");
     }
     
     @Test
@@ -60,8 +60,8 @@ public class TestStringUtil {
         String original = "A java value with ', \", \t & \n";
         String escaped = "A java value with ', \\\", \\t & \\n";
         
-        Assert.isTrue(escaped.equals(StringUtil.escapeString(original, StringUtil.TYPE_JAVA, null)));
-        Assert.isTrue(original.equals(StringUtil.unescapeString(escaped, StringUtil.TYPE_JAVA, null)));
+        Assert.isTrue(escaped.equals(StringUtil.escapeString(original, StringUtil.TYPE_JAVA, null)), "false");
+        Assert.isTrue(original.equals(StringUtil.unescapeString(escaped, StringUtil.TYPE_JAVA, null)), "false");
     }
     
     @Test
@@ -69,8 +69,8 @@ public class TestStringUtil {
         String original = "A sql value with ' in the string";
         String escaped = "A sql value with '' in the string";
         
-        Assert.isTrue(escaped.equals(StringUtil.escapeString(original, StringUtil.TYPE_SQL, null)));
-        Assert.isTrue(original.equals(StringUtil.unescapeString(escaped, StringUtil.TYPE_SQL, null)));
+        Assert.isTrue(escaped.equals(StringUtil.escapeString(original, StringUtil.TYPE_SQL, null)), "false");
+        Assert.isTrue(original.equals(StringUtil.unescapeString(escaped, StringUtil.TYPE_SQL, null)), "false");
     }
     
     @Test
@@ -78,8 +78,8 @@ public class TestStringUtil {
         String original = "a url param with & = ?";
         String escaped = "a%20url%20param%20with%20%26%20%3D%20%3F";
         
-        Assert.isTrue(escaped.equals(StringUtil.escapeString(original, StringUtil.TYPE_URL, null)));
-        Assert.isTrue(original.equals(StringUtil.unescapeString(escaped, StringUtil.TYPE_URL, null)));
+        Assert.isTrue(escaped.equals(StringUtil.escapeString(original, StringUtil.TYPE_URL, null)), "false");
+        Assert.isTrue(original.equals(StringUtil.unescapeString(escaped, StringUtil.TYPE_URL, null)), "false");
     }
     
     @Test
@@ -87,8 +87,8 @@ public class TestStringUtil {
         String original = "test\r\ntest";
         String escaped = "test<br class=\"nl2br\" />test";
         
-        Assert.isTrue(escaped.equals(StringUtil.escapeString(original, StringUtil.TYPE_NL2BR, null)));
-        Assert.isTrue(original.equals(StringUtil.unescapeString(escaped, StringUtil.TYPE_NL2BR, null)));
+        Assert.isTrue(escaped.equals(StringUtil.escapeString(original, StringUtil.TYPE_NL2BR, null)), "false");
+        Assert.isTrue(original.equals(StringUtil.unescapeString(escaped, StringUtil.TYPE_NL2BR, null)), "false");
     }
     
     @Test
@@ -96,8 +96,8 @@ public class TestStringUtil {
         String original = "value1;value2;valu3;value4";
         String escaped = "value1, value2, valu3, value4";
         
-        Assert.isTrue(escaped.equals(StringUtil.escapeString(original, StringUtil.TYPE_SEPARATOR + "(, )", null)));
-        Assert.isTrue(original.equals(StringUtil.unescapeString(escaped, StringUtil.TYPE_SEPARATOR + "(, )", null)));
+        Assert.isTrue(escaped.equals(StringUtil.escapeString(original, StringUtil.TYPE_SEPARATOR + "(, )", null)), "false");
+        Assert.isTrue(original.equals(StringUtil.unescapeString(escaped, StringUtil.TYPE_SEPARATOR + "(, )", null)), "false");
     }
     
     @Test
@@ -105,8 +105,8 @@ public class TestStringUtil {
         String original = "A value with ' in the string";
         String escaped = "A value with '' in the string";
         
-        Assert.isTrue(escaped.equals(StringUtil.escapeString(original, StringUtil.TYPE_EXP, null)));
-        Assert.isTrue(original.equals(StringUtil.unescapeString(escaped, StringUtil.TYPE_EXP, null)));
+        Assert.isTrue(escaped.equals(StringUtil.escapeString(original, StringUtil.TYPE_EXP, null)), "false");
+        Assert.isTrue(original.equals(StringUtil.unescapeString(escaped, StringUtil.TYPE_EXP, null)), "false");
     }
     
     @Test

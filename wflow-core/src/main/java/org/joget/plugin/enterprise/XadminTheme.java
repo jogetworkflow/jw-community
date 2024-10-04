@@ -10,9 +10,8 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 import java.util.StringTokenizer;
-import javax.servlet.http.HttpServletRequest;
-import net.sf.ehcache.Cache;
-import net.sf.ehcache.Element;
+import jakarta.servlet.http.HttpServletRequest;
+import javax.cache.Cache;
 import org.joget.apps.app.service.AppUtil;
 import org.joget.apps.app.service.MobileUtil;
 import org.joget.apps.userview.lib.HtmlPage;
@@ -210,18 +209,14 @@ public class XadminTheme extends UniversalTheme {
             // read CSS from cache
             Cache cache = (Cache) AppUtil.getApplicationContext().getBean("cssCache");
             if (cache != null) {
-                Element element = cache.get(less);
-                if (element != null) {
-                    css = (String) element.getObjectValue();
-                }
+                css = (String)cache.get(less);
             }
             if (css == null || css.isEmpty()) {
                 // not available in cache, compile LESS
                 css = compileLess(less);
                 // store CSS in cache
                 if (cache != null) {
-                    Element element = new Element(less, css);
-                    cache.put(element);
+                    cache.put(less, css);
                 }
             }
         } catch (Exception e) {

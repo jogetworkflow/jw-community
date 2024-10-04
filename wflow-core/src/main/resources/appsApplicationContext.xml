@@ -15,52 +15,12 @@
     <bean id="formService" class="org.joget.apps.form.service.FormServiceImpl">
     </bean>
 
-    <bean id="fluCache" class="org.springframework.cache.ehcache.EhCacheFactoryBean">
-        <property name="cacheManager" ref="cacheManager"/>
-        <property name="cacheName" value="org.joget.cache.FLU_CACHE"/>
-    </bean>
-    
     <bean id="appFluCache" class="org.joget.apps.app.dao.AppDefCache">
-        <property name="cacheObject">
-            <ref bean="fluCache" />
-        </property>
+        <property name="cacheManager" ref="cacheManager" />
     </bean>
 
-    <bean id="userviewMenuCache" class="org.springframework.cache.ehcache.EhCacheFactoryBean">
-        <property name="cacheManager" ref="cacheManager"/>
-        <property name="cacheName" value="org.joget.cache.USERVIEW_CACHE"/>
-    </bean>
-    
-    <bean id="formOptionsCache" class="org.springframework.cache.ehcache.EhCacheFactoryBean">
-        <property name="cacheManager" ref="cacheManager"/>
-        <property name="cacheName" value="org.joget.cache.FORM_OPTIONS_CACHE"/>
-    </bean>
-
-    <bean id="cssCache" class="org.springframework.cache.ehcache.EhCacheFactoryBean">
-        <property name="cacheManager" ref="cacheManager"/>
-        <property name="cacheName" value="org.joget.cache.CSS_CACHE"/>
-    </bean>
-    
     <bean id="formColumnCache" class="org.joget.apps.form.model.FormColumnCache">
         <property name="cache" ref="longTermCache"/>
-    </bean>
-    
-    <bean id="formSessionFactoryCache" class="org.springframework.cache.ehcache.EhCacheFactoryBean">
-        <property name="cacheManager" ref="cacheManager"/>
-        <property name="cacheName" value="org.joget.cache.SF_CACHE"/>
-    </bean>
-    
-    <bean id="joinFormSessionFactoryCache" class="org.springframework.cache.ehcache.EhCacheFactoryBean">
-        <property name="cacheManager" ref="cacheManager"/>
-        <property name="cacheName" value="org.joget.cache.SF_CACHE"/>
-    </bean>
-    
-    <bean id="formPersistentClassCache" class="org.springframework.cache.ehcache.EhCacheFactoryBean">
-        <property name="cacheManager" ref="cacheManager"/>
-    </bean>
-    
-    <bean id="nonceCache" class="org.springframework.cache.ehcache.EhCacheFactoryBean">
-        <property name="cacheManager" ref="cacheManager"/>
     </bean>
     
     <bean id="formOptionsCacheExecutor" class="org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler">
@@ -69,14 +29,11 @@
     </bean>
     
     <bean id="formDataDao" class="org.joget.apps.form.dao.FormDataDaoImpl" >
-        <property name="sessionFactory" ref="formDataSessionFactory" />
         <property name="formDefinitionDao" ref="formDefinitionDao" />
         <property name="builderDefinitionDao" ref="builderDefinitionDao" />
         <property name="formService" ref="formService" />
         <property name="formColumnCache" ref="formColumnCache" />
-        <property name="formSessionFactoryCache" ref="formSessionFactoryCache" />
-        <property name="joinFormSessionFactoryCache" ref="joinFormSessionFactoryCache" />
-        <property name="formPersistentClassCache" ref="formSessionFactoryCache" />
+        <property name="cacheManager" ref="cacheManager" />
     </bean>
     
     <bean id="formDataSessionFactory" class="org.springframework.orm.hibernate5.LocalSessionFactoryBean">

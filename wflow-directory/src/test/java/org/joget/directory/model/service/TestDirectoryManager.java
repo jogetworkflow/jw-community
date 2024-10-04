@@ -87,7 +87,7 @@ public class TestDirectoryManager {
         // verify user
         LogUtil.info(getClass().getName(), "testUsersAndGroups: verify user");
         User user = directoryManager.getUserByUsername(TEST_USER);
-        Assert.isTrue(TEST_USER.equals(user.getFirstName()));
+        Assert.isTrue(TEST_USER.equals(user.getFirstName()), "false");
 
         // verify group
         LogUtil.info(getClass().getName(), "testUsersAndGroups: verify group");
@@ -96,13 +96,13 @@ public class TestDirectoryManager {
         if (!groupList.isEmpty()) {
             group = groupList.iterator().next();
         }
-        Assert.isTrue(group != null && TEST_GROUP.equals(group.getId()));
+        Assert.isTrue(group != null && TEST_GROUP.equals(group.getId()), "false");
 
         // unassign user from group
         LogUtil.info(getClass().getName(), "testUsersAndGroups: unassign user from group");
         userDao.unassignUserFromGroup(TEST_USER, TEST_GROUP);
         groupList = directoryManager.getGroupByUsername(TEST_USER);
-        Assert.isTrue(groupList == null || groupList.isEmpty());
+        Assert.isTrue(groupList == null || groupList.isEmpty(), "false");
 
         // reassign user to group
         LogUtil.info(getClass().getName(), "testUsersAndGroups: reassign user to group");
@@ -120,7 +120,7 @@ public class TestDirectoryManager {
         dept.setOrganization(organization);
         departmentDao.updateDepartment(dept);
         Department loadedDept = directoryManager.getDepartmentById(dept.getId());
-        Assert.isTrue(loadedDept.getOrganization().getId().equals(organization.getId()));
+        Assert.isTrue(loadedDept.getOrganization().getId().equals(organization.getId()), "false");
 
         // assign sub-department to parent and organization
         LogUtil.info(getClass().getName(), "testOrganizationChart: assign sub-department to parent and organization");
@@ -129,7 +129,7 @@ public class TestDirectoryManager {
         child.setParent(loadedDept);
         departmentDao.updateDepartment(child);
         Collection<Department> subDepartments = departmentDao.getDepartmentsByParentId(null, TEST_DEPARTMENT_PARENT, null, null, null, null);
-        Assert.isTrue(((Department) subDepartments.iterator().next()).getId().equals(child.getId()));
+        Assert.isTrue(((Department) subDepartments.iterator().next()).getId().equals(child.getId()), "false");
 
         // assign dept HOD
         LogUtil.info(getClass().getName(), "testOrganizationChart: assign dept HOD");
@@ -147,7 +147,7 @@ public class TestDirectoryManager {
             User userHod = userHodList.iterator().next();
             usernameHod = userHod.getUsername();
         }
-        Assert.isTrue(TEST_DEPARTMENT_CHILD_HOD.equals(usernameHod));        
+        Assert.isTrue(TEST_DEPARTMENT_CHILD_HOD.equals(usernameHod), "false");        
         
         // unassign dept HOD
         LogUtil.info(getClass().getName(), "testOrganizationChart: unassign dept HOD");
@@ -158,7 +158,7 @@ public class TestDirectoryManager {
             User userHod = userHodList.iterator().next();
             usernameHod = userHod.getUsername();
         }
-        Assert.isTrue(TEST_DEPARTMENT_PARENT_HOD.equals(usernameHod));        
+        Assert.isTrue(TEST_DEPARTMENT_PARENT_HOD.equals(usernameHod), "false");        
         
         
         // set user direct report to HOD
@@ -167,7 +167,7 @@ public class TestDirectoryManager {
         employmentDao.assignUserReportTo(TEST_USER, TEST_USER_HOD);
         userHodList = directoryManager.getUserHod(TEST_USER);
         User userHod = userHodList.iterator().next();
-        Assert.isTrue(TEST_USER_HOD.equals(userHod.getUsername()));        
+        Assert.isTrue(TEST_USER_HOD.equals(userHod.getUsername()), "false");        
     }
 
     @Test
@@ -177,19 +177,19 @@ public class TestDirectoryManager {
         LogUtil.info(getClass().getName(), "testDeletion: delete user");
         userDao.deleteUser(TEST_DEPARTMENT_CHILD_HOD);
         User testUser = directoryManager.getUserByUsername(TEST_DEPARTMENT_CHILD_HOD);
-        Assert.isTrue(testUser == null);
+        Assert.isTrue(testUser == null, "false");
         
         // delete department
         LogUtil.info(getClass().getName(), "testDeletion: delete department");
         departmentDao.deleteDepartment(TEST_DEPARTMENT_CHILD);
         Department testDept = directoryManager.getDepartmentById(TEST_DEPARTMENT_CHILD);
-        Assert.isTrue(testDept == null);
+        Assert.isTrue(testDept == null, "false");
         
         // delete organization
         LogUtil.info(getClass().getName(), "testDeletion: delete organization");
         organizationDao.deleteOrganization(TEST_ORGANIZATION);
         Organization testOrg = organizationDao.getOrganization(TEST_ORGANIZATION);
-        Assert.isTrue(testOrg == null);
+        Assert.isTrue(testOrg == null, "false");
     }
     
     protected void addOrganization(String id) {

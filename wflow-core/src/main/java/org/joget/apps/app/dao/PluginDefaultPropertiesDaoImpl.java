@@ -1,11 +1,9 @@
 package org.joget.apps.app.dao;
 
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Properties;
-import net.sf.ehcache.Element;
 import org.joget.apps.app.model.AppDefinition;
 import org.joget.apps.app.model.PluginDefaultProperties;
 import org.joget.apps.app.service.AppDevUtil;
@@ -46,21 +44,17 @@ public class PluginDefaultPropertiesDaoImpl extends AbstractAppVersionedObjectDa
     @Override
     public PluginDefaultProperties loadById(String id, AppDefinition appDefinition) {
         String cacheKey = getCacheKey(id, appDefinition.getAppId(), appDefinition.getVersion());
-        Element element = cache.get(cacheKey, appDefinition);
+        PluginDefaultProperties cachedProps = (PluginDefaultProperties)cache.get(cacheKey, appDefinition);
 
-        if (element == null) {
-            PluginDefaultProperties props = super.loadById(id, appDefinition);
-            
+        if (cachedProps == null) {
+            PluginDefaultProperties props = super.loadById(id, appDefinition);            
             if (props != null) {
                 findSession().evict(props);
-            }
-            
-            element = new Element(cacheKey, (Serializable) props); //for PluginDefaultProperties, store to cache even it is null. It is used by audit trail & hash variable
-            cache.put(element, appDefinition);
-            
+            }            
+            cache.put(cacheKey, cachedProps, appDefinition); //for PluginDefaultProperties, store to cache even it is null. It is used by audit trail & hash variable            
             return props;
         }else{
-            return (PluginDefaultProperties) element.getValue();
+            return cachedProps;
         }
     }
 

@@ -1,6 +1,5 @@
 package org.joget.workflow.model;
 
-import org.joget.commons.util.LogUtil;
 import org.joget.workflow.model.service.WorkflowManager;
 import java.io.BufferedReader;
 import java.io.FileNotFoundException;

@@ -2,7 +2,7 @@ package org.joget.apps.app.service;
 
 import java.lang.reflect.Method;
 import java.sql.SQLException;
-import javax.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletRequest;
 import org.aopalliance.intercept.MethodInterceptor;
 import org.aopalliance.intercept.MethodInvocation;
 import org.joget.commons.util.LogUtil;

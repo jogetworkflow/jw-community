@@ -42,10 +42,10 @@ import org.owasp.csrfguard.util.CsrfGuardUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.servlet.ServletConfig;
-import javax.servlet.http.HttpServlet;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
+import jakarta.servlet.ServletConfig;
+import jakarta.servlet.http.HttpServlet;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -266,7 +266,7 @@ public final class JavaScriptServlet extends HttpServlet {
         try {
             return new URL(url.toString()).getHost();
         } catch (final MalformedURLException e) {
-            // Should not occur. javax.servlet.http.HttpServletRequest.getRequestURL should only return valid URLs.
+            // Should not occur. jakarta.servlet.http.HttpServletRequest.getRequestURL should only return valid URLs.
             return "INVALID_URL: " + url;
         }
     }

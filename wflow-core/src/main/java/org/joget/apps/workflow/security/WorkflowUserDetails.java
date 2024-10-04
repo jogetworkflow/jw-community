@@ -8,7 +8,7 @@ import org.joget.workflow.util.WorkflowUtil;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-import javax.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletRequest;
 import org.joget.directory.model.service.ExtUserDetails;
 import org.springframework.context.ApplicationContext;
 import org.springframework.security.core.GrantedAuthority;

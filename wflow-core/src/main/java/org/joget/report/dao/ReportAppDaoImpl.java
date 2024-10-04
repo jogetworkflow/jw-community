@@ -26,7 +26,7 @@ public class ReportAppDaoImpl extends AbstractSpringDao implements ReportAppDao 
         ReportApp app = new ReportApp();
         app.setAppId(appId);
         app.setAppVersion(appVersion);
-        List<ReportApp> apps = (List<ReportApp>) super.findByExample(ENTITY_NAME, app);
+        List<ReportApp> apps = (List<ReportApp>) super.find(ENTITY_NAME, "WHERE appId=?1 AND appVersion=?2", new Object[] { appId, appVersion }, null, null, 0, 1);
 
         if (apps != null && !apps.isEmpty()) {
             return apps.get(0);

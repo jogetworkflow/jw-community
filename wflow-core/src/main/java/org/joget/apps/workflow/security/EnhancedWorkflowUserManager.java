@@ -6,7 +6,7 @@ import java.util.HashSet;
 import java.util.Properties;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import javax.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletRequest;
 import org.joget.apps.app.model.AppDefinition;
 import org.joget.apps.app.service.AppService;
 import org.joget.apps.app.service.AppUtil;
@@ -32,7 +32,7 @@ public class EnhancedWorkflowUserManager extends WorkflowUserManager {
         HttpServletRequest request = WorkflowUtil.getHttpServletRequest();
         if (request != null) {
             // determine appId from request path
-            String url = (String)request.getAttribute("javax.servlet.forward.request_uri");
+            String url = (String)request.getAttribute("jakarta.servlet.forward.request_uri");
             if (url == null || url.isEmpty()) {
                 url = request.getRequestURI();
             }
@@ -139,7 +139,7 @@ public class EnhancedWorkflowUserManager extends WorkflowUserManager {
 
             // set admin role for backward compatibility on plugin webService calls checking for ROLE_ADMIN
             HttpServletRequest request = WorkflowUtil.getHttpServletRequest();            
-            String url = (String)request.getAttribute("javax.servlet.forward.request_uri");
+            String url = (String)request.getAttribute("jakarta.servlet.forward.request_uri");
             if (url == null || url.isEmpty()) {
                 url = request.getRequestURI();
             }

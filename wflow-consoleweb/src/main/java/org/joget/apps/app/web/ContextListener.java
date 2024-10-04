@@ -1,7 +1,7 @@
 package org.joget.apps.app.web;
 
-import javax.servlet.ServletContextEvent;
-import javax.servlet.ServletContextListener;
+import jakarta.servlet.ServletContextEvent;
+import jakarta.servlet.ServletContextListener;
 import org.joget.commons.util.FileManager;
 import org.joget.commons.util.LogUtil;
 

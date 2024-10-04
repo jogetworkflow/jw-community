@@ -41,7 +41,7 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 import java.util.zip.ZipOutputStream;
 import javax.annotation.Resource;
-import javax.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletRequest;
 import org.apache.commons.collections.map.ListOrderedMap;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.StringUtils;
@@ -1830,7 +1830,7 @@ public class AppServiceImpl implements AppService {
                 appDef = new AppDefinition();
                 appDef.setAppId(packageId);
                 appDef.setName(workflowPackage.getPackageName());
-                appDef.setVersion(new Long(1));
+                appDef.setVersion(Long.valueOf(1));
                 createAppDefinition(appDef);
             }
 

@@ -14,7 +14,7 @@ import javax.cache.CacheException;
 import javax.cache.expiry.CreatedExpiryPolicy;
 import javax.cache.expiry.Duration;
 import javax.sql.rowset.CachedRowSet;
-import net.sf.ehcache.Element;
+import javax.sql.rowset.RowSetProvider;
 import net.sf.jsqlparser.JSQLParserException;
 import net.sf.jsqlparser.util.TablesNamesFinder;
 import org.apache.ignite.Ignite;
@@ -314,15 +314,12 @@ public class IgniteJdbcCacheManager {
 
             // extract table names from sql, using long term local cache for better performance
             String tableNamesCacheKey = SQL_TABLE_NAMES_PREFIX + sql;
-            net.sf.ehcache.Cache longTermCache = (net.sf.ehcache.Cache)SecurityUtil.getApplicationContext().getBean("longTermCacheObject");
-            Element cacheElement = longTermCache.get(tableNamesCacheKey);
-            if (cacheElement != null) {
-                tableNames = (Set<String>)cacheElement.getObjectValue();
-            }
+            javax.cache.Cache longTermCache = (javax.cache.Cache)SecurityUtil.getApplicationContext().getBean("longTermCacheObject");
+            tableNames = (Set<String>)longTermCache.get(tableNamesCacheKey);
             if (tableNames == null || tableNames.isEmpty()) {
                 tableNames = TablesNamesFinder.findTables(sql);
                 if (tableNames != null) {
-                    longTermCache.put(new Element(tableNamesCacheKey, tableNames));
+                    longTermCache.put(tableNamesCacheKey, tableNames);
                 }
             }                
         }
@@ -339,9 +336,9 @@ public class IgniteJdbcCacheManager {
      */
     public static CachedRowSet storeCachedResultSet(String cacheKey, Object result) throws SQLException, TransactionException {
         // wrap in a disconnected result set
-        IgniteJdbcRowSetImpl rowSet = new IgniteJdbcRowSetImpl();
+        CachedRowSet rowSet = RowSetProvider.newFactory().createCachedRowSet();
         rowSet.populate((ResultSet)result);
-        rowSet.setCacheKey(cacheKey);
+//        rowSet.setCacheKey(cacheKey);
         
         // store into cache
         IgniteCache queryCache = getJdbcQueryCache();

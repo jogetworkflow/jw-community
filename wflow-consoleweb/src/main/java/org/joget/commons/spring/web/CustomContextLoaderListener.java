@@ -1,6 +1,6 @@
 package org.joget.commons.spring.web;
 
-import javax.servlet.ServletContextEvent;
+import jakarta.servlet.ServletContextEvent;
 import org.joget.commons.util.LogUtil;
 import org.springframework.beans.factory.BeanCreationException;
 import org.springframework.web.context.ContextLoaderListener;

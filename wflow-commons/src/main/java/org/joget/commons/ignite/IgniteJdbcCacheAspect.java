@@ -9,6 +9,7 @@ import java.util.Set;
 import org.aspectj.lang.annotation.Around;
 
 /**
+ * TODO CUSTOM: Aspect to intercept CachedRowSetImpl private int getColIdxByName(String name) to Fix for Java bug https://bugs.openjdk.org/browse/JDK-8298117
  * AOP aspect to intercept and cache JDBC queries.
  * To run on Java 17 and above, need to add the following JVM options:
  * --add-opens=java.base/java.nio=ALL-UNNAMED

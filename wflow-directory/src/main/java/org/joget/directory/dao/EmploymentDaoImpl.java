@@ -923,7 +923,7 @@ public class EmploymentDaoImpl extends AbstractSpringDao implements EmploymentDa
         }
         
         List result = q.list();
-        return new Long(result.size());
+        return Long.valueOf(result.size());
     }
     
     /**

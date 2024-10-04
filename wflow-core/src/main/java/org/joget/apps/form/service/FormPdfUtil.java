@@ -24,7 +24,7 @@ import org.joget.commons.util.LogUtil;
 import org.joget.commons.util.StringUtil;
 import com.lowagie.text.pdf.ITextCustomFontResolver;
 import com.lowagie.text.pdf.ITextCustomOutputDevice;
-import javax.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletRequest;
 import org.joget.commons.util.SetupManager;
 import org.joget.workflow.model.WorkflowAssignment;
 import org.joget.workflow.util.WorkflowUtil;

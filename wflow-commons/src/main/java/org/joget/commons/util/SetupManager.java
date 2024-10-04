@@ -5,8 +5,8 @@ import java.io.File;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
-import net.sf.ehcache.Cache;
-import net.sf.ehcache.Element;
+import javax.cache.Cache;
+import javax.cache.CacheManager;
 
 /**
  * Service method used to manage system settings
@@ -69,10 +69,10 @@ public class SetupManager {
 
     /**
      * Method used by system to set cache object
-     * @param cache 
+     * @param cacheManager 
      */
-    public void setCache(Cache cache) {
-        this.cache = cache;
+    public void setCacheManager(CacheManager cacheManager) {
+        this.cache = cacheManager.getCache("org.joget.cache.SETUP_CACHE");
         if (cache != null) {
             LogUtil.info(getClass().getName(), "Initializing setup cache");
         }
@@ -115,8 +115,7 @@ public class SetupManager {
                 
                 getSetupManagerHelper().checkSettingChanges(settingMap);
                 
-                Element element = new Element(profile, settingMap);
-                cache.put(element);
+                cache.put(profile, settingMap);
             }
         }
     }
@@ -177,15 +176,13 @@ public class SetupManager {
         if (cache != null) {
             Setting setting = null;
             synchronized(cache) {
-                Element element = null;
                 String profile = DynamicDataSourceManager.getCurrentProfile();
-                element = cache.get(profile);
-                if (element == null) {
+                Map<String, Setting> settingMap = (Map<String, Setting>)cache.get(profile);
+                if (settingMap == null) {
                     refreshCache();
-                    element = cache.get(profile);
+                    settingMap = (Map<String, Setting>)cache.get(profile);
                 }
-                if (element != null) {
-                    Map<String, Setting> settingMap = (Map<String, Setting>)element.getValue();
+                if (settingMap != null) {
                     setting = settingMap.get(property);
                 }
             }

@@ -19,40 +19,30 @@ public class FormColumnCache {
     }
     
     public Collection<String> get(String tableName) {
-        Collection<String> columnList = null;
         String cacheKey = getCacheKey(tableName);
-        net.sf.ehcache.Element element = cache.get(cacheKey);
-        if (element != null) {
-            columnList = (Collection<String>)element.getValue();
-        }
+        Collection<String> columnList = (Collection<String>)cache.get(cacheKey);
         return columnList;
     }
 
     public void put(String tableName, Collection<String> columnList) {
         if (columnList != null) {
             String cacheKey = getCacheKey(tableName);
-            net.sf.ehcache.Element element = new net.sf.ehcache.Element(cacheKey, columnList);
-            cache.put(element);
+            cache.put(cacheKey, columnList);
         } else {
             remove(tableName);
         }
     }
     
     public Collection<String> getIndexes(String tableName) {
-        Collection<String> columnList = null;
         String cacheKey = getIndexCacheKey(tableName);
-        net.sf.ehcache.Element element = cache.get(cacheKey);
-        if (element != null) {
-            columnList = (Collection<String>)element.getValue();
-        }
-        return columnList;
+        Collection<String> indexesList = (Collection<String>)cache.get(cacheKey);
+        return indexesList;
     }
     
     public void putIndexes(String tableName, Collection<String> indexesList) {
         if (indexesList != null) {
             String cacheKey = getIndexCacheKey(tableName);
-            net.sf.ehcache.Element element = new net.sf.ehcache.Element(cacheKey, indexesList);
-            cache.put(element);
+            cache.put(cacheKey, indexesList);
         } else {
             remove(tableName);
         }

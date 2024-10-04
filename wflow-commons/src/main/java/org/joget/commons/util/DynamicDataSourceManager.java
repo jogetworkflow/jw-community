@@ -11,8 +11,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
 import java.util.Set;
-import net.sf.ehcache.Cache;
-import net.sf.ehcache.Element;
+import javax.cache.Cache;
+import javax.cache.CacheManager;
 
 public class DynamicDataSourceManager {
 
@@ -28,8 +28,8 @@ public class DynamicDataSourceManager {
     private static DatasourceProfilePropertyManager profilePropertyManager;
     private static Cache cache;
 
-    public void setCache(Cache cache) {
-        DynamicDataSourceManager.cache = cache;
+    public void setCacheManager(CacheManager cacheManager) {
+        DynamicDataSourceManager.cache = cacheManager.getCache("org.joget.cache.DATASOURCE_CACHE");
     }
     
     /**
@@ -64,17 +64,15 @@ public class DynamicDataSourceManager {
 
     public static Properties getProperties() {
         String profile = getCurrentProfile();
-        Element element = cache.get(getCacheKey(profile));
-        Properties properties = null;
-        if (element == null) {
+        Properties properties = (Properties)cache.get(getCacheKey(profile));
+        if (properties == null) {
             properties = profilePropertyManager.newInstance();
             FileInputStream fis = null;
             try {
                 fis = new FileInputStream(new File(determineFilePath(profile)));
                 properties.load(fis);
                 
-                element = new Element(getCacheKey(profile), properties);
-                cache.put(element);
+                cache.put(getCacheKey(profile), properties);
                 LogUtil.debug(DynamicDataSourceManager.class.getName(), "Updated app_datasource-"+profile+".properties cache");
             } catch (FileNotFoundException e) {
             } catch (Exception e) {
@@ -88,8 +86,6 @@ public class DynamicDataSourceManager {
                     LogUtil.error(DynamicDataSourceManager.class.getName(), e, "");
                 }
             }
-        } else {
-            properties = (Properties) element.getObjectValue();
         }
         
         return properties;
@@ -127,19 +123,14 @@ public class DynamicDataSourceManager {
 
     public static Properties getProfileProperties() {
         String filename = DynamicDataSourceManager.DATASOURCE_FILE;
-        Element element = cache.get(getCacheKey(filename));
-        Properties properties;
-        if (element == null) {
+        Properties properties = (Properties)cache.get(getCacheKey(filename));        
+        if (properties == null) {
             // not in cache, load from file
             properties = loadProfileProperties();
 
             // add into cache
-            element = new Element(getCacheKey(filename), properties);
-            cache.put(element);
+            cache.put(getCacheKey(filename), properties);
             LogUtil.debug(DynamicDataSourceManager.class.getName(), "Updated app_datasource.properties cache");
-        } else {
-            // read from cache
-            properties = (Properties) element.getObjectValue();
         }
         return properties;
     }

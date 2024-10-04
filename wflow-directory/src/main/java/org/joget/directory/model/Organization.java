@@ -1,11 +1,12 @@
 package org.joget.directory.model;
 
+import java.io.Serializable;
 import org.joget.commons.spring.model.Auditable;
 import java.util.Set;
 import org.springmodules.validation.bean.conf.loader.annotation.handler.NotBlank;
 import org.springmodules.validation.bean.conf.loader.annotation.handler.RegExp;
 
-public class Organization implements Auditable {
+public class Organization implements Auditable, Serializable {
 
     @NotBlank
     @RegExp(value = "^[0-9a-zA-Z_-]+$")

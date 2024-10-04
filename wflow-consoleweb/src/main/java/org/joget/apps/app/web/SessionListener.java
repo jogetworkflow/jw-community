@@ -1,9 +1,9 @@
 package org.joget.apps.app.web;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpSession;
-import javax.servlet.http.HttpSessionEvent;
-import javax.servlet.http.HttpSessionListener;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpSession;
+import jakarta.servlet.http.HttpSessionEvent;
+import jakarta.servlet.http.HttpSessionListener;
 import org.joget.apps.app.service.AppUtil;
 import org.joget.directory.model.service.IdentityProviderManager;
 import org.joget.workflow.model.dao.WorkflowHelper;

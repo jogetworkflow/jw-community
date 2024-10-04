@@ -1,11 +1,9 @@
 package org.joget.apps.app.dao;
 
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
-import net.sf.ehcache.Element;
 import org.joget.apps.app.model.AppDefinition;
 import org.joget.apps.app.model.UserviewDefinition;
 import org.joget.apps.app.service.AppDevUtil;
@@ -72,19 +70,17 @@ public class UserviewDefinitionDaoImpl extends AbstractAppVersionedObjectDao<Use
     @Override
     public UserviewDefinition loadById(String id, AppDefinition appDefinition) {
         String cacheKey = getCacheKey(id, appDefinition.getAppId(), appDefinition.getVersion());
-        Element element = cache.get(cacheKey, appDefinition);
+        UserviewDefinition cachedDef = (UserviewDefinition)cache.get(cacheKey, appDefinition);
 
-        if (element == null) {
+        if (cachedDef == null) {
             UserviewDefinition uvDef = super.loadById(id, appDefinition);
-            
             if (uvDef != null) {
                 findSession().evict(uvDef);
-                element = new Element(cacheKey, (Serializable) uvDef);
-                cache.put(element, appDefinition);
+                cache.put(cacheKey, cachedDef, appDefinition);
             }
             return uvDef;
-        }else{
-            return (UserviewDefinition) element.getValue();
+        } else {
+            return cachedDef;
         }
     }
 

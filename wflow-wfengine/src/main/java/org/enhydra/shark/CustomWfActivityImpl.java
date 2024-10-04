@@ -306,9 +306,9 @@ public class CustomWfActivityImpl extends WfActivityImpl {
         }
 
         if ((brokenDeadlines != null) && (brokenDeadlines.size() > 0)) {
-            boolean raiseAsyncDeadlineOnce = new Boolean(
+            boolean raiseAsyncDeadlineOnce = Boolean.parseBoolean(
                     SharkEngineManager.getInstance().getCallbackUtilities()
-                            .getProperty("Deadlines.raiseAsyncDeadlineOnlyOnce", "true")).booleanValue();
+                            .getProperty("Deadlines.raiseAsyncDeadlineOnlyOnce", "true"));
 
             for (int i = 0; i < brokenDeadlines.size(); i++) {
                 DeadlinePersistenceObject dpi = (DeadlinePersistenceObject) brokenDeadlines.get(i);

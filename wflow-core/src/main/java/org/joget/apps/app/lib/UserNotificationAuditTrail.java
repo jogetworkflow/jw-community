@@ -2,9 +2,9 @@ package org.joget.apps.app.lib;
 
 import java.io.IOException;
 import java.util.*;
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import org.apache.commons.mail.EmailException;
 import org.apache.commons.mail.HtmlEmail;
 import org.joget.apps.app.dao.UserReplacementDao;
@@ -348,7 +348,7 @@ public class UserNotificationAuditTrail extends DefaultAuditTrailPlugin implemen
             try {
                 JSONArray jsonArray = new JSONArray();
                 PackageDefinition packageDefinition = appDef.getPackageDefinition();
-                Long packageVersion = (packageDefinition != null) ? packageDefinition.getVersion() : new Long(1);
+                Long packageVersion = (packageDefinition != null) ? packageDefinition.getVersion() : 1;
                 Collection<WorkflowProcess> processList = workflowManager.getProcessList(appId, packageVersion.toString());
 
                 if (processList != null && !processList.isEmpty()) {

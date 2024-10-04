@@ -4,8 +4,8 @@ import org.joget.commons.spring.model.AbstractSpringDao;
 import org.joget.commons.spring.model.Setting;
 import java.io.Serializable;
 import java.util.Collection;
-import javax.persistence.OptimisticLockException;
-import javax.transaction.Transactional;
+import jakarta.persistence.OptimisticLockException;
+import jakarta.transaction.Transactional;
 import org.hibernate.Session;
 import org.hibernate.StaleStateException;
 

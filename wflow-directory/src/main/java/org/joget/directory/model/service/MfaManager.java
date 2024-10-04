@@ -3,7 +3,7 @@ package org.joget.directory.model.service;
 import org.joget.directory.model.User;
 import org.joget.directory.model.mfa.exception.MfaExecutionException;
 
-import javax.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletRequest;
 
 /**
  * Interface to provide external usage of private implementation via Spring beans.

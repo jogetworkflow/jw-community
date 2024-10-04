@@ -5,9 +5,9 @@ import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletRequestWrapper;
-import javax.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletRequestWrapper;
+import jakarta.servlet.http.HttpServletResponse;
 import org.joget.commons.util.FileStore;
 import org.joget.commons.util.HostManager;
 import org.springframework.util.MultiValueMap;
@@ -36,7 +36,7 @@ public class ParameterizedAnnotationMethodHandlerAdapter extends RequestMappingH
 
         private Map<String, String[]> parameters = new HashMap<String, String[]>();
 
-        public ParameterizedPathServletRequest(javax.servlet.http.HttpServletRequest request) {
+        public ParameterizedPathServletRequest(jakarta.servlet.http.HttpServletRequest request) {
             super(request);
 
             // reset profile and set hostname

@@ -1,120 +1,128 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<ehcache xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" updateCheck="true" monitoring="autodetect">
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xmlns="http://www.ehcache.org/v3">
 
-    <!-- Sets the path to the directory where cache .data files are created.
-
-         If the path is a Java System Property it is replaced by
-         its value in the running VM.
-
-         The following properties are translated:
-         user.home - User's home directory
-         user.dir - User's current working directory
-         java.io.tmpdir - Default temp file path -->
-    <diskStore path="java.io.tmpdir"/>
-
-
-    <!--Default Cache configuration. These will applied to caches programmatically created through
-        the CacheManager.
-
-        The following attributes are required for defaultCache:
-
-        maxInMemory       - Sets the maximum number of objects that will be created in memory
-        eternal           - Sets whether elements are eternal. If eternal,  timeouts are ignored and the element
-                            is never expired.
-        timeToIdleSeconds - Sets the time to idle for an element before it expires.
-                            i.e. The maximum amount of time between accesses before an element expires
-                            Is only used if the element is not eternal.
-                            Optional attribute. A value of 0 means that an Element can idle for infinity
-        timeToLiveSeconds - Sets the time to live for an element before it expires.
-                            i.e. The maximum time between creation time and when an element expires.
-                            Is only used if the element is not eternal.
-        overflowToDisk    - Sets whether elements can overflow to disk when the in-memory cache
-                            has reached the maxInMemory limit.
-
-        -->
-
-    <defaultCache
-            maxElementsInMemory="10000"
-            eternal="false"
-            overflowToDisk="false"
-            timeToIdleSeconds="120"
-            timeToLiveSeconds="120"
-            diskPersistent="false"
-            diskExpiryThreadIntervalSeconds="120"/>
-
-    <cache name="org.joget.cache.SETUP_CACHE"
-            maxElementsInMemory="1000"
-            eternal="false"
-            overflowToDisk="false"
-            timeToIdleSeconds="20"
-            timeToLiveSeconds="20"
-            diskPersistent="false"/>
-    
-    <cache name="org.joget.cache.DATASOURCE_CACHE"
-            maxElementsInMemory="1000"
-            eternal="false"
-            overflowToDisk="false"
-            timeToIdleSeconds="20"
-            timeToLiveSeconds="20"
-            diskPersistent="false"/>
-                
-    <cache name="org.joget.cache.RBM_CACHE"
-        maxElementsInMemory="50000"
-        eternal="true"
-        overflowToDisk="false"
-        />
-    
-    <cache name="org.joget.cache.SF_CACHE"
-            maxElementsInMemory="5000"
-            eternal="true"
-            overflowToDisk="false">
-        <cacheEventListenerFactory class="org.joget.commons.util.SessionFactoryCacheListenerFactory" />
+    <!-- Default Cache configuration equivalent in Ehcache 3.x -->
+    <cache alias="default">
+        <expiry>
+            <ttl unit="seconds">120</ttl>
+        </expiry>
+        <resources>
+            <heap unit="entries">10000</heap>
+            <!-- No overflow to disk -->
+        </resources>
+        <!-- Disk persistence is not enabled -->
     </cache>
-    
-    <!-- Cache for form, list, userview -->
-    <cache name="org.joget.cache.FLU_CACHE"
-            maxElementsInMemory="10000"
-            eternal="true"
-            overflowToDisk="false"/>
-    
-    <!-- Cache for UserviewMenu content -->
-    <cache name="org.joget.cache.USERVIEW_CACHE"
-            maxElementsInMemory="1000"
-            eternal="false"
-            overflowToDisk="false"
-            timeToIdleSeconds="20"
-            timeToLiveSeconds="20"
-            diskPersistent="false">
-        <searchable />
-    </cache>
-    
-    <!-- Cache for UserviewMenu content -->
-    <cache name="org.joget.cache.FORM_OPTIONS_CACHE"
-            maxElementsInMemory="1000"
-            eternal="false"
-            overflowToDisk="false"
-            timeToIdleSeconds="20"
-            timeToLiveSeconds="20"
-            diskPersistent="false">
-        <searchable />
-    </cache>
-    
-    <!-- Cache for LESS -->
-    <cache name="org.joget.cache.CSS_CACHE"
-            maxElementsInMemory="1000"
-            eternal="false"
-            overflowToDisk="false"
-            timeToIdleSeconds="600"
-            timeToLiveSeconds="600"
-            diskPersistent="false"/>
 
-    <!-- Cache for MFA nonce -->
-    <cache name="org.joget.cache.MFA_NONCE"
-            maxElementsInMemory="10000"
-            eternal="false"
-            overflowToDisk="false"
-            timeToIdleSeconds="600"
-            timeToLiveSeconds="600"
-            diskPersistent="false"/>
-    
-</ehcache>
+    <!-- Cache for org.joget.cache.SETUP_CACHE -->
+    <cache alias="org.joget.cache.SETUP_CACHE">
+        <expiry>
+            <ttl unit="seconds">20</ttl>
+        </expiry>
+        <resources>
+            <heap unit="entries">1000</heap>
+            <!-- No overflow to disk -->
+        </resources>
+    </cache>
+
+    <!-- Cache for org.joget.cache.DATASOURCE_CACHE -->
+    <cache alias="org.joget.cache.DATASOURCE_CACHE">
+        <expiry>
+            <ttl unit="seconds">20</ttl>
+        </expiry>
+        <resources>
+            <heap unit="entries">1000</heap>
+            <!-- No overflow to disk -->
+        </resources>
+    </cache>
+
+    <!-- Cache for org.joget.cache.RBM_CACHE (Eternal) -->
+    <cache alias="org.joget.cache.RBM_CACHE">
+        <expiry>
+            <none/>
+        </expiry>
+        <resources>
+            <heap unit="entries">50000</heap>
+            <!-- No overflow to disk -->
+        </resources>
+    </cache>
+
+    <!-- Cache for org.joget.cache.SF_CACHE with event listener -->
+    <cache alias="org.joget.cache.SF_CACHE">
+        <expiry>
+            <none/>
+        </expiry>
+        <listeners>
+            <listener>
+                <class>org.joget.commons.util.SessionFactoryCacheListener</class>
+                <event-firing-mode>ASYNCHRONOUS</event-firing-mode>
+                <event-ordering-mode>UNORDERED</event-ordering-mode>
+                <events-to-fire-on>EXPIRED</events-to-fire-on>
+                <events-to-fire-on>EVICTED</events-to-fire-on>
+                <events-to-fire-on>REMOVED</events-to-fire-on>
+            </listener>
+        </listeners>
+        <resources>
+            <heap unit="entries">5000</heap>
+            <!-- No overflow to disk -->
+        </resources>
+    </cache>
+
+    <!-- Cache for form, list, userview (org.joget.cache.FLU_CACHE) -->
+    <cache alias="org.joget.cache.FLU_CACHE">
+        <expiry>
+            <none/>
+        </expiry>
+        <resources>
+            <heap unit="entries">10000</heap>
+            <!-- No overflow to disk -->
+        </resources>
+    </cache>
+
+    <!-- Cache for UserviewMenu content (org.joget.cache.USERVIEW_CACHE) -->
+    <cache alias="org.joget.cache.USERVIEW_CACHE">
+        <expiry>
+            <ttl unit="seconds">20</ttl>
+        </expiry>
+        <resources>
+            <heap unit="entries">1000</heap>
+            <!-- No overflow to disk -->
+        </resources>
+        <!--<searchable/>-->
+    </cache>
+
+    <!-- Cache for form options (org.joget.cache.FORM_OPTIONS_CACHE) -->
+    <cache alias="org.joget.cache.FORM_OPTIONS_CACHE">
+        <expiry>
+            <ttl unit="seconds">20</ttl>
+        </expiry>
+        <resources>
+            <heap unit="entries">1000</heap>
+            <!-- No overflow to disk -->
+        </resources>
+        <!--<searchable/>-->
+    </cache>
+
+    <!-- Cache for LESS (org.joget.cache.CSS_CACHE) -->
+    <cache alias="org.joget.cache.CSS_CACHE">
+        <expiry>
+            <ttl unit="seconds">600</ttl>
+        </expiry>
+        <resources>
+            <heap unit="entries">1000</heap>
+            <!-- No overflow to disk -->
+        </resources>
+    </cache>
+
+    <!-- Cache for MFA nonce (org.joget.cache.MFA_NONCE) -->
+    <cache alias="org.joget.cache.MFA_NONCE">
+        <expiry>
+            <ttl unit="seconds">600</ttl>
+        </expiry>
+        <resources>
+            <heap unit="entries">10000</heap>
+            <!-- No overflow to disk -->
+        </resources>
+    </cache>
+
+</config>

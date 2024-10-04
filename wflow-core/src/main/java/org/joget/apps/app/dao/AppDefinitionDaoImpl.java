@@ -102,6 +102,9 @@ public class AppDefinitionDaoImpl extends AbstractVersionedObjectDao<AppDefiniti
             if (obj.getEnvironmentVariableList() != null) {
                 obj.getEnvironmentVariableList().clear();
             }
+            if (obj.getResourceList()!= null) {
+                obj.getResourceList().clear();
+            }
             if (obj.getMessageList() != null) {
                 obj.getMessageList().clear();
             }
@@ -166,6 +169,27 @@ public class AppDefinitionDaoImpl extends AbstractVersionedObjectDao<AppDefiniti
 
         return q.list();
     }
+    
+    @Override
+    protected String generateQueryCondition(String id, String appId, Long version, String name) {
+        // formulate query and parameters
+        String query = " where 1=1";
+        int ordinalParameter = 1;
+        if (id != null && !id.trim().isEmpty()) {
+            query += " and appId=?" + ordinalParameter++;
+        }
+        if (appId != null && !appId.trim().isEmpty()) {
+            query += " and appId=?" + ordinalParameter++;
+        }
+        if (version != null) {
+            query += " and version=?" + ordinalParameter++;
+        }
+        if (name != null && !name.trim().isEmpty()) {
+            query += " and name like ?" + ordinalParameter++;
+        }
+        return query;
+    }
+    
 
     @Override
     public void saveOrUpdate(AppDefinition appDef) {
@@ -285,9 +309,9 @@ public class AppDefinitionDaoImpl extends AbstractVersionedObjectDao<AppDefiniti
     @Override
     public void updateDateModified(AppDefinition appDef, Date date) {
         Session session = findSession();
-        Query query = session.createQuery("UPDATE "+ENTITY_NAME+" e SET e.dateModified = :dateModified WHERE e.id = :appID and e.version = :appVersion");
+        Query query = session.createQuery("UPDATE "+ENTITY_NAME+" e SET e.dateModified = :dateModified WHERE e.id = :appId and e.version = :appVersion");
         query.setParameter("dateModified", date);
-        query.setParameter("appID", appDef.getAppId());
+        query.setParameter("appId", appDef.getAppId(), String.class);
         query.setParameter("appVersion", appDef.getVersion());
         query.executeUpdate();
     }
@@ -354,7 +378,7 @@ public class AppDefinitionDaoImpl extends AbstractVersionedObjectDao<AppDefiniti
         syncAppConfig(appDef);
                        
         // update app def date modified
-        getHibernateTemplate().clear();
+        findSession().clear();
         appDef.setName(newAppDef.getName());
         appDef.setLicense(newAppDef.getLicense());
         appDef.setDescription(newAppDef.getDescription());

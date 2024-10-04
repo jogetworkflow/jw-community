@@ -8,7 +8,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import javax.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletRequest;
 import org.displaytag.pagination.SmartListHelper;
 import org.displaytag.properties.MediaTypeEnum;
 import org.displaytag.properties.TableProperties;
@@ -130,7 +130,7 @@ public abstract class DataListTemplate extends ExtDefaultPlugin implements Prope
                     exportLinks += anchor.toString();
                 }
             }
-            exportLinks = MessageFormat.format(props.getExportBanner(), new String[]{exportLinks});
+            exportLinks = MessageFormat.format(props.getExportBanner(), new Object[]{exportLinks});
         } else {
             templatePagelinks += " noExportLinks";
         }

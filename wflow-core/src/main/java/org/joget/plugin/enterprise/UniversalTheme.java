@@ -14,11 +14,9 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 import java.util.StringTokenizer;
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import net.sf.ehcache.Cache;
-import net.sf.ehcache.Element;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import org.apache.commons.lang.StringEscapeUtils;
 import org.joget.apps.app.service.AppPluginUtil;
 import org.joget.apps.app.service.AppUtil;
@@ -44,10 +42,8 @@ import org.joget.workflow.model.service.WorkflowManager;
 import org.joget.workflow.model.service.WorkflowUserManager;
 import org.joget.workflow.util.WorkflowUtil;
 import org.json.JSONObject;
-import org.apache.commons.lang3.StringUtils;
 
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
+import javax.cache.Cache;
 
 public class UniversalTheme extends UserviewV5Theme implements UserviewPwaTheme, PluginWebSupport {
     protected final static String PROFILE = "_ja_profile"; 
@@ -603,18 +599,14 @@ public class UniversalTheme extends UserviewV5Theme implements UserviewPwaTheme,
         // read CSS from cache
         Cache cache = (Cache) AppUtil.getApplicationContext().getBean("cssCache");
         if (cache != null) {
-            Element element = cache.get(less);
-            if (element != null) {
-                css = (String) element.getObjectValue();
-            }
+            css = (String)cache.get(less);
         }
         if (css == null || css.isEmpty()) {
             // not available in cache, compile LESS
             css = compileLess(less);
             // store CSS in cache
             if (cache != null) {
-                Element element = new Element(less, css);
-                cache.put(element);
+                cache.put(less, css);
             }
         }
         return css;

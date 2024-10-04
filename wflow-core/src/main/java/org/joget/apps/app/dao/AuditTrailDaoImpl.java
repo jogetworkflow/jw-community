@@ -11,13 +11,11 @@ public class AuditTrailDaoImpl extends AbstractSpringDao implements AuditTrailDa
     public void addAuditTrail(AuditTrail auditTrail) {
         super.save(ENTITY_NAME, auditTrail);
         
-        super.currentSession().evict(auditTrail); //remove audit trail from cache
+        super.findSession().evict(auditTrail); //remove audit trail from cache
     }
 
     public AuditTrail getAuditTrailByUsername(String username) {
-        AuditTrail auditTrail = new AuditTrail();
-        auditTrail.setUsername(username);
-        return (AuditTrail) super.findByExample(ENTITY_NAME, auditTrail);
+        return (AuditTrail) super.find(ENTITY_NAME, "WHERE username=?1", new Object[] {username}, null, null, 0, 1);
     }
 
     public List<AuditTrail> getAuditTrails(String sort, Boolean desc, Integer start, Integer rows) {

@@ -3,8 +3,8 @@ package org.joget.directory.model.service;
 import org.joget.directory.model.User;
 import org.joget.directory.model.idp.IdentityProviderPlugin;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpSession;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpSession;
 import java.util.Collection;
 
 /**

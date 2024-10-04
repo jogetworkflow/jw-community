@@ -1,11 +1,8 @@
 package org.joget.apps.userview.service;
 
-import javax.servlet.http.HttpServletRequest;
-import net.sf.ehcache.Cache;
-import net.sf.ehcache.Element;
-import net.sf.ehcache.search.Query;
-import net.sf.ehcache.search.Result;
-import net.sf.ehcache.search.Results;
+import jakarta.servlet.http.HttpServletRequest;
+import java.util.Iterator;
+import javax.cache.Cache;
 import org.joget.apps.app.model.AppDefinition;
 import org.joget.apps.app.service.AppUtil;
 import org.joget.apps.form.service.FormUtil;
@@ -31,16 +28,17 @@ public class UserviewCache {
         if (cache != null) {
             WorkflowUserManager workflowUserManager = (WorkflowUserManager) AppUtil.getApplicationContext().getBean("workflowUserManager");
             scope = (CACHE_SCOPE_APPLICATION.equals(scope)) ? CACHE_SCOPE_APPLICATION : workflowUserManager.getCurrentUsername();
-            String regex = CACHE_KEY_PREFIX + ":" + userviewId + ":" + menuId + ":" + scope + ":*";
-            Results results = cache.createQuery().includeKeys().addCriteria(Query.KEY.ilike(regex)).execute();
-            for (Result result : results.all()) {
-                String key = (String) result.getKey();
-                cache.remove(key);
-                if (LogUtil.isDebugEnabled(UserviewCache.class.getName())) {    
-                    LogUtil.debug(UserviewCache.class.getName(), "clearCachedContent: " + key);
+            String prefix = CACHE_KEY_PREFIX + ":" + userviewId + ":" + menuId + ":" + scope + ":";
+            for (Iterator i=cache.iterator(); i.hasNext();) {
+                Cache.Entry entry = (Cache.Entry)i.next();
+                String key = entry.getKey().toString();
+                if (key.startsWith(prefix)) {
+                    i.remove();
+                    if (LogUtil.isDebugEnabled(UserviewCache.class.getName())) {    
+                        LogUtil.debug(UserviewCache.class.getName(), "clearCachedContent: " + key);
+                    }
                 }
             }
-            results.discard();
         }
     }
 
@@ -80,12 +78,10 @@ public class UserviewCache {
                 }
             }
             String cacheKey = getCacheKey(userviewMenu, type, scope);
-            Element element = new Element(cacheKey, content);
             if (duration != null && duration > 0) {
-                element.setTimeToIdle(duration);
-                element.setTimeToLive(duration);
+                // TODO CUSTOM: handle custom TTI and TTL
             }
-            cache.put(element);
+            cache.put(cacheKey, content);
             if (LogUtil.isDebugEnabled(UserviewCache.class.getName())) {    
                 LogUtil.debug(UserviewCache.class.getName(), "setCachedContent: " + cacheKey + ", duration " + duration + "s");
             }
@@ -105,9 +101,8 @@ public class UserviewCache {
                 return null;
             }
             String cacheKey = getCacheKey(userviewMenu, type, scope);
-            Element element = cache.get(cacheKey);
-            if (element != null) {
-                content = (String) element.getObjectValue();
+            content = (String)cache.get(cacheKey);
+            if (content != null) {
                 if (LogUtil.isDebugEnabled(UserviewCache.class.getName())) {    
                     LogUtil.debug(UserviewCache.class.getName(), "getCachedContent: " + cacheKey);
                 }
@@ -131,7 +126,7 @@ public class UserviewCache {
         if (request != null) {
             params = request.getQueryString();
             if (params == null) {
-                params = (String)request.getAttribute("javax.servlet.forward.query_string");
+                params = (String)request.getAttribute("jakarta.servlet.forward.query_string");
             }
         }
         

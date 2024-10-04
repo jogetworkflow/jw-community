@@ -163,12 +163,9 @@ public class UserDaoImpl extends AbstractSpringDao implements UserDao {
 
     public User getUser(String username) {
         try {
-            User user = new User();
-            user.setUsername(username);
-            List users = findByExample("User", user);
-
-            if (users.size() > 0) {
-                return (User) users.get(0);
+            Collection users = find("User", "WHERE username=?1", new String[] { username }, null, null, 0, 1);
+            if (!users.isEmpty()) {
+                return (User) users.iterator().next();
             }
         } catch (Exception e) {
             LogUtil.error(UserDaoImpl.class.getName(), e, "Get User Error!");

@@ -1,7 +1,7 @@
 package org.joget.apps.app.model;
 
 import java.util.Collection;
-import javax.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletRequest;
 import org.joget.plugin.property.model.PropertyEditable;
 
 

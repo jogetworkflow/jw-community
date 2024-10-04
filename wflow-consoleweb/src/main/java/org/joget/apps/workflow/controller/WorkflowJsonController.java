@@ -23,8 +23,8 @@ import org.joget.workflow.model.WorkflowVariable;
 import org.joget.commons.util.PagedList;
 import org.joget.directory.model.service.DirectoryManager;
 import java.util.Enumeration;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import org.joget.apps.app.model.AppDefinition;
 import org.joget.apps.app.model.UserviewDefinition;
 import org.joget.apps.app.service.AppService;
@@ -135,7 +135,7 @@ public class WorkflowJsonController {
 
             Integer count = (Integer) data.get("count");
             if (count == null) {
-                count = new Integer(0);
+                count = Integer.valueOf(0);
             }
             ++count;
             data.put("count", count);
@@ -562,7 +562,7 @@ public class WorkflowJsonController {
 
     @RequestMapping("/json/workflow/assignment/list/count")
     public void assignmentPendingAndAcceptedListCount(Writer writer, @RequestParam(value = "callback", required = false) String callback, @RequestParam(value = "packageId", required = false) String packageId, @RequestParam(value = "processDefId", required = false) String processDefId, @RequestParam(value = "processId", required = false) String processId) throws JSONException, IOException {
-        Integer total = new Integer(workflowManager.getAssignmentSize(packageId, processDefId, processId));
+        Integer total = workflowManager.getAssignmentSize(packageId, processDefId, processId);
 
         JSONObject jsonObject = new JSONObject();
         jsonObject.accumulate("total", total);
@@ -571,7 +571,7 @@ public class WorkflowJsonController {
 
     @RequestMapping("/json/workflow/assignment/list/pending/count")
     public void assignmentPendingListCount(Writer writer, @RequestParam(value = "callback", required = false) String callback) throws JSONException, IOException {
-        Integer total = new Integer(workflowManager.getAssignmentSize(Boolean.FALSE, null));
+        Integer total = workflowManager.getAssignmentSize(Boolean.FALSE, null);
 
         JSONObject jsonObject = new JSONObject();
         jsonObject.accumulate("total", total);
@@ -580,7 +580,7 @@ public class WorkflowJsonController {
 
     @RequestMapping("/json/workflow/assignment/list/accepted/count")
     public void assignmentAcceptedListCount(Writer writer, @RequestParam(value = "callback", required = false) String callback) throws JSONException, IOException {
-        Integer total = new Integer(workflowManager.getAssignmentSize(Boolean.TRUE, null));
+        Integer total = workflowManager.getAssignmentSize(Boolean.TRUE, null);
 
         JSONObject jsonObject = new JSONObject();
         jsonObject.accumulate("total", total);
@@ -715,7 +715,7 @@ public class WorkflowJsonController {
                     url += "&callback=" + callback;
                 }
                 data.put("url", url);
-                data.put("count", new Integer(size));
+                data.put("count", size);
                 processMap.put(label, data);
             }
         }
@@ -752,7 +752,7 @@ public class WorkflowJsonController {
                     url += "&callback=" + callback;
                 }
                 data.put("url", url);
-                data.put("count", new Integer(size));
+                data.put("count", size);
                 processMap.put(label, data);
             }
         }
