@@ -1,10 +1,8 @@
 package org.joget.apps.app.dao;
 
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-import net.sf.ehcache.Element;
 import org.joget.apps.app.model.AppDefinition;
 import org.joget.apps.app.model.AppResource;
 import org.joget.apps.app.service.AppDevUtil;
@@ -46,19 +44,17 @@ public class AppResourceDaoImpl extends AbstractAppVersionedObjectDao<AppResourc
     @Override
     public AppResource loadById(String id, AppDefinition appDefinition) {
         String cacheKey = getCacheKey(id, appDefinition.getAppId(), appDefinition.getVersion());
-        Element element = cache.get(cacheKey, appDefinition);
+        AppResource appResource = (AppResource)cache.get(cacheKey, appDefinition);
 
-        if (element == null) {
-            AppResource r = super.loadById(id, appDefinition);
-            
+        if (appResource == null) {
+            AppResource r = super.loadById(id, appDefinition);            
             if (r != null) {
                 findSession().evict(r);
-                element = new Element(cacheKey, (Serializable) r);
-                cache.put(element, appDefinition);
+                cache.put(cacheKey, r, appDefinition);
             }
             return r;
-        }else{
-            return (AppResource) element.getValue();
+        } else {
+            return appResource;
         }
     }
     

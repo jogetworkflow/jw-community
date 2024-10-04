@@ -70,6 +70,7 @@ public interface WorkflowManager {
      * 
      * @param activityId 
      */
+    @Deprecated
     void assignmentAccept(String activityId);
 
     /**
@@ -145,6 +146,7 @@ public interface WorkflowManager {
      * 
      * @param activityId 
      */
+    @Deprecated
     void assignmentWithdraw(String activityId);
 
     /**
@@ -456,6 +458,7 @@ public interface WorkflowManager {
      * @param rows
      * @return 
      */
+    @Deprecated
     PagedList<WorkflowAssignment> getAssignmentAcceptedList(String processDefId, String sort, Boolean desc, Integer start, Integer rows);
 
     /**
@@ -467,6 +470,7 @@ public interface WorkflowManager {
      * @param accepted
      * @return 
      */
+    @Deprecated
     Map getActivityInstanceByProcessIdAndStatus(String processId, Boolean accepted); // TODO: VERIFY USAGE??
 
     /**

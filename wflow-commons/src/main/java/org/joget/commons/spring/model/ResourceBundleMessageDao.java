@@ -4,7 +4,6 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import net.sf.ehcache.Element;
 import org.hibernate.query.Query;
 import org.joget.commons.util.DynamicDataSourceManager;
 import org.joget.commons.util.LongTermCache;
@@ -35,20 +34,16 @@ public class ResourceBundleMessageDao extends AbstractSpringDao {
         return (ResourceBundleMessage) super.find(ENTITY_NAME, id);
     }
 
-    public ResourceBundleMessage getMessage(String key, String locale) {
-        Map<String, ResourceBundleMessage> messageMap;
+    public ResourceBundleMessage getMessage(String key, String locale) {        
         String cacheKey = getCacheKey(key,locale);
-        Element element = cache.get(cacheKey);
-        if (element == null) {
+        Map<String, ResourceBundleMessage> messageMap = (Map<String, ResourceBundleMessage>)cache.get(cacheKey);
+        if (messageMap == null) {
             messageMap = new HashMap<String, ResourceBundleMessage>();
             Collection<ResourceBundleMessage> results = super.find(ENTITY_NAME, "WHERE e.locale = ?", new String[]{locale}, null, null, null, null);
             for (ResourceBundleMessage message : results) {
                 messageMap.put(message.getKey(), message);
             }
-            element = new Element(cacheKey, messageMap);
-            cache.put(element);
-        } else {
-            messageMap = (HashMap<String, ResourceBundleMessage>) element.getObjectValue();
+            cache.put(cacheKey, messageMap);
         }
         ResourceBundleMessage result = messageMap.get(key);
         return result;

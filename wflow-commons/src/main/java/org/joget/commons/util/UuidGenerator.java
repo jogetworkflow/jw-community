@@ -64,6 +64,7 @@ public class UuidGenerator {
      * @return 
      * @deprecated
      */
+    @Deprecated
     public synchronized String getOldUuid() {
         long timeNow = System.currentTimeMillis();
         int timeLow = (int) timeNow & -1;

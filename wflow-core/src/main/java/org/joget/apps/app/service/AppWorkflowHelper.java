@@ -10,9 +10,8 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.StringTokenizer;
-import javax.servlet.http.HttpServletRequest;
-import net.sf.ehcache.Cache;
-import net.sf.ehcache.Element;
+import javax.cache.Cache;
+import jakarta.servlet.http.HttpServletRequest;
 import org.joget.apps.app.dao.AppDefinitionDao;
 import org.joget.apps.app.dao.PackageDefinitionDao;
 import org.joget.apps.app.dao.UserReplacementDao;
@@ -26,7 +25,6 @@ import org.joget.commons.util.CsvUtil;
 import org.joget.commons.util.DynamicDataSourceManager;
 import org.joget.commons.util.HostManager;
 import org.joget.commons.util.LogUtil;
-import org.joget.commons.util.StringUtil;
 import org.joget.directory.model.Department;
 import org.joget.directory.model.Employment;
 import org.joget.directory.model.User;
@@ -776,10 +774,9 @@ public class AppWorkflowHelper implements WorkflowHelper {
         
         Cache cache = (Cache) AppUtil.getApplicationContext().getBean("setupManagerCache");
         if (cache != null) {
-            Element element = cache.get(cacheKey);
-            if (element != null) {
-                replacements = (HashMap<String, Collection<String>>) element.getObjectValue();
-                return replacements;
+            Map<String, Collection<String>> cachedReplacements = (Map<String, Collection<String>>)cache.get(cacheKey);
+            if (cachedReplacements != null) {
+                return cachedReplacements;
             }
         }
         
@@ -799,8 +796,7 @@ public class AppWorkflowHelper implements WorkflowHelper {
             
             replacements.put(ur.getUsername(), processes);
             if (cache != null) {
-                Element element = new Element(cacheKey, replacements);
-                cache.put(element);
+                cache.put(cacheKey, replacements);
             }
         }
         

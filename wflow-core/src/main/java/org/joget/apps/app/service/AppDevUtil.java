@@ -26,9 +26,8 @@ import java.util.Set;
 import java.util.TimeZone;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
-import javax.servlet.http.HttpServletRequest;
-import net.sf.ehcache.Cache;
-import net.sf.ehcache.Element;
+import javax.cache.Cache;
+import jakarta.servlet.http.HttpServletRequest;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.StringUtils;
@@ -1763,10 +1762,7 @@ public class AppDevUtil {
         String cacheKey = profile + "_dirLastModified_" + appDef.toString();
         Cache cache = (Cache) AppUtil.getApplicationContext().getBean("userviewMenuCache");
         if (cache != null) {
-            Element element = cache.get(cacheKey);
-            if (element != null) {
-                latestDate = (Date)element.getObjectValue();
-            }
+            latestDate = (Date)cache.get(cacheKey);
         }
         if (latestDate == null) {
             if (!AppDevUtil.isGitDisabled()) {
@@ -1782,13 +1778,11 @@ public class AppDevUtil {
                         }
                     }
                     if (cache != null) {
-                        Element element = new Element(cacheKey, latestDate);
-                        cache.put(element);
+                        cache.put(cacheKey, latestDate);
                     }
                 }
             } else if (cache != null) {
-                Element element = new Element(cacheKey, appDef.getDateModified());
-                cache.put(element);
+                cache.put(cacheKey, latestDate);
             }
         }
         if (latestDate != null) {

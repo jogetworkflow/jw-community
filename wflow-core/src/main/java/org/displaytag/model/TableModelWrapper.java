@@ -1,6 +1,6 @@
 package org.displaytag.model;
 
-import javax.servlet.jsp.PageContext;
+import jakarta.servlet.jsp.PageContext;
 
 /**
  * This is a wrapper class of org.displaytag.model.TableModel to retrieve 

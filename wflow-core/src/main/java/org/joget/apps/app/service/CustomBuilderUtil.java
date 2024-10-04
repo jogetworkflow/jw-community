@@ -3,7 +3,7 @@ package org.joget.apps.app.service;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
-import javax.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletRequest;
 import org.joget.apps.app.model.BuilderDefinition;
 import org.joget.apps.app.model.CustomBuilder;
 import org.joget.apps.userview.model.Permission;

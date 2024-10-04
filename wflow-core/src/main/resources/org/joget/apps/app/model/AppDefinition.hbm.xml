@@ -4,7 +4,7 @@
     <class entity-name="AppDefinition" name="org.joget.apps.app.model.AppDefinition" table="app_app">
         <cache usage="nonstrict-read-write" /> 
         <composite-id>
-            <key-property column="appId" name="id" type="string"/>
+            <key-property column="appId" name="appId" type="string"/>
             <key-property column="appVersion" name="version" type="long"/>
         </composite-id>
         <property index="idx_name" name="name" type="string"/>

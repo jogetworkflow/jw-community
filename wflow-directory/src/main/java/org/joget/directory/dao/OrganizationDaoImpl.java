@@ -122,12 +122,9 @@ public class OrganizationDaoImpl extends AbstractSpringDao implements Organizati
 
     public Organization getOrganizationByName(String name) {
         try {
-            Organization organization = new Organization();
-            organization.setName(name);
-            List organizations = findByExample("Organization", organization);
-
-            if (organizations.size() > 0) {
-                return (Organization) organizations.get(0);
+            Collection organizations = find("Organization", "WHERE name=?1", new String[] {name}, null, null, 0, 1);
+            if (!organizations.isEmpty()) {
+                return (Organization) organizations.iterator().next();
             }
         } catch (Exception e) {
             LogUtil.error(OrganizationDaoImpl.class.getName(), e, "Get Organization By Name Error!");

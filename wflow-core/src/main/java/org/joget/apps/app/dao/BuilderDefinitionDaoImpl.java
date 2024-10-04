@@ -1,11 +1,9 @@
 package org.joget.apps.app.dao;
 
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
-import net.sf.ehcache.Element;
 import org.joget.apps.app.model.AppDefinition;
 import org.joget.apps.app.model.BuilderDefinition;
 import org.joget.apps.app.model.CustomBuilder;
@@ -87,19 +85,17 @@ public class BuilderDefinitionDaoImpl extends AbstractAppVersionedObjectDao<Buil
     @Override
     public BuilderDefinition loadById(String id, AppDefinition appDefinition) {
         String cacheKey = getCacheKey(id, appDefinition.getAppId(), appDefinition.getVersion());
-        Element element = cache.get(cacheKey, appDefinition);
+        BuilderDefinition builderDef = (BuilderDefinition)cache.get(cacheKey, appDefinition);
 
-        if (element == null) {
-            BuilderDefinition def = super.loadById(id, appDefinition);
-            
+        if (builderDef == null) {
+            BuilderDefinition def = super.loadById(id, appDefinition);            
             if (def != null) {
                 findSession().evict(def);
-                element = new Element(cacheKey, (Serializable) def);
-                cache.put(element, appDefinition);
+                cache.put(cacheKey, builderDef, appDefinition);
             }
             return def;
-        }else{
-            return (BuilderDefinition) element.getValue();
+        } else {
+            return builderDef;
         }
     }
 

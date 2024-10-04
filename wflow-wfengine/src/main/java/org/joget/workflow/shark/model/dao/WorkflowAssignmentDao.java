@@ -585,23 +585,23 @@ public class WorkflowAssignmentDao extends AbstractSpringDao {
       
         if (packageId != null || processDefId != null || processId != null || activityDefId != null || username != null || state != null) {           
             if (packageId != null && !packageId.isEmpty()) {
-                condition += " and PDefName like ?";                
+                condition += " and processDefId like ?";                
                 params.add(packageId+"#%");
             }
             
             if (processDefId != null && !processDefId.isEmpty()) {
-                condition += " and PDefName like ?";
+                condition += " and processDefId like ?";
                 processDefId = ignoreVersion(processDefId);
                 params.add(processDefId);
             }
             
             if (processId != null && !processId.isEmpty()) {
-                condition += " and ProcessId = ?";
+                condition += " and processId = ?";
                 params.add(processId);
             }
             
             if (activityDefId != null && !activityDefId.isEmpty()) {
-                condition += " and ActivityDefinitionId = ?";
+                condition += " and activityDefId = ?";
                 params.add(activityDefId);
             }
             if (state != null && !state.isEmpty()) {
@@ -609,7 +609,7 @@ public class WorkflowAssignmentDao extends AbstractSpringDao {
                 params.add("closed."+state);
             }
             if (username != null && !username.isEmpty()) {
-                condition += " and ResourceId like ?";
+                condition += " and resourceId like ?";
                 params.add(username);
             }
         }
@@ -731,23 +731,23 @@ public class WorkflowAssignmentDao extends AbstractSpringDao {
       
         if (packageId != null || processDefId != null || processId != null || activityDefId != null || username != null || state != null) {           
             if (packageId != null && !packageId.isEmpty()) {
-                condition += " and PDefName like ?";                
+                condition += " and processDefId like ?";                
                 params.add(packageId+"#%");
             }
             
             if (processDefId != null && !processDefId.isEmpty()) {
-                condition += " and PDefName like ?";
+                condition += " and processDefId like ?";
                 processDefId = ignoreVersion(processDefId);
                 params.add(processDefId);
             }
             
             if (processId != null && !processId.isEmpty()) {
-                condition += " and ProcessId = ?";
+                condition += " and processId = ?";
                 params.add(processId);
             }
             
             if (activityDefId != null && !activityDefId.isEmpty()) {
-                condition += " and ActivityDefinitionId = ?";
+                condition += " and activityDefId = ?";
                 params.add(activityDefId);
             }
             if (state != null && !state.isEmpty()) {
@@ -755,7 +755,7 @@ public class WorkflowAssignmentDao extends AbstractSpringDao {
                 params.add("closed."+state);
             }
             if (username != null && !username.isEmpty()) {
-                condition += " and ResourceId like ?";
+                condition += " and resourceId like ?";
                 params.add(username);
             }
         }

@@ -4,7 +4,7 @@ import org.joget.directory.model.mfa.exception.MfaExecutionException;
 import org.joget.plugin.base.Plugin;
 import org.joget.plugin.property.model.PropertyEditable;
 
-import javax.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletRequest;
 
 public interface MfaPlugin extends Plugin, PropertyEditable {
 

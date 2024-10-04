@@ -1,8 +1,8 @@
 package org.joget.commons.spring.web;
 
-import javax.servlet.http.HttpServletRequestWrapper;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.*;
+import jakarta.servlet.http.HttpServletRequestWrapper;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.*;
 import java.util.*;
 import java.io.IOException;
 
@@ -57,7 +57,7 @@ public class ParameterizedPathFilter implements Filter {
 
         private Map<String, String[]> parameters = null;
 
-        public ParameterizedPathServletRequest(javax.servlet.http.HttpServletRequest request) {
+        public ParameterizedPathServletRequest(jakarta.servlet.http.HttpServletRequest request) {
             super(request);
             Map<String, String> pathParameters = (Map<String, String>) super.getAttribute(ParameterizedUrlHandlerMapping.PATH_PARAMETERS);
             if (pathParameters != null) {

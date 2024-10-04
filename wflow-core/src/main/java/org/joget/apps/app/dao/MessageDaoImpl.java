@@ -5,7 +5,6 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import net.sf.ehcache.Element;
 import org.hibernate.Session;
 import org.hibernate.query.Query;
 import org.joget.apps.app.model.AppDefinition;
@@ -52,8 +51,8 @@ public class MessageDaoImpl extends AbstractAppVersionedObjectDao<Message> imple
     public Map<String, Message> getCachedMessageList(String locale, AppDefinition appDefinition) {
         Map<String, Message> messageMap = new HashMap<String, Message>();
         String cacheKey = getCacheKey(locale, appDefinition.getAppId(), appDefinition.getVersion().toString());
-        Element element = cache.get(cacheKey, appDefinition);
-        if (element == null) {
+        HashMap<String, Message> cachedMap = (HashMap<String, Message>)cache.get(cacheKey, appDefinition);
+        if (cachedMap == null) {
             messageMap = new HashMap<String, Message>();
             
             if (!"en_US".equals(locale)) {
@@ -67,10 +66,9 @@ public class MessageDaoImpl extends AbstractAppVersionedObjectDao<Message> imple
             for (Message message : results) {
                 messageMap.put(message.getMessageKey(), message);
             }
-            element = new Element(cacheKey, messageMap);
-            cache.put(element, appDefinition);
+            cache.put(cacheKey, cachedMap, appDefinition);
         } else {
-            messageMap = (HashMap<String, Message>) element.getObjectValue();
+            messageMap = cachedMap;
         }
         return messageMap;
     }

@@ -7,9 +7,9 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import org.joget.apps.app.dao.FormDefinitionDao;
 import org.joget.apps.app.model.AppDefinition;
 import org.joget.apps.app.model.FormDefinition;
@@ -173,7 +173,7 @@ public class RunProcess extends UserviewMenu implements PluginWebSupport, PwaOff
                 WorkflowManager workflowManager = (WorkflowManager) ac.getBean("workflowManager");
                 AppDefinition appDef = appService.getAppDefinition(appId, appVersion);
                 PackageDefinition packageDefinition = appDef.getPackageDefinition();
-                Long packageVersion = (packageDefinition != null) ? packageDefinition.getVersion() : new Long(1);
+                Long packageVersion = (packageDefinition != null) ? packageDefinition.getVersion() : 1;
                 Collection<WorkflowProcess> processList = workflowManager.getProcessList(appId, packageVersion.toString());
 
                 Map<String, String> empty = new HashMap<String, String>();

@@ -35,7 +35,7 @@ public class TestPluginManager {
 
     @Test
     public void testPluginManager() {
-        Assert.notNull(pluginManager);
+        Assert.notNull(pluginManager, "false");
     }
 
     //@Test
@@ -70,7 +70,7 @@ public class TestPluginManager {
             LogUtil.info(getClass().getName(), " plugin: " + p.getName() + "; " + p.getClass().getName());
             System.out.println(" plugin: " + p.getName() + "; " + p.getClass().getName());
         }
-        Assert.isTrue(list.size() > 0);
+        Assert.isTrue(list.size() > 0, "false");
     }
 
     @Test
@@ -83,7 +83,7 @@ public class TestPluginManager {
             LogUtil.info(getClass().getName(), " plugin: " + p.getName() + "; " + p.getClass().getName());
             System.out.println(" plugin: " + p.getName() + "; " + p.getClass().getName());
         }
-        Assert.isTrue(validPlugins);
+        Assert.isTrue(validPlugins, "false");
     }
 
     @Test
@@ -102,7 +102,7 @@ public class TestPluginManager {
         LogUtil.info(getClass().getName(), " ===testLoadClassPlugin=== ");
         String pluginName = "org.joget.plugin.base.SampleApplicationPlugin";
         Plugin plugin = pluginManager.getPlugin(pluginName);
-        Assert.isTrue(plugin.getClass().getClassLoader() == SampleApplicationPlugin.class.getClassLoader());
+        Assert.isTrue(plugin.getClass().getClassLoader() == SampleApplicationPlugin.class.getClassLoader(), "false");
     }
 
     @Test
@@ -112,7 +112,7 @@ public class TestPluginManager {
         InputStream input = null;
         try {
             input = pluginManager.getPluginResource(pluginName, "/resources/SampleApplicationPlugin.txt");
-            Assert.isTrue(input != null);
+            Assert.isTrue(input != null, "false");
         } finally {
             if (input != null) {
                 input.close();
@@ -134,7 +134,7 @@ public class TestPluginManager {
         request.addParameter("arg2", "arg2");
 
         pluginWeb.webService(request, response);
-        Assert.isTrue("{arg1:\"arg1\", arg2:\"arg2\"}".equals(response.getContentAsString()));
+        Assert.isTrue("{arg1:\"arg1\", arg2:\"arg2\"}".equals(response.getContentAsString()), "false");
     }
 
     //@Test

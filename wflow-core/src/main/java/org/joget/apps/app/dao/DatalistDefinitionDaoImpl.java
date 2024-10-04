@@ -1,11 +1,9 @@
 package org.joget.apps.app.dao;
 
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
-import net.sf.ehcache.Element;
 import org.joget.apps.app.model.AppDefinition;
 import org.joget.apps.app.model.DatalistDefinition;
 import org.joget.apps.app.service.AppDevUtil;
@@ -72,19 +70,17 @@ public class DatalistDefinitionDaoImpl extends AbstractAppVersionedObjectDao<Dat
     @Override
     public DatalistDefinition loadById(String id, AppDefinition appDefinition) {
         String cacheKey = getCacheKey(id, appDefinition.getAppId(), appDefinition.getVersion());
-        Element element = cache.get(cacheKey, appDefinition);
+        DatalistDefinition dataListDef = (DatalistDefinition)cache.get(cacheKey, appDefinition);
 
-        if (element == null) {
-            DatalistDefinition listDef = super.loadById(id, appDefinition);
-            
+        if (dataListDef == null) {
+            DatalistDefinition listDef = super.loadById(id, appDefinition);            
             if (listDef != null) {
                 findSession().evict(listDef);
-                element = new Element(cacheKey, (Serializable) listDef);
-                cache.put(element, appDefinition);
+                cache.put(cacheKey, dataListDef, appDefinition);
             }
             return listDef;
-        }else{
-            return (DatalistDefinition) element.getValue();
+        } else {
+            return dataListDef;
         }
     }
 

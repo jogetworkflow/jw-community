@@ -89,7 +89,7 @@
     </script>
         
     <jsp:include page="adminBarExt.jsp" flush="true"/>    
-        <c:set var="requestUri" value="${requestScope['javax.servlet.forward.request_uri']}"/>
+        <c:set var="requestUri" value="${requestScope['jakarta.servlet.forward.request_uri']}"/>
         <c:set var="matchingUri" value="${pageContext.request.contextPath}/web/console/app"/>
         <c:if test="${fn:startsWith(requestUri, matchingUri)}">
             <link href="${pageContext.request.contextPath}/presence/presence.css" rel="stylesheet" />

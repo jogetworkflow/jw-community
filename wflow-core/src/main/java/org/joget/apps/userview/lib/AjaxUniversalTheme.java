@@ -1,12 +1,8 @@
 package org.joget.apps.userview.lib;
 
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
-import javax.servlet.http.HttpServletRequest;
-import net.sf.ehcache.Cache;
-import net.sf.ehcache.Element;
+import java.util.*;
+import javax.cache.Cache;
+import jakarta.servlet.http.HttpServletRequest;
 import org.joget.apps.app.service.AppUtil;
 import org.joget.apps.app.service.MobileUtil;
 import org.joget.apps.userview.model.SupportBuilderColorConfig;
@@ -458,10 +454,7 @@ public class AjaxUniversalTheme extends UniversalTheme implements SupportBuilder
         String html = "";
         Cache cache = (Cache) AppUtil.getApplicationContext().getBean("cssCache");
         if (cache != null) {
-            Element element = cache.get(key);
-            if (element != null) {
-                html = (String) element.getObjectValue();
-            }
+            html = (String)cache.get(key);
         }
         if (html == null || html.isEmpty()) {
             // not available in cache
@@ -542,8 +535,7 @@ public class AjaxUniversalTheme extends UniversalTheme implements SupportBuilder
             html = StringUtil.escapeString(html, StringUtil.TYPE_JAVASCIPT, null);
             
             if (cache != null) {
-                Element element = new Element(key, html);
-                cache.put(element);
+                cache.put(key, html);
             }
         }
         return html;

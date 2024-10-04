@@ -5,7 +5,7 @@ import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import javax.activation.URLDataSource;
-import javax.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletRequest;
 import org.joget.workflow.util.WorkflowUtil;
 
 public class CustomURLDataSource extends URLDataSource {

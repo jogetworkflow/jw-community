@@ -66,12 +66,9 @@ public class GroupDaoImpl extends AbstractSpringDao implements GroupDao {
 
     public Group getGroupByName(String name) {
         try {
-            Group group = new Group();
-            group.setName(name);
-            List groups = findByExample("Group", group);
-
-            if (groups.size() > 0) {
-                return (Group) groups.get(0);
+            Collection groups = find("Group", "WHERE name=?1", new String[] {name}, null, null, 0, 1);
+            if (!groups.isEmpty()) {
+                return (Group) groups.iterator().next();
             }
         } catch (Exception e) {
             LogUtil.error(GroupDaoImpl.class.getName(), e, "Get Group By Name Error!");

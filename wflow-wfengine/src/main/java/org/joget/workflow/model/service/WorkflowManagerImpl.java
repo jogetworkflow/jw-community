@@ -58,7 +58,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.TreeMap;
 import java.util.concurrent.TimeoutException;
-import javax.transaction.TransactionManager;
+import jakarta.transaction.TransactionManager;
 import org.apache.commons.collections.SequencedHashMap;
 import org.apache.commons.lang.StringEscapeUtils;
 import org.enhydra.shark.CustomWfActivityImpl;
@@ -209,6 +209,7 @@ public class WorkflowManagerImpl implements WorkflowManager {
                     TransactionManager tm = this.transactionManager.getTransactionManager();
                     if (tm != null && ic != null) {
                         ic.rebind("jwTransactionManager", tm);
+//                        ic.rebind("jwTransactionManager", new JavaxTransactionManagerWrapper(tm));
                     }
                 }
 
@@ -513,7 +514,7 @@ public class WorkflowManagerImpl implements WorkflowManager {
         }
 
         // set total
-        Integer total = new Integer(processList.size());
+        Integer total = processList.size();
 
         // perform sorting and paging
         PagedList<WorkflowProcess> pagedList = new PagedList<WorkflowProcess>(true, processList, sort, desc, start, rows, total);
@@ -3427,7 +3428,7 @@ public class WorkflowManagerImpl implements WorkflowManager {
                 ass.setAssigneeId(assignee.resource_key());
                 ass.setAssigneeName(assignee.resource_name());
                 ass.setDescription(activity.description());
-                ass.setPriority(new Short(activity.priority()).toString());
+                ass.setPriority(Short.valueOf(activity.priority()).toString());
                 ass.setProcessId(process.key());
                 ass.setProcessName(process.name());
                 ass.setProcessVersion(manager.version());
@@ -3640,7 +3641,7 @@ public class WorkflowManagerImpl implements WorkflowManager {
                 ass.setAssigneeId(assignee.resource_key());
                 ass.setAssigneeName(assignee.resource_name());
                 ass.setDescription(activity.description());
-                ass.setPriority(new Short(activity.priority()).toString());
+                ass.setPriority(Short.valueOf(activity.priority()).toString());
                 ass.setProcessId(process.key());
                 ass.setProcessName(process.name());
                 ass.setProcessVersion(manager.version());
@@ -3787,7 +3788,7 @@ public class WorkflowManagerImpl implements WorkflowManager {
                 ass.setAssigneeId(assignee.resource_key());
                 ass.setAssigneeName(assignee.resource_name());
                 ass.setDescription(activity.description());
-                ass.setPriority(new Short(activity.priority()).toString());
+                ass.setPriority(Short.valueOf(activity.priority()).toString());
                 ass.setProcessId(process.key());
                 ass.setProcessName(process.name());
                 ass.setProcessVersion(manager.version());
@@ -3976,7 +3977,7 @@ public class WorkflowManagerImpl implements WorkflowManager {
                 ass.setAssigneeId(assignee.resource_key());
                 ass.setAssigneeName(assignee.resource_name());
                 ass.setDescription(activity.description());
-                ass.setPriority(new Short(activity.priority()).toString());
+                ass.setPriority(Short.valueOf(activity.priority()).toString());
                 ass.setProcessId(process.key());
                 ass.setProcessName(process.name());
                 ass.setProcessVersion(manager.version());
@@ -4101,7 +4102,7 @@ public class WorkflowManagerImpl implements WorkflowManager {
         List<WorkflowAssignment> assignmentList = (List<WorkflowAssignment>) getAssignmentList(packageId, processDefId, processId, sort, desc, start, rows);
 
         // set total
-        Integer total = new Integer(getAssignmentSize(packageId, processDefId, processId));
+        Integer total = getAssignmentSize(packageId, processDefId, processId);
 
         // perform sorting and paging
         PagedList<WorkflowAssignment> pagedList = new PagedList<WorkflowAssignment>(assignmentList, sort, desc, start, rows, total);
@@ -4122,7 +4123,7 @@ public class WorkflowManagerImpl implements WorkflowManager {
         List<WorkflowAssignment> assignmentList = (List<WorkflowAssignment>) getAssignmentList(Boolean.FALSE, processDefId, sort, desc, start, rows);
 
         // set total
-        Integer total = new Integer(getAssignmentSize(Boolean.FALSE, processDefId));
+        Integer total = getAssignmentSize(Boolean.FALSE, processDefId);
 
         // perform sorting and paging
         PagedList<WorkflowAssignment> pagedList = new PagedList<WorkflowAssignment>(assignmentList, sort, desc, start, rows, total);
@@ -4165,11 +4166,12 @@ public class WorkflowManagerImpl implements WorkflowManager {
      * @param rows
      * @return
      */
+    @Deprecated
     public PagedList<WorkflowAssignment> getAssignmentAcceptedList(String processDefId, String sort, Boolean desc, Integer start, Integer rows) {
         List<WorkflowAssignment> assignmentList = (List<WorkflowAssignment>) getAssignmentList(Boolean.TRUE, processDefId, sort, desc, start, rows);
 
         // set total
-        Integer total = new Integer(getAssignmentSize(Boolean.TRUE, processDefId));
+        Integer total = getAssignmentSize(Boolean.TRUE, processDefId);
 
         // perform sorting and paging
         PagedList<WorkflowAssignment> pagedList = new PagedList<WorkflowAssignment>(assignmentList, sort, desc, start, rows, total);
@@ -4271,6 +4273,7 @@ public class WorkflowManagerImpl implements WorkflowManager {
      * 
      * @param activityId
      */
+    @Deprecated
     public void assignmentWithdraw(String activityId) {
 
         SharkConnection sc = null;
@@ -4844,7 +4847,7 @@ public class WorkflowManagerImpl implements WorkflowManager {
             Object c = a.activity().process_context().get(variableName);
 
             if (c instanceof Long) {
-                c = new Long(variableValue);
+                c = Long.valueOf(variableValue);
             } else if (c instanceof Boolean) {
                 c = Boolean.valueOf(variableValue);
             } else if (c instanceof Double) {

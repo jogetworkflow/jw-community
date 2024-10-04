@@ -78,12 +78,9 @@ public class GradeDaoImpl extends AbstractSpringDao implements GradeDao {
 
     public Grade getGradeByName(String name) {
         try {
-            Grade grade = new Grade();
-            grade.setName(name);
-            List grades = findByExample("Grade", grade);
-
-            if (grades.size() > 0) {
-                return (Grade) grades.get(0);
+            Collection grades = find("Grade", "WHERE name=?1", new String[] {name}, null, null, 0, 1);
+            if (!grades.isEmpty()) {
+                return (Grade) grades.iterator().next();
             }
         } catch (Exception e) {
             LogUtil.error(GradeDaoImpl.class.getName(), e, "Get Grade By Name Error!");

@@ -1,5 +1,6 @@
 package org.joget.apps.form.dao;
 
+import jakarta.persistence.EntityNotFoundException;
 import org.joget.apps.form.model.Form;
 import org.joget.apps.form.service.FormUtil;
 import org.joget.apps.form.model.FormRow;
@@ -23,9 +24,10 @@ import java.util.Properties;
 import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import javax.cache.Cache;
+import javax.cache.CacheManager;
 import javax.sql.DataSource;
 import javax.xml.transform.TransformerException;
-import net.sf.ehcache.Cache;
 import org.apache.commons.collections.map.LRUMap;
 import org.hibernate.SessionFactory;
 import org.hibernate.HibernateException;
@@ -64,7 +66,6 @@ import org.joget.commons.util.PluginThread;
 import org.joget.commons.util.StringUtil;
 import org.json.JSONObject;
 import org.springframework.orm.ObjectRetrievalFailureException;
-import org.springframework.orm.hibernate5.support.HibernateDaoSupport;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NamedNodeMap;
@@ -74,7 +75,7 @@ import org.w3c.dom.NodeList;
 /**
  *
  */
-public class FormDataDaoImpl extends HibernateDaoSupport implements FormDataDao {
+public class FormDataDaoImpl implements FormDataDao {
 
     public static final String FORM_MAPPING_DIRECTORY = "app_forms";
     public static final String FORM_PREFIX_ENTITY = "FormRow_";
@@ -145,28 +146,14 @@ public class FormDataDaoImpl extends HibernateDaoSupport implements FormDataDao 
         this.formColumnCache = formColumnCache;
     }
 
-    public Cache getFormSessionFactoryCache() {
-        return formSessionFactoryCache;
-    }
-
-    public void setFormSessionFactoryCache(Cache formSessionFactoryCache) {
-        this.formSessionFactoryCache = formSessionFactoryCache;
-    }
-
-    public Cache getJoinFormSessionFactoryCache() {
-        return joinFormSessionFactoryCache;
-    }
-
-    public void setJoinFormSessionFactoryCache(Cache joinFormSessionFactoryCache) {
-        this.joinFormSessionFactoryCache = joinFormSessionFactoryCache;
-    }
-
-    public Cache getFormPersistentClassCache() {
-        return formPersistentClassCache;
-    }
-
-    public void setFormPersistentClassCache(Cache formPersistentClassCache) {
-        this.formPersistentClassCache = formPersistentClassCache;
+    /**
+     * Method used by system to set cache object
+     * @param cacheManager 
+     */
+    public void setCacheManager(CacheManager cacheManager) {
+        this.formSessionFactoryCache = cacheManager.getCache("org.joget.cache.SF_CACHE");
+        this.joinFormSessionFactoryCache = cacheManager.getCache("org.joget.cache.SF_CACHE");
+        this.formPersistentClassCache = cacheManager.getCache("default");
     }
 
     /**
@@ -239,8 +226,10 @@ public class FormDataDaoImpl extends HibernateDaoSupport implements FormDataDao 
         // load by primary key
         FormRow row = null;
         try {
-            row = (FormRow) session.load(tableName, primaryKey);
+            row = (FormRow) session.getReference(tableName, primaryKey);
         } catch (ObjectRetrievalFailureException e) {
+            // not found, ignore
+        } catch (EntityNotFoundException e) {
             // not found, ignore
         } catch (ObjectNotFoundException e) {
             // not found, ignore
@@ -633,8 +622,8 @@ public class FormDataDaoImpl extends HibernateDaoSupport implements FormDataDao 
         try {
             // save the form data
             for (String key : primaryKeyValues) {
-                Object obj = session.load(entityName, key);
-                session.delete(entityName, obj);
+                Object obj = session.getReference(entityName, key);
+                session.remove(obj);
             }
             session.flush();
         } finally {
@@ -747,10 +736,11 @@ public class FormDataDaoImpl extends HibernateDaoSupport implements FormDataDao 
         if (!entity.startsWith(FORM_PREFIX_TABLE_NAME)) {
             entity = FORM_PREFIX_TABLE_NAME + entity;
         }
-        for (Object key : joinFormSessionFactoryCache.getKeys()) {
-            if (key.toString().contains("[" + entity + "]")) {
-                joinFormSessionFactoryCache.remove(key);
-            }
+        for (Iterator i = joinFormSessionFactoryCache.iterator(); i.hasNext();) {
+            Cache.Entry entry = (Cache.Entry)i.next();
+            if (entry.getKey().toString().contains("[" + entity + "]")) {
+                i.remove();
+            }            
         }
     }
     
@@ -842,14 +832,12 @@ public class FormDataDaoImpl extends HibernateDaoSupport implements FormDataDao 
     }
 
     protected SessionFactory findSessionFactory(String entityName, String tableName, FormRowSet rowSet, int actionType) throws HibernateException {
-        SessionFactory sf = null;        
         PersistentClass pc = null;
         
         // lookup cache
         String cacheKey = getSessionFactoryCacheKey(entityName, tableName, rowSet);
-        net.sf.ehcache.Element cacheElement = formSessionFactoryCache.get(cacheKey);
-        if (cacheElement != null) {
-            sf = (SessionFactory)cacheElement.getObjectValue();
+        SessionFactory sf = (SessionFactory)formSessionFactoryCache.get(cacheKey);
+        if (sf != null) {
             if (LogUtil.isDebugEnabled(FormDataDaoImpl.class.getName())) {
                 LogUtil.debug(FormDataDaoImpl.class.getName(), "  --- Form " + entityName + " session factory found in cache");
             }
@@ -859,9 +847,8 @@ public class FormDataDaoImpl extends HibernateDaoSupport implements FormDataDao 
             boolean mappingFileExist = true;
             // find existing persistent class for comparison
             if (sf != null) {
-                net.sf.ehcache.Element pcElement = formPersistentClassCache.get(getPersistentClassCacheKey(entityName));
-                if (pcElement != null) {
-                    pc = (PersistentClass)pcElement.getObjectValue();
+                pc = (PersistentClass)formPersistentClassCache.get(getPersistentClassCacheKey(entityName));
+                if (pc != null) {
                     if (LogUtil.isDebugEnabled(FormDataDaoImpl.class.getName())) {
                         LogUtil.debug(FormDataDaoImpl.class.getName(), "  --- Form " + entityName + " PersistentClass found in cache");
                     }
@@ -886,7 +873,7 @@ public class FormDataDaoImpl extends HibernateDaoSupport implements FormDataDao 
                             LogUtil.debug(FormDataDaoImpl.class.getName(), "  --- Form " + entityName + " loaded from mapping file " + mappingFile.getName());
                         }
                         // save into cache
-                        formPersistentClassCache.put(new net.sf.ehcache.Element(getPersistentClassCacheKey(entityName), pc));
+                        formPersistentClassCache.put(getPersistentClassCacheKey(entityName), pc);
                     } else {
                         mappingFileExist = false;
                     }
@@ -1010,9 +997,8 @@ public class FormDataDaoImpl extends HibernateDaoSupport implements FormDataDao 
 
             // lookup cache
             String cacheKey = getJoinSessionFactoryCacheKey(entities);
-            net.sf.ehcache.Element cacheElement = joinFormSessionFactoryCache.get(cacheKey);
-            if (cacheElement != null) {
-                sf = (SessionFactory)cacheElement.getObjectValue();
+            sf = (SessionFactory)joinFormSessionFactoryCache.get(cacheKey);
+            if (sf != null) {
                 LogUtil.debug(FormDataDaoImpl.class.getName(), "  --- Form [" + entities + "] join session factory found in cache");
             }
 
@@ -1037,7 +1023,7 @@ public class FormDataDaoImpl extends HibernateDaoSupport implements FormDataDao 
         
         // set datasource
         DataSource dataSource = (DataSource)AppUtil.getApplicationContext().getBean("setupDataSource");
-        configuration.getProperties().put(Environment.DATASOURCE, dataSource);
+        configuration.getProperties().put(Environment.JAKARTA_JTA_DATASOURCE, dataSource);
         configuration.getProperties().put(Environment.ALLOW_UPDATE_OUTSIDE_TRANSACTION, true);
         Properties properties = getProperties();
         
@@ -1204,12 +1190,12 @@ public class FormDataDaoImpl extends HibernateDaoSupport implements FormDataDao 
         if (actionType == ACTION_TYPE_LOAD) {
             PersistentClass pc = metadata.getEntityBinding(entityName);
             // save into cache
-            formPersistentClassCache.put(new net.sf.ehcache.Element(getPersistentClassCacheKey(entityName), pc));
+            formPersistentClassCache.put(getPersistentClassCacheKey(entityName), pc);
         }
         
         // save into cache
         formSessionFactoryCache.remove(cacheKey);
-        formSessionFactoryCache.put(new net.sf.ehcache.Element(cacheKey, sf));
+        formSessionFactoryCache.put(cacheKey, sf);
         LogUtil.debug(FormDataDaoImpl.class.getName(), "  --- Form " + entityName + " saved in cache");
         
         return sf;
@@ -1222,7 +1208,7 @@ public class FormDataDaoImpl extends HibernateDaoSupport implements FormDataDao 
 
         // save into cache
         joinFormSessionFactoryCache.remove(cacheKey);
-        joinFormSessionFactoryCache.put(new net.sf.ehcache.Element(cacheKey, sf));
+        joinFormSessionFactoryCache.put(cacheKey, sf);
         LogUtil.debug(FormDataDaoImpl.class.getName(), "  --- Form [" + entities + "] saved in cache");
         
         return sf;
@@ -1672,7 +1658,7 @@ public class FormDataDaoImpl extends HibernateDaoSupport implements FormDataDao 
             }
             if (groupBys != null && groupBys.length > 0 && havingParams != null) {
                 for (BigDecimal param : havingParams) {
-                    q.setBigDecimal(i, param);
+                    q.setParameter(i, param);
                     i++;
                 }
             }
@@ -1785,7 +1771,7 @@ public class FormDataDaoImpl extends HibernateDaoSupport implements FormDataDao 
             }
             if (groupBys != null && groupBys.length > 0 && havingParams != null) {
                 for (BigDecimal param : havingParams) {
-                    q.setBigDecimal(i, param);
+                    q.setParameter(i, param);
                     i++;
                 }
             }

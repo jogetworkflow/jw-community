@@ -262,7 +262,7 @@ public class JSPClientUtilities {
       Object c = a.activity().process_context().get(vName);
       
       if (c instanceof Long) {
-         c = new Long(vValue);
+         c = Long.valueOf(vValue);
       } else if (c instanceof Boolean) {
          c = Boolean.valueOf(vValue);
       } else if (c instanceof Double) {

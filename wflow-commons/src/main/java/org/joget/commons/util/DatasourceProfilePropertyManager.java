@@ -1,6 +1,7 @@
 package org.joget.commons.util;
 
 import java.util.Properties;
+import javax.cache.Caching;
 
 /**
  * Allow the injection of custom Properties implementations(for example
@@ -11,6 +12,8 @@ public class DatasourceProfilePropertyManager {
     private String propertyClass = null;
 
     public DatasourceProfilePropertyManager() {
+        // set default cache provider
+        System.setProperty(Caching.JAVAX_CACHE_CACHING_PROVIDER, "org.ehcache.jsr107.EhcacheCachingProvider");
     }
     
     public Properties newInstance() {

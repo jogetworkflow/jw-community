@@ -1,7 +1,7 @@
 package org.joget.commons.ignite;
 
 import javax.cache.configuration.Factory;
-import javax.transaction.TransactionManager;
+import jakarta.transaction.TransactionManager;
 import org.springframework.transaction.jta.JtaTransactionManager;
 
 /**

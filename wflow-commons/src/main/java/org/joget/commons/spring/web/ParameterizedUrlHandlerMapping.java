@@ -3,7 +3,7 @@ package org.joget.commons.spring.web;
 import java.util.HashMap;
 import org.springframework.util.PathMatcher;
 
-import javax.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletRequest;
 import java.util.Map;
 import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping;
 import org.springframework.web.servlet.mvc.method.RequestMappingInfo;

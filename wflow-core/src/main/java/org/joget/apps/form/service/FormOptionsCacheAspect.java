@@ -4,8 +4,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ScheduledFuture;
-import net.sf.ehcache.Cache;
-import net.sf.ehcache.Element;
+import javax.cache.Cache;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
@@ -127,18 +126,18 @@ public class FormOptionsCacheAspect {
         FormRowSet rowset = null;
         Cache cache = (Cache) AppUtil.getApplicationContext().getBean("formOptionsCache");
         if (cache != null) {
-            Element element = cache.get(cacheKey);
+            rowset = (FormRowSet)cache.get(cacheKey);
             try {
                 int count = 0;
-                while (element == null && count < 100) { //try for 10sec
+                while (rowset == null && count < 100) { //try for 10sec
                     if (LogUtil.isDebugEnabled(FormOptionsCacheAspect.class.getName())) {
                         LogUtil.debug(FormOptionsCacheAspect.class.getName(), "cache " + cacheKey + " is not ready! waiting...");
                     }
                     Thread.sleep(100);
-                    element = cache.get(cacheKey);
+                    rowset = (FormRowSet)cache.get(cacheKey);
                     count++;
                 }
-                if (element == null && count == 100) { //fallback
+                if (rowset == null && count == 100) { //fallback
                     if (LogUtil.isDebugEnabled(FormOptionsCacheAspect.class.getName())) {
                         LogUtil.debug(FormOptionsCacheAspect.class.getName(), "cache " + cacheKey + " is not able to retrieve after 10sec");
                     }
@@ -149,8 +148,7 @@ public class FormOptionsCacheAspect {
                     LogUtil.error(FormOptionsCacheAspect.class.getName(), e, "getCachedOptions: " + cacheKey);
                 }
             }
-            if (element != null) {
-                rowset = (FormRowSet) element.getObjectValue();
+            if (rowset != null) {
                 updateLastActive(cacheKey, idleStr);
                 if (LogUtil.isDebugEnabled(FormOptionsCacheAspect.class.getName())) {    
                     LogUtil.debug(FormOptionsCacheAspect.class.getName(), "getCachedOptions: " + cacheKey);
@@ -193,21 +191,19 @@ public class FormOptionsCacheAspect {
                     duration = Integer.parseInt(idleStr); 
                 } catch(Exception ex) {}
             }
-            
-            Element element = new Element(LAST_ACTIVE_CACHE_KEY_PREFIX + cacheKey, new Date());
+
             if (duration != null && duration > 0) {
-                element.setTimeToIdle(duration);
-                element.setTimeToLive(duration);
+                // TODO CUSTOM: handle custom TTI and TTL
             }
-            cache.put(element);
+            cache.put(LAST_ACTIVE_CACHE_KEY_PREFIX + cacheKey, new Date());
         }
     }
     
     public static synchronized boolean syncPaused(String cacheKey) {
         Cache cache = (Cache) AppUtil.getApplicationContext().getBean("formOptionsCache");
         if (cache != null) {
-            Element element = cache.get(LAST_ACTIVE_CACHE_KEY_PREFIX + cacheKey);
-            if (element != null) {
+            Date date = (Date)cache.get(LAST_ACTIVE_CACHE_KEY_PREFIX + cacheKey);
+            if (date != null) {
                 return false;
             }
         }
@@ -237,12 +233,10 @@ public class FormOptionsCacheAspect {
                                 duration = Integer.parseInt(durationStr) + BUFFER_SECONDS; 
                             } catch(Exception ex) {}
                         }
-                        Element element = new Element(cacheKey, rowset);
                         if (duration != null && duration > 0) {
-                            element.setTimeToIdle(duration);
-                            element.setTimeToLive(duration);
+                            // TODO: handle TTI and TTL for custom duration
                         }
-                        cache.put(element);
+                        cache.put(cacheKey, rowset);
                         if (LogUtil.isDebugEnabled(FormOptionsCacheAspect.class.getName())) {    
                             LogUtil.debug(FormOptionsCacheAspect.class.getName(), "syncOptionsCache: " + cacheKey);
                         }

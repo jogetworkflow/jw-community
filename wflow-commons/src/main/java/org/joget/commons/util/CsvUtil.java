@@ -73,6 +73,7 @@ public class CsvUtil {
      * @return
      * @throws IOException 
      */
+    @Deprecated
     public static Map<String, String> getPluginPropertyMap(String propertyString) throws IOException {
         Map propertyMap = new HashMap();
         if (propertyString != null && propertyString.trim().length() > 0) {

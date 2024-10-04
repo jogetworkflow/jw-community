@@ -102,6 +102,7 @@ public class XpdlImageUtil {
      * @param designerwebBaseUrl
      * @param processDefId 
      */
+    @Deprecated
     public static void generateXpdlImage(final String designerwebBaseUrl, final String processDefId) {
         generateXpdlImage(designerwebBaseUrl, processDefId, false);
     }
@@ -116,6 +117,7 @@ public class XpdlImageUtil {
      * @param processDefId
      * @param asynchronous 
      */
+    @Deprecated
     public static void generateXpdlImage(final String designerwebBaseUrl, final String processDefId, boolean asynchronous) {
         String profile = DynamicDataSourceManager.getCurrentProfile();
         
@@ -132,6 +134,7 @@ public class XpdlImageUtil {
      * @param designerwebBaseUrl
      * @param processDefId 
      */
+    @Deprecated
     public static void createXpdlImage(String designerwebBaseUrl, String processDefId) {
         String baseDir = getXpdlImagePath(processDefId);
         ApplicationContext appContext = WorkflowUtil.getApplicationContext();
@@ -229,6 +232,7 @@ public class XpdlImageUtil {
      * @param path
      * @param processDefId 
      */
+    @Deprecated
     public static void createThumbnail(String path, String processDefId) {
         int thumbWidth = THUMBNAIL_SIZE;
         int thumbHeight = THUMBNAIL_SIZE;

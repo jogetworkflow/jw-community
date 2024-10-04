@@ -1,6 +1,6 @@
 package org.joget.apps.app.lib;
 
-import javax.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletRequest;
 import org.joget.apps.app.dao.AppResourceDao;
 import org.joget.apps.app.model.AppDefinition;
 import org.joget.apps.app.model.DefaultHashVariablePlugin;

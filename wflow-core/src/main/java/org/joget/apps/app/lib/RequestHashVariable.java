@@ -3,7 +3,7 @@ package org.joget.apps.app.lib;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Collection;
-import javax.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletRequest;
 import org.joget.apps.app.model.DefaultHashVariablePlugin;
 import org.joget.apps.app.service.AppUtil;
 import org.joget.commons.util.LogUtil;
@@ -60,7 +60,7 @@ public class RequestHashVariable extends DefaultHashVariablePlugin {
                         }
                         
                         if ("requestURI".equals(variableKey) || "requestURL".equals(variableKey)) {
-                            String forwardUri = (String) request.getAttribute("javax.servlet.forward.request_uri");
+                            String forwardUri = (String) request.getAttribute("jakarta.servlet.forward.request_uri");
                             if (forwardUri != null) {
                                 if ("requestURI".equals(variableKey)) {
                                     returnResult = forwardUri;

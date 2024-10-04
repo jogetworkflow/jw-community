@@ -2,6 +2,7 @@ package org.joget.apps.app.service;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
+import jakarta.persistence.EntityNotFoundException;
 import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -41,7 +42,7 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 import java.util.zip.ZipOutputStream;
 import javax.annotation.Resource;
-import javax.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletRequest;
 import org.apache.commons.collections.map.ListOrderedMap;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.StringUtils;
@@ -1830,7 +1831,7 @@ public class AppServiceImpl implements AppService {
                 appDef = new AppDefinition();
                 appDef.setAppId(packageId);
                 appDef.setName(workflowPackage.getPackageName());
-                appDef.setVersion(new Long(1));
+                appDef.setVersion(Long.valueOf(1));
                 createAppDefinition(appDef);
             }
 
@@ -3021,6 +3022,8 @@ public class AppServiceImpl implements AppService {
                         formDataDao.loadWithoutTransaction(table, table, dummyKey);
                         LogUtil.debug(getClass().getName(), "Initialized form table " + table);
                     }
+                } catch (EntityNotFoundException e) {
+                    // ignore
                 } catch (Exception e) {
                     //error creating form data table, rollback
                     for (String formId : importedForms) {
@@ -3217,9 +3220,6 @@ public class AppServiceImpl implements AppService {
                                 }
                                 LogUtil.info(getClass().getName(), "Imported process participant mappings : " + oldPackageDef.getPackageParticipantMap().size());
                             }
-
-                            // update app definition
-                            appDefinitionDao.saveOrUpdate(newAppDef);
                         }
                     }
                 }

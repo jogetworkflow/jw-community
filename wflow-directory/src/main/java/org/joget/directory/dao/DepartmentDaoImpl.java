@@ -93,12 +93,9 @@ public class DepartmentDaoImpl extends AbstractSpringDao implements DepartmentDa
 
     public Department getDepartmentByName(String name) {
         try {
-            Department department = new Department();
-            department.setName(name);
-            List departments = findByExample("Department", department);
-
-            if (departments.size() > 0) {
-                return (Department) departments.get(0);
+            Collection departments = find("Department", "WHERE name=?1", new String[] {name}, null, null, 0, 1);
+            if (!departments.isEmpty()) {
+                return (Department) departments.iterator().next();
             }
         } catch (Exception e) {
             LogUtil.error(DepartmentDaoImpl.class.getName(), e, "Get Department By Name Error!");
