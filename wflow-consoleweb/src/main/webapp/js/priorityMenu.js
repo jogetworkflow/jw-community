@@ -7,6 +7,20 @@ $(document).ready(function () {
     const menuBreakpoint = 768;
     let initialLoad = true;
 
+    $("body").off("click.moreList mouseover.moreList").on("click.moreList mouseover.moreList", "ul#category-container li#menu-more, ul#category-container li#menu-more li.category", function(){
+        var obj = $(this).find("ul")[0]
+        var positionObject = $(obj)[0].getBoundingClientRect(); 
+        //If position of the object exceeds the left side and right side
+        if (positionObject.left < 0 && positionObject.right < 0){
+            return
+        }
+        else if (positionObject.left < 0){
+            $(obj).is('#moreSubMenu') ? $(obj).css({"left":"0px", "right": "unset"}) : $(obj).css({"left":"100%", "right": "unset"})
+        }else if (positionObject.right < 0){
+            $(obj).is('#moreSubMenu') ? $(obj).css({"right": "0px", "left": "unset"}) : $(obj).css({"right": "100%", "left": "unset"})
+        }
+    })
+
     if ($("body").hasClass("horizontal_menu")) {
         winWidth = $(window).width();
         navItems = $('#category-container > li');

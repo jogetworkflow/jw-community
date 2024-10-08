@@ -2,6 +2,64 @@ Joget DX COMMUNITY
 ====================
 For more information, please refer to https://community.joget.org
 
+8.1.6
+=====
+a88e9f60f Fixed: wflow-consoleweb - Form - Printed pdf using Ctrl + P or Print button changes the form's element alignment. T4484 @8.1-SNAPSHOT
+2608902b7 Fixed: jw-community - Email Validator - Email validator not applied in profile, user creation and email smtp. @8.1-SNAPSHOT
+4065280a3 Fixed: wflow-core - Email Tool/ User Notification - Missing completion log after retries. T4838 @8.1-SNAPSHOT
+7a455699b Fixed: wflow-core - JSON API List Data Source - NPE is not handle correctly. T4899 @8.1-SNAPSHOT
+7536efdbd Fixed: wflow-core - Security - Update Tensorflow to 0.5.0, Ndarray to 0.4.0 and protobuf-java to 3.25.4 for CVE-2024-7254. @7.1-SNAPSHOT
+d5a6065f8 Fixed: wflow-consoleweb - Spring Framework - Regression of 5e10534c. Overridden class is not updated. @7.1-SNAPSHOT
+
+8.1.5
+=====
+d7d0ac7da Modified: wflow-consoleweb - App Composer - Distortion on certain screen size. @8.1-SNAPSHOT
+e65a6c982 Fixed: wflow-consoleweb - X-admin theme - Fixed cannot make multiple selections and submit the selections for the pop-up select box in the mobile view. @8.1-SNAPSHOT
+7f3a8710a Fixed: wflow-consoleweb - Process Builder - Fixed transition arrows go haywire if process is complex. @8.1-SNAPSHOT
+604775b2c Fixed: wflow-consoleweb - UI builder - Fixed builder can't edit when menu template rendering throw exception. @8.1-SNAPSHOT
+2f0df208b Fixed: wflow-consoleweb - DX8 Themes - Fixed popup select options are blocking the submit button in smaller screen. @8.1-SNAPSHOT
+6714eb9d2 Fixed: wflow-consoleweb - Header Misalignment - Fixed the login button misalignment issue @8.1-SNAPSHOT
+54a4b576d Fixed: wflow-consoleweb - Builders - Fixed RTL issues. @8.1-SNAPSHOT
+07ec433ea Fixed: wflow-consoleweb - Color Picker - Fixed an issue where color picker in the last row of a repeater field resets to the color of the newly added row @8.1-SNAPSHOT
+498c21e1a Fixed: wflow-consoleweb - CSRF - Token value is store in memory which does not support clustering environment. @8.1-SNAPSHOT
+9f990db2a Modified: jw-enterprise - Security - Update TinyMCE to 7.3.0. CVE-2024-38357 CVE-2024-38356 @8.1-SNAPSHOT
+aba5e15ad Fixed: wflow-consoleweb - UI Component - Dynamic size component does not display correctly in show/hide component. T4688 @8.1-SNAPSHOT
+71573d9a1 Fixed: wflow-consoleweb - List Builder - URL Request Parameter is displayed wrongly on a cloned list. @8.1-SNAPSHOT
+400e054cc Fixed: wflow-consoleweb - Process Builder - Browser hang after update mapping. T4801 @8.1-SNAPSHOT
+422177630 Fixed: wflow-core - User Notification - Hash Variable does not parse correctly. T4756 @8.1-SNAPSHOT
+fdd5966a7 Fixed: wflow-wfengine - Process - Cache causing variable can't store and retrieve correctly and tool missing issue. T4778 T4822 T4823 @8.1-SNAPSHOT
+cf5cd39eb Fixed: wflow-core - Form Grid - Regression of e90d2e92. Causing readonly value can't store correctly. @8.1-SNAPSHOT
+8b455eb48 Modified: jw-community - Security - Update Spring Framework to 5.3.39 for CVE-2024-38808. @7.1-SNAPSHOT
+
+8.1.4
+=====
+fa8b4e7f0 Fixed: wflow-consoleweb - UI - RTL Issue for App Import, Create New App, and Plugin Upload. @8.1-SNAPSHOT
+927fe0a68 Fixed: wflow-core - UI Builder - AJAX event can't update correctly due to cache key is generated wrongly. @8.1-SNAPSHOT
+2c0c5c9aa Fixed: wflow-consoleweb - JSON API Options Binder - Dependency value is not handled correctly. T4676 @8.1-SNAPSHOT
+62a90bd08 Fixed: wflow-consoleweb - Login - Get request is still permitted. T4653 @8.1-SNAPSHOT
+b33459194 Fixed: jw-community - API Call - Not working when hitting API with proxies/redirect. T3989 @8.1-SNAPSHOT
+32a4b9a40 Fixed: wflow-consoleweb - Builder - Styles tab does not display correctly for RTL. T4518 @8.1-SNAPSHOT
+1fffd836e Fixed: wflow-core - JSON API Util - Referer header is wrongly set. @8.1-SNAPSHOT
+42e31a589 Fixed: wflow-core - Date Picker - Fixed validation bug in arabic locale. T4598 @8.1-SNAPSHOT
+
+8.1.3
+=====
+522435d8e Fixed: wflow-consoleweb - DX8 Theme - RTL label position top issue. @8.1-SNAPSHOT
+b951d6d1a Fixed: wflow-consoleweb - Form - Label position top issue. @8.1-SNAPSHOT
+accf1d884 Fixed: wflow-consoleweb - X-Admin Theme - Fixed calculation field value top label rtl issue @8.1-SNAPSHOT
+070165560 Fixed: wflow-core - JSON Tool - FIxed string extraction logic error for subkey. @8.1-SNAPSHOT
+ffd7bdc49 Modified: wflow-core - AppUtil/RequestParameterHashVariable - Added method to set and get partial parse flag. T4118 @8.1-SNAPSHOT
+ec6f58728 Fixed: wflow-consoleweb - Color Picker - Color always reset to white.  @8.1-SNAPSHOT
+e90d2e920 Fixed: wflow-core - Grid - Store Binder of child element unable to update value in row data. @8.1-SNAPSHOT
+ab44753fe Fixed: wflow-consoleweb - Form Builder - The prefix overlaps the table name in RTL. T4518 @8.1-SNAPSHOT
+e6d2c22a8 Fixed: wflow-core - FormPdfUtil - Report HTML of report builder is not same with PDF due to DX 8 theme style. T4153 @8.1-SNAPSHOT
+84639385d Fixed: wflow-core - Form - Regression of b6fbea30. T4521 @8.1-SNAPSHOT
+d810aae31 Fixed: wflow-core - List - Action link & button HTML attributes are not escape correctly. @7.0-SNAPSHOT
+9890f9b3b Fixed: User Profile - Long password & password contains html tag may fail validation. T4515 @8.1-SNAPSHOT
+4639b2b00 Fixed: wflow-core - Import App - Extra prefix on form data tables after import when table indexes are used. T4482 @8.1-SNAPSHOT
+7f953c7d1 Fixed: jw-community - Security - Upgrade Apache Tomcat to 9.0.90 for CVE-2024-34750. @8.1-SNAPSHOT
+2efb49fef Fixed: wflow-core - List Inbox - Not working with PostgreSQL. T4497 @7.0-SNAPSHOT
+
 8.1.2
 =====
 1e093147d Modified: wflow-consoleweb - UI - Updated help links @8.1-SNAPSHOT

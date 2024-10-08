@@ -981,7 +981,7 @@ ProcessBuilder = {
         var xpdlProcesses = ProcessBuilder.getArray(xpdl['WorkflowProcesses'], 'WorkflowProcess');
         for (var p in xpdlProcesses) {
             var xpdlProcessesAttrs = ProcessBuilder.getArray(xpdlProcesses[p]['ExtendedAttributes'], 'ExtendedAttribute');
-            for (var a = 0; a < xpdlProcessesAttrs.length; p++) {
+            for (var a = 0; a < xpdlProcessesAttrs.length; a++) {
                 if (xpdlProcessesAttrs[a]['-Name'] === "JaWE_GRAPH_WORKFLOW_PARTICIPANT_ORDER") {
                     var ids = xpdlProcessesAttrs[a]['-Value'].split(";");
                     for (var i in ids) {
@@ -3395,7 +3395,7 @@ ProcessBuilder = {
                 ProcessBuilder.jsPlumb.setSuspendDrawing(true);
                 ProcessBuilder.jsPlumb.recalculateOffsets(self.frameBody.find(".process"));
                 ProcessBuilder.jsPlumb.setSuspendDrawing(false, true);
-                
+                ProcessBuilder.jsPlumb.repaintEverything(); // Ensure everything is repainted
                 ProcessBuilder.refreshTimeout = null;
             }, 30);
         }

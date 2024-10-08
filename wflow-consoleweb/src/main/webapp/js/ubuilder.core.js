@@ -1016,6 +1016,9 @@ UserviewBuilder = {
                 }
                 $(element).replaceWith(newElement);
                 callback(newElement);
+            },
+            error: function() {
+                callback(null);
             }
         });
     },

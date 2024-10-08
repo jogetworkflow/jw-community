@@ -227,6 +227,31 @@ UI = {
                 callback(UI.messages);
             }
         }
+    },
+    validateEmail: function(emailSelector, multiple, callback) {    
+        // Select the email input
+        var email = $(emailSelector).val();
+
+        var internalCallback = {
+            success: function(data) {
+                    var response = JSON.parse(data);
+
+                    if (email && !response.isValid) {
+                        callback(false); // Call the callback with false if the email is invalid
+                    } else {
+                        callback(true); // Call the callback with true if the email is valid
+                    }
+            },
+        };
+
+        var params = {
+            email: email,
+            multiple: multiple // Set the multiple parameter dynamically
+        };
+
+        ConnectionManager.post('/jw/web/api/validateEmail', internalCallback, params);
+
+        return false; // Prevent default behavior
     }
 };
 

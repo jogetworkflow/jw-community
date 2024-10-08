@@ -22,6 +22,7 @@ import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.impl.client.HttpClients;
+import org.apache.http.impl.client.LaxRedirectStrategy;
 import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.util.EntityUtils;
 import org.joget.commons.util.LogUtil;
@@ -45,6 +46,7 @@ public class JsonApiUtil {
             HttpServletRequest httpRequest = WorkflowUtil.getHttpServletRequest();
 
             HttpClientBuilder httpClientBuilder = HttpClients.custom();
+            httpClientBuilder.setRedirectStrategy(new LaxRedirectStrategy());
             URL urlObj = new URL(jsonUrl);
             
             //prevent recursive call
@@ -134,10 +136,7 @@ public class JsonApiUtil {
                 }
             }
             if (httpRequest != null) {
-                String referer = httpRequest.getHeader("referer");
-                if (referer == null || referer.isEmpty()) {
-                    referer = httpRequest.getRequestURL().toString();
-                }
+                String referer = httpRequest.getRequestURL().toString();
                 request.setHeader("referer", referer);
                 if ("true".equalsIgnoreCase(properties.get("copyCookies").toString())) {
                     request.setHeader("Cookie", httpRequest.getHeader("Cookie"));

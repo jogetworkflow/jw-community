@@ -247,9 +247,10 @@
                 }
             });
         });
-        
+          
         function validateField(){
             var valid = true;
+            var originalAppId = UI.userview_app_id;
             var alertString = "";
             var idMatch = /^[\.@0-9a-zA-Z_\+-]+$/.test($("#username").val());
             if(!idMatch){
@@ -272,14 +273,37 @@
                 alertString += '<ui:msgEscJS key="console.directory.user.error.label.passwordNotMatch"/>';
                 valid = false;
             }
+            
+            UI.validateEmail('#email', true, function(isValid) {
+                if (!isValid) {
+                    if (alertString != "") {
+                        alertString += '\n';
+                    }
+                    try {
+                        if (UI.userview_app_id === '') {
+                            UI.userview_app_id = 'appcenter';
+                        }
 
-            if(valid){
-                $("#createUser").submit();
-            }else{
-                alert(alertString);
-            }
+                        UI.loadMsg(['app.edm.message.invalidEmailFormat'], function(messages) {
+                            alert(messages['app.edm.message.invalidEmailFormat']);
+                        });
+                        valid = false;
+                        UI.unblockUI();
+
+                    } finally {
+                        UI.userview_app_id = originalAppId;
+                    }
+                }
+
+                // Submit the form if everything is valid
+                if (valid) {
+                    $("#createUser").submit();
+                } else if(alertString !== '') {
+                    alert(alertString);
+                }
+            });
         }
-
+       
         function loadDepartmentAndGradeOption(){
             $('tr.row td.org select').each(function(){
                 if ($(this).val() !== "" && orgs[$(this).val()] === undefined) {

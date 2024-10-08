@@ -6,6 +6,10 @@ AjaxComponent = {
      */
     initAjax : function(element) {
         AjaxComponent.unbindEvents();
+        
+        //for non-ajax theme
+        AjaxComponent.overrideCollapseElement(element);
+        
         $(element).find("[data-ajax-component], [data-ajax-component][data-events-triggering], [data-ajax-component][data-events-listening]").each(function() {
             AjaxComponent.initContent($(this));
         });
@@ -26,6 +30,7 @@ AjaxComponent = {
     initContent : function(element) {
         AjaxComponent.overrideLinkEvent(element);
         setTimeout(function(){
+            AjaxComponent.overrideCollapseElement(element);
             AjaxComponent.overrideButtonEvent(element);
             AjaxComponent.overrideDatalistButtonEvent(element);
             AjaxComponent.overrideFormEvent(element);
@@ -141,6 +146,18 @@ AjaxComponent = {
                 }
             }
             return true;
+        });
+    },
+    
+    /*
+     * handle dynamic size elements locate in show/hide element
+     */
+    overrideCollapseElement : function(element) {
+        $(element).find('[data-toggle="collapse"]').off("click.btn-collapse").on("click.btn-collapse", function(){
+            //use timeout to wait for it fully expand
+            setTimeout(function(){
+                $(window).trigger("resize");
+            }, 1);
         });
     },
     

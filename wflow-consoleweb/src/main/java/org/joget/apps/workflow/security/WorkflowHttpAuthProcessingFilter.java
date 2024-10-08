@@ -1,7 +1,6 @@
 package org.joget.apps.workflow.security;
 
 import java.io.IOException;
-import java.lang.reflect.Field;
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
 import javax.servlet.ServletRequest;
@@ -26,6 +25,7 @@ import org.joget.workflow.model.dao.WorkflowHelper;
 import org.joget.workflow.model.service.WorkflowUserManager;
 import org.springframework.context.i18n.LocaleContext;
 import org.springframework.context.i18n.LocaleContextHolder;
+import org.springframework.security.authentication.AuthenticationServiceException;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -179,6 +179,12 @@ public class WorkflowHttpAuthProcessingFilter extends UsernamePasswordAuthentica
         UserSecurity us = DirectoryUtil.getUserSecurity();
         if (us != null && us.getForceSessionTimeout() && !isAnonymous) {
             throw new BadCredentialsException(ResourceBundleUtil.getMessage("authentication.failed.sessionTimeOut"));
+        }
+        
+        //login should only by post request
+        if (!request.getMethod().equals("POST")) {
+            throw new AuthenticationServiceException(
+                            "Authentication method not supported: " + request.getMethod());
         }
         
         Authentication auth = null;

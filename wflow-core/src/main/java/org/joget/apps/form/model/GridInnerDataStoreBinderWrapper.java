@@ -173,6 +173,13 @@ public class GridInnerDataStoreBinderWrapper extends FormBinder implements FormS
                     rowFormData.setPrimaryKeyValue(r.getId());
                 }
                 
+                //set the data to load binder, else readonly field can't store correctly.
+                if (innerForm.getLoadBinder() != null) {
+                    FormRowSet tempSet = new FormRowSet();
+                    tempSet.add(r);
+                    rowFormData.setLoadBinderData(innerForm.getLoadBinder(), tempSet);
+                }
+                
                 //format data
                 FormUtil.executeElementFormatData(innerForm, rowFormData);
                 
@@ -181,6 +188,12 @@ public class GridInnerDataStoreBinderWrapper extends FormBinder implements FormS
                     for (Element e : innerForm.getChildren()) {
                         formService.recursiveExecuteFormStoreBinders(innerForm, e, rowFormData);
                     }
+                }
+                
+                //update form element data back to row
+                if (innerForm.getStoreBinder() != null) {
+                    FormRowSet childRows = rowFormData.getStoreBinderData(innerForm.getStoreBinder());
+                    r.putAll(childRows.get(0));
                 }
             } else {
                 rowFormData = new FormData();

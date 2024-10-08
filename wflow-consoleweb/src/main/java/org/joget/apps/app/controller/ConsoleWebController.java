@@ -6475,4 +6475,21 @@ public class ConsoleWebController {
             }
         }
     }
+    
+     /**
+    * Validates an email address and returns the result as a JSON response.
+    * This method handles POST requests to the "/api/validateEmail" endpoint. 
+    * It utilizes the StringUtil.validateEmail method to validate the provided email address. 
+    */
+    @RequestMapping(value = "/api/validateEmail", method = RequestMethod.POST)
+    public void validateEmail(HttpServletRequest request, HttpServletResponse response, @RequestParam("email") String email, @RequestParam(value = "multiple", required = false) boolean multiple) {
+        try {
+            boolean isValid = StringUtil.validateEmail(email, multiple);
+            response.setContentType("application/json");
+            response.setCharacterEncoding("UTF-8");
+            response.getWriter().write("{\"isValid\": " + isValid + "}");
+        } catch (IOException e) {
+            LogUtil.error(getClass().getName(), e, "Error occurred while validating email.");
+        }
+    }
 }

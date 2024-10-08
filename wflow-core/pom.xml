@@ -50,7 +50,7 @@
         <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-test</artifactId>
-            <version>5.3.37</version>
+            <version>5.3.39</version>
         </dependency>
         <dependency>
             <groupId>javax.servlet</groupId>
@@ -279,7 +279,7 @@
         <dependency>
             <groupId>org.tensorflow</groupId>
             <artifactId>tensorflow-core-platform</artifactId>
-            <version>0.4.1</version>
+            <version>0.5.0</version>
             <exclusions>
                 <exclusion>
                     <groupId>org.tensorflow</groupId>
@@ -290,7 +290,7 @@
         <dependency>
             <groupId>org.tensorflow</groupId>
             <artifactId>tensorflow-core-api</artifactId>
-            <version>0.4.1</version>
+            <version>0.5.0</version>
             <exclusions>
                 <exclusion>
                     <groupId>com.google.protobuf</groupId>
@@ -301,24 +301,24 @@
         <dependency>
             <groupId>org.tensorflow</groupId>
             <artifactId>tensorflow-core-api</artifactId>
-            <version>0.4.1</version>
+            <version>0.5.0</version>
             <classifier>linux-x86_64</classifier>
         </dependency>
         <dependency>
             <groupId>org.tensorflow</groupId>
             <artifactId>tensorflow-core-api</artifactId>
-            <version>0.4.1</version>
+            <version>0.5.0</version>
             <classifier>windows-x86_64</classifier>
         </dependency>
         <dependency>
             <groupId>org.tensorflow</groupId>
             <artifactId>ndarray</artifactId>
-            <version>0.3.3</version>
+            <version>0.4.0</version>
         </dependency>
         <dependency>
             <groupId>com.google.protobuf</groupId>
             <artifactId>protobuf-java</artifactId>
-            <version>3.21.9</version>
+            <version>3.25.4</version>
         </dependency>
         <dependency>
             <groupId>javax.servlet</groupId>

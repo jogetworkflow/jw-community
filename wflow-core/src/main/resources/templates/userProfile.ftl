@@ -228,11 +228,22 @@
                     }
                 </#if>
 
-                if(valid){
-                    $("form#profile").submit();
-                }else{
-                    alert(alertString);
-                }
+                UI.validateEmail('#email', true, function(isValid) {
+                    if (!isValid) {
+                        if (alertString != "") {
+                            alertString += '\n';
+                        }
+                        alertString += '@@app.edm.message.invalidEmailFormat@@';
+                        valid = false;
+                    }
+
+                    // Submit the form if everything is valid
+                    if (valid) {
+                        $("form#profile").submit();
+                    }else{
+                        alert(alertString);
+                    }
+                });
             }
 
             // show/hide the field based on current locale and the chosen locale

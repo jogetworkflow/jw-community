@@ -853,3 +853,8 @@ body.rtl .numeric_field_control {left:10px; right:auto;}
     .numeric_field_controls {bottom: 50px; top:auto;}
     body.rtl .numeric_field_controls {right: auto;}
 }
+
+/* datepicker */
+body.rtl #form-canvas .form-cell .label {
+    text-align: right;
+}
