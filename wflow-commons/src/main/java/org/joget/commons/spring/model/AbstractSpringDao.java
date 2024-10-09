@@ -33,9 +33,9 @@ public abstract class AbstractSpringDao {
     
     protected Serializable save(String entityName, Object obj) {
         Session session = findSession();
-        session.merge(entityName, obj);
+        Serializable save = (Serializable)session.merge(entityName, obj);
         session.flush();
-        return (Serializable) obj;
+        return save;
     }
 
     protected void saveOrUpdate(String entityName, Object obj) {

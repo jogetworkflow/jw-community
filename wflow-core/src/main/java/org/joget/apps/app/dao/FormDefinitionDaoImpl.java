@@ -101,7 +101,7 @@ public class FormDefinitionDaoImpl extends AbstractAppVersionedObjectDao<FormDef
     }
     
     protected boolean shouldEvict(AppDefinition appDefinition) {
-        return true;
+        return false;
     }
 
     @Override

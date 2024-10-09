@@ -28,9 +28,6 @@ public abstract class AbstractAppVersionedObjectDao<T extends AbstractAppVersion
         if (results != null && !results.isEmpty()) {
             result = results.iterator().next();
         }
-        if (result != null) {
-            findSession().refresh(result);
-        }
         return result;
     }
     

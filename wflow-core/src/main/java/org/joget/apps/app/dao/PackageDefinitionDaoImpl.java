@@ -111,7 +111,7 @@ public class PackageDefinitionDaoImpl extends AbstractVersionedObjectDao<Package
         PackageDefinition packageDef = null;
 
         // load the package definition
-        String condition = " INNER JOIN e.appDefinition app WHERE app.id=? AND app.version=?";
+        String condition = " INNER JOIN e.appDefinition app WHERE app.appId=? AND app.version=?";
         Object[] params = {appId, appVersion};
         Collection<PackageDefinition> results = find(getEntityName(), condition, params, null, null, 0, 1);
         if (results != null && !results.isEmpty()) {
@@ -172,6 +172,9 @@ public class PackageDefinitionDaoImpl extends AbstractVersionedObjectDao<Package
         packageDef.setVersion(packageVersion);
         packageDef.setName(appDef.getName());
         packageDef.setAppDefinition(appDef);
+        packageDef.setPackageActivityFormMap(new HashMap<>());
+        packageDef.setPackageActivityPluginMap(new HashMap<>());
+        packageDef.setPackageParticipantMap(new HashMap<>());
         
         Collection<PackageDefinition> list = appDef.getPackageDefinitionList();
         if (list == null) {
@@ -273,7 +276,7 @@ public class PackageDefinitionDaoImpl extends AbstractVersionedObjectDao<Package
         if (appDef.getPackageDefinition() == null) {
             appDef.getPackageDefinitionList().add(packageDef);
         }
-//        appDefinitionDao.merge(appDef);
+        appDefinitionDao.merge(appDef);
         saveOrUpdate(packageDef);
         
         return packageDef;

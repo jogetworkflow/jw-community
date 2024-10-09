@@ -250,13 +250,15 @@ public class TestAppService {
             packageDef = appService.deployWorkflowPackage(TEST_APP_ID, TEST_APP_VERSION.toString(), packageXpdl, true);
             assertTrue(packageDef != null);
 
+            // reload latest app definition from db
+            appDef = appService.loadAppDefinition(TEST_APP_ID, TEST_APP_VERSION.toString());
+
             // verify package versions
             String currentVersion = workflowManager.getCurrentPackageVersion(TEST_APP_ID);
-            AppDefinition loadedApp = appService.loadAppDefinition(TEST_APP_ID, TEST_APP_VERSION.toString());
-            PackageDefinition loadedPackage = loadedApp.getPackageDefinition();
+            PackageDefinition loadedPackage = appDef.getPackageDefinition();
             assertTrue(currentVersion.equals(loadedPackage.getVersion().toString()));
 
-            // create forms
+            // create forms            
             createFormDefinition(appDef, TEST_FORM_ID, TEST_FORM_ID, TEST_APP_VERSION);
             createFormDefinition(appDef, TEST_FORM_ID_1, TEST_FORM_ID_1, TEST_APP_VERSION);
             createFormDefinition(appDef, TEST_FORM_ID_2, TEST_FORM_ID_2, TEST_APP_VERSION);
@@ -283,11 +285,11 @@ public class TestAppService {
             packageDefinitionDao.addAppActivityForm(TEST_APP_ID, TEST_APP_VERSION, paf);
 
             // get runProcess start form
-            PackageActivityForm startForm = appService.viewStartProcessForm(TEST_APP_ID, TEST_APP_VERSION.toString(), TEST_PROCESS_DEF_ID, null, null);
+            FormData data = new FormData();
+            PackageActivityForm startForm = appService.viewStartProcessForm(TEST_APP_ID, TEST_APP_VERSION.toString(), TEST_PROCESS_DEF_ID, data, null);
             assertTrue(TEST_FORM_ID.equals(startForm.getFormId()));
 
             // start process
-            FormData data = new FormData();
             data.addRequestParameterValues(AssignmentCompleteButton.DEFAULT_ID, new String[]{AssignmentCompleteButton.DEFAULT_ID});
             
             WorkflowProcessResult result = appService.submitFormToStartProcess(TEST_APP_ID, TEST_APP_VERSION.toString(), TEST_PROCESS_DEF_ID, data, null, null, null);

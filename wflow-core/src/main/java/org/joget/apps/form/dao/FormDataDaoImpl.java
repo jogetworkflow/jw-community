@@ -1,5 +1,6 @@
 package org.joget.apps.form.dao;
 
+import jakarta.persistence.EntityNotFoundException;
 import org.joget.apps.form.model.Form;
 import org.joget.apps.form.service.FormUtil;
 import org.joget.apps.form.model.FormRow;
@@ -227,6 +228,8 @@ public class FormDataDaoImpl implements FormDataDao {
         try {
             row = (FormRow) session.getReference(tableName, primaryKey);
         } catch (ObjectRetrievalFailureException e) {
+            // not found, ignore
+        } catch (EntityNotFoundException e) {
             // not found, ignore
         } catch (ObjectNotFoundException e) {
             // not found, ignore

@@ -5,17 +5,18 @@ import java.util.Collection;
 import java.util.Date;
 import org.hibernate.query.Query;
 import org.hibernate.Session;
-import org.hibernate.Transaction;
 import org.joget.apps.app.model.AbstractVersionedObject;
 import org.joget.commons.spring.model.AbstractSpringDao;
-import org.springframework.transaction.annotation.Propagation;
-import org.springframework.transaction.annotation.Transactional;
 
 /**
  * DAO to load/store VersionedObjects objects
  */
 public abstract class AbstractVersionedObjectDao<T extends AbstractVersionedObject> extends AbstractSpringDao implements VersionedObjectDao<T> {
 
+    protected String getPrimaryKey() {
+        return "id";
+    }
+    
     /**
      * Loads an object by unique ID (primary key)
      * @param uid
@@ -59,7 +60,7 @@ public abstract class AbstractVersionedObjectDao<T extends AbstractVersionedObje
         if (id != null && !id.trim().isEmpty()) {
             // formulate query and parameters
             ArrayList<Object> paramList = new ArrayList<Object>();
-            String query = " WHERE id=?";
+            String query = " WHERE " + getPrimaryKey() + "=?";
             paramList.add(id);
             if (version != null) {
                 query += " AND version=?";
@@ -97,7 +98,7 @@ public abstract class AbstractVersionedObjectDao<T extends AbstractVersionedObje
 
         // execute query and return result
         String query = "SELECT e FROM " + getEntityName() + " e " + condition + " AND e.version >= ALL";
-        query += "(SELECT version FROM " + getEntityName() + " e2 WHERE e.id=e2.id)";
+        query += "(SELECT version FROM " + getEntityName() + " e2 WHERE e." + getPrimaryKey() + "=e2." + getPrimaryKey() + ")";
 
         if (sort != null && !sort.equals("")) {
             query += " ORDER BY " + sort;
@@ -140,7 +141,7 @@ public abstract class AbstractVersionedObjectDao<T extends AbstractVersionedObje
 
         // execute query and return result
         String query = "SELECT COUNT(*) FROM " + getEntityName() + " e " + condition + " AND e.version >= ALL";
-        query += "(SELECT version FROM " + getEntityName() + " e2 WHERE e.id=e2.id)";
+        query += "(SELECT version FROM " + getEntityName() + " e2 WHERE e." + getPrimaryKey() + "=e2." + getPrimaryKey() + ")";
         Query q = findSession().createQuery(query);
         q.setCacheable(true);
 
@@ -161,7 +162,7 @@ public abstract class AbstractVersionedObjectDao<T extends AbstractVersionedObje
      * @return
      */
     public Long getLatestVersion(final String id) {
-        String query = "SELECT MAX(version) FROM " + getEntityName() + " e WHERE id=?1";
+        String query = "SELECT MAX(version) FROM " + getEntityName() + " e WHERE " + getPrimaryKey() + "=?1";
         Query q = findSession().createQuery(query);
         q.setCacheable(true);
         q.setParameter(1, id);
@@ -216,7 +217,7 @@ public abstract class AbstractVersionedObjectDao<T extends AbstractVersionedObje
         String query = " where 1=1";
         int ordinalParameter = 1;
         if (id != null && !id.trim().isEmpty()) {
-            query += " and id=?" + ordinalParameter++;
+            query += " and " + getPrimaryKey() + "=?" + ordinalParameter++;
         }
         if (appId != null && !appId.trim().isEmpty()) {
             query += " and appId=?" + ordinalParameter++;
@@ -270,7 +271,7 @@ public abstract class AbstractVersionedObjectDao<T extends AbstractVersionedObje
         if (id == null || id.trim().isEmpty()) {
             return new ArrayList<T>();
         }
-        String condition = " where id=?";
+        String condition = " where " + getPrimaryKey() + "=?";
         Object[] params = {id};
         Collection<T> resultList = find(getEntityName(), condition, params, sort, desc, start, rows);
         return resultList;
@@ -285,7 +286,7 @@ public abstract class AbstractVersionedObjectDao<T extends AbstractVersionedObje
         if (id == null || id.trim().isEmpty()) {
             return Long.valueOf(0);
         }
-        String condition = " where id=?";
+        String condition = " where " + getPrimaryKey() + "=?";
         Object[] params = {id};
         Long result = count(getEntityName(), condition, params);
         return result;
@@ -309,7 +310,6 @@ public abstract class AbstractVersionedObjectDao<T extends AbstractVersionedObje
      */
     public void delete(T obj) {
         Session session = findSession();
-        session.refresh(obj);
         delete(getEntityName(), obj);
     }
 

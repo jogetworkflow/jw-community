@@ -78,38 +78,14 @@ public class AppDefinitionDaoImpl extends AbstractVersionedObjectDao<AppDefiniti
     }
 
     @Override
+    protected String getPrimaryKey() {
+        return "appId";
+    }
+    
+    @Override
     public void delete(AppDefinition obj) {
         // disassociate
-        if (obj != null) {
-            if (obj.getDatalistDefinitionList() != null) {
-                obj.getDatalistDefinitionList().clear();
-            }
-            if (obj.getFormDefinitionList() != null) {
-                obj.getFormDefinitionList().clear();
-            }
-            if (obj.getUserviewDefinitionList() != null) {
-                obj.getUserviewDefinitionList().clear();
-            }
-            if (obj.getBuilderDefinitionList() != null) {
-                obj.getBuilderDefinitionList().clear();
-            }
-            if (obj.getPackageDefinitionList() != null) {
-                obj.getPackageDefinitionList().clear();
-            }
-            if (obj.getPluginDefaultPropertiesList() != null) {
-                obj.getPluginDefaultPropertiesList().clear();
-            }
-            if (obj.getEnvironmentVariableList() != null) {
-                obj.getEnvironmentVariableList().clear();
-            }
-            if (obj.getResourceList()!= null) {
-                obj.getResourceList().clear();
-            }
-            if (obj.getMessageList() != null) {
-                obj.getMessageList().clear();
-            }
-            super.saveOrUpdate(obj);
-            
+        if (obj != null) {            
             clearCache(obj);
 
             // delete
@@ -138,7 +114,7 @@ public class AppDefinitionDaoImpl extends AbstractVersionedObjectDao<AppDefiniti
     
     @Override
     public AppDefinition getPublishedAppDefinition(final String appId) {
-        Collection list = super.find(getEntityName(), " WHERE e.published = true and e.id = ?", new String[]{appId}, null, null, null, 1);
+        Collection list = super.find(getEntityName(), " WHERE e.published = true and e.appId = ?", new String[]{appId}, null, null, null, 1);
         
         if (list != null && !list.isEmpty()) {
             return (AppDefinition) list.iterator().next();
@@ -171,28 +147,34 @@ public class AppDefinitionDaoImpl extends AbstractVersionedObjectDao<AppDefiniti
     }
     
     @Override
-    protected String generateQueryCondition(String id, String appId, Long version, String name) {
-        // formulate query and parameters
-        String query = " where 1=1";
-        int ordinalParameter = 1;
-        if (id != null && !id.trim().isEmpty()) {
-            query += " and appId=?" + ordinalParameter++;
-        }
-        if (appId != null && !appId.trim().isEmpty()) {
-            query += " and appId=?" + ordinalParameter++;
-        }
-        if (version != null) {
-            query += " and version=?" + ordinalParameter++;
-        }
-        if (name != null && !name.trim().isEmpty()) {
-            query += " and name like ?" + ordinalParameter++;
-        }
-        return query;
-    }
-    
-
-    @Override
     public void saveOrUpdate(AppDefinition appDef) {
+        if (appDef.getPackageDefinitionList()== null) {
+            appDef.setPackageDefinitionList(new ArrayList());
+        }
+        if (appDef.getFormDefinitionList() == null) {
+            appDef.setFormDefinitionList(new ArrayList());
+        }
+        if (appDef.getDatalistDefinitionList() == null) {
+            appDef.setDatalistDefinitionList(new ArrayList());
+        }
+        if (appDef.getUserviewDefinitionList() == null) {
+            appDef.setUserviewDefinitionList(new ArrayList());
+        }
+        if (appDef.getBuilderDefinitionList() == null) {
+            appDef.setBuilderDefinitionList(new ArrayList<>());
+        }
+        if (appDef.getEnvironmentVariableList() == null) {
+            appDef.setEnvironmentVariableList(new ArrayList());
+        }
+        if (appDef.getPluginDefaultPropertiesList() == null) {
+            appDef.setPluginDefaultPropertiesList(new ArrayList());
+        }
+        if (appDef.getMessageList() == null) {
+            appDef.setMessageList(new ArrayList());
+        }
+        if (appDef.getResourceList() == null) {
+            appDef.setResourceList(new ArrayList());
+        }
         super.saveOrUpdate(appDef);
         
         if (!AppDevUtil.isGitDisabled() && !AppDevUtil.isImportApp()) {
@@ -309,11 +291,11 @@ public class AppDefinitionDaoImpl extends AbstractVersionedObjectDao<AppDefiniti
     @Override
     public void updateDateModified(AppDefinition appDef, Date date) {
         Session session = findSession();
-        Query query = session.createQuery("UPDATE "+ENTITY_NAME+" e SET e.dateModified = :dateModified WHERE e.id = :appId and e.version = :appVersion");
-        query.setParameter("dateModified", date);
-        query.setParameter("appId", appDef.getAppId(), String.class);
-        query.setParameter("appVersion", appDef.getVersion());
-        query.executeUpdate();
+        if (session.contains(appDef)) {
+            session.refresh(appDef);
+        }
+        appDef.setDateModified(date);
+        session.merge(appDef);
     }
     
     @Override
