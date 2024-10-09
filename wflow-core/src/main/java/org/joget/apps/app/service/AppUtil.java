@@ -1002,7 +1002,7 @@ public class AppUtil implements ApplicationContextAware {
      */
     public static void writeJson(Writer writer, JSONObject jsonObject, String callback) throws IOException, JSONException {
         if (callback != null && callback.trim().length() > 0) {
-            writer.write(HtmlUtils.htmlEscape(callback) + "(");
+            writer.write(HtmlUtils.htmlEscape(SecurityUtil.validateStringInput(callback)) + "(");
         }
         jsonObject.write(writer);
         if (callback != null && callback.trim().length() > 0) {
@@ -1020,7 +1020,7 @@ public class AppUtil implements ApplicationContextAware {
      */
     public static void writeJson(Writer writer, JSONArray jsonArray, String callback) throws IOException, JSONException {
         if (callback != null && callback.trim().length() > 0) {
-            writer.write(HtmlUtils.htmlEscape(callback) + "(");
+            writer.write(HtmlUtils.htmlEscape(SecurityUtil.validateStringInput(callback)) + "(");
         }
         jsonArray.write(writer);
         if (callback != null && callback.trim().length() > 0) {
