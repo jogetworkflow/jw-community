@@ -124,7 +124,7 @@ public class FormOptionsCacheAspect {
     
     public static FormRowSet getCachedOptions(String cacheKey, String idleStr, ProceedingJoinPoint pjp) throws Throwable {
         FormRowSet rowset = null;
-        Cache cache = (Cache) AppUtil.getApplicationContext().getBean("formOptionsCache");
+        Cache cache = AppUtil.getCache("org.joget.cache.FORM_OPTIONS_CACHE");
         if (cache != null) {
             rowset = (FormRowSet)cache.get(cacheKey);
             try {
@@ -183,7 +183,7 @@ public class FormOptionsCacheAspect {
     }
     
     public static void updateLastActive(String cacheKey, String idleStr) {
-        Cache cache = (Cache) AppUtil.getApplicationContext().getBean("formOptionsCache");
+        Cache cache = AppUtil.getCache("org.joget.cache.FORM_OPTIONS_CACHE");
         if (cache != null) {
             Integer duration = 0;
             if (idleStr != null && !idleStr.isEmpty()) {
@@ -200,7 +200,7 @@ public class FormOptionsCacheAspect {
     }
     
     public static synchronized boolean syncPaused(String cacheKey) {
-        Cache cache = (Cache) AppUtil.getApplicationContext().getBean("formOptionsCache");
+        Cache cache = AppUtil.getCache("org.joget.cache.FORM_OPTIONS_CACHE");
         if (cache != null) {
             Date date = (Date)cache.get(LAST_ACTIVE_CACHE_KEY_PREFIX + cacheKey);
             if (date != null) {
@@ -211,7 +211,7 @@ public class FormOptionsCacheAspect {
     }
     
     public static synchronized void syncOptionsCache(String cacheKey) {
-        Cache cache = (Cache) AppUtil.getApplicationContext().getBean("formOptionsCache");
+        Cache cache = AppUtil.getCache("org.joget.cache.FORM_OPTIONS_CACHE");
         if (cache != null) {
             String[] params = cacheKey.split("::");
             String className = params[2];

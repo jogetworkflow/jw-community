@@ -118,6 +118,8 @@ import org.springframework.web.util.HtmlUtils;
 import com.github.underscore.lodash.U;
 import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
+import javax.cache.Cache;
+import javax.cache.CacheManager;
 import org.joget.apps.form.lib.DefaultFormBinder;
 
 /**
@@ -793,6 +795,11 @@ public class AppUtil implements ApplicationContextAware {
             AppUtil.setCurrentAppDefinition(originalAppDef);
         }
         return content;
+    }
+    
+    public static Cache getCache(String cacheName) {
+        Cache cache = ((CacheManager)AppUtil.getApplicationContext().getBean("cacheManager")).getCache(cacheName);
+        return cache;
     }
     
     public static boolean hasUnparsedNestedHashVariable(String content) {

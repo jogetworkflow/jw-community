@@ -459,7 +459,7 @@ public class AjaxUniversalTheme extends UniversalTheme implements SupportBuilder
                 .add(themeHash);
         String key = sj.toString();
         String html = "";
-        Cache cache = (Cache) AppUtil.getApplicationContext().getBean("cssCache");
+        Cache cache = AppUtil.getCache("org.joget.cache.CSS_CACHE");
         if (cache != null) {
             html = (String)cache.get(key);
         }
