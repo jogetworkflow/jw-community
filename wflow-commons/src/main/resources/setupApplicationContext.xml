@@ -22,7 +22,7 @@
     	<property name="propertyClass" value="java.util.Properties"/>
     </bean>
     
-    <bean id="staticInitOfDynamicDataSourceManager" class="org.joget.commons.util.DynamicDataSourceManager" depends-on="igniteCacheManager">
+    <bean id="staticInitOfDynamicDataSourceManager" class="org.joget.commons.util.DynamicDataSourceManager">
     	<constructor-arg ref="profilePropertyManager"/>
         <property name="cacheManager" ref="cacheManager"/>
     </bean>
