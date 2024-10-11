@@ -15,5 +15,7 @@
     <context:annotation-config/>
     <context:component-scan base-package="org.joget"/>
 
+    <bean id="setupManagerHelper" class="org.joget.commons.util.TestSetupManagerHelperImpl">
+    </bean>
 </beans>
 
