@@ -207,7 +207,7 @@ public class XadminTheme extends UniversalTheme {
             String less = AppUtil.readPluginResource(getClass().getName(), "resources/themes/" + getPathName() + "/theme.less");
             less = lessVariables + "\n" + less;
             // read CSS from cache
-            Cache cache = (Cache) AppUtil.getApplicationContext().getBean("cssCache");
+            Cache cache = AppUtil.getCache("org.joget.cache.CSS_CACHE");
             if (cache != null) {
                 css = (String)cache.get(less);
             }

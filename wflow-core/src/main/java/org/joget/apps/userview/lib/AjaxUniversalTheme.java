@@ -452,7 +452,7 @@ public class AjaxUniversalTheme extends UniversalTheme implements SupportBuilder
         // read template from cache
         String key = "serviceWorkerTemplate:"+appId+":"+userviewId+":"+userviewKey;
         String html = "";
-        Cache cache = (Cache) AppUtil.getApplicationContext().getBean("cssCache");
+        Cache cache = AppUtil.getCache("org.joget.cache.CSS_CACHE");
         if (cache != null) {
             html = (String)cache.get(key);
         }

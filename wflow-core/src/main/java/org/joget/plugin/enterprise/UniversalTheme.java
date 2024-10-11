@@ -594,7 +594,7 @@ public class UniversalTheme extends UserviewV5Theme implements UserviewPwaTheme,
         
         less = lessVariables + "\n" + less;
         // read CSS from cache
-        Cache cache = (Cache) AppUtil.getApplicationContext().getBean("cssCache");
+        Cache cache = AppUtil.getCache("org.joget.cache.CSS_CACHE");
         if (cache != null) {
             css = (String)cache.get(less);
         }

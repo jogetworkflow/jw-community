@@ -772,7 +772,7 @@ public class AppWorkflowHelper implements WorkflowHelper {
         SimpleDateFormat sf = new SimpleDateFormat("yyyy-MM-dd");
         String cacheKey = profile + ":USER_REPLACEMENT_" + username + "_" + sf.format(new Date());
         
-        Cache cache = (Cache) AppUtil.getApplicationContext().getBean("setupManagerCache");
+        Cache cache = AppUtil.getCache("org.joget.cache.SETUP_CACHE");
         if (cache != null) {
             Map<String, Collection<String>> cachedReplacements = (Map<String, Collection<String>>)cache.get(cacheKey);
             if (cachedReplacements != null) {
@@ -812,7 +812,7 @@ public class AppWorkflowHelper implements WorkflowHelper {
         SimpleDateFormat sf = new SimpleDateFormat("yyyy-MM-dd");
         String cacheKey = profile + ":USER_REPLACEMENT_" + username + "_" + sf.format(new Date());
         
-        Cache cache = (Cache) AppUtil.getApplicationContext().getBean("setupManagerCache");
+        Cache cache = AppUtil.getCache("org.joget.cache.SETUP_CACHE");
         if (cache != null) {
             cache.remove(cacheKey);
         }

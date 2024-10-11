@@ -24,7 +24,7 @@ public class UserviewCache {
     public static final String PROPERTY_DURATION = "userviewCacheDuration";
     
     public static void clearCachedContent(String userviewId, String menuId, String scope) {
-        Cache cache = (Cache) AppUtil.getApplicationContext().getBean("userviewMenuCache");
+        Cache cache = AppUtil.getCache("org.joget.cache.USERVIEW_CACHE");
         if (cache != null) {
             WorkflowUserManager workflowUserManager = (WorkflowUserManager) AppUtil.getApplicationContext().getBean("workflowUserManager");
             scope = (CACHE_SCOPE_APPLICATION.equals(scope)) ? CACHE_SCOPE_APPLICATION : workflowUserManager.getCurrentUsername();
@@ -43,7 +43,7 @@ public class UserviewCache {
     }
 
     public static void setCachedContent(UserviewMenu userviewMenu, String type, String content) {
-        Cache cache = (Cache) AppUtil.getApplicationContext().getBean("userviewMenuCache");
+        Cache cache = AppUtil.getCache("org.joget.cache.USERVIEW_CACHE");
         if (cache != null) {
             String scope = userviewMenu.getPropertyString(PROPERTY_SCOPE);
             if (scope == null || scope.isEmpty()) {
@@ -90,7 +90,7 @@ public class UserviewCache {
 
     public static String getCachedContent(UserviewMenu userviewMenu, String type) {
         String content = null;
-        Cache cache = (Cache) AppUtil.getApplicationContext().getBean("userviewMenuCache");
+        Cache cache = AppUtil.getCache("org.joget.cache.USERVIEW_CACHE");
         if (cache != null) {
             String scope = userviewMenu.getPropertyString(PROPERTY_SCOPE);
             if (scope == null || scope.isEmpty()) {

@@ -115,6 +115,8 @@ import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.util.HtmlUtils;
+import javax.cache.Cache;
+import javax.cache.CacheManager;
 
 /**
  * Utility methods is used by App in runtime
@@ -789,6 +791,11 @@ public class AppUtil implements ApplicationContextAware {
             AppUtil.setCurrentAppDefinition(originalAppDef);
         }
         return content;
+    }
+    
+    public static Cache getCache(String cacheName) {
+        Cache cache = ((CacheManager)AppUtil.getApplicationContext().getBean("cacheManager")).getCache(cacheName);
+        return cache;
     }
     
     public static boolean hasUnparsedNestedHashVariable(String content) {
