@@ -130,10 +130,7 @@
                                             <c:if test="${!empty action.properties.cssClasses}">
                                                 <c:set var="buttonCssClasses" value="${action.properties.cssClasses}"/>
                                             </c:if>
-                                            <%-- Escaping the URL and parameters --%>
-                                            <button data-target="<c:out value="${action.target}" escapeXml="true"/>" data-href="<c:out value="${action.href}" escapeXml="true"/>" data-hrefParam="<c:out value="${action.hrefParam}" escapeXml="true"/>" name="<c:out value="${dataList.actionParamName}" escapeXml="true"/>" class="form-button btn button <c:out value="${buttonCssClasses}" escapeXml="true"/> <c:out value="${action.properties.id}" escapeXml="true"/>">${action.linkLabel}
-                                            </button>
-
+                                            <button data-target="<c:out value="${action.target}" escapeXml="true"/>" data-href="<c:out value="${action.href}" escapeXml="true"/>" data-hrefParam="<c:out value="${action.hrefParam}" escapeXml="true"/>" name="<c:out value="${dataList.actionParamName}" escapeXml="true"/>" class="form-button btn button <c:out value="${buttonCssClasses}" escapeXml="true"/> <c:out value="${action.properties.id}" escapeXml="true"/> ${action.properties.BUILDER_GENERATED_CSS}" ${action.properties.BUILDER_GENERATED_ATTR} value="<c:out value="${action.properties.id}" escapeXml="true"/>" ${buttonConfirmation}>${action.linkLabel}</button>
                                         </c:if>
                                     </c:forEach>
                                 </div>
@@ -266,10 +263,7 @@
                                             <c:if test="${!empty action.properties.cssClasses}">
                                                 <c:set var="buttonCssClasses" value="${action.properties.cssClasses}"/>
                                             </c:if>
-                                            <%-- Escaping the URL and parameters --%>
-                                            <button data-target="<c:out value="${action.target}" escapeXml="true"/>" data-href="<c:out value="${action.href}" escapeXml="true"/>" data-hrefParam="<c:out value="${action.hrefParam}" escapeXml="true"/>" name="<c:out value="${dataList.actionParamName}" escapeXml="true"/>" class="form-button btn button <c:out value="${buttonCssClasses}" escapeXml="true"/> <c:out value="${action.properties.id}" escapeXml="true"/>">${action.linkLabel}
-                                            </button>
-
+                                            <button data-target="<c:out value="${action.target}" escapeXml="true"/>" data-href="<c:out value="${action.href}" escapeXml="true"/>" data-hrefParam="<c:out value="${action.hrefParam}" escapeXml="true"/>" name="<c:out value="${dataList.actionParamName}" escapeXml="true"/>" class="form-button btn button <c:out value="${buttonCssClasses}" escapeXml="true"/> <c:out value="${action.properties.id}" escapeXml="true"/> ${action.properties.BUILDER_GENERATED_CSS}" ${action.properties.BUILDER_GENERATED_ATTR} value="<c:out value="${action.properties.id}" escapeXml="true"/>" ${buttonConfirmation}>${action.linkLabel}</button>
                                         </c:if>
                                     </c:forEach>
                                 </div>
