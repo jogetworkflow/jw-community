@@ -274,7 +274,7 @@ public class DataListDecorator extends CheckboxTableDecorator {
                             } else {
                                 link += "?";
                             }
-                            link += StringEscapeUtils.escapeHtml(params[i]);
+                            link += params[i];
                             link += "=";
                             isValid = true;
                         } else if (!link.contains("?")) {
@@ -339,7 +339,8 @@ public class DataListDecorator extends CheckboxTableDecorator {
             if (StringUtil.stripAllHtmlTag(text).isEmpty()) {
                 arialLabel = " aria-label=\"link\"";
             }
-            link = "<a href=\"" + StringUtil.escapeString(link, StringUtil.TYPE_HTML, null) + "\"" + targetString + confirmationString + arialLabel + " class=\""+StringUtil.escapeString(cssClasses, StringUtil.TYPE_HTML, null)+"\">" + text + "</a>";
+            // Escaping the URL to avoid issues with HTML entities
+            link = "<a href=\"" + StringUtil.escapeString(link, StringUtil.TYPE_HTML, null) + "\"" + targetString + confirmationString + " class=\"" + StringUtil.escapeString(cssClasses, StringUtil.TYPE_HTML, null) + "\">" + text + "</a>";
         }
         return link;
     }
