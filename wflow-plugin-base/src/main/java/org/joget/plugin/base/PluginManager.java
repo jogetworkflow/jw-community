@@ -47,9 +47,12 @@ import java.util.Comparator;
 import java.util.Dictionary;
 import java.util.Enumeration;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.jar.JarEntry;
 import jakarta.servlet.http.HttpServletRequest;
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
+import java.nio.charset.StandardCharsets;
+import java.util.zip.ZipEntry;
 import org.apache.commons.collections.map.ListOrderedMap;
 import org.apache.commons.io.filefilter.FileFilterUtils;
 import org.apache.commons.io.monitor.FileAlterationListener;
@@ -57,13 +60,13 @@ import org.apache.commons.io.monitor.FileAlterationListenerAdaptor;
 import org.apache.commons.io.monitor.FileAlterationMonitor;
 import org.apache.commons.io.monitor.FileAlterationObserver;
 import org.apache.commons.lang.StringEscapeUtils;
+import org.apache.tomcat.jakartaee.Migration;
 import org.aspectj.lang.NoAspectBoundException;
 import org.joget.commons.spring.model.ResourceBundleMessageDao;
 import org.joget.commons.util.PagingUtils;
 import org.joget.commons.util.ResourceBundleUtil;
 import org.joget.commons.util.SecurityUtil;
 import org.joget.commons.util.StringUtil;
-import org.json.JSONObject;
 import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.util.ClassUtils;
 import org.springframework.web.context.request.RequestContextHolder;
@@ -785,6 +788,7 @@ public class PluginManager implements ApplicationContextAware {
             // validate jar file
             boolean isValid = false;
             JarFile jarFile = null;
+            boolean needTransform = false;
             try {
                 jarFile = new JarFile(outputFile);
                 
@@ -799,6 +803,31 @@ public class PluginManager implements ApplicationContextAware {
                                 break;
                             } 
                         }
+                    }
+                }
+                
+                //check is using javax.servlet
+                ZipEntry manifest = jarFile.getEntry("META-INF/MANIFEST.MF");
+                if (manifest == null) {
+                    throw new IOException("Entry META-INF/MANIFEST.MF not found in " + filename);
+                }
+
+                // Open a stream for the entry
+                try (InputStream inputStream = jarFile.getInputStream(manifest);
+                     BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream, StandardCharsets.UTF_8))) {
+
+                    // Read the content of the entry line by line
+                    StringBuilder stringBuilder = new StringBuilder();
+                    String line;
+                    while ((line = reader.readLine()) != null) {
+                        stringBuilder.append(line).append("\n");
+                    }
+
+                    // Return the content as a String
+                    String manifestString = stringBuilder.toString();
+                    
+                    if (manifestString.contains("javax.servlet")) {
+                        needTransform = true;
                     }
                 }
                 
@@ -820,6 +849,11 @@ public class PluginManager implements ApplicationContextAware {
                 if (jarFile != null) {
                     jarFile.close();
                 }
+            }
+            
+            //need transform to Jakarta EE
+            if (needTransform) {
+                location = migratePlugin(outputFile);
             }
             
             // install
@@ -851,6 +885,26 @@ public class PluginManager implements ApplicationContextAware {
                 filesInProgress.add(COMPLETED + fullFileName);
             }
         }
+    }
+    
+    public String migratePlugin(File pluginJar) {
+        try {
+            File transformed = new File(pluginJar.getAbsolutePath() + ".transformed");
+            
+            Migration migration = new Migration();
+            migration.setSource(pluginJar);
+            migration.setDestination(transformed);
+            migration.execute();
+            
+            pluginJar.delete();
+            transformed.renameTo(pluginJar);
+            
+            return pluginJar.toURI().toURL().toExternalForm();
+        } catch (Exception e) {
+            LogUtil.error(PluginManager.class.getName(), e, "");
+        }
+        
+        return null;
     }
     
     public String getJarFileName(String pluginName) {

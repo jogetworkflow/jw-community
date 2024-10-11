@@ -10,7 +10,7 @@ public class LocalSessionFactoryBean extends org.springframework.orm.hibernate5.
     @Override
     public void setHibernateProperties(Properties hibernateProperties) {
         
-        // set properties required for hibernate 5
+        // set properties required for hibernate 6
         if (!hibernateProperties.containsKey("hibernate.enable_lazy_load_no_trans")) {
             hibernateProperties.setProperty("hibernate.enable_lazy_load_no_trans", "true");
         }
@@ -19,6 +19,12 @@ public class LocalSessionFactoryBean extends org.springframework.orm.hibernate5.
         }
         if (!hibernateProperties.containsKey("hibernate.transaction.coordinator_class")) {
             hibernateProperties.setProperty("hibernate.transaction.coordinator_class", "jdbc");
+        }
+        if (!hibernateProperties.containsKey("hibernate.transaction.jta.platform")) {
+            hibernateProperties.setProperty("hibernate.transaction.jta.platform", "org.hibernate.service.jta.platform.internal.BitronixJtaPlatform");
+        }
+        if (!hibernateProperties.containsKey("hibernate.connection.release_mode")) {
+            hibernateProperties.setProperty("hibernate.connection.release_mode", "after_transaction");
         }
         
         super.setHibernateProperties(hibernateProperties);
