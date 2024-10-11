@@ -25,7 +25,7 @@
     <security:http pattern="/web/offline" security="none"/>
 
     <!-- Protected paths -->
-    <security:http pattern="/**" use-expressions="true" disable-url-rewriting="true" auto-config="false" entry-point-ref="authenticationProcessingFilterEntryPoint" servlet-api-provision="false">        
+    <security:http pattern="/**" use-authorization-manager="false" once-per-request="true" use-expressions="true" disable-url-rewriting="true" auto-config="false" entry-point-ref="authenticationProcessingFilterEntryPoint" servlet-api-provision="false">
         <security:access-denied-handler error-page="/web/unauthorized"/>
         <security:csrf disabled="true"/>
         <security:headers defaults-disabled="true">

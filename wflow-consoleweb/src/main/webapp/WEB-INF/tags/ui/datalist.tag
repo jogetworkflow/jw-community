@@ -1,7 +1,7 @@
 <%@tag import="java.net.URLEncoder"%>
 <%@tag import="org.displaytag.util.ParamEncoder"%>
 <%@tag description="Displays a DataList" pageEncoding="UTF-8"%>
-<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="c" uri="jakarta.tags.core" %>
 
 <%@attribute name="id" required="true"%>
 <%@attribute name="jsonDef" required="false"%>

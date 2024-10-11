@@ -298,7 +298,7 @@ public final class SwallowingHttpServletResponse extends HttpServletResponseWrap
      */
     public void setStatus(int status) {
         this.status = status;
-        LogUtil.warn(getClass().getName(), "Ignoring call to setStatus(" + status + ')');
+        LogUtil.debug(getClass().getName(), "Ignoring call to setStatus(" + status + ')');
     }
 
     /**
@@ -310,7 +310,7 @@ public final class SwallowingHttpServletResponse extends HttpServletResponseWrap
     public void setStatus(int newStatus, String newErrorMessage) {
         status = newStatus;
         errorMessage = newErrorMessage;
-        LogUtil.warn(getClass().getName(), "Ignoring call to setStatus(" + newStatus + ", " + newErrorMessage + ')');
+        LogUtil.debug(getClass().getName(), "Ignoring call to setStatus(" + newStatus + ", " + newErrorMessage + ')');
     }
 
     /**

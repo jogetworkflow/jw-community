@@ -49,7 +49,6 @@ public class JsonResponseFilter implements Filter {
             buildJsonBody(sc, "");
         }
 
-        @Override
         public void setStatus(int sc, String msg) {
             buildJsonBody(sc, msg);
         }
@@ -79,13 +78,13 @@ public class JsonResponseFilter implements Filter {
 
                         jsonObject.write(getWriter());
 
-                        super.setStatus(sc, msg);
+                        super.setStatus(sc);
                         super.flushBuffer();
                     } catch (Exception e) {
                         LogUtil.error(JsonResponseFilter.class.getName(), e, "Unable to build json");
                     }
                 } else {
-                    super.setStatus(sc, msg);
+                    super.setStatus(sc);
                 }
             }
         }

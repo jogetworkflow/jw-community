@@ -24,6 +24,9 @@
     <bean class="org.joget.commons.spring.web.ParameterizedAnnotationMethodHandlerAdapter"/>
     <bean id="multipartHandlerInterceptor" class="org.joget.commons.spring.web.MultipartHandlerInterceptor" />
     <bean class="org.joget.commons.spring.web.ParameterizedUrlHandlerMapping">
+        <property name="patternParser">
+            <null />
+        </property>
         <property name="interceptors">
             <list>
                 <ref bean="multipartHandlerInterceptor"/>
