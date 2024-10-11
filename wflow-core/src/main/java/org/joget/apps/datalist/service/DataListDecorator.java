@@ -340,7 +340,7 @@ public class DataListDecorator extends CheckboxTableDecorator {
                 arialLabel = " aria-label=\"link\"";
             }
             // Escaping the URL to avoid issues with HTML entities
-            link = "<a href=\"" + StringUtil.escapeString(link, StringUtil.TYPE_HTML, null) + "\"" + targetString + confirmationString + " class=\"" + StringUtil.escapeString(cssClasses, StringUtil.TYPE_HTML, null) + "\">" + text + "</a>";
+            link = "<a href=\"" + StringUtil.escapeString(link, StringUtil.TYPE_HTML, null) + "\"" + targetString + confirmationString + aria-label + " class=\"" + StringUtil.escapeString(cssClasses, StringUtil.TYPE_HTML, null) + "\">" + text + "</a>";
         }
         return link;
     }
