@@ -1,11 +1,11 @@
 package org.joget.plugin.base;
 
-import org.joget.commons.util.LogUtil;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Collection;
+import org.joget.commons.util.LogUtil;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,55 +16,123 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.util.Assert;
 
 @RunWith(value=SpringJUnit4ClassRunner.class)
-@ContextConfiguration(locations = {"classpath:pluginBaseApplicationContext.xml"})
+@ContextConfiguration(locations = {"classpath:testPluginBaseApplicationContext.xml"})
 public class TestPluginManager {
 
     @Autowired
     PluginManager pluginManager;
 
-    private String samplePluginFile = "../wflow-plugins/wflow-plugin-sample/target/wflow-plugin-sample.jar";
-    private String samplePlugin = "org.joget.plugin.sample.SamplePlugin";
+    private final String samplePluginFile = "/wflow-plugin-test-9.0-SNAPSHOT.jar";
+    private final String samplePlugin = "org.joget.plugin.sample.dx9.Dx9SamplePlugin";
+    private final String sampleJdbcPlugin = "org.joget.plugin.sample.dx9.Dx9JdbcSamplePlugin";
+    private final String sampleMigrationPluginFile = "/wflow-plugin-test-migration-9.0-TEST.jar";
+    private final String sampleMigrationPlugin = "org.joget.plugin.sample.SamplePlugin";
+    private final String sampleJdbcMigrationPlugin = "org.joget.plugin.sample.JdbcSamplePlugin";
 
     public String getSamplePluginFile() {
-        return samplePluginFile;
+        return TestPluginManager.class.getResource(samplePluginFile).getPath();
     }
-
-    public String getSamplePlugin() {
-        return samplePlugin;
+    
+    public String getSampleMigrationPluginFile() {
+        return TestPluginManager.class.getResource(sampleMigrationPluginFile).getPath();
     }
 
     @Test
     public void testPluginManager() {
         Assert.notNull(pluginManager, "false");
     }
-
-    //@Test
-    public void testInstall() {
-
-        InputStream in = null;
+    
+    @Test
+    public void testDx9Plugin() {
+        System.out.println(" === testDX9Plugin === ");
+        testPlugin(getSamplePluginFile(), samplePlugin, sampleJdbcPlugin);
+    }
+    
+    @Test
+    public void testDX8PluginMigration() {
+        System.out.println(" === testDX8PluginMigration === ");
+        testPlugin(getSampleMigrationPluginFile(), sampleMigrationPlugin, sampleJdbcMigrationPlugin);
+    }
+    
+    /**
+     * Test a installed plugin with hibernate, webservice & jdbc
+     * @param path
+     * @param pluginName
+     * @param jdbcPluginName 
+     */
+    public void testPlugin(String path, String pluginName, String jdbcPluginName) {
+        Plugin plugin;
+        Object result;
         try {
-            LogUtil.info(getClass().getName(), " ===testInstall=== ");
-            File file = new File(getSamplePluginFile());
-            if (file.exists()) {
-                in = new FileInputStream(file);
-                pluginManager.upload(file.getName(), in);
-            }
-        } catch (Exception ex) {
-            LogUtil.error(PluginManager.class.getName(), ex, "");
-        } finally {
+            //make sure plugin is not exist first
+            pluginManager.uninstall(pluginName);
+            plugin = pluginManager.getPlugin(pluginName);
+            Assert.isTrue(plugin == null, "Plugin should not exist");
+
+            InputStream in = null;
             try {
-                if (in != null) {
-                    in.close();
+                File file = new File(path);
+                if (file.exists()) {
+                    in = new FileInputStream(file);
+                    pluginManager.upload(file.getName(), in);
                 }
-            } catch (IOException ex) {
-                LogUtil.error(PluginManager.class.getName(), ex, "");
+            } catch (Exception ex) {
+                ex.printStackTrace();
+            } finally {
+                try {
+                    if (in != null) {
+                        in.close();
+                    }
+                } catch (IOException ex) {
+                    ex.printStackTrace();
+                }
             }
+
+            //check plugin is exist after installed
+            plugin = pluginManager.getPlugin(pluginName);
+            Assert.isTrue(plugin != null, "Plugin should installed");
+            
+            try {
+                //test web service
+                MockHttpServletRequest request = new MockHttpServletRequest();
+                MockHttpServletResponse response = new MockHttpServletResponse();
+
+                request.addParameter("_action", "add");
+                request.addParameter("name", "product_name");
+                request.addParameter("desc", "product_description");
+                
+                //call the web service
+                ((PluginWebSupport) plugin).webService(request, response);
+                
+                // Verify that the response contains the expected output
+                result = response.getContentAsString();
+                System.out.println(">>> " + result);
+                Assert.isTrue(result.toString().contains("success"), "the web service response is wrong");
+            } catch (Exception ex) {
+                ex.printStackTrace();
+            }
+
+            //test jdbc execution
+            result = pluginManager.execute(jdbcPluginName, null);
+            System.out.println(">>> " + result);
+            Assert.isTrue("1".equals((String) result), "JDBC Plugin fail to return correct result after executed");
+
+            //test hibernate execution
+            result = pluginManager.execute(pluginName, null);
+            System.out.println(">>> " + result);
+            Assert.isTrue("test".equals((String) result), "Hibernate Plugin fail to return correct result after executed");
+        
+        } finally {
+            //Uninstall the plugin
+            pluginManager.uninstall(pluginName);
+            plugin = pluginManager.getPlugin(pluginName);
+            Assert.isTrue(plugin == null, "Plugin should uninstalled");
         }
     }
-
+    
     @Test
     public void testList() {
-        LogUtil.info(getClass().getName(), " ===testList=== ");
+        System.out.println(" ===testList=== ");
         Collection<Plugin> list = pluginManager.list();
         for (Plugin p : list) {
             LogUtil.info(getClass().getName(), " plugin: " + p.getName() + "; " + p.getClass().getName());
@@ -75,7 +143,7 @@ public class TestPluginManager {
 
     @Test
     public void testFilteredList() {
-        LogUtil.info(getClass().getName(), " ===testFilteredList=== ");
+        System.out.println(" ===testFilteredList=== ");
         boolean validPlugins = true;
         Collection<Plugin> list = pluginManager.list(ApplicationPlugin.class);
         for (Plugin p : list) {
@@ -87,19 +155,8 @@ public class TestPluginManager {
     }
 
     @Test
-    public void testLoadOsgiPlugin() {
-        LogUtil.info(getClass().getName(), " ===testLoadOsgiPlugin=== ");
-        String reportPlugin = "org.joget.plugin.report.ReportPlugin";
-        Plugin plugin = pluginManager.getPlugin(reportPlugin);
-        if (plugin != null) {
-            // Assertion only valid when the ReportPlugin jar is available
-            //Assert.isTrue(plugin.getClass().getClassLoader() != ReportPlugin.class.getClassLoader());
-        }
-    }
-
-    @Test
     public void testLoadClassPlugin() {
-        LogUtil.info(getClass().getName(), " ===testLoadClassPlugin=== ");
+        System.out.println(" ===testLoadClassPlugin=== ");
         String pluginName = "org.joget.plugin.base.SampleApplicationPlugin";
         Plugin plugin = pluginManager.getPlugin(pluginName);
         Assert.isTrue(plugin.getClass().getClassLoader() == SampleApplicationPlugin.class.getClassLoader(), "false");
@@ -107,7 +164,7 @@ public class TestPluginManager {
 
     @Test
     public void testLoadClassPluginResource() throws IOException {
-        LogUtil.info(getClass().getName(), " ===testLoadClassPluginResource=== ");
+        System.out.println(" ===testLoadClassPluginResource=== ");
         String pluginName = "org.joget.plugin.base.SampleApplicationPlugin";
         InputStream input = null;
         try {
@@ -122,7 +179,7 @@ public class TestPluginManager {
 
     @Test
     public void testPluginWebSupoort() throws Exception {
-        LogUtil.info(getClass().getName(), " ===testPluginWebSupoort=== ");
+        System.out.println(" ===testPluginWebSupoort=== ");
         String pluginName = "org.joget.plugin.base.SampleApplicationPlugin";
         Plugin plugin = pluginManager.getPlugin(pluginName);
         PluginWebSupport pluginWeb = (PluginWebSupport) plugin;
@@ -135,25 +192,5 @@ public class TestPluginManager {
 
         pluginWeb.webService(request, response);
         Assert.isTrue("{arg1:\"arg1\", arg2:\"arg2\"}".equals(response.getContentAsString()), "false");
-    }
-
-    //@Test
-    public void testExecute() {
-        LogUtil.info(getClass().getName(), " ===testExecute=== ");
-
-        Object result = pluginManager.execute(getSamplePlugin(), null);
-        //Assert.isTrue(result != null);
-    }
-
-    //@Test
-    public void testUninstall() {
-        LogUtil.info(getClass().getName(), " ===testUninstall=== ");
-        pluginManager.uninstall(getSamplePlugin());
-    }
-
-    @Test
-    public void testPluginTest() {
-        LogUtil.info(getClass().getName(), " ===testPluginTest=== ");
-        pluginManager.testPlugin(getSamplePlugin(), getSamplePluginFile(), null, true);
     }
 }
