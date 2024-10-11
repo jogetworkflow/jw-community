@@ -1027,7 +1027,3 @@ body.rtl .label-top input.hasDatepicker {
     float: none !important;
 }
 
-/* targeting the misaligned form "save" buttons */
-.form-column-horizontal .form-cell, .form-column-horizontal .subform-cell {
-    float: none;
-}
