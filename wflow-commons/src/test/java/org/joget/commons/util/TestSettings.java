@@ -2,6 +2,7 @@ package org.joget.commons.util;
 
 import java.util.Collection;
 import org.joget.commons.spring.model.Setting;
+import org.junit.After;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -99,6 +100,12 @@ public class TestSettings {
         setupDao.delete(setting);
         setting = (Setting) setupDao.find(setting.getId());
         Assert.assertTrue(setting == null);
+    }
+    
+    @After
+    public void clearHelper() {
+        ((TestSetupManagerHelperImpl) setupManagerHelper).audits.clear();
+        ((TestSetupManagerHelperImpl) setupManagerHelper).cacheSettingMaps.clear();
     }
     
     private void cleanProperty(String property) {
