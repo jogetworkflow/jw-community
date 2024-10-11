@@ -40,6 +40,7 @@
         <servlet-name>dispatcher</servlet-name>
         <servlet-class>org.joget.commons.spring.web.CustomDispatcherServlet</servlet-class>
         <load-on-startup>2</load-on-startup>
+        <multipart-config />
     </servlet>
     <servlet>
         <servlet-name>pluginResource</servlet-name>
@@ -49,6 +50,7 @@
             <param-value>/resources</param-value>
         </init-param>
         <load-on-startup>3</load-on-startup>
+        <multipart-config />
     </servlet>
     <servlet>
         <servlet-name>apiServlet</servlet-name>
@@ -58,6 +60,7 @@
             <param-value>/api</param-value>
         </init-param>
         <load-on-startup>4</load-on-startup>
+        <multipart-config />
     </servlet>
     <servlet>
         <servlet-name>setup</servlet-name>

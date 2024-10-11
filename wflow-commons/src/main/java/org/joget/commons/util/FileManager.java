@@ -86,7 +86,7 @@ public class FileManager {
                 // remove all illegal chars after normalized the file name (unicode chars are normalized and become illegal chars)
                 filename = filename.replaceAll(ILLEGAL_CHARS, "");
                 
-                File uploadFile = new File(getBaseDirectory(), filename);
+                File uploadFile = new File(getBaseDirectory(), filename).getAbsoluteFile();
                 if (!uploadFile.isDirectory()) {
                     //create directories if not exist
                     new File(getBaseDirectory(), path).mkdirs();
