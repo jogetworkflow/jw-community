@@ -72,6 +72,8 @@
         </Logger>
         <Logger name="org.joget.commons.spring.web" level="error" additivity="true">
         </Logger>
+        <Logger name="org.joget.commons.util.JogetCommonsMultipartResolver" level="error" additivity="true">
+        </Logger>
         <Logger name="org.objectweb" level="error" additivity="true">
         </Logger>
         <Logger name="org.owasp.csrfguard" level="error" additivity="true">

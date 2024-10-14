@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="ISO-8859-1" ?>
+<!DOCTYPE taglib PUBLIC "-//Sun Microsystems, Inc.//DTD JSP Tag Library 1.2//EN" "http://java.sun.com/dtd/web-jsptaglibrary_1_2.dtd">
+<taglib>
+    <tlib-version>1.1.1</tlib-version>
+    <jsp-version>1.2</jsp-version>
+    <short-name>Valang</short-name>
+    <uri>http://www.springmodules.org/tags/valang</uri>
+    <description>A set of tags that enable the translation of Valang
+        validators into JavaScript.</description>
+    <tag>
+        <name>codebase</name>
+        <tag-class>org.springmodules.validation.valang.javascript.taglib.ValangCodebaseTag</tag-class>
+        <body-content>empty</body-content> <!-- CUSTOM: Fixed bug for invalid body-content None https://access.redhat.com/solutions/910833 -->
+        <description>Generates the JavaScript code that is necessary for the
+            translated JavaScript validation rules to execute. This code needs
+            to be included once per page and before any generated validation
+            rules.</description>
+        <attribute>
+            <name>includeScriptTags</name>
+            <required>false</required>
+            <rtexprvalue>true</rtexprvalue>
+        </attribute>
+        <attribute>
+            <name>globalErrorsId</name>
+            <required>false</required>
+            <rtexprvalue>true</rtexprvalue>
+            <description>Holds the id of the element that should hold/display the global errors</description>
+        </attribute>
+        <attribute>
+            <name>fieldErrorsIdSuffix</name>
+            <required>false</required>
+            <rtexprvalue>true</rtexprvalue>
+            <description>
+                Holds the id suffix of the element that should hold/display a specific field error. For example, if
+                the suffix is set to "_error" and the validated field is "firstName" then the validation error of
+                this field will be shown in an element with id "firstName_err". The default value of this attribute
+                is "_error".
+            </description>
+        </attribute>
+    </tag>
+    <tag>
+        <name>validate</name>
+        <tag-class>org.springmodules.validation.valang.javascript.taglib.ValangValidateTag</tag-class>
+        <body-content>JSP</body-content>
+        <description>Generates a set of JavaScript validation rules bassed on
+            a suplied set of validation rules bound to a specific commandName
+            and/or by translating the body content into valang.</description>
+        <attribute>
+            <name>commandName</name>
+            <required>false</required>
+            <rtexprvalue>true</rtexprvalue>
+        </attribute>
+    </tag>
+</taglib>
