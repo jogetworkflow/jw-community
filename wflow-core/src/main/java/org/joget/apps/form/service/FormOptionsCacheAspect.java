@@ -15,6 +15,7 @@ import org.joget.apps.form.model.FormBinder;
 import org.joget.apps.form.model.FormLoadBinder;
 import org.joget.apps.form.model.FormLoadOptionsBinder;
 import org.joget.apps.form.model.FormRowSet;
+import org.joget.commons.util.DynamicCacheElement;
 import org.joget.commons.util.DynamicDataSourceManager;
 import org.joget.commons.util.LogUtil;
 import org.joget.commons.util.PluginThread;
@@ -126,7 +127,10 @@ public class FormOptionsCacheAspect {
         FormRowSet rowset = null;
         Cache cache = AppUtil.getCache("org.joget.cache.FORM_OPTIONS_CACHE");
         if (cache != null) {
-            rowset = (FormRowSet)cache.get(cacheKey);
+            DynamicCacheElement cacheElement = (DynamicCacheElement)cache.get(cacheKey);
+            if (cacheElement != null) {
+                rowset = (FormRowSet) cacheElement.getValue();
+            }
             try {
                 int count = 0;
                 while (rowset == null && count < 100) { //try for 10sec
@@ -185,26 +189,27 @@ public class FormOptionsCacheAspect {
     public static void updateLastActive(String cacheKey, String idleStr) {
         Cache cache = AppUtil.getCache("org.joget.cache.FORM_OPTIONS_CACHE");
         if (cache != null) {
-            Integer duration = 0;
+            long duration = 0;
             if (idleStr != null && !idleStr.isEmpty()) {
                 try {
-                    duration = Integer.parseInt(idleStr); 
+                    duration = Long.parseLong(idleStr); 
                 } catch(Exception ex) {}
             }
 
-            if (duration != null && duration > 0) {
-                // TODO CUSTOM: handle custom TTI and TTL
-            }
-            cache.put(LAST_ACTIVE_CACHE_KEY_PREFIX + cacheKey, new Date());
+            DynamicCacheElement element = new DynamicCacheElement(new Date(), duration);
+            cache.put(LAST_ACTIVE_CACHE_KEY_PREFIX + cacheKey, element);
         }
     }
     
     public static synchronized boolean syncPaused(String cacheKey) {
         Cache cache = AppUtil.getCache("org.joget.cache.FORM_OPTIONS_CACHE");
         if (cache != null) {
-            Date date = (Date)cache.get(LAST_ACTIVE_CACHE_KEY_PREFIX + cacheKey);
-            if (date != null) {
-                return false;
+            DynamicCacheElement cacheElement = (DynamicCacheElement)cache.get(LAST_ACTIVE_CACHE_KEY_PREFIX + cacheKey);
+            if (cacheElement != null) {
+                Date date = (Date) cacheElement.getValue();
+                if (date != null) {
+                    return false;
+                }
             }
         }
         return true;
@@ -226,17 +231,15 @@ public class FormOptionsCacheAspect {
                 try {
                     FormRowSet rowset = ((FormLoadBinder) optionBinder).load(null, null, null);
                     if (rowset != null) {
-                        Integer duration = null;
+                        Long duration = null;
                         String durationStr = optionBinder.getPropertyString("cacheInterval");
                         if (durationStr != null && !durationStr.isEmpty()) {
                             try {
-                                duration = Integer.parseInt(durationStr) + BUFFER_SECONDS; 
+                                duration = Long.parseLong(durationStr) + BUFFER_SECONDS; 
                             } catch(Exception ex) {}
                         }
-                        if (duration != null && duration > 0) {
-                            // TODO: handle TTI and TTL for custom duration
-                        }
-                        cache.put(cacheKey, rowset);
+                        DynamicCacheElement element = new DynamicCacheElement(rowset, duration);
+                        cache.put(cacheKey, element);
                         if (LogUtil.isDebugEnabled(FormOptionsCacheAspect.class.getName())) {    
                             LogUtil.debug(FormOptionsCacheAspect.class.getName(), "syncOptionsCache: " + cacheKey);
                         }

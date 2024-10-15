@@ -1760,7 +1760,7 @@ public class AppDevUtil {
         
         String profile = DynamicDataSourceManager.getCurrentProfile();
         String cacheKey = profile + "_dirLastModified_" + appDef.toString();
-        Cache cache = AppUtil.getCache("org.joget.cache.USERVIEW_CACHE");
+        Cache cache = AppUtil.getCache("org.joget.cache.APP_CACHE");
         if (cache != null) {
             latestDate = (Date)cache.get(cacheKey);
         }
