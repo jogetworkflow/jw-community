@@ -261,7 +261,7 @@ FormBuilder = {
             CustomBuilder.cachedAjax({
                 type: "POST",
                 data: {"json": jsonStr },
-                url: CustomBuilder.contextPath + '/web/fbuilder/app/' + CustomBuilder.appId + '/' + CustomBuilder.appVersion + '/form/'+ CustomBuilder.id + '/element/preview/',
+                url: CustomBuilder.contextPath + '/web/fbuilder/app/' + CustomBuilder.appId + '/' + CustomBuilder.appVersion + '/form/'+ CustomBuilder.id + '/element/preview',
                 dataType : "text",
                 beforeSend: function (request) {
                    request.setRequestHeader(ConnectionManager.tokenName, ConnectionManager.tokenValue);
