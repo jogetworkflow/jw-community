@@ -143,6 +143,6 @@
 </c:set>
 <c:set var="builderProps" scope="request" value="CustomBuilder.paletteElements['org.joget.apps.form.model.Form']['propertyOptions']" />
 <c:set var="saveUrl" scope="request" value="${pageContext.request.contextPath}/web/fbuilder/app/${appId}/${appDefinition.version}/form/${formId}/save"/>
-<c:set var="previewUrl" scope="request" value="${pageContext.request.contextPath}/web/fbuilder/app/${appId}/${appDefinition.version}/form/${formId}/preview/"/>
+<c:set var="previewUrl" scope="request" value="${pageContext.request.contextPath}/web/fbuilder/app/${appId}/${appDefinition.version}/form/${formId}/preview"/>
 
 <jsp:include page="../cbuilder/base.jsp" flush="true" />

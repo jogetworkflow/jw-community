@@ -236,7 +236,7 @@ public class FormBuilderWebController {
         return null;
     }
 
-    @RequestMapping("/fbuilder/app/(*:appId)/(~:appVersion)/form/(*:formId)/preview/")
+    @RequestMapping("/fbuilder/app/(*:appId)/(~:appVersion)/form/(*:formId)/preview")
     public String previewForm(ModelMap model, HttpServletResponse response, @RequestParam("appId") String appId, @RequestParam(value = "appVersion", required = false) String appVersion, @RequestParam("formId") String formId, @RequestParam("json") String json) {
         try {
             FormUtil.setProcessedFormJson(json);
