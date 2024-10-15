@@ -1,9 +1,6 @@
 package org.joget.plugin.base;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStream;
+import java.io.*;
 import java.util.Collection;
 import org.joget.commons.util.LogUtil;
 import org.junit.Test;
@@ -23,6 +20,7 @@ public class TestPluginManager {
     PluginManager pluginManager;
 
     private final String samplePluginFile = "/wflow-plugin-test-9.0-SNAPSHOT.jar";
+    private final String samplePluginNoManifestFile = "/wflow-plugin-test-9.0-SNAPSHOT-noManifest.jar";
     private final String samplePlugin = "org.joget.plugin.sample.dx9.Dx9SamplePlugin";
     private final String sampleJdbcPlugin = "org.joget.plugin.sample.dx9.Dx9JdbcSamplePlugin";
     private final String sampleMigrationPluginFile = "/wflow-plugin-test-migration-9.0-TEST.jar";
@@ -35,6 +33,10 @@ public class TestPluginManager {
     
     public String getSampleMigrationPluginFile() {
         return TestPluginManager.class.getResource(sampleMigrationPluginFile).getPath();
+    }
+
+    public String getSamplePluginNoManifestFile() {
+        return TestPluginManager.class.getResource(samplePluginNoManifestFile).getPath();
     }
 
     @Test
@@ -138,7 +140,7 @@ public class TestPluginManager {
             LogUtil.info(getClass().getName(), " plugin: " + p.getName() + "; " + p.getClass().getName());
             System.out.println(" plugin: " + p.getName() + "; " + p.getClass().getName());
         }
-        Assert.isTrue(list.size() > 0, "false");
+        Assert.isTrue(!list.isEmpty(), "false");
     }
 
     @Test
@@ -179,7 +181,7 @@ public class TestPluginManager {
 
     @Test
     public void testPluginWebSupoort() throws Exception {
-        System.out.println(" ===testPluginWebSupoort=== ");
+        System.out.println(" ===testPluginWebSupport=== ");
         String pluginName = "org.joget.plugin.base.SampleApplicationPlugin";
         Plugin plugin = pluginManager.getPlugin(pluginName);
         PluginWebSupport pluginWeb = (PluginWebSupport) plugin;
@@ -192,5 +194,24 @@ public class TestPluginManager {
 
         pluginWeb.webService(request, response);
         Assert.isTrue("{arg1:\"arg1\", arg2:\"arg2\"}".equals(response.getContentAsString()), "false");
+    }
+
+    @Test
+    public void testPluginRequiresMigration() throws IOException {
+        System.out.println(" ===testPluginRequiresMigration===");
+
+        // should not require transformation
+        File notRequireTransformationFile = new File(getSamplePluginFile());
+        boolean requiresTransform = pluginManager.requiresMigration(notRequireTransformationFile);
+        Assert.isTrue(!requiresTransform, "The plugin should not require transformation!");
+
+        // should require transformation
+        File requireTransformationFile = new File(getSampleMigrationPluginFile());
+        requiresTransform = pluginManager.requiresMigration(requireTransformationFile);
+        Assert.isTrue(requiresTransform, "The plugin should require transformation!");
+
+        // should throw FileNotFoundException (no manifest file)
+        final File noManifestFile = new File(getSamplePluginNoManifestFile());
+        org.junit.Assert.assertThrows(FileNotFoundException.class, () -> pluginManager.requiresMigration(noManifestFile));
     }
 }

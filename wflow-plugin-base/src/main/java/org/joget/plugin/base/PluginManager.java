@@ -1,31 +1,20 @@
 package org.joget.plugin.base;
 
-import org.joget.commons.util.LogUtil;
-import org.joget.commons.util.SetupManager;
-import java.io.BufferedInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.net.MalformedURLException;
-import java.net.URI;
-import java.net.URL;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
-import java.util.Properties;
-import java.util.ResourceBundle;
-import java.util.Set;
-import java.util.TreeMap;
-import java.util.jar.JarFile;
+import freemarker.template.*;
+import jakarta.servlet.http.HttpServletRequest;
+import org.apache.commons.collections.map.ListOrderedMap;
+import org.apache.commons.io.filefilter.FileFilterUtils;
+import org.apache.commons.io.monitor.FileAlterationListener;
+import org.apache.commons.io.monitor.FileAlterationListenerAdaptor;
+import org.apache.commons.io.monitor.FileAlterationMonitor;
+import org.apache.commons.io.monitor.FileAlterationObserver;
+import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.felix.framework.Felix;
 import org.apache.felix.framework.util.StringMap;
-import org.joget.commons.util.HostManager;
+import org.apache.tomcat.jakartaee.Migration;
+import org.aspectj.lang.NoAspectBoundException;
+import org.joget.commons.spring.model.ResourceBundleMessageDao;
+import org.joget.commons.util.*;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceReference;
@@ -34,43 +23,20 @@ import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.context.annotation.ClassPathScanningCandidateComponentProvider;
-import org.springframework.core.type.filter.AssignableTypeFilter;
-import freemarker.template.Configuration;
-import freemarker.template.DefaultObjectWrapper;
-import freemarker.template.Template;
-import freemarker.template.TemplateModel;
-import freemarker.template.TemplateModelException;
-import java.io.StringWriter;
-import java.io.Writer;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.Dictionary;
-import java.util.Enumeration;
-import java.util.HashSet;
-import java.util.jar.JarEntry;
-import jakarta.servlet.http.HttpServletRequest;
-import java.io.BufferedReader;
-import java.io.InputStreamReader;
-import java.nio.charset.StandardCharsets;
-import java.util.zip.ZipEntry;
-import org.apache.commons.collections.map.ListOrderedMap;
-import org.apache.commons.io.filefilter.FileFilterUtils;
-import org.apache.commons.io.monitor.FileAlterationListener;
-import org.apache.commons.io.monitor.FileAlterationListenerAdaptor;
-import org.apache.commons.io.monitor.FileAlterationMonitor;
-import org.apache.commons.io.monitor.FileAlterationObserver;
-import org.apache.commons.lang.StringEscapeUtils;
-import org.apache.tomcat.jakartaee.Migration;
-import org.aspectj.lang.NoAspectBoundException;
-import org.joget.commons.spring.model.ResourceBundleMessageDao;
-import org.joget.commons.util.PagingUtils;
-import org.joget.commons.util.ResourceBundleUtil;
-import org.joget.commons.util.SecurityUtil;
-import org.joget.commons.util.StringUtil;
 import org.springframework.context.i18n.LocaleContextHolder;
+import org.springframework.core.type.filter.AssignableTypeFilter;
 import org.springframework.util.ClassUtils;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
+
+import java.io.*;
+import java.net.MalformedURLException;
+import java.net.URI;
+import java.net.URL;
+import java.util.*;
+import java.util.jar.JarEntry;
+import java.util.jar.JarFile;
+import java.util.jar.Manifest;
 
 /**
  * Service methods used to manage plugins
@@ -366,6 +332,13 @@ public class PluginManager implements ApplicationContextAware {
 
     protected Bundle installBundle(String location) {
         try {
+            // attempt to migrate plugin before install
+            URI uri = URI.create(location);
+            File file = new File(uri);
+            if (requiresMigration(file)) {
+                location = migratePlugin(file);
+            }
+
             BundleContext context = getOsgiContainer().getBundleContext();
             Bundle newBundle = context.installBundle(location);
             if (newBundle.getSymbolicName() == null) {
@@ -788,7 +761,6 @@ public class PluginManager implements ApplicationContextAware {
             // validate jar file
             boolean isValid = false;
             JarFile jarFile = null;
-            boolean needTransform = false;
             try {
                 jarFile = new JarFile(outputFile);
                 
@@ -805,32 +777,6 @@ public class PluginManager implements ApplicationContextAware {
                         }
                     }
                 }
-                
-                //check is using javax.servlet
-                ZipEntry manifest = jarFile.getEntry("META-INF/MANIFEST.MF");
-                if (manifest == null) {
-                    throw new IOException("Entry META-INF/MANIFEST.MF not found in " + filename);
-                }
-
-                // Open a stream for the entry
-                try (InputStream inputStream = jarFile.getInputStream(manifest);
-                     BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream, StandardCharsets.UTF_8))) {
-
-                    // Read the content of the entry line by line
-                    StringBuilder stringBuilder = new StringBuilder();
-                    String line;
-                    while ((line = reader.readLine()) != null) {
-                        stringBuilder.append(line).append("\n");
-                    }
-
-                    // Return the content as a String
-                    String manifestString = stringBuilder.toString();
-                    
-                    if (manifestString.contains("javax.servlet")) {
-                        needTransform = true;
-                    }
-                }
-                
                 isValid = true;
             } catch (IOException ex) {
                 //delete invalid file
@@ -850,12 +796,6 @@ public class PluginManager implements ApplicationContextAware {
                     jarFile.close();
                 }
             }
-            
-            //need transform to Jakarta EE
-            if (needTransform) {
-                location = migratePlugin(outputFile);
-            }
-            
             // install
             if (location != null && isValid) {
                 Bundle newBundle = installBundle(location);
@@ -886,25 +826,50 @@ public class PluginManager implements ApplicationContextAware {
             }
         }
     }
-    
-    public String migratePlugin(File pluginJar) {
-        try {
-            File transformed = new File(pluginJar.getAbsolutePath() + ".transformed");
-            
-            Migration migration = new Migration();
-            migration.setSource(pluginJar);
-            migration.setDestination(transformed);
-            migration.execute();
-            
-            pluginJar.delete();
-            transformed.renameTo(pluginJar);
-            
-            return pluginJar.toURI().toURL().toExternalForm();
-        } catch (Exception e) {
-            LogUtil.error(PluginManager.class.getName(), e, "");
+
+    /**
+     * Check if the JAR file requires migration from Java EE to Jakarta EE namespaces.
+     *
+     * @param file the file to perform checking
+     * @return {@code true} if requires migration; {@code false} otherwise
+     * @throws IOException if the JAR file does not contain a manifest file at {@code META-INF/MANIFEST.MF}
+     */
+    protected boolean requiresMigration(File file) throws IOException {
+        try (JarFile jarFile = new JarFile(file)) {
+            Manifest manifest = jarFile.getManifest();
+            if (manifest == null) {
+                throw new FileNotFoundException("MANIFEST file not found in " + jarFile.getName());
+            }
+
+            // Return true if any manifest attribute contains the javax.servlet
+            return manifest
+                    .getMainAttributes()
+                    .values()
+                    .stream()
+                    .anyMatch(val -> val.toString().contains("javax.servlet"));
         }
-        
-        return null;
+    }
+
+    /**
+     * Migrates a plugin JAR using Java EE to Jakarta EE namespace.
+     *
+     * @param pluginJar file of the plugin
+     * @return the location/path of the migrated plugin
+     */
+    public String migratePlugin(File pluginJar) throws IOException {
+        File transformed = new File(pluginJar.getAbsolutePath() + ".transformed");
+
+        Migration migration = new Migration();
+        migration.setSource(pluginJar);
+        migration.setDestination(transformed);
+        migration.execute();
+
+        boolean fileOperationsSuccess = pluginJar.delete() && transformed.renameTo(pluginJar);
+        if (!fileOperationsSuccess) {
+            throw new IOException("Failed to copy transformed plugin.");
+        }
+
+        return pluginJar.toURI().toURL().toExternalForm();
     }
     
     public String getJarFileName(String pluginName) {
