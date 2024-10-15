@@ -129,7 +129,7 @@ public class PluginManager implements ApplicationContextAware {
         Properties config = new Properties();
         InputStream in = null;
         try {
-            in = getClass().getClassLoader().getResourceAsStream("config.properties");
+            in = getClass().getClassLoader().getResourceAsStream("felix_config.properties");
             config.load(in);
         } catch (IOException ex) {
             LogUtil.error(PluginManager.class.getName(), ex, "");
@@ -838,7 +838,7 @@ public class PluginManager implements ApplicationContextAware {
         try (JarFile jarFile = new JarFile(file)) {
             Manifest manifest = jarFile.getManifest();
             if (manifest == null) {
-                throw new FileNotFoundException("MANIFEST file not found in " + jarFile.getName());
+                throw new FileNotFoundException("MANIFEST file not found in " + file.getName());
             }
 
             // Return true if any manifest attribute contains the javax.servlet
