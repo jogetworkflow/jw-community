@@ -8,6 +8,7 @@ import org.joget.apps.app.service.AppUtil;
 import org.joget.apps.form.service.FormUtil;
 import org.joget.apps.userview.model.Userview;
 import org.joget.apps.userview.model.UserviewMenu;
+import org.joget.commons.util.DynamicCacheElement;
 import org.joget.commons.util.DynamicDataSourceManager;
 import org.joget.commons.util.LogUtil;
 import org.joget.workflow.model.service.WorkflowUserManager;
@@ -68,20 +69,18 @@ public class UserviewCache {
                 clearCachedContent(userviewId, menuId, scope);
                 return;
             }
-            Integer duration = null;
+            Long duration = null;
             String durationStr = userviewMenu.getPropertyString(PROPERTY_DURATION);
             if (durationStr != null && !durationStr.isEmpty()) {
                 try {
-                    duration = Integer.parseInt(durationStr);
+                    duration = Long.parseLong(durationStr);
                 } catch(Exception e) {
                     // ignore
                 }
             }
             String cacheKey = getCacheKey(userviewMenu, type, scope);
-            if (duration != null && duration > 0) {
-                // TODO CUSTOM: handle custom TTI and TTL
-            }
-            cache.put(cacheKey, content);
+            DynamicCacheElement element = new DynamicCacheElement(content, duration);
+            cache.put(cacheKey, element);
             if (LogUtil.isDebugEnabled(UserviewCache.class.getName())) {    
                 LogUtil.debug(UserviewCache.class.getName(), "setCachedContent: " + cacheKey + ", duration " + duration + "s");
             }
@@ -101,7 +100,10 @@ public class UserviewCache {
                 return null;
             }
             String cacheKey = getCacheKey(userviewMenu, type, scope);
-            content = (String)cache.get(cacheKey);
+            DynamicCacheElement cacheElement = (DynamicCacheElement)cache.get(cacheKey);
+            if (cacheElement != null) {
+                content = (String) cacheElement.getValue();
+            }
             if (content != null) {
                 if (LogUtil.isDebugEnabled(UserviewCache.class.getName())) {    
                     LogUtil.debug(UserviewCache.class.getName(), "getCachedContent: " + cacheKey);

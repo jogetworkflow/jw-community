@@ -82,7 +82,7 @@
     <!-- Cache for UserviewMenu content (org.joget.cache.USERVIEW_CACHE) -->
     <cache alias="org.joget.cache.USERVIEW_CACHE">
         <expiry>
-            <ttl unit="seconds">20</ttl>
+            <class>org.joget.commons.util.DynamicExpiryPolicy</class>
         </expiry>
         <resources>
             <heap unit="entries">1000</heap>
@@ -93,6 +93,17 @@
 
     <!-- Cache for form options (org.joget.cache.FORM_OPTIONS_CACHE) -->
     <cache alias="org.joget.cache.FORM_OPTIONS_CACHE">
+        <expiry>
+            <class>org.joget.commons.util.DynamicExpiryPolicy</class>
+        </expiry>
+        <resources>
+            <heap unit="entries">1000</heap>
+            <!-- No overflow to disk -->
+        </resources>
+        <!--<searchable/>-->
+    </cache>
+    
+    <cache alias="org.joget.cache.APP_CACHE">
         <expiry>
             <ttl unit="seconds">20</ttl>
         </expiry>
