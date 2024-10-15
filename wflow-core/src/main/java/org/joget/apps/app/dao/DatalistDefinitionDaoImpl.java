@@ -75,7 +75,6 @@ public class DatalistDefinitionDaoImpl extends AbstractAppVersionedObjectDao<Dat
         if (dataListDef == null) {
             DatalistDefinition listDef = super.loadById(id, appDefinition);            
             if (listDef != null) {
-                findSession().evict(listDef);
                 cache.put(cacheKey, dataListDef, appDefinition);
             }
             return listDef;

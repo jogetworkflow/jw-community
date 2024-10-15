@@ -48,9 +48,6 @@ public class PluginDefaultPropertiesDaoImpl extends AbstractAppVersionedObjectDa
 
         if (cachedProps == null) {
             PluginDefaultProperties props = super.loadById(id, appDefinition);            
-            if (props != null) {
-                findSession().evict(props);
-            }            
             cache.put(cacheKey, cachedProps, appDefinition); //for PluginDefaultProperties, store to cache even it is null. It is used by audit trail & hash variable            
             return props;
         }else{

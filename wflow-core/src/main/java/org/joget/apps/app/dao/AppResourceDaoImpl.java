@@ -49,7 +49,6 @@ public class AppResourceDaoImpl extends AbstractAppVersionedObjectDao<AppResourc
         if (appResource == null) {
             AppResource r = super.loadById(id, appDefinition);            
             if (r != null) {
-                findSession().evict(r);
                 cache.put(cacheKey, r, appDefinition);
             }
             return r;

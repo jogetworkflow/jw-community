@@ -14,8 +14,6 @@ public class ReportWorkflowProcessInstanceDaoImpl extends AbstractSpringDao impl
     public boolean saveReportWorkflowProcessInstance(ReportWorkflowProcessInstance reportWorkflowProcessInstance) {
         try {
             saveOrUpdate(ENTITY_NAME, reportWorkflowProcessInstance);
-            
-            super.findSession().evict(reportWorkflowProcessInstance);
             return true;
         } catch (Exception e) {
             LogUtil.error(ReportWorkflowProcessInstanceDaoImpl.class.getName(), e, "saveReportWorkflowProcessInstance Error!");
