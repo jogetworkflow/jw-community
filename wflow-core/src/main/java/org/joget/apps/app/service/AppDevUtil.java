@@ -1777,11 +1777,11 @@ public class AppDevUtil {
                             latestDate = dateModified;
                         }
                     }
-                    if (cache != null) {
+                    if (cache != null && latestDate != null) {
                         cache.put(cacheKey, latestDate);
                     }
                 }
-            } else if (cache != null) {
+            } else if (cache != null && latestDate != null) {
                 cache.put(cacheKey, latestDate);
             }
         }
