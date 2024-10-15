@@ -10,8 +10,6 @@ public class AuditTrailDaoImpl extends AbstractSpringDao implements AuditTrailDa
 
     public void addAuditTrail(AuditTrail auditTrail) {
         super.save(ENTITY_NAME, auditTrail);
-        
-        super.findSession().evict(auditTrail); //remove audit trail from cache
     }
 
     public AuditTrail getAuditTrailByUsername(String username) {

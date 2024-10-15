@@ -291,8 +291,12 @@ public class AppDefinitionDaoImpl extends AbstractVersionedObjectDao<AppDefiniti
     @Override
     public void updateDateModified(AppDefinition appDef, Date date) {
         Session session = findSession();
-        if (session.contains(appDef)) {
-            session.refresh(appDef);
+        try {
+            if (session.contains(appDef)) {
+                session.refresh(appDef);
+            }
+        } catch (Exception e) {
+            //can ignore
         }
         appDef.setDateModified(date);
         session.merge(appDef);

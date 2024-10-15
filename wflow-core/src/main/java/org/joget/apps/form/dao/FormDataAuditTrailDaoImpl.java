@@ -10,8 +10,6 @@ public class FormDataAuditTrailDaoImpl extends AbstractSpringDao implements Form
 
     public void addAuditTrail(FormDataAuditTrail auditTrail) {
         super.save(ENTITY_NAME, auditTrail);
-        
-        super.findSession().evict(auditTrail);
     }
 
     public List<FormDataAuditTrail> getAuditTrails(String sort, Boolean desc, Integer start, Integer rows) {
