@@ -622,8 +622,8 @@
 					,{ name : 'rows', value : p.rp }
 					,{ name : 'sort', value : p.sortname}
 					,{ name : 'desc', value : p.sortorder == 'desc' }
-					,{ name : p.qtype, value : p.query}
-                    ,{ name : 'flexrnd', value : new Date().valueOf().toString()}
+					,{ name : (p.qtype !== '') ? p.qtype : "qtype", value : p.query}
+                                        ,{ name : 'flexrnd', value : new Date().valueOf().toString()}
 					//,{ name : 'qtype', value : p.qtype}
 				];
                                 // END CUSTOMIZATION
