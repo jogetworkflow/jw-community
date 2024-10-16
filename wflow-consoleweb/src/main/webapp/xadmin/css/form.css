@@ -1049,13 +1049,16 @@ body.rtl .form-edit-btn{
 }
 
 /* numeric field */
-.numeric_field_controls {top: -8px;}
-.label-top .numeric_field_controls {bottom: 53px; top: auto;}
+.numeric_field_controls {top: -1px;}
+.label-top .numeric_field_controls {bottom: 49px; top: auto;}
 @media (max-width: 768px) {
-    .numeric_field_controls {bottom: auto; top: -8px; right: auto;}
+    .numeric_field_controls {bottom: auto; top: -1px; right: auto;}
 }
 @media (max-width: 480px) {
-    .numeric_field_controls {bottom: 53px; top: auto;}
+    .numeric_field_controls {bottom: 49px; top: auto;}
+}
+body.rtl form.label-left .form-cell.label-top > label{
+    float:none;
 }
 
 /* fields with top-aligned label */
