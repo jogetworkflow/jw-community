@@ -3,9 +3,7 @@
 <hibernate-mapping>
   <class entity-name="Setting" lazy="false" name="org.joget.commons.spring.model.Setting" table="wf_setup">
     <cache usage="nonstrict-read-write" /> 
-    <id name="id" type="string">
-      <generator class="uuid"/>
-    </id>
+    <id name="id" column="id" type="string"/>
     <property name="property" type="string"/>
     <property name="value" type="text"/>
     <property name="ordering" type="integer"/>
