@@ -333,11 +333,7 @@ public class PluginManager implements ApplicationContextAware {
     protected Bundle installBundle(String location) {
         try {
             // attempt to migrate plugin before install
-            URI uri = URI.create(location);
-            File file = new File(uri);
-            if (requiresMigration(file)) {
-                location = migratePlugin(file);
-            }
+            location = attemptMigration(location);
 
             BundleContext context = getOsgiContainer().getBundleContext();
             Bundle newBundle = context.installBundle(location);
@@ -870,6 +866,27 @@ public class PluginManager implements ApplicationContextAware {
         }
 
         return pluginJar.toURI().toURL().toExternalForm();
+    }
+
+    /**
+     * Migrates plugin if required, adding locks to prevent plugin from installing again after migrating.
+     *
+     * @param location the path to the plugin
+     * @return the new path to the plugin
+     */
+    protected String attemptMigration(String location) throws IOException {
+        URI uri = URI.create(location);
+        File file = new File(uri);
+        if (requiresMigration(file)) {
+            String fullFilePath = file.getAbsolutePath();
+            filesInProgress.add(fullFilePath);
+
+            location = migratePlugin(file);
+
+            filesInProgress.remove(fullFilePath);
+            filesInProgress.add(COMPLETED + fullFilePath);
+        }
+        return location;
     }
     
     public String getJarFileName(String pluginName) {
