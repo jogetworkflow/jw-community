@@ -256,7 +256,7 @@ public class DataListDecorator extends CheckboxTableDecorator {
         String link = href;
         String targetString = "";
         String confirmationString = "";
-        String arialLabel= "";
+        String ariaLabel= "";
 
         if (link == null || text == null || text.isEmpty()) {
             link = text;
@@ -274,7 +274,7 @@ public class DataListDecorator extends CheckboxTableDecorator {
                             } else {
                                 link += "?";
                             }
-                            link += StringEscapeUtils.escapeHtml(params[i]);
+                            link += params[i];
                             link += "=";
                             isValid = true;
                         } else if (!link.contains("?")) {
@@ -320,13 +320,13 @@ public class DataListDecorator extends CheckboxTableDecorator {
                     confirmation = "";
                 }
                 confirmation = StringUtil.stripAllHtmlTag(confirmation);
-                targetString = "onclick=\"return dlPopupAction(this, '" + StringUtil.escapeString(confirmation, StringUtil.TYPE_JAVASCIPT, null) + "')\"";
+                targetString = " onclick=\"return dlPopupAction(this, '" + StringUtil.escapeString(confirmation, StringUtil.TYPE_JAVASCIPT, null) + "')\"";
             } else if (target != null && "post".equalsIgnoreCase(target)) {
                 if (confirmation == null) {
                     confirmation = "";
                 }
                 confirmation = StringUtil.stripAllHtmlTag(confirmation);
-                targetString = "onclick=\"return dlPostAction(this, '" + StringUtil.escapeString(confirmation, StringUtil.TYPE_JAVASCIPT, null) + "')\"";
+                targetString = " onclick=\"return dlPostAction(this, '" + StringUtil.escapeString(confirmation, StringUtil.TYPE_JAVASCIPT, null) + "')\"";
             } else {
                 if (target != null && target.trim().length() > 0) {
                     targetString = " target=\"" + StringUtil.escapeString(target, StringUtil.TYPE_HTML, null) + "\"";
@@ -337,9 +337,10 @@ public class DataListDecorator extends CheckboxTableDecorator {
                 }
             }
             if (StringUtil.stripAllHtmlTag(text).isEmpty()) {
-                arialLabel = " aria-label=\"link\"";
+                ariaLabel = " aria-label=\"link\"";
             }
-            link = "<a href=\"" + StringUtil.escapeString(link, StringUtil.TYPE_HTML, null) + "\"" + targetString + confirmationString + arialLabel + " class=\""+StringUtil.escapeString(cssClasses, StringUtil.TYPE_HTML, null)+"\">" + text + "</a>";
+            // Escaping the URL to avoid issues with HTML entities
+            link = "<a href=\"" + StringUtil.escapeString(link, StringUtil.TYPE_HTML, null) + "\"" + targetString + confirmationString + ariaLabel + " class=\"" + StringUtil.escapeString(cssClasses, StringUtil.TYPE_HTML, null) + "\">" + text + "</a>";
         }
         return link;
     }
