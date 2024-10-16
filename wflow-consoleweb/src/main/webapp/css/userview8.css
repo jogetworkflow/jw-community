@@ -294,7 +294,7 @@ header.navbar .dropdown-menu a span.time{
     }
 
     body.rtl.horizontal_menu #sidebar .nav > li > a.dropdown:after {
-        left:0px;
+        left:8px;
         right:unset;
     }
 
@@ -303,8 +303,9 @@ header.navbar .dropdown-menu a span.time{
         text-align: right;
     }
 
-    body.horizontal_menu #sidebar .nav > li > a.dropdown {
-        padding:5px 15px;
+    body.rtl.horizontal_menu #sidebar .nav > li > a.dropdown {
+        padding-left: 25px;
+        padding-right: 15px;
     }
 }
 
