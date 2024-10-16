@@ -46,7 +46,7 @@ var AppCenter = {
         // load JSON
         $.ajax({ 
             url : jsonUrl,
-            dataType:'jsonp',
+            dataType:'json',
             success:function(data) {
                 var content = "";
                 var urlParams = UrlUtil.getUrlParams(location.href);
