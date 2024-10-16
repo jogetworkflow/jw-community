@@ -39,6 +39,10 @@ public class SetupDao extends AbstractSpringDao {
 
     public Serializable save(Object obj) {
         try {
+            Setting setting = (Setting)obj;
+            if (setting.getId() == null) {
+                setting.setId(UuidGenerator.getInstance().getUuid());
+            }
             return super.save(ENTITY_NAME, obj);
         } finally {
             super.findSession().evict(obj);
@@ -48,6 +52,10 @@ public class SetupDao extends AbstractSpringDao {
     @Transactional(dontRollbackOn={OptimisticLockException.class, StaleStateException.class})
     public void saveOrUpdate(Object obj) {
         try {
+            Setting setting = (Setting)obj;
+            if (setting.getId() == null) {
+                setting.setId(UuidGenerator.getInstance().getUuid());
+            }
             super.saveOrUpdate(ENTITY_NAME, obj);
             
             super.findSession().evict(obj);
