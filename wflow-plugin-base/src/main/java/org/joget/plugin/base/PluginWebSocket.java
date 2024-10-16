@@ -1,6 +1,6 @@
 package org.joget.plugin.base;
 
-import javax.websocket.Session;
+import jakarta.websocket.Session;
 
 /**
  * Interface for text based Web Socket Plugin
