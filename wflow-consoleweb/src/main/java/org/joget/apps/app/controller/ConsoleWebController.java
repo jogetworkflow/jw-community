@@ -6544,7 +6544,7 @@ public class ConsoleWebController {
         }
     }
     
-    /**
+     /**
     * Validates an email address and returns the result as a JSON response.
     * This method handles POST requests to the "/api/validateEmail" endpoint. 
     * It utilizes the StringUtil.validateEmail method to validate the provided email address. 

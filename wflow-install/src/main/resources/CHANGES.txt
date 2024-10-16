@@ -2,6 +2,15 @@ Joget DX COMMUNITY
 ====================
 For more information, please refer to https://community.joget.org
 
+8.1.6
+=====
+a88e9f60f Fixed: wflow-consoleweb - Form - Printed pdf using Ctrl + P or Print button changes the form's element alignment. T4484 @8.1-SNAPSHOT
+2608902b7 Fixed: jw-community - Email Validator - Email validator not applied in profile, user creation and email smtp. @8.1-SNAPSHOT
+4065280a3 Fixed: wflow-core - Email Tool/ User Notification - Missing completion log after retries. T4838 @8.1-SNAPSHOT
+7a455699b Fixed: wflow-core - JSON API List Data Source - NPE is not handle correctly. T4899 @8.1-SNAPSHOT
+7536efdbd Fixed: wflow-core - Security - Update Tensorflow to 0.5.0, Ndarray to 0.4.0 and protobuf-java to 3.25.4 for CVE-2024-7254. @7.1-SNAPSHOT
+d5a6065f8 Fixed: wflow-consoleweb - Spring Framework - Regression of 5e10534c. Overridden class is not updated. @7.1-SNAPSHOT
+
 8.1.5
 =====
 d7d0ac7da Modified: wflow-consoleweb - App Composer - Distortion on certain screen size. @8.1-SNAPSHOT
