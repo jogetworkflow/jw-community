@@ -160,11 +160,7 @@ public abstract class DataListBinderDefault extends ExtDefaultPlugin implements 
                 }
             }
             
-            if (getDriver().equals("org.postgresql.Driver")) {
-                conds += " AND ass.IsValid IS TRUE";
-            } else {
-                conds += " AND ass.IsValid = 1";
-            }
+            conds += " AND ass.IsValid IS TRUE";
             
             queryObj.setOperator("AND");
             queryObj.setQuery(conds);
