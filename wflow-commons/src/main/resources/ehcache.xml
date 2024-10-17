@@ -125,6 +125,17 @@
         </resources>
     </cache>
 
+    <!-- Cache for session nonce (org.joget.cache.NONCE_CACHE) -->
+    <cache alias="org.joget.cache.NONCE_CACHE">
+        <expiry>
+            <class>org.joget.commons.util.DynamicExpiryPolicy</class>
+        </expiry>
+        <resources>
+            <heap unit="entries">10000</heap>
+            <!-- No overflow to disk -->
+        </resources>
+    </cache>
+
     <!-- Cache for MFA nonce (org.joget.cache.MFA_NONCE) -->
     <cache alias="org.joget.cache.MFA_NONCE">
         <expiry>
@@ -132,6 +143,17 @@
         </expiry>
         <resources>
             <heap unit="entries">10000</heap>
+            <!-- No overflow to disk -->
+        </resources>
+    </cache>
+
+    <!-- Cache for identity provider (org.joget.cache.IDENTITY_PROVIDER) -->
+    <cache alias="org.joget.cache.IDENTITY_PROVIDER">
+        <expiry>
+            <ttl unit="seconds">3600</ttl>
+        </expiry>
+        <resources>
+            <heap unit="entries">1000</heap>
             <!-- No overflow to disk -->
         </resources>
     </cache>
