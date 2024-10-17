@@ -62,6 +62,52 @@
             <artifactId>wflow-shark-jakarta</artifactId>
             <version>${project.version}</version>
             <classifier>jakarta</classifier>
+            <exclusions>
+                <exclusion>
+                    <groupId>EnhydraShark</groupId>
+                    <artifactId>shark-maven</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>EnhydraShark</groupId>
+                    <artifactId>sharkscripting-standard</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>EnhydraShark</groupId>
+                    <artifactId>sharkclientutilities-misc</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>EnhydraShark</groupId>
+                    <artifactId>sharkinstancepersistence-dods</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>EnhydraShark</groupId>
+                    <artifactId>sharkinstancepersistence-dodslayer</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>EnhydraShark</groupId>
+                    <artifactId>sharkrepositorypersistence-dods</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>EnhydraShark</groupId>
+                    <artifactId>sharkrepositorypersistence-dodslayer</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>EnhydraShark</groupId>
+                    <artifactId>sharklogging-standard</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>TogetherRelationalObjects</groupId>
+                    <artifactId>dbmanager</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>TogetherApplicationFramework</groupId>
+                    <artifactId>eaf-api</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>TogetherApplicationFramework</groupId>
+                    <artifactId>eafconfreader</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
         <dependency>
             <groupId>org.apache-extras.beanshell</groupId>
