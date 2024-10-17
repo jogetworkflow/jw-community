@@ -3728,11 +3728,7 @@ public class ConsoleWebController {
     @RequestMapping(value = "/console/app/(*:appId)/(~:version)/pluginDefault/delete", method = RequestMethod.POST)
     public String consoleAppPluginDefaultDelete(@RequestParam(value = "ids") String ids, @RequestParam String appId, @RequestParam(required = false) String version) {
         AppDefinition appDef = appService.getAppDefinition(appId, version);
-        StringTokenizer strToken = new StringTokenizer(ids, ",");
-        while (strToken.hasMoreTokens()) {
-            String id = (String) strToken.nextElement();
-            pluginDefaultPropertiesDao.delete(id, appDef);
-        }
+        pluginDefaultPropertiesDao.delete(ids.split(","), appDef);
         return "console/apps/dialogClose";
     }
     

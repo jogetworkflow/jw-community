@@ -91,13 +91,6 @@ public class AppResourceDaoImpl extends AbstractAppVersionedObjectDao<AppResourc
 
             // detach from app
             if (obj != null) {
-                Collection<AppResource> list = appDef.getResourceList();
-                for (AppResource object : list) {
-                    if (obj.getId().equals(object.getId())) {
-                        list.remove(obj);
-                        break;
-                    }
-                }
                 obj.setAppDefinition(null);
                 AppResourceUtil.deleteFile(appDef.getAppId(), appDef.getVersion().toString(), filename);
 

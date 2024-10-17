@@ -139,6 +139,49 @@ public class PluginDefaultPropertiesDaoImpl extends AbstractAppVersionedObjectDa
     }
     
     @Override
+    public boolean delete(String[] ids, AppDefinition appDef) {
+        boolean result = false;
+        try {
+            
+            for (String id : ids) {
+                PluginDefaultProperties obj = loadById(id, appDef);
+
+                // detach from app
+                if (obj != null) {
+                    obj.setAppDefinition(null);
+
+                    // delete obj
+                    super.delete(getEntityName(), obj);
+                    cache.remove(getCacheKey(id, appDef.getId(), appDef.getVersion()), appDef);
+                }
+            }
+            
+            appDefinitionDao.updateDateModified(appDef);
+            result = true;
+
+            if (!AppDevUtil.isGitDisabled()) {
+                appDef = appService.loadAppDefinition(appDef.getAppId(), appDef.getVersion().toString());
+                Properties gitProperties = AppDevUtil.getAppDevProperties(appDef);
+                String filename = "appConfig.xml";
+                String xml = AppDevUtil.getAppConfigXml(appDef);
+                boolean commitConfig = !Boolean.parseBoolean(gitProperties.getProperty(AppDevUtil.PROPERTY_GIT_CONFIG_EXCLUDE_COMMIT));
+                if (commitConfig) {
+                    String commitMessage =  "Update app config " + appDef.getId();
+                    AppDevUtil.fileSave(appDef, filename, xml, commitMessage);
+                } else {
+                    AppDevUtil.fileDelete(appDef, filename, null);
+                }        
+
+                // sync app plugins
+                AppDevUtil.dirSyncAppPlugins(appDef);
+            }
+        } catch (Exception e) {
+            LogUtil.error(getClass().getName(), e, "");
+        }
+        return result;
+    }
+    
+    @Override
     public boolean delete(String id, AppDefinition appDef) {
         boolean result = false;
         try {
@@ -146,13 +189,6 @@ public class PluginDefaultPropertiesDaoImpl extends AbstractAppVersionedObjectDa
 
             // detach from app
             if (obj != null) {
-                Collection<PluginDefaultProperties> list = appDef.getPluginDefaultPropertiesList();
-                for (PluginDefaultProperties object : list) {
-                    if (obj.getId().equals(object.getId())) {
-                        list.remove(obj);
-                        break;
-                    }
-                }
                 obj.setAppDefinition(null);
 
                 // delete obj

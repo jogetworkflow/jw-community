@@ -139,13 +139,6 @@ public class DatalistDefinitionDaoImpl extends AbstractAppVersionedObjectDao<Dat
 
             // detach from app
             if (obj != null) {
-                Collection<DatalistDefinition> list = appDef.getDatalistDefinitionList();
-                for (DatalistDefinition object : list) {
-                    if (obj.getId().equals(object.getId())) {
-                        list.remove(obj);
-                        break;
-                    }
-                }
                 obj.setAppDefinition(null);
 
                 // delete obj
