@@ -137,13 +137,6 @@ public class UserviewDefinitionDaoImpl extends AbstractAppVersionedObjectDao<Use
 
             // detach from app
             if (obj != null) {
-                Collection<UserviewDefinition> list = appDef.getUserviewDefinitionList();
-                for (UserviewDefinition object : list) {
-                    if (obj.getId().equals(object.getId())) {
-                        list.remove(obj);
-                        break;
-                    }
-                }
                 obj.setAppDefinition(null);
 
                 // delete obj

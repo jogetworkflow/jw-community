@@ -164,13 +164,6 @@ public class BuilderDefinitionDaoImpl extends AbstractAppVersionedObjectDao<Buil
 
             // detach from app
             if (obj != null) {
-                Collection<BuilderDefinition> list = appDef.getBuilderDefinitionList();
-                for (BuilderDefinition object : list) {
-                    if (obj.getId().equals(object.getId())) {
-                        list.remove(obj);
-                        break;
-                    }
-                }
                 obj.setAppDefinition(null);
 
                 // delete obj

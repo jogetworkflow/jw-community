@@ -177,15 +177,6 @@ public class FormDefinitionDaoImpl extends AbstractAppVersionedObjectDao<FormDef
 
             // detach from app
             if (obj != null) {
-                Collection<FormDefinition> list = appDef.getFormDefinitionList();
-                if (list != null) {
-                    for (FormDefinition object : list) {
-                        if (obj.getId().equals(object.getId())) {
-                            list.remove(obj);
-                            break;
-                        }
-                    }
-                }
                 obj.setAppDefinition(null);
 
                 // delete obj

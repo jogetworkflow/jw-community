@@ -172,16 +172,6 @@ public class MessageDaoImpl extends AbstractAppVersionedObjectDao<Message> imple
 
             // detach from app
             if (obj != null) {
-                Collection<Message> list = appDef.getMessageList();
-                for (Message object : list) {
-                    if (obj.getId().equals(object.getId())) {
-                        String key = getCacheKey(object.getLocale(), object.getAppId(), object.getAppVersion().toString());
-                        cache.remove(key, appDef);
-        
-                        list.remove(obj);
-                        break;
-                    }
-                }
                 obj.setAppDefinition(null);
 
                 // delete obj

@@ -113,13 +113,6 @@ public class EnvironmentVariableDaoImpl extends AbstractAppVersionedObjectDao<En
 
             // detach from app
             if (obj != null) {
-                Collection<EnvironmentVariable> list = appDef.getEnvironmentVariableList();
-                for (EnvironmentVariable object : list) {
-                    if (obj.getId().equals(object.getId())) {
-                        list.remove(obj);
-                        break;
-                    }
-                }
                 obj.setAppDefinition(null);
 
                 // delete obj
