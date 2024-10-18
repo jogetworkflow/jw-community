@@ -253,12 +253,12 @@ public class DataListDecorator extends CheckboxTableDecorator {
     
     public static String generateLink(Object row, String href, String target, String hrefParam, String hrefColumn, String text, String confirmation, String cssClasses) {
         // add links
-        String link = href;
+        String link = "";
         String targetString = "";
         String confirmationString = "";
         String arialLabel= "";
 
-        if (link == null || text == null || text.isEmpty()) {
+        if (href == null || text == null || text.isEmpty()) {
             link = text;
         } else {
             if (hrefParam != null && hrefColumn != null && !hrefColumn.isEmpty()) {
@@ -287,7 +287,7 @@ public class DataListDecorator extends CheckboxTableDecorator {
                         if (isValid) {
                             Object paramValue = DataListService.evaluateColumnValueFromRow(row, columns[i]);
                             if (paramValue == null) {
-                                paramValue = StringEscapeUtils.escapeHtml(columns[i]);
+                                paramValue = fillVariables(StringEscapeUtils.escapeHtml(columns[i]), row);
                             }
                             try {
                                 link += (paramValue != null) ? URLEncoder.encode(paramValue.toString(), "UTF-8") : null;
@@ -299,20 +299,22 @@ public class DataListDecorator extends CheckboxTableDecorator {
                 }
             }
             
-            if (link.contains("{") && link.contains("}")) {
-                Pattern pattern = Pattern.compile("\\{([a-zA-Z0-9_]+)\\}");
-                Matcher matcher = pattern.matcher(link);
-
-                while (matcher.find()) {
-                    String replace = matcher.group(0);
-                    String column = matcher.group(1);
-                    
-                    Object value = DataListService.evaluateColumnValueFromRow(row, column);
-                    if (value != null) {
-                        String temp = StringUtil.escapeString(value.toString(), StringUtil.TYPE_URL, null);
-                        link = link.replaceAll(StringUtil.escapeRegex(replace), StringUtil.escapeRegex(temp));
-                    }
+            // Ensure href is merged with the constructed link
+            if (href != null && !href.isEmpty()) {
+                // First, ensure that variables in the href are replaced
+                href = fillVariables(href, row);
+                
+                if (!href.startsWith("http") && !href.startsWith("javascript:")) {
+                    // Merge href with the query string if it's not a full URL
+                    link = StringUtil.mergeRequestQueryString(href, link);
+                } else {
+                    link = href + link; 
                 }
+            }
+
+            if (href.contains("?") && (!href.startsWith("javascript"))) {
+                String[] urlPart = href.split("\\?");
+                link = (urlPart.length > 0 ? urlPart[0] : "") + "?" + link;
             }
             
             if (target != null && "popup".equalsIgnoreCase(target)) {
@@ -342,6 +344,25 @@ public class DataListDecorator extends CheckboxTableDecorator {
             link = "<a href=\"" + StringUtil.escapeString(link, StringUtil.TYPE_HTML, null) + "\"" + targetString + confirmationString + arialLabel + " class=\""+StringUtil.escapeString(cssClasses, StringUtil.TYPE_HTML, null)+"\">" + text + "</a>";
         }
         return link;
+    }
+    
+    public static String fillVariables(String variable, Object row) {
+        if (variable != null && variable.contains("{") && variable.contains("}")) {
+            Pattern pattern = Pattern.compile("\\{([a-zA-Z0-9_]+)\\}");
+            Matcher matcher = pattern.matcher(variable);
+
+            while (matcher.find()) {
+                String replace = matcher.group(0);
+                String column = matcher.group(1);
+
+                Object value = DataListService.evaluateColumnValueFromRow(row, column);
+                if (value != null) {
+                    String temp = StringUtil.escapeString(value.toString(), StringUtil.TYPE_URL, null);
+                    variable = variable.replaceAll(StringUtil.escapeRegex(replace), StringUtil.escapeRegex(temp));
+                }
+            }
+        }
+        return variable;
     }
 
     public String formatColumn(DataListColumn column, Object row, Object value) {
