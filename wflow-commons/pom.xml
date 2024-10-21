@@ -97,7 +97,7 @@
         <dependency>
             <groupId>org.aspectj</groupId>
             <artifactId>aspectjweaver</artifactId>
-            <version>1.9.7</version>
+            <version>1.9.22</version>
         </dependency>
         <dependency>
             <groupId>org.springframework</groupId>
@@ -362,7 +362,7 @@
         </dependency>    
         <dependency>
             <groupId>com.drewnoakes</groupId>
-            <artifactId>metadata-extractor</artifactId>
+            <artifactId>metadata-extractor</artifactId> 
             <version>2.18.0</version>
             <type>jar</type>
         </dependency>
