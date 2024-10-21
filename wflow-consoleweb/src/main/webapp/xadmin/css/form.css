@@ -124,12 +124,20 @@ body #form-canvas #section-actions{
 body #form-canvas #section-actions .form-cell {
     margin-right: 10px;
 }
+body.rtl #form-canvas #section-actions .form-cell {
+    margin-left: 10px;
+    margin-right: 0;
+}
 body #form-canvas .form-column,
 body #form-canvas .subform-column {
     padding: 0 15px;
     box-sizing: border-box;
     background: #fff;
     min-width: 230px;
+}
+body #form-canvas .form-column-horizontal,
+body #form-canvas .subform-column-horizontal {
+    padding: 0;
 }
 body #form-canvas .form-cell, 
 body #form-canvas .subform-cell {
