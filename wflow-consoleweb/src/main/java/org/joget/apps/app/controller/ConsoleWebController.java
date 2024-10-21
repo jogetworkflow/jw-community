@@ -1634,10 +1634,11 @@ public class ConsoleWebController {
                     // Check if folder is empty delete app version
                     Collection<File> files = FileUtils.listFiles(dir, new String[]{ "json", "xml", "xpdl", "jar" }, true);
                     if (files == null || files.isEmpty()) {
-                       appService.deleteAppDefinitionVersion(appId, appDef.getVersion());
+                        appService.deleteAppDefinitionVersion(appId, appDef.getVersion());
+                    } else {
+                        appDefMap.put(appDef.getVersion(), appDef);
                     }
                 }
-                appDefMap.put(appDef.getVersion(), appDef);
             }            
             
             if (!AppDevUtil.isGitDisabled()) {
