@@ -11,7 +11,7 @@ import org.joget.commons.util.StringUtil;
 
 public abstract class AbstractSpringDao {
 
-    SessionFactory sessionFactory;
+    transient SessionFactory sessionFactory;
     
     public AbstractSpringDao() {
     }

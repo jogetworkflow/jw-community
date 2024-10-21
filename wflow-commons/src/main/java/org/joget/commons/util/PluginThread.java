@@ -48,8 +48,9 @@ public final class PluginThread extends Thread {
     private final String profile;
     private HttpServletRequest request;
     private HttpServletResponse response;
-    private ServletRequestContext servletRequestContext; // for jboss eap and wildfly
-    private Object internalRequest; // for websphere liberty IRequest https://github.com/OpenLiberty/open-liberty/blob/gm-24.0.0.7/dev/com.ibm.ws.webcontainer/src/com/ibm/websphere/servlet/request/IRequest.java
+    private ServletRequestContext wildflyServletRequestContext; // for jboss eap and wildfly
+    private Object websphereRequest; // for websphere liberty IRequest https://github.com/OpenLiberty/open-liberty/blob/gm-24.0.0.10/dev/com.ibm.ws.webcontainer/src/com/ibm/websphere/servlet/request/IRequest.java
+    private Object tomcatConnector; // for tomcat
     
     /**
      * Default timeout for async request in milliseconds, 0 to disable.
@@ -82,21 +83,44 @@ public final class PluginThread extends Thread {
             // This is enforced by some app servers like JBoss EAP.
             if (servletContextClassName.contains("catalina")) {
                 // for tomcat
+                try {
+                    // get internal tomcat connector from the request
+                    ServletRequest wrappedRequest = getWrappedRequest(origRequest);
+                    Field field = wrappedRequest.getClass().getDeclaredField("request");
+                    field.setAccessible(true);
+                    Object tomcatRequest = field.get(wrappedRequest);
+                    Field connectorField = tomcatRequest.getClass().getDeclaredField("connector");
+                    connectorField.setAccessible(true);
+                    
+                    // Set the disableFacades flag to false to prevent
+                    // "java.lang.IllegalStateException: The request object has been recycled and is no longer associated with this facade"
+                    // in tomcat 10.1 and above
+                    tomcatConnector = connectorField.get(tomcatRequest);
+                    MethodUtils.invokeMethod(tomcatConnector, true, "setDiscardFacades", false);
+                } catch (NoSuchFieldException ex) {
+                    // ignore
+                } catch (Exception ex) {
+                    LogUtil.warn(getClass().getName(), ex.toString());
+                }
+                
                 request = new HttpServletRequestWrapper(new PluginThreadHttpRequest(origRequest));
             } else if (servletContextClassName.contains("ibm.ws.webcontainer")) {
                 // for websphere liberty
                 try {
                     ServletRequest wrappedRequest = getWrappedRequest(origRequest);
                     
-                    // clone request using clone() method (https://github.com/OpenLiberty/open-liberty/blob/gm-24.0.0.7/dev/com.ibm.ws.webcontainer/src/com/ibm/ws/webcontainer/srt/SRTServletRequest.java#L1512)
+                    // clone request using clone() method (https://github.com/OpenLiberty/open-liberty/blob/gm-24.0.0.10/dev/com.ibm.ws.webcontainer/src/com/ibm/ws/webcontainer/srt/SRTServletRequest.java#L1512)
                     // requires commons-lang3 upgrade to 3.15.0 for bug in version 3.12.0 https://issues.apache.org/jira/browse/LANG-1694
                     HttpServletRequest clonedRequest = (HttpServletRequest)MethodUtils.invokeMethod(wrappedRequest, true, "clone");
                     request = new HttpServletRequestWrapper(clonedRequest);
 
-                    // obtain internal _request for later initialization (https://github.com/OpenLiberty/open-liberty/blob/gm-24.0.0.7/dev/com.ibm.ws.webcontainer/src/com/ibm/ws/webcontainer/srt/SRTServletRequest.java#L180)
-                    Field field = wrappedRequest.getClass().getSuperclass().getSuperclass().getDeclaredField("_request");
+                    // get reference to class com.ibm.ws.webcontainer.srt.SRTServletRequest
+                    Class requestClass = wrappedRequest.getClass().getSuperclass().getSuperclass().getSuperclass();
+                    
+                    // obtain internal _request for later initialization (https://github.com/OpenLiberty/open-liberty/blob/gm-24.0.0.10/dev/com.ibm.ws.webcontainer/src/com/ibm/ws/webcontainer/srt/SRTServletRequest.java#L180)
+                    Field field = requestClass.getDeclaredField("_request");
                     field.setAccessible(true);
-                    internalRequest = field.get(wrappedRequest);
+                    websphereRequest = field.get(wrappedRequest);
                 } catch (Exception ex) {
                     LogUtil.warn(getClass().getName(), ex.toString());
                 }
@@ -106,7 +130,7 @@ public final class PluginThread extends Thread {
                 request = new HttpServletRequestWrapper(origRequest);
                 if (servletContextClassName.contains("undertow")) {
                     // required for jboss eap and wildfly
-                    servletRequestContext = ServletRequestContext.current();
+                    wildflyServletRequestContext = ServletRequestContext.current();
                 }
             }
             response = sra.getResponse();
@@ -127,18 +151,18 @@ public final class PluginThread extends Thread {
             RequestContextHolder.setRequestAttributes(new ServletRequestAttributes(request, response));
             
             ServletRequest wrappedRequest = getWrappedRequest(request);
-            if (internalRequest != null && wrappedRequest.getClass().getName().contains("SRTServletRequest")) {
+            if (websphereRequest != null && wrappedRequest.getClass().getName().contains("SRTServletRequest")) {
                 // for websphere liberty, initialize request using initForNextRequest (https://github.com/OpenLiberty/open-liberty/blob/gm-24.0.0.7/dev/com.ibm.ws.webcontainer/src/com/ibm/ws/webcontainer/srt/SRTServletRequest.java#L320)
                 try {
-                    MethodUtils.invokeMethod(wrappedRequest, true, "initForNextRequest", new Object[] { internalRequest });
+                    MethodUtils.invokeMethod(wrappedRequest, true, "initForNextRequest", new Object[] { websphereRequest });
                 } catch (Exception ex) {
                     LogUtil.warn(getClass().getName(), ex.toString());
                 }
             }
         }
-        if (servletRequestContext != null) {
+        if (wildflyServletRequestContext != null) {
             // for jboss eap and wildfly
-            ServletRequestContext.setCurrentRequestContext(servletRequestContext);
+            ServletRequestContext.setCurrentRequestContext(wildflyServletRequestContext);
         }
         try {
             super.run();
@@ -147,7 +171,8 @@ public final class PluginThread extends Thread {
                 RequestContextHolder.resetRequestAttributes();
                 request = null;
             }
-            if (servletRequestContext != null) {
+            if (wildflyServletRequestContext != null) {
+                // clear wildfly servlet attachments
                 ServletRequestContext.clearCurrentServletAttachments();
             }
         }        
@@ -181,8 +206,6 @@ public final class PluginThread extends Thread {
     /**
      * Returns the configured timeout for asynchronous request calls based on the system property wflow.asyncRequestTimeout.
      * Zero disables the timeout and makes the call synchronous.
-     * NOTE: For Tomcat 9.0.90 onwards, need to set the system property -Dorg.apache.catalina.connector.RECYCLE_FACADES=false
-     * to prevent exception "java.lang.IllegalStateException: The request object has been recycled and is no longer associated with this facade"
      * @return 
      */
     public static long getAsyncRequestTimeout() {

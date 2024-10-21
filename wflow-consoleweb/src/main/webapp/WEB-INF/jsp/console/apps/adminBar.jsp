@@ -8,7 +8,7 @@
 %>
 <c:set var="isQuickEditEnabled" value="<%= AppUtil.isQuickEditEnabled() %>"/>
 <c:set var="envName" value='<%= WorkflowUtil.getSystemSetupValue("environmentName") %>'/>
-<c:if test="${isQuickEditEnabled || param.webConsole =='true'}">
+<c:if test="${isQuickEditEnabled == 'true' || param.webConsole =='true'}">
     <c:set var="isAdmin" value="<%= WorkflowUtil.isCurrentUserInRole(WorkflowUtil.ROLE_ADMIN) %>"/>
     <c:set var="isCustomAppAdmin" value="<%= EnhancedWorkflowUserManager.isAppAdminRole() %>"/>
     <c:if test="${isAdmin && (param.builderMode || !(isCustomAppAdmin && !empty param.webConsole))}">
