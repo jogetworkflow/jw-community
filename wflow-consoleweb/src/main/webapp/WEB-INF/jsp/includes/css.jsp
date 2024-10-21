@@ -2,7 +2,7 @@
 <%@ page import="org.joget.workflow.util.WorkflowUtil"%>
 
 <c:if test="${!cssJspInRequest}">
-    <c:set var="cssJspInRequest" scope="request" value="true"/>
+    <c:set var="cssJspInRequest" scope="request" value="${true}"/>
     <%
         String css = WorkflowUtil.getSystemSetupValue("css");
         String customCss = WorkflowUtil.getSystemSetupValue("customCss");

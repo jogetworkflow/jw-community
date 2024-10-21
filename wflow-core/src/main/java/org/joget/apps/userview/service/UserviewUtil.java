@@ -58,6 +58,7 @@ import jakarta.servlet.ServletRequest;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpServletResponseWrapper;
+import jakarta.servlet.jsp.JspTagException;
 import java.io.File;
 import java.io.StringWriter;
 import java.io.UnsupportedEncodingException;
@@ -197,7 +198,16 @@ public class UserviewUtil implements ApplicationContextAware, ServletContextAwar
 
             result = sbuffer.toString();
         } catch (Exception e) {
-            LogUtil.error("UserviewUtil", e, viewName);
+            // get root cause
+            Throwable cause = e.getCause();
+            while (cause != null && cause.getCause() != null) {
+                cause = cause.getCause();
+            }
+            if (cause instanceof JspTagException && cause.getMessage() == null) {
+                // ignore JSP exceptions without any message to avoid log clutter
+            } else {
+                LogUtil.error("UserviewUtil", e, viewName);
+            }
         }
 
         return result;
