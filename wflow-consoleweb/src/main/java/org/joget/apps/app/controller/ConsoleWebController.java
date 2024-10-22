@@ -14,6 +14,7 @@ import java.io.OutputStream;
 import java.io.StringWriter;
 import java.io.UnsupportedEncodingException;
 import java.io.Writer;
+import java.net.URISyntaxException;
 import java.net.URLDecoder;
 import java.net.URLEncoder;
 import java.text.DateFormat;
@@ -27,10 +28,12 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.collections.map.ListOrderedMap;
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.commons.lang.StringUtils;
 import org.eclipse.jgit.api.Git;
+import org.eclipse.jgit.api.errors.GitAPIException;
 import org.eclipse.jgit.merge.MergeStrategy;
 import static org.joget.apps.app.controller.UserviewWebController.isBackendLicense;
 import org.joget.apps.app.dao.AppDefinitionDao;
@@ -1620,13 +1623,22 @@ public class ConsoleWebController {
     }
 
     @RequestMapping("/json/console/app/(*:appId)/version/list")
-    public void consoleAppVersionListJson(Writer writer, @RequestParam(value = "appId") String appId, @RequestParam(value = "callback", required = false) String callback, @RequestParam(value = "name", required = false) String name, @RequestParam(value = "sort", required = false) String sort, @RequestParam(value = "desc", required = false) Boolean desc, @RequestParam(value = "start", required = false) Integer start, @RequestParam(value = "rows", required = false) Integer rows) throws IOException, JSONException {
+    public void consoleAppVersionListJson(Writer writer, @RequestParam(value = "appId") String appId, @RequestParam(value = "callback", required = false) String callback, @RequestParam(value = "name", required = false) String name, @RequestParam(value = "sort", required = false) String sort, @RequestParam(value = "desc", required = false) Boolean desc, @RequestParam(value = "start", required = false) Integer start, @RequestParam(value = "rows", required = false) Integer rows) throws IOException, JSONException, GitAPIException, URISyntaxException {
         Collection<AppDefinition> appDefList = appDefinitionDao.findVersions(appId, sort, desc, null, null);
 
         TreeMap<Long, AppDefinition> appDefMap = new TreeMap<>();
         if (!appDefList.isEmpty()) {
             for (AppDefinition appDef: appDefList) {
-                appDefMap.put(appDef.getVersion(), appDef);
+                File dir = AppDevUtil.fileGetFileObject(appDef, ".", false);
+                if (dir != null && dir.isDirectory()) {
+                    // Check if folder is empty delete app version
+                    Collection<File> files = FileUtils.listFiles(dir, new String[]{ "json", "xml", "xpdl", "jar" }, true);
+                    if (files == null || files.isEmpty()) {
+                        appService.deleteAppDefinitionVersion(appId, appDef.getVersion());
+                    } else {
+                        appDefMap.put(appDef.getVersion(), appDef);
+                    }
+                }
             }            
             
             if (!AppDevUtil.isGitDisabled()) {
