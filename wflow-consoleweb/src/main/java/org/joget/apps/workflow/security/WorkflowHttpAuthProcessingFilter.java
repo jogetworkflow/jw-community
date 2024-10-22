@@ -181,10 +181,13 @@ public class WorkflowHttpAuthProcessingFilter extends UsernamePasswordAuthentica
             throw new BadCredentialsException(ResourceBundleUtil.getMessage("authentication.failed.sessionTimeOut"));
         }
         
-        //login should only by post request
-        if (!request.getMethod().equals("POST")) {
-            throw new AuthenticationServiceException(
-                            "Authentication method not supported: " + request.getMethod());
+        // Check if it is not a WebSocket request
+        if (!isWebSocketRequest(request)) {
+            //login should only by post request
+            if (!request.getMethod().equals("POST")) {
+                throw new AuthenticationServiceException(
+                        "Authentication method not supported: " + request.getMethod());
+            }
         }
         
         Authentication auth = null;
@@ -338,7 +341,19 @@ public class WorkflowHttpAuthProcessingFilter extends UsernamePasswordAuthentica
             
             super.unsuccessfulAuthentication(request, response, ae);
         }
-    }    
+    }
+    
+    public boolean isWebSocketRequest(HttpServletRequest request) {
+        // Check if the request has the "Upgrade" and "Connection" headers
+        String upgradeHeader = request.getHeader("Upgrade");
+        String connectionHeader = request.getHeader("Connection");
+        
+        // Check if the "Upgrade" header is set to "websocket" (case-insensitive)
+        // and if the "Connection" header contains the word "upgrade"
+        return "websocket".equalsIgnoreCase(upgradeHeader)
+                && connectionHeader != null
+                && connectionHeader.toLowerCase().contains("upgrade");
+    }
     
     public WorkflowUserManager getWorkflowUserManager() {
         return workflowUserManager;
