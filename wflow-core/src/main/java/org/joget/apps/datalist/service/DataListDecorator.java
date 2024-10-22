@@ -269,7 +269,7 @@ public class DataListDecorator extends CheckboxTableDecorator {
                     if (columns[i] != null && !columns[i].isEmpty()) {
                         boolean isValid = false;
                         if (params.length > i && params[i] != null && !params[i].isEmpty()) {
-                            if (link.contains("?")) {
+                            if (href.contains("?")) {
                                 link += "&";
                             } else {
                                 link += "?";
@@ -298,25 +298,23 @@ public class DataListDecorator extends CheckboxTableDecorator {
                     }
                 }
             }
-            
-            // Ensure href is merged with the constructed link
-            if (href != null && !href.isEmpty()) {
-                // First, ensure that variables in the href are replaced
+
+            // Check if href is a full URL
+            if (href.startsWith("http") || href.startsWith("javascript:")) {
                 href = fillVariables(href, row);
-                
-                if (!href.startsWith("http") && !href.startsWith("javascript:")) {
-                    // Merge href with the query string if it's not a full URL
-                    link = StringUtil.mergeRequestQueryString(href, link);
-                } else {
-                    link = href + link; 
+
+                link = href + link;
+            } else {
+                // Use the original merge logic for non-full URLs
+                link = StringUtil.mergeRequestQueryString(href, link);
+
+                // Handle href containing "?"
+                if (href.contains("?")) {
+                    String[] urlPart = href.split("\\?");
+                    link = (urlPart.length > 0 ? urlPart[0] : "") + "?" + link;
                 }
             }
 
-            if (href.contains("?") && (!href.startsWith("javascript"))) {
-                String[] urlPart = href.split("\\?");
-                link = (urlPart.length > 0 ? urlPart[0] : "") + "?" + link;
-            }
-            
             if (target != null && "popup".equalsIgnoreCase(target)) {
                 if (confirmation == null) {
                     confirmation = "";
