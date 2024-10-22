@@ -227,13 +227,9 @@ header.navbar .dropdown-menu a span.time{
     }
 
     body.rtl.horizontal_menu header.navbar .container-fluid {
-        padding: 12px 60px 12px 20px !important;
+        padding: 10px 20px 6px 10px;
     }
-
-    body.rtl.horizontal_menu #sidebar .nav > li > a > span:not(.badge) {
-        padding: 6px 50px 6px 20px;
-    }
-
+    
     body.rtl.horizontal_menu #sidebar ul#category-container {
         padding-right: 0px;
     }
@@ -241,10 +237,6 @@ header.navbar .dropdown-menu a span.time{
     body.rtl.horizontal_menu #sidebar li a.dropdown:after {
         left: 15px;
         right: unset !important;
-    }
-
-    body.rtl.horizontal_menu #sidebar .nav > li > ul > li > a {
-        padding: 10px 65px 10px 15px;
     }
 
     body.rtl.horizontal_menu #sidebar .nav > li > ul {
@@ -256,18 +248,30 @@ header.navbar .dropdown-menu a span.time{
         padding-right: 0px;
     }
 
-    body.rtl.horizontal_menu #sidebar .nav > li > a {
+    body.rtl.horizontal_menu #sidebar .nav:not(.user-menu) > li > a {
         padding: 5px 15px;
     }
 
     body.rtl.horizontal_menu #sidebar .nav > li > a > span > i:first-child {
         left: unset;
         right: 0;
+        margin-left: 5px;
+        margin-right: 0px;
     }
 
     body.rtl.horizontal_menu #sidebar .badge {
         text-align: center;
         float: left;
+    }
+}
+
+@media screen and (max-width:767px){
+    body.rtl.horizontal_menu #sidebar .nav > li > a > span:not(.badge) {
+        padding: 6px 50px 6px 20px;
+    }
+
+    body.rtl.horizontal_menu #sidebar .nav > li > ul > li > a {
+        padding: 10px 15px 10px 65px;
     }
 }
 
@@ -282,10 +286,6 @@ header.navbar .dropdown-menu a span.time{
     body.rtl.horizontal_menu #sidebar .nav > li > a.dropdown{
         direction: rtl;
         text-align: right;
-    }
-
-    body.rtl.horizontal_menu #sidebar .nav > li > ul > li > a {
-        padding-right: 0px;
     }
 
     body.rtl.horizontal_menu #sidebar .nav > li > ul > li > a.dropdown:after {
@@ -305,7 +305,10 @@ header.navbar .dropdown-menu a span.time{
 
     body.rtl.horizontal_menu #sidebar .nav > li > a.dropdown {
         padding-left: 25px;
-        padding-right: 15px;
+    }
+    body.rtl.horizontal_menu #sidebar .nav > li > a > span > i:first-child{
+        margin-left: 5px;
+        margin-right: 0px;
     }
 }
 
@@ -2031,6 +2034,7 @@ body[builder-theme] #content main {
 }
 body.rtl #navigation li.mm-profile.user-link small {
     padding-right: 49px;
+    text-align: right;
 }
 body.rtl .accordion>.card>.card-header {
     text-align: right;
