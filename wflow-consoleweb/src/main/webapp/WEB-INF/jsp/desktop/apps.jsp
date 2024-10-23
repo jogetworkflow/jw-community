@@ -18,11 +18,11 @@
 </div>
 
 <div id="main" class="nv-apps">
-    <div id="main-title"></div>
+    <div id="main-title"><fmt:message key="console.header.menu.label.apps"/></div>
     <div id="main-action">
         <ul id="main-action-buttons">
-            <li><button onclick="appCreate()"><fmt:message key="console.app.create.label"/></button></li>
-            <li><button onclick="appImport()"><fmt:message key="console.app.import.label"/></button></li>
+            <li><button onclick="appCreate()" class="console-primary"><fmt:message key="console.app.create.label"/></button></li>
+            <li><button onclick="appImport()" class="console-tertiary"><fmt:message key="console.app.import.label"/></button></li>
         </ul>
     </div>
     <div id="main-body">

@@ -16,12 +16,13 @@
 <c:set var="isAdmin" scope="request" value="<%= WorkflowUtil.isCurrentUserInRole(WorkflowUtil.ROLE_ADMIN) %>"/>
 <c:set var="title" value="<%= title != null ? title : \"\" %>"/>
 <c:set var="lang" value="<%= AppUtil.getAppLocale() %>"/>
+<c:set var="systemTheme" value='<%= WorkflowUtil.getSystemSetupValue("systemTheme") %>'/>
 <c:if test="${empty title}">
     <c:set var="title"><fmt:message key="console.header.browser.title"/></c:set>
 </c:if>
 
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
-<html lang="${lang}">
+<html lang="${lang}" system-theme="${systemTheme}">
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
         <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
@@ -72,7 +73,7 @@
             }
         </script>
     </head>
-    <body id="${bodyId}">
+    <body id="${bodyId}" system-theme="${systemTheme}">
         <div id="main-header">
             <a id="home-link" href="${pageContext.request.contextPath}/">
                 <span id="logo"></span>

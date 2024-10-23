@@ -26,10 +26,158 @@
     .row-title{
         font-weight: bold;
     }
+
+    .main-body-row {
+        display: none;
+    }
+
+    .main-body-content-subheader {
+        font-weight: normal;
+        background-color: transparent;
+        margin-bottom: 0px;
+        cursor: pointer;
+        padding-right: 0;
+        padding-left: 0;
+        margin-right: 1.6rem;
+    }
+
+    .main-body-content-subheader:hover {
+        color: #009265;
+    }
+
+    .main-body-content-subheader.selected span{
+        color: #009265;
+        padding: 0 0 5px 0;
+    }
+
+    #header-container {
+        display: flex;
+        margin-bottom: 20px;
+        border-bottom: 1px solid #ccc;
+    }
+
+    body[system-theme='dark'] #header-container {
+        border-bottom: 1px solid #444e57;
+    }
+
+    #main-title{
+        display: inline-flex;
+        justify-content: space-between;
+        width: 100%;
+        align-items: center;
+        margin-top:0px;
+     }
+
+    #search-bar {
+        width: min-content;
+        display: flex;
+        align-items: center;
+        position:relative;
+        border: 1px solid rgb(206, 212, 218);
+        height: 20px;
+        padding:5px 5px 5px 10px;
+        border-radius: 5px;
+    }
+
+    body[system-theme='dark'] #search-bar {
+        border: 1px solid #444e57;
+    }
+
+    #search-bar:has(input:focus-visible) {
+        outline: 2px solid var(--console-button-primary-bg);;
+    }
+
+    #search-bar #search-icon, #search-bar #search-icon:hover {
+        font-size: 0.8rem;
+        color: initial;
+        cursor: initial;
+    }
+
+    body[system-theme='dark'] #search-bar #search-icon, 
+    body[system-theme='dark'] #search-bar #search-icon:hover,
+    body[system-theme='dark'] #search-bar input,
+    body[system-theme='dark'] #search-results {
+        color: #e2e2e2;
+    }
+
+    #search-bar input{
+        width:150px;
+        padding: 0px;
+        border:none;
+        background: transparent;
+        border-bottom: none;
+        box-shadow: none;
+        transition: width 0.5s ease, padding 0.3s ease;
+        font-weight: normal;
+        outline: 0;
+        height: 20px;
+        margin-left:5px;
+        font-size: 0.8rem;
+    }
+
+    body.rtl #search-bar input{
+        margin-left: 0px;
+        margin-right: 5px;
+    }
+
+    #search-results {
+        position: absolute;
+        top: 100%; 
+        left: 0; 
+        right: 0;
+        background-color: white; 
+        border: 1px solid #ccc; 
+        z-index: 10; 
+        max-height: 200px;
+        overflow-y: auto; 
+        display: none; 
+        width:100%;
+        font-weight: normal;
+        font-size: 0.8rem;
+    }
+
+    body[system-theme='dark'] #search-results {
+        background-color: var(--console-main-background-color); 
+        border: 1px solid var(--console-border-color);
+    }
+
+    #search-results .result-item {
+        padding: 5px;
+        cursor: pointer;
+    }
+
+    .highlight {
+        color: #009265;
+        font-weight:bold;
+    }
+
+    #main {
+        visibility: hidden;
+    }
+
+    .form-buttons {
+        position:fixed; 
+        bottom: 30px;
+        right: 45px;
+        border-radius:10px;
+    }
+
+    body.rtl {
+        left:25px;
+        right: initial;
+    }
+
+    a#licenseLink, a#sysinfoLink {
+        background: var(--console-button-secondary-bg)
+    }
+
+    a#licenseLink:hover, a#sysinfoLink:hover {
+        background: var(--console-button-secondary-bg-hover)
+    }
 </style>
 <div id="nav">
     <div id="nav-title">
-        <p><i class="fas fa-cogs"></i> <fmt:message key='console.header.top.label.settings'/></p>
+        <p><i class="fas fa-cogs" id="search-icon"></i> <fmt:message key='console.header.top.label.settings'/></p>
     </div>
     <div id="nav-body">
         <ul id="nav-list">
@@ -39,17 +187,35 @@
 </div>
 
 <div id="main">
-    <div id="main-title"></div>
+    <div id="main-title">
+        <fmt:message key="console.header.submenu.label.setting.general"/> 
+        <div id="search-bar">
+            <i class="fas fa-search" id="search-icon"></i>
+            <input>
+            <div id="search-results" class="results-container"></div>
+        </div>
+    </div>
     <div id="main-action">
     </div>
     <div id="main-body">
         <div id="generalSetup">
             <form method="post" id="generalSettings" class="blockui" action="${pageContext.request.contextPath}/web/console/setting/general/submit">
             <jsp:include page="/web/json/plugin/org.joget.apps.ext.ConsoleWebPlugin/service?spot=settings" />
-            <div class="main-body-content-subheader">
-                <span><fmt:message key="console.setting.general.header.uiSetting"/></span>
+            <div id="header-container">
+                <div class="main-body-content-subheader" id="uiSetting">
+                    <span><fmt:message key="console.setting.general.header.uiSetting"/></span>
+                </div>
+                <div class="main-body-content-subheader" id="timeSettings">
+                    <span><fmt:message key="console.setting.general.header.timeSettings"/></span>
+                </div>
+                <div class="main-body-content-subheader" id="saSettings">
+                    <span><fmt:message key="console.setting.general.header.saSettings"/></span>
+                </div>
+                <div class="main-body-content-subheader" id="smtpSettings">
+                    <span><fmt:message key="console.setting.general.header.smtpSettings"/></span>
+                </div>
             </div>
-            <div class="main-body-row">
+            <div class="main-body-row" data-header="uiSetting">
                 <span class="row-content">
                     <div class="form-row">
                         <label for="defaultUserview"><fmt:message key="console.setting.general.label.defaultUserview"/></label>
@@ -75,13 +241,12 @@
                     </div>
                 </span>
             </div>
-            <div class="main-body-row">
+            <div class="main-body-row" data-header="uiSetting">
                 <span class="row-content">
                     <div class="form-row">
                         <label for="systemTheme"><fmt:message key="console.setting.general.label.system.theme"/></label>
                         <span class="form-input">
                             <select id="systemTheme" name="systemTheme">
-                                <option value="classic" <c:if test="${settingMap['systemTheme'] eq 'classic'}">selected</c:if>><fmt:message key="console.setting.general.label.classic.theme"/></option>
                                 <option value="light" <c:if test="${settingMap['systemTheme'] eq 'light'}">selected</c:if>><fmt:message key="console.setting.general.label.light.theme"/></option>
                                 <option value="dark" <c:if test="${settingMap['systemTheme'] eq 'dark'}">selected</c:if>><fmt:message key="console.setting.general.label.dark.theme"/></option>
                             </select>
@@ -89,7 +254,7 @@
                     </div>
                 </span>
             </div> 
-            <div class="main-body-row">
+            <div class="main-body-row" data-header="uiSetting">
                 <span class="row-content">
                     <div class="form-row">
                         <label for="landingPage"><fmt:message key="console.setting.general.label.landingPage"/></label>
@@ -100,7 +265,7 @@
                     </div>
                 </span>
             </div>
-            <div class="main-body-row">
+            <div class="main-body-row" data-header="uiSetting">
                 <span class="row-content">
                     <div class="form-row">
                         <label for="systemTimeZone"><fmt:message key="console.setting.general.label.systemTimeZone"/></label>
@@ -117,7 +282,7 @@
                     </div>
                 </span>
             </div>            
-            <div class="main-body-row">
+            <div class="main-body-row" data-header="uiSetting">
                 <span class="row-content">
                     <div class="form-row">
                         <label for="systemLocale"><fmt:message key="console.setting.general.label.systemLocale"/></label>
@@ -134,7 +299,7 @@
                     </div>
                 </span>
             </div>
-            <div class="main-body-row">
+            <div class="main-body-row" data-header="uiSetting">
                 <span class="row-content">
                     <div class="form-row">
                         <label for="systemDateFormat"><fmt:message key="console.setting.general.label.systemDateFormat"/></label>
@@ -146,7 +311,7 @@
                     </div>
                 </span>
             </div>            
-            <div class="main-body-row">
+            <div class="main-body-row" data-header="uiSetting">
                 <span class="row-content">
                     <div class="form-row">
                         <label for="dateFormatFollowLocale"><fmt:message key="console.setting.general.label.dateFormatFollowLocale"/></label>
@@ -160,7 +325,7 @@
                     </div>
                 </span>
             </div>
-            <div class="main-body-row">
+            <div class="main-body-row" data-header="uiSetting">
                 <span class="row-content">
                     <div class="form-row">
                         <label for="datepickerFollowLocale"><fmt:message key="console.setting.general.label.datepickerFollowLocale"/></label>
@@ -174,7 +339,7 @@
                     </div>
                 </span>
             </div>
-            <div class="main-body-row">
+            <div class="main-body-row" data-header="uiSetting">
                 <span class="row-content">
                     <div class="form-row">
                         <label for="enableUserLocale"><fmt:message key="console.setting.general.label.enableUserLocale"/></label>
@@ -188,7 +353,7 @@
                     </div>
                 </span>
             </div>
-            <div class="main-body-row">
+            <div class="main-body-row" data-header="uiSetting">
                 <span class="row-content">
                     <div class="form-row">
                         <label for="userLocale"><fmt:message key="console.setting.general.label.userLocale"/></label>
@@ -198,7 +363,7 @@
                     </div>
                 </span>
             </div>
-            <div class="main-body-row">
+            <div class="main-body-row" data-header="uiSetting">
                 <span class="row-content">
                     <div class="form-row">
                         <label for="rightToLeft"><fmt:message key="console.setting.general.label.rightToLeft"/></label>
@@ -212,7 +377,7 @@
                     </div>
                 </span>
             </div>
-            <div class="main-body-row">
+            <div class="main-body-row" data-header="uiSetting">
                 <span class="row-content">
                     <div class="form-row">
                         <label for="displayNameFormat"><fmt:message key="console.setting.general.label.displayNameFormat"/></label>
@@ -229,7 +394,7 @@
                     </div>
                 </span>
             </div> 
-            <div class="main-body-row">
+            <div class="main-body-row" data-header="uiSetting">
                 <span class="row-content">
                     <div class="form-row">
                         <label for="css"><fmt:message key="console.setting.general.label.css"/></label>
@@ -240,7 +405,7 @@
                     </div>
                 </span>
             </div>
-            <div class="main-body-row">
+            <div class="main-body-row" data-header="uiSetting">
                 <span class="row-content">
                     <div class="form-row">
                         <label for="customCss"><fmt:message key="console.setting.general.label.customCss"/></label>
@@ -250,7 +415,7 @@
                     </div>
                 </span>
             </div>
-            <div class="main-body-row">
+            <div class="main-body-row" data-header="uiSetting">
                 <span class="row-content">
                     <div class="form-row">
                         <label for="disableListRenderHtml"><fmt:message key="console.setting.general.label.disableListRenderHtml"/></label>
@@ -264,10 +429,7 @@
                     </div>
                 </span>
             </div>            
-            <div class="main-body-content-subheader">
-                <span><fmt:message key="console.setting.general.header.timeSettings"/></span>
-            </div>
-            <div class="main-body-row">
+            <div class="main-body-row" data-header="timeSettings">
                 <span class="row-content">
                     <div class="form-row">
                         <label for="deadlineCheckerInterval"><fmt:message key="console.setting.general.label.deadlineCheckerInterval"/></label>
@@ -279,7 +441,7 @@
                 </span>
             </div>
             <c:if test="${isNonceSupported}">
-                <div class="main-body-row">
+                <div class="main-body-row" data-header="timeSettings">
                     <span class="row-content">
                         <div class="form-row">
                             <label for="extendNonceCacheTime"><fmt:message key="console.setting.general.label.extendNonceCacheTime"/></label>
@@ -290,11 +452,8 @@
                     </span>
                 </div>
             </c:if>              
-            <div class="main-body-content-subheader">
-                <span><fmt:message key="console.setting.general.header.saSettings"/></span>
-            </div>
             <c:if test="${!userSecurity.disableHashLogin}">
-            <div class="main-body-row">
+            <div class="main-body-row" data-header="saSettings">
                 <span class="row-content">
                     <div class="form-row">
                         <label for="masterLoginUsername"><fmt:message key="console.setting.general.label.masterLoginUsername"/></label>
@@ -304,7 +463,7 @@
                     </div>
                 </span>
             </div>
-            <div class="main-body-row">
+            <div class="main-body-row" data-header="saSettings">
                 <span class="row-content">
                     <div class="form-row">
                         <label for="masterLoginPassword"><fmt:message key="console.setting.general.label.masterLoginPassword"/></label>
@@ -317,7 +476,7 @@
             </div>
             </c:if>
             <c:if test="${!isVirtualHostEnabled}">
-            <div class="main-body-row">
+            <div class="main-body-row" data-header="saSettings">
                 <span class="row-content">
                     <div class="form-row">
                         <label for="dataFileBasePath"><fmt:message key="console.setting.general.label.dataFileBasePath"/></label>
@@ -328,7 +487,7 @@
                     </div>
                 </span>
             </div>
-            <div class="main-body-row">
+            <div class="main-body-row" data-header="saSettings">
                 <span class="row-content">
                     <div class="form-row">
                         <label for="designerwebBaseUrl"><fmt:message key="console.setting.general.label.designerwebBaseUrl"/></label>
@@ -340,7 +499,7 @@
                 </span>
             </div>
             </c:if>
-            <div class="main-body-row">
+            <div class="main-body-row" data-header="saSettings">
                 <span class="row-content">
                     <div class="form-row">
                         <label for="deleteProcessOnCompletion"><fmt:message key="console.setting.general.label.processCompletionDataHandling"/></label>
@@ -358,7 +517,7 @@
                     </div>
                 </span>
             </div>
-            <div class="main-body-row">
+            <div class="main-body-row" data-header="saSettings">
                 <span class="row-content">
                     <div class="form-row">
                         <label for="mediumWarningLevel"><fmt:message key="console.setting.general.label.mediumWarningLevel"/></label>
@@ -369,7 +528,7 @@
                     </div>
                 </span>
             </div>
-            <div class="main-body-row">
+            <div class="main-body-row" data-header="saSettings">
                 <span class="row-content">
                     <div class="form-row">
                         <label for="criticalWarningLevel"><fmt:message key="console.setting.general.label.criticalWarningLevel"/></label>
@@ -380,7 +539,7 @@
                     </div>
                 </span>
             </div>
-            <div class="main-body-row">
+            <div class="main-body-row" data-header="saSettings">
                 <span class="row-content">
                     <div class="form-row">
                         <label for="fileSizeLimit"><fmt:message key="console.setting.general.label.fileSizeLimit"/></label>
@@ -391,7 +550,7 @@
                     </div>
                 </span>
             </div>
-            <div class="main-body-row">
+            <div class="main-body-row" data-header="saSettings">
                 <span class="row-content">
                     <div class="form-row">
                         <label for="disablePerformanceAnalyzer"><fmt:message key="console.setting.general.label.disablePerformanceAnalyzer"/></label>
@@ -405,7 +564,7 @@
                     </div>
                 </span>
             </div>            
-            <div class="main-body-row">
+            <div class="main-body-row" data-header="saSettings">
                 <span class="row-content">
                     <div class="form-row">
                         <label for="performanceAnalyzerThreshold"><fmt:message key="console.setting.general.label.performanceAnalyzerThreshold"/></label>
@@ -416,7 +575,7 @@
                     </div>
                 </span>
             </div>
-            <div class="main-body-row">
+            <div class="main-body-row" data-header="saSettings">
                 <span class="row-content">
                     <div class="form-row">
                         <label for="jsonpWhitelist"><fmt:message key="console.setting.general.label.jsonpWhitelist"/></label>
@@ -426,7 +585,7 @@
                     </div>
                 </span>
             </div>
-            <div class="main-body-row">
+            <div class="main-body-row" data-header="saSettings">
                 <span class="row-content">
                     <div class="form-row">
                         <label for="jsonpIPWhitelist"><fmt:message key="console.setting.general.label.jsonpIPWhitelist"/></label>
@@ -437,7 +596,7 @@
                 </span>
             </div>
             <c:if test="${isEnterprise}">
-                <div class="main-body-row">
+                <div class="main-body-row" data-header="saSettings"> 
                     <span class="row-content">
                         <div class="form-row">
                             <label for="glowrootUrl"><fmt:message key="apm.glowrootUrl"/></label>
@@ -449,7 +608,7 @@
                     </span>
                 </div>
             </c:if>   
-            <div class="main-body-row">
+            <div class="main-body-row" data-header="saSettings">
                 <span class="row-content">
                     <div class="form-row">
                         <label for="startProcessId"><fmt:message key="console.setting.general.label.startProcessId"/></label>
@@ -462,7 +621,7 @@
                     </div>
                 </span>
             </div> 
-            <div class="main-body-row">
+            <div class="main-body-row" data-header="saSettings">
                 <span class="row-content">
                     <div class="form-row">
                         <label for="environmentName"><fmt:message key="console.setting.general.label.environmentName"/></label>
@@ -472,10 +631,7 @@
                     </div>
                 </span>
             </div>                
-            <div class="main-body-content-subheader">
-                <span><fmt:message key="console.setting.general.header.smtpSettings"/></span>
-            </div>
-            <div class="main-body-row">
+            <div class="main-body-row" data-header="smtpSettings">
                 <span class="row-content">
                     <div class="form-row">
                         <label for="smtpHost"><fmt:message key="console.setting.general.label.smtpHost"/></label>
@@ -485,7 +641,7 @@
                     </div>
                 </span>
             </div>
-            <div class="main-body-row">
+            <div class="main-body-row" data-header="smtpSettings">
                 <span class="row-content">
                     <div class="form-row">
                         <label for="smtpPort"><fmt:message key="console.setting.general.label.smtpPort"/></label>
@@ -495,7 +651,7 @@
                     </div>
                 </span>
             </div>
-            <div class="main-body-row">
+            <div class="main-body-row" data-header="smtpSettings">
                 <span class="row-content">
                     <div class="form-row">
                         <label for="smtpSecurity"><fmt:message key="console.setting.general.label.smtpSecurity"/></label>
@@ -509,7 +665,7 @@
                     </div>
                 </span>
             </div>
-            <div class="main-body-row">
+            <div class="main-body-row" data-header="smtpSettings">
                 <span class="row-content">
                     <div class="form-row">
                         <label for="smtpUsername"><fmt:message key="console.setting.general.label.smtpUsername"/></label>
@@ -519,7 +675,7 @@
                     </div>
                 </span>
             </div>
-            <div class="main-body-row">
+            <div class="main-body-row" data-header="smtpSettings">
                 <span class="row-content">
                     <div class="form-row">
                         <label for="smtpPassword"><fmt:message key="console.setting.general.label.smtpPassword"/></label>
@@ -529,7 +685,7 @@
                     </div>
                 </span>
             </div>
-            <div class="main-body-row">
+            <div class="main-body-row" data-header="smtpSettings">
                 <span class="row-content">
                     <div class="form-row">
                         <label for="smtpEmail"><fmt:message key="console.setting.general.label.smtpEmail"/></label>
@@ -539,7 +695,7 @@
                     </div>
                 </span>
             </div>
-            <div class="main-body-row">
+            <div class="main-body-row" data-header="smtpSettings">
                 <span class="row-content">
                     <div class="form-row">
                         <label for="smtpP12"><fmt:message key="app.emailtool.digitalSignature"/> <fmt:message key="app.emailtool.p12path"/></label>
@@ -550,7 +706,7 @@
                     </div>
                 </span>
             </div>
-            <div class="main-body-row">
+            <div class="main-body-row" data-header="smtpSettings">
                 <span class="row-content">
                     <div class="form-row">
                         <label for="smtpStorepass"><fmt:message key="app.emailtool.digitalSignature"/> <fmt:message key="app.emailtool.storepass"/></label>
@@ -560,7 +716,7 @@
                     </div>
                 </span>
             </div>
-            <div class="main-body-row">
+            <div class="main-body-row" data-header="smtpSettings">
                 <span class="row-content">
                     <div class="form-row">
                         <label for="smtpIssuerAlias"><fmt:message key="app.emailtool.digitalSignature"/> <fmt:message key="app.emailtool.issuerAlias"/></label>
@@ -571,7 +727,7 @@
                 </span>
             </div>
             <div class="form-buttons">
-                <input class="form-button" type="submit" value="<ui:msgEscHTML key="general.method.label.submit"/>" />
+                <input class="form-button console-primary" type="submit" value="<ui:msgEscHTML key="general.method.label.submit"/>" />
             </div>
             </form>
         </div>
@@ -602,11 +758,135 @@
         ConnectionManager.post('${pageContext.request.contextPath}/web/console/setting/general/loginHash', callback, params);
     }
     $(document).ready(function() {
+        const savedMessage = localStorage.getItem('formSavedMessage');
+        if (savedMessage) {
+            $('<div class="toast"><i id="toast-icon" style="color:var(--console-button-primary-bg);margin-right:.5em;padding-right:.5em;border-right:1px solid #ced4da" class="fas fa-check-circle"></i><div class="toast-body">'+ savedMessage +'</div><i id="close" class="fas fa-close" style="position:absolute;right:0;margin: 0 1em;"></i></div>').appendTo('div#main');
+            $('.toast').css({
+                'opacity': '0', 
+            });
+            $('.toast #close').mouseenter(function(){
+                $(this).css({'color': 'var(--console-button-primary-bg-hover)', 'cursor': 'pointer'});
+            })
+            $('.toast #close').mouseleave(function(){
+                $(this).css({'color': 'initial', 'cursor': 'initial'});
+            })
+            $('.toast #close').click(function(){
+                $(this).parent().remove();
+            })
+            let mainWidth = $('#main').outerWidth();
+            let mainOffset = $('#main').offset();
+            $('.toast').css({'position': 'absolute', 
+            'top': mainOffset.top + 30 + 'px', 
+            'left': (mainOffset.left + mainWidth / 2) + 'px', 
+            'transform': 'translateX(-50%)',
+            'height': 'calc-size(fit-content, 20px)',
+            'padding': '10px 10px',
+            'display': 'flex',
+            'width': ( 0.5 * $("#main").width() ) +'px',
+            'align-items': 'center',
+            'background': '#e6f5e8',
+            'border-radius': '10px',
+            'color': '#000',
+            'box-shadow': '0 4px 6px rgba(0, 0, 0, 0.05), 0 1px 3px rgba(0, 0, 0, 0.04)',
+            'transition': 'opacity 0.5s ease-in-out'});
+            setTimeout(function() {
+                $('.toast').css({
+                    'opacity': '1', 
+                });
+
+                setTimeout(function() {
+                    $('.toast').css({
+                        'opacity': '0', // Fade out
+                    });
+                    setTimeout(function() {
+                        $('.toast').remove();
+                    }, 500);
+                }, 2000);
+            }, 100); 
+            localStorage.removeItem('formSavedMessage');
+        }
+
         // Override the form submission to validate the SMTP email
         $("#generalSettings").submit(function(event) {
             event.preventDefault(); // Prevent default form submission
             validateSMTPEmail();
+            localStorage.setItem('formSavedMessage', '<fmt:message key="general.label.savedMessage"/>');
         });
+
+        let elementsAfterFirstHeader = $('.main-body-content-subheader').eq(0).nextUntil('#header-container');
+        //Insert the elements after the header-container
+        elementsAfterFirstHeader.attr('data-header', 'system');
+        elementsAfterFirstHeader.insertAfter('#header-container');
+        //Insert the settings header to the header-container
+        $('.main-body-content-subheader').eq(0).attr('id', 'system');
+        $('.main-body-content-subheader').eq(0).prependTo('#header-container');
+
+        //Header select logic
+        $("div.main-body-content-subheader").off('click').on('click', function(){
+            if ($(this).hasClass('selected')){
+                return;
+            }
+            var headerId;
+            //Remove current selected if exists
+            const currentSelected = $('body').find("div.main-body-content-subheader.selected");
+            if (currentSelected.length > 0){
+                $(currentSelected).removeClass('selected');
+                headerId = $(currentSelected).attr('id');
+                $("div.main-body-row[data-header='"+ headerId +"']").hide();
+            }
+
+            headerId = $(this).attr('id');
+            $(this).addClass('selected');
+            $("div.main-body-row[data-header='"+ headerId +"']").show();
+        })
+        //Initialize the first subsection
+        $('.main-body-content-subheader').eq(0).click();
+
+        $("body").off('input', '#search-bar input').on('input', '#search-bar input', function(){
+                var thisObj = this;
+                const filteredResults = $(".main-body-row").filter(function(){
+                    return $(this).find('label').text().toLowerCase().includes($(thisObj).val().toLowerCase());
+                })
+                if(filteredResults && $(thisObj).val() !== ''){
+                    $("#search-results").empty();
+                    filteredResults.each(function(){
+                        let resultText = $(this).find('label').text();
+                        let regex = new RegExp($(thisObj).val(), 'gi'); 
+
+                        resultText = resultText.replace(regex, function(match) {
+                            return `<span class="highlight">`+match+`</span>`;
+                        });
+
+                        $("#search-results").append(`<div class="result-item" data-header="`+ $(this).attr('data-header') +`"">`+ resultText +`</div>`);
+                    })
+                    $("#search-results").show();
+                }else if ($(thisObj).val() === '') {
+                    $("#search-results").hide();
+                }
+        })
+        $("body").off('click', '#search-bar .result-item').on('click', '#search-bar .result-item', function(){
+            const headerId = $(this).attr('data-header'); // Capture the header ID
+            const labelText = $(this).text(); // Capture the text of the clicked element
+
+            $("body").find('.main-body-content-subheader[id=' + headerId + ']').click();
+            setTimeout(function() {
+                const position = $("body").find('label:contains("' + labelText + '")').offset();
+                
+                if (position) {
+                    $('html, body').animate({
+                        scrollTop: position.top
+                    }, 500);
+                }
+            }, 100);
+        })
+        $(this).on('click', function(event){
+            if (event.target !== $("#search-bar") && $("#search-bar").has(event.target).length === 0){
+                $("#search-bar").removeClass('active');
+                $("#search-bar").find('#search-results').hide();
+                $("#search-bar").find('input').val('');
+            }
+        })
+        $("#main").css({'visibility': 'initial'});
     });
 
     function validateSMTPEmail() {

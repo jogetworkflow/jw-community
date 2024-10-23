@@ -3,13 +3,15 @@
 <%@ attribute name="title" %>
 <%@ attribute name="bodyCssClass" required="false"%>
 <%@ attribute name="builderTheme" required="false"%>
+<%@ tag import="org.joget.workflow.util.WorkflowUtil"%>
 
 <c:set var="userviewThemeCss" value="<%= AppUtil.getUserviewThemeCss() %>"/>
 <c:set var="lang" value="<%= AppUtil.getAppLocale() %>"/>
+<c:set var="systemTheme" value='<%= WorkflowUtil.getSystemSetupValue("systemTheme") %>'/>
 <c:if test="${empty title}"><c:set var="title"><fmt:message key="console.header.browser.title"/></c:set></c:if>
 
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
-<html lang="${lang}">
+<html lang="${lang}" system-theme="${systemTheme}">
     <head>
         <meta http-equiv="content-type" content="text/html; charset=utf-8">
         <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
@@ -46,4 +48,12 @@
             </c:if>
         </script>
     </head>
-    <body class="popupBody ${bodyCssClass}"<c:if test="${not empty builderTheme and builderTheme ne 'classic'}"> builder-theme="${builderTheme}"</c:if>>
+    <body class="popupBody ${bodyCssClass}"
+    <c:choose>
+        <c:when test="${not empty builderTheme and builderTheme ne 'classic'}">
+            builder-theme="${builderTheme}"
+        </c:when>
+        <c:otherwise>
+            system-theme="${systemTheme}"
+        </c:otherwise>
+    </c:choose>>

@@ -21,7 +21,6 @@ var AdminBar = {
         }
         
         url = UrlUtil.updateUrlParam(url, "_ov", (new Date().getTime()));
-        
         var $quickOverlayFrame = $(parent.document).find("#quickOverlayFrame");
         if ($quickOverlayFrame.length === 0) {
             var overlayContainer = 
@@ -31,21 +30,23 @@ var AdminBar = {
             $(document.body).append(overlayContainer);
             $(document.body).addClass("stop-scrolling");
             $quickOverlayFrame = $(document.body).find("#quickOverlayFrame");
-            
             if (/iPhone|iPod|iPad/.test(navigator.userAgent)) {
                 $("body").addClass("fixiosframe");
             }
         }
         $quickOverlayFrame.attr("src", "about:blank");
         $quickOverlayFrame.attr("src", url);
+
         $quickOverlayFrame.addClass("iframeloading");
         $("#overlay, #quickOverlayButton, #quickOverlayFrameDiv").fadeIn();
         $quickOverlayFrame.on("load", function() {
+          
             AdminBar.currentPageTitle = document.title;
             var frameTitle = $quickOverlayFrame[0].contentDocument.title;
             if (frameTitle !== "") {
                 document.title = frameTitle;
             }
+            
             $("#quickOverlayContainer").removeClass("minimize");
         });
         $("#quickOverlayFrameDiv, #adminBar, #adminControl, #quickOverlayButton").off("mouseenter mouseleave");
@@ -65,7 +66,23 @@ var AdminBar = {
         $("#quickOverlay").on("click", function() {
             AdminBar.hideQuickOverlay();
         });
-        
+
+        const intervalId = setInterval(function() {
+            if (UI.theme) { 
+                console.log(UI.theme);
+                
+                $(parent.document).find('#quickOverlayFrameDiv').attr('system-theme', UI.theme);
+                $(parent.document).find('#quickOverlayButton').attr('system-theme', UI.theme);
+                
+                clearInterval(intervalId);
+            }
+        }, 100); 
+
+        setTimeout(function() {
+            clearInterval(intervalId);
+            console.log("Cleared interval after 20 seconds due to timeout.");
+        }, 20000);
+
         AdminBar.initPinMode();
         
         return false;
@@ -129,12 +146,14 @@ var AdminBar = {
     },
     showQuickEdit: function() {
         if (!AdminBar.isAdminBarHide()) {
-            $(".analyzer-page").css("display", "inline-block");
+            $(".analyzer-page").css({"display": "inline-block"});
             $("#quickEditMode").removeClass("off");
             $(".quickEdit").fadeIn();
             $(".analyzer-label").css("display", "inline-block");
             $(".analyzer-disabled").addClass("analyzer").removeClass("analyzer-disabled");
             $("body").addClass("quickEditModeActive");
+
+            $("#quickEditMode").find('div.switch-container > .custom-switch > input').prop('checked', true);
 
             $("iframe").each(function(){
                 try {
@@ -149,6 +168,8 @@ var AdminBar = {
         $(".analyzer-label, .analyzer-page").css("display", "none");
         $(".analyzer").addClass("analyzer-disabled").removeClass("analyzer");
         $("body").removeClass("quickEditModeActive");
+
+        $("#quickEditMode").find('div.switch-container > .custom-switch > input').prop('checked', false);
         
         $("iframe").each(function(){
             try {
@@ -257,7 +278,7 @@ var AdminBar = {
         $("#adminControl").on('click', function() {
             if (AdminBar.isAdminBarOpen()) {
                 AdminBar.hideAdminBar();
-            } else {
+            } else {    
                 AdminBar.showAdminBar();
             }
             return false;
@@ -275,7 +296,7 @@ var AdminBar = {
         $("#adminBar").removeClass("adminBarInactive");
         $("#adminBar").addClass("adminBarActive");
         $("#adminControl").addClass("active");
-        $("#adminControl").find("i").attr("class", "fas fa-angle-double-right");
+        $("#adminControl").find("i").attr("class", "fa fa-times");
         var path = AdminBar.cookiePath;
         $.cookie("adminBarModeHide", "false", {
             path: path

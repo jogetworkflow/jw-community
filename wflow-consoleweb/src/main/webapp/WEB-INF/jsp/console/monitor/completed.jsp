@@ -13,7 +13,14 @@
 </div>
 
 <div id="main">
-    <div id="main-title"></div>
+    <c:choose>
+        <c:when test="${mode == 'completed' && hasNonArchivedProcessData}">
+            <fmt:message key="console.header.submenu.label.completedProcesses"/>        </c:when>
+        <c:otherwise>
+            <div id="main-title"><fmt:message key="console.header.submenu.label.archivedProcesses"/></div>
+        </c:otherwise>
+    </c:choose>
+
     <div id="main-action">
     </div>
     <div id="main-body">
@@ -88,6 +95,11 @@
 </div>
 
 <script>
+    $(document).ready(function(){
+        //Reposition the filter
+        $("div #main-body-content-filter").appendTo("#JsonDataTable_processList-search");
+        $("button:has(.fa-trash-alt)").addClass('console-danger');
+    })
     var org_filter = window.filter;
     var filter = function(jsonTable, url, value){
         url = "&appId=" + $('#JsonDataTable_filterbyApp').val();

@@ -17,7 +17,7 @@
 </div>
 
 <div id="main">
-    <div id="main-title"></div>
+    <div id="main-title"><fmt:message key="console.header.submenu.label.logs"/></div>
     <div id="main-action">
     </div>
     <div id="main-body">

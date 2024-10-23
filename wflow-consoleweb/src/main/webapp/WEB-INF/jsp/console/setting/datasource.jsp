@@ -18,6 +18,11 @@
         width: 100%
     }
 
+    .form-input button:nth-child(2) {
+        margin-left:10px;
+        margin-right:2px
+    }
+
     .row-title{
         font-weight: bold;
     }
@@ -34,7 +39,7 @@
 </div>
 
 <div id="main">
-    <div id="main-title"></div>
+    <div id="main-title"><fmt:message key="console.header.submenu.label.setting.datasource"/></div>
     <div id="main-action">
     </div>
     <div id="main-body">
@@ -50,8 +55,8 @@
                                 <option ${selected}><c:out value="${profile}"/></option>
                             </c:forEach>
                         </select>
-                        <button type="button" onclick="changeProfile()"><fmt:message key="console.setting.datasource.label.switchProfile"/></button>
-                        <button type="button" onclick="deleteProfile()"><fmt:message key="console.setting.datasource.label.deleteProfile"/></button>
+                        <button type="button" class="console-primary" onclick="changeProfile()"><fmt:message key="console.setting.datasource.label.switchProfile"/></button>
+                        <button type="button" class="console-danger" onclick="deleteProfile()"><fmt:message key="console.setting.datasource.label.deleteProfile"/></button>
                     </span>
                 </div>
             </span>
@@ -92,7 +97,7 @@
             </div>
             <div class="form-buttons">
                 <input class="form-button" id="saveDatasource" type="button" value="<ui:msgEscHTML key="general.method.label.save"/>" onclick="submitDatasource()" />
-                <input class="form-button" id="saveDatasourceAsNew" type="button" value="<ui:msgEscHTML key="console.setting.datasource.label.saveAsNewProfile"/>" onclick="submitDatasource(true)" />
+                <input class="form-button console-tertiary" id="saveDatasourceAsNew" type="button" value="<ui:msgEscHTML key="console.setting.datasource.label.saveAsNewProfile"/>" onclick="submitDatasource(true)" />
                 <span class="newprofile"><fmt:message key="console.setting.datasource.label.newProfileName"/>
                 <input id="newProfileName" type="text" name="profileName" /></span>
             </div>

@@ -14,6 +14,8 @@
 </style>    
         
 <div id="main">
+    <div id="main-title"><fmt:message key="console.log.mtitle"/></div>
+    <div id="main-action"></div>
     <c:if test="${supportMultipleNode}">        
         <div class="form-row">
             <label for="nodes">Cluster Nodes</label>
@@ -142,5 +144,8 @@ $(document).ready(function() {
             }
         };
     };
+
+    //Change button color
+    $("a.followbtn").addClass('console-secondary');
 });
 </script>  

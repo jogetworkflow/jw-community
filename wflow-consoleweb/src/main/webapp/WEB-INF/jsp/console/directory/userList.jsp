@@ -66,6 +66,11 @@
 
 <script>
     $(document).ready(function(){
+        //Change delete button
+        $("button:has(.fa-trash-alt)").addClass('console-danger');
+        //Reposition the filter
+        $('div#main-body-content-filter').appendTo('div#JsonDataTable_userList-search');
+
         $('#JsonDataTable_searchTerm').hide();
 
         <c:if test="${isCustomDirectoryManager}">

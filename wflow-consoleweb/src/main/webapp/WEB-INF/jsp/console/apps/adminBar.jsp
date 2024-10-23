@@ -16,9 +16,9 @@
             loadCSS("${pageContext.request.contextPath}/css/admin_bar_custom.css");
         </script>
         <div id="adminBar" class="adminBarInactive"  <c:if test="${!empty theme && (theme == 'light' || theme == 'dark')}">builder-theme="<c:out value="${theme}"/>"</c:if>>
-            <a id="appCenter" <c:if test="${empty param.webConsole}"> target="_blank"</c:if> title="<ui:msgEscHTML key='adminBar.label.appCenter'/>" href="${pageContext.request.contextPath}/home"><i class="fab fa-joget"></i></a>
+            <a id="appCenter" <c:if test="${empty param.webConsole}"> target="_blank"</c:if> title="<ui:msgEscHTML key='adminBar.label.appCenter'/>" href="${pageContext.request.contextPath}/home"><i class="fab fa-joget"></i></a>  
             <div id="adminBarButtons">
-            <c:set var="key" value="0" />    
+            <c:set var="key" value="0" />
             <c:if test="${!empty param.appId}">    
                 <c:set var="key" value="1" />
                 <div class="separator"></div>
@@ -26,7 +26,7 @@
                         <a class="adminBarButton" title="CTRL-1: <ui:msgEscHTML key='abuilder.title'/>" href="${pageContext.request.contextPath}/web/console/app/<c:out value="${param.appId}"/>/<c:out value="${param.appVersion}"/>/builders" onclick="return AdminBar.openAppComposer('${pageContext.request.contextPath}/web/console/app/<c:out value="${param.appId}"/>/<c:out value="${param.appVersion}"/>/builders');" target="_blank"><i class="far fa-edit"></i><span><fmt:message key='abuilder.title'/></span></a>
                     </div>
                 
-            </c:if>  
+            </c:if>    
             <c:if test="${!empty param.appId && !isCustomAppAdmin}">
                 <div class="separator"></div>
             </c:if>    
@@ -47,8 +47,14 @@
             </div>
             <div id="quickEditModeOption">
                 <div>
-                    <a id="quickEditMode" title="CTRL-0: <ui:msgEscHTML key='adminBar.label.quickedit'/>"><i class="fas fa-paint-brush"></i><span><fmt:message key='adminBar.label.quickedit'/> : </span><span class="on"><fmt:message key='adminBar.label.on'/></span><span class="off"><fmt:message key='adminBar.label.off'/></span></a>
-                </div>
+                    <a id="quickEditMode" title="CTRL-0: <ui:msgEscHTML key='adminBar.label.quickedit'/>"><i class="fas fa-paint-brush"></i><span><fmt:message key='adminBar.label.quickedit'/></span>
+                        <div class="switch-container">
+                            <div class="custom-switch">
+                                <input type="checkbox" name="mfa-global-toggle" id="mfa-global-toggle" class="custom-control-input"/>
+                                <label class="custom-control-label" for="mfa-global-toggle"></label>
+                            </div>
+                        </div>
+                    </div>
             </div>
             <c:if test="${!empty envName}">
                 <span id="environmentName"><span><c:out value="${envName}"/></span></span>
