@@ -81,6 +81,11 @@ public class IdpMfaUtil {
         return savedUrl;
     }
 
+    /**
+     * Get the IdentityProviderManager bean registered in Spring
+     *
+     * @return a IdentityProviderManager Spring bean
+     */
     public static IdentityProviderManager getIdpManager() {
         try {
             return (IdentityProviderManager) DirectoryUtil.getApplicationContext().getBean("identityProviderManager");
@@ -90,6 +95,11 @@ public class IdpMfaUtil {
         }
     }
 
+    /**
+     * Get the MfaManager bean registered in Spring
+     *
+     * @return a MfaManager Spring bean
+     */
     public static MfaManager getMfaManager() {
         try {
             return (MfaManager) DirectoryUtil.getApplicationContext().getBean("mfaManager");

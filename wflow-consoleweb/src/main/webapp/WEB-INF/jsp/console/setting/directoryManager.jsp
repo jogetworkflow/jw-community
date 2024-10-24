@@ -45,7 +45,7 @@
                 </div>
             </div>
         </section>
-        <c:if test="${isEnterprise}">
+        <c:if test="${hasIdpMfaPage && IdentityProviderManager != null && MfaManager != null}">
             <jsp:include page="idpMfa.jsp" flush="true"/>
         </c:if>
     </div>
