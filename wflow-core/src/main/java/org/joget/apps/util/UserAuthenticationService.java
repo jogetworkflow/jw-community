@@ -1,5 +1,8 @@
 package org.joget.apps.util;
 
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
 import org.joget.apps.app.service.AppUtil;
 import org.joget.apps.workflow.security.AuthenticationTokenWrapper;
 import org.joget.apps.workflow.security.WorkflowUserDetails;
@@ -14,18 +17,16 @@ import org.springframework.context.support.MessageSourceAccessor;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.web.authentication.logout.CookieClearingLogoutHandler;
 import org.springframework.security.web.authentication.logout.SecurityContextLogoutHandler;
 import org.springframework.security.web.authentication.rememberme.AbstractRememberMeServices;
+import org.springframework.security.web.context.HttpSessionSecurityContextRepository;
 import org.springframework.security.web.savedrequest.HttpSessionRequestCache;
 import org.springframework.security.web.savedrequest.SavedRequest;
 import org.springframework.stereotype.Service;
-
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
-import jakarta.servlet.http.HttpSession;
 
 @Service
 public final class UserAuthenticationService {
@@ -56,11 +57,6 @@ public final class UserAuthenticationService {
             return false;
         }
         try {
-            // Generate an authentication token
-            WorkflowUserDetails userDetail = new WorkflowUserDetails(user);
-            UsernamePasswordAuthenticationToken auth = new UsernamePasswordAuthenticationToken(username, userDetail.getPassword(), userDetail.getAuthorities());
-            auth.setDetails(userDetail);
-
             // Change session ID to avoid session fixation vulnerability
             HttpSession oldSession = request.getSession(false);
             String oldSessionId = oldSession == null ? "" : oldSession.getId();
@@ -70,8 +66,31 @@ public final class UserAuthenticationService {
                 return false;
             }
 
-            // Login the user
-            SecurityContextHolder.getContext().setAuthentication(auth);
+            // Generate an authentication token
+            WorkflowUserDetails userDetail = new WorkflowUserDetails(user);
+            UsernamePasswordAuthenticationToken auth = new UsernamePasswordAuthenticationToken(username, userDetail.getPassword(), userDetail.getAuthorities());
+            auth.setDetails(userDetail);
+
+            // Login the user. First set SecurityContext
+            // see: https://docs.spring.io/spring-security/reference/servlet/authentication/architecture.html#servlet-authentication-securitycontextholder
+            SecurityContext context = SecurityContextHolder.getContext();
+            context.setAuthentication(auth);
+            SecurityContextHolder.setContext(context);
+            HttpSession session = request.getSession(false);
+            if (session == null) {
+                LogUtil.debug(getClass().getName(), "Unable to save security context as session is null");
+                return false;
+            }
+
+            /*
+             * Add SecurityContext to session. Required step, otherwise user will not be logged in.
+             *
+             * Since Spring Security 6 / DX 9
+             * See source in:
+             *   org.springframework.security.web.authentication.AbstractAuthenticationProcessingFilter.successfulAuthentication
+             *   Line: "this.securityContextRepository.saveContext(context, request, response);"
+             */
+            session.setAttribute(HttpSessionSecurityContextRepository.SPRING_SECURITY_CONTEXT_KEY, context);
             workflowUserManager.setCurrentThreadUser(user);
 
             // Add audit trail
