@@ -13,7 +13,6 @@ import org.joget.workflow.model.dao.WorkflowHelper;
 import org.joget.workflow.model.service.WorkflowUserManager;
 import org.joget.workflow.util.WorkflowUtil;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.support.MessageSourceAccessor;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -103,7 +102,7 @@ public final class UserAuthenticationService {
         return true;
     }
 
-    public Authentication loginUser(Authentication authentication, MessageSourceAccessor messages) {
+    public Authentication loginUser(Authentication authentication) {
         // Determine username
         String username = (authentication.getPrincipal() == null) ? "NONE_PROVIDED" : authentication.getName();
         String password = authentication.getCredentials().toString();
@@ -122,11 +121,8 @@ public final class UserAuthenticationService {
         }
         if (!validLogin) {
             loginAuditTrailLogging(false, username, request);
-            throw new BadCredentialsException(messages.getMessage("AbstractUserDetailsAuthenticationProvider.badCredentials", "Bad credentials"));
+            return null;
         }
-
-        // add audit trail
-        loginAuditTrailLogging(true, username, request);
 
         // return result
         User user = directoryManager.getUserByUsername(username);
@@ -134,6 +130,9 @@ public final class UserAuthenticationService {
         UsernamePasswordAuthenticationToken token = new UsernamePasswordAuthenticationToken(username, password, details.getAuthorities());
         token.setDetails(details);
         workflowUserManager.setCurrentThreadUser(user);
+
+        // add audit trail
+        loginAuditTrailLogging(true, username, request);
         return new AuthenticationTokenWrapper(token);
     }
 
