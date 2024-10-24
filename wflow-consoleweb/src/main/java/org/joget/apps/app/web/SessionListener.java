@@ -6,6 +6,7 @@ import jakarta.servlet.http.HttpSessionEvent;
 import jakarta.servlet.http.HttpSessionListener;
 import org.joget.apps.app.service.AppUtil;
 import org.joget.directory.model.service.IdentityProviderManager;
+import org.joget.directory.model.service.IdpMfaUtil;
 import org.joget.workflow.model.dao.WorkflowHelper;
 import org.joget.workflow.model.service.WorkflowUserManager;
 import org.joget.workflow.util.WorkflowUtil;
@@ -29,12 +30,12 @@ public class SessionListener implements HttpSessionListener {
             logoutAuditTrail();
 
             // Perform IdP logout
-            Object identityProviderManager = AppUtil.getApplicationContext().getBean("identityProviderManager");
-            if (identityProviderManager instanceof IdentityProviderManager) {
+            IdentityProviderManager identityProviderManager = IdpMfaUtil.getIdpManager();
+            if (identityProviderManager != null) {
                 HttpSession session = event.getSession();
                 Object pluginUuid = session.getAttribute(IdentityProviderManager.LOGGED_IN_IDP_SESSION_KEY);
                 if (pluginUuid != null && !pluginUuid.toString().trim().isEmpty()) {
-                    ((IdentityProviderManager) identityProviderManager).logout(pluginUuid.toString(), session);
+                    identityProviderManager.logout(pluginUuid.toString(), session);
                 }
             }
         }

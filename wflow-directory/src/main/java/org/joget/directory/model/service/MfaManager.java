@@ -1,9 +1,8 @@
 package org.joget.directory.model.service;
 
+import jakarta.servlet.http.HttpServletRequest;
 import org.joget.directory.model.User;
 import org.joget.directory.model.mfa.exception.MfaExecutionException;
-
-import jakarta.servlet.http.HttpServletRequest;
 
 /**
  * Interface to provide external usage of private implementation via Spring beans.
@@ -68,4 +67,11 @@ public interface MfaManager {
      * @return HTML string of the rendered MFA section
      */
     String getProfileFooterHtml(User user);
+
+    /**
+     * Gets the message shown in the login screen when the user logging in requires MFA
+     *
+     * @return the message shown to the user
+     */
+    String getMfaLoginMessage();
 }
