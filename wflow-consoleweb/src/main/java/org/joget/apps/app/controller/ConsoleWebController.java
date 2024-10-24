@@ -2,25 +2,6 @@ package org.joget.apps.app.controller;
 
 import au.com.bytecode.opencsv.CSVWriter;
 import com.github.underscore.lodash.U;
-import java.awt.image.BufferedImage;
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.DataInputStream;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.io.StringWriter;
-import java.io.UnsupportedEncodingException;
-import java.io.Writer;
-import java.net.URLDecoder;
-import java.net.URLEncoder;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
-import java.util.*;
-import javax.annotation.Resource;
-import javax.imageio.ImageIO;
 import jakarta.servlet.ServletOutputStream;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -30,46 +11,11 @@ import org.apache.commons.collections.map.ListOrderedMap;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.commons.lang.StringUtils;
-import static org.joget.apps.app.controller.UserviewWebController.isBackendLicense;
-import org.joget.apps.app.dao.AppDefinitionDao;
-import org.joget.apps.app.dao.AppResourceDao;
-import org.joget.apps.app.dao.BuilderDefinitionDao;
-import org.joget.apps.app.dao.EnvironmentVariableDao;
-import org.joget.apps.app.dao.FormDefinitionDao;
-import org.joget.apps.app.dao.MessageDao;
-import org.joget.apps.app.dao.PackageDefinitionDao;
-import org.joget.apps.app.dao.PluginDefaultPropertiesDao;
-import org.joget.apps.app.dao.UserviewDefinitionDao;
-import org.joget.apps.app.dao.DatalistDefinitionDao;
-import org.joget.apps.app.model.AppDefinition;
-import org.joget.apps.app.model.AppOverviewTool;
-import org.joget.apps.app.model.AppResource;
-import org.joget.apps.app.model.BuilderDefinition;
-import org.joget.apps.app.model.CreateAppOption;
-import org.joget.apps.app.model.CustomBuilder;
-import org.joget.apps.app.model.EnvironmentVariable;
-import org.joget.apps.app.model.FormDefinition;
-import org.joget.apps.app.model.Message;
-import org.joget.apps.app.model.PackageActivityForm;
-import org.joget.apps.app.model.PackageActivityPlugin;
-import org.joget.apps.app.model.PackageDefinition;
-import org.joget.apps.app.model.PackageParticipant;
-import org.joget.apps.app.model.PluginDefaultProperties;
-import org.joget.apps.app.model.UserviewDefinition;
-import org.joget.apps.app.model.DatalistDefinition;
-import org.joget.apps.app.model.ImportAppException;
-import org.joget.apps.app.model.ProcessFormModifier;
-import org.joget.apps.app.model.StartProcessFormModifier;
-import org.joget.apps.app.service.AppDevUtil;
-import org.joget.apps.app.service.AppOverviewUtil;
-import org.joget.apps.app.service.AppResourceUtil;
-import org.joget.apps.app.service.AppService;
-import org.joget.apps.app.service.AppUtil;
-import org.joget.apps.app.service.AuditTrailManager;
-import org.joget.apps.app.service.CustomBuilderUtil;
-import org.joget.apps.app.service.MarketplaceUtil;
-import org.joget.apps.app.service.PushServiceUtil;
-import org.joget.apps.app.service.TaggingUtil;
+import org.eclipse.jgit.api.Git;
+import org.eclipse.jgit.merge.MergeStrategy;
+import org.joget.apps.app.dao.*;
+import org.joget.apps.app.model.*;
+import org.joget.apps.app.service.*;
 import org.joget.apps.app.web.LocalLocaleResolver;
 import org.joget.apps.datalist.service.DataListService;
 import org.joget.apps.datalist.service.JsonUtil;
@@ -88,47 +34,19 @@ import org.joget.apps.workflow.security.EnhancedWorkflowUserManager;
 import org.joget.commons.spring.model.ResourceBundleMessage;
 import org.joget.commons.spring.model.ResourceBundleMessageDao;
 import org.joget.commons.spring.model.Setting;
-import org.joget.commons.util.TimeZoneUtil;
+import org.joget.commons.util.*;
+import org.joget.directory.dao.*;
+import org.joget.directory.model.*;
 import org.joget.directory.model.service.*;
-import org.joget.directory.model.Department;
-import org.joget.directory.model.Employment;
-import org.joget.directory.model.Group;
-import org.joget.directory.model.Role;
-import org.joget.directory.model.User;
+import org.joget.logs.LogViewerAppender;
 import org.joget.plugin.base.Plugin;
 import org.joget.plugin.base.PluginManager;
-import org.joget.workflow.model.WorkflowActivity;
-import org.joget.workflow.model.WorkflowProcess;
-import org.joget.workflow.model.WorkflowVariable;
-import org.joget.commons.util.CsvUtil;
-import org.joget.commons.util.DateUtil;
-import org.joget.commons.util.DynamicDataSourceManager;
-import org.joget.commons.util.FileLimitException;
-import org.joget.commons.util.FileStore;
-import org.joget.commons.util.HostManager;
-import org.joget.commons.util.LogUtil;
-import org.joget.commons.util.PagedList;
-import org.joget.commons.util.PagingUtils;
-import org.joget.commons.util.ResourceBundleUtil;
-import org.joget.commons.util.SecurityUtil;
-import org.joget.commons.util.ServerUtil;
-import org.joget.commons.util.SetupDao;
-import org.joget.commons.util.SetupManager;
-import org.joget.commons.util.StringUtil;
-import org.joget.directory.dao.DepartmentDao;
-import org.joget.directory.dao.EmploymentDao;
-import org.joget.directory.dao.GradeDao;
-import org.joget.directory.dao.GroupDao;
-import org.joget.directory.dao.OrganizationDao;
-import org.joget.directory.dao.RoleDao;
-import org.joget.directory.dao.UserDao;
-import org.joget.directory.dao.UserMetaDataDao;
-import org.joget.directory.model.Grade;
-import org.joget.directory.model.Organization;
-import org.joget.logs.LogViewerAppender;
 import org.joget.plugin.property.model.PropertyEditable;
 import org.joget.plugin.property.service.PropertyUtil;
+import org.joget.workflow.model.WorkflowActivity;
+import org.joget.workflow.model.WorkflowProcess;
 import org.joget.workflow.model.WorkflowProcessLink;
+import org.joget.workflow.model.WorkflowVariable;
 import org.joget.workflow.model.service.WorkflowManager;
 import org.joget.workflow.model.service.WorkflowManagerImpl;
 import org.joget.workflow.model.service.WorkflowUserManager;
@@ -150,6 +68,19 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.LocaleResolver;
 import org.springframework.web.util.HtmlUtils;
+
+import javax.annotation.Resource;
+import javax.imageio.ImageIO;
+import java.awt.image.BufferedImage;
+import java.io.*;
+import java.net.URLDecoder;
+import java.net.URLEncoder;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.*;
+
+import static org.joget.apps.app.controller.UserviewWebController.isBackendLicense;
+import static org.joget.apps.app.service.AppDevUtil.*;
 
 @Controller
 public class ConsoleWebController {
@@ -1400,9 +1331,11 @@ public class ConsoleWebController {
 
             // Get profile footer from IdP Manager
             StringBuilder sbProfileFooter = new StringBuilder();
-            IdentityProviderManager identityProviderManager = (IdentityProviderManager) AppUtil.getApplicationContext().getBean("identityProviderManager");
-            String idpProfileFooter = identityProviderManager.getProfileFooterHtml(currentUser);
-            sbProfileFooter.append(idpProfileFooter);
+            IdentityProviderManager identityProviderManager = IdpMfaUtil.getIdpManager();
+            if (identityProviderManager != null) {
+                String idpProfileFooter = identityProviderManager.getProfileFooterHtml(currentUser);
+                sbProfileFooter.append(idpProfileFooter);
+            }
 
             if (us != null) {
                 model.addAttribute("policies", us.passwordPolicies());
@@ -3747,10 +3680,10 @@ public class ConsoleWebController {
     
     @RequestMapping("/console/app/(*:appId)/(~:version)/builders")
     public String consoleBuilderList(ModelMap map, @RequestParam String appId, @RequestParam(required = false) String version) {
-        String result = checkVersionExist(map, appId, version);
+        String result = checkVersionExist(map, appId, version);       
         if (result != null) {
             return result;
-        }
+        }        
 
         AppDefinition appDef = appService.getAppDefinition(appId, version);
         checkAppPublishedVersion(appDef);

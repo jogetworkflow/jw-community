@@ -1,11 +1,12 @@
 package org.joget.directory.model.service;
 
-import org.apache.commons.lang.StringEscapeUtils;
-import org.springframework.security.web.savedrequest.HttpSessionRequestCache;
-import org.springframework.security.web.savedrequest.SavedRequest;
-
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import org.apache.commons.lang.StringEscapeUtils;
+import org.joget.commons.util.LogUtil;
+import org.springframework.beans.factory.NoSuchBeanDefinitionException;
+import org.springframework.security.web.savedrequest.HttpSessionRequestCache;
+import org.springframework.security.web.savedrequest.SavedRequest;
 
 public class IdpMfaUtil {
 
@@ -78,5 +79,23 @@ public class IdpMfaUtil {
             return url;
         }
         return savedUrl;
+    }
+
+    public static IdentityProviderManager getIdpManager() {
+        try {
+            return (IdentityProviderManager) DirectoryUtil.getApplicationContext().getBean("identityProviderManager");
+        } catch (NoSuchBeanDefinitionException e) {
+            LogUtil.debug(IdpMfaUtil.class.getName(), e.getMessage());
+            return null;
+        }
+    }
+
+    public static MfaManager getMfaManager() {
+        try {
+            return (MfaManager) DirectoryUtil.getApplicationContext().getBean("mfaManager");
+        } catch (NoSuchBeanDefinitionException e) {
+            LogUtil.debug(IdpMfaUtil.class.getName(), e.getMessage());
+            return null;
+        }
     }
 }

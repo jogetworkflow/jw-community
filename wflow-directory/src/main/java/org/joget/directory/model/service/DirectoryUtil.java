@@ -139,14 +139,9 @@ public class DirectoryUtil implements ApplicationContextAware {
      */
     public static String getLoginFormFooter() {
         StringBuilder sb = new StringBuilder();
-        boolean isEnterprise = false;
-        try {
-            Class.forName("org.joget.apps.license.LicenseManager");
-            isEnterprise = true;
-        } catch (Exception ignored) {}
 
-        if (isEnterprise) {
-            IdentityProviderManager identityProviderManager = (IdentityProviderManager) appContext.getBean("identityProviderManager");
+        IdentityProviderManager identityProviderManager = IdpMfaUtil.getIdpManager();
+        if (identityProviderManager != null) {
             String loginButtonsHtml = identityProviderManager.getLoginFooterHtml();
             sb.append(loginButtonsHtml);
         }
@@ -161,17 +156,17 @@ public class DirectoryUtil implements ApplicationContextAware {
     public static String getProfileFormFooter(User user) {
         StringBuilder sb = new StringBuilder();
 
-        // Get profile footer from IdP Manager
-        Object identityProviderManager = getApplicationContext().getBean("identityProviderManager");
-        if (identityProviderManager instanceof IdentityProviderManager) {
-            String idpProfileFooter = ((IdentityProviderManager) identityProviderManager).getProfileFooterHtml(user);
+        // Get profile footer from IdP & MFA Manager
+        IdentityProviderManager identityProviderManager = IdpMfaUtil.getIdpManager();
+        MfaManager mfaManager = IdpMfaUtil.getMfaManager();
+
+        if (identityProviderManager != null) {
+            String idpProfileFooter = identityProviderManager.getProfileFooterHtml(user);
             sb.append(idpProfileFooter);
         }
 
-        // Get profile footer from MFA Manager
-        Object mfaManager = getApplicationContext().getBean("mfaManager");
-        if (mfaManager instanceof MfaManager) {
-            String mfaProfileFooter = ((MfaManager) mfaManager).getProfileFooterHtml(user);
+        if (mfaManager != null) {
+            String mfaProfileFooter = mfaManager.getProfileFooterHtml(user);
             sb.append(mfaProfileFooter);
         }
 
