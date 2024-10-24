@@ -10,6 +10,7 @@ import org.springframework.context.MessageSource;
 import org.springframework.context.MessageSourceAware;
 import org.springframework.context.support.MessageSourceAccessor;
 import org.springframework.security.authentication.AuthenticationProvider;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
@@ -34,8 +35,12 @@ public class WorkflowAuthenticationProvider implements AuthenticationProvider, M
     public Authentication authenticate(Authentication authentication) throws AuthenticationException {
         // reset profile and set hostname
         HostManager.initHost();
-            
-        return ((UserAuthenticationService) AppUtil.getApplicationContext().getBean("userAuthenticationService")).loginUser(authentication, messages);
+
+        Authentication authToken = ((UserAuthenticationService) AppUtil.getApplicationContext().getBean("userAuthenticationService")).loginUser(authentication);
+        if (authToken == null) {
+            throw new BadCredentialsException(messages.getMessage("AbstractUserDetailsAuthenticationProvider.badCredentials", "Bad credentials"));
+        }
+        return authToken;
     }
 
     public boolean supports(Class authentication) {
