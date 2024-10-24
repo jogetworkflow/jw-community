@@ -73,6 +73,7 @@ import javax.annotation.Resource;
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 import java.io.*;
+import java.net.MalformedURLException;
 import java.net.URLDecoder;
 import java.net.URLEncoder;
 import java.text.DateFormat;
@@ -4776,7 +4777,7 @@ public class ConsoleWebController {
     }
 
     @RequestMapping("/console/setting/directory")
-    public String consoleSettingDirectory(ModelMap map) {
+    public String consoleSettingDirectory(ModelMap map, HttpServletRequest request) {
         Collection<Setting> settingList = setupManager.getSettingList("", null, null, null, null);
 
         Map<String, String> settingMap = new HashMap<String, String>();
@@ -4810,6 +4811,17 @@ public class ConsoleWebController {
         map.addAttribute("settingMap", settingMap);
         map.addAttribute("directoryManagerPluginList", pluginList);
         map.addAttribute("isEnterprise", AppUtil.isEnterprise());
+
+        // Get beans for IdP and MFA if available, and checks whether idpMfa.jsp exists
+        map.addAttribute("IdentityProviderManager", IdpMfaUtil.getIdpManager());
+        map.addAttribute("MfaManager", IdpMfaUtil.getMfaManager());
+        boolean hasIdpMfaPage = false;
+        try {
+            hasIdpMfaPage = request.getServletContext().getResource("/WEB-INF/jsp/console/setting/idpMfa.jsp") != null;
+        } catch (Exception e) {
+            LogUtil.warn(getClass().getName(), "Encountered " + e.getClass().getName() + " during rendering directoryManager settings page: " + e.getMessage());
+        }
+        map.addAttribute("hasIdpMfaPage", hasIdpMfaPage);
 
         return "console/setting/directoryManager";
     }
