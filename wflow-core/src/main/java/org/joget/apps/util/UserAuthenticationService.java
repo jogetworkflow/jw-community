@@ -1,5 +1,8 @@
 package org.joget.apps.util;
 
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
 import org.joget.apps.app.service.AppUtil;
 import org.joget.apps.workflow.security.AuthenticationTokenWrapper;
 import org.joget.apps.workflow.security.WorkflowUserDetails;
@@ -10,22 +13,19 @@ import org.joget.workflow.model.dao.WorkflowHelper;
 import org.joget.workflow.model.service.WorkflowUserManager;
 import org.joget.workflow.util.WorkflowUtil;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.support.MessageSourceAccessor;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.web.authentication.logout.CookieClearingLogoutHandler;
 import org.springframework.security.web.authentication.logout.SecurityContextLogoutHandler;
 import org.springframework.security.web.authentication.rememberme.AbstractRememberMeServices;
+import org.springframework.security.web.context.HttpSessionSecurityContextRepository;
 import org.springframework.security.web.savedrequest.HttpSessionRequestCache;
 import org.springframework.security.web.savedrequest.SavedRequest;
 import org.springframework.stereotype.Service;
-
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
-import jakarta.servlet.http.HttpSession;
 
 @Service
 public final class UserAuthenticationService {
@@ -43,47 +43,66 @@ public final class UserAuthenticationService {
      * Method to log in user programmatically
      *
      * @param user the user to be logged in
+     * @return true if successfully logged in; false otherwise
      * @see <a href="https://dev.joget.org/community/display/DX8/Single+Sign+On+-+SSO#SingleSignOnSSO-LoginanUserProgrammatically">
      * Joget KB: Single Sign On - SSO
      * </a>
      */
     public boolean loginUser(User user) {
-        String username = "";
+        String username = user.getUsername();
         HttpServletRequest request = WorkflowUtil.getHttpServletRequest();
+        if (request == null) {
+            LogUtil.warn(getClass().getName(), "Unable to log in user " + username + " because request is null.");
+            return false;
+        }
         try {
+            // Change session ID to avoid session fixation vulnerability
+            HttpSession oldSession = request.getSession(false);
+            String oldSessionId = oldSession == null ? "" : oldSession.getId();
+            String newSessionId = request.changeSessionId();
+            if (oldSessionId.equals(newSessionId)) {
+                LogUtil.warn(getClass().getName(), "Unable to change session ID, cannot log in user.");
+                return false;
+            }
+
             // Generate an authentication token
             WorkflowUserDetails userDetail = new WorkflowUserDetails(user);
-            username = userDetail.getUsername();
             UsernamePasswordAuthenticationToken auth = new UsernamePasswordAuthenticationToken(username, userDetail.getPassword(), userDetail.getAuthorities());
             auth.setDetails(userDetail);
 
-            // Login the user
-            SecurityContextHolder.getContext().setAuthentication(auth);
-            workflowUserManager.setCurrentThreadUser(user);
-
-            // Generate new session to avoid session fixation vulnerability
+            // Login the user. First set SecurityContext
+            // see: https://docs.spring.io/spring-security/reference/servlet/authentication/architecture.html#servlet-authentication-securitycontextholder
+            SecurityContext context = SecurityContextHolder.getContext();
+            context.setAuthentication(auth);
+            SecurityContextHolder.setContext(context);
             HttpSession session = request.getSession(false);
-            if (session != null) {
-                SavedRequest savedRequest = (SavedRequest) session.getAttribute("SPRING_SECURITY_SAVED_REQUEST");
-                session.invalidate();
-                session = request.getSession(true);
-                if (savedRequest != null) {
-                    session.setAttribute("SPRING_SECURITY_SAVED_REQUEST", savedRequest);
-                }
+            if (session == null) {
+                LogUtil.debug(getClass().getName(), "Unable to save security context as session is null");
+                return false;
             }
+
+            /*
+             * Add SecurityContext to session. Required step, otherwise user will not be logged in.
+             *
+             * Since Spring Security 6 / DX 9
+             * See source in:
+             *   org.springframework.security.web.authentication.AbstractAuthenticationProcessingFilter.successfulAuthentication
+             *   Line: "this.securityContextRepository.saveContext(context, request, response);"
+             */
+            session.setAttribute(HttpSessionSecurityContextRepository.SPRING_SECURITY_CONTEXT_KEY, context);
+            workflowUserManager.setCurrentThreadUser(user);
 
             // Add audit trail
             loginAuditTrailLogging(true, username, request);
 
         } catch (Exception e) {
-            loginAuditTrailLogging(false, username, request);
             LogUtil.error(UserAuthenticationService.class.getName(), e, "Failed to login");
             return false;
         }
         return true;
     }
 
-    public Authentication loginUser(Authentication authentication, MessageSourceAccessor messages) {
+    public Authentication loginUser(Authentication authentication) {
         // Determine username
         String username = (authentication.getPrincipal() == null) ? "NONE_PROVIDED" : authentication.getName();
         String password = authentication.getCredentials().toString();
@@ -102,17 +121,18 @@ public final class UserAuthenticationService {
         }
         if (!validLogin) {
             loginAuditTrailLogging(false, username, request);
-            throw new BadCredentialsException(messages.getMessage("AbstractUserDetailsAuthenticationProvider.badCredentials", "Bad credentials"));
+            return null;
         }
-
-        // add audit trail
-        loginAuditTrailLogging(true, username, request);
 
         // return result
         User user = directoryManager.getUserByUsername(username);
         UserDetails details = new WorkflowUserDetails(user);
         UsernamePasswordAuthenticationToken token = new UsernamePasswordAuthenticationToken(username, password, details.getAuthorities());
         token.setDetails(details);
+        workflowUserManager.setCurrentThreadUser(user);
+
+        // add audit trail
+        loginAuditTrailLogging(true, username, request);
         return new AuthenticationTokenWrapper(token);
     }
 
@@ -122,20 +142,6 @@ public final class UserAuthenticationService {
             HttpSession session = request.getSession(false);
             if (session != null) {
                 SavedRequest savedRequest = new HttpSessionRequestCache().getRequest(request, response);
-                try {
-                    session.invalidate();
-                } catch (IllegalStateException ignored) {
-                    // session is already invalidated
-                }
-
-                // create new session
-                HttpSession newSession = request.getSession(true);
-                if (newSession == null) {
-                    throw new IllegalStateException("New session is null");
-                }
-                if (newSession.equals(session)) {
-                    throw new IllegalStateException("New session is same as old session");
-                }
                 if (savedRequest != null) {
                     new HttpSessionRequestCache().saveRequest(request, response);
                 }
