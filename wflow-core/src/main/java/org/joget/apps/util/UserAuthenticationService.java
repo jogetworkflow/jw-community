@@ -142,20 +142,6 @@ public final class UserAuthenticationService {
             HttpSession session = request.getSession(false);
             if (session != null) {
                 SavedRequest savedRequest = new HttpSessionRequestCache().getRequest(request, response);
-                try {
-                    session.invalidate();
-                } catch (IllegalStateException ignored) {
-                    // session is already invalidated
-                }
-
-                // create new session
-                HttpSession newSession = request.getSession(true);
-                if (newSession == null) {
-                    throw new IllegalStateException("New session is null");
-                }
-                if (newSession.equals(session)) {
-                    throw new IllegalStateException("New session is same as old session");
-                }
                 if (savedRequest != null) {
                     new HttpSessionRequestCache().saveRequest(request, response);
                 }
