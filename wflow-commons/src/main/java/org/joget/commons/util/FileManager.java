@@ -23,6 +23,8 @@ import com.drew.imaging.ImageMetadataReader;
 import com.drew.metadata.Metadata;
 import com.drew.metadata.exif.ExifIFD0Directory;
 import com.drew.metadata.jpeg.JpegDirectory;
+import java.nio.file.Files;
+import org.springframework.util.FileCopyUtils;
 
 /**
  * Utility methods used by the system to manager temporary files
@@ -92,7 +94,7 @@ public class FileManager {
                     new File(getBaseDirectory(), path).mkdirs();
 
                     // write file
-                    file.transferTo(uploadFile);
+                    FileCopyUtils.copy(file.getInputStream(), Files.newOutputStream(uploadFile.toPath()));
                 }
             } catch (Exception ex) {
                 LogUtil.error(FileManager.class.getName(), ex, "");
