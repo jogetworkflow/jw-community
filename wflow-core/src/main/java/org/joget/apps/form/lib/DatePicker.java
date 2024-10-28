@@ -327,13 +327,16 @@ public class DatePicker extends Element implements FormBuilderPaletteElement, Pw
             String type = getPropertyString("currentDateAs");
             if (!type.isEmpty()) {
                 String formattedCompare = TimeZoneUtil.convertToTimeZone(new Date(), null, displayFormat);
-                try {
-                    SimpleDateFormat localeDateFormat = new SimpleDateFormat(displayFormat, LocaleContextHolder.getLocale());
-                    SimpleDateFormat englishDateFormat = new SimpleDateFormat(displayFormat, Locale.ENGLISH);
-                    Date date = localeDateFormat.parse(formattedCompare);
-                    formattedCompare = englishDateFormat.format(date);
-                } catch (Exception e) {
-                    LogUtil.error(DatePicker.class.getName(), e, e.getMessage());
+                Locale currentLocale = LocaleContextHolder.getLocale();
+                if (!Locale.ENGLISH.getLanguage().equals(currentLocale.getLanguage())) {
+                    try {
+                        SimpleDateFormat localeDateFormat = new SimpleDateFormat(displayFormat, currentLocale);
+                        SimpleDateFormat englishDateFormat = new SimpleDateFormat(displayFormat, Locale.ENGLISH);
+                        Date date = localeDateFormat.parse(formattedCompare);
+                        formattedCompare = englishDateFormat.format(date);
+                    } catch (Exception e) {
+                        LogUtil.error(DatePicker.class.getName(), e, e.getMessage());
+                    }
                 }
  
                 String start, end;
