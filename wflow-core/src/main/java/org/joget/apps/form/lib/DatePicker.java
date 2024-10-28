@@ -327,31 +327,13 @@ public class DatePicker extends Element implements FormBuilderPaletteElement, Pw
             String type = getPropertyString("currentDateAs");
             if (!type.isEmpty()) {
                 String formattedCompare = TimeZoneUtil.convertToTimeZone(new Date(), null, displayFormat);
-                if (!getLocale().isEmpty() && getLocale().startsWith("zh")) {
-                    try {
-                        SimpleDateFormat localeDateFormat;
-                        SimpleDateFormat englishDateFormat;
-                        if ("".equalsIgnoreCase(getPropertyString("datePickerType"))){
-                            localeDateFormat = new SimpleDateFormat("yyyy-MM-dd", Locale.SIMPLIFIED_CHINESE);
-                            englishDateFormat = new SimpleDateFormat("yyyy-MM-dd", Locale.ENGLISH);
-                        }else{
-                            localeDateFormat = new SimpleDateFormat("yyyy-MM-dd hh:mm a", Locale.SIMPLIFIED_CHINESE);
-                            englishDateFormat = new SimpleDateFormat("yyyy-MM-dd hh:mm a", Locale.ENGLISH);
-                        }
-                        Date date = localeDateFormat.parse(formattedCompare);
-                        formattedCompare = englishDateFormat.format(date);
-                    } catch (Exception e) {
-                        LogUtil.error(DatePicker.class.getName(), e, e.getMessage());
-                    }                    
-                }else if(!getLocale().isEmpty() && !getLocale().startsWith("en")) {
-                    try {
-                        SimpleDateFormat localeDateFormat = new SimpleDateFormat("MM/dd/yyyy hh:mm a", new Locale(getLocale()));
-                        Date date = localeDateFormat.parse(formattedCompare);
-                        SimpleDateFormat englishDateFormat = new SimpleDateFormat("MM/dd/yyyy hh:mm a", Locale.ENGLISH);                      
-                        formattedCompare = englishDateFormat.format(date);
-                    } catch (Exception e) {
-                        LogUtil.error(DatePicker.class.getName(), e, e.getMessage());
-                    }
+                try {
+                    SimpleDateFormat localeDateFormat = new SimpleDateFormat(displayFormat, LocaleContextHolder.getLocale());
+                    SimpleDateFormat englishDateFormat = new SimpleDateFormat(displayFormat, Locale.ENGLISH);
+                    Date date = localeDateFormat.parse(formattedCompare);
+                    formattedCompare = englishDateFormat.format(date);
+                } catch (Exception e) {
+                    LogUtil.error(DatePicker.class.getName(), e, e.getMessage());
                 }
  
                 String start, end;
