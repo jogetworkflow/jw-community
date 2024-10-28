@@ -19,6 +19,8 @@ import org.apache.commons.io.filefilter.FileFileFilter;
 import org.apache.commons.lang.ArrayUtils;
 import org.hibernate.query.Query;
 import org.hibernate.Session;
+import org.hibernate.engine.spi.PersistenceContext;
+import org.hibernate.engine.spi.SessionImplementor;
 import org.joget.apps.app.model.AppDefinition;
 import org.joget.apps.app.model.AppResource;
 import org.joget.apps.app.model.BuilderDefinition;
@@ -85,8 +87,21 @@ public class AppDefinitionDaoImpl extends AbstractVersionedObjectDao<AppDefiniti
     @Override
     public void delete(AppDefinition obj) {
         // disassociate
-        if (obj != null) {            
+        if (obj != null) {
             clearCache(obj);
+            
+            //to fix EntityExistsException after refresh
+            SessionImplementor sessionImpl = findSession().unwrap(SessionImplementor.class);
+            PersistenceContext persistenceContext = sessionImpl.getPersistenceContext();
+            for (Object entity : persistenceContext.getEntitiesByKey().values()) {
+                if (entity instanceof AppDefinition) {
+                    AppDefinition temp = (AppDefinition) entity;
+                    if (temp.getUid().equals(obj.getUid())) {
+                        obj = temp;
+                        break;
+                    }
+                }
+            }
 
             // delete
             super.delete(obj);
