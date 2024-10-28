@@ -301,6 +301,7 @@ textarea,
 }
 input[size]{
     width: auto !important;
+    max-width: 100%;
 }
 select[multiple]{
     height: auto;
