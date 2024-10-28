@@ -19,9 +19,9 @@
     <div id="main-title"><fmt:message key="console.header.submenu.label.setting.message"/></div>
     <div id="main-action">
         <ul id="main-action-buttons">
-            <li><button class="console-primary" onclick="messageCreate()"><fmt:message key="console.setting.message.create.label"/></button></li>
-            <li><button class="console-tertiary" onclick="importPOFile()"><fmt:message key="console.setting.message.import.label"/></button></li>
-            <li><button class="console-tertiary" onclick="exportPOFile()"><fmt:message key="console.setting.message.export.label"/></button></li>
+            <li><button class="console-primary" onclick="messageCreate()"><i class="fas fa-plus"></i> <fmt:message key="console.setting.message.create.label"/></button></li>
+            <li><button class="console-tertiary" onclick="importPOFile()"><i class="fas fa-file-import"></i> <fmt:message key="console.setting.message.import.label"/></button></li>
+            <li><button class="console-tertiary" onclick="exportPOFile()"><i class="fas fa-file-export"></i> <fmt:message key="console.setting.message.export.label"/></button></li>
         </ul>
     </div>
     <div id="main-body">

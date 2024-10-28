@@ -3,9 +3,8 @@
 table {border: 1px solid #ccc; border-left:0; border-collapse: collapse; width: 100%;}
 th {border-bottom: 1px solid #ccc;}
 td, th  {border-left: 1px solid #ccc; padding:10px; position: relative;}
-.category th {text-align: left; background: #ecf0f1;}
+.category th {text-align: left;}
 tr + .category th {border-top: 1px solid #ccc;}
-tr.even { background: #f8f8f8;}
 .status, .timestamp {text-align: center;}
 .status {font-weight: bold;}
 .status .pass {color: #28a745;}

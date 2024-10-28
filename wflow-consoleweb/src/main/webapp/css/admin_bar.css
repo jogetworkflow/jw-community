@@ -17,7 +17,7 @@ html.adminBarShown {
     position: fixed;
     bottom: 10px;
     right: 10px;
-    background: #009688;
+    background: #009265;
     color: #fff;
     padding: 10px;
     box-shadow: #666 1px 1px 2px 1px;
@@ -54,7 +54,7 @@ body #adminBar {
     right: 0px;
     bottom: 0px;
     width: 100%;
-    z-index: 10000;
+    z-index: 10001;
     opacity: 1;
     height: 35px;
     -webkit-font-smoothing: antialiased;
@@ -72,6 +72,8 @@ body.rtl #adminBar {
     left: 0;
     right: auto;
     direction: rtl;
+    padding-left: 50px;
+    padding-right: 0;
 }
 
 body.embeded #adminBar {
@@ -81,16 +83,16 @@ body.embeded #adminBar {
 #adminBar.adminBarInactive {
     width: 0px;
     box-shadow: none;
-    padding: 0;
+    padding: 0 !important;
 }
 
 #adminBar #appCenter {
-	position: absolute;
+    position: absolute;
     display: block;
-	background: inherit;
+    background: inherit;
     bottom: 10px;
     left: 10px;
-    width: 41px;
+    width: fit-content;
     height: 40px;
     border-radius: 50%;
     overflow: hidden;
@@ -105,13 +107,12 @@ body.rtl #adminBar #appCenter {
 #adminBar #appCenter i {
     font-size: 39px;
     padding: 2px 3px;
-    color: #26A69A;
+    color: #009265;
 }
 
 #adminBarButtons {
     vertical-align: top;
     margin-left: 55px;
-    /* display: inline-block; */
     display: flex;
     flex: 1;
     justify-content: left;
@@ -122,10 +123,11 @@ body.rtl #adminBar #appCenter {
 }
 
 body.rtl #adminBarButtons {
-    margin-left: 0px;
-    margin-right: 55px;
     position: relative;
     float: right;
+    justify-content: right;
+    margin-right: 55px;
+    margin-left: 0;
 }
 
 #quickEditModeOption > div, #adminBarButtons > div {
@@ -154,11 +156,7 @@ div.switch-container > div.custom-switch {
     padding-bottom: 0.5rem;
 }
 
-#adminBar[builder-theme='dark'] #quickEditModeOption > div > a, 
-#adminBar[builder-theme='dark'] #adminBarButtons > div > a,
-#adminBar[builder-theme='dark'] #quickEditModeOption > div > a:not(.off), 
-#adminBar[builder-theme='dark'] #adminBarButtons > div > a.current, 
-#adminBar[builder-theme='dark'] #adminBarButtons > div > a:hover {
+#adminBar[builder-theme='dark'] #quickEditModeOption > div > a, #adminBar[builder-theme='dark'] #adminBarButtons > div > a, #adminBar[builder-theme='dark'] #quickEditModeOption > div > a:not(.off), #adminBar[builder-theme='dark'] #adminBarButtons > div > a.current, #adminBar[builder-theme='dark'] #adminBarButtons > div > a:hover {
     color: #fff;
 }
 
@@ -166,12 +164,11 @@ div.switch-container > div.custom-switch {
     margin-left: 5px;
 }
 
-#quickEditModeOption > div > a > i,
-#adminBarButtons > div > a > i {
+#quickEditModeOption > div > a > i, #adminBarButtons > div > a > i {
     margin-right: 5px;
 }
 
-body.rtl #quickEditModeOption > div > a >  i, body.rtl #adminBarButtons > div > a >  i {
+body.rtl #quickEditModeOption > div > a > i, body.rtl #adminBarButtons > div > a > i {
     margin-right: 0;
     margin-left: 5px;
 }
@@ -190,8 +187,8 @@ body.rtl #quickEditModeOption > div > a >  i, body.rtl #adminBarButtons > div > 
     display: none !important;
 }
 
-#quickEditModeOption > div > a:not(.off) > .off{
-	display: none !important;
+#quickEditModeOption > div > a:not(.off) > .off {
+    display: none !important;
 }
 
 #quickEditModeOption > div > a.off > .off {
@@ -211,7 +208,7 @@ body.rtl #quickEditModeOption > div > a >  i, body.rtl #adminBarButtons > div > 
 
 div#quickEditModeOption {
     position: relative;
-	margin-left: 6px;
+    margin-left: 6px;
     padding-left: 10px;
     order: 1;
 }
@@ -263,7 +260,7 @@ body.rtl div#quickEditModeOption:before {
 
 .quickOverlayButton {
     position: fixed;
-    top: 16px;
+    top: 20px;
     right: 42px;
     z-index: 15001;
     text-align: right;
@@ -306,7 +303,7 @@ body.rtl .quickOverlayButton {
 }
 
 .quickOverlayButton[system-theme='dark'] a:focus {
-	color: #e2e2e2;
+    color: #e2e2e2;
 }
 
 .quickOverlayButton a.max {
@@ -346,17 +343,17 @@ body.rtl .quickOverlayButton {
     border: none;
     box-shadow: #666 1px 1px 2px 1px;
     min-width: 780px;
-    background: white;
+    background: #f6f7fb;
     transition: all 0.2s ease-in-out;
     transform-origin: bottom right;
 }
 
 #quickOverlayFrameDiv[system-theme='dark'] {
-    background: #121212;
+    background: #1f1f1f;
 }
 
 body[system-theme='dark'] .chosen-container-single .chosen-single div b {
-	color: var(--console-default-font-color);
+    color: var(--console-default-font-color);
 }
 
 body[system-theme='dark'] .chosen-container .chosen-drop {
@@ -385,6 +382,7 @@ body.fixiosframe #quickOverlayFrameDiv {
     height: 100%;
     border-radius: 15px;
     padding: 5px;
+    border: 0;
 }
 
 body.rtl #quickOverlayFrameDiv {
@@ -414,11 +412,11 @@ body.rtl #quickOverlayFrameDiv {
         display: none;
     }
 
-    #quickEditModeOption > div > a >  i, #adminBarButtons > div > a >  i {
+    #quickEditModeOption > div > a > i, #adminBarButtons > div > a > i {
         margin-right: 0px;
     }
 
-    body.rtl #quickEditModeOption > div > a >  i, body.rtl #adminBarButtons > div > a >  i {
+    body.rtl #quickEditModeOption > div > a > i, body.rtl #adminBarButtons > div > a > i {
         margin-right: auto;
         margin-left: 0px;
     }
@@ -442,7 +440,7 @@ body.rtl #quickOverlayFrameDiv {
     }
 
     #adminBarButtons {
-		margin-left: 45px;
+        margin-left: 45px;
     }
 
     body.rtl #adminBarButtons {
@@ -450,22 +448,24 @@ body.rtl #quickOverlayFrameDiv {
         margin-right: 45px;
     }
 
-    #quickEditModeOption > div > a,
-    #adminBarButtons > div > a {
+    #quickEditModeOption > div > a, #adminBarButtons > div > a {
         height: 45px;
         overflow: hidden;
         font-size: 20px;
-		width: 32px;
+        width: 32px;
         padding: 12px 5px;
     }
 
-    #quickEditModeOption > div > a:hover,
     #adminBarButtons > div > a:hover {
         padding: 10px 5px 0px;
     }
 
-    #quickEditModeOption > div > a > span,
-    #adminBarButtons > div > a > span {
+    #quickEditModeOption > div > a:hover, #quickEditModeOption > div > a:not(.off) {
+        border-bottom: 2px solid #009688;
+        padding-bottom: 14px;
+    }
+
+    #quickEditModeOption > div > a > span, #quickEditModeOption > div > a > div.switch-container, #adminBarButtons > div > a > span {
         display: none !important;
     }
 
@@ -481,6 +481,7 @@ body.rtl #quickOverlayFrameDiv {
 
     #adminBarButtons .separator {
         margin: 0px 2px;
+        display: none;
     }
 
     #adminBarButtons .separator:after {

@@ -106,9 +106,6 @@ button:before, .btn:before {
     background-color: var(--console-main-background-color);
     border-radius: 10px 10px 10px 10px;
 }
-section:not(#connector-setup) .section-list-item:hover {
-    transform: scale(1.01);
-}
 section#connector-setup .section-list-item{
     background-color: transparent;
     padding-left:0px;
@@ -256,6 +253,11 @@ i.btn-icon + .section-list-item-content {
     margin-left: .2rem;
 }
 @media screen and (max-width:680px) { 
+    ul#nav-list {
+        box-sizing: initial;
+        right: 0;
+    }
+
     .section-list-item, 
     .section-header {
         flex-wrap:wrap;

@@ -17,6 +17,7 @@
 <c:set var="title" value="<%= title != null ? title : \"\" %>"/>
 <c:set var="lang" value="<%= AppUtil.getAppLocale() %>"/>
 <c:set var="systemTheme" value='<%= WorkflowUtil.getSystemSetupValue("systemTheme") %>'/>
+<c:set var="rightToLeft" value='<%= WorkflowUtil.getSystemSetupValue("rightToLeft") %>'/>
 <c:if test="${empty title}">
     <c:set var="title"><fmt:message key="console.header.browser.title"/></c:set>
 </c:if>
@@ -73,7 +74,7 @@
             }
         </script>
     </head>
-    <body id="${bodyId}" system-theme="${systemTheme}">
+    <body id="${bodyId}" system-theme="${systemTheme}" class="${rightToLeft ? 'rtl' : ''}">
         <div id="main-header">
             <a id="home-link" href="${pageContext.request.contextPath}/">
                 <span id="logo"></span>

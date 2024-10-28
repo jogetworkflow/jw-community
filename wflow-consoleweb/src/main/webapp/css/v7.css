@@ -31,7 +31,7 @@ html[system-theme='dark'] {
 body{
     padding: 0;
     margin: 0;
-    font-family: Arial,sans-serif;
+    font-family: inter,Arial,sans-serif;
     font-size: 14px;
     color: var(--console-default-font-color) !important;
     background: var(--console-secondary-background-color);
@@ -48,6 +48,8 @@ button#filter-btn {
     transform: none;
     transition-property: none !important;
     transition: none !important;
+    min-width: 180px !important;
+    text-align: center !important;
 }
 .console-danger {
     background: var(--console-button-danger-bg);
@@ -201,6 +203,7 @@ body:not(#login) #footer {
     position: absolute;
     right: 5px;
     top: 5px;
+    font-size: 1rem;
 }
 #nav-title p span {
     display: block;
@@ -208,6 +211,7 @@ body:not(#login) #footer {
 #nav-list {
     margin-right: -1px;
     margin-top: 25px;
+    padding: 2px 10px;
 }
 #nav-list li a{
     display: block;
@@ -242,7 +246,9 @@ body:not(#login) #footer {
     transition-timing-function: ease-out;
 }
 #nav-list li a:focus {
-    color: #fff;
+    background: rgba(0, 146, 101, 10%);
+    color: var(--console-button-primary-bg);
+    border-radius: 10px;
 }
 #nav-list li a:focus:before{
     -webkit-transform: scaleX(1) !important;
@@ -307,6 +313,9 @@ div#adminWelcome > div#getting-started > #welcomeFrame:hover + i.fa-question-cir
     margin-top: 10px;
     color: var(--console-default-font-color);
 }
+body.rtl #main-title {
+    text-align: right;
+}
 #main-action {
     margin-top:15px;
     margin-bottom: 15px;
@@ -368,6 +377,7 @@ div#JsonDataTable_groupList-search, div#JsonDataTable_userList-search {
     list-style: none;
     gap: 8px;
     display:flex;
+    flex-wrap: wrap;
 }
 #main-action-buttons li {
     display: inline-block;
@@ -444,6 +454,7 @@ button:hover, input[type='button']:hover, input[type='submit']:hover, .smallbutt
     margin-bottom: 20px;
     display:flex;
     gap:8px;
+    flex-wrap: wrap;
 }
 #main-action-buttons .moreaction {
     display:none;
@@ -483,6 +494,7 @@ body .ui-tabs-nav li.ui-tabs-tab:first-child > a{
 }
 body::-webkit-scrollbar {
     width: 5px;   
+    height: 4px;
 }
 body::-webkit-scrollbar-track {
     background: rgb(191, 191, 191, 50%);        
@@ -534,6 +546,9 @@ body .ui-tabs .ui-tabs-nav li {
     flex: 1;
     max-width:fit-content;
     margin-right: 1.6rem;
+}
+body.rtl .ui-tabs .ui-tabs-nav li:first-child {
+    margin-right: 0;
 }
 body .ui-tabs .ui-widget-content{
     padding: 25px 0 !important;
@@ -917,14 +932,9 @@ body .flexigrid{
     font-size: 14px;
     color:var(--console-default-font-color);
 }
-.flexigrid div.bDiv table {
-    border: none;
-}
 body .flexigrid div.hDiv {
-    background: #f9fafc;
-    border-top-left-radius: 10px;
-    border-top-right-radius: 10px;
-    border: 1.5px solid var(--console-border-color);
+    background: transparent;
+    border-bottom: 1px solid #ccc;
 }
 body[system-theme='dark'] .flexigrid div.hDiv {
     background: var(--console-secondary-background-color);
@@ -932,38 +942,8 @@ body[system-theme='dark'] .flexigrid div.hDiv {
     border-top-right-radius: 10px;
     border: 1.5px solid var(--console-border-color);
 }
-body .flexigrid div.hDivBox{
-    padding:0;
-}
-body .flexigrid div.bDiv {
-    border: 1px solid var(--console-border-color);
-}
 body[system-theme='dark'] .flexigrid div.bDiv {
     background: var(--console-secondary-background-color);
-}
-body .flexigrid div.pDiv {
-    border-bottom-left-radius: 10px;
-    border-bottom-right-radius: 10px;
-    padding:5px;
-    border: 1.5px solid var(--console-border-color);
-}
-body .flexigrid div.hDiv th, .flexigrid div.bDiv td {
-    border-left: none;
-    border-right: none;
-    border-bottom: none;
-}
-body .flexigrid tr.erow td{
-    background:initial !important;
-}
-body .flexigrid div.hDiv th:first-child,
-body .flexigrid div.bDiv td:first-child {
-    border-right: none;
-    border-left: initial;
-}
-body .flexigrid div.hDiv th:last-child,
-body .flexigrid div.bDiv td:last-child {
-    border-right: initial;
-    border-left: none;
 }
 body .flexigrid div.hDiv th > div {
     font-weight: bold;
@@ -983,6 +963,9 @@ body .flexigrid div.bDiv tr {
     display: block;
     overflow: auto;
 }
+body[system-theme='dark'] .flexigrid div.bDiv td {
+	border-bottom: 1px solid var(--console-secondary-background-color);
+}
 body .flexigrid div.bDiv td > div {
     padding: 10px;
     box-sizing: border-box;
@@ -993,7 +976,7 @@ body .flexigrid tr td.sorted {
 }
 .flexigrid tr.erow td.sorted,
 body .flexigrid tr.erow td{
-    background: rgba(242, 242, 242, 0.5);
+    background: var(--console-main-background-color);
     border-bottom: 0 !important;
 }
 body .flexigrid div.bDiv tr:hover td, 
@@ -1227,6 +1210,10 @@ fieldset legend,
 .form-input i {
     font-style: italic;
     color: #999;
+}
+.form-input button i {
+    font-style: initial;
+    color: inherit;
 }
 .form-input a i {
     font-style: normal;
@@ -1953,17 +1940,20 @@ div#content-container {
         height:auto;
         max-height: 0px;
         position: absolute;
-        width: 100vw;
+        width: 90vw;
         top: 100%;
         z-index: 100;
-        background: #f7f9f9;
+        background: var(--console-main-background-color);
         border-bottom: 1px solid #ccc;
         transition: max-height 0.3s ease-in-out;
         overflow: hidden;
         border-bottom: none;
+        display:none;
     }
     #nav-body.show #nav-list {
         max-height: 310px;
+        display: initial;
+        margin-top:0;
     }
     #nav-list li a:focus {
         background: #004d40;
@@ -2014,6 +2004,10 @@ div#content-container {
     #main-action-buttons.buttongroup.focus {
         box-shadow: 1px 1px 1px rgba(0, 0, 0, .3);
         border: 1px solid #ccc;
+        border-radius: 10px;
+    }
+    #main-action-buttons.buttongroup.focus > li {
+        text-align: center;
     }
     #main-action-buttons.buttongroup li {
         display: none;
@@ -2043,12 +2037,11 @@ div#content-container {
         overflow-x: visible;
         overflow-y: visible;
         white-space: initial;
-        flex-direction: column;
+        flex-direction: row;
         position:relative;
         border-bottom: 0 !important;
     }
     body .ui-tabs .ui-tabs-nav li {
-        display: none;
         flex: 1;
         width: 100%;
         transition:background .4s ease-in-out;
@@ -2057,10 +2050,6 @@ div#content-container {
         align-items:center;
         min-height:40px;
         z-index:1;
-        padding: 0 !important;
-        margin: 0 !important;
-        border: 1px solid #e3e3e3 !important;
-        background: #efefef !important;
     }
     body .ui-tabs .ui-tabs-nav li a {
         display:block;
@@ -2072,31 +2061,9 @@ div#content-container {
     }
     body .ui-tabs .ui-tabs-nav li.ui-tabs-active {
         display: block;
-        order: -1;
         z-index:2;
-        background: var(--console-secondary-background-color) !important;
         border-top:none;    
         position:relative;
-        border: 2px solid #004d40 !important;
-        border-radius: 3px;
-    }
-    body .ui-tabs .ui-tabs-nav li.ui-tabs-active:after {
-        content: '\f078';
-        font-family: "Font Awesome 5 Free";
-        -moz-osx-font-smoothing: grayscale;
-        -webkit-font-smoothing: antialiased;
-        display: inline-block;
-        font-style: normal;
-        font-variant: normal;
-        text-rendering: auto;
-        line-height: 1;
-        font-weight: 900;
-        text-indent: unset !important;
-        font-size: 20px;
-        position: absolute;
-        right: 10px;
-        top: 10px;
-        color: #004d40;
     }
     body .ui-tabs .ui-tabs-nav li.ui-tabs-active a{
         padding-right: 40px;

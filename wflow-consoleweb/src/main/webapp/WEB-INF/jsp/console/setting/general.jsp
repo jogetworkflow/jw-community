@@ -41,6 +41,10 @@
         margin-right: 1.6rem;
     }
 
+    body.rtl .main-body-content-subheader:first-child {
+        margin-right: 0;
+    }
+
     .main-body-content-subheader:hover {
         color: #009265;
     }
@@ -53,7 +57,7 @@
     #header-container {
         display: flex;
         margin-bottom: 20px;
-        border-bottom: 1px solid #ccc;
+        border-bottom: 1px solid #f0f0f0;
     }
 
     body[system-theme='dark'] #header-container {
@@ -156,10 +160,28 @@
     }
 
     .form-buttons {
-        position:fixed; 
-        bottom: 30px;
-        right: 45px;
-        border-radius:10px;
+        position: sticky;
+        bottom: 0px;
+        width: 100%;
+        display: flex;
+        justify-content: flex-end;
+        background-color: #fff;
+        margin-bottom: 0;
+        padding-bottom: 20px;
+        padding-top: 20px;
+        padding-right: 15px;
+        border: 0;
+        box-shadow: 0 -4px 6px -2px rgba(0, 0, 0, 0.1);
+    }
+
+    body[system-theme='dark'] .form-buttons {
+        background-color: #121212;
+        box-shadow: 0 -4px 6px -2px rgba(255, 255, 255, 0.1);
+    }
+
+    body.rtl .form-buttons {
+        padding-right: initial;
+        padding-left: 15px;
     }
 
     body.rtl {
@@ -727,7 +749,8 @@
                 </span>
             </div>
             <div class="form-buttons">
-                <input class="form-button console-primary" type="submit" value="<ui:msgEscHTML key="general.method.label.submit"/>" />
+
+                <button class="form-button console-primary" type="submit"><i class="fas fa-paper-plane"></i> <ui:msgEscHTML key="general.method.label.submit"/></button>
             </div>
             </form>
         </div>
@@ -760,10 +783,17 @@
     $(document).ready(function() {
         const savedMessage = localStorage.getItem('formSavedMessage');
         if (savedMessage) {
-            $('<div class="toast"><i id="toast-icon" style="color:var(--console-button-primary-bg);margin-right:.5em;padding-right:.5em;border-right:1px solid #ced4da" class="fas fa-check-circle"></i><div class="toast-body">'+ savedMessage +'</div><i id="close" class="fas fa-close" style="position:absolute;right:0;margin: 0 1em;"></i></div>').appendTo('div#main');
+            $('<div class="toast"><i id="toast-icon" class="fas fa-check-circle"></i><div class="toast-body">'+ savedMessage +'</div><i id="close" class="fas fa-close"></i></div>').appendTo('div#main');
             $('.toast').css({
                 'opacity': '0', 
             });
+            $('.toast #toast-icon').css({
+                "color":"var(--console-button-primary-bg)",
+                "margin-right": ".5em", 
+                "padding-right": ".5em",
+                "border-right": "1px solid #ced4da"
+            })
+            $('.toast #close').css({"position": "absolute", "right": "0", "margin": "0 1em"});
             $('.toast #close').mouseenter(function(){
                 $(this).css({'color': 'var(--console-button-primary-bg-hover)', 'cursor': 'pointer'});
             })
@@ -789,6 +819,19 @@
             'color': '#000',
             'box-shadow': '0 4px 6px rgba(0, 0, 0, 0.05), 0 1px 3px rgba(0, 0, 0, 0.04)',
             'transition': 'opacity 0.5s ease-in-out'});
+
+            if ($('body').hasClass('rtl')) {
+                $('.toast #close').css({"left": "0", "right": "initial"});
+                
+                $('.toast #toast-icon').css({
+                    "margin-left": ".5em", 
+                    "padding-left": ".5em",
+                    "border-left": "1px solid #ced4da",
+                    "margin-right": "initial", 
+                    "padding-right": "initial",
+                    "border-right": "none"
+                })
+            }
             setTimeout(function() {
                 $('.toast').css({
                     'opacity': '1', 
@@ -802,6 +845,7 @@
                         $('.toast').remove();
                     }, 500);
                 }, 2000);
+
             }, 100); 
             localStorage.removeItem('formSavedMessage');
         }
@@ -877,6 +921,15 @@
                         scrollTop: position.top
                     }, 500);
                 }
+
+                let element = $("body").find('label:contains("' + labelText + '")').parent();
+
+                element.css('background-color', 'rgba(0, 146, 101, 30%)');
+
+                setTimeout(function() {
+                    element.css('background-color', 'rgba(0, 0, 0, 0)');
+                }, 3000);
+
             }, 100);
         })
         $(this).on('click', function(event){

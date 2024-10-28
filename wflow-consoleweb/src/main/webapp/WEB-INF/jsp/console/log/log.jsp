@@ -30,7 +30,7 @@
     </c:if>
     <div id="main-body">
         <div id="main-body-content">
-            <div class="followbuttondiv" style="display:none;"><a class="downloadbtn btn"><fmt:message key="general.method.label.download"/></a> <a class="followbtn btn"><fmt:message key="console.log.unfollow"/></a></div>
+            <div class="followbuttondiv" style="display:none;"><a class="downloadbtn btn console-primary"><fmt:message key="general.method.label.download"/></a> <a class="followbtn btn"><fmt:message key="console.log.unfollow"/></a></div>
             <div id="logviewer">
                 <div id="logs">
                 </div> 

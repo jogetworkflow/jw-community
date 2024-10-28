@@ -5,7 +5,11 @@
 <script type="text/javascript" src="${pageContext.request.contextPath}/js/JSONError.js"></script>
 <script type="text/javascript" src="${pageContext.request.contextPath}/js/governance.js"></script>
 <link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/css/governance.css?build=<fmt:message key="build.number"/>">
-
+<style>
+    div#main {
+        width: fit-content;
+    }
+</style>
 <div id="nav">
     <div id="nav-title">
         <p><i class="fas fa-tachometer-alt"></i> <fmt:message key='console.header.menu.label.monitor'/></p>

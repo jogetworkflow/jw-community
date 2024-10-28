@@ -18,8 +18,12 @@
         width: 100%
     }
 
+    .form-input select#profileList {
+        margin-right: 10px;
+        margin-bottom: 5px;
+    }
+
     .form-input button:nth-child(2) {
-        margin-left:10px;
         margin-right:2px
     }
 
@@ -55,8 +59,8 @@
                                 <option ${selected}><c:out value="${profile}"/></option>
                             </c:forEach>
                         </select>
-                        <button type="button" class="console-primary" onclick="changeProfile()"><fmt:message key="console.setting.datasource.label.switchProfile"/></button>
-                        <button type="button" class="console-danger" onclick="deleteProfile()"><fmt:message key="console.setting.datasource.label.deleteProfile"/></button>
+                        <button type="button" class="console-primary" onclick="changeProfile()"><i class="fas fa-exchange-alt"></i> <fmt:message key="console.setting.datasource.label.switchProfile"/></button>
+                        <button type="button" class="console-danger" onclick="deleteProfile()"><i class="fas fa-trash-alt"></i> <fmt:message key="console.setting.datasource.label.deleteProfile"/></button>
                     </span>
                 </div>
             </span>
@@ -96,8 +100,12 @@
                 <div id="workflowTestConnection"><fmt:message key="console.setting.datasource.label.testing"/> <fmt:message key="console.setting.datasource.label.datasource"/>...<span class="connectionStatus"></span></div>
             </div>
             <div class="form-buttons">
-                <input class="form-button" id="saveDatasource" type="button" value="<ui:msgEscHTML key="general.method.label.save"/>" onclick="submitDatasource()" />
-                <input class="form-button console-tertiary" id="saveDatasourceAsNew" type="button" value="<ui:msgEscHTML key="console.setting.datasource.label.saveAsNewProfile"/>" onclick="submitDatasource(true)" />
+                <button class="form-button console-primary" id="saveDatasource" onclick="submitDatasource()">
+                    <i class="fas fa-save"></i> <ui:msgEscHTML key="general.method.label.save"/>
+                </button>
+                <button class="form-button console-tertiary" id="saveDatasourceAsNew" onclick="submitDatasource(true)">
+                    <i class="fas fa-clone"></i> <ui:msgEscHTML key="console.setting.datasource.label.saveAsNewProfile"/>
+                </button>
                 <span class="newprofile"><fmt:message key="console.setting.datasource.label.newProfileName"/>
                 <input id="newProfileName" type="text" name="profileName" /></span>
             </div>

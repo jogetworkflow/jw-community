@@ -17,7 +17,7 @@
     <div id="main-title"><fmt:message key="console.header.submenu.label.groups"/></div>
     <div id="main-action">
         <ul id="main-action-buttons">
-            <li><button onclick="onCreate()"><fmt:message key="console.directory.group.create.label"/></button></li>
+            <li><button onclick="onCreate()" class="console-primary"><fmt:message key="console.directory.group.create.label"/></button></li>
         </ul>
     </div>
     <div id="main-body">
