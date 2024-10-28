@@ -207,7 +207,7 @@ Section "Joget DX" SecJoget
 
 SectionEnd
 
-Section "Apache Tomcat 9" SecTomcat
+Section "Apache Tomcat 11" SecTomcat
 
   SectionIn RO
   SetOutPath "$INSTDIR"
@@ -226,7 +226,7 @@ ${EndIf}
 
 SectionEnd
 
-Section "Java 11" SecJava
+Section "Java 21" SecJava
 
   SectionIn RO
   SetOutPath "$INSTDIR"
