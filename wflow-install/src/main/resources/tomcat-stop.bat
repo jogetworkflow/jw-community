@@ -1,5 +1,5 @@
-set JAVA_HOME=.\jre11.0.18
-set CATALINA_HOME=.\apache-tomcat-9.0.90
+set JAVA_HOME=.\jre21.0.5
+set CATALINA_HOME=.\apache-tomcat-11.0.0
 
 %CATALINA_HOME%\bin\shutdown.bat
 
