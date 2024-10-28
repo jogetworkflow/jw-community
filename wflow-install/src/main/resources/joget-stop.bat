@@ -7,8 +7,8 @@ CALL .\mariadb-stop.bat
 ECHO.
 
 REM Stop Tomcat
-set JAVA_HOME=.\jre11.0.18
-set CATALINA_HOME=.\apache-tomcat-9.0.90
+set JAVA_HOME=.\jre21.0.5
+set CATALINA_HOME=.\apache-tomcat-11.0.0
 ECHO == Stopping Tomcat from %CATALINA_HOME% ==
 ECHO.
 %CATALINA_HOME%\bin\shutdown.bat
