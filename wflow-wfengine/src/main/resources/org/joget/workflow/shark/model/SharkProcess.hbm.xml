@@ -12,7 +12,7 @@
         <property column="Started" name="started" type="long"/>
         <property column="Created" name="created" type="long"/>
         
-        <many-to-one entity-name="SharkProcessState" insert="false" fetch="join" lazy="false" update="false" name="state" column="State" />  
+        <many-to-one entity-name="SharkProcessState" insert="false" fetch="join" lazy="false" update="false" name="state" column="State" type="long"/>  
     </class>
 </hibernate-mapping>
 
