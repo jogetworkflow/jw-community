@@ -81,5 +81,45 @@ public class TestList {
         //target is post without confirmation
         link = DataListDecorator.generateLink(rowObj, href, "post", "d-2234-checkbox_id", "id", "Label", "", "btn-primary btn-sm");
         Assert.assertEquals(link, "<a href=\"testinglink?d-2234-ac=rowAction_1&amp;d-2234-checkbox_id=123456\"onclick=\"return dlPostAction(this, '')\" class=\"btn-primary btn-sm\">Label</a>");
+        
+
+        // double parameter
+        href = "http://www.joget.com?d-2234-checkbox_id=5566";
+        link = DataListDecorator.generateLink(rowObj, href, "_self", "d-2234-checkbox_id", "id", "Label", "", "");
+        Assert.assertEquals(link, "<a href=\"http://www.joget.com?d-2234-checkbox_id=123456\" target=\"_self\" class=\"\">Label</a>");        
+        
+        // Merge query string correctly with http and query parameters
+        href = "http://example.com/path?existing=1";
+        link = DataListDecorator.generateLink(rowObj, href, "_self", "id", "id", "Label", "", "btn-sm");
+        Assert.assertEquals(link, "<a href=\"http://example.com/path?existing=1&amp;id=123456\" target=\"_self\" class=\"btn-sm\">Label</a>");
+
+        // href with firstName
+        href = "http://example.com/{firstName}";
+        link = DataListDecorator.generateLink(rowObj, href, "_self", "d-2234-checkbox_id", "id", "Label", "", "");
+        Assert.assertEquals(link, "<a href=\"http://example.com/Jessey?d-2234-checkbox_id=123456\" target=\"_self\" class=\"\">Label</a>");
+        
+        // JavaScript href handling
+        href = "javascript:alert('hello')";
+        link = DataListDecorator.generateLink(rowObj, href, "_self", "d-2234-checkbox_id", "id", "Label", "", "");
+        Assert.assertEquals(link, "<a href=\"javascript:alert('hello')?d-2234-checkbox_id=123456\" target=\"_self\" class=\"\">Label</a>");
+
+        // Custom target value (not `_self`, `popup`, or `post`)
+        href = "http://example.com";
+        link = DataListDecorator.generateLink(rowObj, href, "newWindow", "d-2234-checkbox_id", "id", "Label", "", "btn-primary");
+        Assert.assertEquals(link, "<a href=\"http://example.com?d-2234-checkbox_id=123456\" target=\"newWindow\" class=\"btn-primary\">Label</a>");
+
+        // hrefParam with URL already containing query parameters
+        href = "http://example.com?existingParam=value";
+        link = DataListDecorator.generateLink(rowObj, href, "_self", "id;firstName", "id;firstName", "Label", "", "");
+        Assert.assertEquals(link, "<a href=\"http://example.com?firstName=Jessey&amp;existingParam=value&amp;id=123456\" target=\"_self\" class=\"\">Label</a>");
+
+        // hrefColumn with missing placeholders in rowObj
+        link = DataListDecorator.generateLink(rowObj, href, "_self", "id;firstName;nonexistentColumn", "id;firstName;{nonexistentColumn}", "Label", "", "");
+        Assert.assertEquals(link, "<a href=\"http://example.com?nonexistentColumn=%7BnonexistentColumn%7D&amp;firstName=Jessey&amp;existingParam=value&amp;id=123456\" target=\"_self\" class=\"\">Label</a>");
+        
+        // hrefColumn and hrefColumn null
+        href = "http://www.joget.com?d-2234-checkbox_id=5566";
+        link = DataListDecorator.generateLink(rowObj, href, "_self", "", "", "Label", "", "btn-primary");
+        Assert.assertEquals(link, "<a href=\"http://www.joget.com?d-2234-checkbox_id=5566\" target=\"_self\" class=\"btn-primary\">Label</a>");
     }
 }

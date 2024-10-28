@@ -269,7 +269,7 @@ public class DataListDecorator extends CheckboxTableDecorator {
                     if (columns[i] != null && !columns[i].isEmpty()) {
                         boolean isValid = false;
                         if (params.length > i && params[i] != null && !params[i].isEmpty()) {
-                            if (href.contains("?")) {
+                            if (link.contains("?")) {
                                 link += "&";
                             } else {
                                 link += "?";
@@ -299,13 +299,10 @@ public class DataListDecorator extends CheckboxTableDecorator {
                 }
             }
 
-            // Check if href is a full URL
-            if (href.startsWith("http") || href.startsWith("javascript:")) {
-                href = fillVariables(href, row);
-
-                link = href + link;
-            } else {
-                // Use the original merge logic for non-full URLs
+            // Merge logic: merge if href starts with http and contains a ?,
+            // or if href does not start with http or javascript:
+            if (!href.startsWith("javascript:") && (!href.startsWith("http") || href.contains("?"))) {
+                // Use mergeRequestQueryString to combine href and link
                 link = StringUtil.mergeRequestQueryString(href, link);
 
                 // Handle href containing "?"
@@ -313,6 +310,11 @@ public class DataListDecorator extends CheckboxTableDecorator {
                     String[] urlPart = href.split("\\?");
                     link = (urlPart.length > 0 ? urlPart[0] : "") + "?" + link;
                 }
+
+            } else {
+                // Append parameters directly if href does not contain a ?
+                href = fillVariables(href, row);
+                link = href + link;
             }
 
             if (target != null && "popup".equalsIgnoreCase(target)) {
