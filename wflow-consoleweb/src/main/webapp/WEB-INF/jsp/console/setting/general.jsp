@@ -60,10 +60,6 @@
         border-bottom: 1px solid #f0f0f0;
     }
 
-    body[system-theme='dark'] #header-container {
-        border-bottom: 1px solid #444e57;
-    }
-
     #main-title{
         display: inline-flex;
         justify-content: space-between;
@@ -81,10 +77,6 @@
         height: 20px;
         padding:5px 5px 5px 10px;
         border-radius: 5px;
-    }
-
-    body[system-theme='dark'] #search-bar {
-        border: 1px solid #444e57;
     }
 
     #search-bar:has(input:focus-visible) {

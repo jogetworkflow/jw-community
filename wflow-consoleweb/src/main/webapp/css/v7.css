@@ -479,7 +479,7 @@ body .ui-tabs-nav{
     overflow-y: hidden;
     line-height: 100%;
     border-radius: 0 !important;
-    border-bottom: 1px solid #ccc !important;
+    border-bottom: 1px solid #f0f0f0 !important;
     display:flex;
 }
 body .ui-tabs-nav li.ui-tabs-tab > a{
