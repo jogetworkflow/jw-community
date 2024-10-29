@@ -550,7 +550,8 @@ ul#category-container {
         width: 100%;
     }
     div#sidebar {
-        box-shadow: 0 6px 10px #0E1215
+        box-shadow: 0 6px 10px #0E1215;
+        left: 0;
     }
 }
 
@@ -843,7 +844,7 @@ body.rtl #sidebar li ul>li>a > span:first-child{
 .rtl #sidebar li>a.dropdown:after,
 .rtl #sidebar li>a.dropdown:before {
     left: 15px;
-    right: auto;
+    right: auto !important;
 }
 
 #sidebar li.active>a.dropdown:after,
