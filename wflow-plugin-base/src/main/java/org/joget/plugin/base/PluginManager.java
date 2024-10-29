@@ -33,6 +33,8 @@ import java.io.*;
 import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URL;
+import java.nio.file.Files;
+import java.nio.file.StandardCopyOption;
 import java.util.*;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
@@ -51,7 +53,8 @@ public class PluginManager implements ApplicationContextAware {
     private Set<String> blackList;
     private Set<String> scanPackageList;
     protected Set<String> filesInProgress = new HashSet<String>(); //don't need to consider profile as the plugin for each profile having differrent absolute path
-    
+    protected final Set<String> lockOwnership = new HashSet<>();
+
     public final static String ESCAPE_JAVASCRIPT = "javascript";
     protected final static String COMPLETED = "COMPLETED::";
     
@@ -234,7 +237,6 @@ public class PluginManager implements ApplicationContextAware {
         try {
             if (filesInProgress.contains(file.getAbsolutePath())) {
                 filesInProgress.remove(COMPLETED + file.getAbsolutePath()); //remove it just in case there is previous 1 did not remove.
-                
                 LogUtil.debug(PluginManager.class.getName(), "Plugin " + file.getName() + " detected. Skip it due to already in progress installing it.");
                 return;
             }
@@ -243,18 +245,24 @@ public class PluginManager implements ApplicationContextAware {
                 LogUtil.debug(PluginManager.class.getName(), "Plugin " + file.getName() + " is just installed with upload feature. Skip it.");
                 return;
             }
-            
+
+            // if locked, means still processing. skip this round.
+            File lock = new File(file.getAbsolutePath() + ".lock");
+            if (lock.exists()) {
+                return;
+            }
+
             fullFileName = file.getAbsolutePath();
             LogUtil.debug(PluginManager.class.getName(), "Plugin " + fullFileName + " installing in progress.");
             filesInProgress.add(fullFileName);
-            
+
             // wait and check for file upload finish
             long prevSize = 0;
             do {
                 prevSize = file.length();
                 Thread.sleep(50);
             } while (prevSize < file.length());
-            
+
             Bundle bundle = installBundle(file.toURI().toURL().toExternalForm());
             if (bundle != null) {
                 startBundle(bundle);
@@ -331,9 +339,15 @@ public class PluginManager implements ApplicationContextAware {
     }
 
     protected Bundle installBundle(String location) {
+        if (location == null) {
+            LogUtil.warn(getClass().getName(), "null location during bundle installation");
+            return null;
+        }
         try {
             // attempt to migrate plugin before install
-            location = attemptMigration(location);
+            if (!attemptMigration(location)) {
+                return null;
+            }
 
             BundleContext context = getOsgiContainer().getBundleContext();
             Bundle newBundle = context.installBundle(location);
@@ -715,28 +729,37 @@ public class PluginManager implements ApplicationContextAware {
             FileOutputStream out = null;
             try {
                 outputFile = new File(getUploadDir(), filename);
-                if (outputFile.exists()) {
-                    isOverrideExisting = true;
+                // obtain lock before writing file, ensure no other nodes/threads access it
+                if (obtainPluginFileLock(outputFile)) {
+                    try {
+                        if (outputFile.exists()) {
+                            isOverrideExisting = true;
+                        }
+
+                        File outputDir = outputFile.getParentFile();
+                        if (!outputDir.exists()) {
+                            outputDir.mkdirs();
+                        }
+
+                        fullFileName = outputFile.getAbsolutePath();
+                        LogUtil.debug(PluginManager.class.getName(), "Plugin " + fullFileName + " installing in progress.");
+                        filesInProgress.add(fullFileName);
+
+                        out = new FileOutputStream(outputFile);
+                        BufferedInputStream bin = new BufferedInputStream(in);
+                        int len = 0;
+                        byte[] buffer = new byte[4096];
+                        while ((len = bin.read(buffer)) > 0) {
+                            out.write(buffer, 0, len);
+                        }
+                        out.flush();
+                        location = outputFile.toURI().toURL().toExternalForm();
+                    } finally {
+                        releasePluginFileLock(outputFile);
+                    }
+                } else {
+                    throw new PluginException("Unable to obtain lock for plugin upload, cancelling upload.");
                 }
-                
-                File outputDir = outputFile.getParentFile();
-                if (!outputDir.exists()) {
-                    outputDir.mkdirs();
-                }
-                
-                fullFileName = outputFile.getAbsolutePath();
-                LogUtil.debug(PluginManager.class.getName(), "Plugin " + fullFileName + " installing in progress.");
-                filesInProgress.add(fullFileName);
-                
-                out = new FileOutputStream(outputFile);
-                BufferedInputStream bin = new BufferedInputStream(in);
-                int len = 0;
-                byte[] buffer = new byte[4096];
-                while ((len = bin.read(buffer)) > 0) {
-                    out.write(buffer, 0, len);
-                }
-                out.flush();
-                location = outputFile.toURI().toURL().toExternalForm();
             } finally {
                 try {
                     if (out != null) {
@@ -847,12 +870,11 @@ public class PluginManager implements ApplicationContextAware {
     }
 
     /**
-     * Migrates a plugin JAR using Java EE to Jakarta EE namespace.
+     * Migrates a plugin JAR using Java EE to Jakarta EE namespace, replacing the original file.
      *
      * @param pluginJar file of the plugin
-     * @return the location/path of the migrated plugin
      */
-    public String migratePlugin(File pluginJar) throws IOException {
+    public void migratePlugin(File pluginJar) throws IOException {
         File transformed = new File(pluginJar.getAbsolutePath() + ".transformed");
 
         Migration migration = new Migration();
@@ -860,33 +882,92 @@ public class PluginManager implements ApplicationContextAware {
         migration.setDestination(transformed);
         migration.execute();
 
-        boolean fileOperationsSuccess = pluginJar.delete() && transformed.renameTo(pluginJar);
-        if (!fileOperationsSuccess) {
-            throw new IOException("Failed to copy transformed plugin.");
-        }
-
-        return pluginJar.toURI().toURL().toExternalForm();
+        // replace old plugin JAR
+        Files.move(transformed.toPath(), pluginJar.toPath(), StandardCopyOption.REPLACE_EXISTING);
     }
 
     /**
      * Migrates plugin if required, adding locks to prevent plugin from installing again after migrating.
      *
      * @param location the path to the plugin
-     * @return the new path to the plugin
+     * @return {@code true} if migration success or not required; {@code false} otherwise
      */
-    protected String attemptMigration(String location) throws IOException {
+    protected boolean attemptMigration(String location) throws IOException {
         URI uri = URI.create(location);
         File file = new File(uri);
-        if (requiresMigration(file)) {
+        if (!requiresMigration(file)) {
+            return true;
+        }
+        if (!obtainPluginFileLock(file)) {
+            // prevent installation of plugin
+            return false;
+        }
+        try {
             String fullFilePath = file.getAbsolutePath();
             filesInProgress.add(fullFilePath);
-
-            location = migratePlugin(file);
-
+            migratePlugin(file);
             filesInProgress.remove(fullFilePath);
             filesInProgress.add(COMPLETED + fullFilePath);
+            return true;
+        } finally {
+            releasePluginFileLock(file);
         }
-        return location;
+    }
+
+    /**
+     * This method creates a lock to support plugin file handling across multiple nodes.
+     * Logical locks for a file are established by creating a {@code filename.lock} file alongside the original file.
+     * <br>
+     * This method does not put in place filesystem locks. This method will return {@code true} if a lock for this file
+     * is already created (but not yet released).
+     *
+     * @param file the file object to create a lock
+     * @return {@code true} if a lock is registered and created, or already obtained by this node; false otherwise
+     */
+    protected synchronized boolean obtainPluginFileLock(File file) {
+        try {
+            File lock = new File(file.getAbsolutePath() + ".lock");
+            boolean isOwned = lockOwnership.contains(lock.getAbsolutePath());
+
+            if (lock.exists()) {
+                return isOwned; // Return true if owned, false if not
+            } else {
+                boolean created = lock.createNewFile();
+                if (created && !isOwned) {
+                    lockOwnership.add(lock.getAbsolutePath());
+                }
+                return created; // Return whether the lock was created
+            }
+        } catch (Exception e) {
+            return false;
+        }
+    }
+
+    /**
+     * Works inversely to {@link PluginManager#obtainPluginFileLock(File)} where the lock for the corresponding file is
+     * released. The lock will be released only if it was previously obtained by the same node.
+     * <br>
+     * This method will always return {@code true} if no lock for the file exists.
+     *
+     * @param file the file object to release the lock
+     * @return {@code true} if the lock obtained by this node has been unregistered and released, or if no valid lock is
+     * found; {@code false} otherwise
+     */
+    protected synchronized boolean releasePluginFileLock(File file) {
+        try {
+            File lock = new File(file.getAbsolutePath() + ".lock");
+            if (!lock.exists()) {
+                return true;
+            }
+            if (lockOwnership.contains(lock.getAbsolutePath())) {
+                return lock.delete() && lockOwnership.remove(lock.getAbsolutePath());
+            } else {
+                // if lock exist but this node is not the owner, cannot release lock
+                return false;
+            }
+        } catch (Exception e) {
+            return false;
+        }
     }
     
     public String getJarFileName(String pluginName) {
