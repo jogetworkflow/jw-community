@@ -362,7 +362,7 @@ FunctionEnd
   ;Language strings
   LangString DESC_SecJoget ${LANG_ENGLISH} "Core Joget DX Application"
   LangString DESC_SecTomcat ${LANG_ENGLISH} "Apache Tomcat Web Application Server"
-  LangString DESC_SecJava ${LANG_ENGLISH} "Java 11 Standard Edition"
+  LangString DESC_SecJava ${LANG_ENGLISH} "Java 21 Standard Edition"
   LangString DESC_SecMariaDB ${LANG_ENGLISH} "MariaDB 10 Database Server"
   LangString DESC_SecStartMenu ${LANG_ENGLISH} "Start Menu Shortcuts"
 
