@@ -482,6 +482,12 @@ body .close-icon:after {
     right: 28px;
     bottom: 20px;
 }
+.close-icon {
+    position: absolute;
+    padding: 2.25rem;
+    left: 0;
+    right: 0;
+}
 body .editor-cell .close-icon:after {
     top:16px;
     bottom: unset;
