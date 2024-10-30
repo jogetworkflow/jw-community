@@ -19,6 +19,7 @@
 
         <jsp:include page="/WEB-INF/jsp/includes/scripts.jsp" />
         <jsp:include page="/WEB-INF/jsp/includes/rtl.jsp" />
+        <link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/fonts/inter/css/font.css" />
         <link rel="shortcut icon" href="${pageContext.request.contextPath}/images/favicon.ico"/>
         <c:choose>
             <c:when test="${!empty userviewThemeCss}">
