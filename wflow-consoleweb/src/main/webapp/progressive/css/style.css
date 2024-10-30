@@ -1807,6 +1807,11 @@ body:not(#login) #content > main > .datalist-body-content:not(.quickEdit) {
     line-height: 25px !important;
 }
 
+.largeFontSize .hasDatepicker + a {
+    position: absolute;
+    padding: 0.5rem;
+}
+
 .mediumFontSize #form-canvas *,
 .mediumFontSize .fc-view-container *,
 .mediumFontSize .userProfile-body-content *,
@@ -1815,6 +1820,12 @@ body:not(#login) #content > main > .datalist-body-content:not(.quickEdit) {
     font-size: 17px !important;
     line-height: 20px !important;
 }
+
+.mediumFontSize .hasDatepicker + a {
+    position: absolute;
+    padding: 0.8rem 0.5rem;
+}
+
 /*Priority Menu*/
 @media (min-width: 768px){
     ul#moreSubMenu li > ul{
