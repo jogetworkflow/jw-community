@@ -12,6 +12,53 @@ html.adminBarShown {
     }
 }
 
+/* Toggle */
+a#quickEditMode > input#admin-bar-toggle {
+    display: none;
+}
+
+a#quickEditMode:not(.off) > input#admin-bar-toggle + .button {
+    filter: none;
+}
+
+a#quickEditMode:not(.off) > input#admin-bar-toggle + .button .dot {
+    left: calc(100% - 15px);
+    background-color: #f0f0f0;
+}
+
+a#quickEditMode > label.adminbar-control-label.button {
+    background-color: #fff;
+}
+
+a#quickEditMode:not(.off) > label.adminbar-control-label.button {
+    background-color: #009265;
+}
+
+.adminbar-control-label.button {
+    position: relative;
+    width: 29px;
+    height: 16px;
+    border-radius: 1rem;
+    cursor: pointer;
+    margin: 0;
+    margin-left: 5px;
+    border: 1px solid #adb5bd;
+}
+
+.adminbar-control-label.button .dot {
+    position: absolute;
+    width: 14px;
+    height: 14px;
+    left: 0rem;
+    top: 50%;
+    transform: translateY(-50%);
+    border-radius: 50%;
+    transition: all 0.3s;
+    background-color: #adb5bd;
+    will-change: left, background-color;
+}
+/* End of Toggle */
+
 #adminControl {
     display: none;
     position: fixed;
@@ -139,7 +186,7 @@ body.rtl #adminBarButtons {
     color: black;
     padding: 8px 10px;
     text-decoration: none;
-    font-size: 0.8rem;
+    font-size: 13px;
     line-height: 14px;
     height: 30px;
     box-sizing: border-box;
@@ -149,6 +196,10 @@ body.rtl #adminBarButtons {
 #quickEditModeOption > div > a {
     display: flex;
     align-items: center;
+}
+
+.custom-control-input:checked~.custom-control-label::before {
+    background-color: #009265 !important;
 }
 
 div.switch-container > div.custom-switch {
@@ -734,12 +785,18 @@ body.fixiosframe.stop-scrolling {
     background: #ff6100;
     position: absolute;
     right: 0;
+	bottom: 0;
     padding: 5px 60px;
     font-weight: bold;
     color: #fff;
     font-size: 18px;
     font-family: arial;
     line-height: 20px;
+    transition:all 0.2s linear;
+}
+
+html.adminBarShown #adminBar #environmentName {
+	bottom: 35px;
 }
 
 @media only screen and (max-width: 768px),(device-width:1024px) and (device-height:1366px) {

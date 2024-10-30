@@ -48,13 +48,11 @@
             <div id="quickEditModeOption">
                 <div>
                     <a id="quickEditMode" title="CTRL-0: <ui:msgEscHTML key='adminBar.label.quickedit'/>"><i class="fas fa-paint-brush"></i><span><fmt:message key='adminBar.label.quickedit'/></span>
-                        <div class="switch-container">
-                            <div class="custom-switch">
-                                <input type="checkbox" name="mfa-global-toggle" id="mfa-global-toggle" class="custom-control-input"/>
-                                <label class="custom-control-label" for="mfa-global-toggle"></label>
-                            </div>
-                        </div>
-                    </div>
+                    <input type="checkbox" name="admin-bar-toggle" id="admin-bar-toggle" class="admin-bar-toggle"/>
+                    <label class="adminbar-control-label button" for="admin-bar-toggle">
+                        <div class="dot"></div>
+                    </label>
+                </div>
             </div>
             <c:if test="${!empty envName}">
                 <span id="environmentName"><span><c:out value="${envName}"/></span></span>
