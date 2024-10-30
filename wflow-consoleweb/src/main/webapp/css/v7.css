@@ -48,8 +48,11 @@ button#filter-btn {
     transform: none;
     transition-property: none !important;
     transition: none !important;
-    min-width: 180px !important;
     text-align: center !important;
+}
+.console-primary > i, .console-danger > i, 
+.console-secondary > i, .console-tertiary > i{
+    margin-right: 5px;
 }
 .console-danger {
     background: var(--console-button-danger-bg);
@@ -487,7 +490,7 @@ body .ui-tabs-nav li.ui-tabs-tab > a{
     box-sizing: border-box;
     padding-left: 0 !important;
     padding-right: 0 !important;
-    padding-bottom: 15px !important;
+    padding-bottom: 20x !important;
 }
 body .ui-tabs-nav li.ui-tabs-tab:first-child > a{
     padding-left: 0 !important;
@@ -655,6 +658,23 @@ select:not([class^=ui]){
     transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
     box-sizing: border-box;
 }
+input:not([type]):focus-visible,
+input[type="text"]:focus-visible,
+input[type="password"]:focus-visible,
+input[type="email"]:focus-visible,
+input[type="url"]:focus-visible,
+input[type="time"]:focus-visible,
+input[type="date"]:focus-visible,
+input[type="datetime"]:focus-visible,
+input[type="datetime-local"]:focus-visible,
+input[type="tel"]:focus-visible,
+input[type="number"]:focus-visible,
+input[type="search"]:focus-visible,
+input[type="file"]:focus-visible,
+textarea:focus-visible,
+select:not([class^="ui"]):focus-visible {
+    border: none;
+}
 
 select[multiple]:not([class^=ui]){
     height: auto;
@@ -776,7 +796,7 @@ body .ui-widget-overlay{
 }
 body .ui-dialog {
     border: 0;
-    border-radius: 3px !important;
+    border-radius: 15px !important;
     box-shadow: 1px 4px 4px rgba(0, 0, 0, 0.5);
     z-index: 10001;
 }
@@ -925,6 +945,7 @@ body .ui-widget {
 }
 body .ui-widget-content {
     color: inherit;
+    border-radius: inherit;
 }
 
 /* flexigrid tables */
@@ -938,9 +959,10 @@ body .flexigrid div.hDiv {
 }
 body[system-theme='dark'] .flexigrid div.hDiv {
     background: var(--console-secondary-background-color);
-    border-top-left-radius: 10px;
-    border-top-right-radius: 10px;
     border: 1.5px solid var(--console-border-color);
+}
+body[system-theme='dark'] .flexigrid div.nDiv {
+    color: #000;
 }
 body[system-theme='dark'] .flexigrid div.bDiv {
     background: var(--console-secondary-background-color);
@@ -950,6 +972,7 @@ body .flexigrid div.hDiv th > div {
     text-transform: uppercase;
     padding: 10px;
     box-sizing: border-box;
+    height: 100%;
 }
 body .flexigrid div.hDiv th.thOver > div,
 body .flexigrid div.hDiv th.sorted.thOver > div{
@@ -976,7 +999,7 @@ body .flexigrid tr td.sorted {
 }
 .flexigrid tr.erow td.sorted,
 body .flexigrid tr.erow td{
-    background: var(--console-main-background-color);
+    background: inherit;
     border-bottom: 0 !important;
 }
 body .flexigrid div.bDiv tr:hover td, 
@@ -1146,6 +1169,7 @@ a.guider_button:hover {
     margin-bottom: 25px;
     min-height: auto !important;
     position: relative;
+    border-bottom: 1px solid #dedede;
 }
 .row-button {
     position: absolute;
@@ -1173,7 +1197,7 @@ fieldset legend,
 }
 .main-body-content-subheader {
     width: fit-content;
-    padding-bottom:15px !important;
+    padding-bottom:20px !important;
 }
 .main-body-content-subheader.selected {
     border-bottom: 2px solid var(--console-button-primary-bg);
@@ -1182,7 +1206,7 @@ fieldset legend,
     margin-bottom: 15px;
 }
 .form-row label {
-    width: 200px;
+    width: 30%;
     float: left;
     clear: left;
     padding-right: 10px;
@@ -1191,7 +1215,7 @@ fieldset legend,
     margin-bottom: 5px;
 }
 .form-row .form-input {
-    margin-left: 215px;
+    float: left;
     display: block;
     line-height: 25px;
 }
@@ -1833,8 +1857,11 @@ body.webconsole #nav {
 body.webconsole.adminBarShown #nav {
     height: calc(100% - 70px);
 }
-body.webconsole #main-header, body.webconsole #footer, body.webconsole #adminBar {
+body.webconsole #main-header, body.webconsole #footer {
     display: block !important;
+}
+body.webconsole #adminBar {
+    display: flex !important;
 }
 span.dot_red{
     background-color: red;
