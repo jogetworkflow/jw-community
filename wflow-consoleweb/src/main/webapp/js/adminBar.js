@@ -67,9 +67,9 @@ var AdminBar = {
             AdminBar.hideQuickOverlay();
         });
 
+        //Attach the required system theme once it's ready
         const intervalId = setInterval(function() {
             if (UI.theme) { 
-                console.log(UI.theme);
                 
                 $(parent.document).find('#quickOverlayFrameDiv').attr('system-theme', UI.theme);
                 $(parent.document).find('#quickOverlayButton').attr('system-theme', UI.theme);
@@ -80,7 +80,6 @@ var AdminBar = {
 
         setTimeout(function() {
             clearInterval(intervalId);
-            console.log("Cleared interval after 20 seconds due to timeout.");
         }, 20000);
 
         AdminBar.initPinMode();
