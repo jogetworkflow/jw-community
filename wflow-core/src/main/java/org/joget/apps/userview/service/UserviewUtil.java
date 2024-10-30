@@ -315,6 +315,8 @@ public class UserviewUtil implements ApplicationContextAware, ServletContextAwar
                             .hashCode();
                     theme.setProperty("themeHash", themeHash);
                     serviceWorkerJs = ((UserviewPwaTheme)theme).getServiceWorker(appId, userviewId, userviewKey);
+                } else {
+                    serviceWorkerJs = "self.addEventListener('install',function(event){self.skipWaiting();});";
                 }
             }
         }
