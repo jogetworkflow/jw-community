@@ -649,5 +649,41 @@ public class TestSectionVisibilityControl {
         //regex
         Assert.assertTrue(Section.checkValue("a", "true", "a|b"));
         Assert.assertFalse(Section.checkValue("c", "true", "a|b"));
+        
+        Assert.assertTrue(Section.checkValue("hoo", "true", "^(.*?(\\bhoo\\b)[^$]*)$"));
+        Assert.assertFalse(Section.checkValue("abc", "true", "^(.*?(\\bhoo\\b)[^$]*)$"));
+        
+        Assert.assertTrue(Section.checkValue("hello", "true", "^[a-zA-Z]+$"));
+        Assert.assertFalse(Section.checkValue("hello123", "true", "^[a-zA-Z]+$"));
+        
+        Assert.assertTrue(Section.checkValue("123-45-6789", "true", "^\\d{3}-\\d{2}-\\d{4}$"));
+        Assert.assertFalse(Section.checkValue("1234-567-89", "true", "^\\d{3}-\\d{2}-\\d{4}$"));
+        
+        Assert.assertTrue(Section.checkValue("test@example.com", "true", "^[A-Za-z0-9]+@[A-Za-z]+\\.[A-Za-z]{2,3}$"));
+        Assert.assertFalse(Section.checkValue("test@.com", "true", "^[A-Za-z0-9]+@[A-Za-z]+\\.[A-Za-z]{2,3}$"));
+        
+        Assert.assertTrue(Section.checkValue("http://example.com", "true", "^(https?|ftp)://[^\\s/$.?#].[^\\s]*$"));
+        Assert.assertFalse(Section.checkValue("www.example.com", "true", "^(https?|ftp)://[^\\s/$.?#].[^\\s]*$"));
+        
+        Assert.assertTrue(Section.checkValue("(123) 456-7890", "true", "^\\(?\\d{3}\\)?[-.\\s]?\\d{3}[-.\\s]?\\d{4}$"));
+        Assert.assertFalse(Section.checkValue("123-45-7890", "true", "^\\(?\\d{3}\\)?[-.\\s]?\\d{3}[-.\\s]?\\d{4}$"));
+        
+        Assert.assertTrue(Section.checkValue("12345", "true", "^[1-9]\\d*$"));
+        Assert.assertFalse(Section.checkValue("012345", "true", "^[1-9]\\d*$"));
+        
+        Assert.assertTrue(Section.checkValue("foo", "true", "\\b(?:foo|bar)\\b"));
+        Assert.assertFalse(Section.checkValue("foobar", "true", "\\b(?:foo|bar)\\b"));
+        
+        Assert.assertTrue(Section.checkValue("This is a test", "true", "^(?!.*(\\bword\\b)).*$"));
+        Assert.assertFalse(Section.checkValue("The word is here", "true", "^(?!.*(\\bword\\b)).*$"));
+        
+        Assert.assertTrue(Section.checkValue("12345-6789", "true", "\\b\\d{5}(?:-\\d{4})?\\b"));
+        Assert.assertFalse(Section.checkValue("123456789", "true", "\\b\\d{5}(?:-\\d{4})?\\b"));
+        
+        Assert.assertTrue(Section.checkValue("", "true", "^$"));
+        Assert.assertFalse(Section.checkValue("c", "true", "^$"));
+        
+        Assert.assertTrue(Section.checkValue("hello", "true", "^.+$"));
+        Assert.assertFalse(Section.checkValue("", "true", "^.+$"));
     }
 }
