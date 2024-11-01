@@ -40,6 +40,7 @@ var AdminBar = {
         $quickOverlayFrame.addClass("iframeloading");
         $("#overlay, #quickOverlayButton, #quickOverlayFrameDiv").fadeIn();
         $quickOverlayFrame.on("load", function() {
+            $quickOverlayFrame.contents().find('#spinner-container').remove();
           
             AdminBar.currentPageTitle = document.title;
             var frameTitle = $quickOverlayFrame[0].contentDocument.title;
@@ -47,7 +48,9 @@ var AdminBar = {
                 document.title = frameTitle;
             }
             
-            $("#quickOverlayContainer").removeClass("minimize");
+            $("#quickOverlayContainer").removeClass("minimize");    
+            //Make main appear after finish load all the required scripts
+            $(this).contents().find("div#content-container > div#main").css({'visibility': 'visible'});
         });
         $("#quickOverlayFrameDiv, #adminBar, #adminControl, #quickOverlayButton").off("mouseenter mouseleave");
         $("#quickOverlayFrameDiv, #adminBar, #adminControl, #quickOverlayButton").on( "mouseenter", function() {

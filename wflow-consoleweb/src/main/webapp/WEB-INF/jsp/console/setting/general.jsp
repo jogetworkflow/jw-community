@@ -153,10 +153,6 @@
         font-weight:bold;
     }
 
-    #main {
-        visibility: hidden;
-    }
-
     .form-buttons {
         position: sticky;
         bottom: 0px;
@@ -942,7 +938,6 @@
                 $("#search-bar").find('input').val('');
             }
         })
-        $("#main").css({'visibility': 'initial'});
     });
 
     function validateSMTPEmail() {

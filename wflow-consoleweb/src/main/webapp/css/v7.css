@@ -309,6 +309,7 @@ div#adminWelcome > div#getting-started > #welcomeFrame:hover + i.fa-question-cir
     width: calc(100% - 270px);
     box-sizing: border-box;
     min-height: 100vh;
+    visibility: hidden;
 }
 #main-title {
     font-size: 1.2rem;
