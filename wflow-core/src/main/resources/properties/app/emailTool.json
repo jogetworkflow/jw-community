@@ -9,13 +9,9 @@
             var inputElement = parentElement.querySelector('input');
             var inputValue = inputElement.value;
             var errorMsg = "";
-
-            if (inputValue === "") {
-                return "";
-            }
             
-            if (!inputValue.includes('@')) {
-                return ""; 
+            if (inputValue.startsWith("#") && inputValue.endsWith("#") || inputValue === "" || !inputValue.includes('@')) {
+                return "";
             }
 
             $.ajax({
@@ -102,7 +98,7 @@
             var inputValue = inputElement.value;
             var errorMsg = "";
 
-            if (inputValue === "") {
+            if (inputValue === "" || inputValue.startsWith("#") && inputValue.endsWith("#")) {
                 return "";
             }
 
