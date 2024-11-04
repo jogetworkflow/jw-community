@@ -73,6 +73,7 @@
                 <link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/js/line-awesome-1.3.0/css/line-awesome.min.css" />
                 <link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/js/jsondiffpatch/jsondiffpatchhtml.css" />
                 <link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/css/builder_custom.css?build=<fmt:message key="build.number"/>">
+                <link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/fonts/inter/css/font.css" />
                 <jsp:include page="/WEB-INF/jsp/includes/css.jsp" />
                 
                 ${fn:replace(fn:replace(builderCSS, '<style', '<style data-cbuilder-style'), '<link', '<link data-cbuilder-style')}
