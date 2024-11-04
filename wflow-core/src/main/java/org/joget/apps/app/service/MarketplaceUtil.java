@@ -343,7 +343,7 @@ public class MarketplaceUtil {
         update();
         
         //find plugins used in the app
-        List<String> plugins = AppUtil.findCustomPlugins(appDef, false, false);
+        List<String> plugins = AppUtil.findCustomPlugins(appDef, true, true, false);
         
         //get all installed plugins version
         PluginManager pluginManager = (PluginManager) AppUtil.getApplicationContext().getBean("pluginManager");
@@ -750,7 +750,7 @@ public class MarketplaceUtil {
             //find plugins used in the app
             List<String> filtePluginClasses = null;
             if (appDef != null) {
-                filtePluginClasses = AppUtil.findCustomPlugins(appDef, false, false);
+                filtePluginClasses = AppUtil.findCustomPlugins(appDef, false, true, false);
             }
             
             Map<String, Object> installedPlugins = pluginManager.getInstalledBundles(classes, filtePluginClasses, false);
