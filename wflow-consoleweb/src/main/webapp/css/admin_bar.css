@@ -92,6 +92,7 @@ body #adminBar {
     align-items: center;
     justify-content: space-between;
     padding-right: 50px;
+    font-family: "Inter", sans-serif !important;
 }
 
 #adminBar {
