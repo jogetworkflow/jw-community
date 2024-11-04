@@ -138,8 +138,8 @@ section#connector-setup .section-list-item:hover{
     display: flex;
     gap: 8px;
 }
-.section-list-item-actions > button {
-    font-weight: 600;
+button {
+    font-weight: normal !important;
     text-align: center;
     max-width: 250px;
 }
@@ -214,6 +214,7 @@ button:focus, .btn:focus {
 }
 button:focus:not(:active), .btn:focus:not(:active) {
     background-color: var(--primary-accent) !important;
+    color: var(--button-font-color) !important;
 }
 .section-list-item-actions .btn-icon:focus:not(:active) {
     background-color: transparent !important;
