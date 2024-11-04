@@ -12,7 +12,6 @@ html.adminBarShown {
     }
 }
 
-/* Toggle */
 a#quickEditMode > input#admin-bar-toggle {
     display: none;
 }
@@ -57,7 +56,6 @@ a#quickEditMode:not(.off) > label.adminbar-control-label.button {
     background-color: #adb5bd;
     will-change: left, background-color;
 }
-/* End of Toggle */
 
 #adminControl {
     display: none;
@@ -303,7 +301,7 @@ body.rtl div#quickEditModeOption:before {
     position: fixed;
     top: 0px;
     left: 0px;
-    background: transparent;
+    background: #000;
     z-index: 2000;
     opacity: 0.5;
     cursor: pointer;
@@ -678,6 +676,7 @@ body.quickEditModeActive .analyzer-page {
 #adminBar .analyzer-page span {
     color: #000;
     font-size: 10px;
+	font-family: "Inter", sans-serif !important;
 }
 
 .analyzer-label {
@@ -785,18 +784,18 @@ body.fixiosframe.stop-scrolling {
     background: #ff6100;
     position: absolute;
     right: 0;
-	bottom: 0;
+    bottom: 0;
     padding: 5px 60px;
     font-weight: bold;
     color: #fff;
     font-size: 18px;
     font-family: arial;
     line-height: 20px;
-    transition:all 0.2s linear;
+    transition: all 0.2s linear;
 }
 
 html.adminBarShown #adminBar #environmentName {
-	bottom: 35px;
+    bottom: 35px;
 }
 
 @media only screen and (max-width: 768px),(device-width:1024px) and (device-height:1366px) {
