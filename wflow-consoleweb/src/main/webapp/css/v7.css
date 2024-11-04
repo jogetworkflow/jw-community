@@ -31,10 +31,12 @@ html[system-theme='dark'] {
 body{
     padding: 0;
     margin: 0;
-    font-family: inter,Arial,sans-serif;
     font-size: 14px;
     color: var(--console-default-font-color) !important;
     background: var(--console-secondary-background-color);
+}
+body, .flexigrid, button, input {
+    font-family: "Inter", sans-serif !important;
 }
 .console-primary::before, .console-danger::before, 
 .console-secondary::before, .console-tertiary::before,
@@ -55,7 +57,7 @@ button#filter-btn {
     margin-right: 5px;
 }
 .console-danger {
-    background: var(--console-button-danger-bg);
+    background: var(--console-button-danger-bg) !important;
 }
 .console-danger:hover, .console-danger:active, 
 .console-danger:hover, .console-danger:focus {
@@ -111,6 +113,9 @@ a:focus{
 }
 h1, h2, h3, h4, h5 {
     text-transform: uppercase;
+}
+div#nv-apps h4 {
+    text-transform: none;
 }
 
 /* header */
@@ -204,7 +209,7 @@ body:not(#login) #footer {
 }
 #nav-title #main-action-help {
     position: absolute;
-    right: 5px;
+    right: 12px;
     top: 5px;
     font-size: 1rem;
 }
@@ -557,6 +562,14 @@ body.rtl .ui-tabs .ui-tabs-nav li:first-child {
 body .ui-tabs .ui-widget-content{
     padding: 25px 0 !important;
 }
+body .ui-widget.ui-widget-content {
+    border: 1px solid var(--console-main-background-color);
+}
+body .ui-widget.ui-widget-content button.ui-dialog-titlebar-close:focus {
+    background: transparent !important;
+    outline: none !important;
+    border: none !important;
+}
 body .ui-tabs .ui-widget-content .ui-tabs.ui-widget-content {
     padding: 0 !important;
 }
@@ -674,7 +687,11 @@ input[type="search"]:focus-visible,
 input[type="file"]:focus-visible,
 textarea:focus-visible,
 select:not([class^="ui"]):focus-visible {
-    border: none;
+    border: 1px solid var(--console-button-primary-bg);
+}
+
+textarea:focus-visible {
+    border: 1px solid var(--console-button-primary-bg);
 }
 
 select[multiple]:not([class^=ui]){
@@ -804,6 +821,7 @@ body .ui-dialog {
 body .ui-dialog .ui-dialog-content {
     padding: 0px !important;
     overflow: hidden !important;
+    background: var(--console-main-background-color);
 }
 body .ui-dialog .ui-dialog-buttonpane button {
     padding: 5px 10px;
@@ -947,6 +965,7 @@ body .ui-widget {
 body .ui-widget-content {
     color: inherit;
     border-radius: inherit;
+    background: var(--console-main-background-color);
 }
 
 /* flexigrid tables */
@@ -1190,7 +1209,7 @@ fieldset legend,
     font-weight: bold;
     padding: 5px 10px;
     margin-bottom: 15px;
-    background-color: #efefef;
+    background-color: var(--console-main-background-color);
     left: 0px;
     width: 100%;
     position: relative;
@@ -1219,6 +1238,11 @@ fieldset legend,
     float: left;
     display: block;
     line-height: 25px;
+    width: 50%;
+}
+.form-input input:not([type=checkbox]), .form-input textarea, 
+.form-input > div.chosen-container {
+    width: 100% !important;
 }
 .form-row .form-input:after,
 .form-row:after {
@@ -1228,13 +1252,19 @@ fieldset legend,
 }
 .form-input > input[type=checkbox]:first-child{
     margin-top: 10px;
+    transform: scale(1.2);
 }
 .form-input .chosen-container a {
     text-decoration: none !important;
 }
+.form-input .chosen-container-multi .chosen-choices {
+    border: 1px solid var(--console-border-color);
+    background-color: var(--console-secondary-background-color);
+}
 .form-input i {
     font-style: italic;
     color: #999;
+    font-size: 12px;
 }
 .form-input button i {
     font-style: initial;
