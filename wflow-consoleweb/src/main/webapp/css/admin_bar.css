@@ -336,7 +336,7 @@ body.rtl .quickOverlayButton {
     height: 20px;
     background: transparent;
     text-align: center;
-    font-size: 1rem;
+    font-size: 14px;
     box-sizing: border-box;
     margin: 0 8px;
     max-height: fit-content;
