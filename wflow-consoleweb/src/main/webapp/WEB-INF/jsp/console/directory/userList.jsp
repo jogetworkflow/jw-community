@@ -14,7 +14,7 @@
 </div>
 
 <div id="main">
-    <div id="main-title"></div>
+    <div id="main-title"><fmt:message key='console.header.menu.label.users'/></div>
     <div id="main-action">
         <ul id="main-action-buttons">
             <li><button onclick="onCreate()" class="console-primary"><fmt:message key="console.directory.user.create.label"/></button></li>
