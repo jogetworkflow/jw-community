@@ -99,7 +99,7 @@ import org.joget.workflow.model.WorkflowAssignment;
 import org.joget.workflow.model.WorkflowProcess;
 import org.joget.workflow.model.service.WorkflowManager;
 import org.joget.workflow.model.service.WorkflowManagerImpl;
-import org.joget.workflow.shark.model.dao.WorkflowAssignmentDao;
+import org.joget.workflow.model.dao.WorkflowAssignmentDao;
 import org.joget.workflow.util.WorkflowUtil;
 import org.json.JSONArray;
 import org.json.JSONException;

@@ -1,6 +1,6 @@
 package org.joget.apps.datalist.model;
 
-public class DataListFilterQueryObject {
+public class DataListFilterQueryObject implements InboxFilterQueryObject {
 
     private String operator;
     private String query;

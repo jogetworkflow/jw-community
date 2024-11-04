@@ -21,6 +21,7 @@
 	<module>../wflow-commons</module>
         <module>../wflow-shark-jakarta</module>
         <module>../wflow-wfengine</module>
+        <module>../wflow-shark</module>
         <module>../wflow-core</module>
         <module>../wflow-consoleweb</module>		
     </modules>
