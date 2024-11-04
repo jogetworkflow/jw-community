@@ -77,7 +77,7 @@
 
     #search-bar:has(input:focus-visible) {
         outline: 2px solid var(--console-button-primary-bg);
-        border: 0;
+        border: 1px solid transparent;
     }
 
     #search-bar #search-icon, #search-bar #search-icon:hover {
