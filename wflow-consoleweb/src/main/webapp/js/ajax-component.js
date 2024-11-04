@@ -559,7 +559,7 @@ AjaxComponent = {
                         var compareValue = rules[r].value;
                         
                         var values = urlParams[rname];
-                        if (values === undefined && formData !== undefined && formData.has(rname)) {
+                        if (values === undefined && formData !== undefined && formData !== null && formData.has(rname)) {
                             values = formData.get(rname);
                             if (!Array.isArray(values)) {
                                 values = [values];

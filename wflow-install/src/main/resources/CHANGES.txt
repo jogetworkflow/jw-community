@@ -2,6 +2,33 @@ Joget DX COMMUNITY
 ====================
 For more information, please refer to https://community.joget.org
 
+8.1.7
+=====
+e7c81cf9b Fixed: wflow-commons - Security - Update Spring Security to 5.8.15 for CVE-2024-38821. @7.1-SNAPSHOT
+12dec76fe Fixed: wflow-consoleweb - App Composer - App versioning is not synced over remote git. T4464 @8.1-SNAPSHOT
+ebbd3b4ed Fixed: wflow-consoleweb - Property Editor - Icon Text Field - Not align correctly in RTL. @8.1-SNAPSHOT
+25b379e8d Fixed: wflow-consoleweb - Information Tiles - Chart is not properly align with its container. @8.1-SNAPSHOT
+557a58a11 Fixed: wflow-consoleweb - Ajax Component - Fixed an issue where an error saying 'Cannot read properties of null' occurs @8.1-SNAPSHOT
+6d666707d Fixed: wflow-consoleweb - Fixed Ctrl + P cannot be used to print in X-Admin Theme after theme changed, followed with a hard refresh @8.1-SNAPSHOT
+8e7557951 Fixed: wflow-consoleweb - X-Admin theme - Fixed save and cancel button misaligned. #T4960 @8.1-SNAPSHOT
+c90d1be5c Fixed: wflow-consoleweb - Pop-up Select Box - Fix pop-up select box: selections CSS issues in desktop. @8.1-SNAPSHOT
+46eb4a308 Fixed: wflow-consoleweb/wflow-core - List - Fixed missing data on form editing. T5006 @8.1-SNAPSHOT
+55fb70bd7 Fixed: wflow-consoleweb - Exclude the WebSocket URL from POST checks so that authentication can be done using parameters. @8.1-SNAPSHOT
+153a29b3a Fixed: wflow-consoleweb - Platform Translation - Missing validation error message. T4619 @8.1-SNAPSHOT
+5d8ad5fa4 Fixed: wflow-consoleweb - List - Show button does not hide when all filters and page size selector are set to hidden. @7.0-SNAPSHOT
+86ac85c83 Fixed: wflow-consoleweb - Platform Translation - Wrong key validation label. @7.0-SNAPSHOT
+e51b86019 Fixed: wflow-consoleweb - Platform Translation - Missing validation error message. T4619 @7.0-SNAPSHOT
+7491df476 Fixed: wflow-core - X Admin - Fixed no permission login appearing on theme tab @7.0-SNAPSHOT
+
+8.1.6
+=====
+a88e9f60f Fixed: wflow-consoleweb - Form - Printed pdf using Ctrl + P or Print button changes the form's element alignment. T4484 @8.1-SNAPSHOT
+2608902b7 Fixed: jw-community - Email Validator - Email validator not applied in profile, user creation and email smtp. @8.1-SNAPSHOT
+4065280a3 Fixed: wflow-core - Email Tool/ User Notification - Missing completion log after retries. T4838 @8.1-SNAPSHOT
+7a455699b Fixed: wflow-core - JSON API List Data Source - NPE is not handle correctly. T4899 @8.1-SNAPSHOT
+7536efdbd Fixed: wflow-core - Security - Update Tensorflow to 0.5.0, Ndarray to 0.4.0 and protobuf-java to 3.25.4 for CVE-2024-7254. @7.1-SNAPSHOT
+d5a6065f8 Fixed: wflow-consoleweb - Spring Framework - Regression of 5e10534c. Overridden class is not updated. @7.1-SNAPSHOT
+
 8.1.5
 =====
 d7d0ac7da Modified: wflow-consoleweb - App Composer - Distortion on certain screen size. @8.1-SNAPSHOT

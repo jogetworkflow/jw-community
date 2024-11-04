@@ -301,6 +301,7 @@ textarea,
 }
 input[size]{
     width: auto !important;
+    max-width: 100%;
 }
 select[multiple]{
     height: auto;
@@ -1317,10 +1318,29 @@ body.rtl .label-top .numeric_field_controls {left: 15px; right: auto;}
 .numeric_field_control img {width:12px; height:12px; max-width: fit-content; min-width: fit-content; max-height: fit-content; min-height: fit-content;}
 body.rtl .numeric_field_control {left:10px; right:auto;}
 .numeric_field_control.numeric_field_control_decr {top: 15px;} 
-@media (max-width: 768px) {
-    .numeric_field_controls {right: 15px; bottom: 35px;}
+@media (max-width: 767px) {
+    .numeric_field_controls {right: auto; bottom: 35px;}
     body.compact-mode .numeric_field_controls {top:auto; bottom: 32px;}
-    body.rtl .numeric_field_controls {left: 15px; right: auto;}
+    body.rtl .numeric_field_controls {left: auto; right: auto;}
+}
+@media (min-width: 767px) {
+    .label-top.form-container .label-left.form-cell .numeric_field_controls{
+        bottom: unset;
+    }
+}
+.form-cell > label.label + input:has(+ .numeric_field_controls ){
+    display: inline-block;
+}
+body.rtl .form-cell > label.label + input:has(+ .numeric_field_controls){
+    float: none;
+}
+.label-top.form-cell > label.label + input[size] + .numeric_field_controls,
+form.label-top .form-cell > label.label + input[size] + .numeric_field_controls{
+    right: auto;
+}
+body.rtl .label-top.form-cell > label.label + input[size] + .numeric_field_controls,
+body.rtl form.label-top .form-cell > label.label + input[size] + .numeric_field_controls{
+    left: auto;
 }
 body.rtl .form-cell > label.label,
 body.rtl .subform-cell > label.label{

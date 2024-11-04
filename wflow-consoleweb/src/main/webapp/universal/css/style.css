@@ -788,6 +788,10 @@ body#login #page > footer {
     max-width: 20%;
 }
 
+div.InformationTileComponent .badge {
+    max-width: initial;
+}
+
 body.rtl .badge{
     float: left !important;
 }

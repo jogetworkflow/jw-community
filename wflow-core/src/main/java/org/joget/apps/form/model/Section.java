@@ -283,7 +283,7 @@ public class Section extends Element implements FormBuilderEditable, FormContain
                     String[] list = value.replaceAll("__", ";").split(";");
                     result = ArrayUtils.contains(list, fieldValue);
                 } else if ("true".equals(operator)) {
-                    result = fieldValue.matches(StringEscapeUtils.unescapeJavaScript(value));
+                    result = fieldValue.matches(value);
                 }
             }
         }
