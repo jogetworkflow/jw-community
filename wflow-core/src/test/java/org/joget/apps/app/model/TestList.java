@@ -68,19 +68,19 @@ public class TestList {
         //target is popup
         href= "testinglink?d-2234-ac=rowAction_1";
         link = DataListDecorator.generateLink(rowObj, href, "popup", "d-2234-checkbox_id", "id", "Label", "Are you sure?", "btn-primary btn-sm");
-        Assert.assertEquals(link, "<a href=\"testinglink?d-2234-ac=rowAction_1&amp;d-2234-checkbox_id=123456\"onclick=\"return dlPopupAction(this, 'Are you sure?')\" class=\"btn-primary btn-sm\">Label</a>");
+        Assert.assertEquals(link, "<a href=\"testinglink?d-2234-ac=rowAction_1&amp;d-2234-checkbox_id=123456\" onclick=\"return dlPopupAction(this, 'Are you sure?')\" class=\"btn-primary btn-sm\">Label</a>");
         
         //target is popup without confirmation
         link = DataListDecorator.generateLink(rowObj, href, "popup", "d-2234-checkbox_id", "id", "Label", "", "btn-primary btn-sm");
-        Assert.assertEquals(link, "<a href=\"testinglink?d-2234-ac=rowAction_1&amp;d-2234-checkbox_id=123456\"onclick=\"return dlPopupAction(this, '')\" class=\"btn-primary btn-sm\">Label</a>");
+        Assert.assertEquals(link, "<a href=\"testinglink?d-2234-ac=rowAction_1&amp;d-2234-checkbox_id=123456\" onclick=\"return dlPopupAction(this, '')\" class=\"btn-primary btn-sm\">Label</a>");
         
         //target is post
         link = DataListDecorator.generateLink(rowObj, href, "post", "d-2234-checkbox_id", "id", "Label", "Are you sure?", "btn-primary btn-sm");
-        Assert.assertEquals(link, "<a href=\"testinglink?d-2234-ac=rowAction_1&amp;d-2234-checkbox_id=123456\"onclick=\"return dlPostAction(this, 'Are you sure?')\" class=\"btn-primary btn-sm\">Label</a>");
+        Assert.assertEquals(link, "<a href=\"testinglink?d-2234-ac=rowAction_1&amp;d-2234-checkbox_id=123456\" onclick=\"return dlPostAction(this, 'Are you sure?')\" class=\"btn-primary btn-sm\">Label</a>");
        
         //target is post without confirmation
         link = DataListDecorator.generateLink(rowObj, href, "post", "d-2234-checkbox_id", "id", "Label", "", "btn-primary btn-sm");
-        Assert.assertEquals(link, "<a href=\"testinglink?d-2234-ac=rowAction_1&amp;d-2234-checkbox_id=123456\"onclick=\"return dlPostAction(this, '')\" class=\"btn-primary btn-sm\">Label</a>");
+        Assert.assertEquals(link, "<a href=\"testinglink?d-2234-ac=rowAction_1&amp;d-2234-checkbox_id=123456\" onclick=\"return dlPostAction(this, '')\" class=\"btn-primary btn-sm\">Label</a>");
         
 
         // double parameter
