@@ -38,7 +38,10 @@ body[builder-theme='dark'], body[system-theme='dark']{
     --theme-active-color-2: #009ef7;
     --theme-link-color-1: #6c757d;
     --theme-link-color-2: #AAAAAA;
-}   
+}  
+body {
+    font-family: "Inter", sans-serif !important;
+}
 /* Dark Theme CSS */
 body[builder-theme]#cbuilder .nav-tabs .nav-link.active, #cbuilder .nav-tabs .nav-item.show .nav-link {
     border-bottom: 2px solid #1677ff;
@@ -70,7 +73,7 @@ body[builder-theme] .guider {
     box-shadow: 0 6px 16px 0 rgba(0, 0, 0, 0.08), 0 3px 6px -4px rgba(0, 0, 0, 0.12), 0 9px 28px 8px rgba(0, 0, 0, 0.05);
     border-radius: 8px;
     border: 0;
-    font-family: -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,"Noto Sans",sans-serif,"Apple Color Emoji","Segoe UI Emoji","Segoe UI Symbol","Noto Color Emoji";
+    font-family: "Inter", sans-serif !important;
 }
 body[builder-theme]:after{
     opacity: 1; 
@@ -1540,7 +1543,7 @@ body[system-theme] .flexigrid tr td.sorted {
     border-bottom: 1px solid var(--theme-border-color-1);
 }
 body[builder-theme] .flexigrid {
-    font-family: -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,"Noto Sans",sans-serif,"Apple Color Emoji","Segoe UI Emoji","Segoe UI Symbol","Noto Color Emoji";
+    font-family: "Inter", sans-serif !important;
 }
 body[builder-theme] .flexigrid div.hDiv th > div, 
 body[system-theme] .flexigrid div.hDiv th > div {
@@ -1772,7 +1775,7 @@ body[system-theme] .flexigrid div.nBtn {
     border-bottom: 1px solid var(--theme-border-color-1);
 }
 body[builder-theme].popupBody{
-    font-family: -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,"Noto Sans",sans-serif,"Apple Color Emoji","Segoe UI Emoji","Segoe UI Symbol","Noto Color Emoji";
+    font-family: "Inter", sans-serif !important;
 }
 body[builder-theme] .ui-dialog .ui-dialog-content {
     padding: 0px !important;
