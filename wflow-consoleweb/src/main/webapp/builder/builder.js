@@ -5168,8 +5168,8 @@ _CustomBuilder.Builder = {
                                 }
 
                                 var containerOffset = elementsContainer.offset();
-                                var x_offset = ((x - containerOffset.left) / self.zoom) - cursorPos.x;
-                                var y_offset = ((y - containerOffset.top) /self.zoom) - cursorPos.y;
+                                var x_offset = (x - containerOffset.left - cursorPos.x) / self.zoom;
+                                var y_offset = (y - containerOffset.top - cursorPos.y) / self.zoom;
 
                                 self.dragElement.css({
                                    "top" : y_offset + "px",
