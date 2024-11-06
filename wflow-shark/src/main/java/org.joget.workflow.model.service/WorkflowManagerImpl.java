@@ -6650,11 +6650,7 @@ public class WorkflowManagerImpl implements WorkflowManager {
             }
         }
 
-        if (driver.equals("org.postgresql.Driver")) {
-            conds += " AND ass.IsValid IS TRUE";
-        } else {
-            conds += " AND ass.IsValid = 1";
-        }
+        conds += " AND ass.IsValid IS TRUE";
 
         queryObj.setOperator("AND");
         queryObj.setQuery(conds);
