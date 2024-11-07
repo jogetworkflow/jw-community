@@ -124,7 +124,7 @@
         </property>
     </bean>
 
-    <bean id="workflowAssignmentDao" class="org.joget.workflow.shark.model.dao.SharkWorkflowAssignmentDao">
+    <bean id="workflowAssignmentDao" class="org.joget.workflow.shark.model.dao.SharkWorkflowAssignmentDaoImpl">
         <property name="sessionFactory" ref="workflowSessionFactory"/>
         <property name="workflowProcessLinkDao" ref="workflowProcessLinkDao"/>
     </bean>
