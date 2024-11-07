@@ -105,8 +105,10 @@ body #adminBar {
     height: 35px;
     -webkit-font-smoothing: antialiased;
     box-sizing: border-box;
-    transition: all 0.2s ease-in-out;
+    transition: transform 0.2s ease-in-out, opacity 0.2s ease-in-out;
     background: #E6E6E6;
+	transform: translateY(0); 
+    opacity: 1;
 }
 
 #adminBar[builder-theme='dark'] {
@@ -130,6 +132,8 @@ body.embeded #adminBar {
     width: 0px;
     box-shadow: none;
     padding: 0 !important;
+	transform: translateY(100%); 
+    opacity: 0;
 }
 
 #adminBar #appCenter {
@@ -600,7 +604,7 @@ body.rtl #quickOverlayFrameDiv {
 
 .quickEdit, #form-canvas .quickEdit {
     display: none;
-    min-width: 100px;
+    min-width: fit-content;
     max-width: 200px;
     max-height: 20px;
     position: relative;
@@ -620,11 +624,15 @@ body.rtl #quickOverlayFrameDiv {
     overflow: hidden;
 }
 
-.quickEdit a, #navigation .quickEdit a, #form-canvas .quickEdit a {
+.quickEdit:hover, #form-canvas .quickEdit:hover {
+	z-index: 9999;
+}
+
+.quickEdit a, #navigation .quickEdit a, #form-canvas .quickEdit a, .quickEdit i#temp-icon {
     color: black !important;
     text-decoration: none;
     display: inline-block;
-    font-size: 10px;
+    font-size: 12px;
     padding: 0px;
     line-height: 14px;
     width: 100%;
