@@ -29,3 +29,4 @@
 <div id="adminWelcome">
     <jsp:include page="/WEB-INF/jsp/console/welcome.jsp" flush="true" />
 </div>
+<div id="spinner-container" style="position:fixed;top:50%;left:50%;transform:translate(-50%, -50%);color:#009265;font-size:50px;"><i class="fas fa-spinner fa-spin"></i></div>
