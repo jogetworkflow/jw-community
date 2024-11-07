@@ -163,6 +163,23 @@ var AdminBar = {
                 } catch (err) {}
             });
         }
+        $("div.quickEdit")
+        .off("mouseover").on("mouseover", function(e){
+            e.stopPropagation();
+            $("body.quickEditModeActive fieldset#form-canvas, body.quickEditModeActive fieldset#form-canvas .subform-container, body.quickEditModeActive .dataList, body.quickEditModeActive #category-container, body.quickEditModeActive #content>main")
+            .filter('.quick-edit-hovered').removeClass('quick-edit-hovered');
+            if ($(this).parent().is('#sidebar')){
+                $(this).parent().find('#category-container').addClass('quick-edit-hovered')
+            }else{
+                $(this).parent().addClass("quick-edit-hovered")
+            }
+        }).off("mouseleave").on("mouseleave", function(){
+            if ($(this).parent().is('#sidebar')){
+                $(this).parent().find('#category-container').removeClass("quick-edit-hovered");
+            }else{
+                $(this).parent().removeClass("quick-edit-hovered");
+            }
+        })
     },
     hideQuickEdit: function() {
         $("#quickEditMode").addClass("off");
@@ -208,6 +225,10 @@ var AdminBar = {
         });
         if ((AdminBar.webConsole && !AdminBar.builderMode)) {
             $("#quickEditModeOption").hide();
+            $("body").find('#spinner-container').remove();
+          
+            //Make main appear after finish load all the required scripts
+            $("body").find("div#content-container > div#main").css({'visibility': 'visible'});
         }
         if (AdminBar.isAdminBarHide()) {
             AdminBar.hideAdminBar();
