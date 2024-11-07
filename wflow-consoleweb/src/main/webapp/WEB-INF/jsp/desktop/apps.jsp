@@ -4,7 +4,7 @@
 
 <div id="nav">
     <div id="nav-title">
-        <p><i class="fas fa-wrench"></i> <fmt:message key="console.header.menu.label.apps"/></p>
+        <p><i class="fas fa-pencil-ruler"></i> <fmt:message key="console.header.menu.label.apps"/></p>
     </div>
     <div id="nav-body">
         <ul id="nav-list">
