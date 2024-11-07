@@ -76,7 +76,6 @@ body.initializing:after{
     display: block;
 }
 body.quick-nav-shown {
-    padding-left: 30px;
     transition: 0.35s padding-left ease-in-out;
 }
 #builder_loader {
@@ -1584,7 +1583,7 @@ div.section, .header > ol {
 .max-property-editor #right-panel{
     position: fixed;
     top:65px;
-    right: 0;
+    right: 40px;
     bottom: 30px;
     width: 20vw;
     width: var(--builder-right-panel-width);
@@ -1888,7 +1887,7 @@ body #quick-nav-bar {
     position: fixed;
     top: 0px;
     bottom:0;
-    left: 0;
+    right: 0;
     text-align: left;
     z-index: 2000;
     transition: 0.35s all ease-in-out;
@@ -1996,7 +1995,7 @@ body.quick-nav-shown #builder-quick-nav {
     display: block;
     position: fixed;
     top: 0;
-    left: 40px;
+    right: 40px;
     height: 100%;
     list-style: none;
     background: #455a65;
@@ -2066,7 +2065,7 @@ body.quick-nav-shown #builder-quick-nav {
     position: fixed;
     top: 0px;
     z-index: 3;
-    left: 40px;
+    right: 40px;
     width: 300px !important;
     min-width: 13.5vw;
     min-width: var(--builder-logo-width);
@@ -2126,8 +2125,8 @@ body.quick-nav-shown #builder-quick-nav {
     display: block !important;
     position: fixed;
     top: 0;
-    left: 40px;
-    right: 0;
+    right: 40px;
+    left:0;
     bottom: 0;
     background: #000;
     opacity: 0.1;
