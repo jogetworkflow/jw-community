@@ -17,6 +17,7 @@ body[builder-theme='light'], body[system-theme='light']{
     --theme-active-color-2: #1677ff;
     --theme-link-color-1: #6c757d;
     --theme-link-color-2: #AAAAAA;
+    --theme-danger-color: #dc3545;
 }
 
 body[builder-theme='dark'], body[system-theme='dark']{
@@ -38,6 +39,7 @@ body[builder-theme='dark'], body[system-theme='dark']{
     --theme-active-color-2: #009ef7;
     --theme-link-color-1: #6c757d;
     --theme-link-color-2: #AAAAAA;
+    --theme-danger-color: #dc3545;
 }  
 body {
     font-family: "Inter", sans-serif !important;
@@ -113,6 +115,9 @@ body[builder-theme] .form-control-sm{
 body[builder-theme] .builder-type ul li .builder-actions a{
     font-size: 20px;
     color: var(--theme-primary-color-4);
+}
+body[builder-theme] .builder-type ul li .builder-actions a.delete {
+    color: var(--theme-danger-color);
 }
 body[builder-theme] #builder-menu-search .clear-backspace {
     top: 12px;
