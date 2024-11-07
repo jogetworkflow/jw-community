@@ -6481,6 +6481,10 @@ public class WorkflowManagerImpl implements WorkflowManager {
                     }
                 
                     if ("STARTED".equals(statusObj.getString("state"))) {
+                        //retrieve the latest status
+                        result = setupDao.find("WHERE property = ?", new String[]{WorkflowManager.ARCHIVE_SETTING}, null, null, null, null);
+                        status = (result.isEmpty()) ? null : result.iterator().next();
+                        
                         SharkConnection sc = null;
                         try {
                             sc = connect();
@@ -6511,9 +6515,6 @@ public class WorkflowManagerImpl implements WorkflowManager {
                                 ea.deleteProcesses(sessionHandle, pIds.toArray(new String[0]));
                                 LogUtil.debug(WorkflowManagerImpl.class.getName(), "Migrated " + pIds.size() + " processes. " + pIds.toString());
                                 
-                                //retrieve the value again to update completed count, in case there is status changed
-                                result = setupDao.find("WHERE property = ?", new String[]{WorkflowManager.ARCHIVE_SETTING}, null, null, null, null);
-                                status = (result.isEmpty()) ? null : result.iterator().next();
                                 try {
                                     statusObj = new JSONObject(status.getValue());
                                 } catch (Exception e) {
