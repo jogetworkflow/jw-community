@@ -127,6 +127,7 @@ body[builder-theme]#cbuilder #bottom-panel {
 body[builder-theme] .builder-type ul li .builder-actions a.launch {
     visibility: visible;
     font-size: 22px;
+    margin-right: 10px;
 }
 body[builder-theme] #top-panel-main{
     padding-left: calc(var(--builder-logo-width) + 15px);
@@ -197,9 +198,6 @@ body[builder-theme] .builder-type ul li.item:hover {
 }
 body[builder-theme].viewport-enabled {
     background: var(--theme-primary-color-2);
-}
-body[builder-theme].quick-nav-shown {
-    padding-left: 40px;
 }
 body[builder-theme]#cbuilder #left-panel,
 body[builder-theme]#cbuilder #right-panel {
