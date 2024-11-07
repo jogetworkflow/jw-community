@@ -27,14 +27,17 @@
         min-height: 100vh;
     }
 
+
     .main-body-content-subheader {
-        font-weight: 500;
+        font-weight: 600;
         background-color: transparent;
         margin-bottom: 0px;
         cursor: pointer;
         padding-right: 0;
         padding-left: 0;
         margin-right: 1.6rem;
+        width: fit-content;
+        padding-bottom:20px !important;
     }
 
     body.rtl .main-body-content-subheader:first-child {
@@ -75,8 +78,14 @@
         border-radius: 5px;
     }
 
+    div.main-body-row > span > div.form-row.highlight {
+        outline: 3px solid var(--console-button-primary-bg);
+        border-radius: 3px;
+        outline-offset: 0.5rem;    
+    }
+
     #search-bar:has(input:focus-visible) {
-        outline: 2px solid var(--console-button-primary-bg);
+        outline: 2px solid var(--console-button-primary-bg-hover);
         border: 1px solid transparent;
     }
 
@@ -94,7 +103,7 @@
     }
 
     #search-bar input{
-        width:150px;
+        width:180px;
         padding: 0px;
         border:none;
         background: transparent;
@@ -914,10 +923,10 @@
 
                 let element = $("body").find('label:contains("' + labelText + '")').parent();
 
-                element.css('border', '2px solid rgba(0, 146, 101, 30%)');
+                element.addClass("highlight");
 
                 setTimeout(function() {
-                    element.css('border', 'none');
+                    element.removeClass("highlight")
                 }, 3000);
 
             }, 100);

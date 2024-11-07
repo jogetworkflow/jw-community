@@ -12,7 +12,7 @@ body[system-theme='light'] {
     --console-border-color: #ced4da;
     --console-main-background-color: #f6f7fb;
     --console-secondary-background-color: #FFF;
-    --console-default-font-color: #535353;
+    --console-default-font-color: #111827;
 }
 body[system-theme='dark']{
     --console-border-color: #444e57;
@@ -216,6 +216,9 @@ body:not(#login) #footer {
 #nav-title p span {
     display: block;
 }
+#nav-title p > i {
+    margin-right: 10px;
+}
 #nav-list {
     margin-right: -1px;
     margin-top: 25px;
@@ -337,7 +340,7 @@ div#main-body-content-filter {
     width: 100%;
 }
 
-div#main-body-content-filter > form{
+div#main-body-content-filter > form {
     display:flex;
     align-items: center;
     gap: 10px;
@@ -348,19 +351,14 @@ div#JsonDataTable_pluginList2-search > input,
 div#JsonMessageDataTable_messageList-search > input,
 div#JsonDataTable_processList-search > input,
 div#JsonDataTable_groupList-search > input,
-div#JsonDataTable_userList-search > input {
+div#JsonDataTable_userList-search > input,
+div#JsonDataTable_employmentList-search > input,
+div#JsonUserDataTable_userList-search > input,
+div#userDataTable_userList-search > input {
     margin-left: 10px;
     flex: 1;
     min-width:150px;
     max-width: 30%;
-}
-
-:is(input:not([type]), input[type=text], input[type=password], 
-    input[type=email], input[type=url], input[type=time], 
-    input[type=date], input[type=datetime], input[type=datetime-local], 
-    input[type=tel], input[type=number], input[type=search], 
-    input[type=file], textarea, select:not([class^=ui])):focus-visible {
-    outline: 2px solid var(--console-button-primary-bg-hover);
 }
 
 div#main-body-content-filter {
@@ -372,7 +370,10 @@ div#main-body-content-filter {
 div#JsonDataTable1_pluginList-search, div#JsonDataTable_pluginList2-search,
 div#JsonMessageDataTable_messageList-search, div#JsonDataTable_processList-search,
 div#JsonDataTable_auditTrailList-search,
-div#JsonDataTable_groupList-search, div#JsonDataTable_userList-search {
+div#JsonDataTable_groupList-search, div#JsonDataTable_userList-search,
+div#JsonDataTable_employmentList-search,
+div#JsonUserDataTable_userList-search,
+div#userDataTable_userList-search {
     display:flex;
     align-items: center;
     margin-bottom: 15px;
@@ -418,7 +419,7 @@ button, input[type='button'], input[type='submit'], .smallbutton, .btn{
 }
 button:focus, input[type='button']:focus, input[type='submit']:focus, .smallbutton:focus, .btn:focus{
     outline:none;
-    background: var(--console-button-primary-bg-hover) !important;
+    background: var(--console-button-primary-bg-hover);
 }
 button:before, input[type='button']:before, input[type='submit']:before, .smallbutton:before, .btn:before{
     content: "";
@@ -533,6 +534,7 @@ body .ui-tabs .ui-state-default a{
     color: #535353 !important;
     padding: 5px 25px;
     text-decoration: none !important;
+    font-weight: 600;
 }
 body .ui-tabs .ui-tabs-nav li.ui-state-default:not(.ui-tabs-active):hover a {
     color: #009688 !important;
@@ -671,6 +673,7 @@ select:not([class^=ui]){
     border-radius: 5px;
     transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
     box-sizing: border-box;
+    outline: none;
 }
 input:not([type]):focus-visible,
 input[type="text"]:focus-visible,
@@ -687,11 +690,13 @@ input[type="search"]:focus-visible,
 input[type="file"]:focus-visible,
 textarea:focus-visible,
 select:not([class^="ui"]):focus-visible {
-    border: 1px solid var(--console-button-primary-bg);
+    border: 1px solid transparent;
+    outline: 2px solid var(--console-button-primary-bg-hover);
 }
 
 textarea:focus-visible {
-    border: 1px solid var(--console-button-primary-bg);
+    border: 1px solid transparent;
+    outline: 2px solid var(--console-button-primary-bg-hover);
 }
 
 select[multiple]:not([class^=ui]){
@@ -1189,7 +1194,7 @@ a.guider_button:hover {
     margin-bottom: 25px;
     min-height: auto !important;
     position: relative;
-    border-bottom: 1px solid #dedede;
+    border-bottom: 1px solid #f0f0f0;
 }
 .row-button {
     position: absolute;
@@ -1215,10 +1220,6 @@ fieldset legend,
     position: relative;
     box-sizing: border-box;
 }
-.main-body-content-subheader {
-    width: fit-content;
-    padding-bottom:20px !important;
-}
 .main-body-content-subheader.selected {
     border-bottom: 2px solid var(--console-button-primary-bg);
 }
@@ -1231,7 +1232,7 @@ fieldset legend,
     clear: left;
     padding-right: 10px;
     padding-top: 10px;
-    font-weight: 600;
+    font-weight: 500;
     margin-bottom: 5px;
 }
 .form-row .form-input {

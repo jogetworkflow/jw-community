@@ -8,6 +8,7 @@
 <style>
     div#main {
         width: fit-content;
+        min-width: calc(100% - 270px);
     }
 </style>
 <div id="nav">
