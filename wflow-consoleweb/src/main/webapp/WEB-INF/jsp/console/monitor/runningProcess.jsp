@@ -16,10 +16,10 @@
     <div id="main-title"></div>
     <div id="main-action">
         <ul id="main-action-buttons">
-            <li><button onclick="viewGraph()"><fmt:message key="console.monitoring.common.label.viewGraph"/></button></li>
-            <li><button onclick="abortProcessInstance()"><fmt:message key="console.monitoring.running.label.abortProcess"/></button></li>
-            <li><button onclick="removeProcessInstance()"><fmt:message key="console.monitoring.common.label.removeInstance"/></button></li>
-            <li><button onclick="reevaluateProcessInstance()"><fmt:message key="console.monitoring.running.label.reevaluate"/></button></li>
+            <li><button class="console-primary" onclick="viewGraph()"><fmt:message key="console.monitoring.common.label.viewGraph"/></button></li>
+            <li><button class="console-tertiary" onclick="abortProcessInstance()"><fmt:message key="console.monitoring.running.label.abortProcess"/></button></li>
+            <li><button class="console-tertiary" onclick="removeProcessInstance()"><fmt:message key="console.monitoring.common.label.removeInstance"/></button></li>
+            <li><button class="console-tertiary" onclick="reevaluateProcessInstance()"><fmt:message key="console.monitoring.running.label.reevaluate"/></button></li>
         </ul>
     </div>
     <div id="main-body">

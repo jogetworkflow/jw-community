@@ -51,6 +51,11 @@
     <script type="text/javascript">
         $(document).ready(function(){
             $('#JsonDataTable_searchTerm').hide();
+
+            $("div#JsonDataTable_groupList-buttons button").eq(0).addClass("console-primary");
+            $("div#JsonDataTable_groupList-buttons button").eq(1).addClass("console-danger");
+
+            $("div#main-body-content-filter").appendTo("div#JsonDataTable_groupList-search");
         });
 
         function assignGroups(selectedIds){
