@@ -20,6 +20,7 @@
         <jsp:include page="/WEB-INF/jsp/includes/scripts.jsp" />
         <jsp:include page="/WEB-INF/jsp/includes/rtl.jsp" />
         <link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/fonts/inter/css/font.css" />
+        <link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/css/builderTheme.css?build=<fmt:message key="build.number"/>" />
         <link rel="shortcut icon" href="${pageContext.request.contextPath}/images/favicon.ico"/>
         <c:choose>
             <c:when test="${!empty userviewThemeCss}">
