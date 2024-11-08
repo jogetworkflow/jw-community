@@ -2083,6 +2083,14 @@ body.rtl .ContainerComponent {
         width: auto;
         right: 100%;
     }
+    body.rtl.horizontal_menu:not(.inline_menu) ul#moreSubMenu.sub-menu {
+        left: 0 !important;
+        right: unset !important;
+    }
+    body.rtl.horizontal_menu:not(.inline_menu) ul#moreSubMenu.sub-menu > li:hover> ul {
+        left: 100% !important;
+        right: unset !important;
+    }
     ul#moreSubMenu.sub-menu{
         overflow: unset!important;
         max-height: none!important;

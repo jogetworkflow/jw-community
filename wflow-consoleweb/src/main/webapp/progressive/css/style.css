@@ -1815,6 +1815,14 @@ body:not(#login) #content > main > .datalist-body-content:not(.quickEdit) {
         right: 100%;
         visibility: visible;
     }
+    body.rtl.horizontal_menu:not(.inline_menu) ul#moreSubMenu.sub-menu {
+        left: 0 !important;
+        right: unset !important;
+    }
+    body.rtl.horizontal_menu:not(.inline_menu) ul#moreSubMenu.sub-menu > li:hover> ul {
+        left: 100% !important;
+        right: unset !important;
+    }
     ul#moreSubMenu.sub-menu > li > ul{
         visibility: hidden;
     }
