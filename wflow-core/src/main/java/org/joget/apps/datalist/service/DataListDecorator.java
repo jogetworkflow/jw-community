@@ -301,7 +301,7 @@ public class DataListDecorator extends CheckboxTableDecorator {
 
             // Merge logic: merge if href starts with http and contains a ?,
             // or if href does not start with http or javascript:
-            if (!href.startsWith("javascript:") && (!href.startsWith("http") || href.contains("?"))) {
+            if (!href.startsWith("javascript:") && href.contains("?")) {
                 // Use mergeRequestQueryString to combine href and link
                 link = StringUtil.mergeRequestQueryString(href, link);
 
