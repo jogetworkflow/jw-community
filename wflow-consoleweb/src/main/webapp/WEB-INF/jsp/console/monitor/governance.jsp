@@ -27,7 +27,7 @@
     <div id="main-action">
         <ul id="main-action-buttons">
             <li><button class="alertBtn btn btn-primary console-primary"><fmt:message key="console.governance.manageAlert"/></button></li>
-            <li><button class="deleteDataBtn btn btn-primary console-tertiary"><fmt:message key="console.governance.deleteData"/></button></li>
+            <li><button class="deleteDataBtn btn btn-primary console-danger"><fmt:message key="console.governance.deleteData"/></button></li>
             <li><button class="checkNowBtn btn btn-primary console-tertiary"><fmt:message key="console.governance.checkInterval.checkNow"/></button></li>
         </ul>
     </div>

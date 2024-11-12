@@ -18,7 +18,7 @@
         <ul id="main-action-buttons">
             <li><button class="console-primary" onclick="viewGraph()"><fmt:message key="console.monitoring.common.label.viewGraph"/></button></li>
             <li><button class="console-tertiary" onclick="abortProcessInstance()"><fmt:message key="console.monitoring.running.label.abortProcess"/></button></li>
-            <li><button class="console-tertiary" onclick="removeProcessInstance()"><fmt:message key="console.monitoring.common.label.removeInstance"/></button></li>
+            <li><button class="console-danger" onclick="removeProcessInstance()"><fmt:message key="console.monitoring.common.label.removeInstance"/></button></li>
             <li><button class="console-tertiary" onclick="reevaluateProcessInstance()"><fmt:message key="console.monitoring.running.label.reevaluate"/></button></li>
         </ul>
     </div>

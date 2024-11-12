@@ -60,7 +60,7 @@
         </div>
             
         <div id="adminControl"  <c:if test="${!empty theme && (theme == 'light' || theme == 'dark')}">builder-theme="<c:out value="${theme}"/>"</c:if>>
-            <i class="fas fa-pencil-alt"></i>
+            <i class="fas fa-cogs"></i>
         </div>    
             
         <script src="${pageContext.request.contextPath}/js/adminBar.js"></script>

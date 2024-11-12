@@ -19,11 +19,11 @@
     <div id="main-action">
         <ul id="main-action-buttons">
             <li><button class="console-primary" onclick="onEdit()"><fmt:message key="console.directory.department.edit.label"/></button></li>
-            <li><button class="console-tertiary" onclick="onDelete()"><fmt:message key="console.directory.department.delete.label"/></button></li>
+            <li><button class="console-danger" onclick="onDelete()"><fmt:message key="console.directory.department.delete.label"/></button></li>
             <li><button class="console-tertiary" onclick="onCreateSubDepartment()"><fmt:message key="console.directory.department.create.label.createSubDepartment"/></button></li>
             <li><button class="console-tertiary" onclick="onSetHOD()"><fmt:message key="console.directory.department.hod.set.label"/></button></li>
             <c:if test="${!empty hod}">
-                <li><button class="console-tertiary" onclick="onRemoveHOD()"><fmt:message key="console.directory.department.hod.remove.label"/></button></li>
+                <li><button class="console-danger" onclick="onRemoveHOD()"><fmt:message key="console.directory.department.hod.remove.label"/></button></li>
             </c:if>
             <li><button class="console-tertiary" onclick="assignUsers()"><fmt:message key="console.directory.department.user.assign.label"/></button></li>
         </ul>

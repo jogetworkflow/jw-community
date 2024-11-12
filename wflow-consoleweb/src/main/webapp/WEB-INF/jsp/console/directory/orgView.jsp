@@ -17,7 +17,7 @@
     <div id="main-action">
         <ul id="main-action-buttons">
             <li><button class="console-primary" onclick="onEdit()"><fmt:message key="console.directory.org.edit.label"/></button></li>
-            <li><button class="console-tertiary" onclick="onDelete()"><fmt:message key="console.directory.org.delete.label"/></button></li>
+            <li><button class="console-danger" onclick="onDelete()"><fmt:message key="console.directory.org.delete.label"/></button></li>
             <li><button class="console-tertiary" onclick="onCreateDepartment()"><fmt:message key="console.directory.department.create.label"/></button></li>
             <li><button class="console-tertiary" onclick="onCreateGrade()"><fmt:message key="console.directory.grade.create.label"/></button></li>
             <li><button class="console-tertiary" onclick="assignUsers()"><fmt:message key="console.directory.org.user.assign.label"/></button></li>

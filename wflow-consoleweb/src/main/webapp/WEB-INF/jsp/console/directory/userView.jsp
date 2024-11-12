@@ -19,7 +19,7 @@
     <div id="main-action">
         <ul id="main-action-buttons">
             <li><button class="console-primary" onclick="onEdit()"><fmt:message key="console.directory.user.edit.label"/></button></li>
-            <li><button class="console-tertiary" onclick="onDelete()"><fmt:message key="console.directory.user.delete.label"/></button></li>
+            <li><button class="console-danger" onclick="onDelete()"><fmt:message key="console.directory.user.delete.label"/></button></li>
             <li><button class="console-tertiary" onclick="assignReportTo()"><fmt:message key="console.directory.user.reportTo.assign.label"/></button></li>
             <c:forEach items="${user.employments}" var="e" >
                 <c:if test="${!empty e.employmentReportTo && !empty e.employmentReportTo.reportTo}">

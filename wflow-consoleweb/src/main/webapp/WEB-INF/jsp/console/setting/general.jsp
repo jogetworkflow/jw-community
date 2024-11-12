@@ -29,7 +29,7 @@
 
 
     .main-body-content-subheader {
-        font-weight: 600;
+        font-weight: 500;
         background-color: transparent;
         margin-bottom: 0px;
         cursor: pointer;
