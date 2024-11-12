@@ -1856,6 +1856,7 @@ body.quickEditModeActive #category-container {
 }
 
 body.quickEditModeActive fieldset#form-canvas:after, body.quickEditModeActive fieldset#form-canvas .subform-container:after, body.quickEditModeActive .dataList:after, body.quickEditModeActive #category-container:after, body.quickEditModeActive #content>main:after {
+    border: solid 3px #DAE6E2;
     position: absolute;
     top: 0;
     left: 0;
@@ -1869,8 +1870,8 @@ body.quickEditModeActive fieldset#form-canvas:after, body.quickEditModeActive fi
 body.quickEditModeActive fieldset#form-canvas.quick-edit-hovered:after, 
 body.quickEditModeActive fieldset#form-canvas .subform-container.quick-edit-hovered:after, 
 body.quickEditModeActive .dataList.quick-edit-hovered:after, 
-body.quickEditModeActive #category-container.quick-edit-hovered:after, 
-body.quickEditModeActive #content>main.quick-edit-hovered:after {
+body.quickEditModeActive #category-container.quick-edit-hovered:after,
+ body.quickEditModeActive #content>main.quick-edit-hovered:after {
     background-color: rgba(0, 169, 119, 0.1)
 }
 

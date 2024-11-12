@@ -2,7 +2,7 @@
  * Customised from https://github.com/givanz/VvvebJs
  */
 
- _CustomBuilder = {
+_CustomBuilder = {
     isAjaxReady : false,
     saveUrl : '',
     previewUrl : '',
@@ -3564,7 +3564,7 @@
         CustomBuilder.builderTypes = [];
         for (var i in data) {
             var builder = data[i];
-            var li = $('<li class="builder-icon menu-'+builder.value+'"><span tooltip-position="right" title="'+builder.label+'" style="background: '+builder.color+';color: '+builder.color+'"><i class="'+builder.icon+'"></i></span><ul></ul></li>');
+            var li = $('<li class="builder-icon menu-'+builder.value+'"><span tooltip-position="left" title="'+builder.label+'" style="background: '+builder.color+';color: '+builder.color+'"><i class="'+builder.icon+'"></i></span><ul></ul></li>');
             $(li).find("ul").append('<li class="header"><span class="header-label">'+builder.label+'</span> <span class="addnew"><a data-type="'+builder.value+'"><i class="las la-plus"></i> '+get_cbuilder_msg("cbuilder.addnew")+'</a></span></li>');
             CustomBuilder.builderTypes.push(builder.value);
             if (builder.elements) {
@@ -3641,11 +3641,11 @@
                 "position": "absolute",
                 "transform": "translate(-50%, -50%)"
             });
-            $(sessionDiv).append('<p>'+get_cbuilder_msg('cbuilder.sessionTimeout')+'</p>');
-            $(sessionDiv).append('<a href="'+CustomBuilder.contextPath+'/web/presence" target="_blank" class="btn btn-primary">'+get_cbuilder_msg('ubuilder.login')+'</a>');
-            $(sessionDiv).append('<p>'+get_cbuilder_msg('cbuilder.doNotClose')+'</p>');
-            $(sessionDiv).append('<p><i class="fas fa-spin fa-spinner" style="font-size: 40px; color: #ccc;"></i></p>');
-            
+            $(sessionDiv).append('<p style="margin-bottom:0;margin-top: 1rem;line-height: 25px;">'+get_cbuilder_msg('cbuilder.sessionTimeout')+'</p>');
+            $(sessionDiv).append('<p style="font-size:0.8rem;font-style:italic;color:#808080;margin-bottom: 1.5rem;">'+get_cbuilder_msg('cbuilder.doNotClose')+'</p>');
+            $(sessionDiv).append('<a style="margin-bottom:1.5rem;background-color:#009265;border-color:#009265;text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3);" href="'+CustomBuilder.contextPath+'/web/presence" target="_blank" class="btn btn-primary">'+get_cbuilder_msg('ubuilder.login')+'</a>');
+            $(sessionDiv).append('<p><i class="fas fa-spin fa-spinner" style="font-size: 40px; color:#00A977;"></i></p>');
+
             //adding listener
             CustomBuilder.addVisibilityChangeEvent("session", function(event, hidden) {
                 if (!document[hidden]) {

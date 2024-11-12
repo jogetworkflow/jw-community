@@ -1138,7 +1138,7 @@ div.section, .header > ol {
 #builderElementName{
     font-weight: bold;
     padding-top: 2px;
-    padding-right: 60px;
+    padding-right: 100px;
     color: #394249 !important;
     height: 45px;
 }
@@ -1272,9 +1272,6 @@ div.section, .header > ol {
     background: #fff;
     z-index: 10;
     overflow: none;
-}
-#cbuilder.quick-nav-shown .builder-view {
-    left: 30px;
 }
 .builder-view-header h3 {
     font-size: 24px;
@@ -1908,7 +1905,7 @@ body.quick-nav-shown #builder-quick-nav {
     position: absolute;
 }
 #builder-quick-nav #builder-menu {
-    margin-top: 80px;
+    margin-top: 40px;
     display: block !important;
 }
 #builder-quick-nav #builder-menu-search{

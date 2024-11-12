@@ -1,16 +1,17 @@
 .serverName {width: 50%; display: inline-block; min-width: 300px;}
 .check_interval_container {text-align: right;width: 50%; display: inline-block; float: right; padding: 11px 0; box-sizing: border-box; min-width: 300px;}
-table {border: 1px solid #ccc; border-left:0; border-collapse: collapse; width: 100%;}
-th {border-bottom: 1px solid #ccc;}
-td, th  {border-left: 1px solid #ccc; padding:10px; position: relative;}
+table {border: 1px solid var(--theme-border-color-1); border-left:0; border-collapse: collapse; width: 100%;}
+th {border-bottom: 1px solid var(--theme-border-color-1);}
+td, th  {border-left: 1px solid var(--theme-border-color-1); padding:10px; position: relative;}
 .category th {text-align: left;}
-tr + .category th {border-top: 1px solid #ccc;}
+tr + .category th {border-top: 1px solid var(--theme-border-color-1);}
 .status, .timestamp {text-align: center;}
 .status {font-weight: bold;}
-.status .pass {color: #28a745;}
-.status .fail {color: #dc3545;}
-.status .info {color: #007bff;}
-.status .warn {color: #ffc107;}
+.status > span {color:#fff;padding:5px;border-radius: 5px;}
+.status .pass {background-color: #28a745;}
+.status .fail {background-color: #dc3545;}
+.status .info {background-color: #007bff;}
+.status .warn {background-color: #ffc107;}
 .status .progress_cont {width: 25px; height: 25px; margin: 0 auto;}
 .status .progress_svg {width: 25px; height: 25px;}
 .status .progress_cont:after{font-size: 10px;}
@@ -55,5 +56,5 @@ div.check_interval_container > * {margin-bottom: .6rem;}
     .governance_report table thead th:last-child {display: none;}
     .governance_report table tr {display:flex; flex-wrap:wrap; width: 100%;}
     .governance_report table tbody td, .governance_report table thead th {display:block; flex:1; width: auto;}
-    .governance_report table tbody tr th, .governance_report table tbody tr td:last-child {width:100%; flex:auto; border-top: 1px solid #ccc;  border-bottom: 1px solid #ccc;}
+    .governance_report table tbody tr th, .governance_report table tbody tr td:last-child {width:100%; flex:auto; border-top: 1px solid var(--theme-border-color-1);  border-bottom: 1px solid var(--theme-border-color-1);}
 }

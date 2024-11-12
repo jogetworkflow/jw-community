@@ -65,11 +65,13 @@ a#quickEditMode:not(.off) > label.adminbar-control-label.button {
     background: #009265;
     color: #fff;
     padding: 10px;
-    box-shadow: #666 1px 1px 2px 1px;
+    box-shadow: 0 6px 16px 0 rgba(0, 0, 0, 0.08),
+    0 3px 6px -4px rgba(0, 0, 0, 0.12),
+    0 9px 28px 8px rgba(0, 0, 0, 0.05);
     border-radius: 50%;
     z-index: 100000050;
     cursor: pointer;
-    width: 20px;
+    width: 22px;
     text-align: center;
     box-sizing: content-box;
 }
@@ -84,7 +86,7 @@ body.rtl #adminControl .fa-angle-double-right:before {
 }
 
 #adminControl i {
-    font-size: 20px;
+    font-size: 1.125rem;
 }
 
 body #adminBar {
@@ -105,10 +107,9 @@ body #adminBar {
     height: 35px;
     -webkit-font-smoothing: antialiased;
     box-sizing: border-box;
-    transition: transform 0.2s ease-in-out, opacity 0.2s ease-in-out;
+    transition: transform 0.6s linear;
     background: #E6E6E6;
-	transform: translateY(0); 
-    opacity: 1;
+    transform: translateY(0);
 }
 
 #adminBar[builder-theme='dark'] {
@@ -129,11 +130,10 @@ body.embeded #adminBar {
 }
 
 #adminBar.adminBarInactive {
-    width: 0px;
     box-shadow: none;
-    padding: 0 !important;
-	transform: translateY(100%); 
+    transform: translateY(150%);
     opacity: 0;
+    transition: transform 0.6s linear, opacity 0.1s ease-in-out 0.6s;    
 }
 
 #adminBar #appCenter {
@@ -606,26 +606,26 @@ body.rtl #quickOverlayFrameDiv {
     display: none;
     min-width: fit-content;
     max-width: 200px;
-    max-height: 20px;
+    max-height: 25px;
     position: relative;
     top: 1px;
     left: 1px;
     font-size: 9px;
-    line-height: 14px;
+    line-height: 24px;
     text-align: center;
     cursor: pointer;
     margin: 0px 0px 2px 0px;
-    padding: 2px 5px;
-    background: #e7fab6;
+    padding: 2px 10px;
+    background: #DAE6E2;
     border-radius: 2px;
     z-index: 1;
-    box-shadow: #A0C847 0px 0px 3px 1px;
     opacity: 0.8;
     overflow: hidden;
+    font-family: "Inter", sans-serif !important;
 }
 
 .quickEdit:hover, #form-canvas .quickEdit:hover {
-	z-index: 9999;
+    z-index: 9999;
 }
 
 .quickEdit a, #navigation .quickEdit a, #form-canvas .quickEdit a, .quickEdit i#temp-icon {
@@ -642,9 +642,46 @@ body.rtl #quickOverlayFrameDiv {
     background: lightgreen;
 }
 
-body.quickEditModeActive fieldset#form-canvas, body.quickEditModeActive fieldset#form-canvas .subform-container, body.quickEditModeActive .dataList, body.quickEditModeActive #category-container {
-    border: solid 5px #e7fab6;
+body.quickEditModeActive fieldset#form-canvas, 
+body.quickEditModeActive fieldset#form-canvas .subform-container, 
+body.quickEditModeActive .dataList, 
+body.quickEditModeActive #category-container,
+body.quickEditModeActive #content > main {
+    border: solid 5px #DAE6E2;
     padding: 1px;
+}
+
+body.quickEditModeActive fieldset#form-canvas.quick-edit-hovered, 
+body.quickEditModeActive fieldset#form-canvas .subform-container.quick-edit-hovered, 
+body.quickEditModeActive .dataList.quick-edit-hovered, 
+body.quickEditModeActive #category-container.quick-edit-hovered,
+body.quickEditModeActive #content > main.quick-edit-hovered {
+	position: relative;
+}
+
+body.quickEditModeActive fieldset#form-canvas.quick-edit-hovered:after, 
+body.quickEditModeActive fieldset#form-canvas .subform-container.quick-edit-hovered:after, 
+body.quickEditModeActive .dataList.quick-edit-hovered:after, 
+body.quickEditModeActive #category-container.quick-edit-hovered:after,
+body.quickEditModeActive #content > main.quick-edit-hovered:after {
+    background-color: rgba(0, 169, 119, 0.1)    ;
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    content: "";
+    pointer-events: none;
+    z-index: 3;
+    display:block;
+}
+
+body.quickEditModeActive fieldset#form-canvas.quick-edit-hovered:before, 
+body.quickEditModeActive fieldset#form-canvas .subform-container.quick-edit-hovered:before, 
+body.quickEditModeActive .dataList.quick-edit-hovered:before, 
+body.quickEditModeActive #category-container.quick-edit-hovered:before,
+body.quickEditModeActive #content > main.quick-edit-hovered:before {
+    content: none;
 }
 
 body.quickEditModeActive fieldset#form-canvas [class^="icon-"], body.quickEditModeActive fieldset#form-canvas [class*=" icon-"] {
@@ -685,7 +722,7 @@ body.quickEditModeActive .analyzer-page {
 #adminBar .analyzer-page span {
     color: #000;
     font-size: 10px;
-	font-family: "Inter", sans-serif !important;
+    font-family: "Inter", sans-serif !important;
 }
 
 .analyzer-label {
@@ -800,7 +837,7 @@ body.fixiosframe.stop-scrolling {
     font-size: 18px;
     font-family: arial;
     line-height: 20px;
-    transition: all 0.2s linear;
+    transition: all 0.6s linear;
 }
 
 html.adminBarShown #adminBar #environmentName {

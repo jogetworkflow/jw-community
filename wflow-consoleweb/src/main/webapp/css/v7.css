@@ -12,7 +12,7 @@ body[system-theme='light'] {
     --console-border-color: #ced4da;
     --console-main-background-color: #f6f7fb;
     --console-secondary-background-color: #FFF;
-    --console-default-font-color: #111827;
+    --console-default-font-color:  rgba(0, 0, 0, 0.88);
 }
 body[system-theme='dark']{
     --console-border-color: #444e57;
@@ -400,8 +400,8 @@ button, input[type='button'], input[type='submit'], .smallbutton, .btn{
     -webkit-appearance: none;
     font-size: 14px;
     font-weight: normal;
-    border-radius: 10px;
-    padding: 5px 15px;
+    border-radius: 10px !important;
+    padding: 5px 15px !important;
     cursor: pointer;
     -webkit-transform: perspective(1px) translateZ(0);
     transform: perspective(1px) translateZ(0);
@@ -534,7 +534,7 @@ body .ui-tabs .ui-state-default a{
     color: #535353 !important;
     padding: 5px 25px;
     text-decoration: none !important;
-    font-weight: 600;
+    font-weight: 500;
 }
 body .ui-tabs .ui-tabs-nav li.ui-state-default:not(.ui-tabs-active):hover a {
     color: #009688 !important;
@@ -820,7 +820,6 @@ body .ui-widget-overlay{
 body .ui-dialog {
     border: 0;
     border-radius: 15px !important;
-    box-shadow: 1px 4px 4px rgba(0, 0, 0, 0.5);
     z-index: 10001;
 }
 body .ui-dialog .ui-dialog-content {
@@ -847,7 +846,7 @@ body .ui-button-text {
 }
 body .boxy-wrapper .title-bar a.close,
 body .ui-dialog-titlebar-close{
-    top: 15px !important;
+    top: 25px !important;
     right: 10px !important;
     border: 0 !important;
     border-radius: 50% !important;
@@ -909,7 +908,6 @@ body.popupBody #main-body-header {
     color: var(--console-default-font-color);
     padding: 15px;
     position: fixed;
-    text-transform: uppercase;
     font-size: 16px;
     font-weight: bold;
     top: 0;
@@ -975,8 +973,14 @@ body .ui-widget-content {
 
 /* flexigrid tables */
 body .flexigrid{
-    font-size: 14px;
+    font-size: 13px;
     color:var(--console-default-font-color);
+}
+body[system-theme] .flexigrid div.hDiv th > div, 
+body[system-theme] .flexigrid div.bDiv td div,
+body[system-theme] .flexigrid div.pDiv input[type=text],
+body[system-theme] .flexigrid div.pDiv select:not([class^=ui]) {
+    font-size: inherit !important;
 }
 body .flexigrid div.hDiv {
     background: transparent;
@@ -1232,7 +1236,7 @@ fieldset legend,
     clear: left;
     padding-right: 10px;
     padding-top: 10px;
-    font-weight: 500;
+    font-weight: 400;
     margin-bottom: 5px;
 }
 .form-row .form-input {
@@ -1244,6 +1248,11 @@ fieldset legend,
 .form-input input:not([type=checkbox]), .form-input textarea, 
 .form-input > div.chosen-container {
     width: 100% !important;
+}
+.chosen-container .chosen-single,
+.chosen-container .chosen-results, 
+.chosen-container-single .chosen-search {
+    color: var(--console-default-font-color);
 }
 .form-row .form-input:after,
 .form-row:after {
