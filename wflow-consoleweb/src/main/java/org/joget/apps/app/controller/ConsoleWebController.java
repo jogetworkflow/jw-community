@@ -1629,15 +1629,23 @@ public class ConsoleWebController {
         TreeMap<Long, AppDefinition> appDefMap = new TreeMap<>();
         if (!appDefList.isEmpty()) {
             for (AppDefinition appDef: appDefList) {
-                File dir = AppDevUtil.fileGetFileObject(appDef, ".", false);
-                if (dir != null && dir.isDirectory()) {
-                    // Check if folder is empty delete app version
-                    Collection<File> files = FileUtils.listFiles(dir, new String[]{ "json", "xml", "xpdl", "jar" }, true);
-                    if (files == null || files.isEmpty()) {
-                        appService.deleteAppDefinitionVersion(appId, appDef.getVersion());
-                    } else {
-                        appDefMap.put(appDef.getVersion(), appDef);
+                boolean shouldDeleteAppVersion = false;
+
+                // Only delete app version if git is enabled and folder is empty
+                if (!AppDevUtil.isGitDisabled()) {
+                    File dir = AppDevUtil.fileGetFileObject(appDef, ".", false);
+                    if (dir != null && dir.isDirectory()) {
+                        Collection<File> files = FileUtils.listFiles(dir, new String[]{"json", "xml", "xpdl", "jar"}, true);
+                        if (files == null || files.isEmpty()) {
+                            shouldDeleteAppVersion = true;
+                        }
                     }
+                }
+
+                if (shouldDeleteAppVersion) {
+                    appService.deleteAppDefinitionVersion(appId, appDef.getVersion());
+                } else {
+                    appDefMap.put(appDef.getVersion(), appDef);
                 }
             }            
             
