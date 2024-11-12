@@ -168,14 +168,14 @@ var AdminBar = {
             e.stopPropagation();
             $("body.quickEditModeActive fieldset#form-canvas, body.quickEditModeActive fieldset#form-canvas .subform-container, body.quickEditModeActive .dataList, body.quickEditModeActive #category-container, body.quickEditModeActive #content>main")
             .filter('.quick-edit-hovered').removeClass('quick-edit-hovered');
-            if ($(this).parent().is('#sidebar')){
-                $(this).parent().find('#category-container').addClass('quick-edit-hovered')
+            if ($(this).siblings("#navigation").length){
+                $(this).parent().find('#navigation #category-container').addClass('quick-edit-hovered')
             }else{
                 $(this).parent().addClass("quick-edit-hovered")
             }
         }).off("mouseleave").on("mouseleave", function(){
-            if ($(this).parent().is('#sidebar')){
-                $(this).parent().find('#category-container').removeClass("quick-edit-hovered");
+            if ($(this).siblings("#navigation").length){
+                $(this).parent().find('#navigation #category-container').removeClass("quick-edit-hovered");
             }else{
                 $(this).parent().removeClass("quick-edit-hovered");
             }
@@ -331,7 +331,7 @@ var AdminBar = {
         $("#adminBar").removeClass("adminBarActive");
         $("#adminBar").addClass("adminBarInactive");
         $("#adminControl").removeClass("active");
-        $("#adminControl").find("i").attr("class", "fas fa-pencil-alt");
+        $("#adminControl").find("i").attr("class", "fas fa-cogs");
         var path = AdminBar.cookiePath;
         $.cookie("adminBarModeHide", "true", {
             path: path
