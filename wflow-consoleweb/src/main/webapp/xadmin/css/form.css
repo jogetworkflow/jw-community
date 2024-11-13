@@ -280,8 +280,6 @@ body input.no-manual-input{
 }
 body input[size],
 body .editor-cell input[size]{
-    min-width: unset;
-    max-width: unset;
     width: auto;
 }
 body .ql-container.ql-bubble{

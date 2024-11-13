@@ -134,6 +134,7 @@ body .subform-cell > .subform-container.has-frame, .form-cell > .subform-contain
     white-space: normal;
     position: relative;
     width:70%;
+    max-width: 70%;
     float: left;
 }
 .rtl .form-cell > label.label + *:not(.ui-screen-hidden),
@@ -153,6 +154,7 @@ body .subform-cell > .subform-container.has-frame, .form-cell > .subform-contain
 .label-top.form-cell > label.label + .ui-screen-hidden + *,
 .label-top.subform-cell > label.label + .ui-screen-hidden + *{
     width: 100%;
+    max-width: 100%;
     float: none !important;
 }
 @media (max-width: 991px) and (min-width : 768px) {
@@ -1212,6 +1214,7 @@ body.rtl .calculationField_value {
         white-space: normal;
         position: relative;
         width: 100%;
+        max-width: 100%;
         float: none;
     }
     .hasDatepicker + a{
