@@ -50,6 +50,7 @@ public final class PluginThread extends Thread {
     private HttpServletResponse response;
     private ServletRequestContext wildflyServletRequestContext; // for jboss eap and wildfly
     private Object websphereRequest; // for websphere liberty IRequest https://github.com/OpenLiberty/open-liberty/blob/gm-24.0.0.10/dev/com.ibm.ws.webcontainer/src/com/ibm/websphere/servlet/request/IRequest.java
+    private Object websphereRequestHelper; // for websphere liberty SRTServletRequestHelper https://github.com/OpenLiberty/open-liberty/blob/gm-24.0.0.10/dev/com.ibm.ws.webcontainer/src/com/ibm/ws/webcontainer/srt/SRTServletRequest.java
     private Object tomcatConnector; // for tomcat
     
     /**
@@ -121,6 +122,11 @@ public final class PluginThread extends Thread {
                     Field field = requestClass.getDeclaredField("_request");
                     field.setAccessible(true);
                     websphereRequest = field.get(wrappedRequest);
+
+                    // obtain internal _srtRequestHelper for later reuse (https://github.com/OpenLiberty/open-liberty/blob/gm-24.0.0.10/dev/com.ibm.ws.webcontainer/src/com/ibm/ws/webcontainer/srt/SRTServletRequest.java#L162)
+                    Field helperField = requestClass.getDeclaredField("_srtRequestHelper");
+                    helperField.setAccessible(true);
+                    websphereRequestHelper = helperField.get(wrappedRequest);
                 } catch (Exception ex) {
                     LogUtil.warn(getClass().getName(), ex.toString());
                 }
@@ -138,7 +144,7 @@ public final class PluginThread extends Thread {
             request = null;
         }  
     }
-        
+    
     private void setProfile() {
         HostManager.setCurrentProfile(profile);
     }
@@ -152,9 +158,16 @@ public final class PluginThread extends Thread {
             
             ServletRequest wrappedRequest = getWrappedRequest(request);
             if (websphereRequest != null && wrappedRequest.getClass().getName().contains("SRTServletRequest")) {
-                // for websphere liberty, initialize request using initForNextRequest (https://github.com/OpenLiberty/open-liberty/blob/gm-24.0.0.7/dev/com.ibm.ws.webcontainer/src/com/ibm/ws/webcontainer/srt/SRTServletRequest.java#L320)
+                // for websphere liberty
                 try {
+                    // initialize request using initForNextRequest (https://github.com/OpenLiberty/open-liberty/blob/gm-24.0.0.10/dev/com.ibm.ws.webcontainer/src/com/ibm/ws/webcontainer/srt/SRTServletRequest.java#L320)
                     MethodUtils.invokeMethod(wrappedRequest, true, "initForNextRequest", new Object[] { websphereRequest });
+
+                    // get reference to com.ibm.ws.webcontainer.srt.SRTServletRequest and set current _srtRequestHelper
+                    Class requestClass = wrappedRequest.getClass().getSuperclass().getSuperclass().getSuperclass();
+                    Field helperField = requestClass.getDeclaredField("_srtRequestHelper");
+                    helperField.setAccessible(true);
+                    helperField.set(wrappedRequest, websphereRequestHelper);
                 } catch (Exception ex) {
                     LogUtil.warn(getClass().getName(), ex.toString());
                 }
@@ -174,10 +187,10 @@ public final class PluginThread extends Thread {
             if (wildflyServletRequestContext != null) {
                 // clear wildfly servlet attachments
                 ServletRequestContext.clearCurrentServletAttachments();
-            }
-        }        
+            }        
+        }
     }
-
+    
     /**
      * Return the original request within servlet request wrappers.
      * @param req
