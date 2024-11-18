@@ -1843,19 +1843,32 @@ body .form-container [class*="form-cell-value"] {
 .quickEdit,
 #form-canvas .quickEdit {
     position: absolute;
-    z-index: 3;
+    z-index: 5;
 }
 
-body.quickEditModeActive fieldset#form-canvas,
-body.quickEditModeActive fieldset#form-canvas .subform-container,
-body.quickEditModeActive .dataList,
-body.quickEditModeActive #category-container {
+body.quickEditModeActive fieldset#form-canvas, 
+body.quickEditModeActive fieldset#form-canvas .subform-container, 
+body.quickEditModeActive .dataList, 
+body.quickEditModeActive #category-container, 
+body.quickEditModeActive #content > main {
     border: inherit !important;
     padding: inherit !important;
     position: relative;
 }
 
-body.quickEditModeActive fieldset#form-canvas:after, body.quickEditModeActive fieldset#form-canvas .subform-container:after, body.quickEditModeActive .dataList:after, body.quickEditModeActive #category-container:after, body.quickEditModeActive #content>main:after {
+body.quickEditModeActive #content > main {
+    padding: 1px !important;
+}
+
+body.quickEditModeActive div#sidebar .quickEdit > a {
+    margin: 0;
+}
+
+body.quickEditModeActive fieldset#form-canvas:after, 
+body.quickEditModeActive fieldset#form-canvas .subform-container:after, 
+body.quickEditModeActive .dataList:after, 
+body.quickEditModeActive #category-container:after, 
+body.quickEditModeActive #content>main:after {
     border: solid 3px #DAE6E2;
     position: absolute;
     top: 0;

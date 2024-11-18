@@ -8,13 +8,13 @@
     --console-button-danger-bg: #dc3545;
     --console-button-danger-bg-hover: #c82333;
 }
-body[system-theme='light'] {
+html[system-theme='light'], body[system-theme='light'] {
     --console-border-color: #ced4da;
     --console-main-background-color: #f6f7fb;
     --console-secondary-background-color: #FFF;
     --console-default-font-color:  rgba(0, 0, 0, 0.88);
 }
-body[system-theme='dark']{
+html[system-theme='dark'], body[system-theme='dark']{
     --console-border-color: #444e57;
     --console-main-background-color: #1f1f1f;
     --console-secondary-background-color: #121212;
@@ -51,6 +51,8 @@ button#filter-btn {
     transition-property: none !important;
     transition: none !important;
     text-align: center !important;
+    height: 30px !important;
+    box-sizing: border-box;
 }
 .console-primary > i, .console-danger > i, 
 .console-secondary > i, .console-tertiary > i{
@@ -324,6 +326,7 @@ div#adminWelcome > div#getting-started > #welcomeFrame:hover + i.fa-question-cir
     font-weight: bold;
     margin-top: 10px;
     color: var(--console-default-font-color);
+    height: 23px;
 }
 body.rtl #main-title {
     text-align: right;
@@ -491,6 +494,9 @@ body .ui-tabs-nav{
     border-radius: 0 !important;
     border-bottom: 1px solid #f0f0f0 !important;
     display:flex;
+}
+body[system-theme="dark"] .ui-tabs-nav{
+    border-bottom: 1px solid #303030 !important;
 }
 body .ui-tabs-nav li.ui-tabs-tab > a{
     width: fit-content;
@@ -825,7 +831,7 @@ body .ui-dialog {
 body .ui-dialog .ui-dialog-content {
     padding: 0px !important;
     overflow: hidden !important;
-    background: var(--console-main-background-color);
+    background: var(--console-secondary-background-color);
 }
 body .ui-dialog .ui-dialog-buttonpane button {
     padding: 5px 10px;
@@ -1043,8 +1049,7 @@ body[system-theme='dark'] .flexigrid div.bDiv tr:hover td,
 body[system-theme='dark'] .flexigrid div.bDiv tr:hover td.sorted, 
 body[system-theme='dark'] .flexigrid div.bDiv tr.trOver td.sorted, 
 body[system-theme='dark'] .flexigrid div.bDiv tr.trOver td {
-    background: var(--console-secondary-background-color);
-    border-left: 1px solid var(--console-border-color);
+    background: var(--console-main-background-color);
     border-bottom: 0 !important;
 }
 body .flexigrid .pFirst,
@@ -1199,6 +1204,9 @@ a.guider_button:hover {
     min-height: auto !important;
     position: relative;
     border-bottom: 1px solid #f0f0f0;
+}
+body[system-theme="dark"] .main-body-row {
+    border-bottom: 1px solid #303030;
 }
 .row-button {
     position: absolute;

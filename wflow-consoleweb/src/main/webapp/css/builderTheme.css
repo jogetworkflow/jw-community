@@ -224,7 +224,7 @@ body[builder-theme].builder-title {
     font-weight: 600;
 }
 body[builder-theme]#cbuilder.quick-nav-shown #bottom-panel {
-    left: calc(var(--builder-left-panel-width) + var(--builder-canvas-margin) + 40px);
+    left: calc(var(--builder-left-panel-width) + var(--builder-canvas-margin));
 }
 body[builder-theme] .search-container .form-control .element-properties .search .form-control,
 body[builder-theme] #cbuilder .drag-elements>.header .search .form-control {
@@ -659,7 +659,7 @@ body[builder-theme] #treeViewerView .builder-view-body, body[builder-theme] #xra
     background: var(--theme-primary-color-1);
 }
 body[builder-theme] .tree ol li label {
-    font-size: 14px;
+    font-size: 12px;
     padding-left: 35px;
 }
 body[builder-theme] .tree ol li:hover {
@@ -3149,5 +3149,8 @@ body[builder-theme] .info-text{
     color: var(--theme-input-color-1);
 }
 body[builder-theme]#cbuilder.quick-nav-shown .builder-view {
-    right: 40px;
+    left: 40px;
+}
+body[builder-theme]#cbuilder:not(.no-right-panel) div#adminBar > a#quickEditMode > span#environmentName {
+    opacity: 0;
 }

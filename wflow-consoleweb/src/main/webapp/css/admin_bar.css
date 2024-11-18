@@ -41,7 +41,6 @@ a#quickEditMode:not(.off) > label.adminbar-control-label.button {
     cursor: pointer;
     margin: 0;
     margin-left: 5px;
-    border: 1px solid #adb5bd;
 }
 
 .adminbar-control-label.button .dot {
@@ -65,9 +64,7 @@ a#quickEditMode:not(.off) > label.adminbar-control-label.button {
     background: #009265;
     color: #fff;
     padding: 10px;
-    box-shadow: 0 6px 16px 0 rgba(0, 0, 0, 0.08),
-    0 3px 6px -4px rgba(0, 0, 0, 0.12),
-    0 9px 28px 8px rgba(0, 0, 0, 0.05);
+    box-shadow: 0 6px 16px 0 rgba(0, 0, 0, 0.08), 0 3px 6px -4px rgba(0, 0, 0, 0.12), 0 9px 28px 8px rgba(0, 0, 0, 0.05);
     border-radius: 50%;
     z-index: 100000050;
     cursor: pointer;
@@ -107,7 +104,7 @@ body #adminBar {
     height: 35px;
     -webkit-font-smoothing: antialiased;
     box-sizing: border-box;
-    transition: transform 0.6s linear;
+    transition: transform 0.3s linear;
     background: #E6E6E6;
     transform: translateY(0);
 }
@@ -133,7 +130,7 @@ body.embeded #adminBar {
     box-shadow: none;
     transform: translateY(150%);
     opacity: 0;
-    transition: transform 0.6s linear, opacity 0.1s ease-in-out 0.6s;    
+    transition: transform 0.6s linear, opacity 0.1s ease-in-out 0.6s;
 }
 
 #adminBar #appCenter {
@@ -642,29 +639,17 @@ body.rtl #quickOverlayFrameDiv {
     background: lightgreen;
 }
 
-body.quickEditModeActive fieldset#form-canvas, 
-body.quickEditModeActive fieldset#form-canvas .subform-container, 
-body.quickEditModeActive .dataList, 
-body.quickEditModeActive #category-container,
-body.quickEditModeActive #content > main {
+body.quickEditModeActive fieldset#form-canvas, body.quickEditModeActive fieldset#form-canvas .subform-container, body.quickEditModeActive .dataList, body.quickEditModeActive #category-container, body.quickEditModeActive #content > main {
     border: solid 5px #DAE6E2;
     padding: 1px;
 }
 
-body.quickEditModeActive fieldset#form-canvas.quick-edit-hovered, 
-body.quickEditModeActive fieldset#form-canvas .subform-container.quick-edit-hovered, 
-body.quickEditModeActive .dataList.quick-edit-hovered, 
-body.quickEditModeActive #category-container.quick-edit-hovered,
-body.quickEditModeActive #content > main.quick-edit-hovered {
-	position: relative;
+body.quickEditModeActive fieldset#form-canvas.quick-edit-hovered, body.quickEditModeActive fieldset#form-canvas .subform-container.quick-edit-hovered, body.quickEditModeActive .dataList.quick-edit-hovered, body.quickEditModeActive #category-container.quick-edit-hovered, body.quickEditModeActive #content > main.quick-edit-hovered {
+    position: relative;
 }
 
-body.quickEditModeActive fieldset#form-canvas.quick-edit-hovered:after, 
-body.quickEditModeActive fieldset#form-canvas .subform-container.quick-edit-hovered:after, 
-body.quickEditModeActive .dataList.quick-edit-hovered:after, 
-body.quickEditModeActive #category-container.quick-edit-hovered:after,
-body.quickEditModeActive #content > main.quick-edit-hovered:after {
-    background-color: rgba(0, 169, 119, 0.1)    ;
+body.quickEditModeActive fieldset#form-canvas.quick-edit-hovered:after, body.quickEditModeActive fieldset#form-canvas .subform-container.quick-edit-hovered:after, body.quickEditModeActive .dataList.quick-edit-hovered:after, body.quickEditModeActive #category-container.quick-edit-hovered:after, body.quickEditModeActive #content > main.quick-edit-hovered:after {
+    background-color: rgba(0, 169, 119, 0.1);
     position: absolute;
     top: 0;
     left: 0;
@@ -673,14 +658,10 @@ body.quickEditModeActive #content > main.quick-edit-hovered:after {
     content: "";
     pointer-events: none;
     z-index: 3;
-    display:block;
+    display: block;
 }
 
-body.quickEditModeActive fieldset#form-canvas.quick-edit-hovered:before, 
-body.quickEditModeActive fieldset#form-canvas .subform-container.quick-edit-hovered:before, 
-body.quickEditModeActive .dataList.quick-edit-hovered:before, 
-body.quickEditModeActive #category-container.quick-edit-hovered:before,
-body.quickEditModeActive #content > main.quick-edit-hovered:before {
+body.quickEditModeActive fieldset#form-canvas.quick-edit-hovered:before, body.quickEditModeActive fieldset#form-canvas .subform-container.quick-edit-hovered:before, body.quickEditModeActive .dataList.quick-edit-hovered:before, body.quickEditModeActive #category-container.quick-edit-hovered:before, body.quickEditModeActive #content > main.quick-edit-hovered:before {
     content: none;
 }
 

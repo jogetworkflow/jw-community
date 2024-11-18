@@ -252,7 +252,7 @@ body.right-panel-resizing #right-panel-resize-block{
 }
 #cbuilder #bottom-panel {
     width: auto;
-    height: 30px;
+    height: 35px;
     bottom: 0px;
     position: fixed;
     border-top: 1px solid #ddd;
@@ -1622,7 +1622,7 @@ div.section, .header > ol {
     height: 100%;
 }
 .element-properties-footer-actions{
-    padding-top: 10px;
+    padding-top: 5px;
     background: #9bb1c1;
 }
 #apply-btn {
@@ -1693,7 +1693,7 @@ li.jsondiffpatch-unchanged {
     padding:20px 0;
 }
 .treeRightPanel .builder-view-body ol {
-    width: 500px;
+    width: fit-content;
 }
 
 /* popup */
