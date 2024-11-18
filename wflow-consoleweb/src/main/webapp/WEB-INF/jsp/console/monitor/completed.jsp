@@ -15,7 +15,7 @@
 <div id="main">
     <c:choose>
         <c:when test="${mode == 'completed' && hasNonArchivedProcessData}">
-            <fmt:message key="console.header.submenu.label.completedProcesses"/>        </c:when>
+            <div id="main-title"><fmt:message key="console.header.submenu.label.completedProcesses"/></div>        </c:when>
         <c:otherwise>
             <div id="main-title"><fmt:message key="console.header.submenu.label.archivedProcesses"/></div>
         </c:otherwise>
