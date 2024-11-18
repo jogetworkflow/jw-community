@@ -1755,10 +1755,19 @@ public class AppUtil implements ApplicationContextAware {
     }
     
     public static List<String> findMissingPlugins(AppDefinition appDef) {
-        return findCustomPlugins(appDef, true, true);
+        return findCustomPlugins(appDef, true, false, true);
     }
     
-    public static List<String> findCustomPlugins(AppDefinition appDef, Boolean isMissing, Boolean toMarketPlaceLink) {
+    /**
+     * Find custom OSGI plugin from app definition
+     * 
+     * @param appDef
+     * @param isMissing the plugin class can't match a plugin
+     * @param isOsgi the plugin is an OSGI plugin
+     * @param toMarketPlaceLink turn the plugin class name to marketplace link
+     * @return 
+     */
+    public static List<String> findCustomPlugins(AppDefinition appDef, Boolean isMissing, Boolean isOsgi, Boolean toMarketPlaceLink) {
         List<String> foundPlugins = new ArrayList<String>();
         
         if (appDef == null) {
@@ -1841,7 +1850,7 @@ public class AppUtil implements ApplicationContextAware {
         
         for (String p : found) {
             if (p.contains(".") && 
-                    ((!isMissing && osgiplugins.contains(p)) || //exist but it is osgi
+                    ((isOsgi && osgiplugins.contains(p)) || //exist but it is osgi
                     (isMissing && !plugins.contains(p)))) { //not exist
                 // Skip the Theme Builder check as the Theme Builder uses a combination of classname and themeID.
                 if(!p.startsWith("org.joget.plugin.enterprise.BuilderTheme")){
