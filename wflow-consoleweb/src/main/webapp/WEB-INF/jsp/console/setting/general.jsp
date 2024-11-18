@@ -74,7 +74,7 @@
         display: flex;
         align-items: center;
         position:relative;
-        border: 1px solid rgb(206, 212, 218);
+        border: 1px solid var(--console-border-color);
         height: 20px;
         padding:5px 5px 5px 10px;
         border-radius: 5px;
