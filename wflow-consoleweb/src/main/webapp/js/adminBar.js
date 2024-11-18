@@ -319,7 +319,19 @@ var AdminBar = {
         $("#adminBar").removeClass("adminBarInactive");
         $("#adminBar").addClass("adminBarActive");
         $("#adminControl").addClass("active");
-        $("#adminControl").find("i").attr("class", "fa fa-times");
+        const $icon = $("#adminControl").find("i");
+        $({deg: 0}).animate({deg: 360}, {
+            duration: 200,
+            step: function(now) {
+                $icon.css({
+                    transform: `rotate(${now}deg)`
+                });
+            },
+            complete: function() {
+                // After animation completes, change the icon
+                $icon.attr("class", "fas fa-angle-double-down");
+            }
+        });
         var path = AdminBar.cookiePath;
         $.cookie("adminBarModeHide", "false", {
             path: path
@@ -331,7 +343,20 @@ var AdminBar = {
         $("#adminBar").removeClass("adminBarActive");
         $("#adminBar").addClass("adminBarInactive");
         $("#adminControl").removeClass("active");
-        $("#adminControl").find("i").attr("class", "fas fa-cogs");
+        const $icon = $("#adminControl").find("i");
+        if (!($icon.attr('class') === "fas fa-cogs")){
+            $({deg: 0}).animate({deg: 360}, {
+                duration: 200,
+                step: function(now) {
+                    $icon.css({
+                        transform: `rotate(${now}deg)`
+                    });
+                },
+                complete: function() {
+                    $icon.attr("class", "fas fa-cogs");
+                }
+            });
+        }
         var path = AdminBar.cookiePath;
         $.cookie("adminBarModeHide", "true", {
             path: path
