@@ -7,17 +7,42 @@ $(document).ready(function () {
     const menuBreakpoint = 768;
     let initialLoad = true;
 
-    $("body").off("click.moreList mouseover.moreList").on("click.moreList mouseover.moreList", "ul#category-container li#menu-more, ul#category-container li#menu-more li.category", function(){
-        var obj = $(this).find("ul")[0]
-        var positionObject = $(obj)[0].getBoundingClientRect(); 
-        //If position of the object exceeds the left side and right side
-        if (positionObject.left < 0 && positionObject.right < 0){
-            return
+    $("body").off("click.moreList mouseover.moreList touchstart.moreList").on("click.moreList mouseover.moreList touchstart.moreList", "ul#category-container > li.category", function(e) {
+        //Check if device  is touch screen, if so, we can return mouseevent, and click event
+        //to prevent multiple trigger execution
+        if ( (('ontouchstart' in window) ||(navigator.maxTouchPoints > 0) || (navigator.msMaxTouchPoints > 0)) 
+        && (e.type === 'click' || e.type === "mouseover") ) {
+            return;
         }
-        else if (positionObject.left < 0){
-            $(obj).is('#moreSubMenu') ? $(obj).css({"left":"0px", "right": "unset"}) : $(obj).css({"left":"100%", "right": "unset"})
-        }else if (positionObject.right < 0){
-            $(obj).is('#moreSubMenu') ? $(obj).css({"right": "0px", "left": "unset"}) : $(obj).css({"right": "100%", "left": "unset"})
+        //Find the nearest ul
+        var obj = $(this).find("ul")[0]
+        e.stopPropagation();
+
+        //Set the display to block, so we can get the correct position
+        obj.style.setProperty('display', 'block', 'important');
+        var positionObject = obj.getBoundingClientRect();
+        
+        obj.style.setProperty('display', '');
+
+        //Set the left, and right, depending if it exceeds the screen or not
+        if (positionObject.left > 0 && positionObject.right < $(window).width()) {
+            return
+        } else if (positionObject.left < 0) {
+            $(obj).is('#moreSubMenu') ||  ($(obj).is('.menu-container') && $(obj).closest("#moreSubMenu").length === 0) ? $(obj).css({
+                "left": "0px",
+                "right": "unset"
+            }) : $(obj).css({
+                "left": "100%",
+                "right": "unset"
+            })
+        } else if (positionObject.right > $(window).width()) {
+            $(obj).is('#moreSubMenu') ||  ($(obj).is('.menu-container') && $(obj).closest("#moreSubMenu").length === 0) ? $(obj).css({
+                "right": "0px",
+                "left": "unset"
+            }) : $(obj).css({
+                "right": "100%",
+                "left": "unset"
+            })
         }
     })
 
@@ -68,6 +93,8 @@ $(document).ready(function () {
         // format navigation on page resize
         let id;
         $(window).resize(function() {
+            $("ul#category-container > li.category > ul").css({'left': '', 'right': ''});
+
             let firstItemLength;
             let menuItemId = $(navItems[0]).prop('id');
             if ($(window).outerWidth() >= menuBreakpoint){
