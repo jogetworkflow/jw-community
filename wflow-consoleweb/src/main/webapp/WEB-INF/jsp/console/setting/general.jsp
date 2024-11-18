@@ -27,7 +27,6 @@
         min-height: 100vh;
     }
 
-
     .main-body-content-subheader {
         font-weight: 500;
         background-color: transparent;
@@ -59,12 +58,15 @@
         border-bottom: 1px solid #f0f0f0;
     }
 
+    body[system-theme="dark"] #header-container {
+        border-bottom: 1px solid #303030;
+    }
+
     #main-title{
         display: inline-flex;
         justify-content: space-between;
         width: 100%;
         align-items: center;
-        margin-top:0px;
      }
 
     #search-bar {
@@ -856,10 +858,10 @@
         let elementsAfterFirstHeader = $('.main-body-content-subheader').eq(0).nextUntil('#header-container');
         //Insert the elements after the header-container
         elementsAfterFirstHeader.attr('data-header', 'system');
-        elementsAfterFirstHeader.prependTo('div#content');
+        elementsAfterFirstHeader.appendTo('div#content');
         //Insert the settings header to the header-container
         $('.main-body-content-subheader').eq(0).attr('id', 'system');
-        $('.main-body-content-subheader').eq(0).prependTo('#header-container');
+        $('.main-body-content-subheader').eq(0).appendTo('#header-container');
 
         //Header select logic
         $("div.main-body-content-subheader").off('click').on('click', function(){
