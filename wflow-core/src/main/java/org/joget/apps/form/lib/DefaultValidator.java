@@ -138,7 +138,7 @@ public class DefaultValidator extends FormValidator {
     protected boolean validateAlphabet(FormData data, String id, String label, String[] values, String message) {
         boolean result = true;
         if (message == null || message.isEmpty()) {
-            message = ResourceBundleUtil.getMessage("form.defaultvalidator.err.alphabets");
+            message = ResourceBundleUtil.getMessage("form.defaultvalidator.err.alphabet");
         }
         
         if (values != null && values.length > 0) {
@@ -156,7 +156,7 @@ public class DefaultValidator extends FormValidator {
     protected boolean validateNumeric(FormData data, String id, String label, String[] values, String message) {
         boolean result = true;
         if (message == null || message.isEmpty()) {
-            message = ResourceBundleUtil.getMessage("form.defaultvalidator.err.numbers");
+            message = ResourceBundleUtil.getMessage("form.defaultvalidator.err.numeric");
         }
         
         if (values != null && values.length > 0) {

@@ -55,6 +55,18 @@
                                 } catch (err) {}
                                 inst.dpDiv.css({"z-index":(orizindex + 200)});
                             }, 100);
+                            
+                            // Reposition datepicker to bottom of input field
+                            // Get offset and height value of input box
+                            const input_offset = $(input).offset();
+                            const input_height = $(input).outerHeight();
+                            // Delay 10ms to make sure it is fully repositioned
+                            setTimeout(function() {
+                                inst.dpDiv.css({
+                                    top: input_offset.top + input_height + "px",
+                                    left: input_offset.left + "px"
+                                });
+                            }, 10);
                         };
                         o.onClose = function(selectedDate) {
                             $(element).removeClass("popup-picker");
