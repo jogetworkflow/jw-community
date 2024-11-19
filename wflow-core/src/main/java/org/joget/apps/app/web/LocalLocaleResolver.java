@@ -250,6 +250,8 @@ public class LocalLocaleResolver extends SessionLocaleResolver implements Locale
                 session.setAttribute(LOCALE_OF_USER, getWorkflowUserManager().getCurrentUsername());
             }
         }
+        
+        setDefaultLocale(locale);
             
         return locale;
     }
