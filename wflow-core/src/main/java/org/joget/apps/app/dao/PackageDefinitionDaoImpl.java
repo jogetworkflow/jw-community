@@ -55,10 +55,12 @@ public class PackageDefinitionDaoImpl extends AbstractVersionedObjectDao<Package
         packageDef.setDateModified(date);
         
         super.saveOrUpdate(packageDef);
-        appDefinitionDao.updateDateModified(packageDef.getAppDefinition(), date);
+        AppDefinition appDef = packageDef.getAppDefinition();
+        // refresh appDef to prevent detached Hibernate entity
+        appDef = appDefinitionDao.loadVersion(appDef.getId(), appDef.getVersion());
+        appDefinitionDao.updateDateModified(appDef, date);
         
         if (!AppDevUtil.isGitDisabled() && !AppDevUtil.isImportApp()) {
-            AppDefinition appDef = packageDef.getAppDefinition();
             String filename = "appDefinition.xml";
             String xml = AppDevUtil.getAppDefinitionXml(appDef);
             String commitMessage = "Update package " + appDef.getId();
@@ -273,6 +275,8 @@ public class PackageDefinitionDaoImpl extends AbstractVersionedObjectDao<Package
 
         // save app and package definition
         AppDefinition appDef = packageDef.getAppDefinition();
+        // refresh appDef to prevent detached Hibernate entity
+        appDef = appDefinitionDao.loadVersion(appDef.getId(), appDef.getVersion());
         if (appDef.getPackageDefinition() == null) {
             appDef.getPackageDefinitionList().add(packageDef);
         }
