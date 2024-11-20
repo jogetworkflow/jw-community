@@ -154,6 +154,8 @@ public class ProcessBuilderWebController {
                             try {
                                 // deploy package
                                 appService.deployWorkflowPackage(appId, version, xpdl.getBytes("UTF-8"), true);
+                                // refresh appDef to prevent detached Hibernate entity
+                                appDef = appService.getAppDefinition(appId, version);
                             } catch (Exception ex) {
                                 success = false;
                                 error = ex.getMessage().replace(":", "");
