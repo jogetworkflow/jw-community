@@ -190,8 +190,7 @@ public class AppDefinitionDaoImpl extends AbstractVersionedObjectDao<AppDefiniti
         if (appDef.getResourceList() == null) {
             appDef.setResourceList(new ArrayList());
         }
-        super.saveOrUpdate(appDef);
-        
+
         if (!AppDevUtil.isGitDisabled() && !AppDevUtil.isImportApp()) {
             // save and commit app definition
             String filename = "appDefinition.xml";
@@ -218,10 +217,8 @@ public class AppDefinitionDaoImpl extends AbstractVersionedObjectDao<AppDefiniti
             AppDevUtil.dirSyncAppPlugins(appDef);
         }    
         
-        // update date modified
-        appDef.setDateModified(new Date());
-        saveOrUpdate(getEntityName(), appDef); 
-    }    
+        super.saveOrUpdate(appDef);
+    }
 
     @Override
     public void merge(AppDefinition appDef) {
