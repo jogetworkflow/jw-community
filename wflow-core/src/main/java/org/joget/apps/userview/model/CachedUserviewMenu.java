@@ -13,6 +13,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 import org.apache.ignite.Ignite;
 import org.apache.ignite.configuration.CacheConfiguration;
+import org.displaytag.tags.TableTagParameters;
 import org.joget.apps.app.model.AppDefinition;
 import org.joget.apps.app.service.AppUtil;
 import org.joget.apps.userview.lib.AjaxUniversalTheme;
@@ -501,9 +502,10 @@ public class CachedUserviewMenu extends UserviewMenu {
                 Cache menuAsyncCache = getUserviewMenuAsyncCache();
                 HttpServletRequest request = WorkflowUtil.getHttpServletRequest();
                 boolean isAjaxTheme = getUserview().getSetting().getTheme() instanceof AjaxUniversalTheme;
+                boolean isExportRequest = request.getParameter(TableTagParameters.PARAMETER_EXPORTING) != null;
 
-                // check for cache availability, ajax theme and GET request for async request support
-                if (menuAsyncCache == null || !isAjaxTheme || !"GET".equals(request.getMethod())) {
+                // check for cache availability, ajax theme, list export and non-GET request for async request support
+                if (isExportRequest || menuAsyncCache == null || !isAjaxTheme || !"GET".equals(request.getMethod())) {
                     // cache not available, default rendering
                     content = delegate.render();
                     UserviewCache.setCachedContent(delegate, UserviewCache.CACHE_TYPE_PAGE, content);
