@@ -57,15 +57,18 @@ public class Dx8ColorAdminTheme extends AjaxUniversalTheme {
         color += "--header-link-default-color:#20252A;";
         color += "--header-button-default-color:#20252A;";
         color += "--sidebar-brand-default-color:#20252A;";
-        
+
         //If horizontal menu inline is enabled, change default font color to follow header font
         if (!getPropertyString("horizontal_menu").isEmpty() && getPropertyString("horizontal_menu").equals("horizontal_inline")) {
             color += "--sidebar-default-bgcolor:#FFFFFF;";
             color += "--sidebar-menu-default-color:#20252A;";
             color += "--sidebar-icon-default-color:#20252A;";
             color += "--sidebar-active-link-default-color:#20252A;";
-        }else {
-            color += "--sidebar-default-bgcolor:"+colors[5]+";";
+        } else {
+            // Safely access the color array with a check
+            if (colors.length > 5) {
+                color += "--sidebar-default-bgcolor:" + colors[5] + ";";
+            }
             color += "--sidebar-menu-default-color:#ffffff;";
             color += "--sidebar-icon-default-color:#ffffff;";
             color += "--sidebar-active-link-default-color:#ffffff;";
