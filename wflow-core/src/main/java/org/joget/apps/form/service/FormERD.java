@@ -170,13 +170,17 @@ public class FormERD {
                 if (r != null) {
                     relations.add(r);
                 } else {
-                    r = getTempRelationFromBinder(loadBinder.getProperties(), "", entity.getTableName(), entity.getPrimaryKey(), false);
-                    if (r != null) {
-                        relations.add(r);
+                    if (loadBinder != null) {
+                        r = getTempRelationFromBinder(loadBinder.getProperties(), "", entity.getTableName(), entity.getPrimaryKey(), false);
+                        if (r != null) {
+                            relations.add(r);
+                        }
                     }
-                    r = getTempRelationFromBinder(storeBinder.getProperties(), "", entity.getTableName(), entity.getPrimaryKey(), false);
-                    if (r != null) {
-                        relations.add(r);
+                    if (storeBinder != null) {
+                        r = getTempRelationFromBinder(storeBinder.getProperties(), "", entity.getTableName(), entity.getPrimaryKey(), false);
+                        if (r != null) {
+                            relations.add(r);
+                        }
                     }
                 }
             } else if (field instanceof AbstractSubForm) {
@@ -459,8 +463,11 @@ public class FormERD {
                 
                 List<String> limitedTempData = new ArrayList<String>();
                 int start = tempData.indexOf(tn) + 1;
+                if (start > end) { 
+                    end = tempData.size(); //reset the end, the foreignKey may set to hash variable instead of ?
+                }
                 limitedTempData = tempData.subList(start, end);
-                
+
                 for (String fid : e.getFields().keySet()) {
                     int newIndex = -1;
                     if (limitedTempData.contains(fid)) {
