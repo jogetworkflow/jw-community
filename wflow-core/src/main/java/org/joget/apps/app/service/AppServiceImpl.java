@@ -3284,6 +3284,8 @@ public class AppServiceImpl implements AppService {
 
                         pluginManager.upload(entry.getName(), new ByteArrayInputStream(out.toByteArray()));
                         size++;
+                    } catch (Exception e) {
+                        //fail to import migrated plugin should not stop the import of from data and user group
                     } finally {
                         out.flush();
                         out.close();
