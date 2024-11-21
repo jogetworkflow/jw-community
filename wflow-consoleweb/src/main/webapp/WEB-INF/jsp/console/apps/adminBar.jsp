@@ -5,6 +5,9 @@
 <%
     String theme = WorkflowUtil.getSystemSetupValue("systemTheme");
     pageContext.setAttribute("theme", theme);
+
+    String deviceTheme = WorkflowUtil.getSystemSetupValue("deviceTheme");
+    pageContext.setAttribute("deviceTheme", deviceTheme);
 %>
 <c:set var="isQuickEditEnabled" value="<%= AppUtil.isQuickEditEnabled() %>"/>
 <c:set var="envName" value='<%= WorkflowUtil.getSystemSetupValue("environmentName") %>'/>
@@ -15,7 +18,7 @@
         <script>
             loadCSS("${pageContext.request.contextPath}/css/admin_bar_custom.css");
         </script>
-        <div id="adminBar" class="adminBarInactive"  <c:if test="${!empty theme && (theme == 'light' || theme == 'dark')}">builder-theme="<c:out value="${theme}"/>"</c:if>>
+        <div id="adminBar" class="adminBarInactive" <c:if test="${deviceTheme == 'true'}">device-theme="<c:out value="${deviceTheme}"/>"</c:if> <c:if test="${!empty theme && (theme == 'light' || theme == 'dark')}">builder-theme="<c:out value="${theme}"/>"</c:if>>
             <a id="appCenter" <c:if test="${empty param.webConsole}"> target="_blank"</c:if> title="<ui:msgEscHTML key='adminBar.label.appCenter'/>" href="${pageContext.request.contextPath}/home"><i class="fab fa-joget"></i></a>  
             <div id="adminBarButtons">
             <c:set var="key" value="0" />
@@ -90,6 +93,38 @@
             function appImport() {
                 appCreateDialog2.init();
             }
+    </script>
+    <script>
+        if (window.location === window.parent.location) {
+            //Listen to theme changes
+            function ajaxRequestChangeSystemTheme(deviceTheme) {
+                var callback = {
+                    success: function(response) {
+                        if (confirm(`<ui:msgEscJS key="general.label.deviceThemeSwitching"/>`)){
+                            location.reload(); 
+                        }
+                    },
+                    error: function(jqXHR, textStatus, errorThrown) {
+                        console.error('Error updating theme:', jqXHR);
+                    }
+                }
+
+                var params = "deviceTheme=" + deviceTheme;
+                console.log(window.location.origin + UI.base +'/web/console/setting/general/submit')
+                ConnectionManager.post(
+                    UI.base +'/web/console/setting/general/changeSystemThemeAutomatically', 
+                    callback,
+                    params
+                )
+            }
+            window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change',({ matches }) => {
+                if (matches && $("div#adminBar").attr('device-theme') === "true") {
+                    ajaxRequestChangeSystemTheme('dark');
+                } else if (!matches && $("div#adminBar").attr('device-theme') === "true"){
+                    ajaxRequestChangeSystemTheme('light');
+                }
+            })   
+        }
     </script>
         
     <jsp:include page="adminBarExt.jsp" flush="true"/>    
