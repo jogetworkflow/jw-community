@@ -110,7 +110,6 @@
                 }
 
                 var params = "deviceTheme=" + deviceTheme;
-                console.log(window.location.origin + UI.base +'/web/console/setting/general/submit')
                 ConnectionManager.post(
                     UI.base +'/web/console/setting/general/changeSystemThemeAutomatically', 
                     callback,
