@@ -226,6 +226,9 @@ body[builder-theme].builder-title {
 body[builder-theme]#cbuilder.quick-nav-shown #bottom-panel {
     left: calc(var(--builder-left-panel-width) + var(--builder-canvas-margin));
 }
+body[builder-theme]#cbuilder.quick-nav-shown.quick-nav-position-left #bottom-panel {
+    left: calc(var(--builder-left-panel-width) + var(--builder-canvas-margin) + 40px);
+}
 body[builder-theme] .search-container .form-control .element-properties .search .form-control,
 body[builder-theme] #cbuilder .drag-elements>.header .search .form-control {
     border-bottom-color: var(--theme-border-color-1);
@@ -419,6 +422,10 @@ body[builder-theme] .element-properties-footer-actions {
 body[builder-theme] #quick-nav-bar {
     background: var(--theme-primary-color-1);
     border-left: 1px solid var(--theme-border-color-1);
+}
+body[builder-theme].quick-nav-position-left #quick-nav-bar {
+    background: var(--theme-primary-color-1);
+    border-right: 1px solid var(--theme-border-color-1);
 }
 body[builder-theme].quick-nav-shown #quick-nav-bar {
     width: 40px;
@@ -1896,6 +1903,11 @@ body[builder-theme] #quick-nav-bar.active #builder-menu ul li.active ul {
     box-shadow: -6px 0 16px 0 rgba(0, 0, 0, 0.08), -3px 0 6px -4px rgba(0, 0, 0, 0.12), -9px 0 28px 8px rgba(0, 0, 0, 0.05);
     -webkit-clip-path: inset(-5px 0px -5px -50px);
     clip-path: inset(-5px 0px -5px -50px);
+}
+body[builder-theme].quick-nav-position-left #quick-nav-bar.active #builder-menu ul li.active ul {
+    box-shadow: 6px 0 16px 0 rgba(0, 0, 0, 0.08), 3px 0 6px -4px rgba(0, 0, 0, 0.12), 9px 0 28px 8px rgba(0, 0, 0, 0.05);
+    -webkit-clip-path: inset(-5px -50px -5px 0px);
+    clip-path: inset(-5px -50px -5px 0px);
 }
 body[builder-theme] #builder-menu ul li ul li.header span.header-label {
     font-size: 16px;

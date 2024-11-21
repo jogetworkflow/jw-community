@@ -8,6 +8,11 @@ body {
     --drag-items-tabs-height: 40px;
     --builder-content-top: var(--builder-header-top-height);
 }
+body.noselect {
+    user-select: none;
+    -webkit-user-select: none; 
+    -ms-user-select: none; 
+}
 @media (min-width: 576px) {
     body {
         --builder-left-panel-width: 20vw;
@@ -77,6 +82,9 @@ body.initializing:after{
 }
 body.quick-nav-shown {
     transition: 0.35s padding-left ease-in-out;
+}
+body.quick-nav-shown.quick-nav-position-left {
+    padding-left: 40px;
 }
 #builder_loader {
     position: fixed;
@@ -1150,8 +1158,10 @@ div.section, .header > ol {
     margin-top: 0 !important;
 }
 #builderToolbar {
-    padding-right: 60px;
     padding-top: 3px;
+}
+body:not(.quick-nav-position-left) #builderToolbar {
+    padding-right: 40px;
 }
 .toolbar-group {
     border-radius: 5px;
@@ -1591,6 +1601,9 @@ div.section, .header > ol {
     border-left: 2px solid #ccc !important;
     box-shadow: -1px 1px 6px -1px rgb(0 0 0 / 20%);
 }
+body.quick-nav-position-left.max-property-editor #right-panel {
+    right:0px;
+}
 .max-property-editor #right-panel-toogle{
     display:none;
 }
@@ -1892,6 +1905,9 @@ body #quick-nav-bar {
     overflow: hidden;
     overflow-y: auto;
 }
+body.quick-nav-position-left #quick-nav-bar {
+    left:0;
+}
 body #quick-nav-bar::-webkit-scrollbar {
     width: 3px;
 }
@@ -2003,6 +2019,9 @@ body.quick-nav-shown #builder-quick-nav {
     font-size: 13px;
     padding: 60px 0 30px;
 }
+body.quick-nav-position-left #quick-nav-bar #builder-menu ul li ul {
+    left:40px;
+}
 #quick-nav-bar.active #builder-menu ul li.active ul {
     width: 300px !important;
     min-width: 13.5vw;
@@ -2071,6 +2090,9 @@ body.quick-nav-shown #builder-quick-nav {
     padding: 10px;
     box-sizing: border-box;
 }
+body.quick-nav-position-left #builder-menu-search{
+    left: 40px;
+}
 #builder-menu-search input{
     border: 0;
     border-radius: 0;
@@ -2127,6 +2149,10 @@ body.quick-nav-shown #builder-quick-nav {
     bottom: 0;
     background: #000;
     opacity: 0.1;
+}
+body.quick-nav-position-left #quick-nav-bar.active #closeQuickNav{
+    left:40px;
+    right: 0px;
 }
 
 /* Messages */
