@@ -501,19 +501,21 @@ public class CachedUserviewMenu extends UserviewMenu {
             if (content == null) {
                 Cache menuAsyncCache = getUserviewMenuAsyncCache();
                 HttpServletRequest request = WorkflowUtil.getHttpServletRequest();
+
+                // check for cache availability, ajax theme, list export, page component and non-GET request for async request support
+                HttpSession session = request.getSession(false);
+                String sessionId = (session != null) ? session.getId() : null;
+                String cacheKey = UserviewCache.getCacheKey(delegate, UserviewCache.CACHE_TYPE_PAGE, null) + ":" + sessionId;
                 boolean isAjaxTheme = getUserview().getSetting().getTheme() instanceof AjaxUniversalTheme;
                 boolean isExportRequest = request.getParameter(TableTagParameters.PARAMETER_EXPORTING) != null;
+                boolean isPageComponent = cacheKey.contains(":pc-");
 
-                // check for cache availability, ajax theme, list export and non-GET request for async request support
-                if (isExportRequest || menuAsyncCache == null || !isAjaxTheme || !"GET".equals(request.getMethod())) {
+                if (isExportRequest || isPageComponent || menuAsyncCache == null || !isAjaxTheme || !"GET".equals(request.getMethod())) {
                     // cache not available, default rendering
                     content = delegate.render();
                     UserviewCache.setCachedContent(delegate, UserviewCache.CACHE_TYPE_PAGE, content);
                 } else {
                     // use cache to store content asynchronously if required
-                    HttpSession session = request.getSession();
-                    String sessionId = (session != null) ? session.getId() : null;
-                    String cacheKey = UserviewCache.getCacheKey(delegate, UserviewCache.CACHE_TYPE_PAGE, null) + ":" + sessionId;
                     String loadingInProgressContent = getAsyncLoadingInProgressContent();
                     try {
 
@@ -559,8 +561,8 @@ public class CachedUserviewMenu extends UserviewMenu {
                         }
                     } catch (TimeoutException e) {
                         // timed out, return pending content
-                        content = loadingInProgressContent;
-                        menuAsyncCache.put(cacheKey, content);
+                            content = loadingInProgressContent;
+                            menuAsyncCache.put(cacheKey, content);
                         
                         // add slight delay to prevent blank response in JBoss EAP
                         try {
@@ -571,7 +573,7 @@ public class CachedUserviewMenu extends UserviewMenu {
                     } catch (InterruptedException | ExecutionException e) {
                         // don't cache if exception encountered
                         menuAsyncCache.remove(cacheKey);
-                    } catch (Exception e) {
+                    } catch (Throwable e) {
                         // don't cache if exception encountered
                         menuAsyncCache.remove(cacheKey);
                     }
