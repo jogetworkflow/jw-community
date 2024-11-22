@@ -39,6 +39,7 @@ public class IgniteHibernateRegionFactory extends HibernateRegionFactory {
             String regionName = regionConfig.getRegionName();
             CacheConfiguration cacheConfiguration = (CacheConfiguration)SecurityUtil.getApplicationContext().getBean("igniteAtomicCache");
             cacheConfiguration.setName(regionName);
+            cacheConfiguration.setGroupName("domainDataGroup");
             IgniteCacheManager.setCacheMode(cacheConfiguration);
             ignite.getOrCreateCache(cacheConfiguration);
             DomainDataRegion domainDataRegion = super.buildDomainDataRegion(regionConfig, buildingContext);
