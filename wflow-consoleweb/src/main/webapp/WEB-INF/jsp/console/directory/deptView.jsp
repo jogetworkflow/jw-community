@@ -18,14 +18,14 @@
     <div id="main-title"></div>
     <div id="main-action">
         <ul id="main-action-buttons">
-            <li><button onclick="onEdit()"><fmt:message key="console.directory.department.edit.label"/></button></li>
-            <li><button onclick="onDelete()"><fmt:message key="console.directory.department.delete.label"/></button></li>
-            <li><button onclick="onCreateSubDepartment()"><fmt:message key="console.directory.department.create.label.createSubDepartment"/></button></li>
-            <li><button onclick="onSetHOD()"><fmt:message key="console.directory.department.hod.set.label"/></button></li>
+            <li><button class="console-primary" onclick="onEdit()"><fmt:message key="console.directory.department.edit.label"/></button></li>
+            <li><button class="console-danger" onclick="onDelete()"><fmt:message key="console.directory.department.delete.label"/></button></li>
+            <li><button class="console-tertiary" onclick="onCreateSubDepartment()"><fmt:message key="console.directory.department.create.label.createSubDepartment"/></button></li>
+            <li><button class="console-tertiary" onclick="onSetHOD()"><fmt:message key="console.directory.department.hod.set.label"/></button></li>
             <c:if test="${!empty hod}">
-                <li><button onclick="onRemoveHOD()"><fmt:message key="console.directory.department.hod.remove.label"/></button></li>
+                <li><button class="console-danger" onclick="onRemoveHOD()"><fmt:message key="console.directory.department.hod.remove.label"/></button></li>
             </c:if>
-            <li><button onclick="assignUsers()"><fmt:message key="console.directory.department.user.assign.label"/></button></li>
+            <li><button class="console-tertiary" onclick="assignUsers()"><fmt:message key="console.directory.department.user.assign.label"/></button></li>
         </ul>
     </div>
     <div id="main-body">
@@ -146,6 +146,12 @@
     $(document).ready(function(){
         $('#JsonDeptDataTable_searchTerm').hide();
         $('#JsonUserDataTable_searchTerm').hide();
+
+        $('div#JsonDeptDataTable_departmentList-buttons > button').eq(0).addClass("console-primary");
+        $('div#JsonDeptDataTable_departmentList-buttons > button').eq(1).addClass("console-danger");
+
+        $('div#JsonUserDataTable_userList-buttons > button').eq(0).addClass("console-primary");
+        $('div#JsonUserDataTable_userList-buttons > button').eq(1).addClass("console-danger");
 
         <c:if test="${isCustomDirectoryManager || department.readonly}">
             $('#main-action-buttons').remove();

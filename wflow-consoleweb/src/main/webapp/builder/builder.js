@@ -2,7 +2,7 @@
  * Customised from https://github.com/givanz/VvvebJs
  */
 
- _CustomBuilder = {
+_CustomBuilder = {
     isAjaxReady : false,
     saveUrl : '',
     previewUrl : '',
@@ -3437,6 +3437,105 @@
             CustomBuilder.systemTheme = $('body').attr("builder-theme");
         }
         UI.userview_app_id = CustomBuilder.appId;
+
+        //Initialize drag
+        // Initialize drag variables
+        var quickNavPosition = localStorage.getItem("quickNavPosition") || 'right';
+        var isHold = false;
+        var mousePos = { x: 0, y: 0 };
+        var $clonePreview = null;
+        var $overlay = null;
+
+        if(quickNavPosition === "left") {
+            $("body").addClass("quick-nav-position-left")
+        }
+
+        $("#quick-nav-bar").on("mousedown.drag", function(e) {
+            if (e.target !== this && e.target !== $("div#builder-quick-nav")[0]) {
+                return;
+            }
+            isHold = true;
+            mousePos.x = e.pageX;
+            mousePos.y = e.pageY;
+
+            $(document).on("mousemove.drag", function(e) {
+                if (isHold && !$clonePreview && $("#quick-nav-bar.active #builder-menu ul li.active").length === 0) {
+                    $overlay = $('<div id="darken-overlay"></div>');
+                    
+                    $('body').append($overlay);
+                    
+                    $overlay.css({
+                        position: 'fixed',
+                        top: 0,
+                        bottom: 0,
+                        left: 0,
+                        right: 0,
+                        'z-index': 9999
+                    });
+
+                    // Create a clone on initial move
+                    $clonePreview = $("#quick-nav-bar").clone()
+                        .children().remove()
+                        .addClass('clonePreview')
+                        .css({
+                            position: 'fixed',
+                            opacity: 0.5,
+                            left: e.pageX + 'px',
+                            top: e.pageY + 'px',
+                            pointerEvents: 'none',
+                            width: '45px',
+                            height: '45px',
+                            zIndex: '5000'
+                        })
+                        .appendTo("body #quick-nav-bar");
+                    $("body").addClass('noselect');
+                }
+
+                if ($clonePreview) {
+                    $clonePreview.css({
+                        left: e.pageX + 'px',
+                        top: e.pageY + 'px'
+                    });
+
+                    if ($clonePreview.offset().left < parseInt($(window).width()/2)){
+                        $overlay.css({
+                            'pointer-events': 'none', 
+                            background: 'linear-gradient(to right, rgba(0, 0, 0, 0.7), transparent)',
+                            'background-size': '15% 100%', 
+                            'background-repeat': 'no-repeat'
+                        })
+                    }else if ($clonePreview.offset().left > parseInt($(window).width()/2)){
+                        $overlay.css({
+                            'pointer-events': 'none', 
+                            background: 'linear-gradient(to left, rgba(0, 0, 0, 0.7), transparent)',
+                            'background-size': '15% 100%', 
+                            'background-repeat': 'no-repeat',
+                            'background-position': 'right'
+                        })
+                    }
+                }
+            });
+
+            $(document).on("mouseup.drag", function() {
+                if ($clonePreview) {
+                    if ($clonePreview.offset().left < parseInt($(window).width()/2) && !$("body").hasClass("quick-nav-position-left")){
+                        localStorage.setItem("quickNavPosition", "left");
+                        $("body").addClass("quick-nav-position-left");
+                    }else if ($clonePreview.offset().left > parseInt($(window).width()/2)){
+                        $("body").removeClass("quick-nav-position-left");
+                        localStorage.setItem("quickNavPosition", "right");
+                    }
+                    // Handle the end of drag
+                    $clonePreview.remove();
+                    $overlay.remove();
+                    $overlay = null;
+                    $clonePreview = null;
+                }
+                $("body").removeClass('noselect');
+                isHold = false;
+                $(document).off("mousemove.drag mouseup.drag");
+            });
+        });
         
         if ($("#quick-nav-bar").find("#builder-quick-nav").length === 0) {
             $("#quick-nav-bar").append('<div id="closeQuickNav"></div>');
@@ -3564,7 +3663,7 @@
         CustomBuilder.builderTypes = [];
         for (var i in data) {
             var builder = data[i];
-            var li = $('<li class="builder-icon menu-'+builder.value+'"><span tooltip-position="right" title="'+builder.label+'" style="background: '+builder.color+';color: '+builder.color+'"><i class="'+builder.icon+'"></i></span><ul></ul></li>');
+            var li = $('<li class="builder-icon menu-'+builder.value+'"><span tooltip-position="left" title="'+builder.label+'" style="background: '+builder.color+';color: '+builder.color+'"><i class="'+builder.icon+'"></i></span><ul></ul></li>');
             $(li).find("ul").append('<li class="header"><span class="header-label">'+builder.label+'</span> <span class="addnew"><a data-type="'+builder.value+'"><i class="las la-plus"></i> '+get_cbuilder_msg("cbuilder.addnew")+'</a></span></li>');
             CustomBuilder.builderTypes.push(builder.value);
             if (builder.elements) {
@@ -3641,11 +3740,11 @@
                 "position": "absolute",
                 "transform": "translate(-50%, -50%)"
             });
-            $(sessionDiv).append('<p>'+get_cbuilder_msg('cbuilder.sessionTimeout')+'</p>');
-            $(sessionDiv).append('<a href="'+CustomBuilder.contextPath+'/web/presence" target="_blank" class="btn btn-primary">'+get_cbuilder_msg('ubuilder.login')+'</a>');
-            $(sessionDiv).append('<p>'+get_cbuilder_msg('cbuilder.doNotClose')+'</p>');
-            $(sessionDiv).append('<p><i class="fas fa-spin fa-spinner" style="font-size: 40px; color: #ccc;"></i></p>');
-            
+            $(sessionDiv).append('<p style="margin-bottom:0;margin-top: 1rem;line-height: 25px;">'+get_cbuilder_msg('cbuilder.sessionTimeout')+'</p>');
+            $(sessionDiv).append('<p style="font-size:0.8rem;font-style:italic;color:#808080;margin-bottom: 1.5rem;">'+get_cbuilder_msg('cbuilder.doNotClose')+'</p>');
+            $(sessionDiv).append('<a style="margin-bottom:1.5rem;background-color:#009265;border-color:#009265;text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3);" href="'+CustomBuilder.contextPath+'/web/presence" target="_blank" class="btn btn-primary">'+get_cbuilder_msg('ubuilder.login')+'</a>');
+            $(sessionDiv).append('<p><i class="fas fa-spin fa-spinner" style="font-size: 40px; color:#00A977;"></i></p>');
+
             //adding listener
             CustomBuilder.addVisibilityChangeEvent("session", function(event, hidden) {
                 if (!document[hidden]) {

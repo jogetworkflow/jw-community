@@ -136,10 +136,16 @@ public class ConsoleWebPlugin extends ExtDefaultPlugin implements PluginWebSuppo
      */
     protected String getWelcome() {
         String content = "<div id=\"getting-started\">"
-                + "<iframe id=\"welcomeFrame\" style=\"height:100vh; width:100%; box-sizing: border-box; overflow:hidden;\" frameborder=\"0\"></iframe>"
+                + "<iframe id=\"welcomeFrame\" style=\"height:100vh; width:100%; box-sizing: border-box; overflow:hidden;position:absolute;z-index:2;\" frameborder=\"0\"></iframe>"
+                + "<i class=\"fas fa-question-circle\" style=\"\n" + 
+                "    position: absolute;\n" + 
+                "    left: 14px;\n" + 
+                "    top: 9px;\n" + 
+                "    z-index: 0;\n" +
+                "\"></i>"
                 + "</div>"
                 + "<div class=\"clear\"></div>"
-                + "<script>$(window).on(\"load\", function() { $(\"#welcomeFrame\").attr(\"src\", \"https://www.joget.org/updates/DX8/welcome/?src=community\"); });</script>";
+                + "<script>$(window).on(\"load\", function() { $(\"#welcomeFrame\").attr(\"src\", \"https://www.joget.org/updates/DX8/welcome/?src=community\"); setTimeout(function() {$('iframe#welcomeFrame').css({'opacity': '0.0000001'})},100);});</script>";
         return content;
     }
     

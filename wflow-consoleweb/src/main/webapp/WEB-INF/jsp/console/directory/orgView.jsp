@@ -1,7 +1,6 @@
 <%@ include file="/WEB-INF/jsp/includes/taglibs.jsp" %>
 
 <commons:header />
-
 <div id="nav">
     <div id="nav-title">
         <p><i class="fas fa-users"></i> <fmt:message key='console.header.menu.label.users'/></p>
@@ -17,11 +16,11 @@
     <div id="main-title"></div>
     <div id="main-action">
         <ul id="main-action-buttons">
-            <li><button onclick="onEdit()"><fmt:message key="console.directory.org.edit.label"/></button></li>
-            <li><button onclick="onDelete()"><fmt:message key="console.directory.org.delete.label"/></button></li>
-            <li><button onclick="onCreateDepartment()"><fmt:message key="console.directory.department.create.label"/></button></li>
-            <li><button onclick="onCreateGrade()"><fmt:message key="console.directory.grade.create.label"/></button></li>
-            <li><button onclick="assignUsers()"><fmt:message key="console.directory.org.user.assign.label"/></button></li>
+            <li><button class="console-primary" onclick="onEdit()"><fmt:message key="console.directory.org.edit.label"/></button></li>
+            <li><button class="console-danger" onclick="onDelete()"><fmt:message key="console.directory.org.delete.label"/></button></li>
+            <li><button class="console-tertiary" onclick="onCreateDepartment()"><fmt:message key="console.directory.department.create.label"/></button></li>
+            <li><button class="console-tertiary" onclick="onCreateGrade()"><fmt:message key="console.directory.grade.create.label"/></button></li>
+            <li><button class="console-tertiary" onclick="assignUsers()"><fmt:message key="console.directory.org.user.assign.label"/></button></li>
         </ul>
     </div>
     <div id="main-body">
@@ -115,7 +114,6 @@
                     <option value="<c:out value="${d.id}"/>" ${selected}><c:out value="${d.name}"/></option>
                 </c:forEach>
                 </select>
-                &nbsp;&nbsp;&nbsp;&nbsp;
                 <fmt:message key="console.directory.employment.filter.label.byGrade"/>
                 <select id="JsonUserDataTable_filterbyGrade" onchange="filter(JsonUserDataTable, '&gradeId=', this.options[this.selectedIndex].value)">
                     <option></option>
@@ -166,6 +164,16 @@
         $('#JsonDeptDataTable_searchTerm').hide();
         $('#JsonGradeDataTable_searchTerm').hide();
         $('#JsonUserDataTable_searchTerm').hide();
+
+        $("div#JsonDeptDataTable_departmentList-buttons button").eq(0).addClass("console-primary");
+        $("div#JsonDeptDataTable_departmentList-buttons button").eq(1).addClass("console-danger");
+
+        $("div#JsonGradeDataTable_gradeList-buttons button").eq(0).addClass("console-primary");
+        $("div#JsonGradeDataTable_gradeList-buttons button").eq(1).addClass("console-danger");
+
+        $("div#main-body-content-filter").appendTo("div#JsonUserDataTable_userList-search");
+        $("div#JsonUserDataTable_userList-buttons button").eq(0).addClass("console-primary");
+        $("div#JsonUserDataTable_userList-buttons button").eq(1).addClass("console-danger");
 
         <c:if test="${isCustomDirectoryManager || organization.readonly}">
             $('#main-action-buttons').remove();

@@ -14,10 +14,10 @@
 </div>
 
 <div id="main">
-    <div id="main-title"></div>
+    <div id="main-title"><fmt:message key='console.header.menu.label.users'/></div>
     <div id="main-action">
         <ul id="main-action-buttons">
-            <li><button onclick="onCreate()"><fmt:message key="console.directory.user.create.label"/></button></li>
+            <li><button onclick="onCreate()" class="console-primary"><fmt:message key="console.directory.user.create.label"/></button></li>
         </ul>
     </div>
     <div id="main-body">
@@ -66,6 +66,11 @@
 
 <script>
     $(document).ready(function(){
+        //Change delete button
+        $("button:has(.fa-trash-alt)").addClass('console-danger');
+        //Reposition the filter
+        $('div#main-body-content-filter').appendTo('div#JsonDataTable_userList-search');
+
         $('#JsonDataTable_searchTerm').hide();
 
         <c:if test="${isCustomDirectoryManager}">

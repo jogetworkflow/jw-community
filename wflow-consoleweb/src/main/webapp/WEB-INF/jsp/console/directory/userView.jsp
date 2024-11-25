@@ -1,7 +1,6 @@
 <%@ include file="/WEB-INF/jsp/includes/taglibs.jsp" %>
 
 <commons:header />
-
 <c:set var="userId"><ui:escape value="${user.id}" format="url"/></c:set>    
 
 <div id="nav">
@@ -19,15 +18,15 @@
     <div id="main-title"></div>
     <div id="main-action">
         <ul id="main-action-buttons">
-            <li><button onclick="onEdit()"><fmt:message key="console.directory.user.edit.label"/></button></li>
-            <li><button onclick="onDelete()"><fmt:message key="console.directory.user.delete.label"/></button></li>
-            <li><button onclick="assignReportTo()"><fmt:message key="console.directory.user.reportTo.assign.label"/></button></li>
+            <li><button class="console-primary" onclick="onEdit()"><fmt:message key="console.directory.user.edit.label"/></button></li>
+            <li><button class="console-danger" onclick="onDelete()"><fmt:message key="console.directory.user.delete.label"/></button></li>
+            <li><button class="console-tertiary" onclick="assignReportTo()"><fmt:message key="console.directory.user.reportTo.assign.label"/></button></li>
             <c:forEach items="${user.employments}" var="e" >
                 <c:if test="${!empty e.employmentReportTo && !empty e.employmentReportTo.reportTo}">
-                    <li><button onclick="unassignReportTo()"><fmt:message key="console.directory.user.reportTo.unassign.label"/></button></li>
+                    <li><button class="console-tertiary" onclick="unassignReportTo()"><fmt:message key="console.directory.user.reportTo.unassign.label"/></button></li>
                 </c:if>
             </c:forEach>
-            <li><button onclick="assignGroups()"><fmt:message key="console.directory.user.group.assign.label"/></button></li>
+            <li><button class="console-tertiary" onclick="assignGroups()"><fmt:message key="console.directory.user.group.assign.label"/></button></li>
         </ul>
         <c:if test="${!empty addOnButtons}">
             ${addOnButtons}
@@ -218,6 +217,9 @@
 <script>
     $(document).ready(function(){
         $('#JsonDataTable_searchTerm').hide();
+
+        $("div#JsonDataTable_groupList-buttons button").eq(0).addClass("console-primary");
+        $("div#JsonDataTable_groupList-buttons button").eq(1).addClass("console-danger");
 
         <c:if test="${isCustomDirectoryManager || user.readonly}">
             $('#main-action-buttons').remove();

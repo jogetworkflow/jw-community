@@ -16,8 +16,8 @@
     <div id="main-title"></div>
     <div id="main-action">
         <ul id="main-action-buttons">
-            <li><button onclick="viewGraph()"><fmt:message key="console.monitoring.common.label.viewGraph"/></button></li>
-            <li><button onclick="removeProcessInstance()"><fmt:message key="console.monitoring.common.label.removeInstance"/></button></li>
+            <li><button class="console-primary" onclick="viewGraph()"><fmt:message key="console.monitoring.common.label.viewGraph"/></button></li>
+            <li><button class="console-danger" onclick="removeProcessInstance()"><fmt:message key="console.monitoring.common.label.removeInstance"/></button></li>
         </ul>
     </div>
     <div id="main-body">

@@ -188,8 +188,8 @@
                 </div>    
             </fieldset>
             <div class="form-buttons">
-                <input class="form-button btn btn-primary" type="button" value="<ui:msgEscHTML key="general.method.label.save"/>"  onclick="validateField()"/>
-                <input class="form-button btn btn-primary" type="button" value="<ui:msgEscHTML key="general.method.label.cancel"/>" onclick="closeDialog()"/>
+                <input class="form-button btn btn-primary console-primary" type="button" value="<ui:msgEscHTML key="general.method.label.save"/>"  onclick="validateField()"/>
+                <input class="form-button btn btn-primary console-danger" type="button" value="<ui:msgEscHTML key="general.method.label.cancel"/>" onclick="closeDialog()"/>
             </div>
         </form:form>
     </div>

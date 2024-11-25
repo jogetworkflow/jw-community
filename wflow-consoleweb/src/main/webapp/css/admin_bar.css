@@ -1,110 +1,190 @@
 html.adminBarShown {
     padding-bottom: 30px;
 }
-@supports (-webkit-overflow-scrolling: touch) {
+
+@supports(-webkit-overflow-scrolling:touch) {
     html.adminBarShown {
         padding-bottom: 0px;
     }
+
     html.adminBarShown body {
         padding-bottom: 30px;
     }
 }
+
+a#quickEditMode > input#admin-bar-toggle {
+    display: none;
+}
+
+a#quickEditMode:not(.off) > input#admin-bar-toggle + .button {
+    filter: none;
+}
+
+a#quickEditMode:not(.off) > input#admin-bar-toggle + .button .dot {
+    left: calc(100% - 15px);
+    background-color: #f0f0f0;
+}
+
+a#quickEditMode > label.adminbar-control-label.button {
+    background-color: #fff;
+}
+
+a#quickEditMode:not(.off) > label.adminbar-control-label.button {
+    background-color: #009265;
+}
+
+.adminbar-control-label.button {
+    position: relative;
+    width: 29px;
+    height: 16px;
+    border-radius: 1rem;
+    cursor: pointer;
+    margin: 0;
+    margin-left: 5px;
+}
+
+.adminbar-control-label.button .dot {
+    position: absolute;
+    width: 14px;
+    height: 14px;
+    left: 0rem;
+    top: 50%;
+    transform: translateY(-50%);
+    border-radius: 50%;
+    transition: all 0.3s;
+    background-color: #adb5bd;
+    will-change: left, background-color;
+}
+
 #adminControl {
     display: none;
     position: fixed;
     bottom: 10px;
     right: 10px;
-    background: #009688;
-    color: white;
+    background: #009265;
+    color: #fff;
     padding: 10px;
-    box-shadow: #666 1px 1px 2px 1px;
+    box-shadow: 0 6px 16px 0 rgba(0, 0, 0, 0.08), 0 3px 6px -4px rgba(0, 0, 0, 0.12), 0 9px 28px 8px rgba(0, 0, 0, 0.05);
     border-radius: 50%;
     z-index: 100000050;
     cursor: pointer;
-    width: 20px;
+    width: 22px;
     text-align: center;
     box-sizing: content-box;
 }
+
 body.rtl #adminControl {
     right: auto;
     left: 10px;
 }
-body.rtl #adminControl .fa-angle-double-right:before{
+
+body.rtl #adminControl .fa-angle-double-right:before {
     content: "\f100";
 }
+
 #adminControl i {
-    font-size: 20px;
-} 
-body #adminBar {
-    display: block;
+    font-size: 1.125rem;
 }
+
+body #adminBar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding-right: 50px;
+    font-family: "Inter", sans-serif !important;
+}
+
 #adminBar {
     position: fixed;
     right: 0px;
-    bottom: 0;
+    bottom: 0px;
     width: 100%;
-    background: #37474F;
-    border-radius: 0px;
-    z-index: 10000;
+    z-index: 10001;
     opacity: 1;
-    height: 30px;
+    height: 35px;
     -webkit-font-smoothing: antialiased;
     box-sizing: border-box;
-    transition: all 0.2s ease-in-out;
+    transition: transform 0.3s linear;
+    background: #E6E6E6;
+    transform: translateY(0);
 }
+
+#adminBar[builder-theme='dark'] {
+    background: #2E2E2E;
+}
+
 body.rtl #adminBar {
     transform-origin: 100% 50%;
     left: 0;
     right: auto;
     direction: rtl;
+    padding-left: 50px;
+    padding-right: 0;
 }
+
 body.embeded #adminBar {
     display: none;
 }
+
 #adminBar.adminBarInactive {
-    width: 0px;
+    box-shadow: none;
+    transform: translateY(150%);
+    opacity: 0;
+    transition: transform 0.6s linear, opacity 0.1s ease-in-out 0.6s;
 }
+
 #adminBar #appCenter {
     position: absolute;
     display: block;
-    background: #37474F;
-    bottom: 0px;
+    background: inherit;
+    bottom: 10px;
     left: 10px;
-    width: 41px;
+    width: fit-content;
     height: 40px;
     border-radius: 50%;
     overflow: hidden;
     background-size: auto 125%;
 }
+
 body.rtl #adminBar #appCenter {
     left: auto;
     right: 10px;
 }
-#adminBar #appCenter i{
-    font-size: 36px;
+
+#adminBar #appCenter i {
+    font-size: 39px;
     padding: 2px 3px;
-    color : #CFD8DC;
+    color: #009265;
 }
+
 #adminBarButtons {
     vertical-align: top;
     margin-left: 55px;
-    display: inline-block;
+    display: flex;
+    flex: 1;
+    justify-content: left;
 }
+
+#adminBarButtons > div {
+    margin-left: 10px;
+}
+
 body.rtl #adminBarButtons {
-    margin-left: 0px;
-    margin-right: 55px;
     position: relative;
     float: right;
+    justify-content: right;
+    margin-right: 55px;
+    margin-left: 0;
 }
-#quickEditModeOption > div,
-#adminBarButtons > div {
+
+#quickEditModeOption > div, #adminBarButtons > div {
     display: inline-block;
 }
-#quickEditModeOption > div > a,
-#adminBarButtons > div > a {
+
+#quickEditModeOption > div > a, #adminBarButtons > div > a {
     display: block;
-    color: #CFD8DC;
-    padding: 8px 6px;
+    color: black;
+    padding: 8px 10px;
     text-decoration: none;
     font-size: 13px;
     line-height: 14px;
@@ -112,44 +192,78 @@ body.rtl #adminBarButtons {
     box-sizing: border-box;
     cursor: pointer;
 }
-#quickEditModeOption > div > a > i,
-#adminBarButtons > div > a > i {
+
+#quickEditModeOption > div > a {
+    display: flex;
+    align-items: center;
+}
+
+.custom-control-input:checked~.custom-control-label::before {
+    background-color: #009265 !important;
+}
+
+div.switch-container > div.custom-switch {
+    padding-left: 2.5rem;
+    padding-bottom: 0.5rem;
+}
+
+#adminBar[builder-theme='dark'] #quickEditModeOption > div > a, #adminBar[builder-theme='dark'] #adminBarButtons > div > a, #adminBar[builder-theme='dark'] #quickEditModeOption > div > a:not(.off), #adminBar[builder-theme='dark'] #adminBarButtons > div > a.current, #adminBar[builder-theme='dark'] #adminBarButtons > div > a:hover {
+    color: #fff;
+}
+
+#quickEditModeOption > div > a > span:first-of-type, #adminBarButtons > div > a > span {
+    margin-left: 5px;
+}
+
+#quickEditModeOption > div > a > i, #adminBarButtons > div > a > i {
     margin-right: 5px;
 }
-body.rtl #quickEditModeOption > div > a > i,
-body.rtl #adminBarButtons > div > a > i {
+
+body.rtl #quickEditModeOption > div > a > i, body.rtl #adminBarButtons > div > a > i {
     margin-right: 0;
     margin-left: 5px;
 }
-#quickEditModeOption > div > a:not(.off),
-#adminBarButtons > div > a.current,
-#adminBarButtons > div > a:hover {
-    color: #fff;
-    background: #37474F;
-    border-bottom: 2px solid #fff;
+
+#adminBarButtons > div > a.current, #adminBarButtons > div > a:hover {
+    color: black;
+    background: transparent;
+    border-bottom: 2px solid #009688;
 }
+
 #quickEditModeOption > div > a > .off {
     display: none;
 }
+
 #quickEditModeOption > div > a.off > .on {
-    display: none;
+    display: none !important;
 }
+
+#quickEditModeOption > div > a:not(.off) > .off {
+    display: none !important;
+}
+
 #quickEditModeOption > div > a.off > .off {
     display: inline-block;
+    color: red;
 }
+
 #adminBarButtons .separator {
     position: relative;
     margin: 0 4px;
     display: inline-block;
 }
+
 #adminBarButtons .separator h5 {
     display: none;
 }
+
 div#quickEditModeOption {
     position: relative;
     margin-left: 6px;
     padding-left: 10px;
+    order: 1;
 }
+
 body.rtl div#quickEditModeOption {
     margin-left: 0px;
     padding-left: 0px;
@@ -157,201 +271,278 @@ body.rtl div#quickEditModeOption {
     padding-right: 10px;
     float: right;
 }
-div#quickEditModeOption:before,
-#adminBarButtons .separator:after {
+
+div#quickEditModeOption:before, #adminBarButtons .separator:after {
     content: "";
     position: absolute;
-    top:-13px;
+    top: 6px;
     height: 18px;
     border-left: 1px solid #CFD8DC;
     display: block;
     left: 0;
 }
-body.rtl div#quickEditModeOption:before,
-body.rtl #adminBarButtons .separator:after {
+
+body.rtl div#quickEditModeOption:before, body.rtl #adminBarButtons .separator:after {
     right: 0;
-    left:auto;
+    left: auto;
 }
+
 div#quickEditModeOption:before {
     top: 6px;
     left: 0px;
 }
+
 body.rtl div#quickEditModeOption:before {
     left: auto;
     right: 0px;
 }
-.quickOverlay { 
-    height: 100%; 
-    width: 100%; 
-    position: fixed; 
-    top: 0px; 
-    left:0px;
-    background: black; 
-    z-index: 2000; 
+
+.quickOverlay {
+    height: 100%;
+    width: 100%;
+    position: fixed;
+    top: 0px;
+    left: 0px;
+    background: #000;
+    z-index: 2000;
     opacity: 0.5;
-    cursor: pointer;    
+    cursor: pointer;
 }
+
 .quickOverlayButton {
     position: fixed;
-    top: 12px;
-    right: 30px;
-    z-index: 15000;
-    text-align:right;
+    top: 20px;
+    right: 42px;
+    z-index: 15001;
+    text-align: right;
     transition: all 0.2s ease-in-out;
 }
-.minimize:not(.pinned) .quickOverlayButton{
-    display:none;
+
+.minimize:not(.pinned) .quickOverlayButton {
+    display: none;
 }
+
 body.rtl .quickOverlayButton {
     right: auto;
     left: 30px;
 }
-.quickOverlayButton a i { 
-    padding-top:3px;
+
+.quickOverlayButton a i {
+    padding-top: 3px;
 }
-.quickOverlayButton a { 
+
+.quickOverlayButton a {
     text-decoration: none;
     display: inline-block;
     width: 20px;
     height: 20px;
-    background: #f65150;
-    color: #00000080;
-    border-radius: 50%;
+    background: transparent;
     text-align: center;
-    font-size: 11px;
-    box-shadow: #f00505 0px 0px 1px 1px;
+    font-size: 14px;
     box-sizing: border-box;
-    padding: 3px;
-    margin: 0 3px;
+    margin: 0 8px;
+    max-height: fit-content;
+    color: #808080;
 }
-.quickOverlayButton a:focus{
+
+.quickOverlayButton[system-theme='dark'] a {
+    color: #e2e2e2;
+}
+
+.quickOverlayButton a:focus {
     color: #00000080;
-} 
-.quickOverlayButton a.max { 
-    background: #02cf40;
-    box-shadow: #009c30 0px 0px 1px 1px;
-    padding-left: 2px;
 }
-.quickOverlayButton a.pin { 
-    background: #f8b13d;
-    box-shadow: #b9842d 0px 0px 1px 1px;
+
+.quickOverlayButton[system-theme='dark'] a:focus {
+    color: #e2e2e2;
 }
-.quickOverlayButton a.pin.disabled { 
-    background: #dcdbdc;
-    box-shadow: #a8a8a8 0px 0px 1px 1px;
+
+.quickOverlayButton a.max {
+    background: transparent;
+    max-height: fit-content;
 }
+
+.quickOverlayButton a.pin {
+    background: transparent;
+    max-height: fit-content;
+}
+
+.quickOverlayButton a.overlayClose:hover {
+    color: #f65150;
+}
+
+.quickOverlayButton a.pin.disabled {
+    transform: rotate(-45deg);
+}
+
 .quickOverlayButton a:hover {
     color: #000;
 }
+
+.quickOverlayButton[system-theme='dark'] a:hover:not(.overlayClose) {
+    color: #ffffff;
+}
+
 #quickOverlayFrameDiv {
+    border-radius: 15px;
     position: fixed;
     height: calc(100% - 35px);
     width: calc(100% - 50px);
     bottom: 30px;
     right: 25px;
-    z-index: 3000;
+    z-index: 10000;
     border: none;
     box-shadow: #666 1px 1px 2px 1px;
     min-width: 780px;
-    background: white;
+    background: #f6f7fb;
     transition: all 0.2s ease-in-out;
     transform-origin: bottom right;
 }
-body.fixiosframe #quickOverlayFrameDiv {
-    overflow:auto !important; 
-    -webkit-overflow-scrolling:touch !important;
+
+#quickOverlayFrameDiv[system-theme='dark'] {
+    background: #1f1f1f;
 }
+
+body[system-theme='dark'] .chosen-container-single .chosen-single div b {
+    color: var(--console-default-font-color);
+}
+
+body[system-theme='dark'] .chosen-container .chosen-drop {
+    background-color: var(--console-main-background-color);
+    color: var(--console-default-font-color);
+    border: 1px solid var(--console-border-color);
+}
+
+body[system-theme='dark'] .chosen-container-single .chosen-single {
+    background-color: var(--console-secondary-background-color);
+    color: var(--console-default-font-color);
+    border: 1px solid var(--console-border-color);
+}
+
+body[system-theme='dark'] .chosen-container .chosen-results {
+    color: var(--console-default-font-color);
+}
+
+body.fixiosframe #quickOverlayFrameDiv {
+    overflow: auto !important;
+    -webkit-overflow-scrolling: touch !important;
+}
+
 #quickOverlayFrame {
     width: 100%;
     height: 100%;
+    border-radius: 15px;
+    padding: 5px;
+    border: 0;
 }
+
 body.rtl #quickOverlayFrameDiv {
     right: auto;
     left: 25px;
     transform-origin: bottom left;
 }
+
 #quickOverlayContainer.minimize:not(.pinned) #quickOverlayFrameDiv {
     transform: scale(0.6);
 }
+
 #quickOverlayContainer.minimize:not(.pinned) .quickOverlay {
     opacity: 0.2;
 }
+
 #quickEditModeOption {
-    display:inline-block;
+    display: inline-block;
 }
-@media screen and (max-width:1000px) {
-    #quickEditModeOption > div > a,
-    #adminBarButtons > div > a {
-        text-align: center;
+
+@media screen and (max-width: 1200px) {
+    #quickEditModeOption > div > a, #adminBarButtons > div > a {
+        text-align:center;
     }
-    #quickEditModeOption > div > a > span,
-    #adminBarButtons > div > a > span {
-        display:none;
+
+    #quickEditModeOption > div > a > span, #adminBarButtons > div > a > span {
+        display: none;
     }
-    #quickEditModeOption > div > a > i, 
-    #adminBarButtons > div > a > i {
+
+    #quickEditModeOption > div > a > i, #adminBarButtons > div > a > i {
         margin-right: 0px;
-    } 
-    body.rtl #quickEditModeOption > div > a > i, 
-    body.rtl #adminBarButtons > div > a > i {
+    }
+
+    body.rtl #quickEditModeOption > div > a > i, body.rtl #adminBarButtons > div > a > i {
         margin-right: auto;
         margin-left: 0px;
     }
+
     #quickEditModeOption > div > a.off > .off {
         display: none;
     }
 }
-@media screen and (max-width: 680px), (device-width: 1024px) and (device-height:600px) {
-    #adminBar #appCenter i{
-        font-size: 30px;
-        padding: 4px 5px;
+
+@media screen and (max-width: 680px),(device-width:1024px) and (device-height:600px) {
+    #adminBar #appCenter i {
+        font-size:30px;
     }
+
     html.adminBarShown {
         padding-bottom: 45px;
     }
+
     #adminBar {
         height: 45px;
     }
+
     #adminBarButtons {
         margin-left: 45px;
     }
+
     body.rtl #adminBarButtons {
         margin-left: 0px;
         margin-right: 45px;
     }
-    #quickEditModeOption > div > a,
-    #adminBarButtons > div > a {
+
+    #quickEditModeOption > div > a, #adminBarButtons > div > a {
         height: 45px;
         overflow: hidden;
         font-size: 20px;
         width: 32px;
         padding: 12px 5px;
     }
-    #quickEditModeOption > div > a:hover,
+
     #adminBarButtons > div > a:hover {
         padding: 10px 5px 0px;
     }
-    #quickEditModeOption > div > a > span,
-    #adminBarButtons > div > a > span {
-        display:none;
+
+    #quickEditModeOption > div > a:hover, #quickEditModeOption > div > a:not(.off) {
+        border-bottom: 2px solid #009688;
+        padding-bottom: 14px;
     }
+
+    #quickEditModeOption > div > a > span, #quickEditModeOption > div > a > div.switch-container, #adminBarButtons > div > a > span {
+        display: none !important;
+    }
+
     #adminBar #appCenter {
         left: 2px;
         bottom: 2px;
     }
+
     body.rtl #adminBar #appCenter {
         left: auto;
         right: 2px;
     }
+
     #adminBarButtons .separator {
         margin: 0px 2px;
+        display: none;
     }
+
     #adminBarButtons .separator:after {
         top: -32px;
     }
+
     div#quickEditModeOption:before {
         top: 14px;
     }
+
     #adminControl {
         bottom: 7px;
         right: 5px;
@@ -359,17 +550,21 @@ body.rtl #quickOverlayFrameDiv {
         height: 20px;
         padding: 6px;
     }
+
     body.rtl #adminControl {
         right: auto;
         left: 5px;
     }
+
     div#quickEditModeOption {
-        padding-left: 7px;
+        margin-left: 7px;
     }
+
     body.rtl div#quickEditModeOption {
         padding-left: 0;
         padding-right: 7px;
     }
+
     #quickOverlayFrameDiv {
         height: calc(100% - 90px);
         min-width: unset;
@@ -377,198 +572,262 @@ body.rtl #quickOverlayFrameDiv {
         width: calc(100% - 4px);
         bottom: 46px;
     }
+
     body.rtl #quickOverlayFrameDiv {
         right: auto;
         left: 2px;
     }
-    @supports (-webkit-overflow-scrolling: touch) {
+
+    @supports(-webkit-overflow-scrolling:touch) {
         html.adminBarShown {
             padding-bottom: 0px;
         }
+
         html.adminBarShown body {
             padding-bottom: 45px;
         }
     }
 }
-@media screen and (device-width:1024px) and (device-height:600px) {
+
+@media screen and (device-width: 1024px) and (device-height:600px) {
     #adminBar .analyzer-page {
-        margin: 12px 10px !important;
+        margin:12px 10px !important;
     }
+
     #adminBar #environmentName {
         padding: 13px 60px !important;
     }
 }
+
 .quickEdit, #form-canvas .quickEdit {
     display: none;
-    min-width: 100px;
+    min-width: fit-content;
     max-width: 200px;
-    max-height: 20px;
+    max-height: 25px;
     position: relative;
     top: 1px;
     left: 1px;
     font-size: 9px;
-    line-height: 14px;
+    line-height: 24px;
     text-align: center;
     cursor: pointer;
     margin: 0px 0px 2px 0px;
-    padding: 2px 5px;
-    background: #e7fab6;
+    padding: 2px 10px;
+    background: #DAE6E2;
     border-radius: 2px;
     z-index: 1;
-    box-shadow: #A0C847 0px 0px 3px 1px;
     opacity: 0.8;
     overflow: hidden;
+    font-family: "Inter", sans-serif !important;
 }
-.quickEdit a, #navigation .quickEdit a, #form-canvas .quickEdit a {
+
+.quickEdit:hover, #form-canvas .quickEdit:hover {
+    z-index: 9999;
+}
+
+.quickEdit a, #navigation .quickEdit a, #form-canvas .quickEdit a, .quickEdit i#temp-icon {
     color: black !important;
     text-decoration: none;
     display: inline-block;
-    font-size: 10px;
+    font-size: 12px;
     padding: 0px;
     line-height: 14px;
     width: 100%;
 }
+
 .quickEdit:hover, #navigation .quickEdit:hover, #navigation .quickEdit a:hover, #form-canvas .quickEdit:hover, .adminBarButton:hover {
     background: lightgreen;
 }
-body.quickEditModeActive fieldset#form-canvas, body.quickEditModeActive fieldset#form-canvas .subform-container, body.quickEditModeActive .dataList, body.quickEditModeActive #category-container {
-    border: solid 5px #e7fab6;
+
+body.quickEditModeActive fieldset#form-canvas, body.quickEditModeActive fieldset#form-canvas .subform-container, body.quickEditModeActive .dataList, body.quickEditModeActive #category-container, body.quickEditModeActive #content > main {
+    border: solid 5px #DAE6E2;
     padding: 1px;
 }
+
+body.quickEditModeActive fieldset#form-canvas.quick-edit-hovered, body.quickEditModeActive fieldset#form-canvas .subform-container.quick-edit-hovered, body.quickEditModeActive .dataList.quick-edit-hovered, body.quickEditModeActive #category-container.quick-edit-hovered, body.quickEditModeActive #content > main.quick-edit-hovered {
+    position: relative;
+}
+
+body.quickEditModeActive fieldset#form-canvas.quick-edit-hovered:after, body.quickEditModeActive fieldset#form-canvas .subform-container.quick-edit-hovered:after, body.quickEditModeActive .dataList.quick-edit-hovered:after, body.quickEditModeActive #category-container.quick-edit-hovered:after, body.quickEditModeActive #content > main.quick-edit-hovered:after {
+    background-color: rgba(0, 169, 119, 0.1);
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    content: "";
+    pointer-events: none;
+    z-index: 3;
+    display: block;
+}
+
+body.quickEditModeActive fieldset#form-canvas.quick-edit-hovered:before, body.quickEditModeActive fieldset#form-canvas .subform-container.quick-edit-hovered:before, body.quickEditModeActive .dataList.quick-edit-hovered:before, body.quickEditModeActive #category-container.quick-edit-hovered:before, body.quickEditModeActive #content > main.quick-edit-hovered:before {
+    content: none;
+}
+
 body.quickEditModeActive fieldset#form-canvas [class^="icon-"], body.quickEditModeActive fieldset#form-canvas [class*=" icon-"] {
     font-family: FontAwesome;
 }
+
 body.quickEditModeActive .analyzer-page {
     display: inline-block !important;
 }
-/*-- Performance Analyzer --*/
-#analyzerJson { 
-    display: none 
+
+#analyzerJson {
+    display: none
 }
-#navigation .menu.analyzer, .form-section.analyzer, .form-column.analyzer, .form-cell.analyzer, .subform-section.analyzer, .subform-column.analyzer, .subform-cell.analyzer, #content.analyzer { 
-    border: solid 1px orange; 
-    margin: 1px; 
-    border-radius: 4px; 
+
+#navigation .menu.analyzer, .form-section.analyzer, .form-column.analyzer, .form-cell.analyzer, .subform-section.analyzer, .subform-column.analyzer, .subform-cell.analyzer, #content.analyzer {
+    border: solid 1px orange;
+    margin: 1px;
+    border-radius: 4px;
 }
-.analyzer-page { 
+
+.analyzer-page {
     display: none;
     top: 0px;
-    padding: 2px; 
-    position: absolute; 
-    z-index: 500; 
-    border: solid 1px orange; 
-    background: lightgoldenrodyellow; 
+    padding: 2px;
+    z-index: 500;
+    border: solid 1px orange;
+    background: lightgoldenrodyellow;
 }
-#adminBar .analyzer-page{
+
+#adminBar .analyzer-page {
     margin: 4px 10px;
     background: #CFD8DC;
     border: 1px solid #CFD8DC;
     padding: 2px 10px;
     display: inline-block !important;
 }
-#adminBar .analyzer-page span{
-    color: #37474F;
+
+#adminBar .analyzer-page span {
+    color: #000;
     font-size: 10px;
+    font-family: "Inter", sans-serif !important;
 }
-.analyzer-label { 
+
+.analyzer-label {
     display: none;
-    opacity: 0.95; 
-    position: absolute; 
-    max-width: 600px; 
-    z-index: 5; 
-};
-.analyzer-label, #form-canvas .analyzer-label { 
-    position: absolute; 
-    border-radius: 4px; 
-    padding: 5px; 
-    max-width: 500px; 
-    z-index: 1000; 
-    opacity: 0.95; 
-    font-size: 9px; 
-    font-family: sans-serif; 
+    opacity: 0.95;
+    position: absolute;
+    max-width: 600px;
+    z-index: 5;
 }
-.analyzer-info { 
-    display: none; 
-    margin-left: 20px; 
-    margin-top: 0px; 
-    z-index: 1000; 
-    min-width: 200px; 
+
+;.analyzer-label, #form-canvas .analyzer-label {
+    position: absolute;
+    border-radius: 4px;
+    padding: 5px;
+    max-width: 500px;
+    z-index: 1000;
+    opacity: 0.95;
+    font-size: 9px;
+    font-family: sans-serif;
 }
-.analyzer-label:hover .analyzer-info, .analyzer-info:hover { 
-    display: list-item !important; 
-    z-index: 2000 
+
+.analyzer-info {
+    display: none;
+    margin-left: 20px;
+    margin-top: 0px;
+    z-index: 1000;
+    min-width: 200px;
 }
-.analyzer-label:hover { 
-    border: solid 1px orange; 
-    background: lightgoldenrodyellow; 
+
+.analyzer-label:hover .analyzer-info, .analyzer-info:hover {
+    display: list-item !important;
+    z-index: 2000
 }
-.analyzer-info span, #navigation .current .analyzer-info span, #form-canvas .analyzer-info span, .analyzer-page span { 
-    font-size: 8.5px; 
-    font-family: sans-serif; 
-    color: #555; 
-    font-weight: normal; 
-    z-index: 2000 
+
+.analyzer-label:hover {
+    border: solid 1px orange;
+    background: lightgoldenrodyellow;
 }
-.analyzer-info-info { 
-    float: left; 
-    clear: left; 
-    text-align: left; 
-    line-height: 16px; 
+
+.analyzer-info span, #navigation .current .analyzer-info span, #form-canvas .analyzer-info span, .analyzer-page span {
+    font-size: 8.5px;
+    font-family: sans-serif;
+    color: #555;
+    font-weight: normal;
+    z-index: 2000
 }
-.analyzer-label .analyzer-info-info { 
+
+.analyzer-info-info {
+    float: left;
+    clear: left;
+    text-align: left;
+    line-height: 16px;
+}
+
+.analyzer-label .analyzer-info-info {
     width: 90%;
-}    
-.analyzer-info-duration { 
-    float: right; 
-    clear: right; 
-    min-width: 30px; 
-    text-align: right; 
 }
-.duration, #form-canvas .duration, .analyzer-info-duration { 
-    background: lightgoldenrodyellow; 
-    color: #555; 
-    font-size: 8.5px; 
-    border: solid 1px orange; 
-    border-radius: 2px; 
-    padding: 2px; 
-    font-size: 10px; 
-    font-weight: normal; 
+
+.analyzer-info-duration {
+    float: right;
+    clear: right;
+    min-width: 30px;
+    text-align: right;
 }
+
+.duration, #form-canvas .duration, .analyzer-info-duration {
+    background: lightgoldenrodyellow;
+    color: #555;
+    font-size: 8.5px;
+    border: solid 1px orange;
+    border-radius: 2px;
+    padding: 2px;
+    font-size: 10px;
+    font-weight: normal;
+}
+
 .embeded .hasAnalyzer {
-  padding-top: 20px;
+    padding-top: 20px;
 }
+
 .embeded .hasAnalyzer .analyzer-page {
-    top:0;
+    top: 0;
 }
+
 #memWarning .warningMessage {
     padding: 10px 0px;
 }
+
 #memWarning .memGauge {
-    width:100%; 
-    border:solid 1px #555;
+    width: 100%;
+    border: solid 1px #555;
 }
+
 #memWarning .memUsage {
-    background:yellow;
-    padding:2px;
+    background: yellow;
+    padding: 2px;
 }
+
 body.fixiosframe.stop-scrolling {
     height: 100% !important;
     overflow: hidden !important;
 }
-#adminBar #environmentName{
+
+#adminBar #environmentName {
     background: #ff6100;
     position: absolute;
     right: 0;
+    bottom: 0;
     padding: 5px 60px;
     font-weight: bold;
     color: #fff;
     font-size: 18px;
     font-family: arial;
     line-height: 20px;
+    transition: all 0.6s linear;
 }
-@media only screen and (max-width: 768px), (device-width: 1024px) and (device-height: 1366px) {
+
+html.adminBarShown #adminBar #environmentName {
+    bottom: 35px;
+}
+
+@media only screen and (max-width: 768px),(device-width:1024px) and (device-height:1366px) {
     #adminBar #environmentName {
-        max-width: calc(100vw - 285px);
+        max-width:calc(100vw - 285px);
         height: 45px;
         padding: 0px 38px 0 6px;
         font-size: 15px;
@@ -578,33 +837,39 @@ body.fixiosframe.stop-scrolling {
         width: 150px;
     }
 }
-body.rtl #adminBar #environmentName{
+
+body.rtl #adminBar #environmentName {
     right: unset;
-    left:0;
+    left: 0;
 }
-body.rtl #adminBar.adminBarInactive #environmentName{
-    left:auto;
+
+body.rtl #adminBar.adminBarInactive #environmentName {
+    left: auto;
 }
-@media screen and (min-width:681px) { 
+
+@media screen and (min-width: 681px) {
     #page .analyzer-page {
-        display: none !important;
+        display:none !important;
     }
+
     .quickOverlayFrame #presence {
         top: 35px;
     }
+
     .quickOverlayFrame #main {
-        padding-top:35px;
-        padding-right:50px;
+        box-sizing: border-box;
     }
 }
-@media screen and (max-width:680px) { 
-    #adminBar .analyzer-page,
-    body.quickEditModeActive .analyzer-page{
-        display: none !important;
+
+@media screen and (max-width: 680px) {
+    #adminBar .analyzer-page, body.quickEditModeActive .analyzer-page {
+        display:none !important;
     }
+
     .quickOverlayButton a i {
-        padding-top:4px;
+        padding-top: 4px;
     }
+
     .quickOverlayButton a {
         width: 35px;
         height: 35px;
@@ -613,28 +878,47 @@ body.rtl #adminBar.adminBarInactive #environmentName{
         font-size: 24px;
         box-shadow: #666 1px 1px 2px 1px;
     }
+
     .quickOverlayButton a.pin, .quickOverlayButton a.max {
-        display:none;
+        display: none;
     }
+
     .quickOverlayButton {
         top: 5px;
         right: 5px;
         left: auto;
     }
+
     body.rtl .quickOverlayButton {
         right: auto;
         left: 5px;
     }
-    .quickOverlayButton a{
+
+    body.rtl .quickOverlayButton a {
+        right: initial;
+        left: 10px;
+        margin-left: 0px;
+    }
+
+    .quickOverlayButton a {
         width: 28px;
         height: 28px;
-        font-size: 22px;
+        font-size: 1.5rem;
         padding: 0px;
+        position: absolute;
+        top: 7px;
+        right: 10px;
+        background: transparent;
+        box-shadow: none;
+        color: #dc3545;
+        margin-right: 0px;
     }
+
     #quickOverlayFrameDiv {
         height: calc(100% - 49px);
     }
-    #adminBar #environmentName{
+
+    #adminBar #environmentName {
         max-width: calc(100vw - 285px);
         height: 45px;
         padding: 0px 38px 0 3px;
@@ -644,35 +928,18 @@ body.rtl #adminBar.adminBarInactive #environmentName{
         line-height: 14px;
         vertical-align: middle;
     }
-    #adminBar #environmentName span{
+
+    #adminBar #environmentName span {
         display: block;
         top: 50%;
         position: relative;
         transform: translateY(-50%);
     }
 }
+
 iframe.iframeloading {
     background-image: url(data:image/svg+xml;base64,PHN2ZwogIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIgCiAgcm9sZT0iaW1nIgogIHdpZHRoPSI0MDAiCiAgaGVpZ2h0PSIxNjAiCiAgYXJpYS1sYWJlbGxlZGJ5PSJsb2FkaW5nLWFyaWEiCiAgdmlld0JveD0iMCAwIDQwMCAxNjAiCiAgcHJlc2VydmVBc3BlY3RSYXRpbz0ibm9uZSIKPgogIDx0aXRsZSBpZD0ibG9hZGluZy1hcmlhIj5Mb2FkaW5nLi4uPC90aXRsZT4KICA8cmVjdAogICAgeD0iMCIKICAgIHk9IjAiCiAgICB3aWR0aD0iMTAwJSIKICAgIGhlaWdodD0iMTAwJSIKICAgIGNsaXAtcGF0aD0idXJsKCNjbGlwLXBhdGgpIgogICAgc3R5bGU9J2ZpbGw6IHVybCgiI2ZpbGwiKTsnCiAgPjwvcmVjdD4KICA8ZGVmcz4KICAgIDxjbGlwUGF0aCBpZD0iY2xpcC1wYXRoIj4KICAgICAgICA8cmVjdCB4PSIwIiB5PSIxMyIgcng9IjQiIHJ5PSI0IiB3aWR0aD0iNDAwIiBoZWlnaHQ9IjkiIC8+CiAgICAgICAgPHJlY3QgeD0iMCIgeT0iMjkiIHJ4PSI0IiByeT0iNCIgd2lkdGg9IjEwMCIgaGVpZ2h0PSI4IiAvPgogICAgICAgIDxyZWN0IHg9IjAiIHk9IjUwIiByeD0iNCIgcnk9IjQiIHdpZHRoPSI0MDAiIGhlaWdodD0iMTAiIC8+CiAgICAgICAgPHJlY3QgeD0iMCIgeT0iNjUiIHJ4PSI0IiByeT0iNCIgd2lkdGg9IjQwMCIgaGVpZ2h0PSIxMCIgLz4KICAgICAgICA8cmVjdCB4PSIwIiB5PSI3OSIgcng9IjQiIHJ5PSI0IiB3aWR0aD0iMTAwIiBoZWlnaHQ9IjEwIiAvPgogICAgICAgIDxyZWN0IHg9IjAiIHk9Ijk5IiByeD0iNSIgcnk9IjUiIHdpZHRoPSI0MDAiIGhlaWdodD0iMjAwIiAvPgogICAgPC9jbGlwUGF0aD4KICAgIDxsaW5lYXJHcmFkaWVudCBpZD0iZmlsbCI+CiAgICAgIDxzdG9wCiAgICAgICAgb2Zmc2V0PSIwLjU5OTk2NCIKICAgICAgICBzdG9wLWNvbG9yPSIjZjNmM2YzIgogICAgICAgIHN0b3Atb3BhY2l0eT0iMSIKICAgICAgPgogICAgICAgIDxhbmltYXRlCiAgICAgICAgICBhdHRyaWJ1dGVOYW1lPSJvZmZzZXQiCiAgICAgICAgICB2YWx1ZXM9Ii0yOyAtMjsgMSIKICAgICAgICAgIGtleVRpbWVzPSIwOyAwLjI1OyAxIgogICAgICAgICAgZHVyPSIxcyIKICAgICAgICAgIHJlcGVhdENvdW50PSJpbmRlZmluaXRlIgogICAgICAgID48L2FuaW1hdGU+CiAgICAgIDwvc3RvcD4KICAgICAgPHN0b3AKICAgICAgICBvZmZzZXQ9IjEuNTk5OTYiCiAgICAgICAgc3RvcC1jb2xvcj0iI2VjZWJlYiIKICAgICAgICBzdG9wLW9wYWNpdHk9IjEiCiAgICAgID4KICAgICAgICA8YW5pbWF0ZQogICAgICAgICAgYXR0cmlidXRlTmFtZT0ib2Zmc2V0IgogICAgICAgICAgdmFsdWVzPSItMTsgLTE7IDIiCiAgICAgICAgICBrZXlUaW1lcz0iMDsgMC4yNTsgMSIKICAgICAgICAgIGR1cj0iMXMiCiAgICAgICAgICByZXBlYXRDb3VudD0iaW5kZWZpbml0ZSIKICAgICAgICA+PC9hbmltYXRlPgogICAgICA8L3N0b3A+CiAgICAgIDxzdG9wCiAgICAgICAgb2Zmc2V0PSIyLjU5OTk2IgogICAgICAgIHN0b3AtY29sb3I9IiNmM2YzZjMiCiAgICAgICAgc3RvcC1vcGFjaXR5PSIxIgogICAgICA+CiAgICAgICAgPGFuaW1hdGUKICAgICAgICAgIGF0dHJpYnV0ZU5hbWU9Im9mZnNldCIKICAgICAgICAgIHZhbHVlcz0iMDsgMDsgMyIKICAgICAgICAgIGtleVRpbWVzPSIwOyAwLjI1OyAxIgogICAgICAgICAgZHVyPSIxcyIKICAgICAgICAgIHJlcGVhdENvdW50PSJpbmRlZmluaXRlIgogICAgICAgID48L2FuaW1hdGU+CiAgICAgIDwvc3RvcD4KICAgIDwvbGluZWFyR3JhZGllbnQ+CiAgPC9kZWZzPgo8L3N2Zz4=);
     background-repeat: no-repeat;
     background-position: center 50%;
     background-size: 90% auto;
-}
-
-#adminBar[builder-theme] {
-    background: #333;
-}
-#adminBar[builder-theme] #quickEditModeOption > div > a:not(.off), 
-#adminBar[builder-theme] #adminBarButtons > div > a.current, 
-#adminBar[builder-theme] #adminBarButtons > div > a:hover {
-    background: #333;
-}
-#adminBar[builder-theme] #appCenter {
-    background: #333;
-}
-#adminBar[builder-theme] #appCenter i {
-    color: #009265;
-}
-#adminControl[builder-theme] {
-    background: #03543D;
-    box-shadow: 0 6px 16px 0 rgba(0, 0, 0, 0.08), 0 3px 6px -4px rgba(0, 0, 0, 0.12), 0 9px 28px 8px rgba(0, 0, 0, 0.05);
 }

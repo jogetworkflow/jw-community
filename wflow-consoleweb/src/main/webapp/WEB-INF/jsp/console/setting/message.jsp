@@ -4,7 +4,6 @@
 <c:set var="isVirtualHostEnabled" value="<%= HostManager.isVirtualHostEnabled() %>"/>
 
 <commons:header />
-
 <div id="nav">
     <div id="nav-title">
         <p><i class="fas fa-cogs"></i> <fmt:message key='console.header.top.label.settings'/></p>
@@ -17,12 +16,12 @@
 </div>
 
 <div id="main">
-    <div id="main-title"></div>
+    <div id="main-title"><fmt:message key="console.header.submenu.label.setting.message"/></div>
     <div id="main-action">
         <ul id="main-action-buttons">
-            <li><button onclick="messageCreate()"><fmt:message key="console.setting.message.create.label"/></button></li>
-            <li><button onclick="importPOFile()"><fmt:message key="console.setting.message.import.label"/></button></li>
-            <li><button onclick="exportPOFile()"><fmt:message key="console.setting.message.export.label"/></button></li>
+            <li><button class="console-primary" onclick="messageCreate()"><i class="fas fa-plus"></i> <fmt:message key="console.setting.message.create.label"/></button></li>
+            <li><button class="console-tertiary" onclick="importPOFile()"><i class="fas fa-file-import"></i> <fmt:message key="console.setting.message.import.label"/></button></li>
+            <li><button class="console-tertiary" onclick="exportPOFile()"><i class="fas fa-file-export"></i> <fmt:message key="console.setting.message.export.label"/></button></li>
         </ul>
     </div>
     <div id="main-body">
@@ -66,6 +65,12 @@
 <script>
     $(document).ready(function(){
         $('#JsonMessageDataTable_searchTerm').hide();
+
+        //Reposition the filter
+        $("div#main-body-content-filter").appendTo("#JsonMessageDataTable_messageList-search");
+        $("div#main-body-content-filter").show();
+
+        $("button:has(.fa-trash-alt)").addClass('console-danger');
     });
 
     <ui:popupdialog var="popupDialog" src="${pageContext.request.contextPath}/web/console/setting/message/create"/>
