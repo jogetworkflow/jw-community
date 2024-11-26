@@ -1227,6 +1227,11 @@ FormBuilder = {
                         $('#diagram-grid .entity-container').removeClass("showDetails");
                         jsPlumb.repaintEverything();
                     });
+                    
+                    $(window).off("resize.erd");
+                    $(window).on("resize.erd", function (event) {
+                        jsPlumb.repaintEverything();
+                    });
                 } else {
                     $(view).find("#diagram-tab .usage_content, #desc-tab .usage_content").html('<p>'+get_cbuilder_msg('fbuilder.noData')+'</p>');
                 }
