@@ -412,7 +412,7 @@ public class FormDataDaoImpl extends HibernateDaoSupport implements FormDataDao 
             if (params != null) {
                 int i = 0;
                 for (Object param : params) {
-                    q.setParameter(i, param);
+                    q.setParameter(i, param, TextType.INSTANCE);
                     i++;
                 }
             }
