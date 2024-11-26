@@ -215,7 +215,7 @@ header.navbar .dropdown-menu a span.time{
 }
 
 /*Sidebar Horizontal Menu */
-@media screen and (max-width:768px){
+@media screen and (max-width:767px){
     body.rtl.horizontal_menu #sidebar{
         right: 0px;
         left: unset;
@@ -271,7 +271,7 @@ header.navbar .dropdown-menu a span.time{
     }
 
     body.rtl.horizontal_menu #sidebar .nav > li > ul > li > a {
-        padding: 10px 15px 10px 65px;
+        padding: 10px 65px 10px 15px;
     }
 }
 
@@ -533,8 +533,11 @@ body.rtl:not(.horizontal_menu) #sidebar .nav > li > ul > li > a{
 }
 #sidebar .nav > li > ul > li > a > span:first-child {
     max-width: 160px;
+    white-space: normal;
     padding-right: 10px;
-    display: inline-block;
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
 }
 body.rtl:not(.horizontal_menu) #sidebar .nav > li > ul > li > a > span:first-child{
     float: right;
@@ -2073,7 +2076,8 @@ body.rtl .ContainerComponent {
         padding: 14px 15px 16px 10px;
     }
     ul#moreSubMenu.sub-menu > li > ul > li > a {
-        display: block;
+        display:inline-flex;
+        gap:8px;
         padding: 10px 15px 10px 15px;
         color: var(--theme-sidebar-link, var(--theme-color2, #72777a));
         font-size: 13px;
@@ -2083,14 +2087,21 @@ body.rtl .ContainerComponent {
         width: auto;
         right: 100%;
     }
-    body.rtl.horizontal_menu:not(.inline_menu) ul#moreSubMenu.sub-menu {
+    body.rtl.horizontal_menu:not(.inline_menu) ul#moreSubMenu.sub-menu,
+    li#menu-more.over > ul#moreSubMenu,
+    body.horizontal_menu:not(.inline_menu) li.category > ul.menu-container.over-right {
         left: 0 !important;
         right: unset !important;
     }
-    body.rtl.horizontal_menu:not(.inline_menu) ul#moreSubMenu.sub-menu > li:hover> ul {
+    body.rtl.horizontal_menu:not(.inline_menu) ul#moreSubMenu.sub-menu > li:hover> ul,
+    ul#moreSubMenu.sub-menu.over > li:hover> ul {
         left: 100% !important;
         right: unset !important;
     }
+    body.horizontal_menu:not(.inline_menu) li.category > ul.menu-container.over-left {
+        right:0 !important; 
+        left: unset !important;
+    } 
     ul#moreSubMenu.sub-menu{
         overflow: unset!important;
         max-height: none!important;

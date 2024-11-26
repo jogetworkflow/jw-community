@@ -1818,13 +1818,20 @@ body:not(#login) #content > main > .datalist-body-content:not(.quickEdit) {
         right: 100%;
         visibility: visible;
     }
-    body.rtl.horizontal_menu:not(.inline_menu) ul#moreSubMenu.sub-menu {
+    body.rtl.horizontal_menu:not(.inline_menu) ul#moreSubMenu.sub-menu, 
+    li#menu-more.over > ul#moreSubMenu,
+    body.horizontal_menu:not(.inline_menu) li.category > ul.menu-container.over-right {
         left: 0 !important;
         right: unset !important;
     }
-    body.rtl.horizontal_menu:not(.inline_menu) ul#moreSubMenu.sub-menu > li:hover> ul {
+    body.rtl.horizontal_menu:not(.inline_menu) ul#moreSubMenu.sub-menu > li:hover> ul,
+    ul#moreSubMenu.sub-menu.over > li:hover> ul {
         left: 100% !important;
         right: unset !important;
+    }
+    body.horizontal_menu:not(.inline_menu) li.category > ul.menu-container.over-left {
+        right:0 !important; 
+        left: unset !important;
     }
     ul#moreSubMenu.sub-menu > li > ul{
         visibility: hidden;
