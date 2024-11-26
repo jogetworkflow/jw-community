@@ -7,35 +7,6 @@ $(document).ready(function () {
     const menuBreakpoint = 768;
     let initialLoad = true;
 
-    $(document).on("mouseover", "ul#category-container > li, ul#category-container > li > ul > li", function(e) {
-        if ($(window).width() >= menuBreakpoint && $("body").hasClass("horizontal_menu") && $("body").hasClass("inline_menu")) {
-            e.stopPropagation();
-            const ul = $(this).find("ul").eq(0);
-            if (!ul.length) {
-                return;
-            }
-            const left = ul.offset().left;
-            const right = left + ul.outerWidth();
-            if (left < 0) {
-                ul.css({
-                    'left': '100%',
-                    'right': 'unset'
-                });
-            } else if (right > $(window).width()) {
-                ul.css({
-                    'left': 'unset',
-                    'right': '100%'
-                });
-            }
-        }
-    }).on("mouseleave", "ul#category-container > li, ul#category-container > li > ul > li", function() {
-        const ul = $(this).find("ul");
-        ul.css({
-            'left': '',
-            'right': ''
-        });
-    });
-
     if ($("body").hasClass("horizontal_menu")) {
         winWidth = $(window).width();
         navItems = $('#category-container > li');
@@ -91,10 +62,12 @@ $(document).ready(function () {
             //checks if the first menu item width is same as the one captured in navItemWidth array
             //if no, removes old content, remeasures and adds the lengths back in
             if (firstItemLength !== navItemWidth[0] && $(window).outerWidth() >= menuBreakpoint ){
-                navItemWidth.length = 0;
-                $('#category-container > li').each(function () {
+                var count = 0;
+                $('#category-container > li.category').each(function () {
                     let itemWidth = $(this).outerWidth();
-                    navItemWidth.push(itemWidth);
+                    navItemWidth[count] = itemWidth;
+
+                    count++;
                 });
             }
             // checks if id is undefined, if so creates a new id
@@ -164,6 +137,12 @@ $(document).ready(function () {
             }
         }
         function formatNav(containerWidth) {
+            //Reset over
+            $('#moreSubMenu').removeClass("over");
+            $('#menu-more').removeClass("over");    
+            $("li.category:last").find("> ul.menu-container").removeClass("over-right");
+            $("li.category:last").find("> ul.menu-container").removeClass("over-left");
+
             // initial variables
             let room = true;
             let count = 0;
@@ -174,10 +153,12 @@ $(document).ready(function () {
             if (containerWidth === undefined) {
                 containerWidth = $('#navigation').innerWidth();
             }
+            //Add the navPadding to the totalWidth first, as it is fixed
+            totalWidth += navPadding;
             // for each menu item
             navItems.each(function () {
                 // get width of menu with that item
-                tempWidth = totalWidth + navItemWidth[count] + navPadding;
+                tempWidth = totalWidth + navItemWidth[count];
                 // show all menu items if window is within menu breakpoint (less than 768px)
                 if ($(window).outerWidth() < menuBreakpoint){
                     $('#menu-more').before($('#moreSubMenu').children().first());
@@ -197,6 +178,23 @@ $(document).ready(function () {
                             $('#menu-more').hide();
                         }
                     }
+
+                    if (count === navItems.length-1) {
+                        const subMenuClone = $(this).find("> ul.menu-container").clone().css({
+                            "visibility": "hidden",
+                            "display": "table"
+                        }).appendTo("body");
+
+                        var subMenuWidth = subMenuClone.outerWidth();
+
+                        subMenuClone.remove();
+                        
+                        if($(this).offset().left - subMenuWidth < 0) {
+                            $(this).find("> ul.menu-container").addClass("over-right");
+                        }else if($(this).offset().left + subMenuWidth > $(window).width()) {
+                            $(this).find("> ul.menu-container").addClass("over-left");
+                        }
+                    }
                 }
                 // if the menu item will not fit
                 else {
@@ -213,6 +211,27 @@ $(document).ready(function () {
                     let menuItemId = $(this).prop('id');
                     $("li#" + menuItemId).appendTo($('#moreSubMenu'));
                     navItemVisible[count] = false;
+
+                    const subMenuClone = $('#moreSubMenu').clone().css({"visibility":"hidden", "display":"table"}).appendTo("body");
+                    const menuContainerClone = $("li#" + menuItemId).find("ul.menu-container").eq(0).clone().css({"visibility":"hidden", "display":"table"}).appendTo("body");
+                    var width2 = 0;
+                    
+                    if (menuContainerClone.length > 0) {
+                        width2 = menuContainerClone.outerWidth()
+                    }
+
+                    var width = subMenuClone.outerWidth();
+
+                    subMenuClone.remove();
+                    menuContainerClone.remove();
+                    
+                    if($("body").hasClass("inline_menu") && $(window).width() >= menuBreakpoint){
+                        if ($('#menu-more').offset().left - width < 0){
+                            $('#menu-more').addClass("over");
+                        }else if ($('#menu-more').offset().left - width - width2 < 0 && !$('#menu-more').hasClass("over")){
+                            $('#moreSubMenu').addClass("over");
+                        }
+                    }
                 }
                 // update count
                 count += 1;
