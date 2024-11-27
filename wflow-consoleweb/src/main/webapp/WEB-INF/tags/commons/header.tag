@@ -16,7 +16,7 @@
 <c:set var="isAdmin" scope="request" value="<%= WorkflowUtil.isCurrentUserInRole(WorkflowUtil.ROLE_ADMIN) %>"/>
 <c:set var="title" value="<%= title != null ? title : \"\" %>"/>
 <c:set var="lang" value="<%= AppUtil.getAppLocale() %>"/>
-<c:set var="systemTheme" value='<%= WorkflowUtil.getSystemSetupValue("systemTheme") %>'/>
+<c:set var="systemTheme" value='<%= AppUtil.getSystemTheme() %>'/>
 <c:set var="rightToLeft" value='<%= WorkflowUtil.getSystemSetupValue("rightToLeft") %>'/>
 <c:if test="${empty title}">
     <c:set var="title"><fmt:message key="console.header.browser.title"/></c:set>

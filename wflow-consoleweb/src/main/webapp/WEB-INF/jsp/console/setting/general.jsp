@@ -266,9 +266,9 @@
                             <label for="systemTheme"><fmt:message key="console.setting.general.label.system.theme"/></label>
                             <span class="form-input">
                                 <select id="systemTheme" name="systemTheme">
-                                    <option value="" <c:if test="${settingMap['deviceTheme'] == true}">selected</c:if>><fmt:message key="console.setting.general.label.device.theme"/></option>
-                                    <option value="light" <c:if test="${settingMap['deviceTheme'] == false && settingMap['systemTheme'] eq 'light'}">selected</c:if>><fmt:message key="console.setting.general.label.light.theme"/></option>
-                                    <option value="dark" <c:if test="${settingMap['deviceTheme'] == false && settingMap['systemTheme'] eq 'dark'}">selected</c:if>><fmt:message key="console.setting.general.label.dark.theme"/></option>
+                                    <option value="" <c:if test="${settingMap['systemTheme'] eq ''}">selected</c:if>><fmt:message key="console.setting.general.label.device.theme"/></option>
+                                    <option value="light" <c:if test="${settingMap['systemTheme'] eq 'light'}">selected</c:if>><fmt:message key="console.setting.general.label.light.theme"/></option>
+                                    <option value="dark" <c:if test="${settingMap['systemTheme'] eq 'dark'}">selected</c:if>><fmt:message key="console.setting.general.label.dark.theme"/></option>
                                 </select>
                             </span>
                         </div>
@@ -780,12 +780,6 @@
         ConnectionManager.post('${pageContext.request.contextPath}/web/console/setting/general/loginHash', callback, params);
     }
     $(document).ready(function() {
-        if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
-            $('#systemTheme option:first').val('deviceTheme;dark');
-        }else{
-            $('#systemTheme option:first').val('deviceTheme;light');
-        }
-
         const savedMessage = localStorage.getItem('formSavedMessage');
         if (savedMessage) {
             $('<div class="toast"><i id="toast-icon" class="fas fa-check-circle"></i><div class="toast-body">'+ savedMessage +'</div><i id="close" class="fas fa-close"></i></div>').appendTo('div#main');

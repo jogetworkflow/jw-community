@@ -3,10 +3,10 @@
 <%@ page import="org.joget.apps.app.service.AppUtil"%>
 <%@ include file="/WEB-INF/jsp/includes/taglibs.jsp" %>
 <%
-    String theme = WorkflowUtil.getSystemSetupValue("systemTheme");
+    String theme = AppUtil.getSystemTheme();
     pageContext.setAttribute("theme", theme);
 
-    String deviceTheme = WorkflowUtil.getSystemSetupValue("deviceTheme");
+    boolean deviceTheme = AppUtil.isFollowDeviceTheme();
     pageContext.setAttribute("deviceTheme", deviceTheme);
 %>
 <c:set var="isQuickEditEnabled" value="<%= AppUtil.isQuickEditEnabled() %>"/>
@@ -18,7 +18,7 @@
         <script>
             loadCSS("${pageContext.request.contextPath}/css/admin_bar_custom.css");
         </script>
-        <div id="adminBar" class="adminBarInactive" <c:if test="${deviceTheme == 'true'}">device-theme="<c:out value="${deviceTheme}"/>"</c:if> <c:if test="${!empty theme && (theme == 'light' || theme == 'dark')}">builder-theme="<c:out value="${theme}"/>"</c:if>>
+        <div id="adminBar" class="adminBarInactive" <c:if test="${deviceTheme}">device-theme="true"</c:if> <c:if test="${!empty theme}">builder-theme="<c:out value="${theme}"/>"</c:if>>
             <a id="appCenter" <c:if test="${empty param.webConsole}"> target="_blank"</c:if> title="<ui:msgEscHTML key='adminBar.label.appCenter'/>" href="${pageContext.request.contextPath}/home"><i class="fab fa-joget"></i></a>  
             <div id="adminBarButtons">
             <c:set var="key" value="0" />

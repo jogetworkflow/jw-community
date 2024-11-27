@@ -1,12 +1,6 @@
 <%@ include file="/WEB-INF/jsp/includes/taglibs.jsp" %>
-<%@ page import="org.joget.workflow.util.WorkflowUtil"%>
 
-<%
-    String theme = WorkflowUtil.getSystemSetupValue("systemTheme");
-    pageContext.setAttribute("theme", theme);
-%>
-
-<commons:popupHeader bodyCssClass=" builder-popup no-header" builderTheme="${theme}"/>
+<commons:popupHeader bodyCssClass=" builder-popup no-header" builderTheme="true"/>
 <script type="text/javascript" src="${pageContext.request.contextPath}/js/ace/ace.js"></script>
 <script type="text/javascript" src="${pageContext.request.contextPath}/wro/codeMirror.min.js"></script>
 <link rel="stylesheet" href="${pageContext.request.contextPath}/wro/codeMirror.min.css" />
