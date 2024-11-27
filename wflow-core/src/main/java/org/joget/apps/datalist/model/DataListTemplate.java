@@ -271,6 +271,12 @@ public abstract class DataListTemplate extends ExtDefaultPlugin implements Prope
             String key = getDatalist().getBinder().getPrimaryKeyColumnName();
             String param = getDatalist().getDataListEncodedParamName(CHECKBOX_PREFIX + key);
             String value = (String) DataListService.evaluateColumnValueFromRow(data, key);
+            
+            //handle null primary key, causing template does not render all data rows due to value remain {{value}} in template and causing some rows being removed clean method
+            if (value == null) {
+                value = "";
+            }
+            
             String type = "radio";
             String id = type + "_" + param + "_" + value;
             String header = "";
