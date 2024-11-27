@@ -318,6 +318,7 @@ public class FormDataDaoImpl implements FormDataDao {
             String query = "SELECT e FROM " + tableName + " e ";
             if (condition != null) {
                 String newCondition = StringUtil.replaceOrdinalParameters(condition, params);
+                newCondition = replaceColumnNameWithPrefix(tableName, newCondition);
                 query += newCondition;
             }
 
@@ -409,6 +410,7 @@ public class FormDataDaoImpl implements FormDataDao {
         Session session = getHibernateSession(tableName, tableName, null, ACTION_TYPE_LOAD);
         try {
             String newCondition = StringUtil.replaceOrdinalParameters(condition, params);
+            newCondition = replaceColumnNameWithPrefix(tableName, newCondition);
             Query q = session.createQuery(processQuery("SELECT COUNT(*) FROM " + tableName + " e " + newCondition));
             InMemoryCacheManager cacheManager = InMemoryCacheManager.getInMemoryCacheManager();
             cacheManager.setCacheable(q, tableName);
@@ -425,6 +427,20 @@ public class FormDataDaoImpl implements FormDataDao {
         } finally {
             closeSession(session);
         }
+    }
+    
+    /**
+     * Replace the column name with c_ prefix to e.customProperties.
+     * @param tableName
+     * @param condition
+     * @return 
+     */
+    protected String replaceColumnNameWithPrefix(String tableName, String condition) {
+        if (condition != null && !condition.isEmpty() && (condition.contains(" c_") || condition.contains("(c_"))) {
+            //there is no function or method name started with c_, so i think it is safe to replace any ` c_` & `(c_` directly
+            condition = condition.replaceAll("([ \\(])c_", "$1" + StringUtil.escapeRegex("e."+FormUtil.PROPERTY_CUSTOM_PROPERTIES+"."));
+        }
+        return condition;
     }
 
     /**
