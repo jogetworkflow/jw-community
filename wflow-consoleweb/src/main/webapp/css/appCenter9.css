@@ -768,6 +768,26 @@ body.dark-mode  .dataList#dataList_applist .column_2 {
     padding-top: 0px;
 }
 
+.jgt-count-badge{
+    position: absolute; 
+    padding: 2px 8px; 
+    font-weight: 600; 
+    background-color: #FF3C7E;
+    color: #FFFFFF; 
+    font-size: 12px; 
+    top: 12px; 
+    right: 12px; 
+    min-width:25px; 
+    border-radius: 20%
+}
+.jgt-count-badge > i {
+   margin-right: 4px;
+}
+.rtl .jgt-count-badge > i{
+    margin-right: 0px;
+    margin-left: 4px;
+}
+
 @media (max-width: 767px) {
     #customSearchSection.closed #customSearchButton, #customSearchSection.open #customSearchButton {
         display: none;
