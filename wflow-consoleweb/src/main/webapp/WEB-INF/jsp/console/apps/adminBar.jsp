@@ -117,9 +117,9 @@
                 )
             }
             window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change',({ matches }) => {
-                if (matches && $("div#adminBar").attr('device-theme') === "true") {
+                if (matches && $("div#adminBar").attr('device-theme') === "true" && $("div#adminBar").attr('builder-theme') !== "dark") {
                     ajaxRequestChangeSystemTheme('dark');
-                } else if (!matches && $("div#adminBar").attr('device-theme') === "true"){
+                } else if (!matches && $("div#adminBar").attr('device-theme') === "true" && $("div#adminBar").attr('builder-theme') !== "light"){
                     ajaxRequestChangeSystemTheme('light');
                 }
             })   
