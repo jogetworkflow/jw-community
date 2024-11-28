@@ -1717,9 +1717,11 @@ public class ConsoleWebController {
 
     @RequestMapping(value = "/console/app/(*:appId)/(~:version)/publish", method = RequestMethod.POST)
     @Transactional
-    public String consoleAppPublish(@RequestParam(value = "appId") String appId, @RequestParam(value = "version", required = false) String version) {
-        appService.publishApp(appId, version);
-        return "console/apps/dialogClose";
+    public String consoleAppPublish(@RequestParam(value = "appId") String appId, @RequestParam(value = "version", required = false) String version, HttpServletResponse response) throws IOException {
+        AppDefinition appDef = appService.publishApp(appId, version);
+        response.getWriter().write("{\"status\":" + (appDef != null) + "}");
+        response.setStatus(HttpServletResponse.SC_OK);
+        return null;
     }
 
     @RequestMapping(value = "/console/app/(*:appId)/(~:version)/rename/(*:name)", method = RequestMethod.POST)

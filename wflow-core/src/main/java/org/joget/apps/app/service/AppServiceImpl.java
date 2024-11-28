@@ -2279,7 +2279,10 @@ public class AppServiceImpl implements AppService {
     public AppDefinition publishApp(String appId, String version) {
         // unset previous published version
         Long previousVersion = getPublishedVersion(appId);
-        if (previousVersion != null && previousVersion != 0) {
+        if (previousVersion != null) {
+            if (previousVersion == 0) {
+                return null;
+            }
             AppDefinition prevAppDef = appDefinitionDao.loadVersion(appId, previousVersion);
             prevAppDef.setPublished(Boolean.FALSE);
             appDefinitionDao.saveOrUpdate(prevAppDef);
