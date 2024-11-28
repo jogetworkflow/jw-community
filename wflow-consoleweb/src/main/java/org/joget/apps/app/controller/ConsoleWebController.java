@@ -3785,18 +3785,18 @@ public class ConsoleWebController {
                 if (!AppDevUtil.isGitDisabled()) {
                 // get app versions from Git
                     try {                                              
-                        AppDefinition appDef = appDefList.iterator().next();  
-                        String gitBranch = getGitBranchName(appDef);
-                        String projectDirName = getAppGitDirectory(appDef);
-                        File projectDir = AppDevUtil.dirSetup(baseDir, projectDirName);
-                        Git localGit = AppDevUtil.gitInit(projectDir);
-  
+                        AppDefinition appDef = appDefList.iterator().next();
                         Properties prop = AppDevUtil.getAppDevProperties(appDef);
                         String gitUri = prop.getProperty(PROPERTY_GIT_URI);
                         String gitUsername = prop.getProperty(PROPERTY_GIT_USERNAME);
                         String gitPassword = prop.getProperty(PROPERTY_GIT_PASSWORD);
 
                         if (gitUri != null && gitUsername != null && gitPassword != null) {
+                            String gitBranch = getGitBranchName(appDef);
+                            String projectDirName = getAppGitDirectory(appDef);
+                            File projectDir = AppDevUtil.dirSetup(baseDir, projectDirName);
+                            Git localGit = AppDevUtil.gitInit(projectDir);
+
                             AppDevUtil.gitAddRemote(localGit, gitUri);
                             AppDevUtil.gitPull(projectDir, localGit, gitBranch, gitUri, gitUsername, gitPassword, MergeStrategy.RECURSIVE, appDef);
                             List<String> branches = AppDevUtil.getAppGitBranches(appDef);
