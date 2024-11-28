@@ -1683,7 +1683,7 @@ li.jsondiffpatch-unchanged {
 }
 .sticky-buttons {
     position: fixed;
-    right: 20px;
+    right: 40px;
     top: 100px;
 }
 .table_column_items {
@@ -1905,6 +1905,9 @@ body #quick-nav-bar {
     overflow: hidden;
     overflow-y: auto;
 }
+body #quick-nav-bar div#dragIcon {
+    cursor: pointer;
+}
 body.quick-nav-position-left #quick-nav-bar {
     left:0;
 }
@@ -1921,7 +1924,7 @@ body.quick-nav-shown #builder-quick-nav {
     position: absolute;
 }
 #builder-quick-nav #builder-menu {
-    margin-top: 40px;
+    margin-top: 15px;
     display: block !important;
 }
 #builder-quick-nav #builder-menu-search{
