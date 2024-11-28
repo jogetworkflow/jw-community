@@ -1587,7 +1587,8 @@ body .form-container [class*=form-cell-value]{
 body.quickEditModeActive fieldset#form-canvas, 
 body.quickEditModeActive fieldset#form-canvas .subform-container, 
 body.quickEditModeActive .dataList, 
-body.quickEditModeActive #category-container {
+body.quickEditModeActive #category-container, 
+body.quickEditModeActive #content > main {
     border: inherit !important;
     padding: inherit !important;
     position: relative;
