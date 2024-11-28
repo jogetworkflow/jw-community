@@ -67,7 +67,11 @@
         justify-content: space-between;
         width: 100%;
         align-items: center;
-     }
+    }
+
+    #main-body {
+        margin-top: 2rem;
+    }
 
     #search-bar {
         width: min-content;
