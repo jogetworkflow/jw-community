@@ -96,6 +96,7 @@ button:before, .btn:before {
     font-weight: 600;
     text-transform: none;
     font-size: 1rem;
+    margin: 0;
 }
 .section-list-item {
     display: flex;
@@ -164,7 +165,7 @@ button {
     user-select: none;
     transition: all 0.15s;
     box-sizing: border-box;
-    border: 2px solid transparent;
+    border: none;
     text-align: justify;
     min-width: fit-content;
     width:100%;
