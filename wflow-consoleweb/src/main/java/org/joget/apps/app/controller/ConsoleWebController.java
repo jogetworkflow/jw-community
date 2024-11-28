@@ -3795,17 +3795,19 @@ public class ConsoleWebController {
                         String gitUri = prop.getProperty(PROPERTY_GIT_URI);
                         String gitUsername = prop.getProperty(PROPERTY_GIT_USERNAME);
                         String gitPassword = prop.getProperty(PROPERTY_GIT_PASSWORD);
-                                                            
-                        AppDevUtil.gitAddRemote(localGit, gitUri);
-                        AppDevUtil.gitPull(projectDir, localGit, gitBranch, gitUri, gitUsername, gitPassword, MergeStrategy.RECURSIVE, appDef);
-                        List<String> branches = AppDevUtil.getAppGitBranches(appDef);
-                        for (String branch: branches) {                     
-                            int versionIndex = branch.lastIndexOf("_");
-                            String newVersion = (versionIndex != -1) ? branch.substring(versionIndex + 1) : null;     
-                            if (newVersion != null && !appDefMap.containsKey(Long.valueOf(newVersion)) && newVersion.equals(version)) {
-                                AppDefinition newAppDef = appService.createNewAppDefinitionVersion(appId, appDefinitionDao.getLatestVersion(appId));
-                            }                        
-                        }            
+
+                        if (gitUri != null && gitUsername != null && gitPassword != null) {
+                            AppDevUtil.gitAddRemote(localGit, gitUri);
+                            AppDevUtil.gitPull(projectDir, localGit, gitBranch, gitUri, gitUsername, gitPassword, MergeStrategy.RECURSIVE, appDef);
+                            List<String> branches = AppDevUtil.getAppGitBranches(appDef);
+                            for (String branch : branches) {
+                                int versionIndex = branch.lastIndexOf("_");
+                                String newVersion = (versionIndex != -1) ? branch.substring(versionIndex + 1) : null;
+                                if (newVersion != null && !appDefMap.containsKey(Long.valueOf(newVersion)) && newVersion.equals(version)) {
+                                    AppDefinition newAppDef = appService.createNewAppDefinitionVersion(appId, appDefinitionDao.getLatestVersion(appId));
+                                }
+                            }
+                        }
                     } catch(Exception e) {
                         LogUtil.error(getClass().getName(), e, e.getMessage());
                     }
@@ -3816,6 +3818,9 @@ public class ConsoleWebController {
         }
 
         AppDefinition appDef = appService.getAppDefinition(appId, version);
+        if (appDef == null) {
+            return result;
+        }
         checkAppPublishedVersion(appDef);
         map.addAttribute("appId", appDef.getId());
         map.addAttribute("appVersion", appDef.getVersion());
