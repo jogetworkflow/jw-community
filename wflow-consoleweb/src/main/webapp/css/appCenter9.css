@@ -805,7 +805,7 @@ body.dark-mode  .dataList#dataList_applist .column_2 {
         max-width: 20%;
     }
 }
-@media (max-width: 1280px) {
+@media (max-width: 1680px) {
     #design_app .card .card-body .card-actions {
         flex-direction: column;
     }
