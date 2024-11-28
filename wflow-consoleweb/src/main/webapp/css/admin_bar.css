@@ -516,6 +516,22 @@ body.rtl #quickOverlayFrameDiv {
         padding-bottom: 14px;
     }
 
+	/* For touch screen */
+	@media (hover: none) {
+		#quickEditModeOption > div > a:hover {
+			border-bottom: none;
+			padding-bottom: 14px;
+		}
+		
+		#quickEditModeOption > div > a:not(.off) {
+			border-bottom: 2px solid #009688;
+		}
+	}
+
+	#quickEditMode > label[for='admin-bar-toggle'] {
+		display: none;
+	}
+
     #quickEditModeOption > div > a > span, #quickEditModeOption > div > a > div.switch-container, #adminBarButtons > div > a > span {
         display: none !important;
     }
@@ -712,6 +728,7 @@ body.quickEditModeActive .analyzer-page {
     position: absolute;
     max-width: 600px;
     z-index: 5;
+    left: 5px;
 }
 
 ;.analyzer-label, #form-canvas .analyzer-label {
@@ -827,9 +844,10 @@ html.adminBarShown #adminBar #environmentName {
 
 @media only screen and (max-width: 768px),(device-width:1024px) and (device-height:1366px) {
     #adminBar #environmentName {
+		width: auto !important;
         max-width:calc(100vw - 285px);
         height: 45px;
-        padding: 0px 38px 0 6px;
+        padding: 0px 6px 0 6px;
         font-size: 15px;
         word-wrap: break-word;
         line-height: 30px;
@@ -859,6 +877,16 @@ body.rtl #adminBar.adminBarInactive #environmentName {
     .quickOverlayFrame #main {
         box-sizing: border-box;
     }
+}
+
+@media screen and (min-width: 681px) and (max-width: 768px) {
+	#adminBar .analyzer-page {
+		height: 27px;
+	}
+
+	#adminBar .analyzer-page > span {
+		line-height: 10px;
+	}
 }
 
 @media screen and (max-width: 680px) {
@@ -920,14 +948,20 @@ body.rtl #adminBar.adminBarInactive #environmentName {
 
     #adminBar #environmentName {
         max-width: calc(100vw - 285px);
+		width: auto;
         height: 45px;
-        padding: 0px 38px 0 3px;
+        padding: 0px 3px 0 3px;
         color: #fff;
         font-size: 11px;
         word-wrap: break-word;
         line-height: 14px;
         vertical-align: middle;
+		bottom: 45px !important;
     }
+
+	body.rtl #adminBar.adminBarInactive #environmentName {
+		left: 0;
+	}
 
     #adminBar #environmentName span {
         display: block;
