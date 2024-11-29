@@ -39,6 +39,7 @@ body.rtl #nav-list {
 }
 body.rtl #nav-list li a{
     padding: 10px 40px 10px 15px;
+    text-align: right;
 }
 body.rtl #nav-list .nav-steps{
     right: 15px;

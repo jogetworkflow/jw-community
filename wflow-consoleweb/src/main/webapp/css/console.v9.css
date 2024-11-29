@@ -84,7 +84,10 @@ button:before, .btn:before {
     max-width: 800px;
 }
 .section {
-    margin: 2rem 2rem 1rem 2rem;
+    padding: 2rem 2rem 1rem 2rem;
+}
+.section:first-child {
+    padding-top: 0rem;
 }
 .section-header {
     display: flex;
@@ -254,15 +257,31 @@ button.btn-icon {
 i.btn-icon + .section-list-item-content {
     margin-left: .2rem;
 }
-@media screen and (max-width:680px) { 
-    ul#nav-list {
-        box-sizing: initial;
+@media screen and (max-width:680px) {
+    #nav-title p {
+        margin: 5px 0;
+    } 
+
+    ul#nav-list { 
+        box-sizing: content-box;
+    }
+
+    body.rtl ul#nav-list {
         right: 0;
+    }
+
+    body.rtl .section {
+        margin-right: 10px;
+    }
+
+    body.rtl section#connector-setup .section-list-item {
+        padding: 0;
     }
 
     .section-list-item, 
     .section-header {
         flex-wrap:wrap;
+        gap: 5px;
     }
 
     .section-list-item:not(:has(.section-list-item-content)) {

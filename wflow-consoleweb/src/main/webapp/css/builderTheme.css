@@ -2110,9 +2110,6 @@ body[builder-theme] .apmtable tr.last:not(.rowlvl0) {
 body[builder-theme] .apmtable .info-trigger {
     color: var(--theme-label-color-2);
 }
-body[builder-theme='dark'] div#dragIcon {
-    color: var(--theme-label-color-1);
-}
 body[builder-theme='dark'] .apmtable .tab-contents .charts > div {
     border: 1px solid var(--theme-border-color-1);
     background-color: #ced4da;
