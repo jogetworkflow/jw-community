@@ -3,6 +3,18 @@ Joget DX 7 COMMUNITY
 For more information, please refer to 
 https://dev.joget.org/community/display/DX7/Joget+DX+7+Knowledge+Base
 
+CHANGES IN 7.0.48
+=================
+67d2aab42 Fixed: wflow-core, wflow-consoleweb - Grid Validation - Alphabet and numeric validation error displays null message. @7.0-SNAPSHOT
+8c9097210 Fixed: wflow-core - Security - Prevent jQuery script parsing from callback URL parameter. T4937 @7.0-SNAPSHOT
+91c0425af Fixed: wflow-core - Date Picker - Incorrect validation behaviour when using locale other than zh/en or field type is not date and time. T5068 @7.0-SNAPSHOT
+2e340a714 Fixed: jw-community - Security - Update Apache Tomcat to 9.0.97 for CVE-2024-52318. @7.0-SNAPSHOT
+5e53d8fe2 Fixed: wflow-consoleweb - UI - Readjusted RTL styling for close button for specific Popup. @7.0-SNAPSHOT
+5d8ad5fa4 Fixed: wflow-consoleweb - List - Show button does not hide when all filters and page size selector are set to hidden. @7.0-SNAPSHOT
+86ac85c83 Fixed: wflow-consoleweb - Platform Translation - Wrong key validation label. @7.0-SNAPSHOT
+e51b86019 Fixed: wflow-consoleweb - Platform Translation - Missing validation error message. T4619 @7.0-SNAPSHOT
+7491df476 Fixed: wflow-core - X Admin - Fixed no permission login appearing on theme tab @7.0-SNAPSHOT
+
 CHANGES IN 7.0.47
 =================
 ca09d997b Fixed: wflow-commons - Request Hash Variable - Hash variable is not parse in a new thread due to tomcat 9.0.90. @7.0-SNAPSHOT
