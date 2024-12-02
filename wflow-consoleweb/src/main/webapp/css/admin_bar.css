@@ -13,46 +13,48 @@ html.adminBarShown {
 }
 
 a#quickEditMode > input#admin-bar-toggle {
-    display: none;
+    display: none !important;
 }
 
 a#quickEditMode:not(.off) > input#admin-bar-toggle + .button {
-    filter: none;
+    filter: none !important;
 }
 
 a#quickEditMode:not(.off) > input#admin-bar-toggle + .button .dot {
-    left: calc(100% - 15px);
-    background-color: #f0f0f0;
+    left: calc(100% - 15px) !important;
+    background-color: #f0f0f0 !important;
 }
 
 a#quickEditMode > label.adminbar-control-label.button {
-    background-color: #fff;
+    background-color: #fff !important;
 }
 
 a#quickEditMode:not(.off) > label.adminbar-control-label.button {
-    background-color: #009265;
+    background-color: #009265 !important;
 }
 
 .adminbar-control-label.button {
-    position: relative;
-    width: 29px;
-    height: 16px;
-    border-radius: 1rem;
-    cursor: pointer;
-    margin: 0;
-    margin-left: 5px;
+    position: relative !important;
+    width: 29px !important;
+    height: 16px !important;
+    border-radius: 1rem !important;
+    cursor: pointer !important;
+    margin: 0 !important;
+    margin-left: 5px !important;
+	padding: 0 !important;
+	border:none !important;
 }
 
 .adminbar-control-label.button .dot {
-    position: absolute;
-    width: 14px;
-    height: 14px;
-    left: 0rem;
-    top: 50%;
-    transform: translateY(-50%);
-    border-radius: 50%;
-    transition: all 0.3s;
-    background-color: #adb5bd;
+    position: absolute !important;
+    width: 14px !important;
+    height: 14px !important;
+    left: 0rem !important;
+    top: 50% !important;
+    transform: translateY(-50%) !important;
+    border-radius: 50% !important;
+    transition: all 0.3s !important;
+    background-color: #adb5bd !important;
     will-change: left, background-color;
 }
 
@@ -516,6 +518,22 @@ body.rtl #quickOverlayFrameDiv {
         padding-bottom: 14px;
     }
 
+	/* For touch screen */
+	@media (hover: none) {
+		#quickEditModeOption > div > a:hover {
+			border-bottom: none;
+			padding-bottom: 14px;
+		}
+		
+		#quickEditModeOption > div > a:not(.off) {
+			border-bottom: 2px solid #009688;
+		}
+	}
+
+	#quickEditMode > label[for='admin-bar-toggle'] {
+		display: none;
+	}
+
     #quickEditModeOption > div > a > span, #quickEditModeOption > div > a > div.switch-container, #adminBarButtons > div > a > span {
         display: none !important;
     }
@@ -712,6 +730,7 @@ body.quickEditModeActive .analyzer-page {
     position: absolute;
     max-width: 600px;
     z-index: 5;
+    left: 5px;
 }
 
 ;.analyzer-label, #form-canvas .analyzer-label {
@@ -827,9 +846,10 @@ html.adminBarShown #adminBar #environmentName {
 
 @media only screen and (max-width: 768px),(device-width:1024px) and (device-height:1366px) {
     #adminBar #environmentName {
+		width: auto !important;
         max-width:calc(100vw - 285px);
         height: 45px;
-        padding: 0px 38px 0 6px;
+        padding: 0px 6px 0 6px;
         font-size: 15px;
         word-wrap: break-word;
         line-height: 30px;
@@ -859,6 +879,16 @@ body.rtl #adminBar.adminBarInactive #environmentName {
     .quickOverlayFrame #main {
         box-sizing: border-box;
     }
+}
+
+@media screen and (min-width: 681px) and (max-width: 768px) {
+	#adminBar .analyzer-page {
+		height: 27px;
+	}
+
+	#adminBar .analyzer-page > span {
+		line-height: 10px;
+	}
 }
 
 @media screen and (max-width: 680px) {
@@ -920,20 +950,24 @@ body.rtl #adminBar.adminBarInactive #environmentName {
 
     #adminBar #environmentName {
         max-width: calc(100vw - 285px);
-        height: 45px;
-        padding: 0px 38px 0 3px;
+		width: auto;
+        height: auto;
+        padding: 0px 3px 0 3px;
         color: #fff;
         font-size: 11px;
         word-wrap: break-word;
         line-height: 14px;
         vertical-align: middle;
+		bottom: 45px !important;
     }
+
+	body.rtl #adminBar.adminBarInactive #environmentName {
+		left: 0;
+	}
 
     #adminBar #environmentName span {
         display: block;
-        top: 50%;
         position: relative;
-        transform: translateY(-50%);
     }
 }
 

@@ -32,7 +32,6 @@ body.rtl:not(#login) #footer {
 /* menu */
 body.rtl #nav{
     border-right: 0;
-    box-shadow: -1px 1px 1px rgba(0, 0, 0, .3);
 }
 body.rtl #nav-list {
     margin-right: 0px;
@@ -40,6 +39,7 @@ body.rtl #nav-list {
 }
 body.rtl #nav-list li a{
     padding: 10px 40px 10px 15px;
+    text-align: right;
 }
 body.rtl #nav-list .nav-steps{
     right: 15px;
@@ -54,12 +54,10 @@ body.rtl div#adminWelcome{
 body.rtl .form-row label{
     float: right;
     clear: right;
-    margin-left: 15px;
     margin-right: 0;
 }
 body.rtl .form-row .form-input{
-    margin-left: 0px;
-    margin-right: 240px;
+    float: right;
 }
 body.popupBody.rtl{
     text-align: initial;

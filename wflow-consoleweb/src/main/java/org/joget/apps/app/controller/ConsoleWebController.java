@@ -4671,24 +4671,11 @@ public class ConsoleWebController {
     }
 
     @RequestMapping("/console/setting/general/changeSystemThemeAutomatically")
-    public void changeSystemThemeAutomatically(Writer writer, @RequestParam(value = "callback", required = false) String callback, @RequestParam("deviceTheme") String deviceTheme) throws JSONException, IOException {
-        Setting setting = setupManager.getSettingByProperty("deviceTheme");
-        if (setting == null) {
-            setting = new Setting();
-            setting.setProperty("deviceTheme");
+    public void changeSystemThemeAutomatically(HttpServletRequest httpRequest, Writer writer, @RequestParam(value = "callback", required = false) String callback, @RequestParam("deviceTheme") String deviceTheme) throws JSONException, IOException {
+        HttpSession session = httpRequest.getSession();
+        if (session != null) {
+            session.setAttribute("systemDeviceTheme", deviceTheme);
         }
-        setting.setValue("true");
-        setupManager.saveSetting(setting);
-
-        setting = setupManager.getSettingByProperty("systemTheme");
-        if (setting == null) {
-            setting = new Setting();
-            setting.setProperty("systemTheme");
-        }
-        setting.setValue(deviceTheme);
-        setupManager.saveSetting(setting);
-
-        setupManager.clearCache();
     
         JSONObject jsonObject = new JSONObject();
         jsonObject.accumulate("success", "Theme has been changed to" +  deviceTheme + "successfully");
@@ -4734,22 +4721,6 @@ public class ConsoleWebController {
             if (setting == null) {
                 setting = new Setting();
                 setting.setProperty(paramName);
-            }
-
-            Setting deviceThemeSetting = setupManager.getSettingByProperty("deviceTheme");
-            if(paramName.equals("systemTheme") && paramValue.contains("deviceTheme;")){
-                paramValue = paramValue.split(";")[1];
-                if (deviceThemeSetting == null){
-                    deviceThemeSetting = new Setting();
-                    deviceThemeSetting.setProperty(paramName);
-                }
-                deviceThemeSetting.setValue("true");
-                setupManager.saveSetting(deviceThemeSetting);
-            }else if (paramName.equals("systemTheme") && !paramValue.contains("deviceTheme;")){
-                if (deviceThemeSetting != null){
-                    deviceThemeSetting.setValue("false");
-                    setupManager.saveSetting(deviceThemeSetting);
-                }
             }
             
             if ("dataFileBasePath".equals(paramName)) {

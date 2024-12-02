@@ -3,6 +3,13 @@
 <%@ page import="org.joget.apps.app.service.MobileUtil"%>
 <%@ page import="org.joget.apps.app.service.AppUtil"%>
 <%@ page import="org.joget.apm.APMUtil"%>
+<%
+    String theme = AppUtil.getSystemTheme();
+    pageContext.setAttribute("theme", theme);
+
+    boolean deviceTheme = AppUtil.isFollowDeviceTheme();
+    pageContext.setAttribute("deviceTheme", deviceTheme);
+%>
 
 <c:set var="lang" value="<%= AppUtil.getAppLocale() %>"/>
 
@@ -78,7 +85,7 @@
                 
                 ${fn:replace(fn:replace(builderCSS, '<style', '<style data-cbuilder-style'), '<link', '<link data-cbuilder-style')}
             </head>
-            <body id="cbuilder" <c:if test="${isIE}">data-browser="ie"</c:if> class="no-right-panel initializing max-property-editor" <c:if test="${!empty systemTheme && (systemTheme == 'light' || systemTheme == 'dark')}">builder-theme="<c:out value="${systemTheme}"/>"</c:if>>
+            <body id="cbuilder" <c:if test="${isIE}">data-browser="ie"</c:if> class="no-right-panel initializing max-property-editor" <c:if test="${deviceTheme}">device-theme="true"</c:if> <c:if test="${!empty theme}">builder-theme="<c:out value="${theme}"/>"</c:if>>
                 <span id="builder_loader" class="fa-stack fa-3x" style="color:<c:out value="${builderColor}"/>; display:none; z-index:9999999999;">
                     <i class="las la-circle-notch fa-spin fa-stack-2x"></i>
                     <i class="<c:out value="${builderIcon}"/> fa-stack-1x"></i>

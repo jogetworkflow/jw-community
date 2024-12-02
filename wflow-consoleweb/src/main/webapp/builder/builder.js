@@ -3450,16 +3450,14 @@ _CustomBuilder = {
             $("body").addClass("quick-nav-position-left")
         }
 
-        $("#quick-nav-bar").on("mousedown.drag", function(e) {
-            if (e.target !== this && e.target !== $("div#builder-quick-nav")[0]) {
-                return;
-            }
+        $("body").off("mousedown.drag", "#quick-nav-bar #dragIcon").on("mousedown.drag", "#quick-nav-bar #dragIcon", function(e) {
+            
             isHold = true;
             mousePos.x = e.pageX;
             mousePos.y = e.pageY;
 
-            $(document).on("mousemove.drag", function(e) {
-                if (isHold && !$clonePreview && $("#quick-nav-bar.active #builder-menu ul li.active").length === 0) {
+            $(document).off("mousemove.drag").on("mousemove.drag", function(e) {
+                if (isHold && !$(".clonePreview").length && !$clonePreview && $("#quick-nav-bar.active #builder-menu ul li.active").length === 0) {
                     $overlay = $('<div id="darken-overlay"></div>');
                     
                     $('body').append($overlay);
@@ -3516,7 +3514,7 @@ _CustomBuilder = {
                 }
             });
 
-            $(document).on("mouseup.drag", function() {
+            $(document).off("mouseup.drag").on("mouseup.drag", function() {
                 if ($clonePreview) {
                     if ($clonePreview.offset().left < parseInt($(window).width()/2) && !$("body").hasClass("quick-nav-position-left")){
                         localStorage.setItem("quickNavPosition", "left");
@@ -3660,6 +3658,9 @@ _CustomBuilder = {
         $("#builder-quick-nav .backToApp").remove();
         $("#builder-quick-nav").prepend('<div class="backToApp"><a class="builder-link" href="'+CustomBuilder.contextPath+'/web/console/app'+CustomBuilder.appPath+'/builders"  target="_self" title="'+get_cbuilder_msg("abuilder.title")+'"><i class="far fa-edit"></i></a></div>');
         
+        $("#builder-quick-nav div#dragIcon").remove();
+        $("<div id='dragIcon' style='text-align:center;width:35px;font-size:24px;color:#aaa' title='"+get_cbuilder_msg("abuilder.dragTooltipMessage")+"'><i class='las la-braille'></i></div>").insertAfter("#builder-quick-nav .backToApp");
+
         CustomBuilder.builderTypes = [];
         for (var i in data) {
             var builder = data[i];

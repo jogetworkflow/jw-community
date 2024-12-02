@@ -337,6 +337,7 @@ body.rtl #main-title {
 }
 #main-body {
     position: relative;
+    margin-top: 2rem;
 }
 
 div#main-body-content-filter {

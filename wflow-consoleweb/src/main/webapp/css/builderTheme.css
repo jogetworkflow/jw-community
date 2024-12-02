@@ -3160,7 +3160,7 @@ body[builder-theme] .api-container .element-operations .operation {
 body[builder-theme] .info-text{
     color: var(--theme-input-color-1);
 }
-body[builder-theme]#cbuilder.quick-nav-shown .builder-view {
+body[builder-theme]#cbuilder.quick-nav-shown.quick-nav-position-left .builder-view {
     left: 40px;
 }
 body[builder-theme]#cbuilder:not(.no-right-panel) div#adminBar > a#quickEditMode > span#environmentName {
