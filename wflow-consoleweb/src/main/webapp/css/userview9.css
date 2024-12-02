@@ -175,10 +175,16 @@ header.navbar .dropdown-menu {
 }
 
 @media (max-width: 430px){
-    header.navbar .dropdown-menu {
+    header.navbar .dropdown-menu.notifications {
         position: fixed;
-        left: 0;
+        left: 0px;
+        min-width: 100vw !important;
     }
+}
+
+.rtl .dropdown-menu.notifications .refresh{
+    left: 10px;
+    right: unset;
 }
 
 .rtl header.navbar .dropdown-menu {
@@ -191,7 +197,7 @@ header.navbar .dropdown-menu.notifications {
 }
 
 header.navbar .dropdown-menu .dropdown-menu-sub-footer {
-    text-align: center;
+    text-align: center !important;
     margin: 10px auto 5px;
 }
 
