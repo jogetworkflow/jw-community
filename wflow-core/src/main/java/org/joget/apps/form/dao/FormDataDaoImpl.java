@@ -1,5 +1,6 @@
 package org.joget.apps.form.dao;
 
+import org.hibernate.type.TextType;
 import org.joget.apps.form.model.Form;
 import org.joget.apps.form.service.FormUtil;
 import org.joget.apps.form.model.FormRow;
@@ -352,7 +353,7 @@ public class FormDataDaoImpl extends HibernateDaoSupport implements FormDataDao 
             if (params != null) {
                 int i = 1;
                 for (Object param : params) {
-                    q.setParameter(i, param);
+                    q.setParameter(i, param, TextType.INSTANCE);
                     i++;
                 }
             }
@@ -418,7 +419,7 @@ public class FormDataDaoImpl extends HibernateDaoSupport implements FormDataDao 
             if (params != null) {
                 int i = 1;
                 for (Object param : params) {
-                    q.setParameter(i, param);
+                    q.setParameter(i, param, TextType.INSTANCE);
                     i++;
                 }
             }
