@@ -939,11 +939,9 @@ FormBuilder = {
                                 y = 0;
                             } else if (x+1 >= limit) {
                                 y += 1; //find from next row
-                            } else if (y+1 >= limit) {
-                                x += 1; //find from next col
+                                x = 0;
                             } else {
                                 x += 1;
-                                y += 1;
                             }
                             return findEmptyCell(x, y);
                         }
@@ -1227,6 +1225,11 @@ FormBuilder = {
                     $('#diagram-tab a.collapseAll').off("click");
                     $('#diagram-tab a.collapseAll').on("click", function(){
                         $('#diagram-grid .entity-container').removeClass("showDetails");
+                        jsPlumb.repaintEverything();
+                    });
+                    
+                    $(window).off("resize.erd");
+                    $(window).on("resize.erd", function (event) {
                         jsPlumb.repaintEverything();
                     });
                 } else {
