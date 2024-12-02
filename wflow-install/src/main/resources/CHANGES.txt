@@ -2,6 +2,24 @@ Joget DX COMMUNITY
 ====================
 For more information, please refer to https://community.joget.org
 
+8.1.8
+=====
+74b83d0dc Fixed: wflow-core - Service Worker - Fixed issue where offline theme is not properly updated after updating themes in builder.
+f7843830b Fixed: wflow-consoleweb - Form - Numeric field control is not positioned inside the input field when label position is default left.  @8.1-SNAPSHOT
+ff3365418 Fixed: wflow-core - Nested List - Fixed the Form Update and Process Tool Data List Action plugin in a nested data list triggered multiple times on repeated use. Added unit test cases. T4875. @8.1-SNAPSHOT
+732906732 Fixed: wflow-core - Email Tool - Fixed hash variables could not be used in the 'From' and 'To' property in Email Tool-SMTP Settings. T5047. @8.1-SNAPSHOT
+ee4f67f4f Fixed: wflow-consoleweb - Form - Textfield is out of bound in mobile when size attribute is present. @8.1-SNAPSHOT
+09952818c Fixed- wflow-core - Textfield - Fixed numeric input value is overlapped by arrow counter. #T5137 @8.1-SNAPSHOT
+11c3a94e6 Fixed: wflow-core - Section - Regex in visibility control checking is wrongly unescaped. T5141 @8.1-SNAPSHOT
+4e088aebf Fixed: wflow-consoleweb - Process Builder - Dragging node misaligned with cursor when builder canvas is zoomed. T5173 @8.1-SNAPSHOT
+7d6b7e13c Fixed: wflow-consoleweb - App Composer - App is deleted when Git is disabled. @8.1-SNAPSHOT
+d3794afca Fixed: jw-community - Security - Update Apache Tomcat to 9.0.97 for CVE-2024-52318. @8.1-SNAPSHOT
+f41f21bb8 Fixed: wflow-core - Security - Update protobuf-java to 3.25.5 for CVE-2024-7254. @7.1-SNAPSHOT
+67d2aab42 Fixed: wflow-core, wflow-consoleweb - Grid Validation - Alphabet and numeric validation error displays null message. @7.0-SNAPSHOT
+8c9097210 Fixed: wflow-core - Security - Prevent jQuery script parsing from callback URL parameter. T4937 @7.0-SNAPSHOT
+91c0425af Fixed: wflow-core - Date Picker - Incorrect validation behaviour when using locale other than zh/en or field type is not date and time. T5068 @7.0-SNAPSHOT
+5e53d8fe2 Fixed: wflow-consoleweb - UI - Readjusted RTL styling for close button for specific Popup. @7.0-SNAPSHOT
+
 8.1.7
 =====
 e7c81cf9b Fixed: wflow-commons - Security - Update Spring Security to 5.8.15 for CVE-2024-38821. @7.1-SNAPSHOT
