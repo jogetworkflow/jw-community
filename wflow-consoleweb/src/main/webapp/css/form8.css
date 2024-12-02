@@ -310,6 +310,7 @@ select[multiple]{
 }
 textarea{
     height: auto;
+    white-space: pre-wrap !important;
 }
 body input[disabled],
 body input[readonly] {

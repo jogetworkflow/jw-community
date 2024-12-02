@@ -208,9 +208,22 @@ function themePageInit() {
         };
         initMenu();
         
+        //to detect the browser is a safari
+        var isSafari = function() {
+            const ua = navigator.userAgent;
+            return (
+              ua.includes("Safari") &&
+              !ua.includes("Chrome") &&
+              !ua.includes("Chromium") &&
+              !ua.includes("Android")
+            );
+        };
+        
         //open menu
         $("#sidebar-trigger").on("click", function() {
-            if (window.innerWidth >= 1280) {
+            var isSafariBrowser = isSafari();
+            if ((isSafariBrowser && $("body").width() >= 1280) //safari @media query included width of the scrollbar, so using client width
+                    || (!isSafariBrowser && window.innerWidth >= 1280)) {
                 $("body").toggleClass("sidebar-minimized");
             } else {
                 if (!$("body").hasClass("sidebar-toggled")) {
