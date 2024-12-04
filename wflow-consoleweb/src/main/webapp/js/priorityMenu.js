@@ -92,6 +92,54 @@ $(document).ready(function () {
                 setTimeout(formatNav, 150);
             }
         }
+        let resizeTimer;
+        const sidebar = $("#sidebar")[0];
+        //Debounce and listen to sidebar width change to accurately
+        //get the position
+        const debounceResize = () => {
+            clearTimeout(resizeTimer);
+            resizeTimer = setTimeout(() => {
+                //Reset over
+                $('#moreSubMenu').removeClass("over");
+                $('#menu-more').removeClass("over");
+
+                if ($("body").hasClass("inline_menu") && $(window).width() >= menuBreakpoint) {
+                    var menuMoreLeft = $('#menu-more').offset().left;
+
+                    //Clone the subMenu
+                    const subMenuClone = $('#moreSubMenu').clone().css({
+                        "visibility": "hidden",
+                        "display": "table"
+                    }).appendTo("body");
+    
+                    var width = subMenuClone.outerWidth();
+                    subMenuClone.remove();
+
+                    if (menuMoreLeft - width < 0) {
+                        $('#menu-more').addClass("over");
+                    }
+                    
+                    $("#sidebar > nav > ul#category-container > li#menu-more > ul#moreSubMenu > li.category").each(function(){
+                        const menuContainerClone = $(this).find("ul.menu-container").eq(0).clone().css({
+                            "visibility": "hidden",
+                            "display": "table"
+                        }).appendTo("body");
+                        var menuContainerwidth = 0;
+                        if (menuContainerClone.length > 0) {
+                            menuContainerwidth = menuContainerClone.outerWidth()
+                        }
+                        
+                        menuContainerClone.remove();
+                        if (menuMoreLeft - width - menuContainerwidth < 0 && !$('#menu-more').hasClass("over")) {
+                            $('#moreSubMenu').addClass("over");
+                        }
+                    })
+                    
+                }
+            }, 500);
+        };
+        const observer = new ResizeObserver(debounceResize);
+        observer.observe(sidebar);
         function resizeMenuWidth (callback, checkWidth){
             // header title and header nav button container width
             const headerLinkWidth = $('#header-link').outerWidth(true);
@@ -138,8 +186,6 @@ $(document).ready(function () {
         }
         function formatNav(containerWidth) {
             //Reset over
-            $('#moreSubMenu').removeClass("over");
-            $('#menu-more').removeClass("over");    
             $("li.category:last").find("> ul.menu-container").removeClass("over-right");
             $("li.category:last").find("> ul.menu-container").removeClass("over-left");
 
@@ -211,27 +257,6 @@ $(document).ready(function () {
                     let menuItemId = $(this).prop('id');
                     $("li#" + menuItemId).appendTo($('#moreSubMenu'));
                     navItemVisible[count] = false;
-
-                    const subMenuClone = $('#moreSubMenu').clone().css({"visibility":"hidden", "display":"table"}).appendTo("body");
-                    const menuContainerClone = $("li#" + menuItemId).find("ul.menu-container").eq(0).clone().css({"visibility":"hidden", "display":"table"}).appendTo("body");
-                    var width2 = 0;
-                    
-                    if (menuContainerClone.length > 0) {
-                        width2 = menuContainerClone.outerWidth()
-                    }
-
-                    var width = subMenuClone.outerWidth();
-
-                    subMenuClone.remove();
-                    menuContainerClone.remove();
-                    
-                    if($("body").hasClass("inline_menu") && $(window).width() >= menuBreakpoint){
-                        if ($('#menu-more').offset().left - width < 0){
-                            $('#menu-more').addClass("over");
-                        }else if ($('#menu-more').offset().left - width - width2 < 0 && !$('#menu-more').hasClass("over")){
-                            $('#moreSubMenu').addClass("over");
-                        }
-                    }
                 }
                 // update count
                 count += 1;
