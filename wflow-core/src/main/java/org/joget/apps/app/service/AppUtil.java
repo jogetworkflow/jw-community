@@ -421,7 +421,7 @@ public class AppUtil implements ApplicationContextAware {
         String systemTheme = WorkflowUtil.getSystemSetupValue("systemTheme");
         
         //handle old version setting which is set to classic, make it to follow device
-        if ("classic".equalsIgnoreCase(systemTheme)) {
+        if (systemTheme == null || "classic".equalsIgnoreCase(systemTheme)) {
             systemTheme = "";
         }
         
