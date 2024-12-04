@@ -806,6 +806,7 @@ body.rtl .badge{
 #sidebar li ul>li>a > span:first-child{
     max-width: 140px;
     display: inline-block;
+    white-space: normal;
 }
 body.rtl #sidebar li ul>li>a > span:first-child{
     float: right !important;
@@ -1061,6 +1062,11 @@ body.rtl #sidebar li ul>li>a > span:first-child{
     }
     #main .systemAlert {
         top: -26px;
+    }
+    body.horizontal_menu.rtl #sidebar li>a.dropdown:after,
+    body.horizontal_menu.rtl #sidebar li>a.dropdown:before {
+        left: 15px;
+        right: auto !important;
     }
 }
 
