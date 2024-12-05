@@ -43,7 +43,7 @@ public class SharkObjectIdDao extends AbstractSpringDao {
                     SharkObjectId nextOid = result.iterator().next();
                     
                     //lock it for update
-                    session.refresh(ENTITY_NAME, nextOid, new LockOptions(LockMode.PESSIMISTIC_WRITE));
+                    session.refresh(nextOid, new LockOptions(LockMode.PESSIMISTIC_WRITE));
                     
                     LogUtil.debug(SharkObjectIdDao.class.getName(), "Retrieved number is " + nextOid.getNextoid() + ", old number is " + old);
                     

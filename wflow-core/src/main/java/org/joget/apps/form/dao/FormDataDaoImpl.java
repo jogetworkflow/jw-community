@@ -528,7 +528,7 @@ public class FormDataDaoImpl implements FormDataDao {
         try {
             // save the form data
             for (FormRow row : rowSet) {
-                session.saveOrUpdate(entityName, row);
+                session.merge(entityName, row);
             }
             session.flush();
         } finally {
@@ -608,7 +608,7 @@ public class FormDataDaoImpl implements FormDataDao {
         try {
             // save the form data
             for (FormRow row : rows) {
-                session.delete(entityName, row);
+                session.remove(row);
             }
             session.flush();
         } finally {
@@ -902,7 +902,7 @@ public class FormDataDaoImpl implements FormDataDao {
                 
                 // check for cache access strategy
                 String cacheAccessStrategy = pc.getCacheConcurrencyStrategy();
-                if (!"nonstrict-read-write".equals(cacheAccessStrategy)) {
+                if (!"transactional".equals(cacheAccessStrategy)) {
                     changes = true;
                 }
 
@@ -925,7 +925,7 @@ public class FormDataDaoImpl implements FormDataDao {
                         if (size == formFields.size()) {
                             // similar size, so compare individual fields
                             boolean found;
-                            Iterator i = customComponent.getPropertyIterator();
+                            Iterator i = customComponent.getProperties().iterator();
                             while (i.hasNext()) {
                                 Property property = (Property) i.next();
                                 String propertyName = property.getName();
