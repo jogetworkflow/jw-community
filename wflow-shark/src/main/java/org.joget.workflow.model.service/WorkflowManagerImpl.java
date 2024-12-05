@@ -2663,15 +2663,17 @@ public class WorkflowManagerImpl implements WorkflowManager {
             if (wfProcessList.length > 0) {
                 WfProcess wfProcess = wfProcessList[0];
                 
-                //to ignore non exist variable.
-                for (String key : variables.keySet()) {
-                    try {
-                        Map processContext = wfProcess.process_context();
-                        processContext.put(key, variables.get(key));
-                        wfProcess.set_process_context(processContext);
-                    } catch (Exception e) {
-                        LogUtil.warn(getClass().getName(), e.getMessage());
+                Map processContext = wfProcess.process_context();
+                if (processContext != null && !processContext.isEmpty()) {
+                    Map<String, String> temp = new HashMap<String, String>();
+                    for (Object k : processContext.keySet()) { 
+                        String name = k.toString();
+                        if (variables.containsKey(name)) { //to ignore non exist variable.
+                            temp.put(name, variables.get(name));
+                        }
                     }
+                    
+                    wfProcess.set_process_context(temp);
                 }
 
                 //clear cache
@@ -3284,22 +3286,15 @@ public class WorkflowManagerImpl implements WorkflowManager {
                 Set<String> keys = variables.keySet();
                 if (keys != null && keys.size() > 0) {
                     Map contextSignature = wfProcess.manager().context_signature();
-                    for (String key : keys) {
-                        Object value = variables.get(key);
-
+                    Map<String, String> temp = new HashMap<String, String>();
+                    for (Object key : keys) {
                         String signature = (String) contextSignature.get(key);
                         if (signature != null && signature.trim().length() > 0) {
-                            if (signature.equals("java.lang.Long")) {
-                                value = Long.parseLong((String) value);
-                            } else if (signature.equals("java.lang.Boolean")) {
-                                value = Long.parseLong((String) value);
-                            } else if (signature.equals("java.lang.Double")) {
-                                value = Double.parseDouble((String) value);
-                            }
+                            temp.put(key.toString(), variables.get(key));
                         }
-
-                        this.processVariable(processInstanceId, key, value);
                     }
+                    
+                    wfProcess.set_process_context(temp);
                 }
             }
 

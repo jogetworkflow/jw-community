@@ -781,6 +781,11 @@ public class AppServiceImpl implements AppService {
                         
                         result = executeStartProcessFormModifierSubmission(startForm, formData, result, appDef);
                         if (result == null) {
+                            if (workflowVariableMap == null) {
+                                workflowVariableMap = new HashMap<String, String>();
+                            }
+                            workflowVariableMap.putAll(formResult.getWorkflowVariables()); //to handle workflow variables submitted from form fields
+                                
                             result = workflowManager.processStartWithInstanceId(processDefIdWithVersion, processId, workflowVariableMap);
                         }
                         
