@@ -173,7 +173,7 @@ public class EnvironmentVariableDaoImpl extends AbstractAppVersionedObjectDao<En
                 env.setAppDefinition(appDef);
                 env.setRemarks(remark);
                 env.setValue(Integer.toString(count));
-                session.save(getEntityName(), env);     
+                session.merge(getEntityName(), env);     
             }
             session.flush(); 
             transaction.commit();
