@@ -142,6 +142,49 @@
         <property name="cacheManager" ref="cacheManager"/>
     </bean>
     
+    <!-- for cache backward compatible -->
+    <bean id="dynamicDataSourceManagerCache" class="org.joget.commons.util.EhCacheFactoryBean" depends-on="cacheManager">
+        <property name="cacheManager" ref="cacheManager"/>
+        <property name="cacheName" value="org.joget.cache.DATASOURCE_CACHE"/>
+    </bean>
+    <bean id="setupManagerCache" class="org.joget.commons.util.EhCacheFactoryBean" depends-on="cacheManager">
+        <property name="cacheManager" ref="cacheManager"/>
+        <property name="cacheName" value="org.joget.cache.SETUP_CACHE"/>
+    </bean>
+    <bean id="fluCache" class="org.joget.commons.util.EhCacheFactoryBean" depends-on="cacheManager">
+        <property name="cacheManager" ref="cacheManager"/>
+        <property name="cacheName" value="org.joget.cache.FLU_CACHE"/>
+    </bean>
+    <bean id="userviewMenuCache" class="org.joget.commons.util.EhCacheFactoryBean" depends-on="cacheManager">
+        <property name="cacheManager" ref="cacheManager"/>
+        <property name="cacheName" value="org.joget.cache.USERVIEW_CACHE"/>
+    </bean>
+    <bean id="formOptionsCache" class="org.joget.commons.util.EhCacheFactoryBean" depends-on="cacheManager">
+        <property name="cacheManager" ref="cacheManager"/>
+        <property name="cacheName" value="org.joget.cache.FORM_OPTIONS_CACHE"/>
+    </bean>
+    <bean id="cssCache" class="org.joget.commons.util.EhCacheFactoryBean" depends-on="cacheManager">
+        <property name="cacheManager" ref="cacheManager"/>
+        <property name="cacheName" value="org.joget.cache.CSS_CACHE"/>
+    </bean>
+    <bean id="formSessionFactoryCache" class="org.joget.commons.util.EhCacheFactoryBean" depends-on="cacheManager">
+        <property name="cacheManager" ref="cacheManager"/>
+        <property name="cacheName" value=" org.joget.cache.SF_CACHE"/>
+    </bean>
+    <bean id="joinFormSessionFactoryCache" class="org.joget.commons.util.EhCacheFactoryBean" depends-on="cacheManager">
+        <property name="cacheManager" ref="cacheManager"/>
+        <property name="cacheName" value=" org.joget.cache.SF_CACHE"/>
+    </bean>
+    <bean id="formPersistentClassCache" class="org.joget.commons.util.EhCacheFactoryBean" depends-on="cacheManager">
+        <property name="cacheManager" ref="cacheManager"/>
+    </bean>
+    <bean id="resourceBundleMessageCache" class="org.joget.commons.util.EhCacheFactoryBean" depends-on="cacheManager">
+        <property name="cacheManager" ref="cacheManager"/>
+    </bean>
+    <bean id="nonceCache" class="org.joget.commons.util.EhCacheFactoryBean" depends-on="cacheManager">
+        <property name="cacheManager" ref="cacheManager"/>
+    </bean>
+    
     <bean id="fileManager" class="org.joget.commons.util.FileManager" depends-on="setupManager">
     </bean>
 
