@@ -2,8 +2,8 @@
 <!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN" "http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
 <hibernate-mapping>
     <class entity-name="AppDefinition" name="org.joget.apps.app.model.AppDefinition" table="app_app">
-        <cache usage="nonstrict-read-write" /> 
-        <composite-id>
+        <cache usage="transactional" /> 
+        <composite-id class="org.joget.apps.app.model.AppDefinitionKey" mapped="true" unsaved-value="any">
             <key-property column="appId" name="appId" type="string"/>
             <key-property column="appVersion" name="version" type="long"/>
         </composite-id>
@@ -55,6 +55,7 @@
             <one-to-many entity-name="PackageDefinition"/>
         </bag>
         <bag cascade="all-delete-orphan" inverse="true" lazy="true" name="pluginDefaultPropertiesList">
+            <cache usage="transactional" /> 
             <key>
                 <column name="appId"/>
                 <column name="appVersion"/>

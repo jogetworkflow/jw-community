@@ -2,7 +2,7 @@
 <!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN" "http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
 <hibernate-mapping>
     <class entity-name="SharkActivityHistory" lazy="false" name="org.joget.workflow.shark.model.SharkActivityHistory" table="wf_history_activity">
-        <cache usage="nonstrict-read-write" /> 
+        <cache usage="transactional" /> 
         <id column="activityId" name="activityId" type="string"/>
         <property column="activityName" name="activityName" type="string"/>
         <property column="activityDefId" name="activityDefId" type="string"/>

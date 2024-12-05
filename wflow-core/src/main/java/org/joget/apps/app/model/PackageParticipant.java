@@ -26,6 +26,8 @@ public class PackageParticipant implements Serializable {
     public static final String VALUE_ROLE_LOGGED_IN_USER = "loggedInUser";
     
     private PackageDefinition packageDefinition;
+    private String packageId;
+    private Long packageVersion;
     @Element(required = false)
     private String processDefId;
     @Element(required = false)
@@ -55,6 +57,26 @@ public class PackageParticipant implements Serializable {
 
     public void setPackageDefinition(PackageDefinition packageDefinition) {
         this.packageDefinition = packageDefinition;
+        if (packageDefinition != null) {
+            setPackageId(packageDefinition.getId());
+            setPackageVersion(packageDefinition.getVersion());
+        }
+    }
+
+    public String getPackageId() {
+        return packageId;
+    }
+
+    public void setPackageId(String packageId) {
+        this.packageId = packageId;
+    }
+
+    public Long getPackageVersion() {
+        return packageVersion;
+    }
+
+    public void setPackageVersion(Long packageVersion) {
+        this.packageVersion = packageVersion;
     }
 
     public String getProcessDefId() {
