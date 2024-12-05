@@ -2,7 +2,7 @@
 <!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN" "http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
 <hibernate-mapping>
     <class entity-name="User" name="org.joget.directory.model.User" table="dir_user">
-        <cache usage="nonstrict-read-write" /> 
+        <cache usage="transactional" /> 
         <id column="id" name="id" type="string"/>
         <property column="username" name="username" type="string"/>
         <property column="password" name="password" type="string"/>
@@ -14,17 +14,17 @@
         <property column="active" name="active" type="integer"/>
         <!-- join tables -->
         <set name="roles" table="dir_user_role">
-            <cache usage="nonstrict-read-write" /> 
+            <cache usage="transactional" /> 
             <key column="userId"/>
             <many-to-many column="roleId" entity-name="Role"/>
         </set>
         <set name="groups" table="dir_user_group" lazy="true" inverse="false">
-            <cache usage="nonstrict-read-write" /> 
+            <cache usage="transactional" /> 
             <key column="userId"/>
             <many-to-many column="groupId" entity-name="Group"/>
         </set>
         <set name="employments" inverse="true">
-            <cache usage="nonstrict-read-write" /> 
+            <cache usage="transactional" /> 
             <key column="userId"/>
             <one-to-many entity-name="Employment"/>
         </set>

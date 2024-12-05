@@ -2,7 +2,7 @@
 <!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN" "http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
 <hibernate-mapping>
     <class entity-name="SharkProcess" lazy="false" name="org.joget.workflow.shark.model.SharkProcess" table="SHKProcesses">
-        <cache usage="nonstrict-read-write" /> 
+        <cache usage="transactional" /> 
         <id column="Id" name="processId" type="string"/>
         <property column="Name" name="processName" type="string"/>
         <property column="ActivityRequesterProcessId" name="processRequesterId" type="string"/>

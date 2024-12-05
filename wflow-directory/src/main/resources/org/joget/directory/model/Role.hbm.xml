@@ -2,7 +2,7 @@
 <!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN" "http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
 <hibernate-mapping>
     <class entity-name="Role" name="org.joget.directory.model.Role" table="dir_role">
-        <cache usage="nonstrict-read-write" /> 
+        <cache usage="transactional" /> 
         <id column="id" name="id" type="string">
             <generator class="uuid"/>
         </id>
@@ -10,7 +10,7 @@
         <property column="description" name="description" type="string"/>
     <!-- join tables -->
         <set name="users" table="dir_user_role">
-            <cache usage="nonstrict-read-write" /> 
+            <cache usage="transactional" /> 
             <key column="roleId"/>
             <many-to-many column="userId" entity-name="User"/>
         </set>

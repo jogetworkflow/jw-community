@@ -102,7 +102,7 @@ public class AppDefinitionDaoImpl extends AbstractVersionedObjectDao<AppDefiniti
                     }
                 }
             }
-
+            
             // delete
             super.delete(obj);
 
@@ -190,7 +190,7 @@ public class AppDefinitionDaoImpl extends AbstractVersionedObjectDao<AppDefiniti
         if (appDef.getResourceList() == null) {
             appDef.setResourceList(new ArrayList());
         }
-
+        
         if (!AppDevUtil.isGitDisabled() && !AppDevUtil.isImportApp()) {
             // save and commit app definition
             String filename = "appDefinition.xml";
@@ -217,6 +217,8 @@ public class AppDefinitionDaoImpl extends AbstractVersionedObjectDao<AppDefiniti
             AppDevUtil.dirSyncAppPlugins(appDef);
         }    
         
+        // update date modified
+        appDef.setDateModified(new Date());
         super.saveOrUpdate(appDef);
     }
 
