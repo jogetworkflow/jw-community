@@ -232,6 +232,12 @@ public class TestStringUtil {
         original = "<img src=\"img.png\">";
         expected = "<img src=\"img.png\" />";
         Assert.isTrue(expected.equals(StringUtil.stripHtmlRelaxed(original)), "check img with relative path is allowed");
+        
+        //check img with base64 is allowed
+        original = "<img src=\"data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAIAAACQkWg2AAABaklEQVQokZWSXYuCQBSG+xdCa5nRRZgzUlmDNlmCxSCjZg4Y9OkwMxf9Sn/aXrRERrC779U5L+fhfHBa9T/Vek3m8/kztm3bcRzXdTebjed50+m0AWy3W4RQXdcAgCcAIcyyTEpZlqVlWQ1ASnm9XpMksW3bsiwAAISQECKEuN/vlNL1et0ALpeLUkoIked5EAS+7xNCqqpSSlFKwzB838FxnCiKzuezEOJ4PJZlebvdOOdxHGOMPyytaRqEEGPMGOOcSymVUoyx5+gfrjQYDB5zn04nznlVVYyxyWRimuYHoN/vD4fD5XKZpmlRFGma7na7w+GQ5zlCaDQavQOu64ZhmCRJlmUYYwDAeDwOw7Aoiv1+v1gsHMdpAIQQSiml1Pd9wzC63a5hGL1eDyEURVEQBJ1OpwFQSuM49jxP13Vd1x+maZpfL2oAq9VqNpu1221N097O8lpdv/3Sj9X6YDaA1p/V6PBr6UPfrxpWT8DSD68AAAAASUVORK5CYII=\">";
+        expected = "<img src=\"data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAIAAACQkWg2AAABaklEQVQokZWSXYuCQBSG+xdCa5nRRZgzUlmDNlmCxSCjZg4Y9OkwMxf9Sn/aXrRERrC779U5L+fhfHBa9T/Vek3m8/kztm3bcRzXdTebjed50+m0AWy3W4RQXdcAgCcAIcyyTEpZlqVlWQ1ASnm9XpMksW3bsiwAAISQECKEuN/vlNL1et0ALpeLUkoIked5EAS+7xNCqqpSSlFKwzB838FxnCiKzuezEOJ4PJZlebvdOOdxHGOMPyytaRqEEGPMGOOcSymVUoyx5+gfrjQYDB5zn04nznlVVYyxyWRimuYHoN/vD4fD5XKZpmlRFGma7na7w+GQ5zlCaDQavQOu64ZhmCRJlmUYYwDAeDwOw7Aoiv1+v1gsHMdpAIQQSiml1Pd9wzC63a5hGL1eDyEURVEQBJ1OpwFQSuM49jxP13Vd1x+maZpfL2oAq9VqNpu1221N097O8lpdv/3Sj9X6YDaA1p/V6PBr6UPfrxpWT8DSD68AAAAASUVORK5CYII=\" />";
+        Assert.isTrue(expected.equals(StringUtil.stripHtmlRelaxed(original)), "check img with base64 is allowed");
+        
     }
     
     @Test
