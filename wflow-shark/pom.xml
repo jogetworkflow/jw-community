@@ -21,9 +21,9 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-plugin</artifactId>
-                <version>2.4.3</version>
+                <version>3.5.0</version>
                 <configuration>
-                    <!--<skipTests>false</skipTests>-->
+                    <argLine>--add-opens=java.base/java.nio=ALL-UNNAMED</argLine>
                 </configuration>
             </plugin>
         </plugins>
@@ -38,7 +38,7 @@
         <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-test</artifactId>
-            <version>5.3.39</version>
+            <version>6.1.14</version>
             <scope>test</scope>
         </dependency>
         <dependency>
@@ -47,82 +47,61 @@
             <version>${project.version}</version>
         </dependency>
         <dependency>
-            <groupId>EnhydraShark</groupId>
-            <artifactId>shark-maven</artifactId>
-            <version>2.0.1</version>
+            <groupId>org.joget</groupId>
+            <artifactId>wflow-shark-jakarta</artifactId>
+            <version>${project.version}</version>
+            <classifier>jakarta</classifier>
             <exclusions>
                 <exclusion>
-                    <artifactId>xerces</artifactId>
-                    <groupId>xercesImpl</groupId>
+                    <groupId>EnhydraShark</groupId>
+                    <artifactId>shark-maven</artifactId>
                 </exclusion>
                 <exclusion>
-                    <artifactId>xerces</artifactId>
-                    <groupId>xmlParserAPIs</groupId>
+                    <groupId>EnhydraShark</groupId>
+                    <artifactId>sharkscripting-standard</artifactId>
                 </exclusion>
                 <exclusion>
-                    <artifactId>xml-apis</artifactId>
-                    <groupId>xml-apis</groupId>
+                    <groupId>EnhydraShark</groupId>
+                    <artifactId>sharkclientutilities-misc</artifactId>
                 </exclusion>
                 <exclusion>
-                    <groupId>log4j</groupId>
-                    <artifactId>log4j</artifactId>
+                    <groupId>EnhydraShark</groupId>
+                    <artifactId>sharkinstancepersistence-dods</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>EnhydraShark</groupId>
+                    <artifactId>sharkinstancepersistence-dodslayer</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>EnhydraShark</groupId>
+                    <artifactId>sharkrepositorypersistence-dods</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>EnhydraShark</groupId>
+                    <artifactId>sharkrepositorypersistence-dodslayer</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>EnhydraShark</groupId>
+                    <artifactId>sharklogging-standard</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>TogetherRelationalObjects</groupId>
+                    <artifactId>dbmanager</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>TogetherApplicationFramework</groupId>
+                    <artifactId>eaf-api</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>TogetherApplicationFramework</groupId>
+                    <artifactId>eafconfreader</artifactId>
                 </exclusion>
             </exclusions>
         </dependency>
         <dependency>
-            <groupId>EnhydraShark</groupId>
-            <artifactId>sharkscripting-standard</artifactId>
-            <version>2.0.1</version>
-        </dependency>
-        <dependency>
-            <groupId>EnhydraShark</groupId>
-            <artifactId>sharkclientutilities-misc</artifactId>
-            <version>2.0.1</version>
-        </dependency>
-        <dependency>
-            <groupId>EnhydraShark</groupId>
-            <artifactId>sharkinstancepersistence-dods</artifactId>
-            <version>2.0.1</version>
-        </dependency>
-        <dependency>
-            <groupId>EnhydraShark</groupId>
-            <artifactId>sharkinstancepersistence-dodslayer</artifactId>
-            <version>2.0.1</version>
-        </dependency>
-        <dependency>
-            <groupId>EnhydraShark</groupId>
-            <artifactId>sharkrepositorypersistence-dods</artifactId>
-            <version>2.0.1</version>
-        </dependency>
-        <dependency>
-            <groupId>EnhydraShark</groupId>
-            <artifactId>sharkrepositorypersistence-dodslayer</artifactId>
-            <version>2.0.1</version>
-        </dependency>
-        <dependency>
-            <groupId>EnhydraShark</groupId>
-            <artifactId>sharklogging-standard</artifactId>
-            <version>2.0.1</version>
-        </dependency>
-        <dependency>
-            <groupId>TogetherRelationalObjects</groupId>
-            <artifactId>dbmanager</artifactId>
-            <version>7.1-1-professional</version>
-        </dependency>
-        <dependency>
-            <groupId>TogetherApplicationFramework</groupId>
-            <artifactId>eaf-api</artifactId>
-            <version>7.1-1-community</version>
-        </dependency>
-        <dependency>
-            <groupId>TogetherApplicationFramework</groupId>
-            <artifactId>eafconfreader</artifactId>
-            <version>7.1-1-community</version>
-        </dependency>
-        <dependency>
-            <groupId>javax.servlet</groupId>
-            <artifactId>javax.servlet-api</artifactId>
-            <version>3.0.1</version>
+            <groupId>jakarta.servlet</groupId>
+            <artifactId>jakarta.servlet-api</artifactId>
+            <version>6.0.0</version>
             <scope>provided</scope>
         </dependency>
     </dependencies>
