@@ -226,7 +226,11 @@ public class FormDataDaoImpl implements FormDataDao {
         // load by primary key
         FormRow row = null;
         try {
-            row = (FormRow) session.getReference(tableName, primaryKey);
+            FormRowSet rows = internalFind(entityName, tableName, "where id=?", new String[]{primaryKey}, null, null, 0, 1);
+            
+            if (rows != null && !rows.isEmpty()) {
+                row = (FormRow) rows.get(0);
+            }
         } catch (ObjectRetrievalFailureException e) {
             // not found, ignore
         } catch (EntityNotFoundException e) {
@@ -532,7 +536,7 @@ public class FormDataDaoImpl implements FormDataDao {
      */
     protected void internalSaveOrUpdate(String entityName, String tableName, FormRowSet rowSet) {
         // get hibernate template
-        Session session = getHibernateSession(entityName, tableName, rowSet, ACTION_TYPE_STORE);
+        Session session = getHibernateSession(entityName, tableName, rowSet, ACTION_TYPE_LOAD);
 
         try {
             // save the form data
@@ -554,7 +558,7 @@ public class FormDataDaoImpl implements FormDataDao {
     public void updateSchema(Form form, FormRowSet rowSet) {
         String entityName = getFormEntityName(form);
         String tableName = getFormTableName(form);
-        Session session = getHibernateSession(entityName, tableName, rowSet, ACTION_TYPE_STORE);
+        Session session = getHibernateSession(entityName, tableName, rowSet, ACTION_TYPE_LOAD);
         
         closeSession(session);
     }
@@ -569,7 +573,7 @@ public class FormDataDaoImpl implements FormDataDao {
     public void updateSchema(String formDefId, String tableName, FormRowSet rowSet) {
         String entityName = getFormEntityName(formDefId);
         String newTableName = getFormTableName(formDefId, tableName);
-        Session session = getHibernateSession(entityName, newTableName, rowSet, ACTION_TYPE_STORE);
+        Session session = getHibernateSession(entityName, newTableName, rowSet, ACTION_TYPE_LOAD);
         
         closeSession(session);
     }
@@ -613,7 +617,7 @@ public class FormDataDaoImpl implements FormDataDao {
         String newTableName = getFormTableName(formDefId, tableName);
 
         // get hibernate template
-        Session session = getHibernateSession(entityName, newTableName, null, ACTION_TYPE_STORE);
+        Session session = getHibernateSession(entityName, newTableName, null, ACTION_TYPE_LOAD);
         try {
             // save the form data
             for (FormRow row : rows) {
@@ -633,13 +637,15 @@ public class FormDataDaoImpl implements FormDataDao {
      */
     protected void internalDelete(String entityName, String tableName, String[] primaryKeyValues) {
         // get hibernate template
-        Session session = getHibernateSession(entityName, tableName, null, ACTION_TYPE_STORE);
+        Session session = getHibernateSession(entityName, tableName, null, ACTION_TYPE_LOAD);
 
         try {
             // save the form data
             for (String key : primaryKeyValues) {
-                Object obj = session.getReference(entityName, key);
-                session.remove(obj);
+                Object obj = this.internalLoad(entityName, tableName, key);
+                if (obj != null) {
+                    session.remove(obj);
+                }
             }
             session.flush();
         } finally {
