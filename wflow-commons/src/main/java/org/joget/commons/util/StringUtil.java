@@ -76,6 +76,7 @@ public class StringUtil {
         whitelistRelaxed = Safelist.relaxed()
                             .addTags("span", "div", "hr")
                             .addAttributes(":all","id","style","class","title","target", "name")
+                            .addProtocols("img", "src", "data")
                             .preserveRelativeLinks(true);
     }
 
