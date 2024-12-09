@@ -24,6 +24,10 @@ public class Cache implements javax.cache.Cache {
     } 
     
     //Backward compatible method start
+    
+    public Element get(Serializable k) {
+        return (Element) get((Object) k);
+    }
 
     public void put(Element k) {
         cache.put(k.getKey(), k);
