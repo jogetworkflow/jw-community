@@ -226,7 +226,11 @@ public class FormDataDaoImpl implements FormDataDao {
         // load by primary key
         FormRow row = null;
         try {
-            row = (FormRow) session.getReference(tableName, primaryKey);
+            FormRowSet rows = internalFind(entityName, tableName, "where id=?", new String[]{primaryKey}, null, null, 0, 1);
+            
+            if (rows != null && !rows.isEmpty()) {
+                row = (FormRow) rows.get(0);
+            }
         } catch (ObjectRetrievalFailureException e) {
             // not found, ignore
         } catch (EntityNotFoundException e) {
@@ -314,6 +318,7 @@ public class FormDataDaoImpl implements FormDataDao {
             String query = "SELECT e FROM " + tableName + " e ";
             if (condition != null) {
                 String newCondition = StringUtil.replaceOrdinalParameters(condition, params);
+                newCondition = replaceColumnNameWithPrefix(tableName, newCondition);
                 query += newCondition;
             }
 
@@ -404,6 +409,7 @@ public class FormDataDaoImpl implements FormDataDao {
         Session session = getHibernateSession(tableName, tableName, null, ACTION_TYPE_LOAD);
         try {
             String newCondition = StringUtil.replaceOrdinalParameters(condition, params);
+            newCondition = replaceColumnNameWithPrefix(tableName, newCondition);
             Query q = session.createQuery(processQuery("SELECT COUNT(*) FROM " + tableName + " e " + newCondition));
             IgniteCacheManager.setCacheable(q, tableName);
 
@@ -419,6 +425,20 @@ public class FormDataDaoImpl implements FormDataDao {
         } finally {
             closeSession(session);
         }
+    }
+    
+    /**
+     * Replace the column name with c_ prefix to e.customProperties.
+     * @param tableName
+     * @param condition
+     * @return 
+     */
+    protected String replaceColumnNameWithPrefix(String tableName, String condition) {
+        if (condition != null && !condition.isEmpty() && (condition.contains(" c_") || condition.contains("(c_"))) {
+            //there is no function or method name started with c_, so i think it is safe to replace any ` c_` & `(c_` directly
+            condition = condition.replaceAll("([ \\(])c_", "$1" + StringUtil.escapeRegex("e."+FormUtil.PROPERTY_CUSTOM_PROPERTIES+"."));
+        }
+        return condition;
     }
 
     /**
@@ -516,12 +536,12 @@ public class FormDataDaoImpl implements FormDataDao {
      */
     protected void internalSaveOrUpdate(String entityName, String tableName, FormRowSet rowSet) {
         // get hibernate template
-        Session session = getHibernateSession(entityName, tableName, rowSet, ACTION_TYPE_STORE);
+        Session session = getHibernateSession(entityName, tableName, rowSet, ACTION_TYPE_LOAD);
 
         try {
             // save the form data
             for (FormRow row : rowSet) {
-                session.saveOrUpdate(entityName, row);
+                session.merge(entityName, row);
             }
             session.flush();
         } finally {
@@ -538,7 +558,7 @@ public class FormDataDaoImpl implements FormDataDao {
     public void updateSchema(Form form, FormRowSet rowSet) {
         String entityName = getFormEntityName(form);
         String tableName = getFormTableName(form);
-        Session session = getHibernateSession(entityName, tableName, rowSet, ACTION_TYPE_STORE);
+        Session session = getHibernateSession(entityName, tableName, rowSet, ACTION_TYPE_LOAD);
         
         closeSession(session);
     }
@@ -553,7 +573,7 @@ public class FormDataDaoImpl implements FormDataDao {
     public void updateSchema(String formDefId, String tableName, FormRowSet rowSet) {
         String entityName = getFormEntityName(formDefId);
         String newTableName = getFormTableName(formDefId, tableName);
-        Session session = getHibernateSession(entityName, newTableName, rowSet, ACTION_TYPE_STORE);
+        Session session = getHibernateSession(entityName, newTableName, rowSet, ACTION_TYPE_LOAD);
         
         closeSession(session);
     }
@@ -597,11 +617,11 @@ public class FormDataDaoImpl implements FormDataDao {
         String newTableName = getFormTableName(formDefId, tableName);
 
         // get hibernate template
-        Session session = getHibernateSession(entityName, newTableName, null, ACTION_TYPE_STORE);
+        Session session = getHibernateSession(entityName, newTableName, null, ACTION_TYPE_LOAD);
         try {
             // save the form data
             for (FormRow row : rows) {
-                session.delete(entityName, row);
+                session.remove(row);
             }
             session.flush();
         } finally {
@@ -617,13 +637,15 @@ public class FormDataDaoImpl implements FormDataDao {
      */
     protected void internalDelete(String entityName, String tableName, String[] primaryKeyValues) {
         // get hibernate template
-        Session session = getHibernateSession(entityName, tableName, null, ACTION_TYPE_STORE);
+        Session session = getHibernateSession(entityName, tableName, null, ACTION_TYPE_LOAD);
 
         try {
             // save the form data
             for (String key : primaryKeyValues) {
-                Object obj = session.getReference(entityName, key);
-                session.remove(obj);
+                Object obj = this.internalLoad(entityName, tableName, key);
+                if (obj != null) {
+                    session.remove(obj);
+                }
             }
             session.flush();
         } finally {
@@ -893,7 +915,7 @@ public class FormDataDaoImpl implements FormDataDao {
                 
                 // check for cache access strategy
                 String cacheAccessStrategy = pc.getCacheConcurrencyStrategy();
-                if (!"nonstrict-read-write".equals(cacheAccessStrategy)) {
+                if (!"transactional".equals(cacheAccessStrategy)) {
                     changes = true;
                 }
 
@@ -916,7 +938,7 @@ public class FormDataDaoImpl implements FormDataDao {
                         if (size == formFields.size()) {
                             // similar size, so compare individual fields
                             boolean found;
-                            Iterator i = customComponent.getPropertyIterator();
+                            Iterator i = customComponent.getProperties().iterator();
                             while (i.hasNext()) {
                                 Property property = (Property) i.next();
                                 String propertyName = property.getName();
@@ -1015,10 +1037,12 @@ public class FormDataDaoImpl implements FormDataDao {
         Configuration configuration = new Configuration();
         configuration.setProperty("show_sql", "false");
         configuration.setProperty("cglib.use_reflection_optimizer", "true");
-        configuration.setProperty(Environment.USE_QUERY_CACHE, "true");
-        configuration.setProperty(Environment.USE_SECOND_LEVEL_CACHE, "true");
-        configuration.setProperty(Environment.CACHE_REGION_FACTORY, "org.joget.commons.ignite.IgniteHibernateRegionFactory");
-        configuration.setProperty("org.apache.ignite.hibernate.ignite_instance_name", "ignite-grid");
+        if (IgniteCacheManager.isIgniteCacheEnabled()) {
+            configuration.setProperty(Environment.USE_QUERY_CACHE, "true");
+            configuration.setProperty(Environment.USE_SECOND_LEVEL_CACHE, "true");
+            configuration.setProperty(Environment.CACHE_REGION_FACTORY, "org.joget.commons.ignite.IgniteHibernateRegionFactory");
+            configuration.setProperty("org.apache.ignite.hibernate.ignite_instance_name", "ignite-grid");
+        }
         configuration.setProperty(Environment.LOG_SLOW_QUERY, "500");
         
         // set datasource

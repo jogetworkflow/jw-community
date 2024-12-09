@@ -2,8 +2,8 @@
 <!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN" "http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
 <hibernate-mapping>
     <class entity-name="PackageDefinition" name="org.joget.apps.app.model.PackageDefinition" table="app_package">
-        <cache usage="nonstrict-read-write" /> 
-        <composite-id>
+        <cache usage="transactional" /> 
+        <composite-id class="org.joget.apps.app.model.PackageDefinitionKey" mapped="true" unsaved-value="any">
             <key-property column="packageId" name="id" type="string"/>
             <key-property column="packageVersion" name="version" type="long"/>
         </composite-id>
@@ -15,7 +15,7 @@
             <column name="appVersion"/>
         </many-to-one>
         <map cascade="all-delete-orphan" inverse="true" lazy="false" name="packageActivityFormMap">
-            <cache usage="nonstrict-read-write" /> 
+            <cache usage="transactional" /> 
             <key>
                 <column name="packageId"/>
                 <column name="packageVersion"/>
@@ -24,7 +24,7 @@
             <one-to-many entity-name="PackageActivityForm"/>
         </map>
         <map cascade="all-delete-orphan" inverse="true" lazy="false" name="packageActivityPluginMap">
-            <cache usage="nonstrict-read-write" /> 
+            <cache usage="transactional" /> 
             <key>
                 <column name="packageId"/>
                 <column name="packageVersion"/>
@@ -33,7 +33,7 @@
             <one-to-many entity-name="PackageActivityPlugin"/>
         </map>
         <map cascade="all-delete-orphan" inverse="true" lazy="false" name="packageParticipantMap">
-            <cache usage="nonstrict-read-write" /> 
+            <cache usage="transactional" /> 
             <key>
                 <column name="packageId"/>
                 <column name="packageVersion"/>

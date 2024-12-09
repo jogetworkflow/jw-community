@@ -111,7 +111,12 @@ public class WorkflowFormBinder extends DefaultFormBinder implements FormLoadEle
                     if (activityId != null) {
                         workflowManager.activityVariables(activityId, variableMap);
                     } else {
-                        workflowManager.processVariables(processId, variableMap);
+                        //handle by appServiceImpl.submitFormToStartProcess
+                        if (formData.getWorkflowVariables() == null) {
+                            formData.setWorkflowVariables(variableMap);
+                        } else {
+                            formData.getWorkflowVariables().putAll(variableMap);
+                        }
                     }
                 }
             }

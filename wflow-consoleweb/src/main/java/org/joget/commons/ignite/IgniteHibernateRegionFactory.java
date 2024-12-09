@@ -37,7 +37,7 @@ public class IgniteHibernateRegionFactory extends HibernateRegionFactory {
         // only call super method if ignite cache is available
         if (IgniteCacheManager.isStarted()) {
             String regionName = regionConfig.getRegionName();
-            CacheConfiguration cacheConfiguration = (CacheConfiguration)SecurityUtil.getApplicationContext().getBean("igniteAtomicCache");
+            CacheConfiguration cacheConfiguration = (CacheConfiguration)SecurityUtil.getApplicationContext().getBean("igniteTransactionalCache");
             cacheConfiguration.setName(regionName);
             cacheConfiguration.setGroupName("domainDataGroup");
             IgniteCacheManager.setCacheMode(cacheConfiguration);

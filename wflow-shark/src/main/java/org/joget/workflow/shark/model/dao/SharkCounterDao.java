@@ -46,7 +46,7 @@ public class SharkCounterDao extends AbstractSpringDao {
                     SharkCounter next = result.iterator().next();
                     
                     //lock it for update
-                    session.refresh(ENTITY_NAME, next, new LockOptions(LockMode.PESSIMISTIC_WRITE));
+                    session.refresh(next, new LockOptions(LockMode.PESSIMISTIC_WRITE));
                     
                     LogUtil.debug(SharkCounterDao.class.getName(), "Retrieved number is " + next.getNextNumber() + ", old number is " + old);
                     
@@ -57,7 +57,7 @@ public class SharkCounterDao extends AbstractSpringDao {
                     next.setNextNumber(temp.getMaxNumber());
                     next.setVersion(next.getVersion() + 1);
                     
-                    session.update(ENTITY_NAME, next);
+                    session.merge(ENTITY_NAME, next);
                     
                     session.flush();
                     transaction.commit();
@@ -71,7 +71,7 @@ public class SharkCounterDao extends AbstractSpringDao {
                     temp.setVersion(0);
                     temp.setOid(Math.abs(objectName.hashCode()) + 0l);
                     
-                    session.save(ENTITY_NAME, temp);
+                    session.merge(ENTITY_NAME, temp);
                     
                     session.flush();
                     transaction.commit();

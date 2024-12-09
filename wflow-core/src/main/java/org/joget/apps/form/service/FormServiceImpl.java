@@ -547,7 +547,7 @@ public class FormServiceImpl implements FormService {
             if (activityId != null) {
                 workflowManager.activityVariables(activityId, formData.getWorkflowVariables());
             } else {
-                workflowManager.processVariables(processId, formData.getWorkflowVariables());
+                //handle by appServiceImpl.submitFormToStartProcess
             }
         }
 

@@ -2,7 +2,7 @@
 <!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN" "http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
 <hibernate-mapping>
     <class entity-name="FormRow" lazy="false" name="org.joget.apps.form.model.FormRow" table="app_fd">
-        <cache usage="nonstrict-read-write" /> 
+        <cache usage="transactional" /> 
         <id name="id" type="string"/>
         <property name="dateCreated" type="timestamp" index="idx_datecreated" />
         <property name="dateModified" type="timestamp"/>
