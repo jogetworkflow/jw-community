@@ -399,7 +399,7 @@ public class FormPdfUtil {
         }
         
         //convert label for checkbox and radio
-        Pattern formdiv = Pattern.compile("<div class=\"(form-cell-value|subform-cell-value)\" >.*?</div>", Pattern.DOTALL);
+        Pattern formdiv = Pattern.compile("<div class=\"(form-cell-value|subform-cell-value)[^\"]*\" >.*?</div>", Pattern.DOTALL);
         Matcher divMatcher = formdiv.matcher(html);
         while (divMatcher.find()) {
             String divString = divMatcher.group(0);

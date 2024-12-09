@@ -815,6 +815,7 @@ body.rtl .badge{
 #sidebar li ul>li>a > span:first-child{
     max-width: 140px;
     display: inline-block;
+    white-space: normal;
 }
 body.rtl #sidebar li ul>li>a > span:first-child{
     float: right !important;
@@ -852,7 +853,7 @@ body.rtl #sidebar li ul>li>a > span:first-child{
 }
 .rtl #sidebar li>a.dropdown:after,
 .rtl #sidebar li>a.dropdown:before {
-    left: 15px;
+    left: 0px;
     right: auto !important;
 }
 
@@ -1013,6 +1014,9 @@ body.rtl #sidebar li ul>li>a > span:first-child{
     body.horizontal_menu #sidebar .main-menu.nav-tabs>li>a.dropdown {
         padding-right: 15px;
     }
+    body.rtl.horizontal_menu #sidebar .main-menu.nav-tabs>li>a.dropdown {
+        padding-left: 15px;
+    }
     body.horizontal_menu #sidebar ul#category-container {
         margin-bottom: 0;
     }
@@ -1070,6 +1074,11 @@ body.rtl #sidebar li ul>li>a > span:first-child{
         -ms-transform: scale(1);
         -o-transform: scale(1);
         transform: scale(1)
+    }
+    body.horizontal_menu.rtl #sidebar li>a.dropdown:after,
+    body.horizontal_menu.rtl #sidebar li>a.dropdown:before {
+        left: 15px;
+        right: auto !important;
     }
     #main .systemAlert {
         top: -26px;
@@ -1633,11 +1642,18 @@ main .grid-stack-item-header-refresh {
         right: 100%;
         visibility: visible;
     }
-    body.rtl.horizontal_menu:not(.inline_menu) ul#moreSubMenu.sub-menu {
+    body.rtl.horizontal_menu:not(.inline_menu) ul#moreSubMenu.sub-menu,
+    li#menu-more.over > ul#moreSubMenu,
+    body.horizontal_menu:not(.inline_menu) li.category > ul.menu-container.over-right {
         left: 0 !important;
         right: unset !important;
     }
-    body.rtl.horizontal_menu:not(.inline_menu) ul#moreSubMenu.sub-menu > li:hover> ul {
+    body.horizontal_menu:not(.inline_menu) li.category > ul.menu-container.over-left {
+        right:0 !important; 
+        left: unset !important;
+    }
+    body.rtl.horizontal_menu:not(.inline_menu) ul#moreSubMenu.sub-menu > li:hover> ul,
+    ul#moreSubMenu.sub-menu.over > li:hover> ul {
         left: 100% !important;
         right: unset !important;
     }
@@ -1646,6 +1662,9 @@ main .grid-stack-item-header-refresh {
     }
     body.horizontal_menu ul#moreSubMenu.sub-menu > li > a.dropdown:before {
         right: 15px;
+    }
+    body.rtl.horizontal_menu ul#moreSubMenu.sub-menu > li > a.dropdown:before {
+        left: 15px;
     }
     ul#moreSubMenu.sub-menu > li:hover{
         position: relative;
@@ -1659,6 +1678,7 @@ main .grid-stack-item-header-refresh {
     body.horizontal_menu #sidebar .nav {
         flex-wrap: nowrap;
         display: flex;
+        align-items: baseline;
     }
     #category-container > li {
         flex: 0 0 auto;
