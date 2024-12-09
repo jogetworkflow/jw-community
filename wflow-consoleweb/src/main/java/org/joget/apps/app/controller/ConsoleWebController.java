@@ -80,6 +80,7 @@ import org.joget.apps.app.service.CustomBuilderUtil;
 import org.joget.apps.app.service.MarketplaceUtil;
 import org.joget.apps.app.service.PushServiceUtil;
 import org.joget.apps.app.service.TaggingUtil;
+import org.joget.apps.app.web.GitRequestFilter;
 import org.joget.apps.app.web.LocalLocaleResolver;
 import org.joget.apps.datalist.service.DataListService;
 import org.joget.apps.datalist.service.JsonUtil;
@@ -1853,7 +1854,7 @@ public class ConsoleWebController {
     }
 
     @RequestMapping(value = "/console/app/import/submit", method = RequestMethod.POST)
-    public String consoleAppImportSubmit(ModelMap map) throws IOException {
+    public String consoleAppImportSubmit(ModelMap map, HttpServletRequest request) throws IOException {
         Collection<String> errors = new ArrayList<String>();
         
         MultipartFile appZip = null;
@@ -1890,6 +1891,11 @@ public class ConsoleWebController {
             map.addAttribute("appId", appId);
             map.addAttribute("appVersion", appDef.getVersion());
             map.addAttribute("isPublished", appDef.isPublished());
+
+            if (!AppDevUtil.isGitDisabled()) {
+                // enable synchronous commit to ensure app's git folder is properly initialised
+                request.setAttribute(GitRequestFilter.REQUEST_ATTRIBUTE_ENABLE_SYNCHRONOUS_COMMIT, true);
+            }
             return "console/apps/packageUploadSuccess";
         }
     }
