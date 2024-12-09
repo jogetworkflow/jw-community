@@ -6858,7 +6858,7 @@ _CustomBuilder.Builder = {
                 if ($(node).find("> .cbuilder-node-details").length > 0) {
                     height = height - $(node).find("> .cbuilder-node-details").outerHeight();
                 }
-                if (height === 0) {
+                if (height === 0 && !$(node).is(".stretched-link")) { //Make sure it is not stretched-link, because this will make the entire node invisible, since stretched-link covers the entire element
                     $(node).attr("data-cbuilder-invisible", "");
                 }
             }
