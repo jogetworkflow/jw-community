@@ -3064,3 +3064,6 @@ body[builder-theme='dark'] .guider_content p {
 body[builder-theme='dark'] .guider h1 {
     color: #007bff;
 }
+body[builder-theme='dark'] .guider_arrow {
+    background-image: url("../js/guiders/guider_arrows_dark.png");
+}
