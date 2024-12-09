@@ -1,12 +1,6 @@
 package org.joget.apps.app.web;
 
-import java.io.BufferedInputStream;
-import java.io.BufferedReader;
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.PrintWriter;
+import java.io.*;
 import java.lang.reflect.Field;
 import java.sql.Connection;
 import java.sql.ResultSet;
@@ -22,7 +16,11 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import org.apache.commons.dbcp2.BasicDataSource;
 import org.apache.commons.lang.StringEscapeUtils;
+import org.eclipse.jgit.api.Git;
+import org.eclipse.jgit.api.errors.GitAPIException;
+import org.joget.apps.app.dao.GitCommitHelper;
 import org.joget.apps.app.model.AppDefinition;
+import org.joget.apps.app.service.AppDevUtil;
 import org.joget.apps.app.service.AppService;
 import org.joget.apps.app.service.AppUtil;
 import org.joget.commons.spring.web.CustomContextLoaderListener;
@@ -94,7 +92,7 @@ public class SetupServlet extends HttpServlet {
             if (dbName != null) {
                 dbName = SecurityUtil.validateStringInput(dbName);
             }
-            
+
             // create datasource
             LogUtil.info(getClass().getName(), "===== Starting Database Setup =====");
             boolean success = false;
@@ -138,7 +136,7 @@ public class SetupServlet extends HttpServlet {
                     LogUtil.info(getClass().getName(), "Database not yet initialized " + jdbcUrl);
                 }
                 con.commit();
-                
+
                 if (!exists) {
                     // get schema file
                     String schemaFile = null;
@@ -169,7 +167,7 @@ public class SetupServlet extends HttpServlet {
                         con.setCatalog(dbName);
                         con.setAutoCommit(false);
                     }
-                    
+
                     // execute schema file
                     LogUtil.info(getClass().getName(), "Execute schema " + schemaFile);
                     ScriptRunner runner = new ScriptRunner(con, false, true);
@@ -184,13 +182,13 @@ public class SetupServlet extends HttpServlet {
                     in = getClass().getResourceAsStream(schemaFile);
                     runner.runScript(new BufferedReader(new InputStreamReader(in)));
                 }
-                
+
                 con.commit();
                 LogUtil.info(getClass().getName(), "Datasource init complete: " + success);
-                
+
                 //run collation check before servlet init for mysql, else imported apps form data tables are with previous collation.
                 DatabaseUtil.checkAndFixMySqlDbCollation(con);
-                
+
                 // save profile
                 String profileName = (dbName != null && !dbName.trim().isEmpty()) ? dbName : "custom";
                 String jdbcUrlToSave = (jdbcFullUrl != null && !jdbcFullUrl.trim().isEmpty()) ? jdbcFullUrl : jdbcUrl;
@@ -201,7 +199,7 @@ public class SetupServlet extends HttpServlet {
                 DynamicDataSourceManager.writeProperty("workflowUrl", jdbcUrlToSave);
                 DynamicDataSourceManager.writeProperty("workflowUser", jdbcUser);
                 DynamicDataSourceManager.writeProperty("workflowPassword", jdbcPassword);
-                
+
                 // initialize spring application context
                 ServletContext sc = request.getServletContext();
                 ServletContextEvent sce = new ServletContextEvent(sc);
@@ -214,16 +212,16 @@ public class SetupServlet extends HttpServlet {
                 wacField.set(servlet, null);
                 // reinitialize DispatcherServlet
                 servlet.init();
-                
+
                 if (sampleApps != null) {
                     // import sample apps
                     ApplicationContext context = AppUtil.getApplicationContext();
                     InputStream setupInput = getClass().getResourceAsStream("/setup/setup.properties");
                     Properties setupProps = new Properties();
-                    
+
                     WorkflowUserManager wum = (WorkflowUserManager) context.getBean("workflowUserManager");
                     wum.setSystemThreadUser(true);
-                    
+
                     try {
                         setupProps.load(setupInput);
                         String sampleDelimitedApps = setupProps.getProperty("sample.apps");
@@ -236,14 +234,14 @@ public class SetupServlet extends HttpServlet {
                         if (setupInput != null) {
                             setupInput.close();
                         }
-                        
+
                         wum.setSystemThreadUser(false);
                     }
-                }                
-                
+                }
+
                 LogUtil.info(getClass().getName(), "Profile init complete: " + profileName);
                 LogUtil.info(getClass().getName(), "===== Database Setup Complete =====");
-                
+
             } catch (Exception ex) {
                 LogUtil.error(getClass().getName(), null, ex.toString());
                 success = false;
@@ -322,23 +320,25 @@ public class SetupServlet extends HttpServlet {
                     }
                 });
             }
-        } catch(Exception ex) {
+            gitCommitLocal(appDef);
+        } catch (Exception ex) {
             LogUtil.error(getClass().getName(), ex, "Failed to import app " + path);
         } finally {
             try {
                 if (in != null) {
                     in.close();
                 }
-            } catch(IOException e) {                
+            } catch (IOException e) {
+                LogUtil.error(getClass().getName(), e, "Failed to close ZIP file stream when importing app");
             }
         }
-    }    
+    }
 
     /**
      * Reads a specified InputStream, returning its contents in a byte array
      * @param in
      * @return
-     * @throws IOException 
+     * @throws IOException
      */
     protected byte[] readInputStream(InputStream in) throws IOException {
         byte[] fileContent;
@@ -367,7 +367,7 @@ public class SetupServlet extends HttpServlet {
             }
         }
     }
-    
+
     /**
      * Handles the HTTP <code>GET</code> method.
      *
@@ -406,4 +406,32 @@ public class SetupServlet extends HttpServlet {
         return "Servlet to handle first-time database setup and initialization";
     }
 
+    private static void gitCommitLocal(AppDefinition appDef) {
+        if (!AppDevUtil.isGitDisabled()) {
+            GitCommitHelper gitCommitHelper = AppDevUtil.getGitCommitHelper(appDef);
+            try {
+                String gitCommitMessage = gitCommitHelper.getCommitMessage();
+                if (gitCommitHelper.hasChanges() && gitCommitMessage != null && !gitCommitMessage.trim().isEmpty()) {
+                    // sync plugins
+                    if (gitCommitHelper.isSyncPlugins()) {
+                        AppDevUtil.syncAppPlugins(appDef);
+                    }
+
+                    // sync resources
+                    if (gitCommitHelper.isSyncResources()) {
+                        AppDevUtil.syncAppResources(appDef);
+                    }
+
+                    Git git = gitCommitHelper.getGit();
+                    File gitWorkingDir = gitCommitHelper.getWorkingDir();
+                    AppDevUtil.gitPullAndCommit(appDef, git, gitWorkingDir, gitCommitMessage);
+                }
+            } catch (GitAPIException e) {
+                LogUtil.error(SetupServlet.class.getName(), e, "Error setting up Git.");
+            } finally {
+                gitCommitHelper.clean();
+                AppUtil.resetAppDefinition();
+            }
+        }
+    }
 }
