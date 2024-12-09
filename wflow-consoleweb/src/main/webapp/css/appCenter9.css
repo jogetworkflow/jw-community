@@ -446,6 +446,11 @@ a.fs-4.text-dark.fw-bold.text-hover-primary.text-dark.lh-base.commuLabel {
         padding: 0 10px;
     }
 }
+@media (min-width: 420px) and (max-width: 767px) {
+    #design_app .cards.row .p-2 {
+        padding-top: 50px !important;
+    }
+}
 @media (max-width: 1279px) {
     #sidebar-trigger {
         display: block !important;
