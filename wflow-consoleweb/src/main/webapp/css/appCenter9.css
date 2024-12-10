@@ -1121,3 +1121,16 @@ body.rtl form[name='filters_list_appList'].filter_form {
     display: flex;
 }
 /* END custom search styles */
+/* Fix for Analyzer Label & Add New Border Issue in the Home screen */
+@media screen and (max-width: 1024px) {
+    body#home div#content div.analyzer-label:first-of-type {
+        left:5px;
+    }
+}
+body#home.quickEditModeActive main div.addNew {
+    position: absolute;
+}
+body#home.quickEditModeActive main div.addNew::after {
+    border: none;
+}
+/* END of Fix */
