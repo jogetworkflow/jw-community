@@ -4618,7 +4618,11 @@ public class ConsoleWebController {
         Locale[] localeList = Locale.getAvailableLocales();
         Map<String, String> localeStringList = new TreeMap<String, String>();
         for (int x = 0; x < localeList.length; x++) {
-            localeStringList.put(localeList[x].toString(), localeList[x].toString() + " - " +localeList[x].getDisplayName(LocaleContextHolder.getLocale()));
+            if (!localeList[x].toString().isEmpty()) {
+                localeStringList.put(localeList[x].toString(), localeList[x].toString() + " - " +localeList[x].getDisplayName(LocaleContextHolder.getLocale()));
+            } else {
+                localeStringList.put("", "");
+            }
         }
 
         map.addAttribute("serverTZ", TimeZoneUtil.getServerTimeZoneID());

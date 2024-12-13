@@ -784,17 +784,17 @@
         ConnectionManager.post('${pageContext.request.contextPath}/web/console/setting/general/loginHash', callback, params);
     }
     $(document).ready(function() {
-        const savedMessage = localStorage.getItem('formSavedMessage');
+        const savedMessage = localStorage.getItem('showFormSavedMessage');
         if (savedMessage) {
-            UI.showConsoleToast(0, savedMessage, "fas fa-check-circle", 2000, $("div#main"));
-            localStorage.removeItem('formSavedMessage');
+            UI.showConsoleToast(0, '<fmt:message key="general.label.savedMessage"/>', "fas fa-check-circle", 2000, $("div#main"));
+            localStorage.removeItem('showFormSavedMessage');
         }
 
         // Override the form submission to validate the SMTP email
         $("#generalSettings").submit(function(event) {
             event.preventDefault(); // Prevent default form submission
             validateSMTPEmail();
-            localStorage.setItem('formSavedMessage', '<fmt:message key="general.label.savedMessage"/>');
+            localStorage.setItem('showFormSavedMessage', 'true');
         });
 
         let elementsAfterFirstHeader = $('.main-body-content-subheader').eq(0).nextUntil('#header-container');
