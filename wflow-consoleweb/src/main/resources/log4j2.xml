@@ -39,6 +39,21 @@
             </Policies>
             <DefaultRolloverStrategy max="5" />
         </RollingFile>        
+        <RollingFile
+            name="IGNITE"
+            fileName="${LOGDIR}/ignite.log"
+            filePattern="${LOGDIR}/ignite.log.%d{yyyyMMdd}.gz"
+            ignoreExceptions="false">
+            <PatternLayout>
+                <Pattern>%-5p %d{dd MMM yyyy HH:mm:ss} %-50c - %m%throwable{0}%n</Pattern>
+            </PatternLayout>
+            <Policies>
+                <OnStartupTriggeringPolicy />
+                <SizeBasedTriggeringPolicy size="10MB" />
+                <TimeBasedTriggeringPolicy interval="1"/>
+            </Policies>
+            <DefaultRolloverStrategy max="5" />
+        </RollingFile>        
         <LogViewerAppender name="LOGVIEWER">
             <PatternLayout pattern="%-7p %d{dd MMM yyyy HH:mm:ss} %c - %m%n"/>
         </LogViewerAppender>
@@ -111,7 +126,40 @@
         <Logger name="org.joget.plugin.enterprise.ExportFormEmailTool" level="debug" additivity="true">
             <AppenderRef ref="EMAIL"/>
         </Logger>
-        
+
+        <!-- Ignite logs -->
+        <Logger name="org.apache.ignite.internal" level="info" additivity="true">
+            <AppenderRef ref="IGNITE"/>
+        </Logger>
+        <Logger name="org.apache.ignite.internal.processors" level="info" additivity="false">
+            <AppenderRef ref="IGNITE">
+                <LevelRangeFilter minLevel="fatal" maxLevel="info" onMatch="ACCEPT" onMismatch="DENY"/>
+            </AppenderRef>
+            <AppenderRef ref="STDOUT">
+                <LevelRangeFilter minLevel="fatal" maxLevel="warn" onMatch="ACCEPT" onMismatch="DENY"/>
+            </AppenderRef>
+            <AppenderRef ref="LOGFILE">
+                <LevelRangeFilter minLevel="fatal" maxLevel="warn" onMatch="ACCEPT" onMismatch="DENY"/>
+            </AppenderRef>
+            <AppenderRef ref="LOGVIEWER">
+                <LevelRangeFilter minLevel="fatal" maxLevel="warn" onMatch="ACCEPT" onMismatch="DENY"/>
+            </AppenderRef>
+        </Logger>
+        <Logger name="org.apache.ignite.internal.exchange" level="info" additivity="false">
+            <AppenderRef ref="IGNITE">
+                <LevelRangeFilter minLevel="fatal" maxLevel="info" onMatch="ACCEPT" onMismatch="DENY"/>
+            </AppenderRef>
+            <AppenderRef ref="STDOUT">
+                <LevelRangeFilter minLevel="fatal" maxLevel="warn" onMatch="ACCEPT" onMismatch="DENY"/>
+            </AppenderRef>
+            <AppenderRef ref="LOGFILE">
+                <LevelRangeFilter minLevel="fatal" maxLevel="warn" onMatch="ACCEPT" onMismatch="DENY"/>
+            </AppenderRef>
+            <AppenderRef ref="LOGVIEWER">
+                <LevelRangeFilter minLevel="fatal" maxLevel="warn" onMatch="ACCEPT" onMismatch="DENY"/>
+            </AppenderRef>
+        </Logger>
+                
         <!-- Root logger -->
         <Root level="info">
             <AppenderRef ref="STDOUT"/>
