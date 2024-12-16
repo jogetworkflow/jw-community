@@ -3051,3 +3051,19 @@ body[builder-theme] .api-container .plugin-label .errorMsg {
 body[builder-theme] .api-container .element-operations .operation {
     font-size: 14px;
 }
+/* Guider Dark Theme */
+body[builder-theme='dark'] .guider {
+    background-color: var(--theme-primary-color-1);
+    -moz-box-shadow: 0 6px 8px 0 rgba(255, 255, 255, 0.03), 0 3px 4px -4px rgba(255, 255, 255, 0.08), 0 9px 14px 8px rgba(255, 255, 255, 0.02);
+    -webkit-box-shadow: 0 6px 8px 0 rgba(255, 255, 255, 0.03), 0 3px 4px -4px rgba(255, 255, 255, 0.08), 0 9px 14px 8px rgba(255, 255, 255, 0.02);
+    box-shadow: 0 6px 8px 0 rgba(255, 255, 255, 0.03), 0 3px 4px -4px rgba(255, 255, 255, 0.08), 0 9px 14px 8px rgba(255, 255, 255, 0.02);
+}
+body[builder-theme='dark'] .guider_content p {
+    color: var(--theme-label-color-1);
+}
+body[builder-theme='dark'] .guider h1 {
+    color: #007bff;
+}
+body[builder-theme='dark'] .guider_arrow {
+    background-image: url("../js/guiders/guider_arrows_dark.png");
+}
