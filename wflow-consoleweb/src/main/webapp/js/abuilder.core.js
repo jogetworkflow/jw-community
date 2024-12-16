@@ -368,8 +368,19 @@ AppBuilder = {
     publishApp: function() {
         if (confirm(AppBuilder.msg('publishConfirm'))) {
             var callback = {
-                success : function() {
-                    AppBuilder.updatePublishButton(CustomBuilder.appVersion, false);
+                success : function(data) {
+                    try {
+                        data = JSON.parse(data);
+                    } catch (e) {
+                        CustomBuilder.showMessage(get_cbuilder_msg("abuilder.invalidServerResponse"), "danger", false)
+                        console.error("Unable to parse data as JSON");
+                        return;
+                    }
+                    if (data.status) {
+                        AppBuilder.updatePublishButton(CustomBuilder.appVersion, false);
+                    } else {
+                        CustomBuilder.showMessage(get_cbuilder_msg("abuilder.appLimitExceeded"), "danger", false)
+                    }
                 }
             };
             ConnectionManager.post(CustomBuilder.contextPath+'/web/console/app'+CustomBuilder.appPath+'/publish', callback, '');
