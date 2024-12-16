@@ -1700,3 +1700,13 @@ main .grid-stack-item-header-refresh {
     }
 }
 /*Priority Menu*/  
+body.rtl .card-header .header-title {
+    text-align: right !important;
+}
+body.rtl .card-header .header-tag {
+    text-align: left !important;
+    padding-left: 15px !important; 
+}
+body.rtl .InformationTileComponent small {
+    float: left !important;
+}

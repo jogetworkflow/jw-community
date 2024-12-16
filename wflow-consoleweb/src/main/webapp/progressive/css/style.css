@@ -1885,3 +1885,9 @@ body:not(#login) #content > main > .datalist-body-content:not(.quickEdit) {
     }
 }
 /*Priority Menu*/ 
+body.rtl .card-header .header-tag {
+    padding-left: 15px !important; 
+}
+body.rtl .InformationTileComponent small {
+    float:left !important;
+}
