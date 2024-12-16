@@ -117,20 +117,20 @@ body.is-dragging [data-cbuilder-single] [data-cbuilder-dragelement] ~ [data-cbui
     width: 100%;
     height: 100%;
 }
-body [data-cbuilder-invisible],
-body [data-cbuilder-element-invisible]{
+body [data-cbuilder-invisible]:not(.stretched-link),
+body [data-cbuilder-element-invisible]:not(.stretched-link){
     min-height: 35px;
     position: relative;
 }
 body [data-cbuilder-missing-plugin]{
     position: relative;
 }
-body [data-cbuilder-missing-plugin]::after,
-body [data-cbuilder-element-invisible]::after,
-body [data-cbuilder-invisible]::after,
-body [data-cbuilder-desktop-invisible]::after,
-body [data-cbuilder-mobile-invisible]::after,
-body [data-cbuilder-tablet-invisible]::after {
+body [data-cbuilder-missing-plugin]:not(.stretched-link)::after,
+body [data-cbuilder-element-invisible]:not(.stretched-link)::after,
+body [data-cbuilder-invisible]:not(.stretched-link)::after,
+body [data-cbuilder-desktop-invisible]:not(.stretched-link)::after,
+body [data-cbuilder-mobile-invisible]:not(.stretched-link)::after,
+body [data-cbuilder-tablet-invisible]:not(.stretched-link)::after {
     content: '';
     position: absolute;
     left: 0px;
