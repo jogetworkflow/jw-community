@@ -24,6 +24,7 @@ import org.joget.apps.userview.model.UserviewMenu;
 import org.joget.apps.userview.service.UserviewUtil;
 import org.joget.commons.util.LogUtil;
 import org.joget.commons.util.ResourceBundleUtil;
+import org.joget.commons.util.SecurityUtil;
 import org.joget.commons.util.StringUtil;
 import org.joget.directory.model.User;
 import org.joget.directory.model.service.DirectoryUtil;
@@ -429,11 +430,12 @@ public class XadminTheme extends UniversalTheme {
             String url = userview.getParamString("url");
             String menuLabel = "";
             String tempId = "";
+            
+            String key = SecurityUtil.validateStringInput(userview.getParamString("key")); //validate the key to prevent XSS
+            if (key.isEmpty()) {
+                key = Userview.USERVIEW_KEY_EMPTY_VALUE;
+            }
             if (url == null || url.isEmpty()) {
-                String key = userview.getParamString("key");
-                if (key.isEmpty()) {
-                    key = Userview.USERVIEW_KEY_EMPTY_VALUE;
-                }
                 if ("true".equalsIgnoreCase(userview.getParamString("isPreview"))) {
                     url = data.get("context_path").toString() + "/web/console/app/" + userview.getParamString("appId") + "/" + userview.getParamString("appVersion") + "/userview/builderPreview/" + userview.getPropertyString("id") + "/" + getUserview().getPropertyString("homeMenuId");
                 } else {
@@ -451,6 +453,8 @@ public class XadminTheme extends UniversalTheme {
             } else if (INBOX.equals(tempId)) {
                 menuLabel = ResourceBundleUtil.getMessage("theme.universal.inbox");
             } else {
+                boolean found = false;
+                String homeMenuLabel = "";
                 for (UserviewCategory c : userview.getCategories()) {
                     if (c.getMenus() != null) {
                         for (UserviewMenu m : c.getMenus()) {
@@ -458,8 +462,15 @@ public class XadminTheme extends UniversalTheme {
                             if (m.getPropertyString("customId") != null && m.getPropertyString("customId").trim().length() > 0) {
                                 menuId = m.getPropertyString("customId");
                             }
+                            
+                            //capture the home menu label for later use if the viewing url does not having permission to access
+                            if (homeMenuLabel.isEmpty() && getUserview().getPropertyString("homeMenuId").equals(menuId)) {
+                                homeMenuLabel = StringUtil.stripAllHtmlTag(m.getPropertyString("label"));
+                            }
+                            
                             if (tempId.equals(menuId)) {
                                 menuLabel = StringUtil.stripAllHtmlTag(m.getPropertyString("label"));
+                                found = true;
                                 break;
                             }
                         }
@@ -467,6 +478,10 @@ public class XadminTheme extends UniversalTheme {
                     if (!menuLabel.isEmpty()) {
                         break;
                     }
+                }
+                if (!found) { //the viewing url is not having permission to view as anonymous or logged in user, set it to home page
+                    url = data.get("context_path").toString() + "/web/userview/" + userview.getParamString("appId") + "/" + userview.getPropertyString("id") + "/" + key + "/" + getUserview().getPropertyString("homeMenuId");
+                    menuLabel = homeMenuLabel;
                 }
             }
             if (menuLabel.isEmpty()) {
