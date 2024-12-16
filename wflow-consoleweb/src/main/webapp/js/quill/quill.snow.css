@@ -1,5 +1,5 @@
 /*!
- * Quill Editor v1.3.6
+ * Quill Editor v1.3.7
  * https://quilljs.com/
  * Copyright (c) 2014, Jason Chen
  * Copyright (c) 2013, salesforce.com
@@ -365,13 +365,13 @@
   font-family: Monaco, Courier New, monospace;
 }
 .ql-editor .ql-size-small {
-  font-size: 0.75em  !important;
+  font-size: 0.75em;
 }
 .ql-editor .ql-size-large {
-  font-size: 1.5em  !important;
+  font-size: 1.5em;
 }
 .ql-editor .ql-size-huge {
-  font-size: 2.5em  !important;
+  font-size: 2.5em;
 }
 .ql-editor .ql-direction-rtl {
   direction: rtl;
