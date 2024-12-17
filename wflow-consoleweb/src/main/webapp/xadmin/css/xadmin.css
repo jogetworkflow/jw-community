@@ -1124,4 +1124,8 @@ a.btn.disabled,fieldset:disabled a.btn {
 .btn.btn.btn-link, .btn.btn.btn-link.focus, .btn.btn.btn-link:focus, .btn.btn.btn-link:active {
     box-shadow:none !important;
 }
+/* Fix for analyzer-label located in #main in RTL */
+body.rtl div#page > div#main div#content > div.analyzer-label {
+    right: 16px;
+}
 
