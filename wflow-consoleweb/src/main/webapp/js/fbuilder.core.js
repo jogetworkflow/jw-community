@@ -1187,14 +1187,21 @@ FormBuilder = {
                         });
                     }
                     
-                    setTimeout(function(){
-                        jsPlumb.repaintEverything();
-                    }, 5);
+                    function repaintDiagram() {
+                        setTimeout(function(){
+                            jsPlumb.setSuspendDrawing(true);
+                            jsPlumb.recalculateOffsets($("#diagram-grid"));
+                            jsPlumb.setSuspendDrawing(false, true);
+                            jsPlumb.repaintEverything();
+                        }, 5);
+                    };
+                    
+                    repaintDiagram();
                     
                     $(".entity-container h5").off("click")
                     $(".entity-container h5").on("click", function(){
                         $(this).parent().toggleClass("showDetails");
-                        jsPlumb.repaintEverything();
+                        repaintDiagram();
                     });
                     
                     $(".entity-container .forms a").off("click");
@@ -1220,17 +1227,17 @@ FormBuilder = {
                     $('#diagram-tab a.expandAll').off("click");
                     $('#diagram-tab a.expandAll').on("click", function(){
                         $('#diagram-grid .entity-container').addClass("showDetails");
-                        jsPlumb.repaintEverything();
+                        repaintDiagram();
                     });
                     $('#diagram-tab a.collapseAll').off("click");
                     $('#diagram-tab a.collapseAll').on("click", function(){
                         $('#diagram-grid .entity-container').removeClass("showDetails");
-                        jsPlumb.repaintEverything();
+                        repaintDiagram();
                     });
                     
                     $(window).off("resize.erd");
                     $(window).on("resize.erd", function (event) {
-                        jsPlumb.repaintEverything();
+                        repaintDiagram();
                     });
                 } else {
                     $(view).find("#diagram-tab .usage_content, #desc-tab .usage_content").html('<p>'+get_cbuilder_msg('fbuilder.noData')+'</p>');
