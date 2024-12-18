@@ -175,10 +175,18 @@ header.navbar .dropdown-menu {
 }
 
 @media (max-width: 430px){
+    /*57px width of user-link */
+    /*25px width of padding-right of .container-fluid */
     header.navbar .dropdown-menu.notifications {
-        position: fixed;
-        left: 0px;
+        position: absolute;
+        right: calc(0vw - 57px - 25px) !important;
         min-width: 100vw !important;
+    }
+    /*57px width of user-link */
+    /*20px width of padding-left of .container-fluid */
+    body.rtl header.navbar .dropdown-menu.notifications {
+        left: calc(0vw - 57px - 20px) !important;
+        right: unset !important;
     }
 }
 
