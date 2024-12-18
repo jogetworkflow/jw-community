@@ -784,9 +784,9 @@
         ConnectionManager.post('${pageContext.request.contextPath}/web/console/setting/general/loginHash', callback, params);
     }
     $(document).ready(function() {
-        const savedMessage = localStorage.getItem('formSavedMessage');
+        const savedMessage = localStorage.getItem('showFormSavedMessage');
         if (savedMessage) {
-            $('<div class="toast"><i id="toast-icon" class="fas fa-check-circle"></i><div class="toast-body">'+ savedMessage +'</div><i id="close" class="fas fa-close"></i></div>').appendTo('div#main');
+            $('<div class="toast"><i id="toast-icon" class="fas fa-check-circle"></i><div class="toast-body"><fmt:message key="general.label.savedMessage"/></div><i id="close" class="fas fa-close"></i></div>').appendTo('div#main');
             $('.toast').css({
                 'opacity': '0', 
             });
@@ -850,14 +850,14 @@
                 }, 2000);
 
             }, 100); 
-            localStorage.removeItem('formSavedMessage');
+            localStorage.removeItem('showFormSavedMessage');
         }
 
         // Override the form submission to validate the SMTP email
         $("#generalSettings").submit(function(event) {
             event.preventDefault(); // Prevent default form submission
             validateSMTPEmail();
-            localStorage.setItem('formSavedMessage', '<fmt:message key="general.label.savedMessage"/>');
+            localStorage.setItem('showFormSavedMessage', 'true');
         });
 
         let elementsAfterFirstHeader = $('.main-body-content-subheader').eq(0).nextUntil('#header-container');

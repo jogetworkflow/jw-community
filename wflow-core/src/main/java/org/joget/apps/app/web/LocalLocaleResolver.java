@@ -154,6 +154,8 @@ public class LocalLocaleResolver extends SessionLocaleResolver implements Locale
                 session.setAttribute(TIMEZONE_OF_USER, getWorkflowUserManager().getCurrentUsername());
             }
         }
+        
+        this.setDefaultTimeZone(timezone);
             
         return timezone;
     }
@@ -390,5 +392,8 @@ public class LocalLocaleResolver extends SessionLocaleResolver implements Locale
         LocaleContext localeContext = resolveLocaleContext(request);
         LocaleContextHolder.setLocaleContext(localeContext, true);
         resolveLocale(request);
+        
+        //call to initilize it
+        LocaleContextHolder.getLocale();
     }
 }
