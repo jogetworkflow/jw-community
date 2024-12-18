@@ -22,8 +22,6 @@ public class SecurityUtil implements ApplicationContextAware {
 
     public final static String ENVELOPE = "%%%%";
     private static ApplicationContext appContext;
-    private static DataEncryption de;
-    private static NonceGenerator ng;
 
     /**
      * Utility method to retrieve the ApplicationContext of the system
@@ -43,36 +41,15 @@ public class SecurityUtil implements ApplicationContextAware {
     }
 
     /**
-     * Sets a data encryption implementation
-     * @param deImpl
-     */
-    public void setDataEncryption(DataEncryption deImpl) {
-        if (de == null) {
-            de = deImpl;
-        }
-    }
-
-    /**
      * Gets the data encryption implementation
      * @return 
      */
     public static DataEncryption getDataEncryption() {
-        if (de == null) {
-            try {
-                de = (DataEncryption) getApplicationContext().getBean("dataEncryption");
-            } catch (Exception e) {
-            }
-        }
-        return de;
-    }
-    
-    /**
-     * Sets a nonce generator implementation
-     * @param ngImpl 
-     */
-    public void setNonceGenerator(NonceGenerator ngImpl) {
-        if (ng == null) {
-            ng = ngImpl;
+        try {
+            DataEncryption de = (DataEncryption) getApplicationContext().getBean("dataEncryption");
+            return de;
+        } catch(Exception e) {
+            return null;
         }
     }
     
@@ -81,13 +58,12 @@ public class SecurityUtil implements ApplicationContextAware {
      * @return 
      */
     public static NonceGenerator getNonceGenerator() {
-        if (ng == null) {
-            try {
-                ng = (NonceGenerator) getApplicationContext().getBean("nonceGenerator");
-            } catch (Exception e) {
-            }
+        try {
+            NonceGenerator ng = (NonceGenerator) getApplicationContext().getBean("nonceGenerator");
+            return ng;
+        } catch(Exception e) {
+            return null;
         }
-        return ng;
     }
 
     /**
@@ -96,12 +72,12 @@ public class SecurityUtil implements ApplicationContextAware {
      * @return 
      */
     public static String encrypt(String rawContent) {
-
-        if (rawContent != null && getDataEncryption() != null) {
+        DataEncryption de = getDataEncryption();
+        if (rawContent != null && de != null) {
             try {
-                return ENVELOPE + getDataEncryption().encrypt(rawContent) + ENVELOPE;
+                return ENVELOPE + de.encrypt(rawContent) + ENVELOPE;
             } catch (Exception e) {
-                //Ignore
+                LogUtil.warn(SecurityUtil.class.getName(), "Cannot encrypt content: " + e.toString());
             }
         }
         return rawContent;
@@ -113,12 +89,13 @@ public class SecurityUtil implements ApplicationContextAware {
      * @return 
      */
     public static String decrypt(String protectedContent) {
-        if (protectedContent != null && protectedContent.startsWith(ENVELOPE) && protectedContent.endsWith(ENVELOPE) && getDataEncryption() != null) {
+        DataEncryption de = getDataEncryption();
+        if (protectedContent != null && protectedContent.startsWith(ENVELOPE) && protectedContent.endsWith(ENVELOPE) && de != null) {
             try {
                 String tempProtectedContent = cleanPrefixPostfix(protectedContent);
-                return getDataEncryption().decrypt(tempProtectedContent);
+                return de.decrypt(tempProtectedContent);
             } catch (Exception e) {
-                //Ignore
+                LogUtil.warn(SecurityUtil.class.getName(), "Cannot decrypt content: " + e.toString());
             }
         }
         return protectedContent;
@@ -131,10 +108,10 @@ public class SecurityUtil implements ApplicationContextAware {
      * @return 
      */
     public static String computeHash(String rawContent, String randomSalt) {
-
+        DataEncryption de = getDataEncryption();
         if (rawContent != null && !rawContent.isEmpty()) {
-            if (getDataEncryption() != null) {
-                return ENVELOPE + getDataEncryption().computeHash(rawContent, randomSalt) + ENVELOPE;
+            if (de != null) {
+                return ENVELOPE + de.computeHash(rawContent, randomSalt) + ENVELOPE;
             } else {
                 return StringUtil.md5Base16(rawContent);
             }
@@ -152,9 +129,10 @@ public class SecurityUtil implements ApplicationContextAware {
      */
     public static Boolean verifyHash(String hash, String randomSalt, String rawContent) {
         if (hash != null && !hash.isEmpty() && rawContent != null && !rawContent.isEmpty()) {
-            if (hash.startsWith(ENVELOPE) && hash.endsWith(ENVELOPE) && getDataEncryption() != null) {
+            DataEncryption de = getDataEncryption();
+            if (hash.startsWith(ENVELOPE) && hash.endsWith(ENVELOPE) && de != null) {
                 hash = cleanPrefixPostfix(hash);
-                return getDataEncryption().verifyHash(hash, randomSalt, rawContent);
+                return de.verifyHash(hash, randomSalt, rawContent);
             } else {
                 return hash.equals(StringUtil.md5Base16(rawContent));
             }
@@ -167,8 +145,9 @@ public class SecurityUtil implements ApplicationContextAware {
      * @return 
      */
     public static String generateRandomSalt() {
-        if (getDataEncryption() != null) {
-            return getDataEncryption().generateRandomSalt();
+        DataEncryption de = getDataEncryption();
+        if (de != null) {
+            return de.generateRandomSalt();
         }
         return "";
     }
