@@ -2577,3 +2577,6 @@ body.right-panel-mode-window #right-panel-window-resize  {
     margin-top: 150px;
     position: fixed;
 }
+#cbuilder.tox-fullscreen > #quick-nav-bar{
+    display: none;
+}
