@@ -1591,6 +1591,19 @@ body .form-container [class*=form-cell-value]{
     position: relative;
     z-index: 20;
 }
+body.rtl .card-header .header-title {
+    text-align: right !important;
+}
+body.rtl .card-header .header-tag {
+    text-align: left !important;
+    padding-left: 15px !important; 
+}
+body.rtl .InformationTileComponent .mb-1 small {
+    float: left !important;
+}
+body.rtl .InformationTileComponent .mb-1 {
+    text-align: right !important;
+}
 
 /* quick edit & analyzer */
 .quickEdit, #form-canvas .quickEdit{

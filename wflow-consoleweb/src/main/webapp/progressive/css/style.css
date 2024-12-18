@@ -848,10 +848,13 @@ body.rtl #sidebar li ul>li>a > span:first-child{
 }
 .rtl #sidebar li>a.dropdown:after,
 .rtl #sidebar li>a.dropdown:before {
-    left: 0;
+    left: 15px;
     right: auto !important;
 }
-
+.rtl.horizontal_menu #sidebar  li>a.dropdown:after,
+.rtl.horizontal_menu  #sidebar li>a.dropdown:before {
+    left: 0;
+}
 #sidebar li.active>a.dropdown:after,
 #sidebar li.active>a.dropdown:before,
 #sidebar li.toggled>a.dropdown:after,
@@ -1882,3 +1885,9 @@ body:not(#login) #content > main > .datalist-body-content:not(.quickEdit) {
     }
 }
 /*Priority Menu*/ 
+body.rtl .card-header .header-tag {
+    padding-left: 15px !important; 
+}
+body.rtl .InformationTileComponent small {
+    float:left !important;
+}

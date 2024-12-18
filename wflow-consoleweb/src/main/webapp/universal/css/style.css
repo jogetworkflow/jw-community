@@ -853,8 +853,12 @@ body.rtl #sidebar li ul>li>a > span:first-child{
 }
 .rtl #sidebar li>a.dropdown:after,
 .rtl #sidebar li>a.dropdown:before {
-    left: 0px;
+    left: 15px;
     right: auto !important;
+}
+.rtl.horizontal_menu #sidebar  li>a.dropdown:after,
+.rtl.horizontal_menu  #sidebar li>a.dropdown:before {
+    left: 0;
 }
 
 #sidebar li.active>a.dropdown:after,
@@ -1696,3 +1700,13 @@ main .grid-stack-item-header-refresh {
     }
 }
 /*Priority Menu*/  
+body.rtl .card-header .header-title {
+    text-align: right !important;
+}
+body.rtl .card-header .header-tag {
+    text-align: left !important;
+    padding-left: 15px !important; 
+}
+body.rtl .InformationTileComponent small {
+    float: left !important;
+}
