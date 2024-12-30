@@ -313,9 +313,17 @@ public class AjaxUniversalTheme extends UniversalTheme implements SupportBuilder
         return "#FFFFFF";
     }
     
+    protected String generateColorDesign() {       
+        return "";
+    }
+
     @Override
     protected String generateLessCss() {
         String css = ":root{";
+
+        //Get the primary color deigns to maintain the same feel
+        css += generateColorDesign();
+        
         if (!getPropertyString("dx8colorScheme").isEmpty()) {
             String[] colors = getPropertyString("dx8colorScheme").split(";");
             for (int i=0; i < colors.length; i++) {
