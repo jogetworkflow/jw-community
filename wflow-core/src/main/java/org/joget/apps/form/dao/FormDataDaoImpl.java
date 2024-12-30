@@ -57,7 +57,7 @@ import org.joget.apps.form.model.FormColumnCache;
 import org.joget.apps.form.model.FormContainer;
 import org.joget.apps.form.service.CustomFormDataTableUtil;
 import org.joget.apps.form.service.FormService;
-import org.joget.commons.ignite.IgniteCacheManager;
+import org.joget.commons.cache.InMemoryCacheManager;
 import org.joget.commons.util.DynamicDataSourceManager;
 import static org.joget.commons.util.DynamicDataSourceManager.getProperties;
 import org.joget.commons.util.HostManager;
@@ -335,7 +335,8 @@ public class FormDataDaoImpl implements FormDataDao {
                 }
             }
             Query q = session.createQuery(processQuery(query));
-            IgniteCacheManager.setCacheable(q, tableName);
+            InMemoryCacheManager cacheManager = InMemoryCacheManager.getInMemoryCacheManager();
+            cacheManager.setCacheable(q, tableName);
 
             int s = (start == null) ? 0 : start;
             q.setFirstResult(s);
@@ -409,7 +410,8 @@ public class FormDataDaoImpl implements FormDataDao {
         try {
             String newCondition = StringUtil.replaceOrdinalParameters(condition, params);
             Query q = session.createQuery(processQuery("SELECT COUNT(*) FROM " + tableName + " e " + newCondition));
-            IgniteCacheManager.setCacheable(q, tableName);
+            InMemoryCacheManager cacheManager = InMemoryCacheManager.getInMemoryCacheManager();
+            cacheManager.setCacheable(q, tableName);
 
             if (params != null) {
                 int i = 1;
@@ -471,7 +473,8 @@ public class FormDataDaoImpl implements FormDataDao {
             String query = "SELECT e.id FROM " + tableName + " e WHERE " + FormUtil.PROPERTY_CUSTOM_PROPERTIES + "." + fieldName + " = ?1 order by e.dateCreated";
 
             Query q = session.createQuery(processQuery(query));
-            IgniteCacheManager.setCacheable(q, tableName);
+            InMemoryCacheManager cacheManager = InMemoryCacheManager.getInMemoryCacheManager();
+            cacheManager.setCacheable(q, tableName);
 
             q.setFirstResult(0);
             q.setMaxResults(1);
@@ -1021,10 +1024,13 @@ public class FormDataDaoImpl implements FormDataDao {
         Configuration configuration = new Configuration();
         configuration.setProperty("show_sql", "false");
         configuration.setProperty("cglib.use_reflection_optimizer", "true");
-        configuration.setProperty(Environment.USE_QUERY_CACHE, "true");
-        configuration.setProperty(Environment.USE_SECOND_LEVEL_CACHE, "true");
-        configuration.setProperty(Environment.CACHE_REGION_FACTORY, "org.joget.commons.ignite.IgniteHibernateRegionFactory");
-        configuration.setProperty("org.apache.ignite.hibernate.ignite_instance_name", "ignite-grid");
+        if (InMemoryCacheManager.isAvailable()) {
+            InMemoryCacheManager inMemoryCacheManager = InMemoryCacheManager.getInMemoryCacheManager();
+            Properties cacheManagerProperties = inMemoryCacheManager.getHibernateProperties();
+            cacheManagerProperties.forEach((k, v) -> { 
+                configuration.setProperty(k.toString(), v.toString());
+            });
+        }
         configuration.setProperty(Environment.LOG_SLOW_QUERY, "500");
         
         // set datasource
@@ -1646,7 +1652,8 @@ public class FormDataDaoImpl implements FormDataDao {
                 }
             }
             Query q = session.createQuery(processQuery(query));
-            IgniteCacheManager.setCacheable(q, tableName);
+            InMemoryCacheManager cacheManager = InMemoryCacheManager.getInMemoryCacheManager();
+            cacheManager.setCacheable(q, tableName);
 
             int s = (start == null) ? 0 : start;
             q.setFirstResult(s);
@@ -1766,7 +1773,8 @@ public class FormDataDaoImpl implements FormDataDao {
             String query = "SELECT COUNT("+selectField+") FROM " + tableName + " e " + joinQuery + conditionQuery + groupByQuery;
             
             Query q = session.createQuery(processQuery(query));
-            IgniteCacheManager.setCacheable(q, tableName);
+            InMemoryCacheManager cacheManager = InMemoryCacheManager.getInMemoryCacheManager();
+            cacheManager.setCacheable(q, tableName);
 
             int i = 1;
             if (params != null) {

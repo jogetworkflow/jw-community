@@ -17,7 +17,7 @@
     </bean>
     
     <!-- DynamicDataSourceManager will have its property set via @Autowired -->
-    <bean id="staticInitOfDynamicDataSourceManager" class="org.joget.commons.util.DynamicDataSourceManager" depends-on="igniteCacheManager">
+    <bean id="staticInitOfDynamicDataSourceManager" class="org.joget.commons.util.DynamicDataSourceManager" depends-on="securityUtil">
     	<constructor-arg ref="profilePropertyManager"/>
         <property name="cacheManager" ref="cacheManager"/>
     </bean>
@@ -72,7 +72,6 @@
         <property name="maxWait" value="10000" />
         <property name="datasourceName" value="workflow" />
         <property name="jdbcInterceptors" value="org.apache.tomcat.jdbc.pool.interceptor.ConnectionState" />
-        <property name="igniteCacheManager" ref="igniteCacheManager" />
     </bean>
     <!--
     <bean id="setupDataSource" class="org.springframework.jndi.JndiObjectFactoryBean">
@@ -84,7 +83,7 @@
     -->
     
     <!-- Hibernate SessionFactory -->
-    <bean id="setupSessionFactory" class="org.springframework.orm.hibernate5.LocalSessionFactoryBean" autowire-candidate="false" depends-on="staticInitOfDynamicDataSourceManager">
+    <bean id="setupSessionFactory" class="org.joget.commons.cache.InMemoryCacheSessionFactoryBean" autowire-candidate="false" depends-on="staticInitOfDynamicDataSourceManager,securityUtil">
         <property name="dataSource" ref="setupDataSource"/>
         <property name="mappingResources">
             <list>
@@ -192,5 +191,11 @@
     <bean id="fileManager" class="org.joget.commons.util.FileManager" depends-on="setupManager">
     </bean>
 
-    <import resource="classpath:igniteCacheApplicationContext.xml" />
+    <bean id="securityUtil" class="org.joget.commons.util.SecurityUtil">
+    </bean>
+
+    <bean id="inMemoryCacheManager" class="org.joget.commons.cache.NoInMemoryCacheManager">
+        <qualifier value="default"/>
+    </bean>
+    
 </beans>

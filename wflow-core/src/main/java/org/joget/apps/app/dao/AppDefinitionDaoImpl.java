@@ -37,7 +37,7 @@ import org.joget.apps.app.model.UserviewDefinition;
 import org.joget.apps.app.service.AppDevUtil;
 import org.joget.apps.app.service.AppService;
 import org.joget.apps.app.service.AppUtil;
-import org.joget.commons.ignite.IgniteCacheManager;
+import org.joget.commons.cache.InMemoryCacheManager;
 import org.joget.commons.util.LogUtil;
 import org.joget.commons.util.SetupManager;
 import org.joget.plugin.base.PluginManager;
@@ -114,7 +114,8 @@ public class AppDefinitionDaoImpl extends AbstractVersionedObjectDao<AppDefiniti
             }
             
             // clear L2 cache
-            IgniteCacheManager.clearAll();
+            InMemoryCacheManager cacheManager = InMemoryCacheManager.getInMemoryCacheManager();
+            cacheManager.clearAll();
         }
     }
 

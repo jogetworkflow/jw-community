@@ -13,6 +13,7 @@ import org.hibernate.boot.registry.StandardServiceRegistryBuilder;
 import org.hibernate.cfg.Configuration;
 import org.hibernate.cfg.Environment;
 import org.hibernate.service.ServiceRegistry;
+import org.joget.commons.cache.InMemoryCacheManager;
 import org.joget.commons.spring.model.ResourceBundleMessage;
 import org.joget.commons.spring.model.ResourceBundleMessageDao;
 import static org.joget.commons.util.DynamicDataSourceManager.getProperties;
@@ -137,12 +138,12 @@ public class TestCache {
         Configuration configuration = new Configuration();
         configuration.setProperty("show_sql", "false");
         configuration.setProperty("cglib.use_reflection_optimizer", "true");
-        configuration.setProperty(Environment.USE_QUERY_CACHE, "true");
-        configuration.setProperty(Environment.USE_SECOND_LEVEL_CACHE, "true");
-        configuration.setProperty(Environment.CACHE_REGION_FACTORY, "org.joget.commons.ignite.IgniteHibernateRegionFactory");
-        configuration.setProperty("org.apache.ignite.hibernate.ignite_instance_name", "ignite-grid");
         configuration.setProperty(Environment.LOG_SLOW_QUERY, "500");
-        
+        InMemoryCacheManager inMemoryCacheManager = InMemoryCacheManager.getInMemoryCacheManager();
+        Properties cacheManagerProperties = inMemoryCacheManager.getHibernateProperties();
+        cacheManagerProperties.forEach((k, v) -> { 
+            configuration.setProperty(k.toString(), v.toString());
+        });
         // set datasource
         DataSource dataSource = (DataSource) SecurityUtil.getApplicationContext().getBean("setupDataSource");
         configuration.getProperties().put(Environment.JAKARTA_JTA_DATASOURCE, dataSource);

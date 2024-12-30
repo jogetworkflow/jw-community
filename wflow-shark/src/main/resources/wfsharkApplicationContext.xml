@@ -29,7 +29,7 @@
     </bean>
 
     <!-- Hibernate SessionFactory -->
-    <bean id="workflowSessionFactory" class="org.springframework.orm.hibernate5.LocalSessionFactoryBean">
+    <bean id="workflowSessionFactory" class="org.joget.commons.cache.InMemoryCacheSessionFactoryBean">
         <qualifier value="workflow"/>
         <property name="dataSource" ref="setupDataSource"/>
         <property name="mappingResources">
@@ -72,7 +72,7 @@
     </bean> 
     
     <!-- Hibernate SessionFactory added redundantly to create index & schema -->
-    <bean id="sharkWorkflowUpdateSessionFactory" class="org.springframework.orm.hibernate4.LocalSessionFactoryBean">
+    <bean id="sharkWorkflowUpdateSessionFactory" class="org.joget.commons.cache.InMemoryCacheSessionFactoryBean">
         <qualifier value="workflow"/>
         <property name="dataSource" ref="setupDataSource"/>
         <property name="mappingResources">
@@ -95,7 +95,7 @@
         </property>
     </bean>
     
-    <bean id="sharkIdSessionFactory" class="org.springframework.orm.hibernate4.LocalSessionFactoryBean">
+    <bean id="sharkIdSessionFactory" class="org.joget.commons.cache.InMemoryCacheSessionFactoryBean">
         <qualifier value="sharkId"/>
         <property name="dataSource" ref="setupDataSource"/>
         <property name="mappingResources">
