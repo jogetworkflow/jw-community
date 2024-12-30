@@ -1,16 +1,6 @@
 <%@ include file="/WEB-INF/jsp/includes/taglibs.jsp" %>
-<%@ page import="org.joget.workflow.util.WorkflowUtil"%>
 
-<%
-    String theme = WorkflowUtil.getSystemSetupValue("systemTheme");
-    pageContext.setAttribute("theme", theme);
-%>
-
-<c:if test="${not empty theme and theme ne 'classic'}">
-    <link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/css/builderTheme.css?build=<fmt:message key="build.number"/>" />
-</c:if>
-
-<commons:popupHeader bodyCssClass=" builder-popup no-header" builderTheme="${theme}"/>
+<commons:popupHeader bodyCssClass=" builder-popup no-header" builderTheme="true"/>
 <div id="main-body-content">
     <div id="appVersionDiv">   
         <ui:jsontable url="${pageContext.request.contextPath}/web/json/console/app/${appId}/version/list?${pageContext.request.queryString}"
@@ -91,9 +81,26 @@
                 if (version != '' && confirm('<ui:msgEscJS key="console.app.publish.label.confirm"/>')) {
                     showLoading();
                     var callback = {
-                        success : function() {
+                        successd : function() {
                             parent.$.unblockUI();
                             parent.AppBuilder.updatePublishButton(version[0], false);
+                        },
+                        success : function(data) {
+                            const CustomBuilder = parent.CustomBuilder;
+                            const get_cbuilder_msg = parent.get_cbuilder_msg;
+                            try {
+                                data = JSON.parse(data);
+                            } catch (e) {
+                                CustomBuilder.showMessage(get_cbuilder_msg("abuilder.invalidServerResponse"), "danger", false)
+                                console.error("Unable to parse data as JSON");
+                                return;
+                            }
+                            parent.$.unblockUI();
+                            if (data.status) {
+                                parent.AppBuilder.updatePublishButton(version[0], false);
+                            } else {
+                                CustomBuilder.showMessage(get_cbuilder_msg("abuilder.appLimitExceeded"), "danger", false)
+                            }
                         }
                     }
                     ConnectionManager.post('${pageContext.request.contextPath}/web/console/app/<c:out value="${appId}"/>/'+ version +'/publish', callback, '');

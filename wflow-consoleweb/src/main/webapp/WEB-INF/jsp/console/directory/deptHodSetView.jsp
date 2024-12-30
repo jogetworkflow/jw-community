@@ -56,6 +56,11 @@
 
     <script type="text/javascript">
         $(document).ready(function(){
+            $('div#JsonUserDataTable_userList-buttons > button').eq(0).addClass("console-primary");
+            $('div#JsonUserDataTable_userList-buttons > button').eq(1).addClass("console-danger");
+
+            $('div#main-body-content-filter').appendTo('div#JsonUserDataTable_userList-search');
+
             $('#JsonUserDataTable_searchTerm').hide();
         });
 

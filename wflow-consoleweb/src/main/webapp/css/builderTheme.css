@@ -1,4 +1,4 @@
-body[builder-theme='light']{
+body[builder-theme='light'], body[system-theme='light']{
     --theme-primary-color-1: #ffffff;
     --theme-primary-color-2: #F0F2F5;
     --theme-primary-color-3: #F9F9F9;
@@ -17,9 +17,10 @@ body[builder-theme='light']{
     --theme-active-color-2: #1677ff;
     --theme-link-color-1: #6c757d;
     --theme-link-color-2: #AAAAAA;
+    --theme-danger-color: #dc3545;
 }
 
-body[builder-theme='dark']{
+body[builder-theme='dark'], body[system-theme='dark']{
     --theme-primary-color-1: #141414;
     --theme-primary-color-2: #0F1014;
     --theme-primary-color-3: #1d1d1d;
@@ -38,7 +39,11 @@ body[builder-theme='dark']{
     --theme-active-color-2: #009ef7;
     --theme-link-color-1: #6c757d;
     --theme-link-color-2: #AAAAAA;
-}   
+    --theme-danger-color: #dc3545;
+}  
+body {
+    font-family: "Inter", sans-serif !important;
+}
 /* Dark Theme CSS */
 body[builder-theme]#cbuilder .nav-tabs .nav-link.active, #cbuilder .nav-tabs .nav-item.show .nav-link {
     border-bottom: 2px solid #1677ff;
@@ -70,7 +75,7 @@ body[builder-theme] .guider {
     box-shadow: 0 6px 16px 0 rgba(0, 0, 0, 0.08), 0 3px 6px -4px rgba(0, 0, 0, 0.12), 0 9px 28px 8px rgba(0, 0, 0, 0.05);
     border-radius: 8px;
     border: 0;
-    font-family: -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,"Noto Sans",sans-serif,"Apple Color Emoji","Segoe UI Emoji","Segoe UI Symbol","Noto Color Emoji";
+    font-family: "Inter", sans-serif !important;
 }
 body[builder-theme]:after{
     opacity: 1; 
@@ -111,6 +116,9 @@ body[builder-theme] .builder-type ul li .builder-actions a{
     font-size: 20px;
     color: var(--theme-primary-color-4);
 }
+body[builder-theme] .builder-type ul li .builder-actions a.delete {
+    color: var(--theme-danger-color);
+}
 body[builder-theme] #builder-menu-search .clear-backspace {
     top: 12px;
     right: 8px;
@@ -124,6 +132,7 @@ body[builder-theme]#cbuilder #bottom-panel {
 body[builder-theme] .builder-type ul li .builder-actions a.launch {
     visibility: visible;
     font-size: 22px;
+    margin-right: 10px;
 }
 body[builder-theme] #top-panel-main{
     padding-left: calc(var(--builder-logo-width) + 15px);
@@ -195,9 +204,6 @@ body[builder-theme] .builder-type ul li.item:hover {
 body[builder-theme].viewport-enabled {
     background: var(--theme-primary-color-2);
 }
-body[builder-theme].quick-nav-shown {
-    padding-left: 40px;
-}
 body[builder-theme]#cbuilder #left-panel,
 body[builder-theme]#cbuilder #right-panel {
     box-shadow: none;
@@ -218,6 +224,9 @@ body[builder-theme].builder-title {
     font-weight: 600;
 }
 body[builder-theme]#cbuilder.quick-nav-shown #bottom-panel {
+    left: calc(var(--builder-left-panel-width) + var(--builder-canvas-margin));
+}
+body[builder-theme]#cbuilder.quick-nav-shown.quick-nav-position-left #bottom-panel {
     left: calc(var(--builder-left-panel-width) + var(--builder-canvas-margin) + 40px);
 }
 body[builder-theme] .search-container .form-control .element-properties .search .form-control,
@@ -411,6 +420,10 @@ body[builder-theme] .element-properties-footer-actions {
     background: var(--theme-primary-color-1);
 }
 body[builder-theme] #quick-nav-bar {
+    background: var(--theme-primary-color-1);
+    border-left: 1px solid var(--theme-border-color-1);
+}
+body[builder-theme].quick-nav-position-left #quick-nav-bar {
     background: var(--theme-primary-color-1);
     border-right: 1px solid var(--theme-border-color-1);
 }
@@ -653,7 +666,7 @@ body[builder-theme] #treeViewerView .builder-view-body, body[builder-theme] #xra
     background: var(--theme-primary-color-1);
 }
 body[builder-theme] .tree ol li label {
-    font-size: 14px;
+    font-size: 12px;
     padding-left: 35px;
 }
 body[builder-theme] .tree ol li:hover {
@@ -1494,41 +1507,56 @@ body[builder-theme] .flexigrid div.hDiv th div, body[builder-theme].flexigrid di
 body[builder-theme] .flexigrid div.bDiv tr:hover td, 
 body[builder-theme] .flexigrid div.bDiv tr:hover td.sorted, 
 body[builder-theme] .flexigrid div.bDiv tr.trOver td.sorted, 
-body[builder-theme] .flexigrid div.bDiv tr.trOver td {
+body[builder-theme] .flexigrid div.bDiv tr.trOver td,
+body[system-theme] .flexigrid div.bDiv tr:hover td, 
+body[system-theme] .flexigrid div.bDiv tr:hover td.sorted, 
+body[system-theme] .flexigrid div.bDiv tr.trOver td.sorted, 
+body[system-theme] .flexigrid div.bDiv tr.trOver td {
     border-bottom: 1px solid transparent !important;
     border-left: 0px;
 }
-body[builder-theme] .flexigrid div.hDiv th{
+body[builder-theme] .flexigrid div.hDiv th,
+body[system-theme] .flexigrid div.hDiv th{
     border-bottom: 1px solid var(--theme-border-color-1);
 }
 body[builder-theme] .flexigrid div.hDiv th,
-body[builder-theme] .flexigrid div.bDiv td {
+body[builder-theme] .flexigrid div.bDiv td,
+body[system-theme] .flexigrid div.hDiv th,
+body[system-theme] .flexigrid div.bDiv td  {
     border-right: 1px solid var(--theme-border-color-1);
     border-left: 0px;
 }
 body .flexigrid div.bDiv td div{
     font-size: 13px;
 }
-body[builder-theme] .flexigrid div.hDiv {
+body[builder-theme] .flexigrid div.hDiv,
+body[system-theme] .flexigrid div.hDiv {
     border: 1px solid var(--theme-border-color-1);
     border-bottom: 0px;
 }
-body[builder-theme] .flexigrid div.pDiv {
+body[builder-theme] .flexigrid div.pDiv,
+body[system-theme] .flexigrid div.pDiv {
     border: 1px solid var(--theme-border-color-1);
 }
-body[builder-theme] .flexigrid div.bDiv table {
+body[builder-theme] .flexigrid div.bDiv table,
+body[system-theme] .flexigrid div.bDiv table {
     border-bottom: 0px solid #ccc;
 }
-body[builder-theme] .flexigrid div.bDiv tbody tr:last-child td, body[builder-theme] .flexigrid div.bDiv tbody tr:last-child td.sorted {
+body[builder-theme] .flexigrid div.bDiv tbody tr:last-child td, 
+body[builder-theme] .flexigrid div.bDiv tbody tr:last-child td.sorted,
+body[system-theme] .flexigrid div.bDiv tbody tr:last-child td, 
+body[system-theme] .flexigrid div.bDiv tbody tr:last-child td.sorted {
     border-bottom: 1px solid var(--theme-border-color-1) !important;
 }
-body[builder-theme] .flexigrid tr td.sorted {
+body[builder-theme] .flexigrid tr td.sorted,
+body[system-theme] .flexigrid tr td.sorted {
     border-bottom: 1px solid var(--theme-border-color-1);
 }
 body[builder-theme] .flexigrid {
-    font-family: -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,"Noto Sans",sans-serif,"Apple Color Emoji","Segoe UI Emoji","Segoe UI Symbol","Noto Color Emoji";
+    font-family: "Inter", sans-serif !important;
 }
-body[builder-theme] .flexigrid div.hDiv th > div {
+body[builder-theme] .flexigrid div.hDiv th > div, 
+body[system-theme] .flexigrid div.hDiv th > div {
     font-weight: 600;
     text-transform: unset;
     font-size: 14px;
@@ -1536,33 +1564,43 @@ body[builder-theme] .flexigrid div.hDiv th > div {
     padding: 11px !important;
 }
 body[builder-theme] .flexigrid div.hDiv th[axis="col0"] > div:has(input[type="checkbox"]),
-body[builder-theme] .flexigrid div.hDiv th[axis="col0"] > div:has(input[type="radio"]){
+body[builder-theme] .flexigrid div.hDiv th[axis="col0"] > div:has(input[type="radio"]),
+body[system-theme] .flexigrid div.hDiv th[axis="col0"] > div:has(input[type="checkbox"]),
+body[system-theme] .flexigrid div.hDiv th[axis="col0"] > div:has(input[type="radio"]){
     padding: 14px 8px !important;
 }
-body[builder-theme] .flexigrid div.bDiv{
+body[builder-theme] .flexigrid div.bDiv,
+body[system-theme] .flexigrid div.bDiv{
     border: 1px solid var(--theme-border-color-1);
     border-bottom: 0px;
     border-top: 0px;
 }
 body[builder-theme] .flexigrid tr.erow td.sorted,
-body[builder-theme] .flexigrid tr.erow td {
+body[builder-theme] .flexigrid tr.erow td,
+body[system-theme] .flexigrid tr.erow td.sorted,
+body[system-theme] .flexigrid tr.erow td {
     border-bottom: 1px solid transparent !important;
 }
-body[builder-theme] .flexigrid tr .selectionTd{
+body[builder-theme] .flexigrid tr .selectionTd,
+body[system-theme] .flexigrid tr .selectionTd{
     padding: 14px 8px;
 }
 body[builder-theme] .flexigrid input[type=checkbox]:before,
-body[builder-theme] .flexigrid input[type=radio]:before{
+body[builder-theme] .flexigrid input[type=radio]:before,
+body[system-theme] .flexigrid input[type=checkbox]:before,
+body[system-theme] .flexigrid input[type=radio]:before{
     width: 13px;
     height: 13px;
 }
-body[builder-theme] .flexigrid input[type=checkbox]:checked::after{
+body[builder-theme] .flexigrid input[type=checkbox]:checked::after,
+body[system-theme] .flexigrid input[type=checkbox]:checked::after{
     width: 3px;
     height: 8px;
     margin-top: -15px;
     margin-left: 5px;
 }
-body[builder-theme] .flexigrid input[type=radio]:checked::after {
+body[builder-theme] .flexigrid input[type=radio]:checked::after,
+body[system-theme] .flexigrid input[type=radio]:checked::after {
     width: 0px;
     height: 0px;
     border: 4px solid #fff;
@@ -1576,7 +1614,13 @@ body[builder-theme] .flexigrid div.bDiv tr.trSelected:hover td.sorted,
 body[builder-theme] .flexigrid div.bDiv tr.trOver.trSelected td.sorted, 
 body[builder-theme] .flexigrid div.bDiv tr.trOver.trSelected td, 
 body[builder-theme] .flexigrid tr.trSelected td.sorted, 
-body[builder-theme] .flexigrid tr.trSelected td {
+body[builder-theme] .flexigrid tr.trSelected td,
+body[system-theme] .flexigrid div.bDiv tr.trSelected:hover td, 
+body[system-theme] .flexigrid div.bDiv tr.trSelected:hover td.sorted, 
+body[system-theme] .flexigrid div.bDiv tr.trOver.trSelected td.sorted, 
+body[system-theme] .flexigrid div.bDiv tr.trOver.trSelected td, 
+body[system-theme] .flexigrid tr.trSelected td.sorted, 
+body[system-theme] .flexigrid tr.trSelected td {
     border-left: 0px !important;
     border-bottom: 0px;
 }
@@ -1585,7 +1629,13 @@ body[builder-theme] .flexigrid div.bDiv tr.erow.trSelected:hover td.sorted,
 body[builder-theme] .flexigrid div.bDiv tr.erow.trOver.trSelected td.sorted, 
 body[builder-theme] .flexigrid div.bDiv tr.erow.trOver.trSelected td, 
 body[builder-theme] .flexigrid tr.erow.trSelected td.sorted, 
-body[builder-theme] .flexigrid tr.erow.trSelected td {
+body[builder-theme] .flexigrid tr.erow.trSelected td,
+body[system-theme] .flexigrid div.bDiv tr.erow.trSelected:hover td, 
+body[system-theme] .flexigrid div.bDiv tr.erow.trSelected:hover td.sorted,
+body[system-theme] .flexigrid div.bDiv tr.erow.trOver.trSelected td.sorted, 
+body[system-theme] .flexigrid div.bDiv tr.erow.trOver.trSelected td, 
+body[system-theme] .flexigrid tr.erow.trSelected td.sorted, 
+body[system-theme] .flexigrid tr.erow.trSelected td {
     border-left: 0px !important;
     border-bottom: 0px;
 }
@@ -1594,10 +1644,17 @@ body[builder-theme] .flexigrid div.bDiv tr.trSelected:hover td.sorted,
 body[builder-theme] .flexigrid div.bDiv tr.trOver.trSelected td.sorted, 
 body[builder-theme] .flexigrid div.bDiv tr.trOver.trSelected td, 
 body[builder-theme] .flexigrid tr.trSelected td.sorted, 
-body[builder-theme] .flexigrid tr.trSelected td {
+body[builder-theme] .flexigrid tr.trSelected td,
+body[system-theme] .flexigrid div.bDiv tr.trSelected:hover td, 
+body[system-theme] .flexigrid div.bDiv tr.trSelected:hover td.sorted, 
+body[system-theme] .flexigrid div.bDiv tr.trOver.trSelected td.sorted, 
+body[system-theme] .flexigrid div.bDiv tr.trOver.trSelected td, 
+body[system-theme] .flexigrid tr.trSelected td.sorted, 
+body[system-theme] .flexigrid tr.trSelected td {
     border-bottom: 1px solid var(--theme-border-color-1) !important;
 }
-body[builder-theme] .flexigrid div.pDiv div.pDiv2 {
+body[builder-theme] .flexigrid div.pDiv div.pDiv2,
+body[system-theme] .flexigrid div.pDiv div.pDiv2 {
     margin: 8px;
     margin-left: 8px;
     width: 100%;
@@ -1633,18 +1690,25 @@ body[builder-theme] .btn i + span{
     margin-right: 5px;
 }
 body[builder-theme] .flexigrid div.pDiv div.pButton:hover, 
-body[builder-theme] .flexigrid div.pDiv div.pButton.pBtnOver {
+body[builder-theme] .flexigrid div.pDiv div.pButton.pBtnOver,
+body[system-theme] .flexigrid div.pDiv div.pButton:hover, 
+body[system-theme] .flexigrid div.pDiv div.pButton.pBtnOver {
     width: 22px;
     height: 22px;
     cursor: pointer;
     color: var(--theme-active-color-2);
     border: 0px;
 }
-body[builder-theme] .flexigrid div.pDiv .pPageStat, body[builder-theme] .flexigrid div.pDiv .pcontrol {
+body[builder-theme] .flexigrid div.pDiv .pPageStat, 
+body[builder-theme] .flexigrid div.pDiv .pcontrol,
+body[system-theme] .flexigrid div.pDiv .pPageStat, 
+body[system-theme] .flexigrid div.pDiv .pcontrol {
     top: 2px;
 }
 body[builder-theme] .flexigrid div.pDiv div.pButton:hover span, 
-body[builder-theme] .flexigrid div.pDiv div.pButton.pBtnOver span {
+body[builder-theme] .flexigrid div.pDiv div.pButton.pBtnOver span,
+body[system-theme] .flexigrid div.pDiv div.pButton:hover span, 
+body[system-theme] .flexigrid div.pDiv div.pButton.pBtnOver span  {
     width: 20px;
     height: 20px;
     border-top: 0px;
@@ -1715,12 +1779,13 @@ body[builder-theme] button[onclick*="deleteVersion"]:before{
     border-color: #ff4d4f;
     color: #fff;
 }
-body[builder-theme] .flexigrid div.nBtn {
+body[builder-theme] .flexigrid div.nBtn,
+body[system-theme] .flexigrid div.nBtn {
     height: 42px;
     border-bottom: 1px solid var(--theme-border-color-1);
 }
 body[builder-theme].popupBody{
-    font-family: -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,"Noto Sans",sans-serif,"Apple Color Emoji","Segoe UI Emoji","Segoe UI Symbol","Noto Color Emoji";
+    font-family: "Inter", sans-serif !important;
 }
 body[builder-theme] .ui-dialog .ui-dialog-content {
     padding: 0px !important;
@@ -1773,7 +1838,8 @@ body[builder-theme].popupBody #main-body-content-subheader {
 body[builder-theme].popupBody .form-row {
     margin-left: 10px;
 }
-body[builder-theme] .flexigrid div.pDiv input{
+body[builder-theme] .flexigrid div.pDiv input,
+body[system-theme] .flexigrid div.pDiv input{
     margin-top: 3px;
 }
 body[builder-theme].popupBody .form-buttons input[type='button'],
@@ -1834,6 +1900,11 @@ body[builder-theme] #quick-nav-bar.active #closeQuickNav {
     opacity: 0.4;
 }
 body[builder-theme] #quick-nav-bar.active #builder-menu ul li.active ul {
+    box-shadow: -6px 0 16px 0 rgba(0, 0, 0, 0.08), -3px 0 6px -4px rgba(0, 0, 0, 0.12), -9px 0 28px 8px rgba(0, 0, 0, 0.05);
+    -webkit-clip-path: inset(-5px 0px -5px -50px);
+    clip-path: inset(-5px 0px -5px -50px);
+}
+body[builder-theme].quick-nav-position-left #quick-nav-bar.active #builder-menu ul li.active ul {
     box-shadow: 6px 0 16px 0 rgba(0, 0, 0, 0.08), 3px 0 6px -4px rgba(0, 0, 0, 0.12), 9px 0 28px 8px rgba(0, 0, 0, 0.05);
     -webkit-clip-path: inset(-5px -50px -5px 0px);
     clip-path: inset(-5px -50px -5px 0px);
@@ -2764,24 +2835,32 @@ body[builder-theme='dark'] .property_editor_app_resources .dropzone {
     background: #212e48;
     color: #fff;
 }
-body[builder-theme='dark'] .flexigrid div.hDiv th > div {
+body[builder-theme='dark'] .flexigrid div.hDiv th > div,
+body[system-theme='dark'] .flexigrid div.hDiv th > div {
     background-color: var(--theme-primary-color-3) !important;
     color: var(--theme-label-color-1);
 }
-body[builder-theme='dark'] .flexigrid div.bDiv {
+body[builder-theme='dark'] .flexigrid div.bDiv,
+body[system-theme='dark'] .flexigrid div.bDiv {
     background: var(--theme-primary-color-2);
 }
-body[builder-theme='dark'] .flexigrid div.bDiv td div {
+body[builder-theme='dark'] .flexigrid div.bDiv td div,
+body[system-theme='dark'] .flexigrid div.bDiv td div  {
     color: var(--theme-label-color-1);
 }
-body[builder-theme='dark'] .flexigrid div.bDiv td {
+body[builder-theme='dark'] .flexigrid div.bDiv td,
+body[system-theme='dark'] .flexigrid div.bDiv td {
     border-bottom: 1px solid var(--theme-border-color-1) !important;
 }
-body[builder-theme='dark'] .flexigrid tr.erow td.sorted, body[builder-theme='dark'] .flexigrid tr.erow td {
+body[builder-theme='dark'] .flexigrid tr.erow td.sorted, 
+body[builder-theme='dark'] .flexigrid tr.erow td,
+body[system-theme='dark'] .flexigrid tr.erow td.sorted, 
+body[system-theme='dark'] .flexigrid tr.erow td {
     background: transparent;
     border-bottom: 1px solid var(--theme-border-color-1) !important;
 }
-body[builder-theme='dark'] .flexigrid div.btnseparator {
+body[builder-theme='dark'] .flexigrid div.btnseparator,
+body[system-theme='dark'] .flexigrid div.btnseparator {
     border-left: 1px solid var(--theme-border-color-1);
     border-right: 1px solid var(--theme-border-color-1);
 }
@@ -2829,7 +2908,11 @@ body[builder-theme='dark']#cbuilder .property-editor-page-button-panel input[typ
 body[builder-theme='dark'] .flexigrid div.bDiv tr:hover td, 
 body[builder-theme='dark'] .flexigrid div.bDiv tr:hover td.sorted, 
 body[builder-theme='dark'] .flexigrid div.bDiv tr.trOver td.sorted, 
-body[builder-theme='dark'] .flexigrid div.bDiv tr.trOver td {
+body[builder-theme='dark'] .flexigrid div.bDiv tr.trOver td,
+body[system-theme='dark'] .flexigrid div.bDiv tr:hover td, 
+body[system-theme='dark'] .flexigrid div.bDiv tr:hover td.sorted, 
+body[system-theme='dark'] .flexigrid div.bDiv tr.trOver td.sorted, 
+body[system-theme='dark'] .flexigrid div.bDiv tr.trOver td {
     background-color: var(--theme-primary-color-1);
     border-bottom: 1px solid var(--theme-border-color-1) !important;
 }
@@ -2838,7 +2921,13 @@ body[builder-theme='dark'] .flexigrid div.bDiv tr.erow.trSelected:hover td.sorte
 body[builder-theme='dark'] .flexigrid div.bDiv tr.erow.trOver.trSelected td.sorted, 
 body[builder-theme='dark'] .flexigrid div.bDiv tr.erow.trOver.trSelected td, 
 body[builder-theme='dark'] .flexigrid tr.erow.trSelected td.sorted, 
-body[builder-theme='dark'] .flexigrid tr.erow.trSelected td {
+body[builder-theme='dark'] .flexigrid tr.erow.trSelected td,
+body[system-theme='dark'] .flexigrid div.bDiv tr.erow.trSelected:hover td, 
+body[system-theme='dark'] .flexigrid div.bDiv tr.erow.trSelected:hover td.sorted, 
+body[system-theme='dark'] .flexigrid div.bDiv tr.erow.trOver.trSelected td.sorted, 
+body[system-theme='dark'] .flexigrid div.bDiv tr.erow.trOver.trSelected td, 
+body[system-theme='dark'] .flexigrid tr.erow.trSelected td.sorted, 
+body[system-theme='dark'] .flexigrid tr.erow.trSelected td {
     background: var(--theme-primary-color-1);
     border-right: 1px solid var(--theme-border-color-1);
     border-bottom: 1px solid var(--theme-border-color-1) !important;
@@ -2848,7 +2937,13 @@ body[builder-theme='dark'] .flexigrid div.bDiv tr.trSelected:hover td.sorted,
 body[builder-theme='dark'] .flexigrid div.bDiv tr.trOver.trSelected td.sorted, 
 body[builder-theme='dark'] .flexigrid div.bDiv tr.trOver.trSelected td, 
 body[builder-theme='dark'] .flexigrid tr.trSelected td.sorted, 
-body[builder-theme='dark'] .flexigrid tr.trSelected td {
+body[builder-theme='dark'] .flexigrid tr.trSelected td,
+body[system-theme='dark'] .flexigrid div.bDiv tr.trSelected:hover td, 
+body[system-theme='dark'] .flexigrid div.bDiv tr.trSelected:hover td.sorted, 
+body[system-theme='dark'] .flexigrid div.bDiv tr.trOver.trSelected td.sorted, 
+body[system-theme='dark'] .flexigrid div.bDiv tr.trOver.trSelected td, 
+body[system-theme='dark'] .flexigrid tr.trSelected td.sorted, 
+body[system-theme='dark'] .flexigrid tr.trSelected td {
     border-bottom: 1px solid var(--theme-border-color-1) !important;
     background-color: var(--theme-primary-color-1);
     border-right: 1px solid var(--theme-border-color-1);
@@ -2864,23 +2959,31 @@ body[builder-theme='dark'].popupBody #main-body-content-subheader {
 body[builder-theme='dark'] .flexigrid div.bDiv tr:hover td, 
 body[builder-theme='dark'] .flexigrid div.bDiv tr:hover td.sorted, 
 body[builder-theme='dark'] .flexigrid div.bDiv tr.trOver td.sorted, 
-body[builder-theme='dark'] .flexigrid div.bDiv tr.trOver td {
+body[builder-theme='dark'] .flexigrid div.bDiv tr.trOver td,
+body[system-theme='dark'] .flexigrid div.bDiv tr:hover td, 
+body[system-theme='dark'] .flexigrid div.bDiv tr:hover td.sorted, 
+body[system-theme='dark'] .flexigrid div.bDiv tr.trOver td.sorted, 
+body[system-theme='dark'] .flexigrid div.bDiv tr.trOver td {
     border-bottom: 1px solid var(--theme-border-color-1);
     border-left: 0px;
 }
 body[builder-theme='dark'] .flexigrid div.pDiv input,
-body[builder-theme='dark'] .flexigrid div.pDiv select {
+body[builder-theme='dark'] .flexigrid div.pDiv select,
+body[system-theme='dark'] .flexigrid div.pDiv input,
+body[system-theme='dark'] .flexigrid div.pDiv select {
     background-color: var(--theme-primary-color-3);
     border-color: var(--theme-border-color-1);
     color: var(--theme-input-color-1);
 }
-body[builder-theme='dark'] .flexigrid div.hDiv table {
+body[builder-theme='dark'] .flexigrid div.hDiv table,
+body[system-theme='dark'] .flexigrid div.hDiv table {
     border-right: 1px solid transparent;
 }
 body[builder-theme='dark'] #builder-menu-search input::placeholder{
     color: var(--theme-label-color-1);
 }
-body[builder-theme='dark'] .flexigrid .gBlock{
+body[builder-theme='dark'] .flexigrid .gBlock,
+body[system-theme='dark'] .flexigrid .gBlock{
     opacity: 0.1;
 }
 body[builder-theme='dark'].popupBody #nodes{
@@ -3057,6 +3160,25 @@ body[builder-theme] .api-container .element-operations .operation {
 body[builder-theme] .info-text{
     color: var(--theme-input-color-1);
 }
-body[builder-theme]#cbuilder.quick-nav-shown .builder-view {
+body[builder-theme]#cbuilder.quick-nav-shown.quick-nav-position-left .builder-view {
     left: 40px;
+}
+body[builder-theme]#cbuilder:not(.no-right-panel) div#adminBar > a#quickEditMode > span#environmentName {
+    opacity: 0;
+}
+/* Guider Dark Theme */
+body[builder-theme='dark'] .guider {
+    background-color: var(--theme-primary-color-1);
+    -moz-box-shadow: 0 6px 8px 0 rgba(255, 255, 255, 0.03), 0 3px 4px -4px rgba(255, 255, 255, 0.08), 0 9px 14px 8px rgba(255, 255, 255, 0.02);
+    -webkit-box-shadow: 0 6px 8px 0 rgba(255, 255, 255, 0.03), 0 3px 4px -4px rgba(255, 255, 255, 0.08), 0 9px 14px 8px rgba(255, 255, 255, 0.02);
+    box-shadow: 0 6px 8px 0 rgba(255, 255, 255, 0.03), 0 3px 4px -4px rgba(255, 255, 255, 0.08), 0 9px 14px 8px rgba(255, 255, 255, 0.02);
+}
+body[builder-theme='dark'] .guider_content p {
+    color: var(--theme-label-color-1);
+}
+body[builder-theme='dark'] .guider h1 {
+    color: #007bff;
+}
+body[builder-theme='dark'] .guider_arrow {
+    background-image: url("../js/guiders/guider_arrows_dark.png");
 }

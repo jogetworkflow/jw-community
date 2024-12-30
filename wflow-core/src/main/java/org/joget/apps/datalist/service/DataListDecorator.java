@@ -314,6 +314,9 @@ public class DataListDecorator extends CheckboxTableDecorator {
             } else {
                 // Append parameters directly if href does not contain a ?
                 href = fillVariables(href, row);
+                if (href.endsWith("/") && link.startsWith("/")){
+                    link = link.substring(1);
+                }
                 link = href + link;
             }
 

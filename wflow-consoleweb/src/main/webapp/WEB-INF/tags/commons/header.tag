@@ -16,12 +16,14 @@
 <c:set var="isAdmin" scope="request" value="<%= WorkflowUtil.isCurrentUserInRole(WorkflowUtil.ROLE_ADMIN) %>"/>
 <c:set var="title" value="<%= title != null ? title : \"\" %>"/>
 <c:set var="lang" value="<%= AppUtil.getAppLocale() %>"/>
+<c:set var="systemTheme" value='<%= AppUtil.getSystemTheme() %>'/>
+<c:set var="rightToLeft" value='<%= WorkflowUtil.getSystemSetupValue("rightToLeft") %>'/>
 <c:if test="${empty title}">
     <c:set var="title"><fmt:message key="console.header.browser.title"/></c:set>
 </c:if>
 
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
-<html lang="${lang}">
+<html lang="${lang}" system-theme="${systemTheme}">
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
         <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
@@ -30,6 +32,8 @@
         <jsp:include page="/WEB-INF/jsp/includes/scripts.jsp" />
         <jsp:include page="/WEB-INF/jsp/includes/rtl.jsp" />
         <link rel="shortcut icon" href="${pageContext.request.contextPath}/images/favicon.ico"/>
+        <link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/css/builderTheme.css?build=<fmt:message key="build.number"/>" />
+        <link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/fonts/inter/css/font.css" />
         <link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/css/v7.css?build=<fmt:message key="build.number"/>">
         <link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/css/console_custom.css?build=<fmt:message key="build.number"/>">
         <script>
@@ -72,7 +76,7 @@
             }
         </script>
     </head>
-    <body id="${bodyId}">
+    <body id="${bodyId}" system-theme="${systemTheme}" class="${rightToLeft ? 'rtl' : ''}">
         <div id="main-header">
             <a id="home-link" href="${pageContext.request.contextPath}/">
                 <span id="logo"></span>

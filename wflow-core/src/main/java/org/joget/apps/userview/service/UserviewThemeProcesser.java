@@ -162,7 +162,7 @@ public class UserviewThemeProcesser {
         data.put("context_path", request.getContextPath());
         data.put("build_number", ResourceBundleUtil.getMessage("build.number"));
         data.put("right_to_left", AppUtil.isRTL());
-        String builderTheme = WorkflowUtil.getSystemSetupValue("systemTheme");
+        String builderTheme = AppUtil.getSystemTheme();
         data.put("builderTheme", builderTheme);
         String locale = AppUtil.getAppLocale();
         String language = AppUtil.getAppLanguage();

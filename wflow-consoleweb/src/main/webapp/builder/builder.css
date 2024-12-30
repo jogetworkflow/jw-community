@@ -8,6 +8,11 @@ body {
     --drag-items-tabs-height: 40px;
     --builder-content-top: var(--builder-header-top-height);
 }
+body.noselect {
+    user-select: none;
+    -webkit-user-select: none; 
+    -ms-user-select: none; 
+}
 @media (min-width: 576px) {
     body {
         --builder-left-panel-width: 20vw;
@@ -76,8 +81,10 @@ body.initializing:after{
     display: block;
 }
 body.quick-nav-shown {
-    padding-left: 30px;
     transition: 0.35s padding-left ease-in-out;
+}
+body.quick-nav-shown.quick-nav-position-left {
+    padding-left: 40px;
 }
 #builder_loader {
     position: fixed;
@@ -253,7 +260,7 @@ body.right-panel-resizing #right-panel-resize-block{
 }
 #cbuilder #bottom-panel {
     width: auto;
-    height: 30px;
+    height: 35px;
     bottom: 0px;
     position: fixed;
     border-top: 1px solid #ddd;
@@ -1139,7 +1146,7 @@ div.section, .header > ol {
 #builderElementName{
     font-weight: bold;
     padding-top: 2px;
-    padding-right: 60px;
+    padding-right: 100px;
     color: #394249 !important;
     height: 45px;
 }
@@ -1151,8 +1158,10 @@ div.section, .header > ol {
     margin-top: 0 !important;
 }
 #builderToolbar {
-    padding-right: 60px;
     padding-top: 3px;
+}
+body:not(.quick-nav-position-left) #builderToolbar {
+    padding-right: 40px;
 }
 .toolbar-group {
     border-radius: 5px;
@@ -1273,9 +1282,6 @@ div.section, .header > ol {
     background: #fff;
     z-index: 10;
     overflow: none;
-}
-#cbuilder.quick-nav-shown .builder-view {
-    left: 30px;
 }
 .builder-view-header h3 {
     font-size: 24px;
@@ -1584,7 +1590,7 @@ div.section, .header > ol {
 .max-property-editor #right-panel{
     position: fixed;
     top:65px;
-    right: 0;
+    right: 40px;
     bottom: 30px;
     width: 20vw;
     width: var(--builder-right-panel-width);
@@ -1594,6 +1600,9 @@ div.section, .header > ol {
     background: #fff;
     border-left: 2px solid #ccc !important;
     box-shadow: -1px 1px 6px -1px rgb(0 0 0 / 20%);
+}
+body.quick-nav-position-left.max-property-editor #right-panel {
+    right:0px;
 }
 .max-property-editor #right-panel-toogle{
     display:none;
@@ -1626,7 +1635,7 @@ div.section, .header > ol {
     height: 100%;
 }
 .element-properties-footer-actions{
-    padding-top: 10px;
+    padding-top: 5px;
     background: #9bb1c1;
 }
 #apply-btn {
@@ -1674,7 +1683,7 @@ li.jsondiffpatch-unchanged {
 }
 .sticky-buttons {
     position: fixed;
-    right: 20px;
+    right: 40px;
     top: 100px;
 }
 .table_column_items {
@@ -1697,7 +1706,7 @@ li.jsondiffpatch-unchanged {
     padding:20px 0;
 }
 .treeRightPanel .builder-view-body ol {
-    width: 500px;
+    width: fit-content;
 }
 
 /* popup */
@@ -1888,13 +1897,19 @@ body #quick-nav-bar {
     position: fixed;
     top: 0px;
     bottom:0;
-    left: 0;
+    right: 0;
     text-align: left;
     z-index: 2000;
     transition: 0.35s all ease-in-out;
     background: #ddd;
     overflow: hidden;
     overflow-y: auto;
+}
+body #quick-nav-bar div#dragIcon {
+    cursor: pointer;
+}
+body.quick-nav-position-left #quick-nav-bar {
+    left:0;
 }
 body #quick-nav-bar::-webkit-scrollbar {
     width: 3px;
@@ -1909,7 +1924,7 @@ body.quick-nav-shown #builder-quick-nav {
     position: absolute;
 }
 #builder-quick-nav #builder-menu {
-    margin-top: 80px;
+    margin-top: 15px;
     display: block !important;
 }
 #builder-quick-nav #builder-menu-search{
@@ -1996,7 +2011,7 @@ body.quick-nav-shown #builder-quick-nav {
     display: block;
     position: fixed;
     top: 0;
-    left: 40px;
+    right: 40px;
     height: 100%;
     list-style: none;
     background: #455a65;
@@ -2006,6 +2021,9 @@ body.quick-nav-shown #builder-quick-nav {
     width: 0px;
     font-size: 13px;
     padding: 60px 0 30px;
+}
+body.quick-nav-position-left #quick-nav-bar #builder-menu ul li ul {
+    left:40px;
 }
 #quick-nav-bar.active #builder-menu ul li.active ul {
     width: 300px !important;
@@ -2066,7 +2084,7 @@ body.quick-nav-shown #builder-quick-nav {
     position: fixed;
     top: 0px;
     z-index: 3;
-    left: 40px;
+    right: 40px;
     width: 300px !important;
     min-width: 13.5vw;
     min-width: var(--builder-logo-width);
@@ -2074,6 +2092,9 @@ body.quick-nav-shown #builder-quick-nav {
     background: #455a65;
     padding: 10px;
     box-sizing: border-box;
+}
+body.quick-nav-position-left #builder-menu-search{
+    left: 40px;
 }
 #builder-menu-search input{
     border: 0;
@@ -2126,11 +2147,15 @@ body.quick-nav-shown #builder-quick-nav {
     display: block !important;
     position: fixed;
     top: 0;
-    left: 40px;
-    right: 0;
+    right: 40px;
+    left:0;
     bottom: 0;
     background: #000;
     opacity: 0.1;
+}
+body.quick-nav-position-left #quick-nav-bar.active #closeQuickNav{
+    left:40px;
+    right: 0px;
 }
 
 /* Messages */

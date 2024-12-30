@@ -174,6 +174,27 @@ header.navbar .dropdown-menu {
     padding: 0.5rem;
 }
 
+@media (max-width: 430px){
+    /*57px width of user-link */
+    /*25px width of padding-right of .container-fluid */
+    header.navbar .dropdown-menu.notifications {
+        position: absolute;
+        right: calc(0vw - 57px - 25px) !important;
+        min-width: 100vw !important;
+    }
+    /*57px width of user-link */
+    /*20px width of padding-left of .container-fluid */
+    body.rtl header.navbar .dropdown-menu.notifications {
+        left: calc(0vw - 57px - 20px) !important;
+        right: unset !important;
+    }
+}
+
+.rtl .dropdown-menu.notifications .refresh{
+    left: 10px;
+    right: unset;
+}
+
 .rtl header.navbar .dropdown-menu {
     left: 0;
     right: auto;
@@ -184,7 +205,7 @@ header.navbar .dropdown-menu.notifications {
 }
 
 header.navbar .dropdown-menu .dropdown-menu-sub-footer {
-    text-align: center;
+    text-align: center !important;
     margin: 10px auto 5px;
 }
 
@@ -1843,24 +1864,33 @@ body .form-container [class*="form-cell-value"] {
 .quickEdit,
 #form-canvas .quickEdit {
     position: absolute;
-    z-index: 3;
+    z-index: 5;
 }
 
-body.quickEditModeActive fieldset#form-canvas,
-body.quickEditModeActive fieldset#form-canvas .subform-container,
-body.quickEditModeActive .dataList,
-body.quickEditModeActive #category-container {
+body.quickEditModeActive fieldset#form-canvas, 
+body.quickEditModeActive fieldset#form-canvas .subform-container, 
+body.quickEditModeActive .dataList, 
+body.quickEditModeActive #category-container, 
+body.quickEditModeActive #content > main {
     border: inherit !important;
     padding: inherit !important;
     position: relative;
 }
 
-body.quickEditModeActive fieldset#form-canvas:after,
-body.quickEditModeActive fieldset#form-canvas .subform-container:after,
-body.quickEditModeActive .dataList:after,
-body.quickEditModeActive #category-container:after,
+body.quickEditModeActive #content > main {
+    padding: 1px !important;
+}
+
+body.quickEditModeActive div#sidebar .quickEdit > a {
+    margin: 0;
+}
+
+body.quickEditModeActive fieldset#form-canvas:after, 
+body.quickEditModeActive fieldset#form-canvas .subform-container:after, 
+body.quickEditModeActive .dataList:after, 
+body.quickEditModeActive #category-container:after, 
 body.quickEditModeActive #content>main:after {
-    border: solid 3px #e7fab6;
+    border: solid 3px #DAE6E2;
     position: absolute;
     top: 0;
     left: 0;
@@ -1869,6 +1899,14 @@ body.quickEditModeActive #content>main:after {
     content: "";
     pointer-events: none;
     z-index: 3;
+}
+
+body.quickEditModeActive fieldset#form-canvas.quick-edit-hovered:after, 
+body.quickEditModeActive fieldset#form-canvas .subform-container.quick-edit-hovered:after, 
+body.quickEditModeActive .dataList.quick-edit-hovered:after, 
+body.quickEditModeActive #category-container.quick-edit-hovered:after,
+ body.quickEditModeActive #content>main.quick-edit-hovered:after {
+    background-color: rgba(0, 169, 119, 0.1)
 }
 
 #navigation .menu.analyzer,

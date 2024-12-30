@@ -17,15 +17,15 @@
     <div id="main-action">
         <ul id="main-action-buttons">
             <c:if test="${activity.state == 'open.not_running.not_started' || activity.state == 'open.running'}">
-                <li><button onclick="reevaluate()"><fmt:message key="console.monitoring.running.label.reevaluate"/></button></li>
-                <li><button onclick="showReevaluateForUser()"><fmt:message key="console.monitoring.running.label.reevaluateForUser"/></button></li>
+                <li><button class="console-primary" onclick="reevaluate()"><fmt:message key="console.monitoring.running.label.reevaluate"/></button></li>
+                <li><button class="console-tertiary" onclick="showReevaluateForUser()"><fmt:message key="console.monitoring.running.label.reevaluateForUser"/></button></li>
             </c:if>
             <c:if test="${activity.state != 'closed.completed' && activity.state != 'closed.terminated' && activity.state != 'closed.aborted'}">
-                <li><button onclick="reassign()"><fmt:message key="console.monitoring.running.label.reassign"/></button></li>
-                <li><button onclick="completeActivity()"><fmt:message key="console.monitoring.running.label.complete"/></button></li>
+                <li><button class="console-tertiary" onclick="reassign()"><fmt:message key="console.monitoring.running.label.reassign"/></button></li>
+                <li><button class="console-tertiary" onclick="completeActivity()"><fmt:message key="console.monitoring.running.label.complete"/></button></li>
             </c:if>
             <c:if test="${!empty formId}">
-                <li><button onclick="viewForm()"><fmt:message key="console.monitoring.running.label.viewForm"/></button></li>
+                <li><button class="console-tertiary" onclick="viewForm()"><fmt:message key="console.monitoring.running.label.viewForm"/></button></li>
             </c:if>
         </ul>
     </div>

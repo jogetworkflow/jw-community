@@ -4,7 +4,6 @@
 <c:set var="isVirtualHostEnabled" value="<%= HostManager.isVirtualHostEnabled() %>"/>
 
 <commons:header />
-
 <div id="nav">
     <div id="nav-title">
         <p><i class="fas fa-cogs"></i> <fmt:message key='console.header.top.label.settings'/></p>
@@ -17,18 +16,17 @@
 </div>
 
 <div id="main">
-    <div id="main-title"></div>
+    <div id="main-title"><fmt:message key="console.header.submenu.label.setting.plugin"/></div>
     <div id="main-action">
         <ul id="main-action-buttons">
-            <li><button onclick="reload()"><fmt:message key="console.setting.plugin.common.label.reloadPlugin"/></button></li>
-            <li><button onclick="upload()"><fmt:message key="console.setting.plugin.upload.label"/></button></li>
+            <li><button class="console-primary" onclick="reload()"><i class="fa fa-refresh"></i> <fmt:message key="console.setting.plugin.common.label.reloadPlugin"/></button></li>
+            <li><button class="console-tertiary" onclick="upload()"><i class="fas fa-upload"></i> <fmt:message key="console.setting.plugin.upload.label"/></button></li>
         </ul>
     </div>
     <div id="main-body">
         <div id="pluginstab">
             <ul>
-                <li class="selected"><a href="#installed"><span><fmt:message key="console.setting.plugin.common.label.installed"/></span></a></li>
-                <li><a href="#update"><span>Update</span> <span class="jgt-badge update_count">(0)</span></a></li>
+                <li class="selected"><a href="#installed"><span><fmt:message key="console.setting.plugin.common.label.installed"/></span></a></li><li><a href="#update"><span>Update <span class="jgt-badge update_count">(0)</span></a></span></li>
             </ul>
             <div>
                 <div id="installed">
@@ -136,6 +134,20 @@
         $("#pluginList2").on("success", function(){
             $(".update_count").text("(" + JsonDataTable.flexiGrid[0].p.total + ")");
         });
+
+        //Reposition the filter
+        $("div#installed #main-body-content-filter").appendTo("#JsonDataTable1_pluginList-search");
+        $("div#installed #main-body-content-filter").show();
+
+        $("div#update #main-body-content-filter").appendTo("#JsonDataTable_pluginList2-search");
+        $("div#update #main-body-content-filter").show();
+
+
+
+        $('<i class="fas fa-trash-alt"></i><span> </span>').prependTo('div#JsonDataTable1_pluginList-buttons button:nth-child(3)');
+        $('div#JsonDataTable1_pluginList-buttons button:nth-child(3)').addClass('console-danger')
+        $('<i class="fas fa-cloud-download-alt"></i><span> </span>').prependTo('div#JsonDataTable_pluginList2-buttons button:nth-child(3)');
+        $('div#JsonDataTable_pluginList2-buttons button:nth-child(3)').addClass('console-primary')
     });
 
     <ui:popupdialog var="popupDialog" src="${pageContext.request.contextPath}/web/console/setting/plugin/upload"/>

@@ -3,8 +3,11 @@
 <%@ page import="org.joget.apps.app.service.AppUtil"%>
 <%@ include file="/WEB-INF/jsp/includes/taglibs.jsp" %>
 <%
-    String theme = WorkflowUtil.getSystemSetupValue("systemTheme");
+    String theme = AppUtil.getSystemTheme();
     pageContext.setAttribute("theme", theme);
+
+    boolean deviceTheme = AppUtil.isFollowDeviceTheme();
+    pageContext.setAttribute("deviceTheme", deviceTheme);
 %>
 <c:set var="isQuickEditEnabled" value="<%= AppUtil.isQuickEditEnabled() %>"/>
 <c:set var="envName" value='<%= WorkflowUtil.getSystemSetupValue("environmentName") %>'/>
@@ -15,10 +18,10 @@
         <script>
             loadCSS("${pageContext.request.contextPath}/css/admin_bar_custom.css");
         </script>
-        <div id="adminBar" class="adminBarInactive"  <c:if test="${!empty theme && (theme == 'light' || theme == 'dark')}">builder-theme="<c:out value="${theme}"/>"</c:if>>
-            <a id="appCenter" <c:if test="${empty param.webConsole}"> target="_blank"</c:if> title="<ui:msgEscHTML key='adminBar.label.appCenter'/>" href="${pageContext.request.contextPath}/home"><i class="fab fa-joget"></i></a>
+        <div id="adminBar" class="adminBarInactive" <c:if test="${deviceTheme}">device-theme="true"</c:if> <c:if test="${!empty theme}">builder-theme="<c:out value="${theme}"/>"</c:if>>
+            <a id="appCenter" <c:if test="${empty param.webConsole}"> target="_blank"</c:if> title="<ui:msgEscHTML key='adminBar.label.appCenter'/>" href="${pageContext.request.contextPath}/home"><i class="fab fa-joget"></i></a>  
             <div id="adminBarButtons">
-            <c:set var="key" value="0" />    
+            <c:set var="key" value="0" />
             <c:if test="${!empty param.appId}">    
                 <c:set var="key" value="1" />
                 <div class="separator"></div>
@@ -26,7 +29,7 @@
                         <a class="adminBarButton" title="CTRL-1: <ui:msgEscHTML key='abuilder.title'/>" href="${pageContext.request.contextPath}/web/console/app/<c:out value="${param.appId}"/>/<c:out value="${param.appVersion}"/>/builders" onclick="return AdminBar.openAppComposer('${pageContext.request.contextPath}/web/console/app/<c:out value="${param.appId}"/>/<c:out value="${param.appVersion}"/>/builders');" target="_blank"><i class="far fa-edit"></i><span><fmt:message key='abuilder.title'/></span></a>
                     </div>
                 
-            </c:if>  
+            </c:if>    
             <c:if test="${!empty param.appId && !isCustomAppAdmin}">
                 <div class="separator"></div>
             </c:if>    
@@ -47,7 +50,11 @@
             </div>
             <div id="quickEditModeOption">
                 <div>
-                    <a id="quickEditMode" title="CTRL-0: <ui:msgEscHTML key='adminBar.label.quickedit'/>"><i class="fas fa-paint-brush"></i><span><fmt:message key='adminBar.label.quickedit'/> : </span><span class="on"><fmt:message key='adminBar.label.on'/></span><span class="off"><fmt:message key='adminBar.label.off'/></span></a>
+                    <a id="quickEditMode" title="CTRL-0: <ui:msgEscHTML key='adminBar.label.quickedit'/>"><i class="fas fa-paint-brush"></i><span><fmt:message key='adminBar.label.quickedit'/></span>
+                    <input type="checkbox" name="admin-bar-toggle" id="admin-bar-toggle" class="admin-bar-toggle"/>
+                    <label class="adminbar-control-label button" for="admin-bar-toggle">
+                        <div class="dot"></div>
+                    </label>
                 </div>
             </div>
             <c:if test="${!empty envName}">
@@ -56,7 +63,7 @@
         </div>
             
         <div id="adminControl"  <c:if test="${!empty theme && (theme == 'light' || theme == 'dark')}">builder-theme="<c:out value="${theme}"/>"</c:if>>
-            <i class="fas fa-pencil-alt"></i>
+            <i class="fas fa-cogs"></i>
         </div>    
             
         <script src="${pageContext.request.contextPath}/js/adminBar.js"></script>
@@ -86,6 +93,37 @@
             function appImport() {
                 appCreateDialog2.init();
             }
+    </script>
+    <script>
+        if (window.location === window.parent.location) {
+            //Listen to theme changes
+            function ajaxRequestChangeSystemTheme(deviceTheme) {
+                var callback = {
+                    success: function(response) {
+                        if (confirm(`<ui:msgEscJS key="general.label.deviceThemeSwitching"/>`)){
+                            location.reload(); 
+                        }
+                    },
+                    error: function(jqXHR, textStatus, errorThrown) {
+                        console.error('Error updating theme:', jqXHR);
+                    }
+                }
+
+                var params = "deviceTheme=" + deviceTheme;
+                ConnectionManager.post(
+                    UI.base +'/web/console/setting/general/changeSystemThemeAutomatically', 
+                    callback,
+                    params
+                )
+            }
+            window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change',({ matches }) => {
+                if (matches && $("div#adminBar").attr('device-theme') === "true" && $("div#adminBar").attr('builder-theme') !== "dark") {
+                    ajaxRequestChangeSystemTheme('dark');
+                } else if (!matches && $("div#adminBar").attr('device-theme') === "true" && $("div#adminBar").attr('builder-theme') !== "light"){
+                    ajaxRequestChangeSystemTheme('light');
+                }
+            })   
+        }
     </script>
         
     <jsp:include page="adminBarExt.jsp" flush="true"/>    

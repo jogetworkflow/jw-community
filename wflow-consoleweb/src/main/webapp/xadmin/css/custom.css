@@ -1338,6 +1338,20 @@ div.InformationTileComponent .card-body {
     border-bottom: 1px solid rgba(0,0,0,.125)
 }
 
+body.rtl .card-header .header-title {
+    text-align: right !important;
+}
+body.rtl .card-header .header-tag {
+    text-align: left !important;
+    padding-left: 15px !important; 
+}
+body.rtl .InformationTileComponent .mb-1 small {
+    float: left !important;
+}
+body.rtl .InformationTileComponent .mb-1 {
+    text-align: right !important;
+}
+
 .card-header:first-child {
     border-radius: calc(.25rem - 1px) calc(.25rem - 1px) 0 0
 }

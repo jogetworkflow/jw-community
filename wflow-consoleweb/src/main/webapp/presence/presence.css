@@ -40,7 +40,7 @@ body.rtl #presence{
 #presence:hover li {
     display: inline-block;
     position: relative;
-    right: auto !important;
+    left: auto !important;
     transition: ease-in-out;
     transform:scale(1.5);
     transform-origin:top right;

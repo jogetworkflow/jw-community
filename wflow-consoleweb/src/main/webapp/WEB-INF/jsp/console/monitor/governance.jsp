@@ -1,12 +1,16 @@
 <%@ include file="/WEB-INF/jsp/includes/taglibs.jsp" %>
 
 <commons:header />
-
 <script type="text/javascript" src="${pageContext.request.contextPath}/js/JSON.js"></script>
 <script type="text/javascript" src="${pageContext.request.contextPath}/js/JSONError.js"></script>
 <script type="text/javascript" src="${pageContext.request.contextPath}/js/governance.js"></script>
 <link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/css/governance.css?build=<fmt:message key="build.number"/>">
-
+<style>
+    div#main {
+        width: fit-content;
+        min-width: calc(100% - 270px);
+    }
+</style>
 <div id="nav">
     <div id="nav-title">
         <p><i class="fas fa-tachometer-alt"></i> <fmt:message key='console.header.menu.label.monitor'/></p>
@@ -19,11 +23,12 @@
 </div>
 
 <div id="main">
+    <div id="main-title"><fmt:message key="console.governance.healthCheck"/></div>
     <div id="main-action">
         <ul id="main-action-buttons">
-            <li><button class="alertBtn btn btn-primary"><fmt:message key="console.governance.manageAlert"/></button></li>
-            <li><button class="deleteDataBtn btn btn-primary"><fmt:message key="console.governance.deleteData"/></button></li>
-            <li><button class="checkNowBtn btn btn-primary"><fmt:message key="console.governance.checkInterval.checkNow"/></button></li>
+            <li><button class="alertBtn btn btn-primary console-primary"><fmt:message key="console.governance.manageAlert"/></button></li>
+            <li><button class="deleteDataBtn btn btn-primary console-danger"><fmt:message key="console.governance.deleteData"/></button></li>
+            <li><button class="checkNowBtn btn btn-primary console-tertiary"><fmt:message key="console.governance.checkInterval.checkNow"/></button></li>
         </ul>
     </div>
     <div id="main-body">

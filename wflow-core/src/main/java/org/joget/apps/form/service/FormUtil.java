@@ -2221,6 +2221,12 @@ public class FormUtil implements ApplicationContextAware {
                     status = "draft";
                 } else if (primaryKey != null && !primaryKey.equals(formData.getRequestParameter(FormUtil.FORM_META_ORIGINAL_ID))) {
                     status = "create";
+                } else if (primaryKey != null && !primaryKey.isEmpty() && formData.getActivityId() != null && !formData.getActivityId().isEmpty()) { 
+                    //if assignment form, check record creation on first process activity (Form is not mapped on Start node) by checking load binder data
+                    FormRowSet rows = formData.getLoadBinderData(form);
+                    if (rows == null || rows.isEmpty() || rows.get(0).isEmpty()) {
+                        status = "create";
+                    }
                 }
 
                 if (run.equals(status) || ("both".equals(run) && !"draft".equals(status))) {

@@ -2287,7 +2287,10 @@ public class AppServiceImpl implements AppService {
     public AppDefinition publishApp(String appId, String version) {
         // unset previous published version
         Long previousVersion = getPublishedVersion(appId);
-        if (previousVersion != null && previousVersion != 0) {
+        if (previousVersion != null) {
+            if (previousVersion == 0) {
+                return null;
+            }
             AppDefinition prevAppDef = appDefinitionDao.loadVersion(appId, previousVersion);
             prevAppDef.setPublished(Boolean.FALSE);
             appDefinitionDao.saveOrUpdate(prevAppDef);
@@ -3289,6 +3292,8 @@ public class AppServiceImpl implements AppService {
 
                         pluginManager.upload(entry.getName(), new ByteArrayInputStream(out.toByteArray()));
                         size++;
+                    } catch (Exception e) {
+                        //fail to import migrated plugin should not stop the import of from data and user group
                     } finally {
                         out.flush();
                         out.close();

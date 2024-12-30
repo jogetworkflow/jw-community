@@ -50,12 +50,18 @@ public class PackageDefinition extends AbstractVersionedObject {
     }
 
     public void setAppDefinition(AppDefinition appDefinition) {
-        if (appDefinition != null) {
-            setAppId(appDefinition.getAppId());
-        }
         this.appDefinition = appDefinition;
     }
 
+    @Override
+    public String getAppId() {
+        String appId = super.getAppId();
+        if (appId == null && appDefinition != null) {
+            appId = appDefinition.getAppId();
+        }
+        return appId;
+    }
+    
     public Map<String, PackageActivityForm> getPackageActivityFormMap() {
         return packageActivityFormMap;
     }

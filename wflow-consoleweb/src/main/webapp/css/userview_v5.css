@@ -4979,6 +4979,20 @@ a.bg-dark:focus,a.bg-dark:hover,button.bg-dark:focus,button.bg-dark:hover {
     text-align: right!important
 }
 
+body.rtl .card-header .header-title {
+    text-align: right !important;
+}
+body.rtl .card-header .header-tag {
+    text-align: left !important;
+    padding-left: 15px !important; 
+}
+body.rtl .InformationTileComponent .mb-1 small {
+    float:left !important;
+}
+body.rtl .InformationTileComponent .mb-1 {
+    text-align: right !important;
+}
+
 .text-center {
     text-align: center!important
 }

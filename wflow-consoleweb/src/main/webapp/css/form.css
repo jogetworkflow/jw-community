@@ -18,6 +18,9 @@ body.rtl #form-canvas .form-cell label.label{
 #form-canvas textarea {
     font-size: 13px;
 }
+textarea{
+    white-space: pre-wrap !important;
+}
 .form-section, .form-column, .form-cell, .subform-section, .subform-column, .subform-cell {
     border: none 1px #dddddd;
     padding: 0px;

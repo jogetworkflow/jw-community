@@ -415,6 +415,47 @@ public class AppUtil implements ApplicationContextAware {
     }
     
     /**
+     * Check is it following device theme
+     */
+    public static boolean isFollowDeviceTheme() {
+        String systemTheme = WorkflowUtil.getSystemSetupValue("systemTheme");
+        
+        //handle old version setting which is set to classic, make it to follow device
+        if (systemTheme == null || "classic".equalsIgnoreCase(systemTheme)) {
+            systemTheme = "";
+        }
+        
+        return systemTheme.isEmpty();
+    }
+    
+    /**
+     * Return the system theme setting based on system setting or the device theme
+     */
+    public static String getSystemTheme() {
+        String systemTheme = WorkflowUtil.getSystemSetupValue("systemTheme");
+        
+        //handle old version setting which is set to classic, make it to follow device
+        if (!"light".equalsIgnoreCase(systemTheme) && !"dark".equalsIgnoreCase(systemTheme)) {
+            systemTheme = "";
+        }
+        
+        //handle follow device theme here
+        if (systemTheme.isEmpty()) {
+            HttpSession session = WorkflowUtil.getHttpServletRequest().getSession();
+            if (session != null) {
+                systemTheme = (String) session.getAttribute("systemDeviceTheme");
+            }
+        }
+        
+        //if theme is null or empty, default to light
+        if (systemTheme == null || systemTheme.isEmpty()) {
+            systemTheme = "light";
+        }
+        
+        return systemTheme;
+    }
+    
+    /**
      * Read firstDayifWeek from locale
      * @return fdow
      */

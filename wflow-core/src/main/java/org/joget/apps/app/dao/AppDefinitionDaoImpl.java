@@ -37,6 +37,7 @@ import org.joget.apps.app.model.UserviewDefinition;
 import org.joget.apps.app.service.AppDevUtil;
 import org.joget.apps.app.service.AppService;
 import org.joget.apps.app.service.AppUtil;
+import org.joget.commons.ignite.IgniteCacheManager;
 import org.joget.commons.util.LogUtil;
 import org.joget.commons.util.SetupManager;
 import org.joget.plugin.base.PluginManager;
@@ -102,7 +103,7 @@ public class AppDefinitionDaoImpl extends AbstractVersionedObjectDao<AppDefiniti
                     }
                 }
             }
-
+            
             // delete
             super.delete(obj);
 
@@ -111,6 +112,9 @@ public class AppDefinitionDaoImpl extends AbstractVersionedObjectDao<AppDefiniti
                 String commitMessage = "Delete app version " + obj.getId() + " " + obj.getVersion();
                 AppDevUtil.dirDelete(obj, commitMessage);
             }
+            
+            // clear L2 cache
+            IgniteCacheManager.clearAll();
         }
     }
 
@@ -190,7 +194,7 @@ public class AppDefinitionDaoImpl extends AbstractVersionedObjectDao<AppDefiniti
         if (appDef.getResourceList() == null) {
             appDef.setResourceList(new ArrayList());
         }
-
+        
         if (!AppDevUtil.isGitDisabled() && !AppDevUtil.isImportApp()) {
             // save and commit app definition
             String filename = "appDefinition.xml";
@@ -217,6 +221,8 @@ public class AppDefinitionDaoImpl extends AbstractVersionedObjectDao<AppDefiniti
             AppDevUtil.dirSyncAppPlugins(appDef);
         }    
         
+        // update date modified
+        appDef.setDateModified(new Date());
         super.saveOrUpdate(appDef);
     }
 
