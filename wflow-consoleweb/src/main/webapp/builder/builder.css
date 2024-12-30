@@ -2624,3 +2624,6 @@ a.marketplaceLink {
 .drag-elements-sidepane.sidepane li:has(a.marketplaceLink){
     padding-bottom: 30px;
 }
+#cbuilder.tox-fullscreen > #quick-nav-bar{
+    display: none;
+}
