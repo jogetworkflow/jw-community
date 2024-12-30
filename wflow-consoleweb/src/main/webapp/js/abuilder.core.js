@@ -32,6 +32,14 @@ AppBuilder = {
             AppBuilder.deleteItem($(this).closest(".item"));
             return false;
         });
+        $("#builder_canvas").off("mouseenter", " li.item a.delete")
+        .on("mouseenter", " li.item a.delete", function(){
+            $(this).closest("li.item").addClass("delete-highlight");
+        })
+        .off("mouseleave", " li.item a.delete")
+        .on("mouseleave", " li.item a.delete", function(){
+            $(this).closest("li.item").removeClass("delete-highlight");
+        });
         $("#builder_canvas").off("click", " li.item a.launch");
         $("#builder_canvas").on("click", " li.item a.launch", function(){
             if (!$(this).hasClass("disabled")) {
