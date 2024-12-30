@@ -1630,25 +1630,21 @@ public class ConsoleWebController {
         TreeMap<Long, AppDefinition> appDefMap = new TreeMap<>();
         if (!appDefList.isEmpty()) {
             for (AppDefinition appDef: appDefList) {
-                boolean shouldDeleteAppVersion = false;
-
-                // Only delete app version if git is enabled and folder is empty
                 if (!AppDevUtil.isGitDisabled()) {
                     File dir = AppDevUtil.fileGetFileObject(appDef, ".", false);
-                    if (dir != null && dir.isDirectory()) {
+                    if (AppDevUtil.isGitVersionDeleted(dir)) {
+                        // version is deleted in remote git repo but exist in database (deleted version in another instance)
+                        appDef.setDescription("Git: deleted");
+                    } else if (dir != null && dir.isDirectory()) {
+                        // database version exist but git version does not (previously disabled git)
                         Collection<File> files = FileUtils.listFiles(dir, new String[]{"json", "xml", "xpdl", "jar"}, true);
                         if (files == null || files.isEmpty()) {
-                            shouldDeleteAppVersion = true;
+                            appDef.setDescription("Git: not exist");
                         }
                     }
                 }
-
-                if (shouldDeleteAppVersion) {
-                    appService.deleteAppDefinitionVersion(appId, appDef.getVersion());
-                } else {
-                    appDefMap.put(appDef.getVersion(), appDef);
-                }
-            }            
+                appDefMap.put(appDef.getVersion(), appDef);
+            }
             
             if (!AppDevUtil.isGitDisabled()) {
                 // get app versions from Git
@@ -1657,13 +1653,14 @@ public class ConsoleWebController {
                     List<String> branches = AppDevUtil.getAppGitBranches(appDef);
                     for (String branch: branches) {
                         int versionIndex = branch.lastIndexOf("_");
-                        String version = (versionIndex != -1) ? branch.substring(versionIndex + 1) : null;                      
-                        if (version != null && !appDefMap.containsKey(Long.valueOf(version))) {
-                            AppDefinition tempAppDef = AppDevUtil.createDummyAppDefinition(appId, Long.valueOf(version));
+                        Long version = (versionIndex != -1) ? Long.parseLong(branch.substring(versionIndex + 1)) : null;
+
+                        if (version != null && !appDefMap.containsKey(version)) {
+                            AppDefinition tempAppDef = AppDevUtil.createDummyAppDefinition(appId, version);
                             tempAppDef.setDescription("Git: " + branch);
                             appDefMap.put(tempAppDef.getVersion(), tempAppDef);
                         }
-                    }            
+                    }
                 } catch(Exception e) {
                     LogUtil.error(getClass().getName(), e, e.getMessage());
                 }

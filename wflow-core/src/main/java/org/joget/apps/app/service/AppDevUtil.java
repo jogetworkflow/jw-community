@@ -11,19 +11,7 @@ import java.net.URISyntaxException;
 import java.nio.file.Files;
 import java.nio.file.NoSuchFileException;
 import java.nio.file.attribute.BasicFileAttributes;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Collection;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Properties;
-import java.util.Random;
-import java.util.Set;
-import java.util.TimeZone;
+import java.util.*;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 import javax.servlet.http.HttpServletRequest;
@@ -39,10 +27,7 @@ import org.eclipse.jgit.api.PullResult;
 import org.eclipse.jgit.api.RemoteAddCommand;
 import org.eclipse.jgit.api.RemoteListCommand;
 import org.eclipse.jgit.api.RemoteRemoveCommand;
-import org.eclipse.jgit.api.errors.CheckoutConflictException;
-import org.eclipse.jgit.api.errors.GitAPIException;
-import org.eclipse.jgit.api.errors.JGitInternalException;
-import org.eclipse.jgit.api.errors.RefNotFoundException;
+import org.eclipse.jgit.api.errors.*;
 import org.eclipse.jgit.diff.DiffEntry;
 import org.eclipse.jgit.lib.ObjectId;
 import org.eclipse.jgit.lib.Ref;
@@ -2173,5 +2158,34 @@ public class AppDevUtil {
         }
         
         return concatAppDef;
+    }
+
+    /**
+     * Gets the latest Git commit message of the directory with git
+     * @param dir the directory of the git
+     * @return the latest git commit message
+     */
+    public static String getLatestCommitMessage(File dir) {
+        try (Git git = Git.open(dir)){
+            Iterable<RevCommit> log = git.log().setMaxCount(1).call();
+            RevCommit commit = log.iterator().next();
+            return commit == null ? null : commit.getFullMessage();
+        } catch (IOException | NoSuchElementException | GitAPIException e) {
+            return null;
+        }
+    }
+
+    /**
+     * Determine whether the version is deleted via latest Git commit message.
+     * @param dir the directory of the app version that contains git
+     * @return {@code true} if the latest commit message shows deleted; {@code false} otherwise
+     */
+    public static boolean isGitVersionDeleted(File dir) {
+        String message = getLatestCommitMessage(dir);
+        if (message == null) {
+            return false;
+        }
+        // Refer to AppDefinitionDaoImpl.delete(AppDefinition)
+        return message.startsWith("Delete app version");
     }
 }
