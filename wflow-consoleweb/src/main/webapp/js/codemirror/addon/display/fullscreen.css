@@ -1,0 +1,7 @@
+.CodeMirror-fullscreen {
+  position: fixed !important;
+  top: 0; left: 0; right: 0 !important; bottom: 0 !important;
+  height: auto !important;
+  z-index: 2147483646 !important;
+  font-size:20px;
+}

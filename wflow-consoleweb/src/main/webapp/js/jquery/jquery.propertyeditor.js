@@ -8920,43 +8920,196 @@ PropertyEditor.Type.CodeEditor.prototype = {
         return data;
     },
     renderField: function() {
-        return '<pre id="' + this.id + '" name="' + this.id + '" class="ace_editor"></pre>';
+        return '<div id="' + this.id + '" name="' + this.id + '" class="code-editor"></div>';
     },
     initScripting: function() {
         var thisObj = this;
         if (this.value === null) {
             this.value = "";
         }
-        ace.config.set('loadWorkerFromBlob', false);
-        this.codeeditor = ace.edit(this.id);
-        this.codeeditor.setValue(this.value);
-        this.codeeditor.getSession().setTabSize(4);
-        if (this.properties.theme !== undefined || this.properties.theme !== "") {
-            if ($('body').attr('builder-theme') === "dark") {
-                this.properties.theme = "vibrant_ink";
-            } else {
-                this.properties.theme = "textmate";
+        
+        this.codeeditor = CodeMirror(document.getElementById(this.id), {
+            lineNumbers: true,
+            mode: "text",
+            matchBrackets: true,
+            theme: "default",
+            autoRefresh:true,
+            gutters: ["CodeMirror-lint-markers", "CodeMirror-linenumbers", "CodeMirror-foldgutter"],
+            lint: true,
+            historyEventDelay: 100,
+            autoCloseTags: true,
+            autoCloseBrackets: true,
+            foldGutter: true,
+            lint: true,
+            lineWrapping: true,
+            highlightSelectionMatches: {annotateScrollbar: true, minChars: 1},
+            extraKeys: {
+                "Ctrl-F": function(cm) {
+                  cm.execCommand("replace")
+                  $('#' + thisObj.id).find(".CodeMirror-advanced-dialog").css({display: 'block'})
+                  var offsetTop = "0px"
+                  if ($("body #top-panel").length > 0){
+                    offsetTop = $("body #top-panel").outerHeight() + "px"
+                  }
+                  if (thisObj.codeeditor.getOption("fullScreen")){
+                    $('#' + thisObj.id).find(".CodeMirror-advanced-dialog").css({position:"fixed", zIndex:"2147483647", top: offsetTop, left:"calc(100% - 320px)"});
+                  }
+                  else{
+                    $('#' + thisObj.id).find(".CodeMirror-advanced-dialog").css({position:"fixed", top:"0", left:"calc(100% - 320px)", zIndex:"999", marginTop:"150px"});
+                  }
+                  $('#' + thisObj.id).find(".CodeMirror-advanced-dialog").draggable()
+                },
+                "Ctrl-=": function(cm) {
+                  cm.increaseFontSize();
+                },
+                "Ctrl--": function(cm) {
+                  cm.decreaseFontSize();
+                },
+                "Ctrl-/": function(cm) {
+                  cm.toggleComment()
+                }
+              }
+          });
+
+        thisObj.codeeditor.execCommand("replace");
+        $('#' + thisObj.id).find(".CodeMirror-advanced-dialog").css({display: 'none'})
+
+        if (this.properties.mode !== undefined && this.properties.mode !== "") {
+            if (this.properties.mode === "html"){
+                this.codeeditor.setOption("mode", "htmlmixed");
+            }
+            else if (this.properties.mode === "java"){
+                this.codeeditor.setOption("mode", "text/x-java");
+            }else if (this.properties.mode === "json"){
+                this.codeeditor.setOption("mode", "application/json");
+            }else if (this.properties.mode === "sql"){
+                this.codeeditor.setOption("mode", "sql");
+            }else if (this.properties.mode === "css"){
+                this.codeeditor.setOption("mode", "css");
+            }else if (this.properties.mode === "javascript"){
+                this.codeeditor.setOption("mode", "javascript");
+            }else if (this.properties.mode === "xml"){
+                this.codeeditor.setOption("mode", "xml");
+            }else {
+                this.codeeditor.setOption("mode", "text");
             }
         }
-        this.codeeditor.setTheme("ace/theme/" + this.properties.theme);
-        if (this.properties.mode !== undefined && this.properties.mode !== "") {
-            this.codeeditor.getSession().setMode("ace/mode/" + this.properties.mode);
+
+        //Set dark theme if dark theme mode is activated
+        if ($('body').attr('builder-theme') === "dark") {
+            this.codeeditor.setOption("theme", "ayu-mirage");
         }
-        if (this.properties.check_syntax !== undefined && this.properties.check_syntax.toLowerCase() === "false") {
-            this.codeeditor.getSession().setUseWorker(false);
-        }
-        this.codeeditor.getSession().on('change', function() {
-            $(thisObj.editor).find("#"+thisObj.id).trigger("change");
+
+        //Detect keydown for specific actions, such as f12 to toggle full screen mode, escape
+        //to exit full screen mode, and F1 to toggle help panel
+        //and Undo and Redo
+        $('#' + this.id).on('keydown', function(event) {
+            if (event.keyCode == 90 && event.ctrlKey){
+                thisObj.codeeditor.execCommand("undo")
+                event.preventDefault();
+                event.stopPropagation();
+            }
+            else if (event.keyCode == 89 && event.ctrlKey){
+                thisObj.codeeditor.execCommand("redo")
+                event.preventDefault();
+                event.stopPropagation();
+            }
+            else if (event.key === "F1" && !thisObj.codeeditor.getOption("fullScreen")) {
+                if (panels[panelId]) {
+                    //Resets height
+                    thisObj.codeeditor.setSize(null, $("#" + thisObj.id).find(".CodeMirror").height()-1)
+                    panels[panelId].clear();
+                    delete panels[panelId];
+                    resetHeight();
+                } else {
+                    addPanel("top");
+                    resetHeight();
+                }
+                event.preventDefault();
+            }else if (event.key === "F1" && thisObj.codeeditor.getOption("fullScreen")) {
+                event.preventDefault();
+            }else if (event.key === 'F12' || (event.key === 'Escape' && thisObj.codeeditor.getOption("fullScreen"))){
+                if (thisObj.codeeditor.getOption("fullScreen")) {
+                    thisObj.codeeditor.setOption("fullScreen", false);
+                    $('#' + thisObj.id).find(".CodeMirror-advanced-dialog .row.find button:last").click();
+                    resetHeight();
+                    $('#' + thisObj.id).find(".CodeMirror-advanced-dialog").css({position:"sticky", top:"0px", zIndex:"10"});
+                    $('#'+thisObj.id).find(".CodeMirror").css({left: "", top: ""})
+                    event.stopPropagation();
+                }else{
+                    var offsetTop = "0px"
+                    var offsetLeft = "0px"
+                    if ($("body #top-panel").length > 0){
+                        offsetTop = $("body #top-panel").outerHeight() + "px"
+                    }
+                    if ($("body #quick-nav-bar").length > 0){
+                        offsetLeft = $("body #quick-nav-bar").outerWidth()+"px"
+                    }
+                    thisObj.codeeditor.setOption("fullScreen", true);
+                    $('#' + thisObj.id).find(".CodeMirror-advanced-dialog").css({position:"fixed", zIndex:"2147483647", top: offsetTop, left:"calc(100% - 320px)", marginTop:"0px"})
+                    $('#'+thisObj.id).find(".CodeMirror").css({left: offsetLeft, top: offsetTop})
+                    $('#' + thisObj.id).find(".CodeMirror-advanced-dialog").draggable()
+                }
+                event.preventDefault();
+            }
         });
-        this.codeeditor.setAutoScrollEditorIntoView(true);
-        this.codeeditor.setOption("maxLines", 1000000); //unlimited, to fix the height issue
-        this.codeeditor.setOption("minLines", 10);
-        this.codeeditor.resize();
-        $(thisObj.editor).find("#"+thisObj.id).trigger("change");
+
+        var panels = {};
+        var panelId = "";
+
+        function makePanel(where) {
+            var node = document.createElement("div");
+            var label, div, msg;
+
+            node.id = "panel-" + thisObj.id;
+            node.className = "panel " + where;
+            
+            div = $("<div>")
+            msg = get_peditor_msg('peditor.codemirror.helpMessage')
+            msg.split(" | ").forEach(el =>{
+                div.append($("<span>").text(el))
+            })
+
+            label = div.appendTo(node);
+
+            label.css({
+                "color": "black",
+                "font-size": "12px",
+                "padding": "5px 10px",
+                "font-weight":"bold",
+                "display": "flex",
+                "flex-direction": "column"
+            })
+
+            $(node).css({
+                "background-color":"rgb(255, 250, 143)"
+            })
+
+            return node;
+        };
+
+        function resetHeight(){
+            //Make CodeMirror unscrollable, and height follows the code written 
+            $("#" + thisObj.id).find(".CodeMirror").css({"height":"auto", "minHeight":"300px"});
+            $("#" + thisObj.id).find(".CodeMirror-scroll").css({"maxHeight":"auto", "minHeight":"300px"});
+        }
+
+        function addPanel(where) {
+            var node = makePanel(where);
+            panelId = "panel-" + thisObj.id;
+            panels[panelId] = thisObj.codeeditor.addPanel(node, {position: where, stable: true});
+        }
+        
+        this.codeeditor.setValue(this.value);
+
+        var tooltip = $("<span>").attr('title', get_peditor_msg('peditor.codemirror.tooltipTitle')).append(" <i class=\"zmdi zmdi-info-outline\"></i>");
+        
+        $("#"+thisObj.id).parent().parent().find(".property-label").append(tooltip);
+
+        resetHeight();
     },
     pageShown: function() {
-        this.codeeditor.resize();
-        this.codeeditor.gotoLine(1);
+        this.codeeditor.refresh();
     }
 };
 PropertyEditor.Type.CodeEditor = PropertyEditor.Util.inherit(PropertyEditor.Model.Type, PropertyEditor.Type.CodeEditor.prototype);
@@ -10970,8 +11123,8 @@ PropertyAssistant = {
             delete keys[e.which];
         });
         
-        $(element).off("focus.assist", "input[name]:not([type=checkbox]):not([type=radio]):not([type=button]):not([type=number]), textarea, .ace_editor");
-        $(element).on("focus.assist", "input[name]:not([type=checkbox]):not([type=radio]):not([type=button]):not([type=number]), textarea, .ace_editor", function() {
+        $(element).off("focus.assist", "input[name]:not([type=checkbox]):not([type=radio]):not([type=button]):not([type=number]), textarea, .ace_editor, .code-editor");
+        $(element).on("focus.assist", "input[name]:not([type=checkbox]):not([type=radio]):not([type=button]):not([type=number]), textarea, .ace_editor, .code-editor", function() {
             var field = $(this);
             $(element).find(".assist_icon").remove();
             var container = $(field).parent();
@@ -10982,6 +11135,13 @@ PropertyAssistant = {
             var display = container.css("display");
             if (display === "inline") {
                 container.css("display", "block");
+            }
+
+            //If it contains CodeMirror, change the container to CodeMirror's container
+            //Without changing the container, the property assistant will initialize
+            //on the panel 
+            if ($(container).has(".code-editor .CodeMirror").length > 0){
+                container = $(container).find(".code-editor .CodeMirror"); 
             }
             
             $(container).append('<i class="assist_icon la la-user-astronaut" title="'+get_peditor_msg('peditor.assit')+'"></i>');
@@ -11318,6 +11478,13 @@ PropertyAssistant = {
                     value = " " + value;
                 }
                 codeeditor.session.insert(PropertyAssistant.currentCaretPosition, value);
+            } else if ($(PropertyAssistant.currentField).hasClass("code-editor")) {
+                var codeeditor = $(PropertyAssistant.currentField).find(".CodeMirror")[0].CodeMirror;
+                var old = codeeditor.getValue();
+                if (old !== "") {
+                    value = " " + value;
+                }
+                codeeditor.getDoc().replaceRange(value, PropertyAssistant.currentCaretPosition);
             } else {
                 var org = $(PropertyAssistant.currentField).val();
                 var output = "";
@@ -11899,7 +12066,10 @@ PropertyAssistant = {
             var id = $(PropertyAssistant.currentField).closest(".ace_editor").attr("id");
             var codeeditor = ace.edit(id);
             return codeeditor.getCursorPosition();
-        } else {
+        } else if ($(PropertyAssistant.currentField).hasClass("code-editor")) {
+            var codeeditor = $(PropertyAssistant.currentField).find(".CodeMirror")[0].CodeMirror;
+            return codeeditor.getCursor();
+        }  else {
             // Initialize
             var iCaretPos = 0;
 

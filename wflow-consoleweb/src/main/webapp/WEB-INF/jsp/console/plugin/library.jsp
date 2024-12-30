@@ -20,6 +20,13 @@
 <script type="text/javascript" src="${pageContext.request.contextPath}/web/console/i18n/peditor?build=<fmt:message key="build.number"/>"></script>
 <script type="text/javascript" src="${pageContext.request.contextPath}/js/jquery/scrollTo/jquery.scrollTo.min.js"></script>
 <script type="text/javascript" src="${pageContext.request.contextPath}/js/jquery/jquery.propertyeditor.js?build=<fmt:message key="build.number"/>"></script>
+
+<script type="text/javascript" src="${pageContext.request.contextPath}/wro/codeMirror.min.js"></script>
+<!-- For sql mode, it is separated, because putting it in wro.xml messes up the regular expression, -->
+<!-- as it will get combined together with the next line, which fails the regex after building -->
+<script type="text/javascript" src="${pageContext.request.contextPath}/js/codemirror/mode/sql/sql.js"></script>
+
+
 <script type="text/javascript">// Immediately after the js include
     Dropzone.autoDiscover = false;
 </script>
@@ -28,6 +35,8 @@
 <link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/js/tooltipster/css/tooltipster.bundle.min.css" />
 <link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/css/jquery.propertyeditor.css?build=<fmt:message key="build.number"/>" />
 <link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/universal/lib/material-design-iconic-font/css/material-design-iconic-font.min.css" />
+
+<link rel="stylesheet" href="${pageContext.request.contextPath}/wro/codeMirror.min.css" />
 
 <c:if test="${not empty theme and theme ne 'classic'}">
         <link href="${pageContext.request.contextPath}/css/builderTheme.css" rel="stylesheet" />
