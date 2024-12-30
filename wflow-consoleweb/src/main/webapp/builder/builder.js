@@ -6027,6 +6027,20 @@ _CustomBuilder.Builder = {
             event.preventDefault();
             return false;
         });
+        
+        $(".element-actions .delete-btn").off("mouseenter").
+        on("mouseenter", function () {
+            $(this).closest("#element-highlight-box, #element-select-box").addClass("delete-highlight");
+            if ($(this).closest("#element-select-box").length > 0 && $(this).closest("#element-select-box").siblings().is("#element-highlight-box")){
+                $(this).closest("#element-select-box").siblings("#element-highlight-box").addClass("hidden");
+            }
+        }).off("mouseleave")
+        .on("mouseleave", function (event) {
+            $(this).closest("#element-highlight-box, #element-select-box").removeClass("delete-highlight");
+            if ($(this).closest("#element-select-box").length > 0 && $(this).closest("#element-select-box").siblings().is("#element-highlight-box")){
+                $(this).closest("#element-select-box").siblings("#element-highlight-box").removeClass("hidden");
+            }
+        });
     },
 
     /*

@@ -496,6 +496,26 @@ body.right-panel-resizing #right-panel-resize-block{
     left: 0px;
     display: none;
 }
+/* CSS to control delete feedback */
+#cbuilder #element-highlight-box.hidden {
+    display: none !important;
+}
+#cbuilder #element-highlight-box.delete-highlight,
+#cbuilder #element-select-box.delete-highlight,
+#builders li.item.delete-highlight {
+    border-color: #FF4D4F !important;
+    z-index: 1;
+    background: rgba(255, 77, 79, 0.1);  
+}
+#cbuilder #element-highlight-box.delete-highlight div#element-highlight-name,
+#cbuilder #element-select-box.delete-highlight div#element-select-name {
+    background-color: #FF4D4F !important;
+}
+#cbuilder #element-highlight-box.delete-highlight div#element-highlight-name a.delete-btn,
+#cbuilder #element-select-box.delete-highlight div#element-select-name a.delete-btn {
+    background-color: #FF2400 !important;
+}
+/* End of CSS */
 #cbuilder #element-parent-box{
     border: 1px dotted #08565c;
 }
