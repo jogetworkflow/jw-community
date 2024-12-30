@@ -20,7 +20,7 @@ import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import org.apache.commons.lang.StringEscapeUtils;
-import org.apache.commons.validator.routines.EmailValidator;
+import org.apache.commons.validator.EmailValidator;
 import org.json.simple.JSONObject;
 import org.jsoup.Jsoup;
 import org.jsoup.safety.Safelist;
@@ -1057,7 +1057,7 @@ public class StringUtil {
             emails = new String[]{email};
         }
         
-        EmailValidator validator = EmailValidator.getInstance(true);
+        EmailValidator validator = EmailValidator.getInstance();
         
         boolean valid = true;
         for (String e : emails) {

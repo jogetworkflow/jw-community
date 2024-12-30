@@ -2,6 +2,17 @@ Joget DX COMMUNITY
 ====================
 For more information, please refer to https://community.joget.org
 
+8.1.4
+=====
+fa8b4e7f0 Fixed: wflow-consoleweb - UI - RTL Issue for App Import, Create New App, and Plugin Upload. @8.1-SNAPSHOT
+927fe0a68 Fixed: wflow-core - UI Builder - AJAX event can't update correctly due to cache key is generated wrongly. @8.1-SNAPSHOT
+2c0c5c9aa Fixed: wflow-consoleweb - JSON API Options Binder - Dependency value is not handled correctly. T4676 @8.1-SNAPSHOT
+62a90bd08 Fixed: wflow-consoleweb - Login - Get request is still permitted. T4653 @8.1-SNAPSHOT
+b33459194 Fixed: jw-community - API Call - Not working when hitting API with proxies/redirect. T3989 @8.1-SNAPSHOT
+32a4b9a40 Fixed: wflow-consoleweb - Builder - Styles tab does not display correctly for RTL. T4518 @8.1-SNAPSHOT
+1fffd836e Fixed: wflow-core - JSON API Util - Referer header is wrongly set. @8.1-SNAPSHOT
+42e31a589 Fixed: wflow-core - Date Picker - Fixed validation bug in arabic locale. T4598 @8.1-SNAPSHOT
+
 8.1.3
 =====
 522435d8e Fixed: wflow-consoleweb - DX8 Theme - RTL label position top issue. @8.1-SNAPSHOT

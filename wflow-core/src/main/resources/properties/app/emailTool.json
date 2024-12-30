@@ -3,54 +3,7 @@
     properties : [{
         name : 'toSpecific',
         label : '@@app.emailtool.toEmail@@',
-        type : 'textfield',
-        js_validation: function(fieldName, value) {
-            var parentElement = document.querySelector('[property-name="toSpecific"]');
-            var inputElement = parentElement.querySelector('input');
-            var inputValue = inputElement.value;
-            var errorMsg = "";
-
-            if (inputValue === "") {
-                return "";
-            }
-            
-            if (!inputValue.includes('@')) {
-                return ""; 
-            }
-
-            $.ajax({
-                url: UI.base + "/web/api/validateEmail",
-                type: 'POST',
-                data: {
-                    email: inputValue,
-                    multiple: true
-                },
-                headers: {
-                    "FETCH-CSRF-TOKEN-PARAM": "true",
-                    "FETCH-CSRF-TOKEN": "true"
-                },
-                async: false, 
-                success: function(response) {
-                    if (response && typeof response === 'object' && !response.isValid) {
-                        if (!response.isValid) {
-                            var xhr = new XMLHttpRequest();
-                            xhr.open('POST', UI.base + '/web/userview/' + UI.userview_app_id + '/appI18nMessages', false);
-                            xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
-                            xhr.onreadystatechange = function() {
-                                if (xhr.readyState === 4 && xhr.status === 200) {
-                                    var messages = JSON.parse(xhr.responseText);
-                                    UI.messages = $.extend(UI.messages || {}, messages);
-                                    errorMsg = messages['app.edm.message.invalidEmailFormat'];
-                                }
-                            };
-                            xhr.send('keys[]=app.edm.message.invalidEmailFormat');
-                        }
-                    }
-                },
-            });
-
-            return errorMsg;
-        }
+        type : 'textfield'
     },
     {
         name : 'toParticipantId',
@@ -95,50 +48,7 @@
         name : 'from',
         label : '@@app.emailtool.from@@',
         type : 'textfield',
-        description : '@@app.emailtool.from.desc@@',
-        js_validation: function(fieldName, value) {
-            var parentElement = document.querySelector('[property-name="from"]');
-            var inputElement = parentElement.querySelector('input');
-            var inputValue = inputElement.value;
-            var errorMsg = "";
-
-            if (inputValue === "") {
-                return "";
-            }
-
-            $.ajax({
-                url: UI.base + "/web/api/validateEmail",
-                type: 'POST',
-                data: {
-                    email: inputValue,
-                    multiple: false
-                },
-                headers: {
-                    "FETCH-CSRF-TOKEN-PARAM": "true",
-                    "FETCH-CSRF-TOKEN": "true"
-                },
-                async: false, 
-                success: function(response) {
-                    if (response && typeof response === 'object' && !response.isValid) {
-                        if (!response.isValid) {
-                            var xhr = new XMLHttpRequest();
-                            xhr.open('POST', UI.base + '/web/userview/' + UI.userview_app_id + '/appI18nMessages', false);
-                            xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
-                            xhr.onreadystatechange = function() {
-                                if (xhr.readyState === 4 && xhr.status === 200) {
-                                    var messages = JSON.parse(xhr.responseText);
-                                    UI.messages = $.extend(UI.messages || {}, messages);
-                                    errorMsg = messages['app.edm.message.invalidEmailFormat'];
-                                }
-                            };
-                            xhr.send('keys[]=app.edm.message.invalidEmailFormat');
-                        }
-                    }
-                },
-            });
-
-            return errorMsg;
-        }
+        description : '@@app.emailtool.from.desc@@'
     },
     {
         name : 'host',

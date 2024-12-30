@@ -601,16 +601,6 @@
         var params = "username=" + username + "&password=" + password;
         ConnectionManager.post('${pageContext.request.contextPath}/web/console/setting/general/loginHash', callback, params);
     }
-    
-    $(document).ready(function() {
-        $('form').on('submit', function(event) {
-            event.preventDefault(); // Prevent the form from submitting
-            var formSelector = this; // The form being submitted
-            var emailSelector = '#smtpEmail';
-            UI.validateEmail(formSelector, emailSelector);
-        });
-    });
-    
 </script>
 
 <script>
