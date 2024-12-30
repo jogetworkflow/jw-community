@@ -359,3 +359,52 @@ body.compact-mode.rtl #sidebar .nav-tabs.user-menu .mm-profile > a{
     padding: 25px 15px;
 }
 
+body.compact-mode .label-top.form-cell > label.label > i,
+body.compact-mode .label-top.subform-cell > label.label > i{
+    bottom: -27px;
+}
+
+body.compact-mode .form-cell > label.label > i,
+body.compact-mode .subform-cell > label.label > i{
+    height: calc(1.5em + 0.25rem + 2px);
+}
+body.compact-mode .label-top .form-cell:not(.label-left) > label.label > i,
+body.compact-mode .label-top .subform-cell:not(.label-left) > label.label > i{
+    bottom: -27px;
+}
+@media(max-width: 767px) {
+    body.compact-mode .form-cell > label.label > i,
+    body.compacy-mode .subform-cell > label.label > i{
+        bottom: -27px;
+    }
+    body.compact-mode.rtl .form-cell > label.label > i,
+    body.compact-mode.rtl .subform-cell > label.label > i {
+        bottom: -27px;
+    }
+}
+body.compact-mode.mediumFontSize .label-top .form-cell:not(.label-left) > label.label > i,
+body.compact-mode.mediumFontSize .label-top .subform-cell:not(.label-left) > label.label > i,
+body.compact-mode.mediumFontSize .label-top.form-cell > label.label > i,
+body.compact-mode.mediumFontSize .label-top.subform-cell > label.label > i{
+    bottom: -31.5px;
+}
+body.compact-mode.largeFontSize .label-top .form-cell:not(.label-left) > label.label > i,
+body.compact-mode.largeFontSize .label-top .subform-cell:not(.label-left) > label.label > i,
+body.compact-mode.largeFontSize .label-top.form-cell > label.label > i,
+body.compact-mode.largeFontSize .label-top.subform-cell > label.label > i{
+    bottom: -36px;
+}
+@media (max-width: 767px){
+    body.compact-mode.mediumFontSize .form-cell > label.label > i,
+    body.compact-mode.mediumFontSize .subform-cell > label.label > i,
+    body.compact-mode.mediumFontSize .label-left.form-cell > label.label > i,
+    body.compact-mode.mediumFontSize .label-left.subform-cell > label.label > i{
+        bottom: -31.5px;
+    }
+    body.compact-mode.largeFontSize .form-cell > label.label > i,
+    body.compact-mode.largeFontSize .subform-cell > label.label > i,
+    body.compact-mode.largeFontSize .label-left.form-cell > label.label > i,
+    body.compact-mode.largeFontSize .label-left.subform-cell > label.label > i{
+        bottom: -36px;
+    }
+}
