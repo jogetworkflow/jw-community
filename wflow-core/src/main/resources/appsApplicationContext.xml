@@ -37,7 +37,7 @@
         <property name="cacheManager" ref="cacheManager" />
     </bean>
     
-    <bean id="formDataSessionFactory" class="org.joget.commons.ignite.IgniteSessionFactoryBean">
+    <bean id="formDataSessionFactory" class="org.joget.commons.cache.InMemoryCacheSessionFactoryBean">
         <property name="dataSource" ref="setupDataSource"/>
         <property name="mappingResources">
             <list>
@@ -115,7 +115,7 @@
         <property name="sessionFactory" ref="reportSessionFactory"/>
     </bean>
 
-    <bean id="appSessionFactory" class="org.joget.commons.ignite.IgniteSessionFactoryBean">
+    <bean id="appSessionFactory" class="org.joget.commons.cache.InMemoryCacheSessionFactoryBean">
         <qualifier value="app"/>
         <property name="dataSource" ref="setupDataSource"/>
         <property name="mappingResources">
@@ -152,7 +152,7 @@
     </bean>
     
     <!-- Hibernate SessionFactory for report-->
-    <bean id="reportSessionFactory" class="org.joget.commons.ignite.IgniteSessionFactoryBean">
+    <bean id="reportSessionFactory" class="org.joget.commons.cache.InMemoryCacheSessionFactoryBean">
         <qualifier value="report"/>
         <property name="dataSource" ref="setupDataSource"/>
         <property name="mappingResources">

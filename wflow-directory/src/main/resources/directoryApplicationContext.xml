@@ -11,7 +11,7 @@
     <import resource="classpath:commonsApplicationContext.xml" />
     <import resource="classpath:pluginBaseApplicationContext.xml" />
 
-    <bean id="directorySessionFactory" class="org.joget.commons.ignite.IgniteSessionFactoryBean">
+    <bean id="directorySessionFactory" class="org.joget.commons.cache.InMemoryCacheSessionFactoryBean">
         <property name="dataSource" ref="setupDataSource"/>
         <property name="mappingResources">
             <list>

@@ -371,32 +371,6 @@
             <type>jar</type>
         </dependency>
         <dependency>
-          <groupId>org.apache.ignite</groupId>
-          <artifactId>ignite-core</artifactId>
-          <version>2.16.0</version>
-        </dependency>
-        <dependency>
-          <groupId>org.apache.ignite</groupId>
-          <artifactId>ignite-log4j2</artifactId>
-          <version>2.16.0</version>
-        </dependency>
-        <dependency>
-          <groupId>org.apache.ignite</groupId>
-          <artifactId>ignite-kubernetes</artifactId>
-          <version>2.16.0</version>
-        </dependency>
-        <dependency>
-          <groupId>org.apache.ignite</groupId>
-          <artifactId>ignite-hibernate-ext</artifactId>
-          <version>5.3.0</version>
-          <exclusions>
-              <exclusion>
-                  <groupId>org.hibernate</groupId>
-                  <artifactId>hibernate-core</artifactId>
-              </exclusion>
-          </exclusions>
-        </dependency>
-        <dependency>
             <groupId>com.github.jsqlparser</groupId>
             <artifactId>jsqlparser</artifactId>
             <version>4.9</version>

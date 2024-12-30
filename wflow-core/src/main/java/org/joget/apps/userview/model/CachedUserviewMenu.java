@@ -11,14 +11,12 @@ import java.util.concurrent.TimeoutException;
 import javax.cache.Cache;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
-import org.apache.ignite.Ignite;
-import org.apache.ignite.configuration.CacheConfiguration;
 import org.displaytag.tags.TableTagParameters;
 import org.joget.apps.app.model.AppDefinition;
 import org.joget.apps.app.service.AppUtil;
 import org.joget.apps.userview.lib.AjaxUniversalTheme;
 import org.joget.apps.userview.service.UserviewCache;
-import org.joget.commons.ignite.IgniteCacheManager;
+import org.joget.commons.cache.InMemoryCacheManager;
 import org.joget.commons.util.LogUtil;
 import org.joget.commons.util.PluginThread;
 import org.joget.commons.util.ResourceBundleUtil;
@@ -610,14 +608,9 @@ public class CachedUserviewMenu extends UserviewMenu {
      */
     public static Cache getUserviewMenuAsyncCache() {        
         if (userviewMenuCache == null) {
-            Ignite ignite = IgniteCacheManager.getIgnite();
-            if (ignite != null) {
-                String regionName = "userview-menu-region";
-                CacheConfiguration cacheConfiguration = (CacheConfiguration)SecurityUtil.getApplicationContext().getBean("igniteAtomicCache");
-                cacheConfiguration.setName(regionName);
-                IgniteCacheManager.setCacheMode(cacheConfiguration);
-                userviewMenuCache = ignite.getOrCreateCache(cacheConfiguration);
-            }        
+            String regionName = "userview-menu-region";
+            InMemoryCacheManager cacheManager = InMemoryCacheManager.getInMemoryCacheManager();
+            userviewMenuCache = cacheManager.getCache(regionName, 0);
         }
         return userviewMenuCache;
     }
