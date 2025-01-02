@@ -133,11 +133,10 @@ public class UserviewDefinitionDaoImpl extends AbstractAppVersionedObjectDao<Use
     public boolean delete(String id, AppDefinition appDef) {
         boolean result = false;
         try {
-            UserviewDefinition obj = loadById(id, appDef);
+            UserviewDefinition obj = super.loadById(id, appDef);
 
-            // detach from app
             if (obj != null) {
-                obj.setAppDefinition(null);
+                appDef = obj.getAppDefinition();
 
                 // delete obj
                 super.delete(getEntityName(), obj);

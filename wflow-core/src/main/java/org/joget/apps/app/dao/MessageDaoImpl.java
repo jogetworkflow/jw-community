@@ -168,11 +168,10 @@ public class MessageDaoImpl extends AbstractAppVersionedObjectDao<Message> imple
     public boolean delete(String id, AppDefinition appDef) {
         boolean result = false;
         try {
-            Message obj = loadById(id, appDef);
+            Message obj = super.loadById(id, appDef);
 
-            // detach from app
             if (obj != null) {
-                obj.setAppDefinition(null);
+                appDef = obj.getAppDefinition();
 
                 // delete obj
                 super.delete(getEntityName(), obj);

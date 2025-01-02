@@ -109,11 +109,10 @@ public class EnvironmentVariableDaoImpl extends AbstractAppVersionedObjectDao<En
     public boolean delete(String id, AppDefinition appDef) {
         boolean result = false;
         try {
-            EnvironmentVariable obj = loadById(id, appDef);
+            EnvironmentVariable obj = super.loadById(id, appDef);
 
-            // detach from app
             if (obj != null) {
-                obj.setAppDefinition(null);
+                appDef = obj.getAppDefinition();
 
                 // delete obj
                 super.delete(getEntityName(), obj);

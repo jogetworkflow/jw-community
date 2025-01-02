@@ -135,11 +135,10 @@ public class DatalistDefinitionDaoImpl extends AbstractAppVersionedObjectDao<Dat
     public boolean delete(String id, AppDefinition appDef) {
         boolean result = false;
         try {
-            DatalistDefinition obj = loadById(id, appDef);
+            DatalistDefinition obj = super.loadById(id, appDef);
 
-            // detach from app
             if (obj != null) {
-                obj.setAppDefinition(null);
+                appDef = obj.getAppDefinition();
 
                 // delete obj
                 super.delete(getEntityName(), obj);
