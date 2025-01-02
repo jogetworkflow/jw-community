@@ -15,6 +15,7 @@
         <property name="dateCreated" type="timestamp"/>
         <property name="dateModified" type="timestamp"/>
         <bag cascade="all-delete-orphan" inverse="true" lazy="true" name="formDefinitionList">
+            <cache usage="transactional" /> 
             <key>
                 <column name="appId"/>
                 <column name="appVersion"/>
@@ -22,6 +23,7 @@
             <one-to-many entity-name="FormDefinition"/>
         </bag>
         <bag cascade="all-delete-orphan" inverse="true" lazy="true" name="datalistDefinitionList">
+            <cache usage="transactional" /> 
             <key>
                 <column name="appId"/>
                 <column name="appVersion"/>
@@ -29,6 +31,7 @@
             <one-to-many entity-name="DatalistDefinition"/>
         </bag>
         <bag cascade="all-delete-orphan" inverse="true" lazy="true" name="userviewDefinitionList">
+            <cache usage="transactional" /> 
             <key>
                 <column name="appId"/>
                 <column name="appVersion"/>
@@ -36,6 +39,7 @@
             <one-to-many entity-name="UserviewDefinition"/>
         </bag>
         <bag cascade="all-delete-orphan" inverse="true" lazy="true" name="builderDefinitionList">
+            <cache usage="transactional" /> 
             <key>
                 <column name="appId"/>
                 <column name="appVersion"/>
@@ -43,6 +47,7 @@
             <one-to-many entity-name="BuilderDefinition"/>
         </bag>
         <bag cascade="all-delete-orphan" inverse="true" lazy="true" name="packageDefinitionList">
+            <cache usage="transactional" /> 
             <key>
                 <column name="appId"/>
                 <column name="appVersion"/>
@@ -58,6 +63,7 @@
             <one-to-many entity-name="PluginDefaultProperties"/>
         </bag>
         <bag cascade="all-delete-orphan" inverse="true" lazy="true" name="environmentVariableList">
+            <cache usage="transactional" /> 
             <key>
                 <column name="appId"/>
                 <column name="appVersion"/>
@@ -65,6 +71,7 @@
             <one-to-many entity-name="EnvironmentVariable"/>
         </bag>
         <bag cascade="all-delete-orphan" inverse="true" lazy="true" name="messageList">
+            <cache usage="transactional" /> 
             <key>
                 <column name="appId"/>
                 <column name="appVersion"/>
@@ -72,6 +79,7 @@
             <one-to-many entity-name="Message"/>
         </bag>
         <bag cascade="all-delete-orphan" inverse="true" lazy="true" name="resourceList">
+            <cache usage="transactional" /> 
             <key>
                 <column name="appId"/>
                 <column name="appVersion"/>
