@@ -144,19 +144,19 @@ public class PluginDefaultPropertiesDaoImpl extends AbstractAppVersionedObjectDa
         try {
             
             for (String id : ids) {
-                PluginDefaultProperties obj = loadById(id, appDef);
+                PluginDefaultProperties obj = super.loadById(id, appDef);
 
-                // detach from app
                 if (obj != null) {
-                    obj.setAppDefinition(null);
-
                     // delete obj
                     super.delete(getEntityName(), obj);
+                    
                     cache.remove(getCacheKey(id, appDef.getId(), appDef.getVersion()), appDef);
                 }
             }
-            
+            //reload the appdef to prevent "deleted object would be re-saved by cascade"
+            appDef = appDefinitionDao.loadVersion(appDef.getId(), appDef.getVersion());
             appDefinitionDao.updateDateModified(appDef);
+            
             result = true;
 
             if (!AppDevUtil.isGitDisabled()) {
@@ -185,11 +185,10 @@ public class PluginDefaultPropertiesDaoImpl extends AbstractAppVersionedObjectDa
     public boolean delete(String id, AppDefinition appDef) {
         boolean result = false;
         try {
-            PluginDefaultProperties obj = loadById(id, appDef);
+            PluginDefaultProperties obj = super.loadById(id, appDef);
 
-            // detach from app
             if (obj != null) {
-                obj.setAppDefinition(null);
+                appDef = obj.getAppDefinition();
 
                 // delete obj
                 super.delete(getEntityName(), obj);

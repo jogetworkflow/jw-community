@@ -12,6 +12,7 @@ import java.util.Collection;
 import java.util.Map;
 import junit.framework.Assert;
 import org.apache.commons.io.FileUtils;
+import org.joget.apps.app.dao.FormDefinitionDao;
 import org.junit.runner.RunWith;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
@@ -64,6 +65,8 @@ public class TestAppService {
     private WorkflowManager workflowManager;
     @Autowired
     private FormDataDao formDataDao;
+    @Autowired
+    private FormDefinitionDao formDefinitionDao;
 
     public TestAppService() {
         TestUtil.cleanFormMappingFile();
@@ -514,6 +517,33 @@ public class TestAppService {
             } catch(Exception e) {
                 e.printStackTrace();
             }
+            
+            // delete app
+            deleteAppDefinition(TEST_APP_ID);
+        }
+    }
+    
+    @Test
+    @Transactional(propagation = Propagation.NOT_SUPPORTED)
+    @Rollback(false)
+    public void testDeleteBuilderItem() throws Exception {
+        try {
+            AppDefinition appDef = null;
+
+            // delete app
+            deleteAppDefinition(TEST_APP_ID);
+
+            // create app definition
+            appDef = createAppDefinition(TEST_APP_ID, TEST_APP_VERSION);
+
+            // Form
+            createFormDefinition(appDef, TEST_FORM_ID, TEST_FORM_ID, TEST_APP_VERSION);
+            Assert.assertNotNull(formDefinitionDao.loadById(TEST_FORM_ID, appDef));
+            formDefinitionDao.delete(TEST_FORM_ID, appDef);
+            Assert.assertNull(formDefinitionDao.loadById(TEST_FORM_ID, appDef));
+            
+            
+        } finally {
             
             // delete app
             deleteAppDefinition(TEST_APP_ID);

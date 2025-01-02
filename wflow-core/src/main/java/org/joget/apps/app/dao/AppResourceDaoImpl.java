@@ -87,11 +87,11 @@ public class AppResourceDaoImpl extends AbstractAppVersionedObjectDao<AppResourc
     public boolean delete(String filename, AppDefinition appDef) {
         boolean result = false;
         try {
-            AppResource obj = loadById(filename, appDef);
+            AppResource obj = super.loadById(filename, appDef);
 
-            // detach from app
             if (obj != null) {
-                obj.setAppDefinition(null);
+                appDef = obj.getAppDefinition();
+                
                 AppResourceUtil.deleteFile(appDef.getAppId(), appDef.getVersion().toString(), filename);
 
                 // delete obj
