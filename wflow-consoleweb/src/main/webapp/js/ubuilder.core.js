@@ -79,6 +79,54 @@ UserviewBuilder = {
             
             UserviewBuilder.initThemeConfigPluginList();
         });
+
+        var savedCss, savedJs = "";
+        var propertiesViewInitilized = $("#propertiesView").length > 0 ? true : false;
+        $("body").on("mouseenter", "div[property-name='theme'] > .property-input > div.chosen-container", function() {
+            savedCss = $("div[property-name='css'] > .property-input > div.code-editor > div > div.CodeMirror")[0].CodeMirror.getValue();
+            savedJs = $("div[property-name='js'] > .property-input > div.code-editor > div > div.CodeMirror")[0].CodeMirror.getValue();
+        }).on("change", "div[property-name='theme'] > .property-input > select", function(e) {
+            if (!propertiesViewInitilized) {
+                propertiesViewInitilized = true;
+            } else {
+                const observer = new MutationObserver((mutationsList, observer) => {
+                    const jsPreElement = $("div[property-name='js'] > .property-input > div.code-editor > div > div.CodeMirror")[0];
+                    const cssPreElement = $("div[property-name='css'] > .property-input > div.code-editor > div > div.CodeMirror")[0];
+    
+                    if (jsPreElement) {
+                        var cmJs = jsPreElement.CodeMirror;
+                        if (cmJs.getValue() === "" ||
+                            (cmJs.getValue() !== "" &&
+                            cmJs.getValue() !== savedJs &&
+                            !confirm(
+                                get_cbuilder_msg("ubuilder.customJS.confirm")
+                            ))
+                        ) {
+                            cmJs.setValue(savedJs);
+                        }
+                    }
+    
+                    if (cssPreElement) {
+                        var cmCss = cssPreElement.CodeMirror;
+                        if (cmCss.getValue() === "" ||
+                            (cmCss.getValue() !== "" &&
+                            cmCss.getValue() !== savedCss &&
+                            !confirm(
+                                get_cbuilder_msg("ubuilder.customCSS.confirm")
+                            ))
+                        ) {
+                            cmCss.setValue(savedCss);
+                        }
+                    }
+
+                    if (cssPreElement || jsPreElement) {
+                        observer.disconnect();
+                    }
+                });
+    
+                observer.observe(document.body, { childList: true, subtree: true });   
+            }
+        }); 
     },
     
     /*
