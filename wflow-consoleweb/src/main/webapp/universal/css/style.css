@@ -65,6 +65,16 @@ header.navbar {
     border-radius: 0;
 }
 
+body.horizontal_menu.inline_menu.quickEditModeActive header.navbar {
+    height: 95px;
+}
+
+@media (min-width:1455px) {
+    body.horizontal_menu.inline_menu.quickEditModeActive header.navbar {
+        height: 89px;
+    }
+}
+ 
 a {
     text-decoration: none;
 }
@@ -1029,6 +1039,10 @@ body.rtl #sidebar li ul>li>a > span:first-child{
         content: "\f2f9";
         opacity: 0.7;
         right:0;
+    }
+    body.horizontal_menu.inline_menu #sidebar li.toggled>a.dropdown:before,
+    body.horizontal_menu.inline_menu #sidebar li>a.dropdown:before {
+        margin-top: -14px;
     }
     body.horizontal_menu #sidebar li.toggled>a.dropdown:before {
         -webkit-transform: none;
