@@ -1629,6 +1629,10 @@ main .grid-stack-item-header-refresh {
     font-size: 20px !important;
     line-height: 25px !important;
 }
+.largeFontSize .hasDatepicker + a {
+    position: absolute;
+    padding: 0.5rem;
+}
 
 .mediumFontSize #form-canvas *,
 .mediumFontSize .fc-view-container *,
@@ -1638,6 +1642,11 @@ main .grid-stack-item-header-refresh {
     font-size: 17px !important;
     line-height: 20px !important;
 }
+.mediumFontSize .hasDatepicker + a {
+    position: absolute;
+    padding: 0.8rem 0.5rem;
+}
+
 /*Priority Menu*/
 @media (min-width: 768px){
     ul#moreSubMenu li > ul{
