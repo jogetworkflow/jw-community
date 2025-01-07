@@ -50,7 +50,6 @@
             <one-to-many entity-name="PackageDefinition"/>
         </bag>
         <bag cascade="all-delete-orphan" inverse="true" lazy="true" name="pluginDefaultPropertiesList">
-            <cache usage="transactional" /> 
             <key>
                 <column name="appId"/>
                 <column name="appVersion"/>

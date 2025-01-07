@@ -1,23 +1,44 @@
 package net.sf.ehcache;
 
 import java.io.Serializable;
+import java.util.Date;
+import javax.cache.CacheException;
 
-public class Element {
+public class Element implements Serializable, Cloneable {
     
     private String key;
     private Object objectValue;
+    private long creationTime;
     
     public Element(Serializable key, Serializable objectValue) {
         this.key = (String) key;
         this.objectValue = (Object) objectValue;
+        this.creationTime = (new Date()).getTime();
     } 
 
-    public String getKey() {
+    public final String getKey() {
         return key;
     }
     
-    public Object getObjectValue() {
+    public final Object getObjectKey() {
+        return key;
+    }
+    
+    public final Object getObjectValue() {
         return objectValue;
+    }
+    
+    public final Serializable getValue() throws CacheException {
+        try {
+            return (Serializable) getObjectValue();
+        } catch (ClassCastException e) {
+            throw new CacheException("The value " + getObjectValue() + " for key " + getObjectKey() +
+                    " is not Serializable. Consider using Element.getObjectValue()");
+        }
+    }
+    
+    public final long getCreationTime() {
+        return creationTime;
     }
     
     public void setTimeToLive(final int timeToLiveSeconds) {

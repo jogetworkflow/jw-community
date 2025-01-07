@@ -11,7 +11,6 @@ import org.apache.commons.io.monitor.FileAlterationObserver;
 import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.felix.framework.Felix;
 import org.apache.felix.framework.util.StringMap;
-import org.apache.tomcat.jakartaee.Migration;
 import org.aspectj.lang.NoAspectBoundException;
 import org.joget.commons.spring.model.ResourceBundleMessageDao;
 import org.joget.commons.util.*;
@@ -39,6 +38,7 @@ import java.util.*;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 import java.util.jar.Manifest;
+import org.apache.tomcat.jakartaee.JogetPluginMigration;
 
 /**
  * Service methods used to manage plugins
@@ -877,7 +877,7 @@ public class PluginManager implements ApplicationContextAware {
     public void migratePlugin(File pluginJar) throws IOException {
         File transformed = new File(pluginJar.getAbsolutePath() + ".transformed");
 
-        Migration migration = new Migration();
+        JogetPluginMigration migration = new JogetPluginMigration();
         migration.setSource(pluginJar);
         migration.setDestination(transformed);
         migration.execute();
