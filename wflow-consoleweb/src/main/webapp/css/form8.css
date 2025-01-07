@@ -397,10 +397,24 @@ body.rtl .form-cell-value > label,
 body.rtl .subform-cell-value > label {
     float: right;
 }
+
+/* Password field */
+.password-input-wrapper button.password-toggle {
+    margin: 0 0.5em;
+    padding: 0.5em 1em;
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+}
+
 @media screen and (max-width: 480px) {
     .form-container [class*=form-cell-value]{
         float: unset !important;
         width: 100% !important;
+    }
+    .password-input-wrapper input.hasToggle[type=text],
+    .password-input-wrapper input.hasToggle[type=password] {
+        padding-inline-end: 3.5em;
     }
 }
 .form-cell-value.fullWidth > label,

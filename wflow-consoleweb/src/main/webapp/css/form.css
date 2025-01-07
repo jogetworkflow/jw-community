@@ -1273,3 +1273,12 @@ body.rtl input.hasDatepicker {
     direction: ltr;
     text-align: right;
 }
+
+#content .password-input-wrapper button.password-toggle {
+    font-size: revert !important;
+    line-height: revert !important;
+}
+#content .password-input-wrapper button.password-toggle i {
+    font-size: revert !important;
+    line-height: revert !important;
+}

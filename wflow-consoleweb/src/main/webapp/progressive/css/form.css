@@ -335,6 +335,18 @@ body .filter-cell select:not([class^=ui]){
     }
 }
 
+/* Password field */
+#content .password-input-wrapper button.password-toggle {
+    height: 2em;
+    width: 2em;
+    right: 0;
+}
+
+.rtl #content .password-input-wrapper button.password-toggle {
+    left: 0;
+    right: auto;
+}
+
 @media screen and (max-width: 480px) {
     body .form-container input:not([type]),
     body .form-container input[type=text],
@@ -358,6 +370,10 @@ body .filter-cell select:not([class^=ui]){
     }
     body .form-container textarea[cols] {
         width: 100%;
+    }
+    .password-input-wrapper input.hasToggle[type=text],
+    .password-input-wrapper input.hasToggle[type=password] {
+        padding-inline-end: 3.5em;
     }
 }
 

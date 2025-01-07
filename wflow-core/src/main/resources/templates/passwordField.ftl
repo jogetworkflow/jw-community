@@ -17,8 +17,7 @@
             .password-input-wrapper input[type=text],
             .password-input-wrapper input[type=password] {
                 margin-bottom: 0;
-                padding-inline-end: 30px !important;
-                padding-inline-start: 12px !important;
+                padding-inline-end: 2.2em !important;
                 max-width: 100%;
                 min-width: 100%;
             }

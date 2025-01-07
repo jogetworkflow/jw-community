@@ -1090,6 +1090,17 @@ body .handsontable input, .handsontable textarea{
     float: none;
 }
 
+#content .password-input-wrapper button.password-toggle {
+    position: relative;
+    right: 2em;
+    height: 30px;
+    transform: none;
+}
+body.rtl #content .password-input-wrapper button.password-toggle {
+    right: auto;
+    left: 2em;
+}
+
 @media screen and (max-width: 480px) {
     body .form-container input:not([type]),
     body .form-container input[type=text],
@@ -1136,6 +1147,15 @@ body .handsontable input, .handsontable textarea{
     }
     body.rtl #form-canvas div.form-cell .label {
         text-align: right;
+    }
+    #content .password-input-wrapper button.password-toggle {
+        position: absolute;
+        right: 0.6em;
+        transform: translateY(-50%);
+    }
+    body.rtl #content .password-input-wrapper button.password-toggle {
+        right: auto;
+        left: 0.7em;
     }
 }
 
