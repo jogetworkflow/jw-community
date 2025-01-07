@@ -122,11 +122,43 @@ body .subform-cell > .subform-container.has-frame, .form-cell > .subform-contain
     width: 100%;
     float: none !important;
 }
-/* For datepicker trigger and close field icons */
+
+/* Top-label for S-Size in Normal Mode*/
 .label-top .hasDatepicker + a, .label-top .hasDatepicker + a + a {
-    top: unset;
-    bottom: 7px;
+    top: auto;
+    bottom: 0.5rem;
 }
+/* Top-label for M-Size in Normal Mode*/
+.mediumFontSize .label-top .hasDatepicker + a, .mediumFontSize .label-top .hasDatepicker + a + a {
+    top: auto;
+    bottom: 0.7rem;
+}
+/* Top-label for L-Size in Normal Mode*/
+.largeFontSize .label-top .hasDatepicker + a, .largeFontSize .label-top .hasDatepicker + a + a {
+    top: auto;
+    bottom: 1rem;
+}
+
+/*Consistent datepicker icon spacing for M Font Size*/
+.mediumFontSize .hasDatepicker + a + a {
+    right: 2.8rem;
+}
+/*Consistent datepicker icon spacing for L Font Size*/
+.largeFontSize .hasDatepicker + a + a {
+    right: 3rem;
+}
+
+/*Consistent datepicker icon spacing for M Font Size*/
+body.rtl.mediumFontSize .hasDatepicker + a + a {
+    right: auto;
+    left: 2.8rem;
+}
+/*Consistent datepicker icon spacing for L Font Size*/
+body.rtl.largeFontSize .hasDatepicker + a + a {
+    right: auto;
+    left: 3rem;
+}
+
 .form-cell > label.label + *:not(.ui-screen-hidden),
 .subform-cell > label.label + *:not(.ui-screen-hidden),
 .form-cell > label.label + .ui-screen-hidden + *,
@@ -1215,13 +1247,21 @@ body.rtl .calculationField_value {
         max-width: 100%;
         float: none;
     }
-    .hasDatepicker + a{
-        top: unset;
-        bottom: 7px;
+
+    /*Icon position for small font size*/
+    .hasDatepicker + a, .hasDatepicker + a + a {
+        top: auto;
+        bottom: 0.5rem;
     }
-    .hasDatepicker + a + a{
-        top: unset;
-        bottom: 6px;
+    /*Icon position for medium font size*/
+    .mediumFontSize .hasDatepicker + a, .mediumFontSize .hasDatepicker + a + a {
+        top: auto;
+        bottom: 0.7rem;
+    }
+    /*Icon position for large font size*/
+    .largeFontSize .hasDatepicker + a, .largeFontSize .hasDatepicker + a + a {
+        top: auto;
+        bottom: 1rem;
     }
 
     .form-column, .subform-column{
@@ -1491,4 +1531,7 @@ body.rtl .label-top.subform-cell > label.label > i{
 body.rtl .form-cell > label.label,
 body.rtl .subform-cell > label.label{
     padding: 8px 0 0 10px;
+}
+.numeric_field_controls.disabled{
+    display: none;
 }

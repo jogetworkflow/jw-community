@@ -2,6 +2,29 @@ Joget DX COMMUNITY
 ====================
 For more information, please refer to https://community.joget.org
 
+8.1.9
+=====
+47384e87f Fixed: jw-community - Security - Update Quill JS to 1.3.7, commons-dbcp2 to 2.13.0 & guava to 33.3.1-jre. T5364 @7.1-SNAPSHOT
+37671c220 Fixed: wflow-consoleweb - UI - Downgrade TinyMCE to 6.8.5 due to licensing. @8.1-SNAPSHOT
+dd0a75a82 Fixed: wflow-commons - StringUtil - Image with Based64 data url is stripped by stripHtmlRelaxed method. T5379 @7.0-SNAPSHOT
+835d57a47 Modified: wflow-core - JasperReports - Upgrade openpdf to 1.3.32 for jasperreports 6.21.4. T5309 @7.0-SNAPSHOT
+864cc93e4 Fixed: wflow-commons - Ehcache - java.lang.IllegalStateException cache is closed error after initial DB setup @7.0-SNAPSHOT
+3db3ee67c Fixed: wflow-core - X-Admin Theme - UI with anonymous permission showing login page in tab after logout. @8.1-SNAPSHOT
+cbc64b610 Fixed: wflow-consoleweb - App License - Show warning during publishing when exceeded app license limit. @8.1-SNAPSHOT
+9a0f4c8af Fixed: wflow-consoleweb - Information Tiles - Fixed incostistent text alignment header design in rtl for multiple theme @8.1-SNAPSHOT
+071c4f475 Fixed: wflow-consoleweb - Priority Menu - Horizontal menu css issue. @8.1-SNAPSHOT
+3e45fffe5 Fixed: wflow-core - Post Form Processing Tool - Does not trigger on data creation on process first activity. @8.1-SNAPSHOT
+c8dadb865 Fixed: wflow-core - List Template - Null value primary key causing card template can't display all rows. T5186 @8.1-SNAPSHOT
+28085e4fe Fixed: wflow-core - Form Builder - ERD can't render for large app. T5107 @8.1-SNAPSHOT
+a693a0777 Fixed: wflow-consoleweb - DX 8 Themes - Show/hide sidebar does not work for certain width in Safari browser. T5271 @8.1-SNAPSHOT
+b6155674f Fixed: wflow-consoleweb - Form - Newline not working for textarea using Firefox. @8.1-SNAPSHOT
+1b21c0df7 Fixed: wflow-consoleweb - List Builder - Element displayed as hidden when it shouldn't be. @8.1-SNAPSHOT
+ef5a4d8b6 Fixed: wflow-consoleweb - GitRequestFilter - Imported app version deleted after viewing version tab. @8.1-SNAPSHOT
+4e8848d2a Fixed: wflow-consoleweb - Guider - Added Dark Theme Styling for Guider/Tooltip Dialog @8.1-SNAPSHOT
+92924525c Fixed: wflow-consoleweb - Form Builder - Fixed error when Ctrl + S is pressed multiple times at very high rate issue. @8.1-SNAPSHOT
+32800b5eb Fixed: wflow-core - Form PDF - Hide unselected options property does not work with vertical options. T5363 @8.1-SNAPSHOT
+3d20ae23c Fixed: wflow-core - Datalist Decorator - Fixed request rejected error because url contains potentially malicious string. @8.1-SNAPSHOT
+
 8.1.8
 =====
 74b83d0dc Fixed: wflow-core - Service Worker - Fixed issue where offline theme is not properly updated after updating themes in builder.

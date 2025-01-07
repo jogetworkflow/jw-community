@@ -485,6 +485,10 @@ public class FormServiceImpl implements FormService {
     public FormData executeFormActions(Form form, FormData formData) {
         FormData updatedFormData = formData;
         updatedFormData = FormUtil.executeActions(form, form, formData);
+        HttpServletRequest request = WorkflowUtil.getHttpServletRequest();
+        if (request != null) {
+            request.setAttribute("id", updatedFormData.getPrimaryKeyValue());
+        }
         return updatedFormData;
     }
 

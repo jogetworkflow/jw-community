@@ -65,6 +65,16 @@ header.navbar {
     border-radius: 0;
 }
 
+body.horizontal_menu.inline_menu.quickEditModeActive header.navbar {
+    height: 95px;
+}
+
+@media (min-width:1457px) {
+    body.horizontal_menu.inline_menu.quickEditModeActive header.navbar {
+        height: 91px;
+    }
+}
+ 
 a {
     text-decoration: none;
 }
@@ -1018,6 +1028,10 @@ body.rtl #sidebar li ul>li>a > span:first-child{
         opacity: 0.3;
         right:0;
     }
+    body.horizontal_menu.inline_menu #sidebar li.toggled>a.dropdown:before,
+    body.horizontal_menu.inline_menu #sidebar li>a.dropdown:before {
+        margin-top: -14px;
+    }
     body.horizontal_menu #sidebar li.toggled>a.dropdown:before {
         -webkit-transform: none;
         -ms-transform: none;
@@ -1801,6 +1815,11 @@ body:not(#login) #content > main > .datalist-body-content:not(.quickEdit) {
     line-height: 25px !important;
 }
 
+.largeFontSize .hasDatepicker + a {
+    position: absolute;
+    padding: 0.5rem;
+}
+
 .mediumFontSize #form-canvas *,
 .mediumFontSize .fc-view-container *,
 .mediumFontSize .userProfile-body-content *,
@@ -1809,6 +1828,12 @@ body:not(#login) #content > main > .datalist-body-content:not(.quickEdit) {
     font-size: 17px !important;
     line-height: 20px !important;
 }
+
+.mediumFontSize .hasDatepicker + a {
+    position: absolute;
+    padding: 0.8rem 0.5rem;
+}
+
 /*Priority Menu*/
 @media (min-width: 768px){
     ul#moreSubMenu li > ul{
