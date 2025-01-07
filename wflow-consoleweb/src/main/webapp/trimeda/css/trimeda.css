@@ -1340,6 +1340,13 @@ textarea:focus, .chosen-container-multi .chosen-choices:focus, .selector_element
     box-shadow: 4px 4px 24px 5px #0B79DE0D;
 }
 
+@media screen and (max-width: 480px) {
+    .password-input-wrapper input.hasToggle[type=text],
+    .password-input-wrapper input.hasToggle[type=password] {
+        padding-inline-end: 3.5em;
+    }
+}
+
 .form-container .form-cell-value, .form-container .subform-cell-value,
 .form-container .form-fileupload, 
 .form-container .subform-fileupload, .form-container .grid, .form-container 

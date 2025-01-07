@@ -313,6 +313,10 @@ body .filter-cell select:not([class^=ui]){
     body .form-container textarea[cols] {
         width: 100%;
     }
+    .password-input-wrapper input.hasToggle[type=text],
+    .password-input-wrapper input.hasToggle[type=password] {
+        padding-inline-end: 3.5em;
+    }
 }
 
 body .form-container .form-cell-value,

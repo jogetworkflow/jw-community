@@ -377,6 +377,10 @@ body input[readonly] {
         float: unset !important;
         width: 100% !important;
     }
+    .password-input-wrapper input.hasToggle[type=text],
+    .password-input-wrapper input.hasToggle[type=password] {
+        padding-inline-end: 3.5em;
+    }
 }
 .form-cell-value.fullWidth > label,
 .subform-cell-value.fullWidth > label{

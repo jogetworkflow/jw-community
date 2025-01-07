@@ -1100,6 +1100,10 @@ body .handsontable input, .handsontable textarea{
     body.rtl #form-canvas div.form-cell .label {
         text-align: right;
     }
+    .password-input-wrapper input.hasToggle[type=text],
+    .password-input-wrapper input.hasToggle[type=password] {
+        padding-inline-end: 3.5em;
+    }
 }
 
 .form-edit-btn{
