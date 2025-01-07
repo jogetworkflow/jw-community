@@ -1259,6 +1259,12 @@ public class AppServiceImpl implements AppService {
     public Collection<String> createAppDefinition(AppDefinition appDefinition, AppDefinition copy, String tablePrefix) {
         Collection<String> errors = new ArrayList<String>();
 
+        // Validate table prefix if provided
+        if (tablePrefix != null && !tablePrefix.isEmpty() && !tablePrefix.matches("^[a-zA-Z0-9_]+$")) {
+            errors.add("console.app.error.label.tablePrefixInvalid");
+            return errors;
+        }
+
         // check for duplicate
         String appId = appDefinition.getId();
         AppDefinition appDef = appDefinitionDao.loadById(appId);
