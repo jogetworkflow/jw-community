@@ -6052,3 +6052,6 @@ html.adminBarShown {
         text-align: right;
     }
 }
+div.InformationTileComponent .badge{
+    max-width: initial;
+}
