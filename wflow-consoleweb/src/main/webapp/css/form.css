@@ -923,6 +923,10 @@ body.rtl .numeric_field_control {left:10px; right:auto;}
     top: 17px;
 }
 
+.numeric_field_controls.disabled{
+    display: none;
+}
+
 /* datepicker */
 body.rtl #form-canvas .form-cell .label {
     text-align: right;

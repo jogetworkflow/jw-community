@@ -1390,3 +1390,6 @@ body.rtl .label-top.form-cell > label.label + input[size] + .numeric_field_contr
 body.rtl form.label-top .form-cell > label.label + input[size] + .numeric_field_controls{
     left: auto;
 }
+.numeric_field_controls.disabled{
+    display: none;
+}
