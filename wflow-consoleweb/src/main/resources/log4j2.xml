@@ -62,8 +62,6 @@
         </Logger>        
         <Logger name="org.hibernate.event.internal.DefaultLoadEventListener" level="warn" additivity="true">
         </Logger>        
-        <Logger name="org.apache.ignite.cache.hibernate" level="debug" additivity="true">
-        </Logger>        
         <Logger name="org.hibernate.tool.hbm2ddl.SchemaUpdate" level="fatal" additivity="true">
         </Logger>
         <Logger name="org.hibernate.tool.hbm2ddl.SchemaExport" level="fatal" additivity="true">
@@ -111,7 +109,7 @@
         <Logger name="org.joget.plugin.enterprise.ExportFormEmailTool" level="debug" additivity="true">
             <AppenderRef ref="EMAIL"/>
         </Logger>
-        
+
         <!-- Root logger -->
         <Root level="info">
             <AppenderRef ref="STDOUT"/>

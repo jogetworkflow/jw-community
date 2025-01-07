@@ -1,9 +1,9 @@
-package org.joget.commons.ignite;
+package org.joget.commons.cache;
 
 /**
  * Interface to indicate that JDBC queries are cacheable.
  */
-public interface IgniteJdbcCacheable {
+public interface InMemoryJdbcCacheable {
     
     boolean isJdbcCacheable(String cacheKey);
     

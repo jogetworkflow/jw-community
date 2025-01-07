@@ -7,6 +7,5 @@
         <aspect name="org.joget.apps.app.service.DateFormatAspect"/>
         <aspect name="org.joget.apps.form.service.FormOptionsCacheAspect"/>
         <aspect name="org.enhydra.shark.SharkUtilitiesAspect"/>
-        <aspect name="org.joget.commons.ignite.IgniteJdbcCacheAspect"/>
     </aspects>
 </aspectj>

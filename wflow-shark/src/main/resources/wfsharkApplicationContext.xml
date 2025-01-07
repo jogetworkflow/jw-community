@@ -29,7 +29,7 @@
     </bean>
 
     <!-- Hibernate SessionFactory -->
-    <bean id="workflowSessionFactory" class="org.joget.commons.ignite.IgniteSessionFactoryBean">
+    <bean id="workflowSessionFactory" class="org.joget.commons.cache.InMemoryCacheSessionFactoryBean">
         <qualifier value="workflow"/>
         <property name="dataSource" ref="setupDataSource"/>
         <property name="mappingResources">
@@ -68,7 +68,7 @@
     </bean> 
     
     <!-- Hibernate SessionFactory added redundantly to create index & schema -->
-    <bean id="sharkWorkflowUpdateSessionFactory" class="org.joget.commons.ignite.IgniteSessionFactoryBean">
+    <bean id="sharkWorkflowUpdateSessionFactory" class="org.joget.commons.cache.InMemoryCacheSessionFactoryBean">
         <qualifier value="workflow"/>
         <property name="dataSource" ref="setupDataSource"/>
         <property name="mappingResources">
@@ -94,7 +94,7 @@
         </property>
     </bean>
     
-    <bean id="sharkIdSessionFactory" class="org.joget.commons.ignite.IgniteSessionFactoryBean">
+    <bean id="sharkIdSessionFactory" class="org.joget.commons.cache.InMemoryCacheSessionFactoryBean">
         <qualifier value="sharkId"/>
         <property name="dataSource" ref="setupDataSource"/>
         <property name="mappingResources">

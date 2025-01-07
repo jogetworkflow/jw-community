@@ -37,7 +37,7 @@
         <property name="cacheManager" ref="cacheManager" />
     </bean>
     
-    <bean id="formDataSessionFactory" class="org.joget.commons.ignite.IgniteSessionFactoryBean">
+    <bean id="formDataSessionFactory" class="org.joget.commons.cache.InMemoryCacheSessionFactoryBean">
         <property name="dataSource" ref="setupDataSource"/>
         <property name="mappingResources">
             <list>
@@ -115,7 +115,7 @@
         <property name="sessionFactory" ref="reportSessionFactory"/>
     </bean>
 
-    <bean id="appSessionFactory" class="org.joget.commons.ignite.IgniteSessionFactoryBean">
+    <bean id="appSessionFactory" class="org.joget.commons.cache.InMemoryCacheSessionFactoryBean">
         <qualifier value="app"/>
         <property name="dataSource" ref="setupDataSource"/>
         <property name="mappingResources">
@@ -152,7 +152,7 @@
     </bean>
     
     <!-- Hibernate SessionFactory for report-->
-    <bean id="reportSessionFactory" class="org.joget.commons.ignite.IgniteSessionFactoryBean">
+    <bean id="reportSessionFactory" class="org.joget.commons.cache.InMemoryCacheSessionFactoryBean">
         <qualifier value="report"/>
         <property name="dataSource" ref="setupDataSource"/>
         <property name="mappingResources">
@@ -280,7 +280,7 @@
         <aop:advisor advice-ref="txAdvice" pointcut="execution(* org.joget.report.dao.*Dao.*(..))" order="1" />
         <aop:advisor advice-ref="txAdvice" pointcut="execution(* org.joget.apps.form.dao.*Dao.*(..))" order="1" />
         <aop:advisor advice-ref="sqlFilterAspect" pointcut="execution(* org.joget.workflow.model.service.WorkflowManager.*(..))" order="1" />
-        <aop:advisor advice-ref="auditTrailInterceptor" pointcut="execution(* org.joget.workflow.model.service.WorkflowManager.*(..)) and !(execution(* org.joget..*.get*(..)) or execution(* org.joget..*.set*(..)) or execution(* org.joget..*.is*(..)) or execution(* org.joget..*.internal*(..)))" order="2" />
+        <aop:advisor advice-ref="auditTrailInterceptor" pointcut="execution(* org.joget.workflow.model.service.WorkflowManager.*(..)) and !(execution(* org.joget..*.get*(..)) or execution(* org.joget..*.set*(..)) or execution(* org.joget..*.is*(..)) or execution(* org.joget..*.internal*(..) or execution(* org.joget..*.*Inbox*(..)))" order="2" />
         <aop:advisor advice-ref="auditTrailInterceptor" pointcut="execution(* org.joget.directory.dao.*Dao.*(..)) and !(execution(* org.joget..*.get*(..)) or execution(* org.joget..*.set*(..)))" order="1" />
         <aop:advisor advice-ref="auditTrailInterceptor" pointcut="execution(* org.joget.apps.form.dao.FormDataDao.*(..)) and !(execution(* org.joget..*.get*(..)) or execution(* org.joget..*.set*(..)) or execution(* org.joget..*.internal*(..)) or execution(* org.joget..*.loadByTable*(..)) or execution(* org.joget..*.clear*(..)))" order="1" />
         <aop:advisor advice-ref="auditTrailInterceptor" pointcut="execution(* org.joget.apps.app.dao.*Dao.*(..)) and !(execution(* org.joget.apps.app.dao.AuditTrailDao.*(..))) and (execution(* org.joget..*.save*(..)) or execution(* org.joget..*.delete*(..)) or execution(* org.joget..*.add*(..)) or execution(* org.joget..*.update*(..)))" order="1" />

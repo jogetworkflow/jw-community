@@ -21,7 +21,7 @@
         <aop:advisor advice-ref="txAdvice" pointcut="execution(* org.joget.workflow.model.dao.*Dao.*(..))" order="1" />
     </aop:config>
 
-    <bean id="workflowUpdateSessionFactory" class="org.joget.commons.ignite.IgniteSessionFactoryBean">
+    <bean id="workflowUpdateSessionFactory" class="org.joget.commons.cache.InMemoryCacheSessionFactoryBean">
         <qualifier value="workflow"/>
         <property name="dataSource" ref="setupDataSource"/>
         <property name="mappingResources">

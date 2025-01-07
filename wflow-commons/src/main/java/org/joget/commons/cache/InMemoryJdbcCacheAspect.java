@@ -1,4 +1,4 @@
-package org.joget.commons.ignite;
+package org.joget.commons.cache;
 
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Aspect;
@@ -21,15 +21,14 @@ import org.aspectj.lang.annotation.Around;
  * --add-opens=java.sql.rowset/com.sun.rowset.providers=ALL-UNNAMED
  */
 @Aspect
-public class IgniteJdbcCacheAspect {
+public class InMemoryJdbcCacheAspect {
 
     private final static ThreadLocal cacheableObject = new InheritableThreadLocal();
     
     /**
      * Intercept JDBC plugin method calls.
      */
-//    @Pointcut("execution(* org.joget.plugin.enterprise.Jdbc*.*(..))")
-    @Pointcut("execution(* org.joget.commons.ignite.IgniteJdbcCacheable+.*(..))")
+    @Pointcut("execution(* org.joget.commons.cache.InMemoryJdbcCacheable+.*(..))")
     public void jdbcPluginMethods() {
     }
 
@@ -37,7 +36,7 @@ public class IgniteJdbcCacheAspect {
     public Object cacheJdbcPluginSql(ProceedingJoinPoint pjp) throws Throwable {
         try {
             Object target = pjp.getTarget();
-            if (target instanceof IgniteJdbcCacheable) {
+            if (target instanceof InMemoryJdbcCacheable) {
                 cacheableObject.set(target);
             }
             Object result = pjp.proceed();
@@ -69,7 +68,7 @@ public class IgniteJdbcCacheAspect {
             
         try {
             // get cache key for query
-            String cacheKey = IgniteJdbcCacheManager.generateCacheKey(target, args);
+            String cacheKey = InMemoryJdbcCacheManager.generateCacheKey(target, args);
             if (cacheKey == null) {
                 // not cacheable, just proceed
                 return pjp.proceed();
@@ -77,8 +76,8 @@ public class IgniteJdbcCacheAspect {
 
             boolean isCacheable = false;
             Object activeObject = cacheableObject.get();
-            if (activeObject != null && activeObject instanceof IgniteJdbcCacheable) {
-                isCacheable = ((IgniteJdbcCacheable)activeObject).isJdbcCacheable(cacheKey);
+            if (activeObject != null && activeObject instanceof InMemoryJdbcCacheable) {
+                isCacheable = ((InMemoryJdbcCacheable)activeObject).isJdbcCacheable(cacheKey);
             }
             if (!isCacheable) {
                 // not within JDBC plugin, just proceed
@@ -86,10 +85,10 @@ public class IgniteJdbcCacheAspect {
             }            
             
             // get tables used in query
-            Set<String> tableNames = IgniteJdbcCacheManager.extractTableNames(cacheKey);
+            Set<String> tableNames = InMemoryJdbcCacheManager.extractTableNames(cacheKey);
 
             // get cached query if available
-            ResultSet cachedResultSet = IgniteJdbcCacheManager.readQueryCache(method, cacheKey, tableNames);
+            ResultSet cachedResultSet = InMemoryJdbcCacheManager.readQueryCache(method, cacheKey, tableNames);
             if (cachedResultSet != null) {
                 return cachedResultSet;
             }
@@ -98,7 +97,7 @@ public class IgniteJdbcCacheAspect {
             Object result = pjp.proceed();
 
             // update cache with result
-            cachedResultSet = IgniteJdbcCacheManager.updateQueryCache(method, cacheKey, result, tableNames);
+            cachedResultSet = InMemoryJdbcCacheManager.updateQueryCache(method, cacheKey, result, tableNames);
             if (cachedResultSet != null) {
                 result = cachedResultSet;
             }
