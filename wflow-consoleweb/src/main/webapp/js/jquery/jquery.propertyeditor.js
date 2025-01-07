@@ -7658,6 +7658,11 @@ PropertyEditor.Type.Grid.prototype = {
         thisObj.value = csvRows;
         thisObj.switchCSVvalue = csvRows;
         
+        //clear previous ajax call to reload options from cache
+        $.each(thisObj.properties.columns, function(i, column) {
+            delete PropertyEditor.Util.prevAjaxCalls[thisObj.id + "::" + column.key];
+        });
+        
         //reconstructed using renderField & initScripting implementation
         var html = thisObj.renderField();
         $("#" + this.id + "_input").html(html);
