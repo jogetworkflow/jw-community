@@ -17,6 +17,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -45,6 +46,7 @@ import org.springframework.core.type.filter.AssignableTypeFilter;
 import org.tensorflow.proto.framework.DataType;
 import org.tensorflow.Graph;
 import org.tensorflow.Operand;
+import org.tensorflow.Result;
 import org.tensorflow.Session;
 import org.tensorflow.Tensor;
 import org.tensorflow.ndarray.Shape;
@@ -448,14 +450,13 @@ public class TensorFlowUtil {
                     }
                     for (String key: outputNames) {
                         runner.fetch(key);
-                    }
-                    List<Tensor> outputTensors = runner.run();
+                    }        
+                    Result outputTensors = runner.run();
                     
-                    int i=0;
-                    for (Tensor tensor: outputTensors) {
-                        String operationName = outputNames[i];
-                        i++;
-                        resultMap.put(operationName, tensor);
+                    Iterator it = outputTensors.iterator();
+                    while (it.hasNext()) {
+                        Map.Entry<String, Tensor> tensor = (Map.Entry<String, Tensor>) it.next();
+                        resultMap.put(tensor.getKey(), tensor.getValue());
                     }
                     return resultMap;
                 }

@@ -450,7 +450,14 @@ public class AjaxUniversalTheme extends UniversalTheme implements SupportBuilder
     @Override
     public String getServiceWorkerTemplate(String appId, String userviewId, String userviewKey) {
         // read template from cache
-        String key = "serviceWorkerTemplate:"+appId+":"+userviewId+":"+userviewKey;
+        String themeHash = getPropertyString("themeHash");
+        StringJoiner sj = new StringJoiner(":")
+                .add("serviceWorkerTemplate")
+                .add(appId)
+                .add(userviewId)
+                .add(userviewKey)
+                .add(themeHash);
+        String key = sj.toString();
         String html = "";
         Cache cache = AppUtil.getCache("org.joget.cache.CSS_CACHE");
         if (cache != null) {

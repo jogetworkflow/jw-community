@@ -8,6 +8,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.collections.map.ListOrderedMap;
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.commons.lang.StringUtils;
@@ -72,15 +73,17 @@ import javax.annotation.Resource;
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 import java.io.*;
-import java.net.MalformedURLException;
+import java.net.URISyntaxException;
 import java.net.URLDecoder;
 import java.net.URLEncoder;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.*;
+import org.eclipse.jgit.api.errors.GitAPIException;
 
 import static org.joget.apps.app.controller.UserviewWebController.isBackendLicense;
 import static org.joget.apps.app.service.AppDevUtil.*;
+import org.joget.apps.app.web.GitRequestFilter;
 
 @Controller
 public class ConsoleWebController {
@@ -1554,13 +1557,30 @@ public class ConsoleWebController {
     }
 
     @RequestMapping("/json/console/app/(*:appId)/version/list")
-    public void consoleAppVersionListJson(Writer writer, @RequestParam(value = "appId") String appId, @RequestParam(value = "callback", required = false) String callback, @RequestParam(value = "name", required = false) String name, @RequestParam(value = "sort", required = false) String sort, @RequestParam(value = "desc", required = false) Boolean desc, @RequestParam(value = "start", required = false) Integer start, @RequestParam(value = "rows", required = false) Integer rows) throws IOException, JSONException {
+    public void consoleAppVersionListJson(Writer writer, @RequestParam(value = "appId") String appId, @RequestParam(value = "callback", required = false) String callback, @RequestParam(value = "name", required = false) String name, @RequestParam(value = "sort", required = false) String sort, @RequestParam(value = "desc", required = false) Boolean desc, @RequestParam(value = "start", required = false) Integer start, @RequestParam(value = "rows", required = false) Integer rows) throws IOException, JSONException, GitAPIException, URISyntaxException {
         Collection<AppDefinition> appDefList = appDefinitionDao.findVersions(appId, sort, desc, null, null);
 
         TreeMap<Long, AppDefinition> appDefMap = new TreeMap<>();
         if (!appDefList.isEmpty()) {
             for (AppDefinition appDef: appDefList) {
-                appDefMap.put(appDef.getVersion(), appDef);
+                boolean shouldDeleteAppVersion = false;
+
+                // Only delete app version if git is enabled and folder is empty
+                if (!AppDevUtil.isGitDisabled()) {
+                    File dir = AppDevUtil.fileGetFileObject(appDef, ".", false);
+                    if (dir != null && dir.isDirectory()) {
+                        Collection<File> files = FileUtils.listFiles(dir, new String[]{"json", "xml", "xpdl", "jar"}, true);
+                        if (files == null || files.isEmpty()) {
+                            shouldDeleteAppVersion = true;
+                        }
+                    }
+                }
+
+                if (shouldDeleteAppVersion) {
+                    appService.deleteAppDefinitionVersion(appId, appDef.getVersion());
+                } else {
+                    appDefMap.put(appDef.getVersion(), appDef);
+                }
             }            
             
             if (!AppDevUtil.isGitDisabled()) {
@@ -1569,8 +1589,8 @@ public class ConsoleWebController {
                     AppDefinition appDef = appDefList.iterator().next();
                     List<String> branches = AppDevUtil.getAppGitBranches(appDef);
                     for (String branch: branches) {
-                        StringTokenizer st = new StringTokenizer(branch, "_");
-                        String version = (st.countTokens() == 2) ? branch.substring(branch.indexOf("_")+1) : null;
+                        int versionIndex = branch.lastIndexOf("_");
+                        String version = (versionIndex != -1) ? branch.substring(versionIndex + 1) : null;                      
                         if (version != null && !appDefMap.containsKey(Long.valueOf(version))) {
                             AppDefinition tempAppDef = AppDevUtil.createDummyAppDefinition(appId, Long.valueOf(version));
                             tempAppDef.setDescription("Git: " + branch);
@@ -1631,9 +1651,11 @@ public class ConsoleWebController {
 
     @RequestMapping(value = "/console/app/(*:appId)/(~:version)/publish", method = RequestMethod.POST)
     @Transactional
-    public String consoleAppPublish(@RequestParam(value = "appId") String appId, @RequestParam(value = "version", required = false) String version) {
-        appService.publishApp(appId, version);
-        return "console/apps/dialogClose";
+    public String consoleAppPublish(@RequestParam(value = "appId") String appId, @RequestParam(value = "version", required = false) String version, HttpServletResponse response) throws IOException {
+        AppDefinition appDef = appService.publishApp(appId, version);
+        response.getWriter().write("{\"status\":" + (appDef != null) + "}");
+        response.setStatus(HttpServletResponse.SC_OK);
+        return null;
     }
 
     @RequestMapping(value = "/console/app/(*:appId)/(~:version)/rename/(*:name)", method = RequestMethod.POST)
@@ -1767,7 +1789,7 @@ public class ConsoleWebController {
     }
 
     @RequestMapping(value = "/console/app/import/submit", method = RequestMethod.POST)
-    public String consoleAppImportSubmit(ModelMap map) throws IOException {
+    public String consoleAppImportSubmit(ModelMap map, HttpServletRequest request) throws IOException {
         Collection<String> errors = new ArrayList<String>();
         
         MultipartFile appZip = null;
@@ -1804,6 +1826,11 @@ public class ConsoleWebController {
             map.addAttribute("appId", appId);
             map.addAttribute("appVersion", appDef.getVersion());
             map.addAttribute("isPublished", appDef.isPublished());
+
+            if (!AppDevUtil.isGitDisabled()) {
+                // enable synchronous commit to ensure app's git folder is properly initialised
+                request.setAttribute(GitRequestFilter.REQUEST_ATTRIBUTE_ENABLE_SYNCHRONOUS_COMMIT, true);
+            }
             return "console/apps/packageUploadSuccess";
         }
     }
@@ -3681,11 +3708,54 @@ public class ConsoleWebController {
     @RequestMapping("/console/app/(*:appId)/(~:version)/builders")
     public String consoleBuilderList(ModelMap map, @RequestParam String appId, @RequestParam(required = false) String version) {
         String result = checkVersionExist(map, appId, version);       
+        String baseDir = AppDevUtil.getAppDevBaseDirectory();       
         if (result != null) {
-            return result;
-        }        
+            Collection<AppDefinition> appDefList = appDefinitionDao.findVersions(appId, null, null, null, null);
+            TreeMap<Long, AppDefinition> appDefMap = new TreeMap<>();
+            if (!appDefList.isEmpty()) {
+                for (AppDefinition appDef: appDefList) {
+                    appDefMap.put(appDef.getVersion(), appDef);
+                }            
+            
+                if (!AppDevUtil.isGitDisabled()) {
+                // get app versions from Git
+                    try {                                              
+                        AppDefinition appDef = appDefList.iterator().next();
+                        Properties prop = AppDevUtil.getAppDevProperties(appDef);
+                        String gitUri = prop.getProperty(PROPERTY_GIT_URI);
+                        String gitUsername = prop.getProperty(PROPERTY_GIT_USERNAME);
+                        String gitPassword = prop.getProperty(PROPERTY_GIT_PASSWORD);
+
+                        if (gitUri != null && gitUsername != null && gitPassword != null) {
+                            String gitBranch = getGitBranchName(appDef);
+                            String projectDirName = getAppGitDirectory(appDef);
+                            File projectDir = AppDevUtil.dirSetup(baseDir, projectDirName);
+                            Git localGit = AppDevUtil.gitInit(projectDir);
+
+                            AppDevUtil.gitAddRemote(localGit, gitUri);
+                            AppDevUtil.gitPull(projectDir, localGit, gitBranch, gitUri, gitUsername, gitPassword, MergeStrategy.RECURSIVE, appDef);
+                            List<String> branches = AppDevUtil.getAppGitBranches(appDef);
+                            for (String branch : branches) {
+                                int versionIndex = branch.lastIndexOf("_");
+                                String newVersion = (versionIndex != -1) ? branch.substring(versionIndex + 1) : null;
+                                if (newVersion != null && !appDefMap.containsKey(Long.valueOf(newVersion)) && newVersion.equals(version)) {
+                                    AppDefinition newAppDef = appService.createNewAppDefinitionVersion(appId, appDefinitionDao.getLatestVersion(appId));
+                                }
+                            }
+                        }
+                    } catch(Exception e) {
+                        LogUtil.error(getClass().getName(), e, e.getMessage());
+                    }
+                }
+            } else {
+                return result;
+            }        
+        }
 
         AppDefinition appDef = appService.getAppDefinition(appId, version);
+        if (appDef == null) {
+            return result;
+        }
         checkAppPublishedVersion(appDef);
         map.addAttribute("appId", appDef.getId());
         map.addAttribute("appVersion", appDef.getVersion());
@@ -6514,6 +6584,23 @@ public class ConsoleWebController {
             } finally {
                 HostManager.resetProfile();
             }
+        }
+    }
+    
+     /**
+    * Validates an email address and returns the result as a JSON response.
+    * This method handles POST requests to the "/api/validateEmail" endpoint. 
+    * It utilizes the StringUtil.validateEmail method to validate the provided email address. 
+    */
+    @RequestMapping(value = "/api/validateEmail", method = RequestMethod.POST)
+    public void validateEmail(HttpServletRequest request, HttpServletResponse response, @RequestParam("email") String email, @RequestParam(value = "multiple", required = false) boolean multiple) {
+        try {
+            boolean isValid = StringUtil.validateEmail(email, multiple);
+            response.setContentType("application/json");
+            response.setCharacterEncoding("UTF-8");
+            response.getWriter().write("{\"isValid\": " + isValid + "}");
+        } catch (IOException e) {
+            LogUtil.error(getClass().getName(), e, "Error occurred while validating email.");
         }
     }
 }

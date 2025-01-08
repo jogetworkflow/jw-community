@@ -311,10 +311,6 @@
                 $.extend(_colorPicker.color.options, _options = _this.options);
             toggle.call(this, event);
         })
-        .on('change.tcp', function() {
-            // _color.setColor(this.value || '#FFF');
-            _this.colorPicker.render(true);
-        })
         .each(function() {
             var value = extractValue(this),
                 mode = value.split('('),

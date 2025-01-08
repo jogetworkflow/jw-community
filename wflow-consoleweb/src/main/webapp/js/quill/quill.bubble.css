@@ -1,5 +1,5 @@
 /*!
- * Quill Editor v1.3.6
+ * Quill Editor v1.3.7
  * https://quilljs.com/
  * Copyright (c) 2014, Jason Chen
  * Copyright (c) 2013, salesforce.com
@@ -592,22 +592,22 @@
   display: none;
 }
 .ql-bubble .ql-editor h1 {
-  font-size: 2em  !important;
+  font-size: 2em;
 }
 .ql-bubble .ql-editor h2 {
-  font-size: 1.5em  !important;
+  font-size: 1.5em;
 }
 .ql-bubble .ql-editor h3 {
-  font-size: 1.17em  !important;
+  font-size: 1.17em;
 }
 .ql-bubble .ql-editor h4 {
-  font-size: 1em  !important;
+  font-size: 1em;
 }
 .ql-bubble .ql-editor h5 {
-  font-size: 0.83em  !important;
+  font-size: 0.83em;
 }
 .ql-bubble .ql-editor h6 {
-  font-size: 0.67em  !important;
+  font-size: 0.67em;
 }
 .ql-bubble .ql-editor a {
   text-decoration: underline;

@@ -253,12 +253,12 @@ public class DataListDecorator extends CheckboxTableDecorator {
     
     public static String generateLink(Object row, String href, String target, String hrefParam, String hrefColumn, String text, String confirmation, String cssClasses) {
         // add links
-        String link = href;
+        String link = "";
         String targetString = "";
         String confirmationString = "";
-        String arialLabel= "";
+        String ariaLabel= "";
 
-        if (link == null || text == null || text.isEmpty()) {
+        if (href == null || text == null || text.isEmpty()) {
             link = text;
         } else {
             if (hrefParam != null && hrefColumn != null && !hrefColumn.isEmpty()) {
@@ -274,7 +274,7 @@ public class DataListDecorator extends CheckboxTableDecorator {
                             } else {
                                 link += "?";
                             }
-                            link += StringEscapeUtils.escapeHtml(params[i]);
+                            link += params[i];
                             link += "=";
                             isValid = true;
                         } else if (!link.contains("?")) {
@@ -287,7 +287,7 @@ public class DataListDecorator extends CheckboxTableDecorator {
                         if (isValid) {
                             Object paramValue = DataListService.evaluateColumnValueFromRow(row, columns[i]);
                             if (paramValue == null) {
-                                paramValue = StringEscapeUtils.escapeHtml(columns[i]);
+                                paramValue = fillVariables(StringEscapeUtils.escapeHtml(columns[i]), row);
                             }
                             try {
                                 link += (paramValue != null) ? URLEncoder.encode(paramValue.toString(), "UTF-8") : null;
@@ -298,35 +298,40 @@ public class DataListDecorator extends CheckboxTableDecorator {
                     }
                 }
             }
-            
-            if (link.contains("{") && link.contains("}")) {
-                Pattern pattern = Pattern.compile("\\{([a-zA-Z0-9_]+)\\}");
-                Matcher matcher = pattern.matcher(link);
 
-                while (matcher.find()) {
-                    String replace = matcher.group(0);
-                    String column = matcher.group(1);
-                    
-                    Object value = DataListService.evaluateColumnValueFromRow(row, column);
-                    if (value != null) {
-                        String temp = StringUtil.escapeString(value.toString(), StringUtil.TYPE_URL, null);
-                        link = link.replaceAll(StringUtil.escapeRegex(replace), StringUtil.escapeRegex(temp));
-                    }
+            // Merge logic: merge if href starts with http and contains a ?,
+            // or if href does not start with http or javascript:
+            if (!href.startsWith("javascript:") && href.contains("?")) {
+                // Use mergeRequestQueryString to combine href and link
+                link = StringUtil.mergeRequestQueryString(href, link);
+
+                // Handle href containing "?"
+                if (href.contains("?")) {
+                    String[] urlPart = href.split("\\?");
+                    link = (urlPart.length > 0 ? urlPart[0] : "") + "?" + link;
                 }
+
+            } else {
+                // Append parameters directly if href does not contain a ?
+                href = fillVariables(href, row);
+                if (href.endsWith("/") && link.startsWith("/")){
+                    link = link.substring(1);
+                }
+                link = href + link;
             }
-            
+
             if (target != null && "popup".equalsIgnoreCase(target)) {
                 if (confirmation == null) {
                     confirmation = "";
                 }
                 confirmation = StringUtil.stripAllHtmlTag(confirmation);
-                targetString = "onclick=\"return dlPopupAction(this, '" + StringUtil.escapeString(confirmation, StringUtil.TYPE_JAVASCIPT, null) + "')\"";
+                targetString = " onclick=\"return dlPopupAction(this, '" + StringUtil.escapeString(confirmation, StringUtil.TYPE_JAVASCIPT, null) + "')\"";
             } else if (target != null && "post".equalsIgnoreCase(target)) {
                 if (confirmation == null) {
                     confirmation = "";
                 }
                 confirmation = StringUtil.stripAllHtmlTag(confirmation);
-                targetString = "onclick=\"return dlPostAction(this, '" + StringUtil.escapeString(confirmation, StringUtil.TYPE_JAVASCIPT, null) + "')\"";
+                targetString = " onclick=\"return dlPostAction(this, '" + StringUtil.escapeString(confirmation, StringUtil.TYPE_JAVASCIPT, null) + "')\"";
             } else {
                 if (target != null && target.trim().length() > 0) {
                     targetString = " target=\"" + StringUtil.escapeString(target, StringUtil.TYPE_HTML, null) + "\"";
@@ -337,11 +342,31 @@ public class DataListDecorator extends CheckboxTableDecorator {
                 }
             }
             if (StringUtil.stripAllHtmlTag(text).isEmpty()) {
-                arialLabel = " aria-label=\"link\"";
+                ariaLabel = " aria-label=\"link\"";
             }
-            link = "<a href=\"" + StringUtil.escapeString(link, StringUtil.TYPE_HTML, null) + "\"" + targetString + confirmationString + arialLabel + " class=\""+StringUtil.escapeString(cssClasses, StringUtil.TYPE_HTML, null)+"\">" + text + "</a>";
+            // Escaping the URL to avoid issues with HTML entities
+            link = "<a href=\"" + StringUtil.escapeString(link, StringUtil.TYPE_HTML, null) + "\"" + targetString + confirmationString + ariaLabel + " class=\"" + StringUtil.escapeString(cssClasses, StringUtil.TYPE_HTML, null) + "\">" + text + "</a>";
         }
         return link;
+    }
+    
+    public static String fillVariables(String variable, Object row) {
+        if (variable != null && variable.contains("{") && variable.contains("}")) {
+            Pattern pattern = Pattern.compile("\\{([a-zA-Z0-9_]+)\\}");
+            Matcher matcher = pattern.matcher(variable);
+
+            while (matcher.find()) {
+                String replace = matcher.group(0);
+                String column = matcher.group(1);
+
+                Object value = DataListService.evaluateColumnValueFromRow(row, column);
+                if (value != null) {
+                    String temp = StringUtil.escapeString(value.toString(), StringUtil.TYPE_URL, null);
+                    variable = variable.replaceAll(StringUtil.escapeRegex(replace), StringUtil.escapeRegex(temp));
+                }
+            }
+        }
+        return variable;
     }
 
     public String formatColumn(DataListColumn column, Object row, Object value) {

@@ -44,7 +44,7 @@
     </div>
     <div id="main-body">
         <div id="generalSetup">
-            <form method="post" class="blockui" action="${pageContext.request.contextPath}/web/console/setting/general/submit">
+            <form method="post" id="generalSettings" class="blockui" action="${pageContext.request.contextPath}/web/console/setting/general/submit">
             <jsp:include page="/web/json/plugin/org.joget.apps.ext.ConsoleWebPlugin/service?spot=settings" />
             <div class="main-body-content-subheader">
                 <span><fmt:message key="console.setting.general.header.uiSetting"/></span>
@@ -600,6 +600,43 @@
         }
         var params = "username=" + username + "&password=" + password;
         ConnectionManager.post('${pageContext.request.contextPath}/web/console/setting/general/loginHash', callback, params);
+    }
+    $(document).ready(function() {
+        // Override the form submission to validate the SMTP email
+        $("#generalSettings").submit(function(event) {
+            event.preventDefault(); // Prevent default form submission
+            validateSMTPEmail();
+        });
+    });
+
+    function validateSMTPEmail() {
+        var valid = true;
+        var originalAppId = UI.userview_app_id;
+        
+        // Call the validateEmail function from ui.js
+        UI.validateEmail('#smtpEmail', false, function(isValid) {
+            if (!isValid) {
+                try {
+                    if (UI.userview_app_id === '') {
+                        UI.userview_app_id = 'appcenter';
+                    }
+                    
+                    UI.loadMsg(['app.edm.message.invalidEmailFormat'], function(messages) {
+                        alert(messages['app.edm.message.invalidEmailFormat']);
+                    });
+                    valid = false;
+                    UI.unblockUI();
+                    
+                } finally {
+                    UI.userview_app_id = originalAppId;
+                }
+            }
+
+            // Submit the form if everything is valid
+            if (valid) {
+                $("#generalSettings").off('submit').submit(); // Re-enable form submission and submit
+            }
+        });
     }
 </script>
 

@@ -234,7 +234,6 @@ public class UserviewThemeProcesser {
         }
         data.put("joget_footer", getJogetFooter());
         data.put("content_container", getContentContainer(data));
-
         return getLayout(data);
     }
 

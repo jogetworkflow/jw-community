@@ -16,6 +16,8 @@ import org.joget.apps.app.service.AppService;
 import org.joget.apps.app.service.AppUtil;
 import org.joget.apps.ext.ConsoleWebPlugin;
 import org.joget.apps.userview.model.Userview;
+import org.joget.apps.userview.model.UserviewPwaTheme;
+import org.joget.apps.userview.model.UserviewTheme;
 import org.joget.apps.userview.service.UserviewService;
 import org.joget.apps.userview.service.UserviewThemeProcesser;
 import org.joget.apps.userview.service.UserviewUtil;
@@ -107,7 +109,9 @@ public class UserviewWebController {
         if (userview != null) {
             String json = userview.getJson();
             Userview userviewObject = userviewService.createUserview(json, menuId, false, request.getContextPath(), request.getParameterMap(), key, embed);
-            UserviewThemeProcesser processer = new UserviewThemeProcesser(userviewObject, request);
+            UserviewThemeProcesser processer;
+            UserviewTheme theme = userviewObject.getSetting().getTheme();
+            processer = new UserviewThemeProcesser(userviewObject, request);
             map.addAttribute("userview", userviewObject);
             map.addAttribute("processer", processer);
             String view = processer.getView();

@@ -62,10 +62,12 @@ $(document).ready(function () {
             //checks if the first menu item width is same as the one captured in navItemWidth array
             //if no, removes old content, remeasures and adds the lengths back in
             if (firstItemLength !== navItemWidth[0] && $(window).outerWidth() >= menuBreakpoint ){
-                navItemWidth.length = 0;
-                $('#category-container > li').each(function () {
+                var count = 0;
+                $('#category-container > li.category').each(function () {
                     let itemWidth = $(this).outerWidth();
-                    navItemWidth.push(itemWidth);
+                    navItemWidth[count] = itemWidth;
+
+                    count++;
                 });
             }
             // checks if id is undefined, if so creates a new id
@@ -90,6 +92,54 @@ $(document).ready(function () {
                 setTimeout(formatNav, 150);
             }
         }
+        let resizeTimer;
+        const sidebar = $("#sidebar")[0];
+        //Debounce and listen to sidebar width change to accurately
+        //get the position
+        const debounceResize = () => {
+            clearTimeout(resizeTimer);
+            resizeTimer = setTimeout(() => {
+                //Reset over
+                $('#moreSubMenu').removeClass("over");
+                $('#menu-more').removeClass("over");
+
+                if ($("body").hasClass("inline_menu") && $(window).width() >= menuBreakpoint) {
+                    var menuMoreLeft = $('#menu-more').offset().left;
+
+                    //Clone the subMenu
+                    const subMenuClone = $('#moreSubMenu').clone().css({
+                        "visibility": "hidden",
+                        "display": "table"
+                    }).appendTo("body");
+    
+                    var width = subMenuClone.outerWidth();
+                    subMenuClone.remove();
+
+                    if (menuMoreLeft - width < 0) {
+                        $('#menu-more').addClass("over");
+                    }
+                    
+                    $("#sidebar > nav > ul#category-container > li#menu-more > ul#moreSubMenu > li.category").each(function(){
+                        const menuContainerClone = $(this).find("ul.menu-container").eq(0).clone().css({
+                            "visibility": "hidden",
+                            "display": "table"
+                        }).appendTo("body");
+                        var menuContainerwidth = 0;
+                        if (menuContainerClone.length > 0) {
+                            menuContainerwidth = menuContainerClone.outerWidth()
+                        }
+                        
+                        menuContainerClone.remove();
+                        if (menuMoreLeft - width - menuContainerwidth < 0 && !$('#menu-more').hasClass("over")) {
+                            $('#moreSubMenu').addClass("over");
+                        }
+                    })
+                    
+                }
+            }, 500);
+        };
+        const observer = new ResizeObserver(debounceResize);
+        observer.observe(sidebar);
         function resizeMenuWidth (callback, checkWidth){
             // header title and header nav button container width
             const headerLinkWidth = $('#header-link').outerWidth(true);
@@ -135,6 +185,10 @@ $(document).ready(function () {
             }
         }
         function formatNav(containerWidth) {
+            //Reset over
+            $("li.category:last").find("> ul.menu-container").removeClass("over-right");
+            $("li.category:last").find("> ul.menu-container").removeClass("over-left");
+
             // initial variables
             let room = true;
             let count = 0;
@@ -145,10 +199,12 @@ $(document).ready(function () {
             if (containerWidth === undefined) {
                 containerWidth = $('#navigation').innerWidth();
             }
+            //Add the navPadding to the totalWidth first, as it is fixed
+            totalWidth += navPadding;
             // for each menu item
             navItems.each(function () {
                 // get width of menu with that item
-                tempWidth = totalWidth + navItemWidth[count] + navPadding;
+                tempWidth = totalWidth + navItemWidth[count];
                 // show all menu items if window is within menu breakpoint (less than 768px)
                 if ($(window).outerWidth() < menuBreakpoint){
                     $('#menu-more').before($('#moreSubMenu').children().first());
@@ -166,6 +222,23 @@ $(document).ready(function () {
                         // if all are visible, hide More
                         if (count === numItems) {
                             $('#menu-more').hide();
+                        }
+                    }
+
+                    if (count === navItems.length-1) {
+                        const subMenuClone = $(this).find("> ul.menu-container").clone().css({
+                            "visibility": "hidden",
+                            "display": "table"
+                        }).appendTo("body");
+
+                        var subMenuWidth = subMenuClone.outerWidth();
+
+                        subMenuClone.remove();
+                        
+                        if($(this).offset().left - subMenuWidth < 0) {
+                            $(this).find("> ul.menu-container").addClass("over-right");
+                        }else if($(this).offset().left + subMenuWidth > $(window).width()) {
+                            $(this).find("> ul.menu-container").addClass("over-left");
                         }
                     }
                 }

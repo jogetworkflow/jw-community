@@ -1306,6 +1306,10 @@
     padding: 1.25rem
 }
 
+div.InformationTileComponent .card-body {
+    padding: 2rem;
+}
+
 .card-title {
     margin-bottom: .75rem
 }
@@ -1332,6 +1336,20 @@
     margin-bottom: 0;
     background-color: rgba(0,0,0,.03);
     border-bottom: 1px solid rgba(0,0,0,.125)
+}
+
+body.rtl .card-header .header-title {
+    text-align: right !important;
+}
+body.rtl .card-header .header-tag {
+    text-align: left !important;
+    padding-left: 15px !important; 
+}
+body.rtl .InformationTileComponent .mb-1 small {
+    float: left !important;
+}
+body.rtl .InformationTileComponent .mb-1 {
+    text-align: right !important;
 }
 
 .card-header:first-child {
@@ -5797,7 +5815,7 @@ footer {
 }
 .InformationTileComponent .acSparkline-initialized,
 .InformationTileComponent a:not(.stretched-link),
-.InformationTileComponent button{
+.InformationTileComponent button, .InformationTileComponent .card-footer:has(a){
     position: relative;
     z-index: 20;
 }

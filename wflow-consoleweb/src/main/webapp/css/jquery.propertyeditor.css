@@ -146,7 +146,8 @@
 .property-editor-container .property-editor-page-step-indicator{
     padding:0px 10px;
     color:#666666;
-    height:30px;
+    min-height:30px;
+    height:fit-content;
 }
 .property-editor-container .property-editor-page-step-indicator span {
     font-size:11px;
@@ -785,10 +786,6 @@ body.rtl .property-input a.elementHelplink{
     left: 50px;
     right: unset;
 }
-body.rtl .builder-view .builder-link a.openbuilder,
-body.rtl .builder-view .property-input a.elementHelplink{
-    left: 37.5vw;
-}
 body.rtl .pluginConfig .builder-link a.openbuilder,
 body.rtl .pluginConfig .property-input a.elementHelplink{
     left: 38.5vw;
@@ -1396,9 +1393,6 @@ body.rtl .property-input > span.icon > span > span.dropdown{
     right: 50px;
     top: 7px;
 }
-.builder-view .builder-link a.openbuilder, .builder-view .property-input a.elementHelplink{
-    right: 37.5vw;
-}
 .pluginConfig .builder-link a.openbuilder, .pluginConfig .property-input a.elementHelplink{
     right: 38.5vw;
     top: 10px;
@@ -1416,6 +1410,15 @@ body:not(.right-panel-mode-window) .property-editor-container.narrow.wider .prop
 .builder-view .property-type-selectbox a.builderAddNew{
     top: 6px;
     margin-left: 8px;
+}
+body.rtl .builder-view .property-type-selectbox .property-input {
+    display: flex;
+    flex-direction: row-reverse;
+    align-items: center;
+}
+body.rtl .builder-view .property-type-selectbox .property-input a.builderAddNew{
+    position: unset;
+    margin-right: 8px;
 }
 .pluginConfig .property-type-selectbox a.builderAddNew{
     top: 8px;
@@ -1688,6 +1691,9 @@ body .ui-dialog .button_form.editor-panel-mode #main-body-header {
     .property-input select,
     .property-input textarea{
         max-width: 100%;
+    }
+    body.rtl .builder-view .builder-link a.openbuilder {
+        right: unset;
     }
 }
 
@@ -2700,4 +2706,16 @@ i.fa-sort, i.fa-sort-asc, i.fa-sort-desc{
     outline: 2px solid rgba(0, 0, 0, 0.8);
     box-shadow: none;
     border: 1px solid transparent;
+}
+.rtl .property-input > span.icon > span{
+    right: 0;
+    border-radius: 0 0.25rem 0.25rem 0;
+}
+.rtl .property-input > span.icon .property-icon-picker{
+    left:unset;
+    right: 0;
+}
+.rtl .property-input > span.icon + input{
+    padding-right: 50px;
+    padding-left: 12px !important;
 }

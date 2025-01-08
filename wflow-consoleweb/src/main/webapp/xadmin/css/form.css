@@ -124,12 +124,20 @@ body #form-canvas #section-actions{
 body #form-canvas #section-actions .form-cell {
     margin-right: 10px;
 }
+body.rtl #form-canvas #section-actions .form-cell {
+    margin-left: 10px;
+    margin-right: 0;
+}
 body #form-canvas .form-column,
 body #form-canvas .subform-column {
     padding: 0 15px;
     box-sizing: border-box;
     background: #fff;
     min-width: 230px;
+}
+body #form-canvas .form-column-horizontal,
+body #form-canvas .subform-column-horizontal {
+    padding: 0;
 }
 body #form-canvas .form-cell, 
 body #form-canvas .subform-cell {
@@ -280,8 +288,6 @@ body input.no-manual-input{
 }
 body input[size],
 body .editor-cell input[size]{
-    min-width: unset;
-    max-width: unset;
     width: auto;
 }
 body .ql-container.ql-bubble{
@@ -538,6 +544,22 @@ body label > input[type=checkbox]:disabled + i:after {
     color:#fff;
 }
 
+.dataList.size_sm > form > .table-wrapper > table.responsivetable > tbody > tr > td.select_checkbox > label > i,
+.dataList.size_sm > .table-wrapper > table.responsivetable > tbody > tr > td.select_checkbox > label > i {
+    width: 100%;
+    height: 100%;
+    border-color: transparent;
+}
+
+.dataList.size_sm > form > .table-wrapper > table.responsivetable > tbody > tr > td.select_checkbox > label{
+    position: static;
+    transform: none;
+}
+
+.dataList.size_sm > form > .table-wrapper > table.responsivetable > tbody > tr > td.select_checkbox{
+    position: static;
+}
+
 /* Select Field
    ========================================================================== */
 body select:not([class^="ui-"]),
@@ -703,6 +725,62 @@ body #form-canvas .page-button-panel .button{
     border-radius: 2px;
 }
 
+/* Popup select box */
+@media screen and (min-width: 600px) {
+    body #form-canvas .selector_element {
+        margin-left: 150px;
+    }
+}
+body #form-canvas .selector_items{
+    margin-left: 0px;
+}
+body.rtl #form-canvas .selector_item{
+    margin-left: 5px;
+    margin-right: 0px;
+}
+@media screen and (min-width: 480px) {
+    body.rtl #form-canvas .selector_items {
+        margin-right:0px !important;
+    }
+}
+@media screen and (min-width: 600px) {
+    body.rtl #form-canvas .selector_element {
+        margin-right:150px;
+        margin-left: 0px;
+    }
+}
+body.rtl .label-top > .label {
+    width: 100%;
+    float: none;
+}
+body #form-canvas .label-top .selector_element {
+    margin-left: 40px;
+}
+body #form-canvas .label-top .selector_items {
+    margin-left: 0px;
+}
+@media screen and (min-width: 600px) {
+    body #form-canvas .label-top .selector_element .selector_items {
+        margin-left:0px;
+    }
+}
+@media screen and (max-width: 480px) {
+    body #form-canvas .label-top .selector_element {
+        margin-left:0px !important;
+        margin-right:0px;
+    }
+}
+body.rtl #form-canvas .label-top.form-cell .selector_element {
+    margin-right: 40px;
+}
+body.rtl #form-canvas .label-top.form-cell .selector_items {
+    margin-right: 0px !important;
+}
+@media screen and (max-width: 480px) {
+    body.rtl #form-canvas .label-top.form-cell .selector_element {
+        margin-right:0px !important;
+    }
+}
 body #form-canvas .selector_element .selector_button {
     border-color: #5FB878;
     background-color: #5FB878;
@@ -977,13 +1055,16 @@ body.rtl .form-edit-btn{
 }
 
 /* numeric field */
-.numeric_field_controls {top: -8px;}
-.label-top .numeric_field_controls {bottom: 53px; top: auto;}
+.numeric_field_controls {top: -1px;}
+.label-top .numeric_field_controls {bottom: 49px; top: auto;}
 @media (max-width: 768px) {
-    .numeric_field_controls {bottom: auto; top: -8px; right: auto;}
+    .numeric_field_controls {bottom: auto; top: -1px; right: auto;}
 }
 @media (max-width: 480px) {
-    .numeric_field_controls {bottom: 53px; top: auto;}
+    .numeric_field_controls {bottom: 49px; top: auto;}
+}
+body.rtl form.label-left .form-cell.label-top > label{
+    float:none;
 }
 
 body #form-canvas .form-cell label.label:has(i), body #form-canvas .subform-cell label.label:has(i) {
@@ -1074,7 +1155,3 @@ body.rtl .label-top input.hasDatepicker {
     float: none !important;
 }
 
-/* targeting the misaligned form "save" buttons */
-.form-column-horizontal .form-cell, .form-column-horizontal .subform-cell {
-    float: none;
-}

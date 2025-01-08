@@ -20,7 +20,7 @@ import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import org.apache.commons.lang.StringEscapeUtils;
-import org.apache.commons.validator.EmailValidator;
+import org.apache.commons.validator.routines.EmailValidator;
 import org.json.simple.JSONObject;
 import org.jsoup.Jsoup;
 import org.jsoup.safety.Safelist;
@@ -76,6 +76,7 @@ public class StringUtil {
         whitelistRelaxed = Safelist.relaxed()
                             .addTags("span", "div", "hr")
                             .addAttributes(":all","id","style","class","title","target", "name")
+                            .addProtocols("img", "src", "data")
                             .preserveRelativeLinks(true);
     }
 
@@ -1057,7 +1058,7 @@ public class StringUtil {
             emails = new String[]{email};
         }
         
-        EmailValidator validator = EmailValidator.getInstance();
+        EmailValidator validator = EmailValidator.getInstance(true);
         
         boolean valid = true;
         for (String e : emails) {

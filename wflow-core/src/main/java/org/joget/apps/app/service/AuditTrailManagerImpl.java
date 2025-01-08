@@ -182,8 +182,10 @@ public class AuditTrailManagerImpl implements AuditTrailManager {
                     try {
                         if (plugin instanceof PropertyEditable) {
                             ((PropertyEditable) plugin).setProperties(props);
+                            plugin.execute(((PropertyEditable) plugin).getProperties()); //to make the properties is HashVariableSupportedMap
+                        } else {
+                            plugin.execute(props);
                         }
-                        plugin.execute(props);
                     } catch (Exception e) {
                         LogUtil.error(getClass().getName(), e, "Error executing audit trail plugin " + ClassUtils.getUserClass(plugin).getName());
                     }

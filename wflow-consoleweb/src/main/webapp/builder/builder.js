@@ -1591,35 +1591,42 @@
      * Merge remote change and save
      */
     mergeAndSave: function(event) {
-        if ($("body").hasClass("properties-builder-view")) {
-            var editor = $("#propertiesView .builder-view-body").data("editor");
-            if (editor !== undefined && editor.isChange()) {
-                if (editor.options.orgSaveCallback === undefined || editor.options.orgSaveCallback === null) {
-                    editor.options.orgSaveCallback = editor.options.saveCallback;
-                    editor.options.saveCallback = function(container, properties) {
-                        editor.options.orgSaveCallback(container, properties);
-                        $("#save-btn").attr("disabled", "disabled");
-                        CustomBuilder.merge(CustomBuilder.save);
-                    };
+        let isDisabled = false;
+
+        if ($("#save-btn").attr("disabled") !== undefined) {
+            isDisabled = true;
+        }
+        
+        if(!isDisabled){
+            if ($("body").hasClass("properties-builder-view")) {
+                var editor = $("#propertiesView .builder-view-body").data("editor");
+                if (editor !== undefined && editor.isChange()) {
+                    if (editor.options.orgSaveCallback === undefined || editor.options.orgSaveCallback === null) {
+                        editor.options.orgSaveCallback = editor.options.saveCallback;
+                        editor.options.saveCallback = function(container, properties) {
+                            editor.options.orgSaveCallback(container, properties);
+                            $("#save-btn").attr("disabled", "disabled");
+                            CustomBuilder.merge(CustomBuilder.save);
+                        };
+                    }
+                    editor.save();
+                    editor.options.saveCallback = editor.options.orgSaveCallback;
+                    editor.options.orgSaveCallback = null;
+                } else {
+                    $("#save-btn").attr("disabled", "disabled");
+                    CustomBuilder.merge(CustomBuilder.save);
                 }
-                editor.save();
-                editor.options.saveCallback = editor.options.orgSaveCallback;
-                editor.options.orgSaveCallback = null;
+            } else if ($("body").hasClass("property-editor-right-panel") && !$("body").hasClass("no-right-panel")) {
+                CustomBuilder.checkChangeBeforeCloseElementProperties(function(){
+                    $("#save-btn").attr("disabled", "disabled");
+                    $("body").addClass("no-right-panel");
+                    CustomBuilder.merge(CustomBuilder.save);
+                });
             } else {
                 $("#save-btn").attr("disabled", "disabled");
                 CustomBuilder.merge(CustomBuilder.save);
             }
-        } else if ($("body").hasClass("property-editor-right-panel") && !$("body").hasClass("no-right-panel")) {
-            CustomBuilder.checkChangeBeforeCloseElementProperties(function(){
-                $("#save-btn").attr("disabled", "disabled");
-                $("body").addClass("no-right-panel");
-                CustomBuilder.merge(CustomBuilder.save);
-            });
-        } else {
-            $("#save-btn").attr("disabled", "disabled");
-            CustomBuilder.merge(CustomBuilder.save);
         }
-        
         if (event) {
             //to stop browser save dialog
             event.preventDefault();
@@ -5231,8 +5238,8 @@ _CustomBuilder.Builder = {
                                 }
 
                                 var containerOffset = elementsContainer.offset();
-                                var x_offset = ((x - containerOffset.left) / self.zoom) - cursorPos.x;
-                                var y_offset = ((y - containerOffset.top) /self.zoom) - cursorPos.y;
+                                var x_offset = (x - containerOffset.left - cursorPos.x) / self.zoom;
+                                var y_offset = (y - containerOffset.top - cursorPos.y) / self.zoom;
 
                                 self.dragElement.css({
                                    "top" : y_offset + "px",

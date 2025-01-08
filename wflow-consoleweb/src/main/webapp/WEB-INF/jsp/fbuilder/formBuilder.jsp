@@ -67,7 +67,7 @@
         #desc-tab .relations{padding: 0 0 20px 24px;}
         .diagram-actions {text-align: right;}
         .diagram-actions a {cursor: pointer;}
-        #diagram-grid {position: relative;}
+        #diagram-grid {position: relative;min-width: max-content;}
         #diagram-grid .col:nth-child(even) {padding-top:150px;}
         #diagram-grid .col .row {padding: 80px 100px;}
         #diagram-grid .col .row:nth-child(even) {padding-left:50px;}

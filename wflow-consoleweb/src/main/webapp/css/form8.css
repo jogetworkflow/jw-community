@@ -134,6 +134,7 @@ body .subform-cell > .subform-container.has-frame, .form-cell > .subform-contain
     white-space: normal;
     position: relative;
     width:70%;
+    max-width: 70%;
     float: left;
 }
 .rtl .form-cell > label.label + *:not(.ui-screen-hidden),
@@ -153,9 +154,10 @@ body .subform-cell > .subform-container.has-frame, .form-cell > .subform-contain
 .label-top.form-cell > label.label + .ui-screen-hidden + *,
 .label-top.subform-cell > label.label + .ui-screen-hidden + *{
     width: 100%;
+    max-width: 100%;
     float: none !important;
 }
-@media (max-width: 991px) and (min-width : 768px) {
+@media screen and (max-width: 991px) and (min-width : 768px) {
     .tablet-label-top.form-cell > label.label,
     .tablet-label-top.subform-cell > label.label{
         width: 100%;
@@ -301,6 +303,7 @@ textarea,
 }
 input[size]{
     width: auto !important;
+    max-width: 100%;
 }
 select[multiple]{
     height: auto;
@@ -1122,9 +1125,6 @@ body.rtl .calculationField_value {
         border-radius: 0.25rem;
         padding-bottom: 20px;
     }
-    .form-column, .subform-column{
-        width:100% !important;
-    }
 }
 
 .form-cell table:not([class]) td, .form-cell table:not([class]) th, .subform-cell table:not([class]) td, .subform-cell table:not([class]) th {
@@ -1202,7 +1202,7 @@ body.rtl .calculationField_value {
     border-color: #6c757d;
 }
 
-@media (max-width: 767px) {
+@media screen and (max-width: 767px) {
     .form-cell > label.label,
     .subform-cell > label.label,
     .form-cell > label.label + *:not(.ui-screen-hidden),
@@ -1212,6 +1212,7 @@ body.rtl .calculationField_value {
         white-space: normal;
         position: relative;
         width: 100%;
+        max-width: 100%;
         float: none;
     }
     .hasDatepicker + a{
@@ -1221,6 +1222,10 @@ body.rtl .calculationField_value {
     .hasDatepicker + a + a{
         top: unset;
         bottom: 6px;
+    }
+
+    .form-column, .subform-column{
+        width:100% !important;
     }
 }
 @media screen and (max-width: 39.9375em) {
@@ -1317,10 +1322,10 @@ body.rtl .label-top .numeric_field_controls {left: 15px; right: auto;}
 .numeric_field_control img {width:12px; height:12px; max-width: fit-content; min-width: fit-content; max-height: fit-content; min-height: fit-content;}
 body.rtl .numeric_field_control {left:10px; right:auto;}
 .numeric_field_control.numeric_field_control_decr {top: 15px;} 
-@media (max-width: 768px) {
-    .numeric_field_controls {right: 15px; bottom: 35px;}
+@media (max-width: 767px) {
+    .numeric_field_controls {right: auto; bottom: 35px;}
     body.compact-mode .numeric_field_controls {top:auto; bottom: 32px;}
-    body.rtl .numeric_field_controls {left: 15px; right: auto;}
+    body.rtl .numeric_field_controls {left: auto; right: auto;}
 }
 .form-cell > label.label > i,
 .subform-cell > label.label > i,
@@ -1463,4 +1468,23 @@ body.rtl .label-top.subform-cell > label.label > i{
 body.rtl .form-cell > label.label,
 body.rtl .subform-cell > label.label{
     padding: 8px 0 0 10px;
+}
+@media (min-width: 767px) {
+    .label-top.form-container .label-left.form-cell .numeric_field_controls{
+        bottom: unset;
+    }
+}
+.form-cell > label.label + input:has(+ .numeric_field_controls ){
+    display: inline-block;
+}
+body.rtl .form-cell > label.label + input:has(+ .numeric_field_controls){
+    float: none;
+}
+.label-top.form-cell > label.label + input[size] + .numeric_field_controls,
+form.label-top .form-cell > label.label + input[size] + .numeric_field_controls{
+    right: auto;
+}
+body.rtl .label-top.form-cell > label.label + input[size] + .numeric_field_controls,
+body.rtl form.label-top .form-cell > label.label + input[size] + .numeric_field_controls{
+    left: auto;
 }

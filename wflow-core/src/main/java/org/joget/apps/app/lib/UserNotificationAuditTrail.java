@@ -298,6 +298,7 @@ public class UserNotificationAuditTrail extends DefaultAuditTrailPlugin implemen
                                                 try {
                                                     LogUtil.info(UserNotificationAuditTrail.class.getName(), "Sending email attempt " + retry + ": Sending email from=" + email.getFromAddress().toString() + ", to=" + emailToOutput + "cc=" + cc + ", bcc=" + bcc + ", subject=" + email.getSubject());
                                                     email.sendMimeMessage();
+                                                    LogUtil.info(UserNotificationAuditTrail.class.getName(), "Sending email attempt " + retry + " completed for subject=" + email.getSubject());
                                                     break;
                                                 } catch (EmailException ex2) {
                                                     LogUtil.error(UserNotificationAuditTrail.class.getName(), ex, "Sending email attempt " + retry + " failure.");

@@ -55,20 +55,20 @@ body.overview_view .builder-type ul li.item > a .item-id {visibility: visible;}
 .overview_view .show_overview_no_data .no_overview_data:not(.search_hide) {display: list-item !important;}
 #toogle_no_overview_data {margin-left: 20px; cursor: pointer; color: #007bff; display:none;}
 .overview_view #toogle_no_overview_data{display: inline-block;}
-@media screen and (max-width:1290px) {
+@media screen and (max-width:1284px) {
     #builders {grid-auto-rows: 200px;}
     #builders-seperator > span {left:calc((100% - 30px)/2 + 14px); right: auto;}
     #builders-seperator > span:nth-child(2) {display:none;}
     #builders > div:nth-child(n+4){border-top:1px solid #ccc; padding-top: 20px !important;}
 }
-@media screen and (min-width:1701px) {
+@media screen and (min-width:1695px) {
     #builders-seperator > span {left:calc((100% - 30px)/4 + 14px);}
     #builders-seperator > span:nth-child(2) {left:calc(((100% - 30px)/4 * 2) + 13px);}
     #builders-seperator > span:nth-child(3) {left:calc(((100% - 30px)/4 * 3) + 13px);}
     #builders > div:nth-child(n+5){border-top:0; padding-top: 0px !important;}
     #builders > div:nth-child(n+6){border-top:1px solid #ccc; padding-top: 20px !important;}
 }
-@media screen and (min-width:2111px) {
+@media screen and (min-width:2105px) {
     #builders-seperator > span {left:calc((100% - 30px)/5 + 14px);}
     #builders-seperator > span:nth-child(2) {left:calc(((100% - 30px)/5 * 2) + 13px);}
     #builders-seperator > span:nth-child(3) {left:calc(((100% - 30px)/5 * 3) + 13px);}
@@ -76,7 +76,7 @@ body.overview_view .builder-type ul li.item > a .item-id {visibility: visible;}
     #builders > div:nth-child(n+6){border-top:0; padding-top: 0px !important;}
     #builders > div:nth-child(n+7){border-top:1px solid #ccc; padding-top: 20px !important;}
 }
-@media screen and (min-width:2521px) {
+@media screen and (min-width:2515px) {
     #builders-seperator > span {left:calc((100% - 30px)/6 + 14px);}
     #builders-seperator > span:nth-child(2) {left:calc(((100% - 30px)/6 * 2) + 13px);}
     #builders-seperator > span:nth-child(3) {left:calc(((100% - 30px)/6 * 3) + 13px);}
@@ -85,7 +85,7 @@ body.overview_view .builder-type ul li.item > a .item-id {visibility: visible;}
     #builders > div:nth-child(n+7){border-top:0; padding-top: 0px !important;}
     #builders > div:nth-child(n+8){border-top:1px solid #ccc; padding-top: 20px !important;}
 }
-@media screen and (min-width:2931px) {
+@media screen and (min-width:2925px) {
     #builders-seperator > span {left:calc((100% - 30px)/7 + 14px);}
     #builders-seperator > span:nth-child(2) {left:calc(((100% - 30px)/7 * 2) + 13px);}
     #builders-seperator > span:nth-child(3) {left:calc(((100% - 30px)/7 * 3) + 13px);}
