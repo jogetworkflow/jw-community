@@ -1,10 +1,10 @@
 <%@ include file="/WEB-INF/jsp/includes/taglibs.jsp" %>
 <%@ page import="org.joget.directory.model.service.DirectoryUtil"%>
 <%@ page import="org.joget.commons.util.SecurityUtil"%>
-<%@ page import="org.joget.workflow.util.WorkflowUtil"%>
+<%@ page import="org.joget.apps.app.service.AppUtil"%>
 
 <%
-    String theme = WorkflowUtil.getSystemSetupValue("systemTheme");
+    String theme = AppUtil.getSystemTheme();
     pageContext.setAttribute("theme", theme);
 %>
 

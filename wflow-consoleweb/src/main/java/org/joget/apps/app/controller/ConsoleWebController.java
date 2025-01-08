@@ -4660,6 +4660,19 @@ public class ConsoleWebController {
         AppUtil.writeJson(writer, jsonObject, callback);
     }
 
+    @RequestMapping("/console/setting/general/changeSystemThemeAutomatically")
+    public void changeSystemThemeAutomatically(HttpServletRequest httpRequest, Writer writer, @RequestParam(value = "callback", required = false) String callback, @RequestParam("deviceTheme") String deviceTheme) throws JSONException, IOException {
+        HttpSession session = httpRequest.getSession();
+        if (session != null) {
+            session.setAttribute("systemDeviceTheme", deviceTheme);
+        }
+    
+        JSONObject jsonObject = new JSONObject();
+        jsonObject.accumulate("success", "Theme has been changed to" +  deviceTheme + "successfully");
+
+        AppUtil.writeJson(writer, jsonObject, callback);
+    }
+
     @RequestMapping(value = "/console/setting/general/submit", method = RequestMethod.POST)
     public String consoleSettingGeneralSubmit(HttpServletRequest request, ModelMap map) {
         boolean localeChanged = false;

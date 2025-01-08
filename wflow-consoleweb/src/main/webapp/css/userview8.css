@@ -1613,7 +1613,8 @@ body.rtl .InformationTileComponent .mb-1 {
 body.quickEditModeActive fieldset#form-canvas, 
 body.quickEditModeActive fieldset#form-canvas .subform-container, 
 body.quickEditModeActive .dataList, 
-body.quickEditModeActive #category-container {
+body.quickEditModeActive #category-container, 
+body.quickEditModeActive #content > main {
     border: inherit !important;
     padding: inherit !important;
     position: relative;
@@ -1621,17 +1622,24 @@ body.quickEditModeActive #category-container {
 body.quickEditModeActive fieldset#form-canvas:after, 
 body.quickEditModeActive fieldset#form-canvas .subform-container:after, 
 body.quickEditModeActive .dataList:after, 
-body.quickEditModeActive #category-container:after,
-body.quickEditModeActive #content > main:after{
-    border: solid 3px #e7fab6;
+body.quickEditModeActive #category-container:after, 
+body.quickEditModeActive #content > main:after {
+    border: solid 3px #DAE6E2;
     position: absolute;
-    top:0;
-    left:0;
+    top: 0;
+    left: 0;
     right: 0;
     bottom: 0;
     content: "";
     pointer-events: none;
     z-index: 3;
+}
+body.quickEditModeActive fieldset#form-canvas.quick-edit-hovered:after, 
+body.quickEditModeActive fieldset#form-canvas .subform-container.quick-edit-hovered:after, 
+body.quickEditModeActive .dataList.quick-edit-hovered:after, 
+body.quickEditModeActive #category-container.quick-edit-hovered:after,
+body.quickEditModeActive #content>main.quick-edit-hovered:after {
+    background-color: rgba(0, 169, 119, 0.1);
 }
 #navigation .menu.analyzer, 
 .form-section.analyzer, 

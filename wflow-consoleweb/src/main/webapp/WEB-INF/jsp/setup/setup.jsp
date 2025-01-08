@@ -21,7 +21,7 @@
 <c:set var="lang" value="<%= AppUtil.getAppLocale() %>"/>
 
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
-<html lang="${lang}">
+<html lang="${lang}" system-theme="light">
     <head>
         <title><%= ResourceBundleUtil.getMessage("console.header.top.title")%></title>
         <link rel="shortcut icon" href="${pageContext.request.contextPath}/images/favicon.ico"/>
@@ -333,6 +333,9 @@
             $("#setupButton").on("click", Setup.setupStatus);
             $(function() {
                 Setup.selectType();
+                
+                //Make main appear after finish load all the required scripts
+                $("body").find("#main").css({'visibility': 'visible'});
             });
         </script>
     </body>

@@ -42,6 +42,9 @@
 
     <script type="text/javascript">
         $(document).ready(function(){
+            $('div#JsonDataTable_employmentList-buttons > button').eq(0).addClass("console-primary");
+            $('div#JsonDataTable_employmentList-buttons > button').eq(1).addClass("console-danger");
+
             $('#JsonDataTable_searchTerm').hide();
         });
 

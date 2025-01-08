@@ -412,6 +412,9 @@ public class UniversalTheme extends UserviewV5Theme implements UserviewPwaTheme,
         
         jsCssLink += generateBuilderStyle();
         
+        //Add Inter font for Admin Bar
+        jsCssLink += "<link rel=\"stylesheet\" href=\"" + data.get("context_path") + "/fonts/inter/css/font.css\"/>\n";
+        
         return jsCssLink;
     }
     

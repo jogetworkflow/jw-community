@@ -1,12 +1,11 @@
 <%@ include file="/WEB-INF/jsp/includes/taglibs.jsp" %>
 <%@ page import="org.joget.apps.app.service.AppUtil"%>
 <%@ taglib uri="http://displaytag.sf.net" prefix="display" %>
-<%@ page import="org.joget.workflow.util.WorkflowUtil"%>
 
 <c:set var="lang" value="<%= AppUtil.getAppLocale() %>"/>
 
 <%
-    String theme = WorkflowUtil.getSystemSetupValue("systemTheme");
+    String theme = AppUtil.getSystemTheme();
     pageContext.setAttribute("theme", theme);
 %>
 

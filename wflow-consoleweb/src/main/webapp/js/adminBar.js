@@ -21,7 +21,6 @@ var AdminBar = {
         }
         
         url = UrlUtil.updateUrlParam(url, "_ov", (new Date().getTime()));
-        
         var $quickOverlayFrame = $(parent.document).find("#quickOverlayFrame");
         if ($quickOverlayFrame.length === 0) {
             var overlayContainer = 
@@ -31,22 +30,27 @@ var AdminBar = {
             $(document.body).append(overlayContainer);
             $(document.body).addClass("stop-scrolling");
             $quickOverlayFrame = $(document.body).find("#quickOverlayFrame");
-            
             if (/iPhone|iPod|iPad/.test(navigator.userAgent)) {
                 $("body").addClass("fixiosframe");
             }
         }
         $quickOverlayFrame.attr("src", "about:blank");
         $quickOverlayFrame.attr("src", url);
+
         $quickOverlayFrame.addClass("iframeloading");
         $("#overlay, #quickOverlayButton, #quickOverlayFrameDiv").fadeIn();
         $quickOverlayFrame.on("load", function() {
+            $quickOverlayFrame.contents().find('#spinner-container').remove();
+          
             AdminBar.currentPageTitle = document.title;
             var frameTitle = $quickOverlayFrame[0].contentDocument.title;
             if (frameTitle !== "") {
                 document.title = frameTitle;
             }
-            $("#quickOverlayContainer").removeClass("minimize");
+            
+            $("#quickOverlayContainer").removeClass("minimize");    
+            //Make main appear after finish load all the required scripts
+            $(this).contents().find("div#content-container > div#main").css({'visibility': 'visible'});
         });
         $("#quickOverlayFrameDiv, #adminBar, #adminControl, #quickOverlayButton").off("mouseenter mouseleave");
         $("#quickOverlayFrameDiv, #adminBar, #adminControl, #quickOverlayButton").on( "mouseenter", function() {
@@ -65,7 +69,22 @@ var AdminBar = {
         $("#quickOverlay").on("click", function() {
             AdminBar.hideQuickOverlay();
         });
-        
+
+        //Attach the required system theme once it's ready
+        const intervalId = setInterval(function() {
+            if (UI.theme) { 
+                
+                $(parent.document).find('#quickOverlayFrameDiv').attr('system-theme', UI.theme);
+                $(parent.document).find('#quickOverlayButton').attr('system-theme', UI.theme);
+                
+                clearInterval(intervalId);
+            }
+        }, 100); 
+
+        setTimeout(function() {
+            clearInterval(intervalId);
+        }, 20000);
+
         AdminBar.initPinMode();
         
         return false;
@@ -129,12 +148,14 @@ var AdminBar = {
     },
     showQuickEdit: function() {
         if (!AdminBar.isAdminBarHide()) {
-            $(".analyzer-page").css("display", "inline-block");
+            $(".analyzer-page").css({"display": "inline-block"});
             $("#quickEditMode").removeClass("off");
             $(".quickEdit").fadeIn();
             $(".analyzer-label").css("display", "inline-block");
             $(".analyzer-disabled").addClass("analyzer").removeClass("analyzer-disabled");
             $("body").addClass("quickEditModeActive");
+
+            $("#quickEditMode").find('div.switch-container > .custom-switch > input').prop('checked', true);
 
             $("iframe").each(function(){
                 try {
@@ -142,6 +163,23 @@ var AdminBar = {
                 } catch (err) {}
             });
         }
+        $("div.quickEdit")
+        .off("mouseover").on("mouseover", function(e){
+            e.stopPropagation();
+            $("body.quickEditModeActive fieldset#form-canvas, body.quickEditModeActive fieldset#form-canvas .subform-container, body.quickEditModeActive .dataList, body.quickEditModeActive #category-container, body.quickEditModeActive #content>main")
+            .filter('.quick-edit-hovered').removeClass('quick-edit-hovered');
+            if ($(this).siblings("#navigation").length){
+                $(this).parent().find('#navigation #category-container').addClass('quick-edit-hovered')
+            }else{
+                $(this).parent().addClass("quick-edit-hovered")
+            }
+        }).off("mouseleave").on("mouseleave", function(){
+            if ($(this).siblings("#navigation").length){
+                $(this).parent().find('#navigation #category-container').removeClass("quick-edit-hovered");
+            }else{
+                $(this).parent().removeClass("quick-edit-hovered");
+            }
+        })
     },
     hideQuickEdit: function() {
         $("#quickEditMode").addClass("off");
@@ -149,6 +187,8 @@ var AdminBar = {
         $(".analyzer-label, .analyzer-page").css("display", "none");
         $(".analyzer").addClass("analyzer-disabled").removeClass("analyzer");
         $("body").removeClass("quickEditModeActive");
+
+        $("#quickEditMode").find('div.switch-container > .custom-switch > input').prop('checked', false);
         
         $("iframe").each(function(){
             try {
@@ -185,6 +225,10 @@ var AdminBar = {
         });
         if ((AdminBar.webConsole && !AdminBar.builderMode)) {
             $("#quickEditModeOption").hide();
+            $("body").find('#spinner-container').remove();
+          
+            //Make main appear after finish load all the required scripts
+            $("body").find("div#content-container > div#main").css({'visibility': 'visible'});
         }
         if (AdminBar.isAdminBarHide()) {
             AdminBar.hideAdminBar();
@@ -257,7 +301,7 @@ var AdminBar = {
         $("#adminControl").on('click', function() {
             if (AdminBar.isAdminBarOpen()) {
                 AdminBar.hideAdminBar();
-            } else {
+            } else {    
                 AdminBar.showAdminBar();
             }
             return false;
@@ -275,7 +319,19 @@ var AdminBar = {
         $("#adminBar").removeClass("adminBarInactive");
         $("#adminBar").addClass("adminBarActive");
         $("#adminControl").addClass("active");
-        $("#adminControl").find("i").attr("class", "fas fa-angle-double-right");
+        const $icon = $("#adminControl").find("i");
+        $({deg: 0}).animate({deg: 360}, {
+            duration: 200,
+            step: function(now) {
+                $icon.css({
+                    transform: `rotate(${now}deg)`
+                });
+            },
+            complete: function() {
+                // After animation completes, change the icon
+                $icon.attr("class", "fas fa-angle-double-down");
+            }
+        });
         var path = AdminBar.cookiePath;
         $.cookie("adminBarModeHide", "false", {
             path: path
@@ -287,7 +343,20 @@ var AdminBar = {
         $("#adminBar").removeClass("adminBarActive");
         $("#adminBar").addClass("adminBarInactive");
         $("#adminControl").removeClass("active");
-        $("#adminControl").find("i").attr("class", "fas fa-pencil-alt");
+        const $icon = $("#adminControl").find("i");
+        if (!($icon.attr('class') === "fas fa-cogs")){
+            $({deg: 0}).animate({deg: 360}, {
+                duration: 200,
+                step: function(now) {
+                    $icon.css({
+                        transform: `rotate(${now}deg)`
+                    });
+                },
+                complete: function() {
+                    $icon.attr("class", "fas fa-cogs");
+                }
+            });
+        }
         var path = AdminBar.cookiePath;
         $.cookie("adminBarModeHide", "true", {
             path: path

@@ -17,7 +17,6 @@
                 <option value="<c:out value="${d.id}"/>" ${selected}><c:out value="${d.name}"/></option>
             </c:forEach>
             </select>
-            &nbsp;&nbsp;&nbsp;&nbsp;
             <fmt:message key="console.directory.employment.filter.label.byGrade"/>
             <select id="JsonDataTable_filterbyGrade" onchange="filter(JsonDataTable, '&gradeId=', this.options[this.selectedIndex].value)">
                 <option value=""><fmt:message key="console.directory.grade.empty.option.label"/></option>
@@ -65,6 +64,11 @@
     <script type="text/javascript">
         $(document).ready(function(){
             $('#JsonDataTable_searchTerm').hide();
+
+            $("div#JsonDataTable_employmentList-buttons button").eq(0).addClass("console-primary");
+            $("div#JsonDataTable_employmentList-buttons button").eq(1).addClass("console-danger");
+
+            $("div#main-body-content-filter").appendTo("div#JsonDataTable_employmentList-search");
         });
 
         function assignReportTo(selectedId){

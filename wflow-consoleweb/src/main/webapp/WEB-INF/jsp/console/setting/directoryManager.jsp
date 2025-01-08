@@ -18,7 +18,7 @@
 </div>
 
 <div id="main">
-    <div id="main-title"></div>
+    <div id="main-title"><fmt:message key="console.header.submenu.label.setting.directory"/></div>
     <div id="main-action">
     </div>
     <div id="main-body">
@@ -39,9 +39,9 @@
                 </span>
                 <div class="section-list-item-actions">
                     <c:if test="${isDmConfigurable}">
-                        <button type="button" id="dm-config" class="btn button-action-main" onclick="configureDirectoryManagerImpl()"><fmt:message key="general.method.label.configPlugin"/></button>
+                        <button type="button" id="dm-config" class="btn button-action-main console-primary" onclick="configureDirectoryManagerImpl()"><i class="fas fa-wrench"></i> <fmt:message key="general.method.label.configPlugin"/></button>
                     </c:if>
-                    <button type="button" id="dm-change" class="btn button-action-main" onclick="selectDirectoryManagerImpl()"><fmt:message key="console.setting.directory.label.changePlugin"/></button>
+                    <button type="button" id="dm-change" class="btn button-action-main console-tertiary" onclick="selectDirectoryManagerImpl()"><i class="fas fa-exchange-alt"></i> <fmt:message key="console.setting.directory.label.changePlugin"/></button>
                 </div>
             </div>
         </section>
@@ -78,3 +78,4 @@
 </script>
 
 <commons:footer />
+    

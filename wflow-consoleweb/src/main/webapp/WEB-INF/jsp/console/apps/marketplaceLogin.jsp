@@ -2,18 +2,8 @@
 
 <c:set var="appName" value="${param.name}" />
 <c:set var="appId" value="${param.appId}" />
-<%@ page import="org.joget.workflow.util.WorkflowUtil" %>
 
-<% String theme = WorkflowUtil.getSystemSetupValue("systemTheme");
-            pageContext.setAttribute("theme", theme);%>
-
-<c:if test="${not empty theme and theme ne 'classic'}">
-    <link rel="stylesheet" type="text/css"
-          href="${pageContext.request.contextPath}/css/builderTheme.css?build=<fmt:message key="
-                                                                                     build.number" />" />
-</c:if>
-
-<commons:popupHeader bodyCssClass=" builder-popup no-header" builderTheme="${theme}" />
+<commons:popupHeader bodyCssClass=" builder-popup no-header" builderTheme="true" />
 <style>
     html, body, .bgi-cover{
         height: 100%;

@@ -66,6 +66,7 @@
 </div>
 <script>
     $(document).ready(function(){
+        $('div.main-body-content-filter').appendTo('div#userDataTable_userList-search');
         $('#userDataTable_searchTerm').hide();
     });
     function submitUser(username){

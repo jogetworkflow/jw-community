@@ -1,10 +1,20 @@
 :root {
-    --primary-accent: #e7ecf4;
-    --primary-accent-hover: #cdd4df;
-    --primary-accent-active: #bbc1cc;
+    --primary-add-button-bg-color: #007A5E;
+    --primary-accent: #009265;
+    --primary-accent-hover: #00A977;
+    --primary-accent-active: #00A977;
     --secondary-accent: #e7ecf4;
     --base-font-color: #404040;
+    --button-font-color: #fff;
     --item-subtitle: #005281;
+}
+@keyframes vibrate {
+    0% { transform: translate(0px, 0px); }
+    20% { transform: translate(0px, -1px); }
+    40% { transform: translate(0px, -1px); }
+    60% { transform: translate(0px, 1px); }
+    80% { transform: translate(0px, 1px); }
+    100% { transform: translate(0px, 0px); }
 }
 body {
     padding: 0;
@@ -12,8 +22,6 @@ body {
     font-family: Arial,sans-serif;
     font-size: 14px;
     line-height: normal;
-    color: #535353;
-    background: #fff;
 }
 ol, ul {
     margin: 0;
@@ -70,13 +78,16 @@ button:before, .btn:before {
     display: flex;
     flex-direction: column;
     overflow-y: auto;
-    color: var(--base-font-color);
-    background-color: #fff;
+    color: var(--console-default-font-color);
+    background-color: inherit;
     flex: 3;
     max-width: 800px;
 }
 .section {
-    margin: 2rem 2rem 1rem 2rem;
+    padding: 2rem 2rem 1rem 2rem;
+}
+.section:first-child {
+    padding-top: 0rem;
 }
 .section-header {
     display: flex;
@@ -87,22 +98,35 @@ button:before, .btn:before {
 .section-title {
     font-weight: 600;
     text-transform: none;
+    font-size: 1rem;
+    margin: 0;
 }
 .section-list-item {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin: 1rem 0 0 0;
+    margin: 0.3rem 0 0 0;
+    padding: 0.5rem 3rem 0.5rem 3rem;
+    background-color: var(--console-main-background-color);
+    border-radius: 10px 10px 10px 10px;
+}
+section#connector-setup .section-list-item{
+    background-color: transparent;
+    padding-left:0px;
+}
+section#connector-setup .section-list-item:hover{
+    transform: initial;
+    box-shadow: initial;
 }
 .section-list-item-title {
-    font-size: 1.2rem;
+    font-size: 0.9rem;
 }
 .section-list-item-content {
     line-height: 1.2;
 }
 .content-title {
     display: block;
-    font-size: 1.2rem;
+    font-size: 0.9rem;
     font-weight: 400;
 }
 .content-title > .inline-icon {
@@ -116,20 +140,24 @@ button:before, .btn:before {
 }
 .section-list-item-actions {
     display: flex;
+    gap: 8px;
 }
-.section-list-item-actions > button {
-    font-size: small;
-    font-weight: 600;
+button {
+    font-weight: normal !important;
     text-align: center;
     max-width: 250px;
-    margin: 0 3px;
 }
 .section-list-item-actions > .btn-icon {
-    width: 2.5rem;
-    height: 2.5rem;
+    box-sizing: border-box;
+    width:  fit-content;
+    height: fit-content;
     border-radius: 50%;
-    padding: 3px 5px;
+    padding: 3px 2px;
     color: var(--base-font-color);
+    margin-bottom: 0;
+}
+.section-list-item-actions:has(.btn-icon){
+    height: fit-content;    
 }
 .button-action-main {
     border-radius: 10px;
@@ -140,21 +168,19 @@ button:before, .btn:before {
     user-select: none;
     transition: all 0.15s;
     box-sizing: border-box;
-    border: 2px solid transparent;
+    border: none;
     text-align: justify;
     min-width: fit-content;
-    width: 100%;
+    width:100%;
     color: var(--base-font-color);
+    font-size: 0.8rem;
 }
-.button-action-main:hover, .btn-icon:hover {
+.button-action-main:hover {
     background-color: var(--primary-accent-hover);
 }
 .button-action-main:focus, .btn-icon:focus {
     outline: none;
-    box-shadow: 0 0 0 .2rem rgb(from var(--base-font-color) r g b / .25);
-}
-.button-action-main:active, .btn-icon:active {
-    background-color: var(--primary-accent-active);
+    box-shadow: none;
 }
 .button-action-main .section-list-item-content {
     margin: 0 1rem;
@@ -163,6 +189,16 @@ button:before, .btn:before {
     display: flex;
     align-items: center;
     padding: 1rem;
+    width:fit-content;
+    color: var(--primary-accent);
+    background-color: transparent; 
+    padding:0;
+}
+.button-list-add:hover {
+    border-radius: 0px;
+    color: var(--primary-accent-hover);
+    background-color: transparent;
+    transform: translate(0px, -2px);
 }
 .button-list-add .content-title {
     font-weight: 600;
@@ -170,9 +206,7 @@ button:before, .btn:before {
 .section-actions {
     display: flex;
     align-items: center;
-}
-.section-actions > * {
-    margin: 0 5px
+    gap: 8px;
 }
 
 /* START Temporary fix to override v7.css styles */
@@ -180,18 +214,86 @@ button:before, .btn:before {
     background: transparent;
 }
 button:focus, .btn:focus {
-    background-color: var(--primary-accent-active) !important;
+    background-color: transparent !important;
 }
 button:focus:not(:active), .btn:focus:not(:active) {
     background-color: var(--primary-accent) !important;
+    color: var(--button-font-color) !important;
 }
 .section-list-item-actions .btn-icon:focus:not(:active) {
     background-color: transparent !important;
 }
-button:hover, .btn:hover {
-    color: var(--base-font-color);
+button, button:hover, .btn:hover {
+    color: var(--button-font-color);
+}
+.btn-icon:hover {
+    background-color: transparent;
+    color: var(--base-font-color) !important;
+}
+.btn-icon:hover i.fa-trash-alt {
+    animation: vibrate 0.8s linear infinite;
+}
+.btn-icon > i.fa-trash-alt {
+    color: var(--console-button-danger-bg) !important;
+}
+.btn-icon > i.fa-cog {
+    color: #808080;
+} 
+.btn-icon:hover > i.fa-cog {
+    color: #007BFF !important;
+    transform: rotate(180deg); 
+    transition: color 0.3s ease, transform 0.8s ease; 
+}
+button.btn-icon {
+    color: var(--base-font-color) !important;
+    font-size: 0.8rem;
 }
 #nav-title p {
     margin: 1em 0;
+}
+.custom-switch, section#idp > .section-header > .section-actions {
+    margin-bottom: 0.5rem;
+}
+i.btn-icon + .section-list-item-content {
+    margin-left: .2rem;
+}
+@media screen and (max-width:680px) {
+    #nav-title p {
+        margin: 5px 0;
+    } 
+
+    ul#nav-list { 
+        box-sizing: content-box;
+    }
+
+    body.rtl ul#nav-list {
+        right: 0;
+    }
+
+    body.rtl .section {
+        margin-right: 10px;
+    }
+
+    body.rtl section#connector-setup .section-list-item {
+        padding: 0;
+    }
+
+    .section-list-item, 
+    .section-header {
+        flex-wrap:wrap;
+        gap: 5px;
+    }
+
+    .section-list-item:not(:has(.section-list-item-content)) {
+        gap: 5px;
+    }
+
+    .section-list-item-actions {
+        flex-wrap: wrap;
+    }
+
+    li.section-list-item div.section-list-item-content {
+        flex: 1;
+    }
 }
 /* END Temporary fix to override v7.css styles */

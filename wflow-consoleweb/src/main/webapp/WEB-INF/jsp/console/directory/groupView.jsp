@@ -1,7 +1,6 @@
 <%@ include file="/WEB-INF/jsp/includes/taglibs.jsp" %>
 
 <commons:header />
-
 <div id="nav">
     <div id="nav-title">
         <p><i class="fas fa-users"></i> <fmt:message key='console.header.menu.label.users'/></p>
@@ -17,8 +16,8 @@
     <div id="main-title"></div>
     <div id="main-action">
         <ul id="main-action-buttons">
-            <li><button onclick="onEdit()"><fmt:message key="console.directory.group.edit.label"/></button></li>
-            <li><button onclick="onDelete()"><fmt:message key="console.directory.group.delete.label"/></button></li>
+            <li><button class="console-primary" onclick="onEdit()"><fmt:message key="console.directory.group.edit.label"/></button></li>
+            <li><button class="console-danger" onclick="onDelete()"><fmt:message key="console.directory.group.delete.label"/></button></li>
         </ul>
     </div>
     <div id="main-body">
@@ -80,6 +79,9 @@
     $(document).ready(function(){
         $('#JsonDataTable_searchTerm').hide();
 
+        $("div#JsonDataTable_userList-buttons button").eq(0).addClass("console-primary");
+        $("div#JsonDataTable_userList-buttons button").eq(1).addClass("console-danger");
+
         <c:if test="${isCustomDirectoryManager || group.readonly}">
             $('#main-action-buttons').remove();
             $('#JsonDataTable_userList-buttons').remove();
@@ -132,5 +134,3 @@
 </script>
 
 <commons:footer />
-
-
