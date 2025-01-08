@@ -105,8 +105,20 @@ public class UserviewService {
             //set theme & permission
             try {
                 JSONObject themeObj = settingObj.getJSONObject("properties").getJSONObject("theme");
-                UserviewTheme theme = (UserviewTheme) pluginManager.getPlugin(themeObj.getString("className"));
-                theme.setProperties(PropertyUtil.getPropertiesValueFromJson(themeObj.getJSONObject("properties").toString()));
+                UserviewTheme theme;
+                String themeClassName = themeObj.getString("className");
+                String themeProperties = themeObj.getJSONObject("properties").toString();
+                if (isThemeBuilder(themeClassName)) {
+                    // If the Theme Builder is used, get the properties from the Theme Builder.
+                    String[] result = getBuilderTheme(themeClassName);
+                    themeClassName = result[0];
+                    JSONObject propertiesJson = getThemeProperties(result[1]);
+                    propertiesJson.put("themeID", result[1]);
+                    themeProperties = propertiesJson.toString();
+                }
+                theme = (UserviewTheme) pluginManager.getPlugin(themeClassName);
+                theme.setProperties(PropertyUtil.getPropertiesValueFromJson(themeProperties));
+                theme.setProperty(json, theme);
                 theme.setRequestParameters(requestParameters);
                 theme.setUserview(userview);
                 setting.setTheme(theme);
@@ -225,7 +237,19 @@ public class UserviewService {
             try {
                 JSONObject themeObj = settingObj.getJSONObject("properties").getJSONObject("theme");
                 JSONObject themeProperties = themeObj.getJSONObject("properties");
-                UserviewTheme theme = (UserviewTheme) pluginManager.getPlugin(themeObj.getString("className"));
+                String themeClassName = themeObj.getString("className");
+                if (isThemeBuilder(themeClassName)) {
+                    // If the Theme Builder is used, get the properties from the Theme Builder.
+                    String[] result = getBuilderTheme(themeClassName);
+                    themeClassName = result[0];
+                    if(!preview){
+                        themeProperties = getThemeProperties(result[1]);
+                    } else {
+                        themeProperties = themeObj.getJSONObject("properties");
+                    }
+                    themeProperties.put("themeID", result[1]);
+                }
+                UserviewTheme theme = (UserviewTheme) pluginManager.getPlugin(themeClassName);
                 if (theme == null) {
                     String defaultTheme = ResourceBundleUtil.getMessage("generator.userview.theme");
                     theme = (UserviewTheme) pluginManager.getPlugin(defaultTheme);
@@ -519,10 +543,19 @@ public class UserviewService {
 
                         JSONObject settingObj = userviewObj.getJSONObject("setting");
                         JSONObject themeObj = settingObj.getJSONObject("properties").getJSONObject("theme");
-
-                        theme = (UserviewTheme) pluginManager.getPlugin(themeObj.getString("className"));
+                        String themeClassName = themeObj.getString("className");
+                        if (isThemeBuilder(themeClassName)) {
+                            // If the Theme Builder is used, get the properties from the Theme Builder.
+                            String[] result = getBuilderTheme(themeClassName);
+                            themeClassName = result[0];
+                            themeObj = getThemeProperties(result[1]);
+                            themeObj.put("themeID", result[1]);
+                        } else {
+                            themeObj = settingObj.getJSONObject("properties").getJSONObject("theme").getJSONObject("properties");
+                        }
+                        theme = (UserviewTheme) pluginManager.getPlugin(themeClassName);
                         if (theme != null) {
-                            theme.setProperties(PropertyUtil.getProperties(themeObj.getJSONObject("properties")));
+                            theme.setProperties(PropertyUtil.getProperties(themeObj));
                             theme.setRequestParameters(requestParameters);
                             theme.setUserview(userview);
                         }
@@ -870,5 +903,38 @@ public class UserviewService {
                 savePageDefinition(mObj, userviewId, appDef);
             }
         }
+    }
+    
+    // Get theme builder properties by using theme builder ID
+    public JSONObject getThemeProperties(String themeBuilderID) {
+        JSONObject json = null;
+        if (!themeBuilderID.isEmpty()) {
+            AppDefinition appDef = AppUtil.getCurrentAppDefinition();
+
+            BuilderDefinitionDao dao = (BuilderDefinitionDao) AppUtil.getApplicationContext().getBean("builderDefinitionDao");
+            BuilderDefinition def = dao.loadById(themeBuilderID, appDef);
+
+            JSONObject themeProperties = new JSONObject(def.getJson());
+            json = themeProperties.getJSONObject("theme").getJSONObject("properties");
+        }
+        return json;
+    }
+    
+    // Check if theme builder is used
+    public boolean isThemeBuilder(String className) {
+        return className.startsWith("org.joget.plugin.enterprise.BuilderTheme") && !className.equalsIgnoreCase("org.joget.plugin.enterprise.BuilderTheme");
+    }
+    
+    //Seperate the classname to get theme classname and theme builder ID
+    public static String[] getBuilderTheme(String className) {
+        int lastIndex = className.lastIndexOf('.');
+        
+        if (lastIndex != -1) {
+            String beforeLastDot = className.substring(0, lastIndex);     // Before the last dot
+            String afterLastDot = className.substring(lastIndex + 1);     // After the last dot
+            return new String[]{beforeLastDot, afterLastDot};
+        }
+        
+        return new String[]{className, ""};
     }
 }

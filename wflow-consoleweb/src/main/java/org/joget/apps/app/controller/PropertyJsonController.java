@@ -15,9 +15,11 @@ import java.util.Map.Entry;
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import org.joget.apps.app.dao.AppResourceDao;
+import org.joget.apps.app.dao.BuilderDefinitionDao;
 import org.joget.apps.app.dao.PluginDefaultPropertiesDao;
 import org.joget.apps.app.model.AppDefinition;
 import org.joget.apps.app.model.AppResource;
+import org.joget.apps.app.model.BuilderDefinition;
 import org.joget.apps.app.model.PluginDefaultProperties;
 import org.joget.apps.app.model.PropertyAssistant;
 import org.joget.apps.app.service.AppResourceUtil;
@@ -63,11 +65,14 @@ public class PropertyJsonController {
     @Autowired
     PluginDefaultPropertiesDao pluginDefaultPropertiesDao;
     
+    @Autowired
+    BuilderDefinitionDao builderDefinitionDao;
+    
     @Resource
     AppResourceDao appResourceDao;
 
-    @RequestMapping("/property/json/getElements")
-    public void getElements(Writer writer, @RequestParam("classname") String className, @RequestParam(value = "exclude", required = false) String exclude, @RequestParam(value = "includeHidden", required = false) Boolean includeHidden, @RequestParam(value = "pwaValidation", required = false) Boolean pwaValidation) throws Exception {
+    @RequestMapping(value = {"/property/json/getElements","/property/json/(*:appId)/(~:appVersion)/getElements"})
+    public void getElements(Writer writer, @RequestParam("classname") String className, @RequestParam(value = "exclude", required = false) String exclude, @RequestParam(value = "includeHidden", required = false) Boolean includeHidden, @RequestParam(value = "pwaValidation", required = false) Boolean pwaValidation, @RequestParam(value = "appId", required = false) String appId, @RequestParam(value = "appVersion", required = false) String appVersion) throws Exception {
         JSONArray jsonArray = new JSONArray();
         
         if (includeHidden == null) {
@@ -132,7 +137,22 @@ public class PropertyJsonController {
                     list.add(option);
                 }
             }
-        
+            
+            //add available theme builder option
+            if (className.equalsIgnoreCase("org.joget.apps.userview.model.UserviewTheme")) {
+                Collection<BuilderDefinition> builderDefinitionList = null;
+                if (appId != null && !appId.trim().isEmpty()) {
+                    AppDefinition appDef = appService.getAppDefinition(appId, appVersion);
+                    builderDefinitionList = builderDefinitionDao.getBuilderDefinitionList("theme", null, appDef, "name", false, null, null);
+                    for (BuilderDefinition def : builderDefinitionList) {
+                        Map<String, String> option = new HashMap<String, String>();
+                        option.put("value", "org.joget.plugin.enterprise.BuilderTheme." + def.getId());
+                        option.put("label", ResourceBundleUtil.getMessage("tbuilder.builder.name") + " - " + def.getName());
+                        list.add(option);
+                    }
+                }
+            }
+            
             Collections.sort(list, new Comparator() {
                 @Override
                 public int compare(Object objA, Object objB) {

@@ -1841,7 +1841,10 @@ public class AppUtil implements ApplicationContextAware {
             if (p.contains(".") && 
                     ((isOsgi && osgiplugins.contains(p)) || //exist but it is osgi
                     (isMissing && !plugins.contains(p)))) { //not exist
-                foundPlugins.add(p);
+                // Skip the Theme Builder check as the Theme Builder uses a combination of classname and themeID.
+                if(!p.startsWith("org.joget.plugin.enterprise.BuilderTheme")){
+                    foundPlugins.add(p);
+                }
             }
         }
         
