@@ -21,7 +21,8 @@
                 getDefinitionUrl : "",
                 rightPropertyPanel : false,
                 defaultBuilder : false,
-                submitDiff : false //use for saving, prepare diff and post together with json definition
+                submitDiff : false, //use for saving, prepare diff and post together with json definition
+                marketplacePaletteClass : '' //use for set a default plugin type when click on palette marketplace link
             },
             callbacks : {
                 initBuilder : "",
@@ -478,6 +479,13 @@
             $("#preview-btn").hide();
         }
         
+        //check touch device
+        if('ontouchstart' in document.documentElement) {
+            $("body").addClass("touch_screen");
+        } else {
+            $("body").removeClass("touch_screen");
+        }
+        
         $("body").addClass("property-editor-right-panel");
         
         //use for old builder implementation like api builder & report builder
@@ -834,7 +842,8 @@
                             </button> \
                         </div> \
                         <div class="drag-elements-sidepane sidepane"> \
-                            <div> \
+                            <div> \\n\
+                                <div class="ajaxLoader" style="display: none;"><div class="loaderIcon"><i class="fas fa-spinner fa-spin fa-4x"></i></div></div> \
                                 <ul class="components-list clearfix" data-type="leftpanel"> \
                                 </ul>\
                             </div> \
@@ -926,7 +935,7 @@
                 var categoryId = CustomBuilder.createPaletteCategory(category, tab);
                 var container = $('#'+ tab + '_comphead_' + categoryId + '_list');
                 var eid = categoryId+"_"+className.replace(/\./g, "_");
-                var li = $('<li class="'+licss+'"><div id="'+eid+'" element-class="'+className+'" class="builder-palette-element '+css+'"> <a>'+UI.escapeHTML(label)+'</a></div><i class="lar la-star"></i></li>');
+                var li = $('<li class="' + licss + '"><div id="' + eid + '" element-class="' + className + '" class="builder-palette-element ' + css + '"> <a>' + UI.escapeHTML(label) + '</a></div><i class="lar la-star"></i></li>');
                 $(li).find('.builder-palette-element').prepend($(iconObj).clone());
                 $(container).append(li);
             }
@@ -3532,7 +3541,8 @@
                 }
             }
         }
-        
+        //add marketplace link in palette when builder init
+        CustomBuilder.Builder.initMarketplacePalette();
         setTimeout(function(){
             CustomBuilder.reloadBuilderMenu();
         }, 100); //delay the loading to prevent it block the builder ajax call
@@ -3572,11 +3582,15 @@
         container.after('<span class="seperator"></span><ul class="app_tools"></ul>');
         
         var appTools = $("#builder-menu > ul.app_tools");
+        appTools.find("#marketplace-btn").parent().remove();
+        if ($('body').hasClass('default-builder')){
+            appTools.append('<li><a title="Get add-ons" id="marketplace-btn" onclick="CustomBuilder.Builder.loadSeamlessMarketplace()" data-cbuilder-view="marketplace"><i class="las la-plus"></i></a></li>');
+        }
         appTools.append('<li><a title="'+get_cbuilder_msg('abuilder.notes')+'" id="appDesc-btn" data-cbuilder-view="appDesc" href="'+CustomBuilder.contextPath+'/web/console/app'+CustomBuilder.appPath+'/note" data-cbuilder-action="switchView" data-hide-tool=""><i class="las la-sticky-note"></i></a></li>');
         appTools.append('<li><a title="'+get_cbuilder_msg('abuilder.envVariable')+'" id="variables-btn" data-cbuilder-view="envVariables" href="'+CustomBuilder.contextPath+'/web/console/app'+CustomBuilder.appPath+'/envVariable" data-cbuilder-action="switchView" data-hide-tool=""><i class="word-icon" style="font-size: 75%; font-weight: 350; line-height: 20px; vertical-align: top; display:inline-block; letter-spacing: 0.6px;">{x}</i></a></li>');
         appTools.append('<li><a title="'+get_cbuilder_msg('abuilder.appMessage')+'" id="appMessage-btn" data-cbuilder-view="appMessage" data-cbuilder-action="switchView" data-hide-tool=""><i class="la la-language"</i></a></li>');
         appTools.append('<li><a title="'+get_cbuilder_msg('abuilder.resources')+'" id="resources-btn" data-cbuilder-view="resources" href="'+CustomBuilder.contextPath+'/web/console/app'+CustomBuilder.appPath+'/resources" data-cbuilder-action="switchView" data-hide-tool=""><i class="lar la-file-image"></i> </a></li>');
-        appTools.append('<li><a title="'+get_cbuilder_msg('abuilder.pluginDefault')+'" id="plugin-default-btn" data-cbuilder-view="pluginDefaultProperties" href="'+CustomBuilder.contextPath+'/web/console/app'+CustomBuilder.appPath+'/properties" data-cbuilder-action="switchView" data-hide-tool=""><i class="las la-plug"></i> </a></li>');
+        appTools.append('<li><a title="'+get_cbuilder_msg('abuilder.plugins')+'" id="plugin-default-btn" data-cbuilder-view="pluginDefaultProperties" href="'+CustomBuilder.contextPath+'/web/console/app'+CustomBuilder.appPath+'/properties" data-cbuilder-action="switchView" data-hide-tool=""><i class="las la-plug"></i> </a></li>');
         if (CustomBuilder.isGlowrootAvailable === "true") {
             appTools.append('<li><a title="'+get_cbuilder_msg('abuilder.performance')+'" id="performance-btn" data-cbuilder-view="performance" href="'+CustomBuilder.contextPath+'/web/console/app/'+CustomBuilder.appId+'/performance" data-cbuilder-action="switchView" data-hide-tool=""><i class="las la-tachometer-alt"></i> </a></li>');
         }
@@ -7641,9 +7655,118 @@ _CustomBuilder.Builder = {
                 $("#paste-element-btn").removeClass("disabled");
             }
         }
+    },
+    
+    /*
+    * initMarketplace Palette and add link based on builder type
+    */
+    initMarketplacePalette: function () {
+        var className = CustomBuilder.config.builder.options['marketplacePaletteClass'];
+        if (className !== undefined && className !== null && className !== "") {
+            var link = $('<a class="marketplaceLink"><div id="marketplace-link" class="marketplace-link" onclick="CustomBuilder.Builder.loadSeamlessMarketplace()">' + get_cbuilder_msg("cbuilder.seamless.marketplace.more.plugin") + '</div></a>');
+            $("#left-panel ul.components-list").append(link);
+        }
+    },
+    
+    //call to open seamless marketplace
+    loadSeamlessMarketplace : function (type, login) {
+        if (type === undefined) {
+            type = CustomBuilder.config.builder.options['marketplacePaletteClass'];
+        }
+        
+        var url = CustomBuilder.contextPath + '/web/console/app' + CustomBuilder.appPath + '/marketplace?type=' + CustomBuilder.builderType + "&pluginType=" + type;
+        if (login) {
+            url += "&login=true";
+        }
+        JPopup.show("navCreateNewDialog", url, {}, "");
+    },
+    
+    //when link onclick get the plugin category and load it on seamless marketplace
+    handleChosenContainerClick : function () {
+        var optionElement = $(this).closest(".property-input").find("option:contains('" + $(this).text() + "')");
+        CustomBuilder.Builder.loadSeamlessMarketplace(optionElement.val());
+    },
+    
+    //check to reload palette or properties
+    reloadPaletteOrProperties: function (pluginCategory) {
+        var self = CustomBuilder.Builder;
+        
+        var reload = self.reloadPropertiesCache(pluginCategory);
+        
+        //reload permission
+        if (pluginCategory.indexOf("Permission") !== -1) {
+            CustomBuilder.initPermissionList(CustomBuilder.config.advanced_tools.permission.permission_plugin);
+        } else if (!reload) {
+            CustomBuilder.callback(CustomBuilder.config.builder.callbacks["marketplaceReloadPalette"]);
+        }
+    },
+    
+    // Reload palette 
+    reloadPalette: function (url, elementCallback) {
+        $(".drag-elements-sidepane.sidepane .ajaxLoader").show();
+        
+        // Make a GET rqeust to get reloaded palette data
+        fetch(url, {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        })
+        .then(response => {
+            if (!response.ok) {
+                throw new Error(`HTTP error! Status: ${response.status}`);
+            }
+            return response.json();
+        })
+        .then(data => {
+            data.success.elements.forEach(element => {
+                
+                //allow builder to modify the element before render it to palette
+                if (elementCallback) {
+                    element = elementCallback(element);
+                }
+                
+                //map the variables to element
+                var {
+                    category,
+                    className,
+                    i18nLabel,
+                    icon,
+                    defaultPropertyValues,
+                    propertyOptions,
+                    hidden,
+                    metadata
+                } = element;
+                
+                CustomBuilder.initPaletteElement(category, className, i18nLabel, icon, JSON.parse(propertyOptions), defaultPropertyValues, !hidden, "", metadata);
+                
+            });
+            
+            //move marketplace link in palette to last position
+            $('.components-list').append($('.components-list .marketplaceLink'));
+            
+            $(".drag-elements-sidepane.sidepane .ajaxLoader").hide();
+        })
+        .catch(error => {
+            console.error('Fetch error:', error);
+            $(".drag-elements-sidepane.sidepane .ajaxLoader").hide();
+        });
+    },
+    
+    /*
+     * reload the plugin selector
+     */
+    reloadPropertiesCache: function (pluginClass) {
+        if (PropertyEditor) {
+            return PropertyEditor.Util.reloadElementSelectFields(pluginClass);
+        } else {
+            return false;
+        }
     }
 }
 
 CustomBuilder = $.extend(true, {}, _CustomBuilder);
 
 var isIE11 = !!window.MSInputMethodContext && !!document.documentMode;
+$(document).on('click', '.property-type-elementselect .chosen-container .chosen-drop ul li.disabled-result', CustomBuilder.Builder.handleChosenContainerClick);
+$(document).on('click', '.property-type-elementmultiselect .chosen-container .chosen-drop ul li.disabled-result', CustomBuilder.Builder.handleChosenContainerClick);

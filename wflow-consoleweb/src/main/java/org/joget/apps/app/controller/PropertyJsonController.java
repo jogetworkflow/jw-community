@@ -91,7 +91,6 @@ public class PropertyJsonController {
             } else {
                 clazz = Class.forName(className);
             }
-            
             Collection<Plugin> elementList = pluginManager.list(clazz);
             Map<String, String> empty = new HashMap<String, String>();
             empty.put("value", "");
@@ -133,6 +132,7 @@ public class PropertyJsonController {
                     list.add(option);
                 }
             }
+        
             Collections.sort(list, new Comparator() {
                 @Override
                 public int compare(Object objA, Object objB) {
@@ -147,6 +147,13 @@ public class PropertyJsonController {
                     }
                 }
             });
+        
+            Map<String, String> marketplaceOption = new HashMap<String, String>();
+            marketplaceOption.put("value", className);
+            marketplaceOption.put("label", ResourceBundleUtil.getMessage("cbuilder.seamless.marketplace.more.plugin"));
+            marketplaceOption.put("marketplace", "true");
+            list.add(marketplaceOption);
+            
             for (int i = 0; i < list.size(); i++) {
                 jsonArray.put(list.get(i));
             }

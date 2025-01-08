@@ -345,4 +345,20 @@ public class PropertyUtil implements ApplicationContextAware {
     public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
         this.applicationContext = applicationContext;
     }
+    
+    public static void recursivelyAddQuotes(JSONObject newObject, JSONObject jsonObject) {
+        for (String key : jsonObject.keySet()) {
+            Object value = jsonObject.get(key);
+
+            if (value instanceof JSONObject) {
+                // If the value is a nested object, process it recursively
+                JSONObject nestedObject = new JSONObject();
+                recursivelyAddQuotes(nestedObject, (JSONObject) value);
+                newObject.put(key, nestedObject);
+            } else {
+                // Otherwise, add or keep double quotes around the key and copy the value
+                newObject.put(key, value);
+            }
+        }
+    }
 }

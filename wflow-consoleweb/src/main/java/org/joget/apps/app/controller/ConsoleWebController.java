@@ -156,6 +156,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.LocaleResolver;
 import org.springframework.web.util.HtmlUtils;
+
 @Controller
 public class ConsoleWebController {
 
@@ -227,7 +228,7 @@ public class ConsoleWebController {
     AuditTrailManager auditTrailManager;
     @Autowired
     WorkflowAssignmentDao workflowAssignmentDao;
-
+    
     @RequestMapping({"/index", "/", "/home"})
     public String index() {
         String landingPage = WorkflowUtil.getSystemSetupValue("landingPage");
@@ -3775,8 +3776,6 @@ public class ConsoleWebController {
         }
         map.addAttribute("properties", PropertyUtil.propertiesJsonLoadProcessing(properties));
         
-        AppUtil.findMissingPlugins(appDef);
-        
         ConsoleWebPlugin consoleWebPlugin = (ConsoleWebPlugin)pluginManager.getPlugin(ConsoleWebPlugin.class.getName());
 
         // get app info
@@ -3799,6 +3798,39 @@ public class ConsoleWebController {
             jsonObject.accumulate("error", ResourceBundleUtil.getMessage("dependency.tree.warning.MissingPlugin"));
         } else {
             jsonObject.accumulate("error", "App not found!");
+        }
+        
+        AppUtil.writeJson(writer, jsonObject, callback);
+    }
+    
+    @RequestMapping("/json/console/app/(*:appId)/(~:version)/builders/missingAndupdateAvailablePlugins")
+    public void consoleBuilderMissingAndupdateAvailablePlugins(Writer writer, @RequestParam String appId, @RequestParam(required = false) String version, @RequestParam(value = "callback", required = false) String callback) throws IOException, JSONException {
+        AppDefinition appDef = appService.getAppDefinition(appId, version);
+        
+        JSONObject jsonObject = new JSONObject();
+        if (appDef != null) {
+            jsonObject.put("missing", AppUtil.findMissingPlugins(appDef));
+            
+            JSONObject updatePlugins = MarketplaceUtil.getInstalledBundledList(appDef, null, null, true, null, null, null, null);
+            if (updatePlugins != null && updatePlugins.has("data")) {
+                JSONArray pluginList = updatePlugins.getJSONArray("data");
+                JSONArray updateList = new JSONArray();
+                for (int i =0; i< pluginList.length(); i++) {
+                    JSONObject p = pluginList.getJSONObject(i);
+                    updateList.put("<a class=\"marketplace-plugin\" data-id=\""+StringUtil.escapeString(p.getString("id"), StringUtil.TYPE_HTML)
+                                    +"\" href=\""+StringUtil.escapeString(p.getString("url"), StringUtil.TYPE_HTML)
+                                    +"\" target=\"_blank\">"+StringUtil.escapeString(p.getString("label"), StringUtil.TYPE_HTML)
+                                    +" (" + StringUtil.escapeString(p.getString("version"), StringUtil.TYPE_HTML) 
+                                    + " >> " + StringUtil.escapeString(p.getString("latestVersion"), StringUtil.TYPE_HTML) 
+                                    + ")"
+                                    +"</a>");
+                }
+                jsonObject.put("update", updateList);
+            }
+            
+            jsonObject.put("error", ResourceBundleUtil.getMessage("dependency.tree.warning.MissingPlugin"));
+        } else {
+            jsonObject.put("error", "App not found!");
         }
         
         AppUtil.writeJson(writer, jsonObject, callback);
@@ -6043,32 +6075,7 @@ public class ConsoleWebController {
             map.addAttribute("isPublished", appDef.isPublished());
             return "console/apps/packageUploadSuccess";
         }
-    }    
-
-    @RequestMapping({"/desktop/marketplace/app"})
-    public String marketplaceApp(ModelMap model, @RequestParam(value = "url") String url) {
-        boolean trusted = false;
-        String trustedUrlsKey = "appCenter.link.marketplace.trusted";
-        String trustedUrls = ResourceBundleUtil.getMessage(trustedUrlsKey);
-        if (trustedUrls != null && !trustedUrls.isEmpty()) {
-            StringTokenizer st = new StringTokenizer(trustedUrls, ",");
-            while (st.hasMoreTokens()) {
-                String trustedUrl = st.nextToken().trim();
-                if (url.startsWith(trustedUrl)) {
-                    trusted = true;
-                    break;
-                }
-            }
-        }
-        
-        if (trusted) {
-            model.addAttribute("appUrl", url);
-        } else {
-            model.addAttribute("appUrl", "");
-        }
-        
-        return "desktop/marketplaceApp";
-    }
+    } 
     
     @RequestMapping({"/json/console/app/(*:appId)/(~:version)/userview/(*:userviewId)/json"})
     public void getUserviewJson(Writer writer, HttpServletResponse response, @RequestParam(value = "appId") String appId, @RequestParam(value = "version", required = false) String version, @RequestParam(value = "userviewId") String userviewId) throws IOException {

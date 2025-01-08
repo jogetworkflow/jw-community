@@ -22,7 +22,8 @@
                 "getDefinitionUrl" : "${pageContext.request.contextPath}/web/json/console/app/${appId}/${appVersion}/datalist/${datalist.id}/json",
                 "rightPropertyPanel" : true,
                 "defaultBuilder" : true,
-                "filterParam" : "<c:out value="${filterParam}"/>"
+                "filterParam" : "<c:out value="${filterParam}"/>",
+                "marketplacePaletteClass" : "org.joget.apps.datalist.model.DataListAction"
             },
             "callbacks" : {
                 "initBuilder" : "DatalistBuilder.initBuilder",
@@ -35,6 +36,7 @@
                 "getRuleObject" : "DatalistBuilder.getRuleObject",
                 "builderBeforeMerge" : "DatalistBuilder.beforeMerge",
                 "afterUpdate" : "DatalistBuilder.afterUpdate",
+                "marketplaceReloadPalette" : "DatalistBuilder.marketplaceReloadPalette"
             }
         },
         "advanced_tools" : {

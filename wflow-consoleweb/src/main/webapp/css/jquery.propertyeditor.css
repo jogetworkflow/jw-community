@@ -722,7 +722,8 @@ td.error .chosen-container, td.error input {
 }
 .helplink {color: gray;}
 
-.property-editor-container .ajaxLoader {
+.property-editor-container .ajaxLoader,
+.drag-elements-sidepane .ajaxLoader{
     display: none; 
     position: absolute; 
     z-index: 10000; 
@@ -732,7 +733,8 @@ td.error .chosen-container, td.error input {
     height: 100%; 
     background: rgba(0, 0, 0, 0.05);
 }
-.property-editor-container .loaderIcon {
+.property-editor-container .loaderIcon,
+.drag-elements-sidepane .loaderIcon{
     text-align: center;
     top: 50%;
     position: absolute;
@@ -2660,6 +2662,15 @@ i.fa-sort, i.fa-sort-asc, i.fa-sort-desc{
     width: 100%;
     color: #495057;
     font-weight: 500;
+}
+.property-type-elementselect .chosen-container .chosen-drop ul li.disabled-result,
+.property-type-elementmultiselect .chosen-container .chosen-drop ul li.disabled-result{
+    color: var(--blue);
+    cursor: pointer;
+}
+.property-type-elementselect .chosen-container .chosen-drop ul li.disabled-result:hover,
+.property-type-elementmultiselect .chosen-container .chosen-drop ul li.disabled-result:hover{
+    text-decoration: underline;
 }
 .property-editor-container input[type=text]:focus{
     outline: 2px solid rgba(0, 0, 0, 0.8);

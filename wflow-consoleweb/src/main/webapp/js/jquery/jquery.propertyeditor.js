@@ -1549,6 +1549,47 @@ PropertyEditor.Util = {
         } else {
             callback();
         }
+    },
+    /* find all element select field which used this classes and reload it. */
+    reloadElementSelectFields : function(classes) {
+        if (classes) {
+            var classesArray = classes.split(";");
+            var fields = [];
+
+            $(".property-editor-container").each(function(){
+                var thisEditor = $(this);
+                
+                $(thisEditor).find(".element-select-field").each(function(){
+                    var field = $(this).data("field");
+                    if (field.properties.options_ajax !== undefined && field.properties.options_ajax.indexOf("getElements?classname") !== -1) {
+                        for (var i in classesArray) {
+                            if (field.properties.options_ajax.indexOf(classesArray[i]) !== -1) {
+                                //remove cached value
+                                delete PropertyEditor.Util.cachedAjaxCalls[PropertyEditor.Util.replaceContextPath(field.properties.options_ajax, field.options.contextPath)];
+                                
+                                //reload it together later, so that the new load values not removed by previous line.
+                                fields.push(field);
+                                break;
+                            }
+                        }
+                    }
+                });
+            });
+            
+            //reload the option fields
+            if (fields.length > 0) {
+                for (var f in fields) {
+                    var field = fields[f];
+                    var ajax_url = field.properties.options_ajax;
+                    var on_change = field.properties.options_ajax_on_change;
+                    var mapping = field.properties.options_ajax_mapping;
+                    var method = field.properties.options_ajax_method;
+                    var extra = field.properties.options_extra;
+                    PropertyEditor.Util.callLoadOptionsAjax(field, null, ajax_url, on_change, mapping, method, extra);
+                }
+            }
+                                
+        }
     }
 };
 
@@ -9218,8 +9259,13 @@ PropertyEditor.Type.ElementSelect.prototype = {
             $.each(this.properties.options, function(i, option) {
                 var selected = "";
                 var cssClass = "";
+                var disabled = "";
                 if (valueString === option.value) {
                     selected = " selected";
+                }
+                //check if is marketplace then set disabled for the seamless marketplace option
+                if (option.marketplace === 'true') {
+                    disabled = " disabled";
                 }
                 if (option.developer_mode !== undefined && option.developer_mode !== "") {
                     var temp = option.developer_mode.split(";");
@@ -9231,7 +9277,7 @@ PropertyEditor.Type.ElementSelect.prototype = {
                 if (option.helplink !== undefined && option.helplink !== "") {
                     cssClass += ' data-helplink="' + PropertyEditor.Util.escapeHtmlTag(option.helplink) + '"';
                 }
-                html += '<option '+cssClass+' value="' + PropertyEditor.Util.escapeHtmlTag(option.value) + '"' + selected + '>' + PropertyEditor.Util.escapeHtmlTag(option.label) + '</option>';
+                html += '<option '+cssClass+' value="' + PropertyEditor.Util.escapeHtmlTag(option.value) + '"' + selected + disabled + '>' + PropertyEditor.Util.escapeHtmlTag(option.label) + '</option>';
             });
         }
         html += '</select>';
@@ -9275,8 +9321,13 @@ PropertyEditor.Type.ElementSelect.prototype = {
             $.each(this.properties.options, function(i, option) {
                 var selected = "";
                 var cssClass = "";
+                var disabled = "";
                 if (value === option.value) {
                     selected = " selected";
+                }
+                //check if is marketplace then set disabled for the seamless marketplace option
+                if (option.marketplace === 'true') {
+                    disabled = " disabled";
                 }
                 if (option.developer_mode !== undefined && option.developer_mode !== "") {
                     var temp = option.developer_mode.split(";");
@@ -9288,7 +9339,7 @@ PropertyEditor.Type.ElementSelect.prototype = {
                 if (option.helplink !== undefined && option.helplink !== "") {
                     cssClass += ' data-helplink="' + PropertyEditor.Util.escapeHtmlTag(option.helplink) + '"';
                 }
-                html += '<option '+cssClass+' value="' + PropertyEditor.Util.escapeHtmlTag(option.value) + '"' + selected + '>' + PropertyEditor.Util.escapeHtmlTag(option.label) + '</option>';
+                html += '<option '+cssClass+' value="' + PropertyEditor.Util.escapeHtmlTag(option.value) + '"' + selected + disabled + '>' + PropertyEditor.Util.escapeHtmlTag(option.label) + '</option>';
             });
             $("#" + this.id).html(html);
             $("#" + this.id).trigger("change");
@@ -9315,6 +9366,9 @@ PropertyEditor.Type.ElementSelect.prototype = {
             $(field).addClass("chosen-rtl");
         }
         $(field).chosen({ width: "54%", placeholder_text: " " });
+        
+        $(field).addClass("element-select-field");
+        $(field).data("field", this);
 
         if (!$(field).hasClass("hidden") && $(field).val() !== undefined &&
             $(field).val() !== null && this.properties.options !== undefined &&
@@ -9725,6 +9779,9 @@ PropertyEditor.Type.ElementMultiSelect.prototype = {
         
         thisObj.loadValues(true);
         
+        $("#" + thisObj.id + "_input select").addClass("element-select-field");
+        $("#" + thisObj.id + "_input select").data("field", this);
+        
         $("#" + thisObj.id + "_input").off("click", "> div > div > .addrow, > div > .repeater-rows-container > .repeater-row > .actions > .addrow");
         $("#" + thisObj.id + "_input").on("click", "> div > div > .addrow, > div > .repeater-rows-container > .repeater-row > .actions > .addrow", function(){
             thisObj.addRow(this);
@@ -9783,8 +9840,13 @@ PropertyEditor.Type.ElementMultiSelect.prototype = {
             $.each(thisObj.properties.options, function(i, option) {
                 var selected = "";
                 var cssClass = "";
+                var disabled = "";
                 if (valueString === option.value) {
                     selected = " selected";
+                }
+                //check if is marketplace then set disabled for the seamless marketplace option
+                if (option.marketplace === 'true') {
+                    disabled = " disabled";
                 }
                 if (option.developer_mode !== undefined && option.developer_mode !== "") {
                     var temp = option.developer_mode.split(";");
@@ -9796,7 +9858,7 @@ PropertyEditor.Type.ElementMultiSelect.prototype = {
                 if (option.helplink !== undefined && option.helplink !== "") {
                     cssClass += ' data-helplink="' + PropertyEditor.Util.escapeHtmlTag(option.helplink) + '"';
                 }
-                html += '<option '+cssClass+' value="' + PropertyEditor.Util.escapeHtmlTag(option.value) + '"' + selected + '>' + PropertyEditor.Util.escapeHtmlTag(option.label) + '</option>';
+                html += '<option '+cssClass+' value="' + PropertyEditor.Util.escapeHtmlTag(option.value) + '"' + selected + disabled + '>' + PropertyEditor.Util.escapeHtmlTag(option.label) + '</option>';
             });
         }
         html += '</select>';
@@ -9844,6 +9906,15 @@ PropertyEditor.Type.ElementMultiSelect.prototype = {
             thisObj.renderPages($(field), $(row).data("collapse"));
             $(row).data("collapse", false);
         });
+
+        //Move helpLink inside the chosen container, so it can be positioned more consistently
+        var $helpLink = $(row).find(".inputs .inputs-container .elementHelplink")
+        $helpLink.appendTo($(row).find(".inputs .inputs-container .chosen-container"))
+        $helpLink.on("click.chosen", function(event){
+            var url = $(this).attr('href');
+            window.open(url, '_blank');
+        })
+
         this.updateRows();
     },
     deleteRow : function(button) {
@@ -9890,8 +9961,13 @@ PropertyEditor.Type.ElementMultiSelect.prototype = {
                 $.each(thisObj.properties.options, function(i, option) {
                     var selected = "";
                     var cssClass = "";
+                    var disabled = "";
                     if (value === option.value) {
                         selected = " selected";
+                    }
+                    //check if is marketplace then set disabled for the seamless marketplace option
+                    if (option.marketplace === 'true') {
+                        disabled = " disabled";
                     }
                     if (option.developer_mode !== undefined && option.developer_mode !== "") {
                         var temp = option.developer_mode.split(";");
@@ -9903,7 +9979,7 @@ PropertyEditor.Type.ElementMultiSelect.prototype = {
                     if (option.helplink !== undefined && option.helplink !== "") {
                         cssClass += ' data-helplink="' + PropertyEditor.Util.escapeHtmlTag(option.helplink) + '"';
                     }
-                    html += '<option '+cssClass+' value="' + PropertyEditor.Util.escapeHtmlTag(option.value) + '"' + selected + '>' + PropertyEditor.Util.escapeHtmlTag(option.label) + '</option>';
+                    html += '<option '+cssClass+' value="' + PropertyEditor.Util.escapeHtmlTag(option.value) + '"' + selected + disabled +'>' + PropertyEditor.Util.escapeHtmlTag(option.label) + '</option>';
                 });
                 $(this).html(html);
                 $(this).trigger("change");

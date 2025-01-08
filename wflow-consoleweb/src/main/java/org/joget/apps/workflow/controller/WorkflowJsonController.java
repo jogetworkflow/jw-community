@@ -1,11 +1,8 @@
 package org.joget.apps.workflow.controller;
 
-import java.io.BufferedInputStream;
-import java.io.ByteArrayOutputStream;
 import org.joget.commons.util.DynamicDataSourceManager;
 import org.joget.commons.util.LogUtil;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.Writer;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -26,26 +23,14 @@ import org.joget.workflow.model.WorkflowVariable;
 import org.joget.commons.util.PagedList;
 import org.joget.directory.model.service.DirectoryManager;
 import java.util.Enumeration;
-import java.util.StringTokenizer;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import org.apache.http.Header;
-import org.apache.http.HttpResponse;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.client.methods.HttpHead;
-import org.apache.http.impl.client.CloseableHttpClient;
-import org.apache.http.impl.client.HttpClientBuilder;
-import org.apache.http.impl.client.HttpClients;
-import org.apache.http.impl.client.LaxRedirectStrategy;
 import org.joget.apps.app.model.AppDefinition;
 import org.joget.apps.app.model.UserviewDefinition;
 import org.joget.apps.app.service.AppService;
 import org.joget.apps.app.service.AppUtil;
-import org.joget.apps.app.service.MarketplaceUtil;
-import org.joget.commons.util.ResourceBundleUtil;
 import org.joget.commons.util.StringUtil;
 import org.joget.commons.util.TimeZoneUtil;
-import org.joget.plugin.base.PluginManager;
 import org.joget.workflow.model.WorkflowPackage;
 import org.joget.report.model.ReportRow;
 import org.joget.report.service.ReportManager;
@@ -56,10 +41,7 @@ import org.joget.workflow.util.WorkflowUtil;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.transaction.support.TransactionCallback;
-import org.springframework.transaction.support.TransactionTemplate;
 import org.springframework.ui.ModelMap;
 
 @Controller
@@ -76,8 +58,6 @@ public class WorkflowJsonController {
     private AppService appService;
     @Autowired
     private ReportManager reportManager;
-    @Autowired
-    private PluginManager pluginManager;
 
     @RequestMapping("/json/workflow/package/list")
     public void packageList(Writer writer, @RequestParam(value = "callback", required = false) String callback) throws JSONException, IOException {
@@ -1141,144 +1121,7 @@ public class WorkflowJsonController {
         root.put("apps", apps);
         AppUtil.writeJson(writer, root, callback);
     }
-
-    @RequestMapping(value = "/json/apps/install", method = RequestMethod.POST)
-    public void installMarketplaceApp(Writer writer, HttpServletRequest request, HttpServletResponse response, @RequestParam(value = "callback", required = false) String callback, @RequestParam("url") final String url) throws IOException, JSONException {
-        JSONObject jsonObject = new JSONObject();
-        
-        // validate trusted URL
-        boolean trusted = validateTrustedUrl(url);
-        if (!trusted) {
-            response.sendError(HttpServletResponse.SC_FORBIDDEN, "Untrusted URL");
-            return;
-        }
-        
-        // get URL InputStream
-        HttpClientBuilder builder = HttpClients.custom().setRedirectStrategy(new LaxRedirectStrategy());
-        CloseableHttpClient client = builder.build();
-        InputStream in = null;
-        try {
-            HttpGet get = new HttpGet(url);
-            HttpResponse httpResponse = client.execute(get);
-            in = httpResponse.getEntity().getContent();
-
-            if (httpResponse.getStatusLine().getStatusCode() == HttpServletResponse.SC_OK) {
-                String filename = "";
-                //get all headers		
-                Header[] headers = httpResponse.getAllHeaders();
-                for (Header header : headers) {
-                    if ("Content-Disposition".equalsIgnoreCase(header.getName())) {
-                        filename = header.getValue().substring(header.getValue().indexOf("filename=") + 9);
-                        break;
-                    }
-                }
-
-                if (filename.endsWith(".jar")) {
-                    pluginManager.upload(filename, in);
-                    jsonObject.accumulate("pluginName", filename);
-                } else {
-                    // read InputStream
-                    byte[] fileContent = readInputStream(in);
-                
-                    // import app
-                    final AppDefinition appDef = appService.importApp(fileContent);
-                    if (appDef != null) {
-                        TransactionTemplate transactionTemplate = (TransactionTemplate)AppUtil.getApplicationContext().getBean("transactionTemplate");
-                        transactionTemplate.execute(new TransactionCallback<Object>() {
-                            public Object doInTransaction(TransactionStatus ts) {
-                                appService.publishApp(appDef.getId(), null);
-                                return false;
-                            }
-                        });
-                        jsonObject.accumulate("appId", appDef.getAppId());
-                        jsonObject.accumulate("appName", appDef.getName());
-                        jsonObject.accumulate("appVersion", appDef.getVersion());
-                    }
-                }
-            }
-        } finally {
-            try {
-                in.close();
-            } catch(IOException e) {
-            }
-            try {
-                client.close();
-            } catch(IOException e) {
-            }
-        }
-        
-        AppUtil.writeJson(writer, jsonObject, callback);
-    }
     
-    /**
-     * Reads a specified InputStream, returning its contents in a byte array
-     * @param in
-     * @return
-     * @throws IOException 
-     */
-    protected byte[] readInputStream(InputStream in) throws IOException {
-        byte[] fileContent;
-        ByteArrayOutputStream out = null;
-        try {
-            out = new ByteArrayOutputStream();
-            BufferedInputStream bin = new BufferedInputStream(in);
-            int len;
-            byte[] buffer = new byte[4096];
-            while ((len = bin.read(buffer)) > 0) {
-                out.write(buffer, 0, len);
-            }
-            out.flush();
-            fileContent = out.toByteArray();
-            return fileContent;
-        } finally {
-            try {
-                if (out != null) {
-                    out.close();
-                }
-                if (in != null) {
-                    in.close();
-                }
-            } catch (IOException ex) {
-                LogUtil.error(getClass().getName(), ex, ex.getMessage());
-            }
-        }
-    }    
-    
-    @RequestMapping(value = "/json/apps/verify", method = RequestMethod.HEAD)
-    public void verifyUrl(Writer writer, HttpServletRequest request, HttpServletResponse response, @RequestParam("url") String url) throws IOException {
-        boolean trusted = validateTrustedUrl(url);
-        if (!trusted) {
-            response.sendError(HttpServletResponse.SC_FORBIDDEN, "Untrusted URL");
-            return;
-        }
-        
-        CloseableHttpClient client = HttpClients.custom().setRedirectStrategy(new LaxRedirectStrategy()).build();
-        try {
-            HttpHead head = new HttpHead(url);
-            HttpResponse httpResponse = client.execute(head);
-            response.setStatus(httpResponse.getStatusLine().getStatusCode());
-        } finally {
-            client.close();
-        }
-    }
-
-    protected boolean validateTrustedUrl(String url) {
-        boolean trusted = false;
-        String trustedUrlsKey = "appCenter.link.marketplace.trusted";
-        String trustedUrls = ResourceBundleUtil.getMessage(trustedUrlsKey);
-        if (trustedUrls != null && !trustedUrls.isEmpty()) {
-            StringTokenizer st = new StringTokenizer(trustedUrls, ",");
-            while (st.hasMoreTokens()) {
-                String trustedUrl = st.nextToken().trim();
-                if (url.startsWith(trustedUrl)) {
-                    trusted = true;
-                    break;
-                }
-            }
-        }
-        return trusted;
-    }
-
     @RequestMapping("/json/monitoring/activity/previous/(*:activityId)")
     public void activityPrevious(HttpServletResponse response, Writer writer, @RequestParam(value = "callback", required = false) String callback, @RequestParam("activityId") String activityId, @RequestParam(value = "includeTools", required = false) String includeTools) throws JSONException, IOException {
         JSONArray results = new JSONArray();
@@ -1406,20 +1249,7 @@ public class WorkflowJsonController {
         appDef = appService.unpublishApp(appId);
         jsonObject.accumulate("status", appDef != null);
         AppUtil.writeJson(writer, jsonObject, callback);
-    }    
-    
-    @RequestMapping("/json/marketplace/list")
-    public void marketplaceList(HttpServletResponse response, Writer writer, @RequestParam(value = "callback", required = false) String callback, 
-            @RequestParam(value = "search", required = false) String search, @RequestParam(value = "type", required = false) String type, 
-            @RequestParam(value = "category", required = false) String category, @RequestParam(value = "isNew", required = false) Boolean isNew,
-            @RequestParam(value = "sort", required = false) String sort, @RequestParam(value = "desc", required = false) Boolean desc, @RequestParam(value = "start", required = false) Integer start, @RequestParam(value = "rows", required = false) Integer rows) throws JSONException, IOException {
-        AppUtil.writeJson(writer, MarketplaceUtil.getList(search, type, category, isNew, sort, desc, start, rows), callback);
-    }
-    
-    @RequestMapping("/json/marketplace/template/config")
-    public void marketplaceTemplateConfig(HttpServletResponse response, Writer writer, @RequestParam(value = "id") String id) throws JSONException, IOException {
-        AppUtil.writeJson(writer, MarketplaceUtil.getTemplateConfig(id), null);
-    }
+    }  
     
     @RequestMapping("/json/duplicate/app/config")
     public void duplicateAppConfig(HttpServletResponse response, Writer writer, @RequestParam(value = "id") String id) throws JSONException, IOException {

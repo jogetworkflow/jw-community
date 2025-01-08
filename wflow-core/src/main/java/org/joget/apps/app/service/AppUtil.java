@@ -1744,9 +1744,20 @@ public class AppUtil implements ApplicationContextAware {
     }
     
     public static List<String> findMissingPlugins(AppDefinition appDef) {
-        long start = System.nanoTime();
-        
-        List<String> missingPlugins = new ArrayList<String>();
+        return findCustomPlugins(appDef, true, false, true);
+    }
+    
+    /**
+     * Find custom OSGI plugin from app definition
+     * 
+     * @param appDef
+     * @param isMissing the plugin class can't match a plugin
+     * @param isOsgi the plugin is an OSGI plugin
+     * @param toMarketPlaceLink turn the plugin class name to marketplace link
+     * @return 
+     */
+    public static List<String> findCustomPlugins(AppDefinition appDef, Boolean isMissing, Boolean isOsgi, Boolean toMarketPlaceLink) {
+        List<String> foundPlugins = new ArrayList<String>();
         
         if (appDef == null) {
             appDef = AppUtil.getCurrentAppDefinition();
@@ -1795,12 +1806,18 @@ public class AppUtil implements ApplicationContextAware {
         // get plugins list
         PluginManager pluginManager = (PluginManager)AppUtil.getApplicationContext().getBean("pluginManager");
         Collection<Plugin> pluginList = pluginManager.list(null);
+        Collection<Plugin> osgiPluginList = pluginManager.listOsgiPlugin(null);
         Set<String> plugins = new HashSet<String>();
+        Set<String> osgiplugins = new HashSet<String>();
 
         // look for plugins used in any definition file
         for (Plugin plugin: pluginList) {
             String pluginClassName = ClassUtils.getUserClass(plugin).getName();
             plugins.add(pluginClassName);
+        }
+        for (Plugin plugin: osgiPluginList) {
+            String pluginClassName = ClassUtils.getUserClass(plugin).getName();
+            osgiplugins.add(pluginClassName);
         }
         
         //find "className": "" 
@@ -1821,18 +1838,21 @@ public class AppUtil implements ApplicationContextAware {
         found.remove("org.joget.apps.userview.model.UserviewPermission");
         
         for (String p : found) {
-            if (p.contains(".") && !plugins.contains(p)) {
-                missingPlugins.add(p);
+            if (p.contains(".") && 
+                    ((isOsgi && osgiplugins.contains(p)) || //exist but it is osgi
+                    (isMissing && !plugins.contains(p)))) { //not exist
+                foundPlugins.add(p);
             }
         }
         
-        missingPlugins = MarketplaceUtil.pluginClassToMarketplaceLink(missingPlugins);
+        if (toMarketPlaceLink) {
+            foundPlugins = MarketplaceUtil.pluginClassToMarketplaceLink(foundPlugins);
+            Collections.sort(foundPlugins);
+        }
         
-        Collections.sort(missingPlugins);
-        
-        return missingPlugins;
+        return foundPlugins;
     }
-    
+        
     /**
      * Retrieve the app template config based on app id & version
      * @param appId

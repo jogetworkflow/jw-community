@@ -642,6 +642,8 @@ JsonTable.prototype = {
         }
 
         var dataPreProcess = function(jsonObject) {
+            $("#" + thisObject.divToUpdate).trigger("refresh");
+            
             //custom pre-processor
             if(thisObject.customPreProcessor)
                 jsonObject = thisObject.customPreProcessor(jsonObject);
@@ -771,7 +773,10 @@ JsonTable.prototype = {
             height: thisObject.height,
             resizable: false,
             singleSelect: !thisObject.checkbox || thisObject.checkboxSelectSingle,
-            preProcess: dataPreProcess
+            preProcess: dataPreProcess,
+            onSuccess: function(){
+                $("#" + thisObject.divToUpdate).trigger("success");
+            }
         });
         
         $("#" + thisObject.divToUpdate).on("click", "*", function(){
