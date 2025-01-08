@@ -261,64 +261,7 @@ public class DataListDecorator extends CheckboxTableDecorator {
         if (href == null || text == null || text.isEmpty()) {
             link = text;
         } else {
-            if (hrefParam != null && hrefColumn != null && !hrefColumn.isEmpty()) {
-                String[] params = hrefParam.split(";");
-                String[] columns = hrefColumn.split(";");
-                
-                for (int i = 0; i < columns.length; i++ ) {
-                    if (columns[i] != null && !columns[i].isEmpty()) {
-                        boolean isValid = false;
-                        if (params.length > i && params[i] != null && !params[i].isEmpty()) {
-                            if (link.contains("?")) {
-                                link += "&";
-                            } else {
-                                link += "?";
-                            }
-                            link += params[i];
-                            link += "=";
-                            isValid = true;
-                        } else if (!link.contains("?")) {
-                            if (!link.endsWith("/")) {
-                                link += "/";
-                            }
-                            isValid = true;
-                        }
-                        
-                        if (isValid) {
-                            Object paramValue = DataListService.evaluateColumnValueFromRow(row, columns[i]);
-                            if (paramValue == null) {
-                                paramValue = fillVariables(StringEscapeUtils.escapeHtml(columns[i]), row);
-                            }
-                            try {
-                                link += (paramValue != null) ? URLEncoder.encode(paramValue.toString(), "UTF-8") : null;
-                            } catch (UnsupportedEncodingException ex) {
-                                link += paramValue;
-                            }
-                        }
-                    }
-                }
-            }
-
-            // Merge logic: merge if href starts with http and contains a ?,
-            // or if href does not start with http or javascript:
-            if (!href.startsWith("javascript:") && href.contains("?")) {
-                // Use mergeRequestQueryString to combine href and link
-                link = StringUtil.mergeRequestQueryString(href, link);
-
-                // Handle href containing "?"
-                if (href.contains("?")) {
-                    String[] urlPart = href.split("\\?");
-                    link = (urlPart.length > 0 ? urlPart[0] : "") + "?" + link;
-                }
-
-            } else {
-                // Append parameters directly if href does not contain a ?
-                href = fillVariables(href, row);
-                if (href.endsWith("/") && link.startsWith("/")){
-                    link = link.substring(1);
-                }
-                link = href + link;
-            }
+            link = generateLinkAndMergeParams(hrefParam, hrefColumn, href, link, row);
 
             if (target != null && "popup".equalsIgnoreCase(target)) {
                 if (confirmation == null) {
@@ -349,7 +292,7 @@ public class DataListDecorator extends CheckboxTableDecorator {
         }
         return link;
     }
-    
+
     public static String fillVariables(String variable, Object row) {
         if (variable != null && variable.contains("{") && variable.contains("}")) {
             Pattern pattern = Pattern.compile("\\{([a-zA-Z0-9_]+)\\}");
@@ -367,6 +310,68 @@ public class DataListDecorator extends CheckboxTableDecorator {
             }
         }
         return variable;
+    }
+
+    public static String generateLinkAndMergeParams(String hrefParam, String hrefColumn, String href, String link, Object row) {
+        if (hrefParam != null && !hrefParam.isEmpty() && hrefColumn != null && !hrefColumn.isEmpty()) {
+            String[] params = hrefParam.split(";");
+            String[] columns = hrefColumn.split(";");
+
+            for (int i = 0; i < columns.length; i++ ) {
+                if (columns[i] != null && !columns[i].isEmpty()) {
+                    boolean isValid = false;
+                    if (params.length > i && params[i] != null && !params[i].isEmpty()) {
+                        if (link.contains("?")) {
+                            link += "&";
+                        } else {
+                            link += "?";
+                        }
+                        link += params[i];
+                        link += "=";
+                        isValid = true;
+                    } else if (!link.contains("?")) {
+                        if (!link.endsWith("/")) {
+                            link += "/";
+                        }
+                        isValid = true;
+                    }
+
+                    if (isValid) {
+                        Object paramValue = DataListService.evaluateColumnValueFromRow(row, columns[i]);
+                        if (paramValue == null) {
+                            paramValue = fillVariables(StringEscapeUtils.escapeHtml(columns[i]), row);
+                        }
+                        try {
+                            link += (paramValue != null) ? URLEncoder.encode(paramValue.toString(), "UTF-8") : null;
+                        } catch (UnsupportedEncodingException ex) {
+                            link += paramValue;
+                        }
+                    }
+                }
+            }
+        }
+
+        // Merge logic: merge if href starts with http and contains a ?,
+        // or if href does not start with http or javascript:
+        if (!href.startsWith("javascript:") && href.contains("?")) {
+            // Use mergeRequestQueryString to combine href and link
+            link = StringUtil.mergeRequestQueryString(href, link);
+
+            // Handle href containing "?"
+            if (href.contains("?")) {
+                String[] urlPart = href.split("\\?");
+                link = (urlPart.length > 0 ? urlPart[0] : "") + "?" + link;
+            }
+
+        } else {
+            // Append parameters directly if href does not contain a ?
+            href = fillVariables(href, row);
+            if (href.endsWith("/") && link.startsWith("/")){
+                link = link.substring(1);
+            }
+            link = href + link;
+        }
+        return link;
     }
 
     public String formatColumn(DataListColumn column, Object row, Object value) {

@@ -3,7 +3,6 @@ package org.joget.apps.userview.service;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import org.apache.commons.io.FileUtils;
-import org.apache.commons.lang.StringEscapeUtils;
 import org.directwebremoting.util.SwallowingHttpServletResponse;
 import org.joget.apps.app.dao.UserviewDefinitionDao;
 import org.joget.apps.app.model.*;
@@ -13,7 +12,7 @@ import org.joget.apps.datalist.model.DataList;
 import org.joget.apps.datalist.model.DataListAction;
 import org.joget.apps.datalist.model.DataListCollection;
 import org.joget.apps.datalist.model.DataListColumn;
-import org.joget.apps.datalist.service.DataListService;
+import org.joget.apps.datalist.service.DataListDecorator;
 import org.joget.apps.userview.lib.AjaxUniversalTheme;
 import org.joget.apps.userview.model.*;
 import org.joget.commons.util.LogUtil;
@@ -42,8 +41,6 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpServletResponseWrapper;
 import java.io.File;
 import java.io.StringWriter;
-import java.io.UnsupportedEncodingException;
-import java.net.URLEncoder;
 import java.util.*;
 
 /**
@@ -536,51 +533,17 @@ public class UserviewUtil implements ApplicationContextAware, ServletContextAwar
     }
     
     protected static void addDatalistRowCacheUrl(Set<String> urls, DataListAction a, DataList list, Object row) {
-        String link = a.getHref();
-        if (link != null && !link.isEmpty()) {
-            if (link.startsWith("?" + list.getActionParamName() + "=")) {
+        String href = a.getHref();
+        if (href != null && !href.isEmpty()) {
+            if (href.startsWith("?" + list.getActionParamName() + "=")) {
                 return;
             }
             
             String hrefParam = a.getHrefParam();
             String hrefColumn = a.getHrefColumn();
-            if (hrefParam != null && !hrefParam.isEmpty() && hrefColumn != null && !hrefColumn.isEmpty()) {
-                String[] params = hrefParam.split(";");
-                String[] columns = hrefColumn.split(";");
-                for (int i = 0; i < columns.length; i++ ) {
-                    if (columns[i] != null && !columns[i].isEmpty()) {
-                        boolean isValid = false;
-                        if (params.length > i && params[i] != null && !params[i].isEmpty()) {
-                            if (link.contains("?")) {
-                                link += "&";
-                            } else {
-                                link += "?";
-                            }
-                            link += StringEscapeUtils.escapeHtml(params[i]);
-                            link += "=";
-                            isValid = true;
-                        } if (!link.contains("?")) {
-                            if (!link.endsWith("/")) {
-                                link += "/";
-                            }
-                            isValid = true;
-                        }
-                        
-                        if (isValid) {
-                            Object paramValue = DataListService.evaluateColumnValueFromRow(row, columns[i]);
-                            if (paramValue == null) {
-                                paramValue = StringEscapeUtils.escapeHtml(columns[i]);
-                            }
-                            try {
-                                link += (paramValue != null) ? URLEncoder.encode(paramValue.toString(), "UTF-8") : null;
-                            } catch (UnsupportedEncodingException ex) {
-                                link += paramValue;
-                            }
-                        }
-                    }
-                }
-            }
-            urls.add(link);
+
+            href = DataListDecorator.generateLinkAndMergeParams(hrefParam, hrefColumn, href, "", row);
+            urls.add(href);
         }
     }
 }
