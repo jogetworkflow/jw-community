@@ -217,9 +217,8 @@ public class SetupManager {
         Setting setting = getSettingByProperty(property);
         if (setting != null) {
             getSetupDao().delete(setting);
+            setting.setValue(null);
         }
-        
-        setting.setValue(null);
         getSetupManagerHelper().auditSettingChange(setting);
     }
 

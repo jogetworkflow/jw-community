@@ -8,12 +8,22 @@ public interface UserMetaDataDao {
     UserMetaData getUserMetaData(String username, String key);
     
     Collection<UserMetaData> getUserMetaDatas(String username);
-    
+
+    Collection<UserMetaData> getUserMetaDataByKey(String key);
+
+    Collection<UserMetaData> getUserMetaDataByKeyPrefix(String keyPrefix);
+
+    Collection<UserMetaData> getUserMetaDatasByKeyValue(String key, String value);
+
+    Collection<UserMetaData> getUserMetaDatasByUsernameKeyPrefix(String username, String keyPrefix);
+
     Boolean addUserMetaData(UserMetaData data);
     
     Boolean updateUserMetaData(UserMetaData data);
     
     Boolean deleteUserMetaData(String username, String key);
+
+    Boolean deleteUserMetaDataByKey(String key);
     
     Boolean deleteUserMetaDatas(String username);
 }

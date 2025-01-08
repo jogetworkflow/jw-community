@@ -89,12 +89,12 @@ import org.joget.commons.spring.model.ResourceBundleMessage;
 import org.joget.commons.spring.model.ResourceBundleMessageDao;
 import org.joget.commons.spring.model.Setting;
 import org.joget.commons.util.TimeZoneUtil;
+import org.joget.directory.model.service.*;
 import org.joget.directory.model.Department;
 import org.joget.directory.model.Employment;
 import org.joget.directory.model.Group;
 import org.joget.directory.model.Role;
 import org.joget.directory.model.User;
-import org.joget.directory.model.service.ExtDirectoryManager;
 import org.joget.plugin.base.Plugin;
 import org.joget.plugin.base.PluginManager;
 import org.joget.workflow.model.WorkflowActivity;
@@ -125,9 +125,6 @@ import org.joget.directory.dao.UserDao;
 import org.joget.directory.dao.UserMetaDataDao;
 import org.joget.directory.model.Grade;
 import org.joget.directory.model.Organization;
-import org.joget.directory.model.service.DirectoryManagerPlugin;
-import org.joget.directory.model.service.DirectoryUtil;
-import org.joget.directory.model.service.UserSecurity;
 import org.joget.logs.LogViewerAppender;
 import org.joget.plugin.property.model.PropertyEditable;
 import org.joget.plugin.property.service.PropertyUtil;
@@ -149,10 +146,7 @@ import org.springframework.ui.ModelMap;
 import org.springframework.util.ClassUtils;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.Validator;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.LocaleResolver;
 import org.springframework.web.util.HtmlUtils;
@@ -1312,16 +1306,22 @@ public class ConsoleWebController {
                 }
             }
         }
-        
+
+        StringBuilder sbProfileFooter = new StringBuilder();
+
+        // Get profile footer from DirectoryUtil
+        String profileFormFooter = DirectoryUtil.getProfileFormFooter(user);
+        sbProfileFooter.append(profileFormFooter);
+
         UserSecurity us = DirectoryUtil.getUserSecurity();
         if (us != null) {
             map.addAttribute("policies", us.passwordPolicies());
-            map.addAttribute("userProfileFooter", us.getUserProfileFooter(user));
+            sbProfileFooter.append(us.getUserProfileFooter(user));
         } else {
             map.addAttribute("policies", "");
-            map.addAttribute("userProfileFooter", "");
         }
 
+        map.addAttribute("userProfileFooter", sbProfileFooter.toString());
         map.addAttribute("enableUserLocale", enableUserLocale);
         map.addAttribute("localeStringList", localeStringList);
 
@@ -1397,14 +1397,21 @@ public class ConsoleWebController {
             }
             model.addAttribute("enableUserLocale", enableUserLocale);
             model.addAttribute("localeStringList", localeStringList);
-            
+
+            // Get profile footer from IdP Manager
+            StringBuilder sbProfileFooter = new StringBuilder();
+            IdentityProviderManager identityProviderManager = (IdentityProviderManager) AppUtil.getApplicationContext().getBean("identityProviderManager");
+            String idpProfileFooter = identityProviderManager.getProfileFooterHtml(currentUser);
+            sbProfileFooter.append(idpProfileFooter);
+
             if (us != null) {
                 model.addAttribute("policies", us.passwordPolicies());
-                model.addAttribute("userProfileFooter", us.getUserProfileFooter(currentUser));
+                sbProfileFooter.append(us.getUserProfileFooter(currentUser));
             } else {
                 model.addAttribute("policies", "");
                 model.addAttribute("userProfileFooter", "");
             }
+            model.addAttribute("userProfileFooter", sbProfileFooter.toString());
 
             return "console/profile";
         } else {
@@ -4849,19 +4856,16 @@ public class ConsoleWebController {
         }
 
         //get directory manager plugin list
-        Collection<Plugin> pluginList = pluginManager.list();
-        Iterator i = pluginList.iterator();
-        while (i.hasNext()) {
-            Plugin plugin = (Plugin) i.next();
-            if (!(plugin instanceof DirectoryManagerPlugin)) {
-                i.remove();
-            }
-        }
+        Collection<Plugin> pluginList = pluginManager.list(DirectoryManagerPlugin.class);
         String className = "";
-        if (DirectoryUtil.isOverridden()) {
+        boolean isDmConfigurable = true;
+        boolean isOverridden = DirectoryUtil.isOverridden();
+        if (isOverridden) {
             className = DirectoryUtil.getOverriddenDirectoryManagerClassName();
         } else if (settingMap.get("directoryManagerImpl") != null) {
             className = settingMap.get("directoryManagerImpl");
+        } else {
+            isDmConfigurable = false;
         }
         
         if (className != null && !className.isEmpty()) {
@@ -4871,16 +4875,55 @@ public class ConsoleWebController {
             }
         }
 
+        map.addAttribute("isDmConfigurable", isDmConfigurable);
+        map.addAttribute("isOverridden", isOverridden);
+        map.addAttribute("overriddenDmClassName", className);
         map.addAttribute("settingMap", settingMap);
         map.addAttribute("directoryManagerPluginList", pluginList);
+        map.addAttribute("isEnterprise", AppUtil.isEnterprise());
 
         return "console/setting/directoryManager";
     }
 
     @RequestMapping(value = "/console/setting/directoryManagerImpl/remove", method = RequestMethod.POST)
-    public void consoleSettingDirectoryManagerImplRemove(Writer writer, ModelMap map) {
+    public void consoleSettingDirectoryManagerImplRemove() {
         setupManager.deleteSetting("directoryManagerImpl");
         setupManager.deleteSetting("directoryManagerImplProperties");
+    }
+
+    @RequestMapping("/console/setting/directoryManagerImpl/select")
+    public String consoleSettingDirectoryManagerImplSelect(ModelMap map) {
+        return "console/setting/dmSelect";
+    }
+
+    @GetMapping("/console/setting/directoryManagerImpl/list")
+    public void consoleSettingDirectoryManagerImplList(Writer writer, HttpServletResponse response) throws IOException {
+        Collection<Plugin> plugins = pluginManager.list(DirectoryManagerPlugin.class);
+        if (plugins.isEmpty()) {
+            response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+        }
+        JSONObject jsonObject = new JSONObject();
+
+        // add default DM
+        Map<String, String> map = new HashMap<>();
+        map.put("directoryManagerImpl", "default");
+        map.put("name", "Default");
+        map.put("description", "Default directory manager implementation");
+        map.put("version", "");
+        jsonObject.accumulate("data", map);
+
+        // add plugin DMs
+        for (Plugin plugin : plugins) {
+            map = new HashMap<>();
+            map.put("directoryManagerImpl", plugin.getClass().getName());
+            map.put("name", plugin.getName());
+            map.put("description", plugin.getDescription());
+            map.put("version", plugin.getVersion());
+            jsonObject.accumulate("data", map);
+        }
+        jsonObject.put("total", plugins.size());
+        jsonObject.put("start", 0);
+        jsonObject.write(writer);
     }
 
     @RequestMapping("/console/setting/directoryManagerImpl/config")
@@ -4922,7 +4965,18 @@ public class ConsoleWebController {
     }
 
     @RequestMapping(value = "/console/setting/directoryManagerImpl/config/submit", method = RequestMethod.POST)
-    public String consoleSettingDirectoryManagerImplConfigSubmit(ModelMap map, @RequestParam("id") String id, @RequestParam(value = "pluginProperties", required = false) String pluginProperties, HttpServletRequest request) {
+    public String consoleSettingDirectoryManagerImplConfigSubmit(ModelMap map, @RequestParam("id") String id, @RequestParam(value = "pluginProperties", required = false) String pluginProperties, HttpServletRequest request, HttpServletResponse response) throws IOException {
+        if ("default".equals(id)) {
+            try {
+                consoleSettingDirectoryManagerImplRemove();
+                response.setStatus(HttpServletResponse.SC_OK);
+            } catch (Exception e) {
+                LogUtil.error(getClass().getName(), e, "Error changing directory manager to default.");
+                response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+            }
+            return null;
+        }
+
         Plugin plugin = (Plugin) pluginManager.getPlugin(id);
 
         String settingName = "";

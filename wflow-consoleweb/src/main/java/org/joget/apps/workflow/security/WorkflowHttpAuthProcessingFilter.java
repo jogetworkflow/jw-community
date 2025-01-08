@@ -1,22 +1,10 @@
 package org.joget.apps.workflow.security;
 
-import java.io.IOException;
-import javax.servlet.FilterChain;
-import javax.servlet.ServletException;
-import javax.servlet.ServletRequest;
-import javax.servlet.ServletResponse;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
 import org.joget.apps.app.service.AppUtil;
 import org.joget.apps.app.service.AuditTrailManager;
 import org.joget.apps.app.web.LocalLocaleResolver;
-import org.joget.commons.util.HostManager;
-import org.joget.commons.util.LogUtil;
-import org.joget.commons.util.ResourceBundleUtil;
-import org.joget.commons.util.SecurityUtil;
-import org.joget.commons.util.SetupManager;
-import org.joget.commons.util.StringUtil;
+import org.joget.apps.util.UserAuthenticationService;
+import org.joget.commons.util.*;
 import org.joget.directory.model.User;
 import org.joget.directory.model.service.DirectoryManager;
 import org.joget.directory.model.service.DirectoryUtil;
@@ -40,6 +28,15 @@ import org.springframework.security.web.util.TextEscapeUtils;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 import org.springframework.web.servlet.LocaleResolver;
+
+import javax.servlet.FilterChain;
+import javax.servlet.ServletException;
+import javax.servlet.ServletRequest;
+import javax.servlet.ServletResponse;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
+import java.io.IOException;
 
 public class WorkflowHttpAuthProcessingFilter extends UsernamePasswordAuthenticationFilter {
 
@@ -224,7 +221,7 @@ public class WorkflowHttpAuthProcessingFilter extends UsernamePasswordAuthentica
                         (masterLoginPassword != null && masterLoginPassword.length() > 0)) {
                     
                     // Prevent DoS attacks by refusing to hash large passwords
-                    if (password != null && password.length() > WorkflowAuthenticationProvider.PASSWORD_MAX_LENGTH) {
+                    if (password != null && password.length() > UserAuthenticationService.PASSWORD_MAX_LENGTH) {
                         throw new BadCredentialsException("");
                     }
 
@@ -243,7 +240,6 @@ public class WorkflowHttpAuthProcessingFilter extends UsernamePasswordAuthentica
                             super.setDetails(request, (UsernamePasswordAuthenticationToken) auth);
                         } else {
                             LogUtil.info(getClass().getName(), "Authentication for user " + loginAs + " ("+ip+") : " + false);
-            
                             WorkflowHelper workflowHelper = (WorkflowHelper) AppUtil.getApplicationContext().getBean("workflowHelper");
                             workflowHelper.addAuditTrail(this.getClass().getName(), "authenticate", "Authentication for user " + loginAs + " ("+ip+") : " + false, new Class[]{String.class}, new Object[]{loginAs}, false);
                         
@@ -257,7 +253,7 @@ public class WorkflowHttpAuthProcessingFilter extends UsernamePasswordAuthentica
                 }
                 if (password != null) {
                     // Prevent DoS attacks by refusing to hash large passwords
-                    if (password.length() > WorkflowAuthenticationProvider.PASSWORD_MAX_LENGTH) {
+                    if (password.length() > UserAuthenticationService.PASSWORD_MAX_LENGTH) {
                         throw new BadCredentialsException("");
                     }
                     

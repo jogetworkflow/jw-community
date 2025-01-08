@@ -311,6 +311,8 @@
         <constructor-arg><ref bean="govHealthCheckScheduler" /></constructor-arg>
         <constructor-arg><ref bean="setupManager" /></constructor-arg>
     </bean>
+
+    <bean id="userAuthenticationService" class="org.joget.apps.util.UserAuthenticationService"/>
    
     <aop:config>
         <aop:advisor advice-ref="txAdvice" pointcut="execution(* org.joget.apps.app.dao.*Dao.*(..)) and !(execution(* org.joget.apps.app.dao.AppDefinitionDao.updateDateModified(..)))" order="1" />
