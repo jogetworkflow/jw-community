@@ -3048,3 +3048,6 @@ body[builder-theme] .api-container .element-operations .operation {
 body[builder-theme]#cbuilder.quick-nav-shown .builder-view {
     left: 40px;
 }
+body[builder-theme] .info-text{
+    color: var(--theme-input-color-1);
+}
