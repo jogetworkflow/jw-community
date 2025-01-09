@@ -69,6 +69,9 @@ public abstract class AbstractVersionedObjectDao<T extends AbstractVersionedObje
                 result = resultList.iterator().next();
             }
         }
+        if (result != null) {
+            findSession().refresh(result);
+        }
         return result;
     }
     
