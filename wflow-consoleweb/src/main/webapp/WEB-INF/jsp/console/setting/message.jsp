@@ -43,7 +43,7 @@
            jsonData="data"
            rowsPerPage="15"
            width="100%"
-           sort="messageKey"
+           sort="key"
            desc="false"
            href="${pageContext.request.contextPath}/web/console/setting/message/edit"
            hrefParam="id"
