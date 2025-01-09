@@ -3793,7 +3793,7 @@ public class ConsoleWebController {
             }        
         }
 
-        AppDefinition appDef = appService.getAppDefinition(appId, version);
+        AppDefinition appDef = appDefinitionDao.loadVersion(appId, AppUtil.convertVersionToLong(version));
         if (appDef == null) {
             return result;
         }
