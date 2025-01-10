@@ -173,7 +173,7 @@ PwaUtil = {
         })
     },
 
-    register: function () {
+    register: async function () {
         if (navigator.serviceWorker) {
             function indexesOf(string, substring){
                 var a=[], i=-1;
@@ -190,63 +190,69 @@ PwaUtil = {
             }
             
             PwaUtil.registerBaseServiceWorker();
-
             console.log('registering service worker, scope: ' + swScope);
+        
+            try {
+                await PwaUtil.indexedDBinit();
+                console.log("IndexedDB: Collected URLs in page for offline caching");
 
-            return navigator.serviceWorker.register(PwaUtil.serviceWorkerPath, { scope: swScope })
-                    .then(function (registration) {
-                        var serviceWorker;
-                        if (registration.installing) {
-                            serviceWorker = registration.installing;
-                            // console.log('Service worker installing');
-                        } else if (registration.waiting) {
-                            serviceWorker = registration.waiting;
-                            // console.log('Service worker installed & waiting');
-                        } else if (registration.active) {
-                            serviceWorker = registration.active;
-                            // console.log('Service worker active');
-                        }
-
-                        var afterActivated = function(){                            
-                            if (PwaUtil.pushEnabled) {
-                                PwaUtil.subscribe(registration);
+                return navigator.serviceWorker.register(PwaUtil.serviceWorkerPath, { scope: swScope })
+                        .then(function (registration) {
+                            var serviceWorker;
+                            if (registration.installing) {
+                                serviceWorker = registration.installing;
+                                // console.log('Service worker installing');
+                            } else if (registration.waiting) {
+                                serviceWorker = registration.waiting;
+                                // console.log('Service worker installed & waiting');
+                            } else if (registration.active) {
+                                serviceWorker = registration.active;
+                                // console.log('Service worker active');
                             }
 
-                            if (registration.sync) {
-                                registration.sync.register('sendFormData')
-                                        .then(function () {
-                                            console.log('sync event registered');
-                                        }).catch(function () {
-                                    // system was unable to register for a sync,
-                                    // this could be an OS-level restriction
-                                    console.log('sync registration failed');
+                            var afterActivated = function(){                            
+                                if (PwaUtil.pushEnabled) {
+                                    PwaUtil.subscribe(registration);
+                                }
+
+                                if (registration.sync) {
+                                    registration.sync.register('sendFormData')
+                                            .then(function () {
+                                                console.log('sync event registered');
+                                            }).catch(function () {
+                                        // system was unable to register for a sync,
+                                        // this could be an OS-level restriction
+                                        console.log('sync registration failed');
+                                    });
+                                }
+
+                                console.log('Service worker successfully registered and activated.');
+
+                                navigator.serviceWorker.controller && navigator.serviceWorker.controller.postMessage({
+                                    userviewKey: PwaUtil.userviewKey,
+                                    homePageLink: PwaUtil.homePageLink
                                 });
+
+                                PwaUtil.updateServiceWorkerList();
                             }
 
-                            console.log('Service worker successfully registered and activated.');
-
-                            navigator.serviceWorker.controller && navigator.serviceWorker.controller.postMessage({
-                                userviewKey: PwaUtil.userviewKey,
-                                homePageLink: PwaUtil.homePageLink
-                            });
-
-                            PwaUtil.updateServiceWorkerList();
-                        }
-
-                        if (serviceWorker && serviceWorker.state === "installing") {
-                            serviceWorker.onstatechange = function(e) {
-                                if(e.target.state === 'activated'){
-                                    afterActivated();
+                            if (serviceWorker && serviceWorker.state === "installing") {
+                                serviceWorker.onstatechange = function(e) {
+                                    if(e.target.state === 'activated'){
+                                        afterActivated();
+                                    }
                                 }
                             }
-                        }
 
-                        if (serviceWorker && (serviceWorker.state === "installed" || serviceWorker.state === "activated")) {
-                            afterActivated();
-                        }
-                    }, function (err) {
-                        console.error('Unsuccessful registration with ', PwaUtil.serviceWorkerPath, err);
-                    });
+                            if (serviceWorker && (serviceWorker.state === "installed" || serviceWorker.state === "activated")) {
+                                afterActivated();
+                            }
+                        }, function (err) {
+                            console.error('Unsuccessful registration with ', PwaUtil.serviceWorkerPath, err);
+                        });
+            } catch (err) {
+                console.error("Error during IndexedDB initialization: ", err);
+            }
         }
     },
 
@@ -468,7 +474,122 @@ PwaUtil = {
             var r = Math.random()*16|0, v = c == 'x' ? r : (r&0x3|0x8);
             return v.toString(16);
         }).toUpperCase();
+    },
+
+    indexedDBinit : function () {
+        return new Promise((resolve, reject) => {
+            console.log("IndexedDB logic initiated");
+            const dbName = "joget_" + UI.userview_app_id + "-" + UI.userview_id + "_precache";
+            const storeName = "URLs";
+            let db;
+            const request = indexedDB.open(dbName, 1);
+
+            request.onupgradeneeded = function(event) {
+                db = event.target.result;
+                const objectStore = db.createObjectStore(storeName, { keyPath: "id", autoIncrement: true });
+                objectStore.createIndex("url", "url", { unique: true });
+            };
+            request.onsuccess = function(event) {
+                db = event.target.result;
+                //console.log("IndexedDB is ready.");
+                PwaUtil.collectUrls({storeName, db}).then(() => resolve()).catch(reject);
+            };
+            request.onerror = function(event) {
+                console.error("Database error:", event.target.error);
+                reject(event.target.error);
+            };
+        });
+    },
+
+    collectUrls : function(idbDetails) { 
+        return new Promise((resolve, reject) => {
+            //  Empty Set to store URLs
+            const uniqueUrls = new Set();
+            // Extract url from style script
+            function extractUrlsFromCss(cssText) {
+                const urlPattern = /url\(['"]?(.*?)['"]?\)/g;
+                let match;
+                while ((match = urlPattern.exec(cssText)) !== null) {
+                    addUrl(match[1]);
+                }
+            }
+            // Add URLs to the Empty Set
+            function addUrl(url) {
+                if (url.includes("#")) return;
+                uniqueUrls.add(url);
+            }
+            
+            // DOM querySelector
+            document.querySelectorAll("script[src]").forEach(script => {
+                addUrl(script.getAttribute("src"));
+            });
+            document.querySelectorAll("link[href]").forEach(link => {
+                addUrl(link.getAttribute("href"));
+            });
+            document.querySelectorAll("img[src]").forEach(img => {
+                addUrl(img.getAttribute("src"));
+            });
+            document.querySelectorAll("div[style]").forEach(div => {
+                const style = div.getAttribute("style");
+                const urlMatch = style.match(/background-image:\s*url\(['"]?(.*?)['"]?\)/);
+                if (urlMatch) {
+                    addUrl(urlMatch[1]);
+                }
+            });
+            document.querySelectorAll("style").forEach(styleTag => {
+                const cssText = styleTag.textContent;
+                extractUrlsFromCss(cssText);
+            });
+            PwaUtil.saveUrlsToIndexedDB(Array.from(uniqueUrls),idbDetails).then(resolve).catch(reject);
+        });
+    },
+
+    saveUrlsToIndexedDB : function(urls, idbDetails) {
+        return new Promise((resolve, reject) => {
+            const transaction = idbDetails.db.transaction(idbDetails.storeName, "readwrite");
+            const objectStore = transaction.objectStore(idbDetails.storeName);
+            // URLs tracker
+            let pendingRequests = urls.length;
+
+            urls.forEach(url => {
+                const checkRequest = objectStore.index("url").get(url);
+                checkRequest.onsuccess = function() {
+                    // Check for duplication
+                    if (checkRequest.result) {
+                        //console.log("Duplicate URL found, skipping:", url);
+                        pendingRequests--;
+                        if (pendingRequests === 0) resolve();  // Resolve on skip
+                        return;
+                    }
+                    const addRequest = objectStore.add({ url: url });
+                    addRequest.onsuccess = function() {
+                        //console.log("URL added to IndexedDB:", url);
+                        pendingRequests--;
+                        if (pendingRequests === 0) resolve();  // Resolve on complete
+                    };
+                    addRequest.onerror = function(event) {
+                        console.error("Error adding URL:", url, event.target.error);
+                        pendingRequests--;
+                        if (pendingRequests === 0) resolve();  // Resolve on error
+                    };
+                };
+                checkRequest.onerror = function(event) {
+                    console.error("Error checking URL:", url, event.target.error);
+                    pendingRequests--;
+                    if (pendingRequests === 0) resolve();  // Resolve on error
+                };
+            });
+            
+            transaction.onerror = function(event) {
+                console.error("Transaction error:", event.target.error);
+                reject(event.target.error);
+            };
+
+             // Resolve in case no URLs to process
+            if (urls.length === 0) resolve();
+        });
     }
+
 }
 
 $.fn.serializeObject = function() {
