@@ -44,6 +44,7 @@ var formData = null;
 
 var formDb = null;
 
+var PRECACHE_DB_NAME     = 'joget' + '_' + appUserviewId + '_precache';
 var FORM_DB_NAME         = 'joget' + '_' + appUserviewId;
 var CACHE_DB_NAME         = 'joget-shared-cache';
 var FORM_DB_STORE_NAME   = 'offline_post';
@@ -123,39 +124,37 @@ function cacheUserview(){
         });
 }
 
-self.addEventListener('install', function (event) {
+self.addEventListener('install', (event) => {
     console.log('SW install event');
     self.skipWaiting();
     event.waitUntil(
         caches.delete(appCacheName)
-            .then(function(){
-                caches.open(appCacheName)
-                    .then(function (cache) {
-                        var promises = [];
+            .then(() => caches.open(appCacheName))
+            .then((cache) => {
+                urlsToCache.push(getPath() + '/_/pwaoffline');
+                urlsToCache.push(getPath() + '/_/offline');
 
-                        urlsToCache.push(getPath() + '/_/pwaoffline');
-                        urlsToCache.push(getPath() + '/_/offline');
-                        promises.push(
-                            //cache one by one to prevent duplicate url causing DOMexception
-                            urlsToCache.map(function(url) {
-                                return caches.match(url).then(function(checkCache){
-                                    if(checkCache === undefined){
-                                        cache.addAll([url]).then(function() {
-                                            //console.log(url + " cached");
-                                        }).catch(function(err) {
-                                            //ignore
-                                        });
-                                    }else{
-                                        //console.log(url + ' already exists in cache');
-                                    }
-                                })
-                            })
-                        );
-
-                        return Promise.all(promises);
-                    })
-                cacheUserview();
+                return getUrlsFromIndexedDB().then((dbUrls) => {
+                    urlsToCache.push(...dbUrls);
+                    var promises = urlsToCache.map((url) => {
+                        return cache.match(url).then((checkCache) => {
+                            if(!checkCache) {
+                                return cache.addAll([url])
+                                    // .then(() => console.log(url + " cached"))
+                                    .catch((err) => console.error("Error caching " + url + ": " + err));
+                            } else {
+                                // console.log(url + " already exists in cache");
+                            }
+                        });
+                    });
+                    return Promise.all(promises);
+                });
             })
+            .then(() => {
+                cacheUserview();
+                console.log('DONE SW install event');
+            })
+            .catch((err) => console.error("Error during installation: " + err))
     );
 });
 
@@ -750,5 +749,44 @@ self.addEventListener('sync', function(event) {
         )
     }
 })
+
+// Function to retrieve URLs from IndexedDB
+function getUrlsFromIndexedDB() {
+    return new Promise((resolve, reject) => {
+        const dbName = PRECACHE_DB_NAME;
+        const storeName = "URLs";
+        const request = indexedDB.open(dbName);
+
+        request.onsuccess = function(event) {
+            const db = event.target.result;
+            const transaction = db.transaction(storeName, "readonly");
+            const objectStore = transaction.objectStore(storeName);
+            const urls = [];
+
+            // Use a cursor to iterate through all entries in the store
+            const cursorRequest = objectStore.openCursor();
+            cursorRequest.onsuccess = function(event) {
+                const cursor = event.target.result;
+                if (cursor) {
+                    urls.push(cursor.value.url);  // Collect the URL
+                    //console.log(cursor.value.url + " Collected");
+                    cursor.continue();
+                } else {
+                    db.close();
+                    resolve(urls);  // Resolve the promise once all URLs are collected
+                }
+            };
+
+            cursorRequest.onerror = function(event) {
+                db.close();
+                reject("Error retrieving URLs from IndexedDB: " + event.target.error);
+            };
+        };
+
+        request.onerror = function(event) {
+            reject("Failed to open IndexedDB: " + event.target.error);
+        };
+    });
+}
 
 openDatabase();
