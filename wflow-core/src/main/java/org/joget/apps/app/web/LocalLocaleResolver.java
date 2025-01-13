@@ -157,6 +157,8 @@ public class LocalLocaleResolver extends SessionLocaleResolver implements Locale
         
         this.setDefaultTimeZone(timezone);
             
+        this.setDefaultTimeZone(timezone);
+            
         return timezone;
     }
             

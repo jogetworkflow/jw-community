@@ -1,5 +1,6 @@
 package org.joget.workflow.shark.model.dao;
 
+<<<<<<<< HEAD:wflow-shark/src/main/java/org/joget/workflow/shark/model/dao/SharkWorkflowAssignmentDaoImpl.java
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collection;
@@ -1642,4 +1643,12 @@ public class SharkWorkflowAssignmentDaoImpl extends AbstractSpringDao implements
         
         return temp;
     }
+========
+/**
+ * this is just a reference to org.joget.workflow.model.dao.WorkflowAssignmentDao 
+ * for backward compatible
+ */
+public interface WorkflowAssignmentDao extends org.joget.workflow.model.dao.WorkflowAssignmentDao {
+
+>>>>>>>> origin/9.0-RELEASE:wflow-wfengine/src/main/java/org/joget/workflow/shark/model/dao/WorkflowAssignmentDao.java
 }

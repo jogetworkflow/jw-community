@@ -1812,9 +1812,10 @@ body[builder-theme].popupBody .button-panel{
     position: fixed;
     bottom: -4px;
     margin-bottom: 0;
-    width: 96%;
+    width: 100%;
     right: 0;
     padding: 15px 30px;
+    box-sizing: border-box;
     padding-bottom: 0;
     border-top: 1px solid var(--theme-border-color-1);
     background-color: var(--theme-primary-color-1);
@@ -1851,13 +1852,10 @@ body[builder-theme].popupBody #generate-btn{
     height: 36px;
 }
 body[builder-theme].popupBody #main-body-content{
-    height: calc(100% - 90px) !important;
+    box-sizing: border-box;
 }
 body[builder-theme].popupBody.builder-popup #main-body-content {
     padding: 25px 35px;
-}
-body[builder-theme].popupBody #main-body-content:has(> div#JsonDataTable_pluginList-search){
-    height: calc(100% - 40px) !important;
 }
 body[builder-theme].popupBody div.property-editor-page-button-panel > div.page-button-action > input.page-button-save{
     float: right;

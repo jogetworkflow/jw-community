@@ -1129,6 +1129,22 @@ body .flexigrid tr.trSelected td{
     border-left: 1px solid #ecf0f1 !important;
     border-bottom: 0 !important;
 }
+body[system-theme="dark"] .flexigrid div.bDiv tr.erow.trSelected:hover td, 
+body[system-theme="dark"] .flexigrid div.bDiv tr.erow.trSelected:hover td.sorted, 
+body[system-theme="dark"] .flexigrid div.bDiv tr.erow.trOver.trSelected td.sorted, 
+body[system-theme="dark"] .flexigrid div.bDiv tr.erow.trOver.trSelected td, 
+body[system-theme="dark"] .flexigrid tr.erow.trSelected td.sorted, 
+body[system-theme="dark"] .flexigrid tr.erow.trSelected td{
+    background: #2a2e2f;
+}
+body[system-theme="dark"] .flexigrid div.bDiv tr.trSelected:hover td, 
+body[system-theme="dark"] .flexigrid div.bDiv tr.trSelected:hover td.sorted, 
+body[system-theme="dark"] .flexigrid div.bDiv tr.trOver.trSelected td.sorted, 
+body[system-theme="dark"] .flexigrid div.bDiv tr.trOver.trSelected td, 
+body[system-theme="dark"] .flexigrid tr.trSelected td.sorted, 
+body[system-theme="dark"] .flexigrid tr.trSelected td{
+    background: #1e2223;
+}
 body .flexigrid div.bDiv table { 
     display: block; 
 } 
@@ -1253,6 +1269,9 @@ fieldset legend,
     display: block;
     line-height: 25px;
     width: 50%;
+}
+body.builder-popup {
+    white-space: nowrap;
 }
 .form-input input:not([type=checkbox]), .form-input textarea, 
 .form-input > div.chosen-container {
@@ -1909,6 +1928,20 @@ body.webconsole.adminBarShown #nav {
 }
 body.webconsole #main-header, body.webconsole #footer {
     display: block !important;
+    color: var(--console-default-font-color);
+    background: var(--console-main-background-color);
+    margin-top: 0px;
+}
+body.webconsole #adminBar {
+    display: flex !important;
+}
+body.webconsole div#generalSetup .form-buttons {
+    transition: transform 0.3s linear;
+    transform: translateY(0px);
+}
+body.webconsole.adminBarShown div#generalSetup .form-buttons {
+    transition: transform 0.3s linear;
+    transform: translateY(-20px);
 }
 body.webconsole #adminBar {
     display: flex !important;

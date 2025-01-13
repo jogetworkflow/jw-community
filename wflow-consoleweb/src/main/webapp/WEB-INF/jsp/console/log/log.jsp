@@ -147,5 +147,7 @@ $(document).ready(function() {
 
     //Change button color
     $("a.followbtn").addClass('console-secondary');
+
+    $("div#main").css({visibility: 'visible'});
 });
 </script>  

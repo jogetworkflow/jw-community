@@ -42,6 +42,8 @@
     <script>
         $(document).ready(function(){
             $('#JsonDataTable_searchTerm').hide();
+
+            $('div#main-body-content-filter').appendTo('div#JsonDataTable_pluginList-search');
         });
     </script>    
 <commons:popupFooter />

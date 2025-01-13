@@ -115,12 +115,8 @@ import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.util.HtmlUtils;
-import com.github.underscore.lodash.U;
-import java.io.ByteArrayOutputStream;
-import java.io.InputStream;
 import javax.cache.Cache;
 import javax.cache.CacheManager;
-import org.joget.apps.form.lib.DefaultFormBinder;
 
 /**
  * Utility methods is used by App in runtime

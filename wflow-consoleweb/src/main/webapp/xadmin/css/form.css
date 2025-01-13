@@ -1130,7 +1130,6 @@ body.rtl .subform-cell > label.label:has(+ select:focus) > i{
         width: 50%;
     }
 }
-
 /* fields with top-aligned label */
 body #form-canvas .label-top .label {
     text-align: left;
