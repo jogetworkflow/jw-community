@@ -4172,29 +4172,6 @@ public class ConsoleWebController {
         AppUtil.writeJson(writer, jsonArray, callback);
     }
     
-    @RequestMapping("/json/console/app/(*:appId)/(~:version)/userview/category/options")
-    public void consoleUserviewCategoryOptionsJson(Writer writer, @RequestParam(value = "appId") String appId, @RequestParam(value = "version", required = false) String version, @RequestParam(value = "callback", required = false) String callback, @RequestParam(value = "userviewId", required = false) String userviewId) throws IOException, JSONException {
-        JSONArray jsonArray = new JSONArray();
-        Map blank = new HashMap();
-        blank.put("value", "");
-        blank.put("label", "");
-        jsonArray.put(blank);
-        
-        Map<String, String> i = userviewService.getAllCategory(appId, version, userviewId);
-        for (Map.Entry<String, String> entry : i.entrySet()) {
-            Object key = entry.getKey();
-            Object value = entry.getValue();
-            
-            blank = new HashMap();
-            blank.put("value", key);
-            blank.put("label", value);
-            jsonArray.put(blank);
-        }
-        
-        jsonArray = sortJSONArray(jsonArray, "label", false);
-        AppUtil.writeJson(writer, jsonArray, callback);
-    }
-    
     @RequestMapping("/json/console/app/(*:appId)/(~:version)/userview/menu/tree/options")
     public void consoleUserviewMenuTreeOptionsJson(Writer writer, @RequestParam(value = "appId") String appId, @RequestParam(value = "version", required = false) String version, @RequestParam(value = "callback", required = false) String callback, @RequestParam(value = "userviewId", required = false) String userviewId, @RequestParam(value = "customAppId", required = false) String customAppId) throws IOException, JSONException {
         AppDefinition appDef = null;

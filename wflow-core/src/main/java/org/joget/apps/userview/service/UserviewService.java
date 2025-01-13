@@ -629,34 +629,6 @@ public class UserviewService {
         return ids;
     }
     
-    public Map<String, String> getAllCategory(String appId, String version, String userviewId) {
-       Map<String, String> result = new HashMap();
-       
-        
-        AppDefinition appDef = appService.getAppDefinition(appId, version);
-        UserviewDefinition userviewDef = userviewDefinitionDao.loadById(userviewId, appDef);
-        if (userviewDef != null) {
-            String json = userviewDef.getJson();
-
-            try {
-                //set userview properties
-                JSONObject userviewObj = new JSONObject(json);
-                JSONArray categoriesArray = userviewObj.getJSONArray("categories");
-                for (int i = 0; i < categoriesArray.length(); i++) {
-                    JSONObject categoryObj = (JSONObject) categoriesArray.get(i);
-                    JSONObject props = categoryObj.getJSONObject("properties");
-                    String id = props.getString("id");
-                    String label = props.getString("label");
-                    
-                    result.put(id, label);
-                }
-            } catch (Exception e) {
-                LogUtil.debug(getClass().getName(), "get userview category ids error.");
-            }
-        }
-        return result;
-    }
-    
     /**
      * Gets the userview menu tree
      * @param appId
