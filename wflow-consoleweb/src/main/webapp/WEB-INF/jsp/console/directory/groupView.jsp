@@ -112,7 +112,7 @@
                     document.location = '${pageContext.request.contextPath}/web/console/directory/group/view/${group.id}';
                 }
             }
-            var request = ConnectionManager.post('${pageContext.request.contextPath}/web/console/directory/group/${group.id}/user/unassign', callback, 'ids='+ selectedIds);
+            var request = ConnectionManager.post('${pageContext.request.contextPath}/web/console/directory/group/${group.id}/user/unassign', callback, 'ids='+ selectedIds);            
         }
     }
 
@@ -125,6 +125,8 @@
                 }
             }
             var request = ConnectionManager.post('${pageContext.request.contextPath}/web/console/directory/group/delete', callback, 'ids=${group.id}');
+
+            localStorage.setItem("selectedList", "${group.id}");
         }
     }
 </script>
