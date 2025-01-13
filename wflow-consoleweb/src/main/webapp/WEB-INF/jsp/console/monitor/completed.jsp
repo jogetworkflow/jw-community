@@ -61,35 +61,35 @@
         </div>
 
         <ui:jsontable url="${pageContext.request.contextPath}/web/json/console/monitor/${mode}/list?${pageContext.request.queryString}"
-               var="JsonDataTable"
-               divToUpdate="processList"
-               jsonData="data"
-               rowsPerPage="15"
-               width="100%"
-               sort="createdTime"
-               desc="true"
-               href="${pageContext.request.contextPath}/web/console/monitor/${mode}/process/view"
-               hrefParam="id"
-               hrefQuery="false"
-               hrefDialog="false"
-               hrefDialogWidth="600px"
-               hrefDialogHeight="400px"
-               hrefDialogTitle="Process Dialog"
-               checkbox="true"
-               checkboxButton1="general.method.label.delete"
-               checkboxCallback1="removeProcessInstances"
-               searchItems="processId|console.app.process.common.label.id, processName|console.app.process.common.label.name, version|console.app.process.common.label.version,recordId|console.app.process.common.label.recordId,requester|console.app.process.common.label.requester"
-               fields="['id', 'version', 'name', 'state', 'startedTime', 'due', 'serviceLevelMonitor']"
-               column1="{key: 'id', label: 'console.app.process.common.label.id', sortable: true}"
-               column2="{key: 'startedTime', label: 'console.app.process.common.label.startedTime', sortable: true}"
-               column3="{key: 'name', label: 'console.app.process.common.label.name', sortable: true}"
-               column4="{key: 'requesterId', label: 'console.app.process.common.label.requester', sortable: false}"
-               column5="{key: 'version', label: 'console.app.process.common.label.version', sortable: false}"
-               column6="{key: 'state', label: 'console.app.process.common.label.state', sortable: false}"
-               column7="{key: 'due', label: 'console.app.process.common.label.dueDate', sortable: false}"
-               column8="{key: 'serviceLevelMonitor', label: 'console.app.process.common.label.serviceLevelMonitor', sortable: false, relaxed: true}"
-               column9="{key: 'recordId', label: 'console.app.process.common.label.recordId', sortable: false}"
-               />
+            var="JsonDataTable"
+            divToUpdate="processList"
+            jsonData="data"
+            rowsPerPage="15"
+            width="100%"
+            sort="createdTime"
+            desc="true"
+            href="${pageContext.request.contextPath}/web/console/monitor/${mode}/process/view"
+            hrefParam="id"
+            hrefQuery="false"
+            hrefDialog="false"
+            hrefDialogWidth="600px"
+            hrefDialogHeight="400px"
+            hrefDialogTitle="Process Dialog"
+            checkbox="true"
+            checkboxButton1="general.method.label.delete"
+            checkboxCallback1="removeProcessInstances"
+            searchItems="processId|console.app.process.common.label.id, processName|console.app.process.common.label.name, version|console.app.process.common.label.version,recordId|console.app.process.common.label.recordId,requester|console.app.process.common.label.requester"
+            fields="['id', 'version', 'name', 'state', 'startedTime', 'due', 'serviceLevelMonitor']"
+            column1="{key: 'id', label: 'console.app.process.common.label.id', sortable: true}"
+            column2="{key: 'startedTime', label: 'console.app.process.common.label.startedTime', sortable: true}"
+            column3="{key: 'name', label: 'console.app.process.common.label.name', sortable: true}"
+            column4="{key: 'requesterId', label: 'console.app.process.common.label.requester', sortable: false}"
+            column5="{key: 'version', label: 'console.app.process.common.label.version', sortable: false}"
+            column6="{key: 'state', label: 'console.app.process.common.label.state', sortable: false}"
+            column7="{key: 'due', label: 'console.app.process.common.label.dueDate', sortable: false}"
+            column8="{key: 'serviceLevelMonitor', label: 'console.app.process.common.label.serviceLevelMonitor', sortable: false, relaxed: true}"
+            column9="{key: 'recordId', label: 'console.app.process.common.label.recordId', sortable: false}"
+            />
         
     </div>
 </div>
@@ -99,6 +99,15 @@
         //Reposition the filter
         $("div #main-body-content-filter").appendTo("#JsonDataTable_processList-search");
         $("button:has(.fa-trash-alt)").addClass('console-danger');
+
+        var selectedList = localStorage.getItem("selectedList");
+        if(selectedList) {
+            selectedList = localStorage.getItem("selectedList").split(',')
+            selectedList.forEach(function(item, index){
+                UI.showConsoleToast(index, item + '<ui:msgEscJS key="console.app.message.delete.toast.message"/>', "fas fa-exclamation-circle", 2000, $("div#main")); 
+            })
+            localStorage.removeItem("selectedList")
+        }
     })
     var org_filter = window.filter;
     var filter = function(jsonTable, url, value){
@@ -110,7 +119,7 @@
     };
 
     function removeProcessInstances(selectedList){
-         if (confirm('<ui:msgEscJS key="console.monitoring.common.label.removeProcess.confirm"/>')) {
+        if (confirm('<ui:msgEscJS key="console.monitoring.common.label.removeProcess.confirm"/>')) {
             UI.blockUI(); 
             var callback = {
                 success : function() {
@@ -118,6 +127,8 @@
                 }
             }
             var request = ConnectionManager.post('${pageContext.request.contextPath}/web/console/monitor/process/delete', callback, 'ids='+selectedList);
+            
+            localStorage.setItem('selectedList', selectedList);            
         }
     }
 

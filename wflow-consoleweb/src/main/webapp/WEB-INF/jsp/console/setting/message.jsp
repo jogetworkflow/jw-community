@@ -106,6 +106,10 @@
                 }
             }
             var request = ConnectionManager.post('${pageContext.request.contextPath}/web/console/setting/message/delete', callback, 'ids='+selectedList);
+
+            selectedList.forEach(function(item, index){
+                UI.showConsoleToast(index, 'Row' + item + '<ui:msgEscJS key="console.app.message.delete.toast.message"/>', "fas fa-exclamation-circle", 2000, $("div#main")); 
+            })
         }
     }
 

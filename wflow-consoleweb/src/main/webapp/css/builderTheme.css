@@ -1869,12 +1869,6 @@ body[builder-theme].popupBody .single-page .property-editor-pages > .property-ed
 body[builder-theme] .page-button-navigation + .page-button-action{
     float: right;
 }
-body[builder-theme].popupBody .pluginConfig .property-editor-container {
-    height: calc(100% - 0px) !important;
-}
-body[builder-theme].popupBody .single-page .property-editor-pages{
-    height: calc(100% - 60px);
-}
 body[builder-theme] .i18n_table tr td textarea {
     padding: 5px 10px;
 }
@@ -3182,4 +3176,12 @@ body[builder-theme='dark'] .guider h1 {
 }
 body[builder-theme='dark'] .guider_arrow {
     background-image: url("../js/guiders/guider_arrows_dark.png");
+}
+/* Toast Message */
+#builder-message .toast .close {
+    box-shadow: none;
+}
+#builder-message .toast .close:focus,
+#builder-message .toast .close:focus-visible {
+    outline: none;
 }

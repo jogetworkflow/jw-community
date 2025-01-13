@@ -1240,6 +1240,54 @@ fieldset {
     margin: 0;
     margin-bottom: 25px;
 }
+/* Fieldset Form Canvas Styling [Used in Run Process Form App Composer] */
+body[system-theme] fieldset#form-canvas {
+    background: var(--console-secondary-background-color);
+}
+body[system-theme] fieldset#form-canvas *:not(.form-button) {
+    color: var(--console-default-font-color);
+    text-shadow: none;
+}
+body[system-theme] fieldset#form-canvas .form-cell-validator {
+    color: initial;
+}
+body[system-theme] .form-section-title span, 
+body[system-theme] .subform-section-title span {
+    background: var(--console-main-background-color);
+}
+body[system-theme] .multiPagedForm.tab .page-nav-panel{
+    border-color: #f0f0f0;
+}
+body[system-theme='dark'] .multiPagedForm.tab .page-nav-panel {
+    border-color: #303030;
+}
+body[system-theme] .multiPagedForm.tab .page-nav-panel .nav_item.current button {
+    border: none;
+    background: none;
+    border-radius: 0 !important;
+    border-bottom: 1px solid var(--console-button-primary-bg-hover);
+}
+body[system-theme] .multiPagedForm.tab .page-nav-panel .nav_item button {
+    border: none;
+    background: none;
+    border-radius: 0 !important;
+}
+body[system-theme] .multiPagedForm.tab .page-nav-panel .nav_item button:focus {
+    transform: none;
+}
+body[system-theme] .multiPagedForm.tab .page-nav-panel .nav_item button span:hover {
+    color: var(--console-button-primary-bg-hover) !important;
+}
+body[system-theme] .dropzone {
+    background-color: var(--console-main-background-color);
+}
+body[system-theme='dark'] .chosen-container-multi .chosen-choices {
+    background-color: var(--console-main-background-color);
+}
+body[system-theme] input.no-manual-input {
+    background-color: var(--console-secondary-background-color);
+}
+/*  */
 fieldset legend,
 .main-body-content-subheader,
 #main-body-content-subheader{
@@ -2364,3 +2412,46 @@ div#content-container {
     }
 }
 /* progress bar end */
+/* Toast for Admin Console */
+.toast.console {
+    position: absolute; 
+    transform: translateX(-50%);
+    height: fit-content;
+    padding: 10px;
+    display: flex;
+    align-items: center;
+    background: #e6f5e8;
+    border-radius: 10px;
+    color: #000;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05), 0 1px 3px rgba(0, 0, 0, 0.04);
+    transition: opacity 0.5s ease-in-out;
+}
+.toast.console .toast-body {
+    padding-right: 12px;
+}
+body.rtl .toast.console .toast-body {
+    padding-left: 12px;
+    padding-right: 0px;
+}
+.toast.console #toast-icon {
+    color: var(--console-button-primary-bg);
+    margin-right: 0.5em;
+    padding-right: 0.5em;
+    border-right: 1px solid #ced4da;
+}
+.toast.console .toast-text {
+    flex: 1;
+    overflow-wrap: break-word;
+    margin-right: 2em; 
+}
+.toast.console #close {
+    position: absolute;
+    right: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    cursor: pointer;
+}
+body.rtl .toast.console #close {
+    left: 10px; 
+    right: initial;
+}

@@ -786,70 +786,7 @@
     $(document).ready(function() {
         const savedMessage = localStorage.getItem('formSavedMessage');
         if (savedMessage) {
-            $('<div class="toast"><i id="toast-icon" class="fas fa-check-circle"></i><div class="toast-body">'+ savedMessage +'</div><i id="close" class="fas fa-close"></i></div>').appendTo('div#main');
-            $('.toast').css({
-                'opacity': '0', 
-            });
-            $('.toast #toast-icon').css({
-                "color":"var(--console-button-primary-bg)",
-                "margin-right": ".5em", 
-                "padding-right": ".5em",
-                "border-right": "1px solid #ced4da"
-            })
-            $('.toast #close').css({"position": "absolute", "right": "0", "margin": "0 1em"});
-            $('.toast #close').mouseenter(function(){
-                $(this).css({'color': 'var(--console-button-primary-bg-hover)', 'cursor': 'pointer'});
-            })
-            $('.toast #close').mouseleave(function(){
-                $(this).css({'color': 'initial', 'cursor': 'initial'});
-            })
-            $('.toast #close').click(function(){
-                $(this).parent().remove();
-            })
-            let mainWidth = $('#main').outerWidth();
-            let mainOffset = $('#main').offset();
-            $('.toast').css({'position': 'absolute', 
-            'top': mainOffset.top + 30 + 'px', 
-            'left': (mainOffset.left + mainWidth / 2) + 'px', 
-            'transform': 'translateX(-50%)',
-            'height': 'calc-size(fit-content, 20px)',
-            'padding': '10px 10px',
-            'display': 'flex',
-            'width': ( 0.5 * $("#main").width() ) +'px',
-            'align-items': 'center',
-            'background': '#e6f5e8',
-            'border-radius': '10px',
-            'color': '#000',
-            'box-shadow': '0 4px 6px rgba(0, 0, 0, 0.05), 0 1px 3px rgba(0, 0, 0, 0.04)',
-            'transition': 'opacity 0.5s ease-in-out'});
-
-            if ($('body').hasClass('rtl')) {
-                $('.toast #close').css({"left": "0", "right": "initial"});
-                
-                $('.toast #toast-icon').css({
-                    "margin-left": ".5em", 
-                    "padding-left": ".5em",
-                    "border-left": "1px solid #ced4da",
-                    "margin-right": "initial", 
-                    "padding-right": "initial",
-                    "border-right": "none"
-                })
-            }
-            setTimeout(function() {
-                $('.toast').css({
-                    'opacity': '1', 
-                });
-
-                setTimeout(function() {
-                    $('.toast').css({
-                        'opacity': '0', // Fade out
-                    });
-                    setTimeout(function() {
-                        $('.toast').remove();
-                    }, 500);
-                }, 2000);
-
-            }, 100); 
+            UI.showConsoleToast(0, savedMessage, "fas fa-check-circle", 2000, $("div#main"));
             localStorage.removeItem('formSavedMessage');
         }
 

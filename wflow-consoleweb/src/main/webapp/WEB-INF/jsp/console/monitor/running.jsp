@@ -68,6 +68,15 @@
         //Reposition the filter
         $("div #main-body-content-filter").appendTo("#JsonDataTable_processList-search");
         $("button:has(.fa-trash-alt)").addClass('console-danger');
+
+        var selectedList = localStorage.getItem("selectedList");
+        if(selectedList) {
+            selectedList = localStorage.getItem("selectedList").split(',')
+            selectedList.forEach(function(item, index){
+                UI.showConsoleToast(index, item + '<ui:msgEscJS key="console.app.message.delete.toast.message"/>', "fas fa-exclamation-circle", 2000, $("div#main")); 
+            })
+            localStorage.removeItem("selectedList")
+        }
     })
     var org_filter = window.filter;
     var filter = function(jsonTable, url, value){
@@ -87,6 +96,8 @@
                 }
             }
             var request = ConnectionManager.post('${pageContext.request.contextPath}/web/console/monitor/process/delete', callback, 'ids='+selectedList);
+            
+            localStorage.setItem('selectedList', selectedList);            
         }
     }
 

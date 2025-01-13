@@ -250,6 +250,8 @@
                 }
             }
             var request = ConnectionManager.post('${pageContext.request.contextPath}/web/console/directory/user/delete', callback, 'ids=${userId}');
+        
+            localStorage.setItem("selectedList", "${userId}");
         }
     }
 

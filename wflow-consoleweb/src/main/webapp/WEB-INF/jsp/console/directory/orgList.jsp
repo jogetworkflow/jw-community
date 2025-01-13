@@ -62,6 +62,15 @@
             $('#main-action-buttons').remove();
             $('#JsonDataTable_organizationList-buttons').remove();
         </c:if>
+
+        var selectedList = localStorage.getItem("selectedList");
+        if(selectedList) {
+            selectedList = localStorage.getItem("selectedList").split(',')
+            selectedList.forEach(function(item, index){
+                UI.showConsoleToast(index, item + '<ui:msgEscJS key="console.app.message.delete.toast.message"/>', "fas fa-exclamation-circle", 2000, $("div#main"));
+            })
+            localStorage.removeItem("selectedList")
+        }
     });
 
     <ui:popupdialog var="popupDialog" src="${pageContext.request.contextPath}/web/console/directory/org/create"/>
@@ -83,6 +92,8 @@
                 }
             }
             var request = ConnectionManager.post('${pageContext.request.contextPath}/web/console/directory/org/delete', callback, 'ids='+selectedList);
+        
+            localStorage.setItem('selectedList', selectedList);
         }
     }
 </script>
