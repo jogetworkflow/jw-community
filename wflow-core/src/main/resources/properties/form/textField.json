@@ -174,22 +174,19 @@
         control_use_regex: 'true'
     },
     {
-        name : 'disableIncrementDecrementArrow',
-        label : '@@form.textfield.disableIncrementDecrementArrow@@',
-        type : 'checkbox',
-        options : [{
-            value : 'true',
-            label : ''
-        }],
-        control_field: 'style',
-        control_value: 'us|euro',
-        control_use_regex: 'true'
-    },
-    {
         name : 'storeNumeric',
         label : '@@form.textfield.storeNumeric@@',
         type : 'checkbox',
         value : 'False',
+        options : [{
+            value : 'true',
+            label : ''
+        }]
+    },
+    {
+        name : 'disableIncrementDecrementArrow',
+        label : '@@form.textfield.disableIncrementDecrementArrow@@',
+        type : 'checkbox',
         options : [{
             value : 'true',
             label : ''
