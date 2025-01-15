@@ -1101,6 +1101,9 @@ body.rtl .main-wrapper{
         padding: 0px 15px 0px 0px;
     }
 }
+body.rtl form[name='filters_list_appList'].filter_form {
+    display: flex;
+}
 /* END custom search styles */
 /* Fix for Analyzer Label & Add New Border Issue in the Home screen */
 @media screen and (max-width: 1024px) {
