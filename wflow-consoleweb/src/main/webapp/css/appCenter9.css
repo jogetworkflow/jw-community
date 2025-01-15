@@ -1101,4 +1101,7 @@ body.rtl .main-wrapper{
         padding: 0px 15px 0px 0px;
     }
 }
+body.rtl form[name='filters_list_appList'].filter_form {
+    display: flex;
+}
 /* END custom search styles */
