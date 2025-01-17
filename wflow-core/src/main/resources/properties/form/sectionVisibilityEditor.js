@@ -216,7 +216,7 @@
             $(groupContainer).find("> .buttons > .revert").addClass("checked");
         }
         if (data["join"] === "or") {
-            $(container).find("> .buttons > .andOr").val("or");
+            $(groupContainer).find("> .buttons > .andOr").val("or");
         }
         $(groupContainer).find("input.condition").val(data["visibilityControl"]);
         
