@@ -3,6 +3,7 @@ package org.joget.commons.util;
 import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
 import java.math.BigInteger;
+import java.net.URI;
 import java.net.URLDecoder;
 import java.net.URLEncoder;
 import java.security.MessageDigest;
@@ -494,28 +495,38 @@ public class StringUtil {
         } catch (Exception e) {}
         
         if (request != null) {
-            Pattern pattern = Pattern.compile("<img[^>]*>");
-            Matcher matcher = pattern.matcher(content);
-            while (matcher.find()) {
-                String imgString = matcher.group(0);
+            Set<String> urls = new HashSet<String>();
+            
+            //find all image src
+            if (content.contains("<img")) {
+                Pattern pattern = Pattern.compile("<img[^>]*>");
+                Matcher matcher = pattern.matcher(content);
+                while (matcher.find()) {
+                    String imgString = matcher.group(0);
 
-                //get the src
-                Pattern patternSrc = Pattern.compile("src=\"([^\\\"]*)\"");
-                Matcher matcherSrc = patternSrc.matcher(imgString);
-                String orgSrc = "";
-                String src = "";
-                if (matcherSrc.find()) {
-                    orgSrc = matcherSrc.group(1);
-                    src = orgSrc;
+                    //get the src
+                    Pattern patternSrc = Pattern.compile("src=\"([^\\\"]*)\"");
+                    Matcher matcherSrc = patternSrc.matcher(imgString);
+                    if (matcherSrc.find()) {
+                        urls.add(matcherSrc.group(1));
+                    }
                 }
+            } 
 
+            //convert each image src to base64
+            for (String orgSrc : urls) {
+                String src = orgSrc;
                 if (!src.isEmpty() && src.startsWith(request.getContextPath())) {
-                    src = request.getScheme() + "://" + request.getServerName() + ":" + request.getServerPort() + src;
-                    
                     CloseableHttpClient httpClient = null;
                     ByteArrayOutputStream bos = null;
                     InputStream is = null;
                     try {
+                        //Construct URI to escape chars
+                        URI srcUri = new URI(request.getScheme(),  null, request.getServerName(), request.getServerPort(), src, null, null);
+                    
+                        // Get the properly escaped URLˆ
+                        src = srcUri.toASCIIString();
+                    
                         HttpClientBuilder httpClientBuilder = HttpClients.custom();
                         httpClientBuilder.setRedirectStrategy(new LaxRedirectStrategy());
                         HttpGet get = new HttpGet(src);
