@@ -21,10 +21,10 @@
         <script>
             $(function() {
                 if (window.self !== window.top && $("#main-body-header").length > 0) {
-                    var wh = $(window.self).height() - $("#main-body-header").outerHeight(true) - 40;
                     $("body.popupBody").css("width", "99.9%");
                     $("body.popupBody").css("padding-top", $("#main-body-header").outerHeight(true) + "px");
-                    $("#main-body-content").css("height", wh + "px");
+                    $("body.popupBody").css("height", "calc(100vh - " + $("#main-body-header").outerHeight(true) + "px)");
+                    $("body.popupBody").css("overflow", "auto");
                 }
             });
             UI.base = "${pageContext.request.contextPath}";

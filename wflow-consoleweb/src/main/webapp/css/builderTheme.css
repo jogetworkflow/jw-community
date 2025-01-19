@@ -1855,7 +1855,8 @@ body[builder-theme].popupBody #main-body-content{
     box-sizing: border-box;
 }
 body[builder-theme].popupBody.builder-popup #main-body-content {
-    padding: 25px 35px;
+    padding: 25px 35px 72px;
+    height: auto !important;
 }
 body[builder-theme].popupBody div.property-editor-page-button-panel > div.page-button-action > input.page-button-save{
     float: right;
@@ -1868,6 +1869,9 @@ body[builder-theme].popupBody .single-page .property-editor-pages > .property-ed
 }
 body[builder-theme] .page-button-navigation + .page-button-action{
     float: right;
+}
+body[builder-theme].popupBody .pluginConfig .single-page .property-editor-pages{
+    height: calc(100vh - 159px) !important;
 }
 body[builder-theme] .i18n_table tr td textarea {
     padding: 5px 10px;
