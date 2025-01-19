@@ -2552,7 +2552,7 @@ body:not(.right-panel-mode-window) .property-editor-container.narrow.wider .assi
     display: block !important;
     z-index: 2;
     overflow: auto;
-    max-width: 880px;
+    max-width: 100%;
 }
 .property-type-imageradio li {
     padding: 5px;
@@ -2598,6 +2598,7 @@ body:not(.right-panel-mode-window) .property-editor-container.narrow.wider .assi
     min-width: 74px;
     border-radius: 3px 0px 0px 3px;
     background-size: auto;
+    max-width: 90%;
 }
 .property-input .multiple_option.imagepicker{
     display:inline-block;
