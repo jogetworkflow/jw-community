@@ -1,7 +1,15 @@
 <%@ include file="/WEB-INF/jsp/includes/taglibs.jsp" %>
 <jsp:useBean id="PropertyUtil" class="org.joget.plugin.property.service.PropertyUtil" scope="page"/>
 
-<commons:popupHeader builderTheme="true"/>
+<c:choose>
+    <c:when test="${!empty param.__a_}">
+        <commons:popupHeader bodyCssClass="pluginConfigPopup"/>
+    </c:when>
+    <c:otherwise>
+        <commons:popupHeader bodyCssClass="pluginConfigPopup" builderTheme="true"/>
+    </c:otherwise>    
+</c:choose>    
+
 <c:if test="${!empty propertyEditable}">
     <jsp:include page="/WEB-INF/jsp/console/plugin/library.jsp" />
 </c:if>

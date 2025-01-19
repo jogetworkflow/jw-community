@@ -412,7 +412,6 @@ PopupDialog.prototype = {
               newFrame.setAttribute("width", "100%");
               if (UI.userview_app_id === undefined || UI.userview_app_id === '') {
                   newFrame.setAttribute("height", this.height-20);
-                  newFrame.setAttribute("scrolling", "no");
               } else {
                   newFrame.setAttribute("height", this.height-10);
               }

@@ -35,30 +35,37 @@
             </c:otherwise>
         </c:choose>    
         <script>
-            $(function() {
-                if (window.self !== window.top && $("#main-body-header").length > 0) {
-                    var wh = $(window.self).height() - $("#main-body-header").outerHeight(true) - 40;
-                    $("body.popupBody").css("width", "99.9%");
-                    $("body.popupBody").css("padding-top", $("#main-body-header").outerHeight(true) + "px");
-                    $("#main-body-content").css("height", wh + "px");
-                }
-            });
             UI.base = "${pageContext.request.contextPath}";
-            <c:if test="${!empty param.__a_}">
-                UI.userview_app_id = '<c:out value="${param.__a_}"/>';
-                UI.userview_id = '<c:out value="${param.__u_}"/>';
-                $(document).ready(function() {
-                    UI.initThemeParams();
-                });
-            </c:if>
+            <c:choose>
+                <c:when test="${!empty param.__a_}">
+                    UI.userview_app_id = '<c:out value="${param.__a_}"/>';
+                    UI.userview_id = '<c:out value="${param.__u_}"/>';
+                    $(document).ready(function() {
+                        UI.initThemeParams();
+                    });
+                </c:when>
+                <c:otherwise>
+                    $(function() {
+                        if (window.self !== window.top && $("#main-body-header").length > 0) {
+                            $("body.popupBody").css("width", "99.9%");
+                            $("body.popupBody").css("padding-top", $("#main-body-header").outerHeight(true) + "px");
+                            $("body.popupBody").css("height", "calc(100vh - " + $("#main-body-header").outerHeight(true) + "px)");
+                            $("body.popupBody").css("overflow", "auto");
+                        }
+                    });
+                </c:otherwise>    
+            </c:choose>
         </script>
     </head>
     <body class="popupBody ${bodyCssClass}"
-    <c:choose>
-        <c:when test="${not empty builderTheme}">
-            builder-theme="${systemTheme}"
-        </c:when>
-        <c:otherwise>
-            system-theme="${systemTheme}"
-        </c:otherwise>
-    </c:choose>>
+    <c:if test="${empty param.__a_}">
+        <c:choose>
+            <c:when test="${not empty builderTheme}">
+                builder-theme="${systemTheme}"
+            </c:when>
+            <c:otherwise>
+                system-theme="${systemTheme}"
+            </c:otherwise>
+        </c:choose>
+    </c:if>            
+    >

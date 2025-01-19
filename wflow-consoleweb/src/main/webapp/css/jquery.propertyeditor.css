@@ -2719,3 +2719,22 @@ i.fa-sort, i.fa-sort-asc, i.fa-sort-desc{
     padding-right: 50px;
     padding-left: 12px !important;
 }
+
+/* for popup plugin config page */
+body.popupBody.pluginConfigPopup #main-body-content{
+    height: calc(100% - 57px);
+    padding: 0px !important;
+    overflow: hidden !important;
+}
+body.popupBody.pluginConfigPopup #main-body-content .property-editor-page-title, 
+body.popupBody.pluginConfigPopup #main-body-content .property-editor-page-step-indicator,
+body.popupBody.pluginConfigPopup #main-body-content .property-editor-property-container{
+    padding: 10px 30px;
+    box-sizing: border-box;    
+}
+body:not([builder-theme]).pluginConfigPopup{
+    padding: 0px;
+}
+body:not([builder-theme]).pluginConfigPopup #main-body-header{
+    display: none;
+}
