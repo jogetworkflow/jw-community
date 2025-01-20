@@ -346,7 +346,7 @@ public class JsonApiDatalistBinder extends DataListBinderDefault {
     protected static Query<Map> translateQuery(String query, String[] values, int index, List<String> sampleKeys, Map<String, Object> sample, Map<String, Attribute> attrs) {
         String lowercaseQuery = query.toLowerCase();
         
-        if (lowercaseQuery.contains("and") || lowercaseQuery.contains("or")) {
+        if (lowercaseQuery.contains(" and ") || lowercaseQuery.contains(" or ")) {
             List<String> queryParts = new ArrayList<String>();
             String operation = breakQueryParts(query, queryParts);
             if (queryParts.size() > 1) {
@@ -422,16 +422,27 @@ public class JsonApiDatalistBinder extends DataListBinderDefault {
         String operator = "AND";
         String lowercaseQuery = query.toLowerCase();
         
+        String stringValueChecker = ""; //used to check the current char is within a string value
+        
         for (int i = 0; i < query.length(); i++) {
             char c = query.charAt(i);
             if (c == '(') {
                 depth++;
             } else if (c == ')') {
                 depth--;
-            } else if (depth == 0 && (lowercaseQuery.startsWith("and", i) || lowercaseQuery.startsWith("or", i))) {
+            } else if (stringValueChecker.isEmpty() && (lowercaseQuery.startsWith("\"", i) || lowercaseQuery.startsWith("'", i))) {
+                //start of string value
+                if (lowercaseQuery.startsWith("\"", i)) {
+                    stringValueChecker = "\"";
+                } else {
+                    stringValueChecker = "'";
+                }
+            } else if (!stringValueChecker.isEmpty() && lowercaseQuery.startsWith(stringValueChecker, i)) {
+                stringValueChecker = ""; //closing of a string value
+            } else if (depth == 0 && stringValueChecker.isEmpty() && (i == 0 || Character.isWhitespace(lowercaseQuery.charAt(i - 1))) && (lowercaseQuery.startsWith("and ", i) || lowercaseQuery.startsWith("or ", i))) {
                 addQueryParts(query.substring(start, i).trim(), queryParts);
                 
-                if (lowercaseQuery.startsWith("and", i)) {
+                if (lowercaseQuery.startsWith("and ", i)) {
                     operator = "AND";
                 } else {
                     operator = "OR";

@@ -228,7 +228,31 @@ public class TestPluginMethods {
         Assert.assertEquals(operator, "AND");
         Assert.assertEquals(queryParts.get(0), "lower(name) = lower(?)");
         Assert.assertEquals(queryParts.get(1), "CONCAT(SUBSTRING(dateCreated, 0, 4), '-', SUBSTRING(dateCreated, 4, 2), '-', SUBSTRING(dateCreated, 6, 2), ' 00:00:00.0') >= ?");
-    }
+    
+        queryParts.clear();   
+        query = "(thailand like \"%abc%\" and ecuador = \"abc\")";
+        operator = JsonApiDatalistBinder.breakQueryParts(query, queryParts);
+        Assert.assertEquals(queryParts.get(0), "thailand like \"%abc%\" and ecuador = \"abc\"");
+      
+        queryParts.clear();
+        query = "thailand like \"%tom and jerry%\" and ecuador = \"123\"";
+        operator = JsonApiDatalistBinder.breakQueryParts(query, queryParts);
+        Assert.assertEquals(operator, "AND");
+        Assert.assertEquals(queryParts.get(0), "thailand like \"%tom and jerry%\"");
+        Assert.assertEquals(queryParts.get(1), "ecuador = \"123\"");
+
+        queryParts.clear();
+        query = "(ecuador like \"%123 and 456%\" or thailand = \"test\")";
+        operator = JsonApiDatalistBinder.breakQueryParts(query, queryParts);
+        Assert.assertEquals(queryParts.get(0), "ecuador like \"%123 and 456%\" or thailand = \"test\"");
+    
+        queryParts.clear();
+        query = "ecuador like \"%123 or 456%\" or thailand = \"test\"";
+        operator = JsonApiDatalistBinder.breakQueryParts(query, queryParts);
+        Assert.assertEquals(operator, "OR");
+        Assert.assertEquals(queryParts.get(0), "ecuador like \"%123 or 456%\"");
+        Assert.assertEquals(queryParts.get(1), "thailand = \"test\"");
+}
     
     @Test
     public void testJsonApiListBinderRecursiveGetData() throws IOException {
