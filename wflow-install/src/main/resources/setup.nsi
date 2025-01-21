@@ -167,7 +167,7 @@ Section "Joget DX" SecJoget
         RmDir /r "$INSTDIR\apache-tomcat-$EXISTING_TOMCAT_VERSION\webapps\jw"
         RmDir /r "$INSTDIR\apache-tomcat-$EXISTING_TOMCAT_VERSION\webapps\jwdesigner"
         CreateDirectory "$INSTDIR\apache-tomcat-$EXISTING_TOMCAT_VERSION\webapps"
-        File /oname=apache-tomcat-$EXISTING_TOMCAT_VERSION\webapps\jw.war apache-tomcat-11.0.1\webapps\jw.war
+        File /oname=apache-tomcat-$EXISTING_TOMCAT_VERSION\webapps\jw.war apache-tomcat-11.0.2\webapps\jw.war
         CreateDirectory "$INSTDIR\data"
         File /oname=data\jwdb-empty.sql data\jwdb-empty.sql
         File /oname=data\jwdb-sample.sql data\jwdb-sample.sql
@@ -182,8 +182,8 @@ Section "Joget DX" SecJoget
 
   ;Joget Files Here
   File /r apache-ant-1.7.1
-  CreateDirectory "$INSTDIR\apache-tomcat-11.0.1\webapps"
-  File /oname=apache-tomcat-11.0.1\webapps\jw.war apache-tomcat-11.0.1\webapps\jw.war
+  CreateDirectory "$INSTDIR\apache-tomcat-11.0.2\webapps"
+  File /oname=apache-tomcat-11.0.2\webapps\jw.war apache-tomcat-11.0.2\webapps\jw.war
   CreateDirectory "$INSTDIR\data"
   File /oname=data\jwdb-empty.sql data\jwdb-empty.sql
   File /oname=data\jwdb-sample.sql data\jwdb-sample.sql
@@ -214,7 +214,7 @@ Section "Apache Tomcat 11" SecTomcat
 
 ${If} $INSTALL_TYPE == "${INSTALL_TYPE_FULL}"
   ;Tomcat File Here
-  File /r /x *.war apache-tomcat-11.0.1
+  File /r /x *.war apache-tomcat-11.0.2
   File tomcat-run.bat
   File tomcat-stop.bat
   File joget-start.bat
@@ -282,6 +282,9 @@ Function CheckUpgrade
 
   ${If} ${FileExists} $INSTDIR\apache-tomcat-6.0.18\webapps\wflow-designerweb.war
     StrCpy $INSTALL_TYPE ${INSTALL_TYPE_ABORT}
+    ${ElseIf} ${FileExists} $INSTDIR\apache-tomcat-11.0.2\webapps\jw.war
+    StrCpy $INSTALL_TYPE ${INSTALL_TYPE_UPDATE}
+    StrCpy $EXISTING_TOMCAT_VERSION "11.0.2"
     ${ElseIf} ${FileExists} $INSTDIR\apache-tomcat-11.0.1\webapps\jw.war
     StrCpy $INSTALL_TYPE ${INSTALL_TYPE_UPDATE}
     StrCpy $EXISTING_TOMCAT_VERSION "11.0.1"
@@ -389,8 +392,8 @@ Section "Uninstall"
 
   RmDir /r "$INSTDIR\apache-ant-1.7.1"
   RmDir /r "$INSTDIR\jre21.0.5"
-  RmDir /r "$INSTDIR\apache-tomcat-11.0.1\webapps\jw"
-  Delete "$INSTDIR\apache-tomcat-11.0.1\webapps\jw.war"
+  RmDir /r "$INSTDIR\apache-tomcat-11.0.2\webapps\jw"
+  Delete "$INSTDIR\apache-tomcat-11.0.2\webapps\jw.war"
   Delete "$INSTDIR\build.xml"
   Delete "$INSTDIR\LICENSE.txt"
   Delete "$INSTDIR\NOTICE.txt"
