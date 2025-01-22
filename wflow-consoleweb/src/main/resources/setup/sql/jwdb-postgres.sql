@@ -1732,7 +1732,7 @@ CREATE TABLE wf_history_activity (
     state character varying(255),
     type character varying(255),
     due timestamp without time zone,
-    variables character varying(255),
+    variables text,
     processid character varying(255)
 );
 
@@ -1755,7 +1755,7 @@ CREATE TABLE wf_history_process (
     limitduration character varying(255),
     due timestamp without time zone,
     state character varying(255),
-    variables character varying(255)
+    variables text
 );
 
 
