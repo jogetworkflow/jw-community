@@ -1731,9 +1731,6 @@ public class AppServiceImpl implements AppService {
             
             AppResourceUtil.copyAppResources(appId, version.toString(), appId, newAppDef.getVersion().toString());
 
-            // save app def
-            appDefinitionDao.saveOrUpdate(newAppDef);
-            
             return newAppDef;
         } catch (Exception e) {
             LogUtil.error(AppServiceImpl.class.getName(), e, appId);
@@ -3148,8 +3145,16 @@ public class AppServiceImpl implements AppService {
                 for (Message o : appDef.getMessageList()) {
                     String k = o.getMessageKey() + AbstractAppVersionedObject.ID_SEPARATOR + o.getLocale();
                     if (!keys.contains(k)) {
-                        o.setAppDefinition(newAppDef);
-                        messageDao.add(o);
+                        Message n = new Message();
+                        n.setId(o.getId());
+                        n.setName(o.getName());
+                        n.setJson(o.getJson());
+                        n.setDescription(o.getDescription());
+                        n.setLocale(o.getLocale());
+                        n.setMessage(o.getMessage());
+                        n.setMessageKey(o.getMessageKey());
+                        n.setAppDefinition(newAppDef);
+                        messageDao.add(n);
                         keys.add(k);
                     }
                 }
@@ -3158,23 +3163,39 @@ public class AppServiceImpl implements AppService {
 
             if (appDef.getPluginDefaultPropertiesList() != null) {
                 for (PluginDefaultProperties o : appDef.getPluginDefaultPropertiesList()) {
+                    PluginDefaultProperties n = new PluginDefaultProperties();
+                    n.setId(o.getId());
+                    n.setJson(o.getJson());
+                    n.setDescription(o.getDescription());
+                    n.setPluginName(o.getPluginName());
+                    n.setPluginDescription(o.getPluginDescription());
+                    n.setPluginProperties(o.getPluginProperties());
+                    
                     if (!overridePluginDefault && orgAppDef != null && orgAppDef.getPluginDefaultPropertiesList() != null) {
                         PluginDefaultProperties temp = pluginDefaultPropertiesDao.loadById(o.getId(), orgAppDef);
                         if (temp != null) {
-                            o.setPluginProperties(temp.getPluginProperties());
+                            n.setPluginProperties(temp.getPluginProperties());
                         }
                     }
 
-                    o.setAppDefinition(newAppDef);
-                    pluginDefaultPropertiesDao.add(o);
+                    n.setAppDefinition(newAppDef);
+                    pluginDefaultPropertiesDao.add(n);
                 }
                 LogUtil.info(getClass().getName(), "Imported default plugin properties : " + appDef.getPluginDefaultPropertiesList().size());
             }
 
             if (appDef.getResourceList() != null) {
                 for (AppResource o : appDef.getResourceList()) {
-                    o.setAppDefinition(newAppDef);
-                    appResourceDao.add(o);
+                    AppResource n = new AppResource();
+                    n.setId(o.getId());
+                    n.setName(o.getName());
+                    n.setJson(o.getJson());
+                    n.setDescription(o.getDescription());
+                    n.setFilesize(o.getFilesize());
+                    n.setPermissionClass(o.getPermissionClass());
+                    n.setPermissionProperties(o.getPermissionProperties());
+                    n.setAppDefinition(newAppDef);
+                    appResourceDao.add(n);
                 }
                 LogUtil.info(getClass().getName(), "Imported app resources : " + appDef.getResourceList().size());
             }
@@ -3240,7 +3261,7 @@ public class AppServiceImpl implements AppService {
             } catch (Exception e) {
                 LogUtil.error(getClass().getName(), e, "Error deploying package for " + appDef.getAppId());
             }
-
+            
             // reload app from DB
             newAppDef = loadAppDefinition(newAppDef.getAppId(), newAppDef.getVersion().toString());
             LogUtil.debug(getClass().getName(), "Finished importing app " + newAppDef.getId() + " version " + newAppDef.getVersion());

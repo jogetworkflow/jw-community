@@ -2,6 +2,7 @@ package org.joget.apps.app.dao;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Date;
 import java.util.List;
 import org.joget.apps.app.model.AppDefinition;
 import org.joget.apps.app.model.AppResource;
@@ -145,7 +146,12 @@ public class AppResourceDaoImpl extends AbstractAppVersionedObjectDao<AppResourc
     
     @Override
     public boolean add(AppResource object) {
-        appDefinitionDao.updateDateModified(object.getAppDefinition());
+        // save in db
+        Date date = new Date();
+        object.setDateCreated(date);
+        object.setDateModified(date);
+        
+        appDefinitionDao.updateDateModified(object.getAppDefinition(), date);
         boolean result = super.add(object);
         
         if (!AppDevUtil.isGitDisabled() && !AppDevUtil.isImportApp()) {

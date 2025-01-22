@@ -2,6 +2,7 @@ package org.joget.apps.app.dao;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Date;
 import java.util.List;
 import java.util.Properties;
 import org.joget.apps.app.model.AppDefinition;
@@ -87,8 +88,13 @@ public class PluginDefaultPropertiesDaoImpl extends AbstractAppVersionedObjectDa
 
     @Override
     public boolean add(PluginDefaultProperties object) {
+        // save in db
+        Date date = new Date();
+        object.setDateCreated(date);
+        object.setDateModified(date);
+        
         boolean result = super.add(object);
-        appDefinitionDao.updateDateModified(object.getAppDefinition());
+        appDefinitionDao.updateDateModified(object.getAppDefinition(), date);
         
         if (!AppDevUtil.isGitDisabled() && !AppDevUtil.isImportApp()) {
             AppDefinition appDef = appService.loadAppDefinition(object.getAppId(), object.getAppVersion().toString());

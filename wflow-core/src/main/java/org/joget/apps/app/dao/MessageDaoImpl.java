@@ -2,6 +2,7 @@ package org.joget.apps.app.dao;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -214,8 +215,13 @@ public class MessageDaoImpl extends AbstractAppVersionedObjectDao<Message> imple
     
     @Override
     public boolean add(Message object) {
+        // save in db
+        Date date = new Date();
+        object.setDateCreated(date);
+        object.setDateModified(date);
+        
         boolean result = super.add(object);
-        appDefinitionDao.updateDateModified(object.getAppDefinition());
+        appDefinitionDao.updateDateModified(object.getAppDefinition(), date);
         
         if (!AppDevUtil.isGitDisabled() && !AppDevUtil.isImportApp()) {
             // save and commit app definition
