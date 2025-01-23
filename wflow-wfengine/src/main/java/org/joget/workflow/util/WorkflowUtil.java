@@ -475,27 +475,27 @@ public class WorkflowUtil implements ApplicationContextAware {
      * @throws ExecutionException 
      */
     public static <T> T executeAsync(Callable<T> task, long timeout) throws TimeoutException, InterruptedException, ExecutionException {
-        T result = null;
-        // get executor service
-        ExecutorService asyncExecutorService = PluginThread.getAsyncExecutorService();
-        
-        try {
-            if (timeout <= 0) {
-                // no timeout configured, execute task synchronously within the same thread
-                try {
-                    return task.call();
-                } catch (Exception ex) {
-                    throw new RuntimeException(ex);
-                }
+        if (timeout <= 0) {
+            // no timeout configured, execute task synchronously within the same thread
+            try {
+                return task.call();
+            } catch (Exception ex) {
+                throw new RuntimeException(ex);
             }
-            
+        }
+
+        T result = null;
+        
+        // get executor service
+        ExecutorService asyncExecutorService = PluginThread.getAsyncExecutorService();        
+        try {
             // execute task asynchronously with a timeout
             final WorkflowUserManager wum = (WorkflowUserManager)WorkflowUtil.getApplicationContext().getBean("workflowUserManager");
             final String currentUser = wum.getCurrentUsername();
             Future<T> future = asyncExecutorService.submit(() -> {
-                // execute within new transaction, otherwise data will not be available to other threads
-                TransactionTemplate transactionTemplateRequiresNew = (TransactionTemplate)WorkflowUtil.getApplicationContext().getBean("transactionTemplateRequiresNew");
-                return transactionTemplateRequiresNew.execute((TransactionStatus status) -> {
+                // execute within transaction, otherwise data will not be available to other threads
+                TransactionTemplate transactionTemplate = (TransactionTemplate)WorkflowUtil.getApplicationContext().getBean("transactionTemplate");
+                return transactionTemplate.execute((TransactionStatus status) -> {
                     // set current user in thread
                     wum.setCurrentThreadUser(currentUser);
                     try {
@@ -512,10 +512,10 @@ public class WorkflowUtil implements ApplicationContextAware {
             } catch(TimeoutException te) {
                 LogUtil.debug(PluginThread.class.getName(), "Timeout executeAsyc for " + task);
                 throw te;
-            }       
+            }
         } finally {
             asyncExecutorService.shutdown();
-        }
+        }       
         return result;
     }
     

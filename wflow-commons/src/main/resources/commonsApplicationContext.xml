@@ -38,11 +38,6 @@
         <property name="transactionManager" ref="transactionManager"></property>
     </bean>
     
-    <bean id="transactionTemplateRequiresNew" class="org.springframework.transaction.support.TransactionTemplate">
-        <property name="transactionManager" ref="transactionManager"></property>
-        <property name="propagationBehaviorName" value="PROPAGATION_REQUIRES_NEW"></property>
-    </bean>    
-    
     <tx:annotation-driven transaction-manager="transactionManager" />
 
     <tx:advice id="txAdvice" transaction-manager="transactionManager">

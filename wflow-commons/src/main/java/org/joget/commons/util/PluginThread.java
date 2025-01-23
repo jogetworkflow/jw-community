@@ -39,6 +39,7 @@ import jakarta.servlet.http.Part;
 import org.apache.commons.lang3.reflect.MethodUtils;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
+import sun.misc.Unsafe;
 
 /**
  * Thread implementation to used by plugin
@@ -53,6 +54,31 @@ public final class PluginThread extends Thread {
     private Object websphereRequestHelper; // for websphere liberty SRTServletRequestHelper https://github.com/OpenLiberty/open-liberty/blob/gm-24.0.0.10/dev/com.ibm.ws.webcontainer/src/com/ibm/ws/webcontainer/srt/SRTServletRequest.java
     private Object tomcatConnector; // for tomcat
     
+    // internal thread fields for Java 21+, need to clear holder.task field to prevent memory leak 
+    // https://github.com/openjdk/jdk21/blob/master/src/java.base/share/classes/java/lang/Thread.java#L256
+    private static Unsafe unsafe;
+    private static Field threadHolderField;
+    private static Field threadTaskField;
+    static {
+        try {
+            // get internal thread holder and task fields using reflection
+            threadHolderField = Thread.class.getDeclaredField("holder");
+            threadHolderField.setAccessible(true);
+            Object holder = threadHolderField.get(new Thread());
+            threadTaskField = holder.getClass().getDeclaredField("task");                
+            threadTaskField.setAccessible(true);
+
+            // get low-level Unsafe object that is required to set the value for holder.task which is declared final
+            final Field unsafeField = Unsafe.class.getDeclaredField("theUnsafe");
+            unsafeField.setAccessible(true);
+            unsafe = (Unsafe) unsafeField.get(null);
+        } catch (NoSuchFieldException | IllegalArgumentException | IllegalAccessException ex) {
+            // ignore if fields do not exist
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
+    }
+    
     /**
      * Default timeout for async request in milliseconds, 0 to disable.
      */
@@ -61,9 +87,6 @@ public final class PluginThread extends Thread {
     /**
      * Timeout for async request in milliseconds, 0 to disable
      * e.g. -Dwflow.asyncRequestTimeout=3000
-     * Need to also set Tomcat configuration property 
-     * -Dorg.apache.catalina.connector.RECYCLE_FACADES=false
-     * to prevent exception "The request object has been recycled and is no longer associated with this facade".
      */
     public static String SYSTEM_PROPERTY_ASYNC_REQUEST_TIMEOUT = "wflow.asyncRequestTimeout";
     
@@ -180,6 +203,15 @@ public final class PluginThread extends Thread {
         try {
             super.run();
         } finally {
+            if (tomcatConnector != null) {
+                // for tomcat, set the disableFacades flag back to true
+                try {
+                    MethodUtils.invokeMethod(tomcatConnector, true, "setDiscardFacades", true);
+                } catch (Exception ex) {
+                    LogUtil.warn(getClass().getName(), ex.toString());
+                }
+            }
+            
             if (request != null) {
                 RequestContextHolder.resetRequestAttributes();
                 request = null;
@@ -187,10 +219,29 @@ public final class PluginThread extends Thread {
             if (wildflyServletRequestContext != null) {
                 // clear wildfly servlet attachments
                 ServletRequestContext.clearCurrentServletAttachments();
-            }        
+            }
+            
+            // clear attributes
+            response = null;
+            wildflyServletRequestContext = null;
+            websphereRequest = null;
+            websphereRequestHelper = null;
+            tomcatConnector = null;        
+
+            try {
+                if (threadHolderField != null && threadTaskField != null && unsafe != null) {
+                    // Java 21+, clear holder.task field to avoid memory leak
+                    Object holder = threadHolderField.get(this);
+                    if (holder != null) {
+                        unsafe.putObject(holder, unsafe.objectFieldOffset(threadTaskField), null);
+                    }
+                }
+            } catch (IllegalAccessException ex) {
+                LogUtil.warn(getClass().getName(), ex.toString());
+            }            
         }
     }
-    
+
     /**
      * Return the original request within servlet request wrappers.
      * @param req
