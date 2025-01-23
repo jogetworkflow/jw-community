@@ -3231,8 +3231,7 @@ public class WorkflowManagerImpl implements WorkflowManager {
         final WorkflowProcessResult taskResult = result;
         try {
             // create process instance in separate transaction first so that it will be accessible in a different thread
-            TransactionTemplate transactionTemplateRequiresNew = (TransactionTemplate)WorkflowUtil.getApplicationContext().getBean("transactionTemplateRequiresNew");
-            transactionTemplateRequiresNew.execute((TransactionStatus transactionStatus) -> processCreate(processDefId, processId, variables, startProcUsername, parentProcessId, taskResult));
+            transactionTemplate.execute((TransactionStatus transactionStatus) -> processCreate(processDefId, processId, variables, startProcUsername, parentProcessId, taskResult));
         
             if (!startManually) {
                 final String startUser = startProcUsername;
