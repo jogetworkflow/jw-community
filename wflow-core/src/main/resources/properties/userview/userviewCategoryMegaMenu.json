@@ -1,0 +1,23 @@
+,
+{
+    label : '@@userview.userviewcategory.megaMenu@@',
+    type : 'header',
+    name : 'megaMenuHeader'
+},
+{
+    name : 'enableMegaMenu', 
+    label : '@@userview.userviewcategory.enableMegaMenu@@', 
+    type : 'checkbox',
+    options : [{
+        value : 'true',
+        label : ''
+    }]
+},
+{
+    name : 'megaMenuConfiguration',
+    label : '@@userview.userviewcategory.configureMegaMenu@@',
+    type : 'custom',
+    script_url : '[CONTEXT_PATH]/web/console/app[APP_PATH]/userview/megaMenuExtension?version=@@build.number@@',
+    control_field : 'enableMegaMenu',
+    control_value : 'true'
+}

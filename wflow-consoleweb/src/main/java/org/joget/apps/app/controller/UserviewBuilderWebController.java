@@ -589,14 +589,29 @@ public class UserviewBuilderWebController {
         writer.write(PropertyUtil.propertiesJsonLoadProcessing(userviewJson));
     }
     
-    @RequestMapping(value = "/console/app/(*:appId)/(~:appVersion)/userview/loginTemplateEditor", method = RequestMethod.GET)
-    public void loginTemplateEditor(HttpServletResponse response, @RequestParam("appId") String appId, @RequestParam(value = "appVersion", required = false) String appVersion) throws Exception {
+    @RequestMapping(value = {"/console/app/(*:appId)/(~:appVersion)/userview/loginTemplateEditor", "/console/app/(*:appId)/(~:appVersion)/userview/megaMenuTemplateEditor"}, method = RequestMethod.GET)
+    public void loginTemplateEditor(HttpServletRequest request, HttpServletResponse response, @RequestParam("appId") String appId, @RequestParam(value = "appVersion", required = false) String appVersion) throws Exception {
+        String requestedUrl = request.getRequestURI();
+        
         String temp = AppUtil.readPluginResource("org.joget.apps.userview.lib.DefaultV5EmptyTheme", "/templates/loginTemplates.html", null, false, null);
+        
+        if (requestedUrl.contains("megaMenuTemplateEditor")) {
+            temp = AppUtil.readPluginResource("org.joget.apps.userview.lib.DefaultV5EmptyTheme", "/templates/megaMenuTemplate.html", null, false, null);
+        }
+        
         String[] templates = temp.split("\\r?\\n\\r?\\n");
         for (int i = 0; i < templates.length; i++) {
             templates[i] = "\"" + StringUtil.escapeString(templates[i], StringUtil.TYPE_JSON, null) + "\"";
         }
 
         response.getWriter().write(AppUtil.readPluginResource("org.joget.apps.userview.lib.DefaultV5EmptyTheme", "/resources/js/templateEditor.js", new Object[]{StringUtils.join(templates, ", ")}, false, null));
+    }
+
+    @RequestMapping(value = "/console/app/(*:appId)/(~:appVersion)/userview/megaMenuExtension", method = RequestMethod.GET)
+    public void megaMenuExtension(HttpServletResponse response, @RequestParam("appId") String appId, @RequestParam(value = "appVersion", required = false) String appVersion) throws Exception {
+        String contextPath = AppUtil.getRequestContextPath(); 
+        
+        Object[] arguments = {contextPath, appId, appVersion};
+        response.getWriter().write(AppUtil.readPluginResource(DefaultTheme.class.getName(), "/resources/js/megaMenuEditor.js", arguments, false, null));
     }
 }

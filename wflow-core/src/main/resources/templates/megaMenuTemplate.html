@@ -1,0 +1,338 @@
+<!--{sampleWidth: '100%', tags: 'image'}-->
+<style>
+    a#{menu_id}.mega-menu-template-1 {
+        display: block;
+        border-radius: 8px;
+        transition: all 0.3s ease-in-out;
+    }
+    a#{menu_id}.mega-menu-template-1:hover {
+        background-color: rgba(0, 0, 0, 0.05);
+        box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.15);
+        transform: translateY(-3px);
+    }
+</style>
+<a href="{{menu_link}}" id="{menu_id}" class="mega-menu-template-1 text-body" style="display:block;max-width:{{width||300px}};">
+    <div class="row align-items-center">
+        <div class="col-6 d-flex align-items-center">
+            <img src="{{image||#request.contextPath#/images/loginTemplate/balloon.jpg}}"
+                class="img-fluid shadow-1-strong rounded"/>
+        </div>
+        <div class="col-6 p-0">
+            <p class="mb-1" style="color:{{titleColor}}">
+                <strong>{{title||Air Balloon Tour}}</strong>
+            </p>
+            <p style="color:{{subtitleColor}}"><u>{{subtitle||View tour}}</u></p>
+        </div>
+    </div>
+</a>
+<!---->
+
+<!--{sampleWidth: '100%', tags: 'image header'}-->
+<style>
+    a#{menu_id}.mega-menu-template-2 {
+        transition: all 0.3s ease-in-out;
+    }
+    a#{menu_id}.mega-menu-template-2:hover .p-3 {
+        background-color: rgba(0, 0, 0, 0.05);
+        box-shadow: 0px 6px 12px rgba(0, 0, 0, 0.15);
+        transform: translateY(-3px);
+    }
+    a#{menu_id}.mega-menu-template-2:hover img {
+        transform: scale(1.05);
+    }
+    a#{menu_id}.mega-menu-template-2 img {
+        transition: transform 0.3s ease-in-out;
+    }
+</style>
+<a href="{{menu_link}}" id="{menu_id}" class="mega-menu-template-2 text-body text-decoration-none d-block" style="max-width: {{width||300px}};">
+    <div class="p-3 border rounded shadow-sm bg-white">
+        <p class="text-uppercase font-weight-bold text-secondary mb-2" style="color:{{headerColor}} !important;">
+            {{title||Florence: The Cradle of the Renaissance}}
+        </p>
+        <div class="position-relative mb-3">
+            <img src="{{image||#request.contextPath#/images/loginTemplate/italy.jpg}}" class="img-fluid rounded" />
+        </div>
+        <h5 class="font-weight-bold mb-2 text-dark" style="color:{{titleColor}}!important;">
+            {{header||Discover the Timeless Beauty of Florence}}
+        </h5>
+        <p class="text-muted small mb-0" style="color:{{descriptionColor}}!important;">
+            {{description||Florence, the capital of Italy's Tuscany region, is a city renowned for its art, architecture, and history. Known as the birthplace of the Renaissance, it is home to masterpieces by artists such as Michelangelo, Botticelli, and Leonardo da Vinci. With its stunning cathedrals, iconic bridges, and rich cultural heritage, Florence offers visitors an unforgettable journey through Italy's artistic legacy.}}
+        </p>
+    </div>
+</a>
+<!---->
+
+<!--{sampleWidth: '100%', tags: 'image header'}-->
+<style>
+    a#{menu_id}.mega-menu-template-3:hover h5,
+    a#{menu_id}.mega-menu-template-3:hover p {
+        transform: scale(1.01);
+        transition: transform 0.3s ease-in-out;
+    }
+</style>
+<a href="{{menu_link}}" id="{menu_id}" class="mega-menu-template-3" style="display:block;max-width: {{width||300px}};">
+<div>
+    <h5 class="text-dark" style="color:{{titleColor}}!important;">{{title||San Francisco: The City of Bridges and Skyscrapers}}</h5>
+    <p style="color:{{descriptionColor}}">
+    {{description||San Francisco is famous for its iconic Golden Gate Bridge, which spans the entrance to the bay, allowing boats to pass beneath it. The combination of this stunning bridge with the city's striking skyline, including impressive skyscrapers, creates a scene unlike any other. Whether you're exploring the vibrant waterfront or taking in views of the bay, San Francisco offers an incredible blend of natural beauty and urban sophistication.}}
+    </p>
+</div>
+<div class="bg-image hover-overlay shadow-1-strong rounded ripple mb-4"
+data-mdb-ripple-color="light">
+<img src="{{image||#request.contextPath#/images/loginTemplate/building.jpg}}" class="img-fluid" />
+<div class="mask" style="
+                background-color: rgba(
+                    251,
+                    251,
+                    251,
+                    0.15
+                );
+                ">
+</div>
+</div>
+</a>
+<!---->
+
+<!--{sampleWidth: '100%', tags: 'text header'}-->
+<style>
+    a#{menu_id}.mega-menu-template-4 .row {
+        transition: transform 0.2s ease-in-out, opacity 0.2s ease-in-out;
+    }  
+    a#{menu_id}.mega-menu-template-4:hover .row {
+        transform: scale(1.05);
+        opacity: 0.9;
+    }
+</style>
+<a href="{{menu_link}}" id="{menu_id}" class="text-body d-block mega-menu-template-4">
+<div class="row">
+    <p class="mb-0 px-3 font-weight-bold h5" style="color:{{headerColor}}">
+        {{title||Privacy and Account}}
+    </p>
+</div>
+<div class="row px-3 text-muted" style="color:{{descriptionColor}}!important;">
+    {{description||Manage your personal data and control who can view or access your information, ensuring your privacy preferences are respected.}}
+</div>
+</a>
+<!---->
+
+<!--{sampleWidth: '100%', tags: 'list text header'}-->
+<style>
+    a#{menu_id}.mega-menu-template-5 .row {
+        transition: transform 0.2s ease-in-out, opacity 0.2s ease-in-out;
+    }
+    a#{menu_id}.mega-menu-template-5:hover .row:first-of-type p {
+        transform: scale(1.05);
+    }
+    .row#{menu_id}.mega-menu-template-5.px-4 a {
+        transition: color 0.2s ease-in-out, padding-left 0.2s ease-in-out;
+    }
+    .row#{menu_id}.mega-menu-template-5.px-4 a:hover {
+        padding-left: 6px; 
+    }
+</style>
+<a href="{{menu_link}}" class="mega-menu-template-5 text-body d-block">
+<div class="row mb-2">
+    <p class="mb-0 px-3 font-weight-bold h5" style="color:{{headerColor}}">
+        {{title||Privacy and Account}}
+    </p>
+</div>
+</a>
+{{repeat||[{"link":"#", "subtitle":"Change Account Credentials"}, {"link":"#", "subtitle":"Update Privacy Preferences"}, {"link":"#", "subtitle":"Data Usage Consent"}]}}
+<div class="row px-4" id="{menu_id}">
+    <a href="{{repeat.link}}" class="mega-menu-template-5 text-body d-block">
+        <p class="text-muted my-0" style="color:{{repeat.subtitleColor}}!important;">{{repeat.subtitle}}</p>
+    </a>
+</div>
+{{repeat}}
+<!---->
+
+<!--{sampleWidth: '100%', tags: 'icon'}-->
+<style>
+    a#{menu_id}.mega-menu-template-6.text-body {
+        transition: background-color 0.2s ease-in-out, transform 0.2s ease-in-out;
+        display: block;
+        border-radius: 6px;
+        padding: 6px;
+    }
+    a#{menu_id}.mega-menu-template-6.text-body:hover {
+        background-color: rgba(0, 123, 255, 0.1);
+        transform: scale(1.02);
+    }
+    a#{menu_id}.mega-menu-template-6:hover h6 {
+        transform: scale(1.05);
+        transition: transform 0.2s ease-in-out;
+    }
+</style>
+<a href="{{menu_link}}" id="{menu_id}" class="mega-menu-template-6 text-body text-decoration-none">
+    <div class="d-flex align-items-center mb-3 row">
+        <div class="icon ml-3 col-auto" style="font-size: 16px; color: {{iconColor||#007bff}}; 
+             border: 2px solid {{iconColor||#007bff}}; 
+             border-radius: 50%; 
+             padding: 8px; 
+             width: 36px; 
+             height: 36px; 
+             display: flex; 
+             align-items: center; 
+             justify-content: center;">
+            {{icon||<i class="fas fa-map"></i>}}
+        </div>
+        <div class="col-auto">
+            <h6 class="mb-1 font-weight-bold text-dark" style="color:{{titleColor}}!important;">{{title||Resources}}</h6>
+            <p class="text-muted mb-0" style="color:{{descriptionColor}}!important;">{{description||Free tutorials, videos, blogs & more}}</p>
+        </div>
+    </div>
+</a>
+<!---->
+
+<!--{sampleWidth: '100%', tags: 'icon'}-->
+<style>
+    .card#{menu_id}.mega-menu-template-7 {
+        transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+    }
+    .card#{menu_id}.mega-menu-template-7:hover {
+        transform: translateY(-3px);
+        box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.15);
+    }
+    .card#{menu_id}.mega-menu-template-7 .icon {
+        transition: transform 0.2s ease-in-out;
+    }
+    .card#{menu_id}.mega-menu-template-7:hover .icon {
+        transform: scale(1.1);
+    }
+    .card#{menu_id}.mega-menu-template-7 a.text-primary {
+        transition: color 0.2s ease-in-out;
+    }
+    .card#{menu_id}.mega-menu-template-7 a.text-primary:hover {
+        color: #0056b3 !important;
+        text-decoration: underline;
+    }        
+</style>
+<div id="{menu_id}" class="mega-menu-template-7 card border-0 shadow-sm p-3">
+    <div class="d-flex align-items-center mb-2">
+    <div class="icon mr-2 my-0">
+        {{icon||<i class="fas fa-briefcase fa-lg text-primary"></i>}}
+    </div>
+    <h5 class="mb-0 mt-0 text-dark my-0" style="color:{{titleColor}}!important;">{{title||Business}}</h5>
+    </div>
+    <p class="text-muted mb-2" style="color:{{descriptionColor}}!important;">{{description||Demo for Agency and Business}}</p>
+    <a href="{{menu_link}}" class="text-primary fw-bold">{{subtitle||See Demo →}}</a>
+</div>
+<!---->
+
+<!--{sampleWidth: '100%', tags: 'icon'}-->
+<style>
+    div#{menu_id}.interactive-card .card {
+        border-radius: 10px;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        transition: all 0.2s ease-in-out;
+        padding: 5px 10px;
+    }
+    div#{menu_id}.interactive-card .card:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+    }
+    div#{menu_id}.interactive-card .card-icon {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        width: 50px;
+        height: 50px;
+        border-radius: 10px;
+        background-color: #f0f0f0;
+        margin-right: 20px;
+        transition: background-color 0.2s ease-in-out;
+    }
+    div#{menu_id}.interactive-card .card-icon {
+        background-color: #e0e0e0;
+    }
+    div#{menu_id}.interactive-card .card-icon i {
+        font-size: 20px;
+        color: #007bff;
+        transition: transform 0.2s ease-in-out;
+    }
+    div#{menu_id}.interactive-card .card-text {
+        font-size: 14px;
+        color: #777;
+        flex-grow: 1;
+        display: flex;
+        flex-direction: column;
+        justify-content: flex-start;
+    }
+    div#{menu_id}.interactive-card .card-footer {
+        display: flex;
+        align-items: center;
+        justify-content: flex-end;
+    }
+    div#{menu_id}.interactive-card .fa-arrow-right {
+        transition: transform 0.2s ease-in-out;
+    }
+    div#{menu_id}.interactive-card .card:hover .fa-arrow-right {
+        transform: translateX(5px);
+    }        
+</style>
+<a href="{{menu_link}}" style="text-decoration:none; color:inherit">
+    <div class="interactive-card" id="{menu_id}">
+        <div class="card mt-0">
+            <div class="row d-flex align-items-center">
+                <div class="col-auto">
+                    <div class="card-icon">
+                        {{icon||<i class="fas fa-funnel-dollar"></i>}}
+                    </div>
+                </div>
+                <div class="col-auto d-flex justify-content-start">
+                    <div class="card-text">
+                        <h4 style="color:{{titleColor}}!important;" class="text-dark">{{title||Funnel optimization}}</h4>
+                        <p style="color:{{descriptionColor}}">{{description||Boost conversions with efficient funnel optimization}}</p>
+                    </div>
+                </div>
+                <div class="col-auto d-flex justify-content-center">
+                    <i class="fas fa-arrow-right"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+</a>
+<!---->
+
+<!--{sampleWidth: '100%', tags: 'image'}-->
+<style>
+    a#{menu_id}.mega-menu-template-8.text-body.text-decoration-none.d-block {
+        transition: transform 0.2s ease-in-out;
+    }
+    a#{menu_id}.mega-menu-template-8.text-body.text-decoration-none.d-block:hover {
+        transform: translateY(-3px);
+    }
+    a#{menu_id}.mega-menu-template-8 .card {
+        border-radius: 10px;
+        overflow: hidden;
+        transition: box-shadow 0.2s ease-in-out;
+    }
+    a#{menu_id}.mega-menu-template-8 .card:hover {
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+    }
+    a#{menu_id}.mega-menu-template-8 .card-img-top img {
+        width: 100%;
+        height: auto;
+        object-fit: cover;
+        transition: transform 0.2s ease-in-out;
+    }
+    a#{menu_id}.mega-menu-template-8 .card:hover .card-img-top img {
+        transform: scale(1.05);
+    }
+    a#{menu_id}.mega-menu-template-8 .card-body h6 {
+        transition: color 0.2s ease-in-out;
+    }
+</style>
+<a href="{{menu_link}}" id="{menu_id}" class="mega-menu-template-8 text-body text-decoration-none d-block" style="max-width: {{width||300px}};">
+    <div class="card border-0 shadow-sm">
+        <div class="card-img-top">
+            <img 
+                src="{{image||#request.contextPath#/images/loginTemplate/high_building.jpg}}" 
+                class="img-fluid rounded-top">
+        </div>
+        <div class="card-body text-center p-3">
+            <h6 class="card-title mb-1 font-weight-bold" style="color:{{titleColor}}">{{title||Our Office Building}}</h6>
+        </div>
+    </div>
+</a>
+<!---->

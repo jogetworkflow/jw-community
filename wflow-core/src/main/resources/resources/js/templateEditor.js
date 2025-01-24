@@ -17,7 +17,11 @@
     renderField : function() {
         
         var html = '<div class="template_editor_container" style="overflow:hidden;">';
-        html += '<div class="actions"><a class="choosetemplate btn button small" style="margin-left:0px;margin-top:5px">@@userview.infotile.chooseTemplate@@</a> <a class="edittemplate btn button small" style="margin-top:5px">@@userview.infotile.editTemplate@@</a> <a style="display:none;margin-top:5px;" class="hideedit btn button small">@@userview.infotile.hideTemplateEditor@@</a><a class="reloadtemplate btn button small" style="margin-top:5px">@@userview.infotile.reloadTemplate@@</a><div class="reloadMessage toast hide align-items-center text-bg-success border-0" style="position:fixed;z-index:300;top:0;right:50px;margin-top:150px" role="alert" aria-live="assertive" aria-atomic="true" data-bs-delay="2000"><div class="d-flex"><div class="toast-body"><strong class="me-auto">@@userview.infotile.reloadMessage@@</strong></div><button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button></div></div></div>';
+        html += '<div class="actions"><a class="choosetemplate btn button small" style="margin-left:0px;margin-top:5px">@@userview.infotile.chooseTemplate@@</a> <a class="edittemplate btn button small" style="margin-top:5px">@@userview.infotile.editTemplate@@</a> <a style="display:none;margin-top:5px;" class="hideedit btn button small">@@userview.infotile.hideTemplateEditor@@</a>'
+        if(thisObj.properties.control_field === "customLogin" || thisObj.properties.enableAutoReload === 'true'){
+            html += '<a class="reloadtemplate btn button small" style="margin-top:5px">@@userview.infotile.reloadTemplate@@</a> <div class="reloadMessage toast hide" style="position:fixed;z-index:300;top: 0px;right:50px;margin-top:150px;background-color:green;" role="alert" aria-live="assertive" aria-atomic="true" data-delay="2000"> <div class="toast-header"> <strong class="mr-auto">@@userview.infotile.reloadMessage@@</strong> <button type="button" class="ml-2 mb-1 close" data-dismiss="toast" aria-label="Close"> <span aria-hidden="true">&times;</span> </button> </div> </div>';
+        }
+        html += "</div>";
         html += '<div class="editor" style="margin-top:10px; display:none;"><pre id="' + this.id + '" name="' + this.id + '" class="ace_editor"></pre></div>';
         html += '<div class="sample_container" style="margin-top:10px; padding:10px; border:1px solid #ced4da; background:#fff; border-radius:5px; overflow: scroll;"><label>@@userview.infotile.sample@@</label><div class="sample_preview" style="position:relative;"></div></div>';
         html += '</div>';
@@ -36,20 +40,37 @@
         });
 
         $(document).ready(function(){
-            const container = $("#" + thisObj.id).closest('.template_editor_container');
+            if(thisObj.properties.control_field === "customLogin" || thisObj.properties.enableAutoReload === 'true'){
+                const container = $("#" + thisObj.id).closest('.template_editor_container');
 
-            function handleChange(event){
-                var scroll = $(container).closest(".property-editor-property-container").scrollTop();
+                function handleChange(event){
+                    var scroll = $(container).closest(".property-editor-property-container").scrollTop();
 
-                //Doesnt have scrollbar
-                if (!($(container).closest(".property-editor-property-container").get(0).scrollHeight > $(container).closest(".property-editor-property-container").get(0).clientHeight)){
-                    scroll = $(container).closest(".property-editor-pages").scrollTop();
-                }
+                    //Doesnt have scrollbar
+                    if (!($(container).closest(".property-editor-property-container").get(0).scrollHeight > $(container).closest(".property-editor-property-container").get(0).clientHeight)){
+                        scroll = $(container).closest(".property-editor-pages").scrollTop();
+                    }
 
-                if (event.type === "focusin"){
-                    //Check for image change
-                    if ($(this).attr("class")==="image" && (($(this).attr("data-value") !== $(this).val() && $(this).attr("data-value") !==  undefined))) {
-                        $(container).find('.reloadtemplate').click();
+                    if (event.type === "focusin"){
+                        //Check for image change
+                        if ($(this).attr("class")==="image" && (($(this).attr("data-value") !== $(this).val() && $(this).attr("data-value") !==  undefined))) {
+                            $(container).find('.reloadtemplate').click();
+                            
+                            if (!($(container).closest(".property-editor-property-container").get(0).scrollHeight > $(container).closest(".property-editor-property-container").get(0).clientHeight)){
+                                $(container).closest(".property-editor-pages").scrollTop(scroll);
+                            }else{
+                                $(container).closest(".property-editor-property-container").scrollTop(scroll);
+                            }
+                        }
+
+                        //Save initial value for checking
+                        $(this).attr("data-value", $(this).val());
+                    }
+                    else {                  
+                        //Only reload template once the value has been changed
+                        if (($(this).attr("data-value") !== $(this).val() && !$(this).hasClass("la-check")) || ($(this).hasClass("la-check") && $(this).data('colorValue') === "none")){
+                            $(container).find('.reloadtemplate').click();
+                        }
                         
                         if (!($(container).closest(".property-editor-property-container").get(0).scrollHeight > $(container).closest(".property-editor-property-container").get(0).clientHeight)){
                             $(container).closest(".property-editor-pages").scrollTop(scroll);
@@ -57,105 +78,112 @@
                             $(container).closest(".property-editor-property-container").scrollTop(scroll);
                         }
                     }
-
-                    //Save initial value for checking
-                    $(this).attr("data-value", $(this).val());
                 }
-                else {                  
-                    //Only reload template once the value has been changed
-                    if (($(this).attr("data-value") !== $(this).val() && !$(this).hasClass("la-check")) || ($(this).hasClass("la-check") && $(this).data('colorValue') === "none")){
+
+                var parent = $(container).parent().parent();
+
+                //Get the siblings
+                var siblings = $(parent).siblings();
+                //Take only the repeater
+                var repeater = siblings.filter('[property-name="repeat"]').first();
+                //Exclude repeater, and checkbox
+                var standardSiblings = siblings.not('[property-name="repeat"]').not('[property-name="icon"]').filter('[data-control_field="template"]');
+                //Icon
+                var icon = siblings.filter('[property-name="icon"]');
+                
+                repeater.off("focusin focusout", ".property-input .repeater-rows-container .repeater-row .inputs .inputs-container div[class^=\"property_container\"]:not(.hidden)[property-name!=\"icon\"] input", handleChange).on("focusin focusout", ".property-input .repeater-rows-container .repeater-row .inputs .inputs-container div[class^=\"property_container\"]:not(.hidden)[property-name!=\"icon\"] input", handleChange);
+                
+                repeater.off("click.handleChange", ".property-input .repeater-rows-container .repeater-row .inputs .inputs-container div[class^=\"property_container\"]:not(.hidden)[property-name=\"icon\"] .la.la-check", handleChange).on("click.handleChange", ".property-input .repeater-rows-container .repeater-row .inputs .inputs-container div[class^=\"property_container\"]:not(.hidden)[property-name=\"icon\"] .la.la-check", function(event){
+                    $(this).data('colorValue', $(this).siblings('.color_value').css('display'));
+                    setTimeout(function() {
+                        handleChange.call(this, event);
+                    }.bind(this), 1000);
+                });
+
+                standardSiblings.find(".property-input input").off("focusin focusout", handleChange).on("focusin focusout", handleChange)
+                standardSiblings.find(".property-input input[type='number']")
+                .siblings("select")
+                .on("change", function() {
+                    $(this).off("change");
+
+                    if ($(this).val() === 'auto') {
                         $(container).find('.reloadtemplate').click();
                     }
-                    
-                    if (!($(container).closest(".property-editor-property-container").get(0).scrollHeight > $(container).closest(".property-editor-property-container").get(0).clientHeight)){
-                        $(container).closest(".property-editor-pages").scrollTop(scroll);
-                    }else{
-                        $(container).closest(".property-editor-property-container").scrollTop(scroll);
-                    }
-                }
+
+                    $(this).on("change", arguments.callee);
+                });
+
+                icon.off("click.handleChange", ".la.la-check").on("click.handleChange", ".la.la-check", function(event){
+                    $(this).data('colorValue', $(this).siblings('.color_value').css('display'));
+                    setTimeout(function() {
+                        handleChange.call(this, event);
+                    }.bind(this), 1000);
+                })
             }
-
-            var parent = $(container).parent().parent();
-
-            //Get the siblings
-            var siblings = $(parent).siblings();
-            //Take only the repeater
-            var repeater = siblings.filter('[property-name="repeat"]').first();
-            //Exclude repeater, and checkbox
-            var standardSiblings = siblings.not('[property-name="repeat"]').not('[property-name="icon"]').filter('[data-control_field="template"]');
-            //Icon
-            var icon = siblings.filter('[property-name="icon"]');
-            
-            repeater.off("focusin focusout", ".property-input .repeater-rows-container .repeater-row .inputs .inputs-container div[class^=\"property_container\"]:not(.hidden)[property-name!=\"icon\"] input", handleChange).on("focusin focusout", ".property-input .repeater-rows-container .repeater-row .inputs .inputs-container div[class^=\"property_container\"]:not(.hidden)[property-name!=\"icon\"] input", handleChange);
-            
-            repeater.off("click.handleChange", ".property-input .repeater-rows-container .repeater-row .inputs .inputs-container div[class^=\"property_container\"]:not(.hidden)[property-name=\"icon\"] .la.la-check", handleChange).on("click.handleChange", ".property-input .repeater-rows-container .repeater-row .inputs .inputs-container div[class^=\"property_container\"]:not(.hidden)[property-name=\"icon\"] .la.la-check", function(event){
-                $(this).data('colorValue', $(this).siblings('.color_value').css('display'));
-                setTimeout(function() {
-                    handleChange.call(this, event);
-                }.bind(this), 1000);
-            });
-
-            standardSiblings.find(".property-input input").off("focusin focusout", handleChange).on("focusin focusout", handleChange)
-
-            icon.off("click.handleChange", ".la.la-check").on("click.handleChange", ".la.la-check", function(event){
-                $(this).data('colorValue', $(this).siblings('.color_value').css('display'));
-                setTimeout(function() {
-                    handleChange.call(this, event);
-                }.bind(this), 1000);
-            })
         });
 
-        $(container).find(".reloadtemplate").off("click");
-        $(container).find(".reloadtemplate").on("click", function() {
-            $(container).find(".sample_preview").html("");
-            var parent = $(container).parent().parent();
-           
-            var dataControlField = $("#"+thisObj.id).closest(".property-input").parent().attr("property-name"); 
+        if(thisObj.properties.control_field === "customLogin" || thisObj.properties.enableAutoReload === 'true'){
+            $(container).find(".reloadtemplate").off("click");
+            $(container).find(".reloadtemplate").on("click", function() {
+                $(container).find(".sample_preview").html("");
+                var parent = $(container).parent().parent();
             
-            var template = thisObj.codeeditor.getSession().getValue();
-            var dict = {};
-            var arr = [];
-            //Get the siblings
-            var siblings = $(parent).siblings();
-            //Take only the repeater
-            var repeater = siblings.filter('[property-name="repeat"]').first();
-            //Exclude repeater, and checkbox
-            var standardSiblings = siblings.filter(':visible').not('[property-name="repeat"]').filter('[data-control_field="template"]');
+                var dataControlField = $("#"+thisObj.id).closest(".property-input").parent().attr("property-name"); 
+                
+                var template = thisObj.codeeditor.getSession().getValue();
+                var dict = {};
+                var arr = [];
+                //Get the siblings
+                var siblings = $(parent).siblings();
+                //Take only the repeater
+                var repeater = siblings.filter('[property-name="repeat"]').first();
+                //Exclude repeater, and checkbox
+                var standardSiblings = siblings.filter(':visible').not('[property-name="repeat"]').filter('[data-control_field="template"]');
+                repeater.find(".property-input .repeater-rows-container .repeater-row").each(function(){
+                    $(this).find('.inputs .inputs-container div[class^=\"property_container\"]:not(.hidden)').each(function(){
+                        var propertyName = $(this).attr('property-name');
 
-            repeater.find(".property-input .repeater-rows-container .repeater-row").each(function(){
-                $(this).find('.inputs .inputs-container div[class^=\"property_container\"]:not(.hidden)').each(function(){
-                    var propertyName = $(this).attr('property-name');
+                        if (propertyName === "icon"){
+                            dict[propertyName] = $(this).find('.value i').prop("outerHTML");
+                        }else if ($(this).find("input").val() !== ""){
+                            dict[propertyName] = $(this).find("input").val();
+                        }
+                    })
+                
+                    arr.push(dict);
+                    dict = {};
+                })
 
+                template = thisObj.fillLoopVariables(template, arr, "");
+
+                dict = {};
+                standardSiblings.find('.property-input input').each(function(){
+                    var propertyName = $(this).closest('div[id^="property_"][data-control_field="' + dataControlField + '"]').attr('property-name');
                     if (propertyName === "icon"){
-                        dict[propertyName] = $(this).find('.value i').prop("outerHTML");
-                    }else if ($(this).find("input").val() !== ""){
-                        dict[propertyName] = $(this).find("input").val();
+                        dict[propertyName] = $(this).closest('div[id^="property_"][data-control_field="' + dataControlField + '"]').find('.value i').prop('outerHTML');
+                    }else if ($(this).attr('type') === 'number' && $(this).siblings("select").length > 0 && $(this).siblings("select").val() === 'auto'){
+                        dict[propertyName] = "auto";
+                    }
+                    else if ($(this).val() !== ""){
+                        var value = $(this).val();
+
+                        if ($(this).attr('type') === 'number' && $(this).siblings("select").length > 0) {
+                            var selectValue = $(this).siblings("select").val();
+                            
+                            value += selectValue; 
+                        }  
+
+                        dict[propertyName] = value;
                     }
                 })
-            
-                arr.push(dict);
-                dict = {};
-            })
 
-            template = thisObj.fillLoopVariables(template, arr, "");
+                template = thisObj.fillStandardVariables(template, dict, "");
 
-            dict = {};
-            standardSiblings.find('.property-input input').each(function(){
-                var propertyName = $(this).closest('div[id^="property_"][data-control_field="' + dataControlField + '"]').attr('property-name');
-                if (propertyName === "icon"){
-                    dict[propertyName] = $(this).closest('div[id^="property_"][data-control_field="' + dataControlField + '"]').find('.value i').prop('outerHTML');
-                }
-                else if ($(this).val() !== ""){
-                    dict[propertyName] = $(this).val();
-                }
-            })
-
-            template = thisObj.fillStandardVariables(template, dict, "");
-
-            thisObj.codeeditor.getSession().setValue(template);
-            $(container).find(".reloadMessage").toast();  
-            $(container).find(".reloadMessage").toast('show');  
-        });
+                thisObj.codeeditor.getSession().setValue(template);
+                $(container).find(".reloadMessage").toast();  
+                $(container).find(".reloadMessage").toast('show');  
+            });
+        }
         
         $(container).find(".edittemplate").off("click");
         $(container).find(".edittemplate").on("click", function() {
@@ -257,10 +285,12 @@
         for (; r < 1; r++) {
             var t_container = $(object).find(".templates");
             var tile = thisObj.getTile(thisObj.templates[r]);
-            if (thisObj.properties.control_field === "customLogin"){
+            if (thisObj.properties.control_field === "customLogin" || $(thisObj.editor).closest(".megaMenuWrapper").length > 0){
                 //Added border for better distinguish between different tempates
                 $(tile).css({"border": "1px solid black"})
-                $(tile).css("aspect-ratio", "16/9");
+                if (thisObj.properties.control_field === "customLogin"){
+                    $(tile).css("aspect-ratio", "16/9");
+                }
                 $(tile).css("padding", "5px");
             }
 
@@ -352,10 +382,12 @@
             for (; r < thisObj.templates.length; r++) {
                 var t_container = $(object).find(".templates");
                 var tile = thisObj.getTile(thisObj.templates[r]);
-                if (thisObj.properties.control_field === "customLogin"){
+                if (thisObj.properties.control_field === "customLogin" || $(thisObj.editor).closest(".megaMenuWrapper").length > 0){
                     //Added border for better distinguish between different tempates
                     $(tile).css({"border": "1px solid black"})
-                    $(tile).css("aspect-ratio", "16/9");
+                    if (thisObj.properties.control_field === "customLogin") {
+                        $(tile).css("aspect-ratio", "16/9");
+                    }
                     $(tile).css("padding", "5px");
                 }
 
@@ -363,6 +395,8 @@
                 
                 t_container.append(tile);
             }
+            t_container = $(object).find(".templates");
+
             t_container.find(".dt-loading").remove();
             search();
         }, 800);

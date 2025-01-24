@@ -43,6 +43,7 @@
                 type :'codeeditor', 
                 mode :'text'
             }
+            %s
         ]
     }
 ]

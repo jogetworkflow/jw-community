@@ -65,9 +65,7 @@
                 </c:choose>   
             </div>
         </c:when>
-        <c:otherwise>
-            ${properties.customHeader}
-        </c:otherwise>
+        <c:otherwise>${properties.customHeader}</c:otherwise>
     </c:choose>
     <c:choose>
         <c:when test="${properties.view eq 'unauthorized'}">

@@ -66,8 +66,10 @@
         <css>/css/form.css</css>
         <css>/css/datalistBuilderView.css</css>
         <css>/css/userview_v5.css</css>
+        <css>/css/mega_menu.css</css>
         <js>/js/ajax-component.js</js>
         <js>/js/ajax-menus-count.js</js>
+        <js>/js/megaMenu.js</js>
     </group>
     <group name="userview_print.min">
         <css>/css/userview_print.css</css>
@@ -92,6 +94,8 @@
         <css>/universal/lib/malihu-custom-scrollbar/jquery.mCustomScrollbar.min.css</css>
         <css>/universal/lib/waves/waves.min.css</css>
         <css>/css/jquery.toast.min.css</css>
+        <css>/css/mega_menu.css</css>
+        <js>/js/megaMenu.js</js>
         <js>/universal/js/preload.js</js>
         <js>/js/joget-design-system9/js/jds.bundle.js</js>
         <js>/universal/lib/malihu-custom-scrollbar/jquery.mCustomScrollbar.concat.min.js</js>
@@ -118,6 +122,8 @@
         <css>/universal/lib/malihu-custom-scrollbar/jquery.mCustomScrollbar.min.css</css>
         <css>/universal/lib/waves/waves.min.css</css>
         <css>/css/jquery.toast.min.css</css>
+        <css>/css/mega_menu.css</css>
+        <js>/js/megaMenu.js</js>
         <js>/progressive/js/preload.js</js>
         <js>/js/joget-design-system9/js/jds.bundle.js</js>
         <js>/universal/lib/malihu-custom-scrollbar/jquery.mCustomScrollbar.concat.min.js</js>
@@ -141,6 +147,8 @@
         <css>/xadmin/css/list.css</css>
         <css>/css/jquery.toast.min.css</css>
         <css>/xadmin/css/custom.css</css>
+        <css>/css/mega_menu.css</css>
+        <js>/js/megaMenu.js</js>
         <js>/universal/lib/malihu-custom-scrollbar/jquery.mCustomScrollbar.concat.min.js</js>
         <js>/js/hubspot-offline/offline.min.js</js>
         <js>/js/jquery/toast/jquery.toast.min.js</js>
@@ -169,6 +177,8 @@
         <css>/universal/lib/waves/waves.min.css</css>
         <css>/css/jquery.toast.min.css</css>
         <css>/universal/lib/malihu-custom-scrollbar/jquery.mCustomScrollbar.min.css</css>
+        <css>/css/mega_menu.css</css>
+        <js>/js/megaMenu.js</js>
         <js>/universal/lib/malihu-custom-scrollbar/jquery.mCustomScrollbar.concat.min.js</js>
         <js>/universal/js/preload.js</js>
         <js>/js/joget-design-system9/js/jds.bundle.js</js>

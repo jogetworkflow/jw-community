@@ -18,7 +18,45 @@ ${nav_before!}
                     <#assign cClass = cClass + " " + current_category_classes!>
                 </#if>
                 <#assign firstMenu = category.menus[0]>
-                <#if combine_single_menu_category! && category.menus?size == 1>
+                    <#if (theme.properties.horizontal_menu! == 'dark-inline' || theme.properties.horizontal_menu! == 'light-inline' || theme.properties.horizontal_menu! == 'dark-header' || theme.properties.horizontal_menu! == 'light-header' || theme.properties.horizontal_menu! == 'true' || theme.properties.horizontal_menu! == 'horizontal_inline') && category.properties.enableMegaMenu! == 'true' && category.properties.megaMenuConfiguration?? && category.properties.megaMenuConfiguration["general-layout"]?? && !(category.properties.megaMenuConfiguration["general-layout"]?is_string)>
+                    <li id="${category.properties.id!}" class="${cClass} mega-menu-category">
+                        ${category_inner_before!}
+                        <a class="${category_label_classes!} dropdown" href="javascript:;">${theme.decorateCategoryLabel(category)}</a>
+                        ${menu_container_before!}
+                        ${menu_container_inner_before!}
+                        ${menu_before!}
+                        ${menu_inner_before!}
+                        ${theme.decorateMenu(category, null)}
+                        ${menu_inner_after!}
+                        ${menu_after!}
+                        ${menu_container_inner_after!}
+                        ${menu_container_after!}
+                        ${category_inner_after!}
+                        <ul class="${menus_container_classes!} megaMenuMobile" >
+                            ${menu_container_inner_before!}
+                            <#list category.menus as menu>
+                                <#assign mClass = menu_classes!>
+                                <#if menu_index == 0>
+                                    <#assign mClass = mClass + " " + first_menu_classes!>
+                                </#if>
+                                <#if (menu_index + 1) == category.menus?size>
+                                    <#assign mClass = mClass + " " + last_menu_classes!>
+                                </#if>
+                                <#if userview.current?? && menu.properties.id == userview.current.properties.id>
+                                    <#assign mClass = mClass + " " + current_menu_classes!>
+                                </#if>
+                                ${menu_before!}
+                                <li id="${menu.properties.id!}" class="${mClass}">
+                                    ${menu_inner_before!}
+                                    ${theme.decorateMenu(category, menu)}
+                                    ${menu_inner_after!}
+                                </li>
+                                ${menu_after!}
+                            </#list>
+                            ${menu_container_inner_after!}
+                        </ul>
+                    </li>
+                <#elseif combine_single_menu_category! && category.menus?size == 1>
                     <li id="${firstMenu.properties.id}" class="${cClass}">
                         ${category_inner_before!}
                         ${theme.decorateMenu(category, firstMenu)}

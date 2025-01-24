@@ -78,6 +78,18 @@ UserviewBuilder = {
             callback();
             
             UserviewBuilder.initThemeConfigPluginList();
+
+            function shouldHideMegaMenuConfiguration() {
+                return CustomBuilder?.data?.setting?.properties?.theme?.properties?.horizontal_menu === "" || 
+                       CustomBuilder?.data?.setting?.properties?.theme?.properties?.horizontal_menu === null ||
+                       !["light-header", "light-inline", "dark-header", "dark-inline", "horizontal_inline", "true"].includes(CustomBuilder?.data?.setting?.properties?.theme?.properties?.horizontal_menu);
+            }
+
+            if (shouldHideMegaMenuConfiguration()) {
+                $("body").addClass("hideMegaMenuConfiguration");
+            }else {
+                $("body").removeClass("hideMegaMenuConfiguration");
+            }
         });
 
         var savedCss, savedJs = "";
@@ -606,11 +618,17 @@ UserviewBuilder = {
                 }
             }
         }
+
+        if ($(container).find("div[property-name='horizontal_menu']").length === 0) {
+            if (CustomBuilder?.data?.setting?.properties?.theme?.properties?.horizontal_menu) {
+                CustomBuilder.data.setting.properties.theme.properties.horizontal_menu = "";
+            }
+        }
         
         properties.theme.properties = $.extend(CustomBuilder.data.setting.properties.theme.properties, properties.theme.properties);
         $.extend(CustomBuilder.data.setting.properties, properties);
         CustomBuilder.update();
-        
+
         var combinedProperties = $.extend(true, {}, CustomBuilder.data.properties, CustomBuilder.data.setting.properties.theme.properties);
         var userviewElement = CustomBuilder.Builder.frameBody;
         userviewElement.find('[data-cbuilder-classname="userview-header"]').data("data", {className: "userview-header", properties: combinedProperties});
@@ -735,7 +753,6 @@ UserviewBuilder = {
             }
             
             CustomBuilder.overviewPath = CustomBuilder.overviewPath.substring(CustomBuilder.overviewPath.indexOf(".referencePage.") + 15);
-            console.log(CustomBuilder.overviewPath);
         }
         
         
@@ -1388,10 +1405,20 @@ UserviewBuilder = {
             // Get theme builder properties
             UserviewBuilder.getThemeBuilderJson(themeClassName.substring(lastIndex + 1), function (themeJson) {
                 var props = themeJson.theme.properties;
+                if (!["light-header", "light-inline", "dark-header", "dark-inline", "horizontal_inline", "true"].includes(props?.horizontal_menu)){
+                    $("body").addClass("hideMegaMenuConfiguration");
+                }else {
+                    $("body").removeClass("hideMegaMenuConfiguration");
+                }
                 handleProperties(props);
             });
         } else {
             var props = CustomBuilder.data.setting.properties.theme.properties;
+            if (!["light-header", "light-inline", "dark-header", "dark-inline", "horizontal_inline", "true"].includes(props?.horizontal_menu)){
+                $("body").addClass("hideMegaMenuConfiguration");
+            }else {
+                $("body").removeClass("hideMegaMenuConfiguration");
+            }
             handleProperties(props);
         }
     },
