@@ -1368,13 +1368,13 @@ public class SharkWorkflowAssignmentDaoImpl extends AbstractSpringDao implements
         
         if (processId != null || actDefId != null || username != null) {
             if (processId != null && !processId.isEmpty()) {
-                condition += " and p.processId like ?";
-                params.add("%" + processId + "%");
+                condition += " and p.processId = ?";
+                params.add(processId);
             }
             
             if (actDefId != null && !actDefId.isEmpty()) {
-                condition += " and e.activityDefId like ?";
-                params.add("%" + actDefId + "%");
+                condition += " and e.activityDefId = ?";
+                params.add(actDefId);
             }
             
             if (username != null && !username.isEmpty()) {
@@ -1393,13 +1393,13 @@ public class SharkWorkflowAssignmentDaoImpl extends AbstractSpringDao implements
         
         if (processId != null || actDefId != null || username != null) {
             if (processId != null && !processId.isEmpty()) {
-                condition += " and p.processId like ?";
-                params.add("%" + processId + "%");
+                condition += " and p.processId = ?";
+                params.add(processId);
             }
             
             if (actDefId != null && !actDefId.isEmpty()) {
-                condition += " and e.activityDefId like ?";
-                params.add("%" + actDefId + "%");
+                condition += " and e.activityDefId = ?";
+                params.add(actDefId);
             }
             
             if (username != null && !username.isEmpty()) {

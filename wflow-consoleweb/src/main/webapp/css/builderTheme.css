@@ -3164,6 +3164,9 @@ body[builder-theme]#cbuilder.quick-nav-shown.quick-nav-position-left .builder-vi
 body[builder-theme]#cbuilder:not(.no-right-panel) div#adminBar > a#quickEditMode > span#environmentName {
     opacity: 0;
 }
+body[builder-theme]#cbuilder.tox-fullscreen > #top-panel{
+    display: none;
+}
 /* Guider Dark Theme */
 body[builder-theme='dark'] .guider {
     background-color: var(--theme-primary-color-1);

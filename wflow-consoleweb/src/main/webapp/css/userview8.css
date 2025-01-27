@@ -1610,6 +1610,10 @@ body.rtl .InformationTileComponent .mb-1 {
     position: absolute;
     z-index: 3;
 }
+/* Fix for analyzer-label located in #main in RTL */
+body.rtl div#page > div#main div#content > div.analyzer-label {
+    left: 16px;
+}
 body.quickEditModeActive fieldset#form-canvas, 
 body.quickEditModeActive fieldset#form-canvas .subform-container, 
 body.quickEditModeActive .dataList, 

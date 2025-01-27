@@ -3,6 +3,7 @@
     properties : [{
         name : 'script',
         label : '@@form.beanshellfrombinder.script@@',
+        description : '@@form.beanshellfrombinder.script.desc@@',
         type : 'codeeditor',
         required : 'True',
         mode : 'java'

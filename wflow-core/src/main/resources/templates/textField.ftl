@@ -20,14 +20,14 @@
     <#else>
         <#if ((validator?? && validator == "numeric") || element.properties.style! != "") && element.properties.readonly! != 'true' >
             <input id="${elementParamName!}" name="${elementParamName!}" class="textfield_${element.properties.elementUniqueKey!}" type="text" inputmode="numeric" oninput="this.value = this.value.replace(/[^0-9.,-]/g, '');" placeholder="${element.properties.placeholder!?html}" <#if element.properties.size?has_content>size="${element.properties.size!}"</#if> value="${value!?html}" <#if element.properties.maxlength?has_content>maxlength="${element.properties.maxlength!}"</#if> <#if element.properties["fieldInput-style-text-align"]?has_content>style="padding-right: 30px;"</#if> <#if error??>class="form-error-cell"</#if> />
-            <div class="numeric_field_controls">
-                <a class="numeric_field_control numeric_field_control_incr">
-                    <img src="${request.contextPath}/plugin/org.joget.apps.form.lib.TextField/images/chevron-up-solid.svg">
-                </a>
-                <a class="numeric_field_control numeric_field_control_decr">
-                    <img src="${request.contextPath}/plugin/org.joget.apps.form.lib.TextField/images/chevron-down-solid.svg">
-                </a>
-            </div>
+                <div class="numeric_field_controls<#if (element.properties.disableIncrementDecrementArrow! == 'true')> disabled</#if>">
+                    <a class="numeric_field_control numeric_field_control_incr">
+                        <img src="${request.contextPath}/plugin/org.joget.apps.form.lib.TextField/images/chevron-up-solid.svg">
+                    </a>
+                    <a class="numeric_field_control numeric_field_control_decr">
+                        <img src="${request.contextPath}/plugin/org.joget.apps.form.lib.TextField/images/chevron-down-solid.svg">
+                    </a>
+                </div>
             <#if !(includeMetaData!)>
                 <script type="text/javascript" src="${request.contextPath}/plugin/org.joget.apps.form.lib.TextField/js/jquery.numberField.js"></script>
                 <script type="text/javascript">

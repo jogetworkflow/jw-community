@@ -34,9 +34,8 @@ public class FormHashVariable extends DefaultHashVariablePlugin {
         }
         
         //get from request parameter if exist
-        HttpServletRequest request = WorkflowUtil.getHttpServletRequest();
-        if (primaryKey == null && request != null && request.getParameter("id") != null && !request.getParameter("id").isEmpty()) {
-            primaryKey = request.getParameter("id");
+        if (primaryKey == null) {
+            primaryKey = getPrimaryKeyFromRequest();
         }
         
         String temp[] = variableKey.split("\\.");
@@ -134,5 +133,21 @@ public class FormHashVariable extends DefaultHashVariablePlugin {
     @Override
     public String escapeHashVariableValue(String value) {
         return AppUtil.escapeHashVariable(value);
+    }
+
+    public static String getPrimaryKeyFromRequest() {
+        HttpServletRequest request = WorkflowUtil.getHttpServletRequest();
+        if (request != null) {
+            String requestParamId = request.getParameter("id");
+            if (requestParamId != null && !requestParamId.isEmpty()) {
+                return requestParamId;
+            } else {
+                Object requestAttrId = request.getAttribute("id");
+                if (requestAttrId instanceof String && !((String) requestAttrId).isEmpty()) {
+                    return (String) requestAttrId;
+                }
+            }
+        }
+        return null;
     }
 }

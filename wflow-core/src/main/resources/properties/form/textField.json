@@ -182,5 +182,14 @@
             value : 'true',
             label : ''
         }]
+    },
+    {
+        name : 'disableIncrementDecrementArrow',
+        label : '@@form.textfield.disableIncrementDecrementArrow@@',
+        type : 'checkbox',
+        options : [{
+            value : 'true',
+            label : ''
+        }]
     }]
 }]

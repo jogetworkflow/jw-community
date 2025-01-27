@@ -990,6 +990,10 @@ body.rtl .label-top.subform-cell > label.label > i{
     top: 17px;
 }
 
+.numeric_field_controls.disabled{
+    display: none;
+}
+
 /* datepicker */
 body.rtl #form-canvas .form-cell .label {
     text-align: right;
