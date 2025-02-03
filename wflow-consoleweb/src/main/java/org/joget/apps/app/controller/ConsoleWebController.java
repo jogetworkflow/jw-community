@@ -1641,11 +1641,16 @@ public class ConsoleWebController {
 
     @RequestMapping(value = "/console/app/(*:appId)/version/new", method = RequestMethod.POST)
     @Transactional
-    public String consoleAppCreate(@RequestParam(value = "appId") String appId, @RequestParam(value = "version", required = false) Long version) {
+    public void consoleAppCreate(Writer writer, @RequestParam(value = "appId") String appId, @RequestParam(value = "version", required = false) Long version)  throws IOException, JSONException {
         AppDefinition appDef = appService.createNewAppDefinitionVersion(appId, version);
-        return "console/apps/dialogClose";
+        
+        JSONObject jsonObject = new JSONObject();
+        jsonObject.put("appId", appDef.getAppId());
+        jsonObject.put("appVersion", appDef.getVersion().toString());
+        
+        AppUtil.writeJson(writer, jsonObject, null);
     }
-
+    
     @RequestMapping(value = "/console/app/(*:appId)/(~:version)/publish", method = RequestMethod.POST)
     @Transactional
     public String consoleAppPublish(@RequestParam(value = "appId") String appId, @RequestParam(value = "version", required = false) String version, HttpServletResponse response) throws IOException {
