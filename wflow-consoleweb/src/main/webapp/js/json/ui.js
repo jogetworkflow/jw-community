@@ -718,6 +718,24 @@ JsonTable.prototype = {
                 }
             }
         }
+        
+        var renderResourceFilePreview = function(row, prop) {
+            var fileExtension = row[prop].split('.').pop().toLowerCase();
+
+            if (['jpg', 'jpeg', 'png', 'gif'].includes(fileExtension)) {
+                return '<img src="' + UI.escapeHTML(row[prop]) + '" alt="Image" style="max-width: 100px; max-height: 63px;" />';
+            } else if (fileExtension === 'zip') {
+                return '<i class="fa fa-file-archive-o" aria-hidden="true" style="font-size: 63px;"></i>';
+            } else if (fileExtension === 'pdf') {
+                return '<i class="fa fa-file-pdf-o" aria-hidden="true" style="font-size: 63px;"></i>';
+            } else if (fileExtension === 'jwa') {
+                return '<i class="fa fa-file" aria-hidden="true" style="font-size: 63px;"></i>';
+            } else if (fileExtension === 'txt') {
+                return '<i class="file-item-icon far fa-file-alt text-secondary" aria-hidden="true" style="font-size: 63px;"></i>';
+            } else {
+                return '<i class="fa fa-file-o" aria-hidden="true" style="font-size: 63px;"></i>';
+            }
+        }
 
         var dataPreProcess = function(jsonObject) {
             $("#" + thisObject.divToUpdate).trigger("refresh");
@@ -751,9 +769,11 @@ JsonTable.prototype = {
                                 check = 'checked="true"';
                             }
                             row[prop]='<input type="checkbox" class="' + thisObject.divToUpdate + '-checkbox-list" id="' + thisObject.divToUpdate + '_checkbox_' + i + '" ' + check + 'onclick="toggleCheckbox(\'' + thisObject.divToUpdate + '_checkbox_' + i + '\')">';
-                        }else if(thisObject.checkbox && thisObject.checkboxSelectSingle && prop == 'radio'){
+                        } else if(thisObject.checkbox && thisObject.checkboxSelectSingle && prop == 'radio'){
                             row[prop]='<input type="radio" id="' + thisObject.divToUpdate +'_radio_' + i + '" name="' + thisObject.divToUpdate + '_radio" onclick="' + thisObject.divToUpdate + '_toggleRadioButton(\'' + thisObject.divToUpdate + '_radio_' + i + '\')">';
-                        }else {
+                        } else if (this.colModel[j].type === 'image') {
+                            row[prop] = renderResourceFilePreview(row, prop);             
+                        } else { 
                             var relaxed = this.colModel[j].relaxed;
                             if (!relaxed) {
                                 row[prop]= UI.escapeHTML(row[prop]);

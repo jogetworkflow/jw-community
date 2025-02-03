@@ -3423,28 +3423,32 @@ public class ConsoleWebController {
 
         Collection<String> errors = new ArrayList<String>();
         
-        MultipartFile file = null;
-        
+        MultipartFile[] files = null;  
+
         try {
-            file = FileStore.getFile("file");
+            files = FileStore.getFiles("file");
         } catch (FileLimitException e) {
             errors.add(ResourceBundleUtil.getMessage("general.error.fileSizeTooLarge", new Object[]{FileStore.getFileSizeLimit()}));
         }
 
-        if (file == null || !errors.isEmpty()) {
+        if (files == null || files.length == 0 || !errors.isEmpty()) {
             map.addAttribute("errors", errors);
             return "console/apps/appResourceCreate";
-        } else {
-            //store file
-            AppResourceUtil.storeFile(appDef, file, false);
-            
-            String contextPath = WorkflowUtil.getHttpServletRequest().getContextPath();
-            String url = contextPath + "/web/console/app/" + appDef.getId() + "/" + appDef.getVersion() + "/resources";
-            map.addAttribute("url", url);
-            return "console/apps/dialogClose";
         }
-    }
 
+        for (MultipartFile file : files) {
+            if (file != null) {
+                //store file
+                AppResourceUtil.storeFile(appDef, file, false);
+            }
+        }
+
+        String contextPath = WorkflowUtil.getHttpServletRequest().getContextPath();
+        String url = contextPath + "/web/console/app/" + appDef.getId() + "/" + appDef.getVersion() + "/resources";
+        map.addAttribute("url", url);
+        return "console/apps/dialogClose";
+    }
+    
     @RequestMapping("/console/app/(*:appId)/(~:version)/resource/permission")
     public String consoleAppResourcePermission(ModelMap map, @RequestParam String id, @RequestParam String appId, @RequestParam(required = false) String version, @RequestParam(required = false) Boolean upload) {
         AppDefinition appDef = appService.getAppDefinition(appId, version);
@@ -3506,6 +3510,9 @@ public class ConsoleWebController {
                 Plugin p = pluginManager.getPlugin(r.getPermissionClass());
                 data.put("permissionClassLabel", (p != null)?p.getI18nLabel():"");
                 data.put("permissionProperties", r.getPermissionProperties());
+                String imageUrl = getResourceUrl(appDef, r);  
+                data.put("image", imageUrl);
+
                 jsonObject.accumulate("data", data);
             }
         }
@@ -3516,6 +3523,25 @@ public class ConsoleWebController {
         jsonObject.accumulate("desc", desc);
 
         AppUtil.writeJson(writer, jsonObject, callback);
+    }
+    
+    public String getResourceUrl(AppDefinition appDef, AppResource appResource) {
+        HttpServletRequest request = WorkflowUtil.getHttpServletRequest();
+        String appPath = "/" + appDef.getAppId() + "/" + appDef.getVersion();
+        String resourceUrl = request.getContextPath() + "/web/app" + appPath + "/resources/" + appResource.getId();
+
+        String extension = "";
+        if (resourceUrl != null && resourceUrl.contains(".")) {
+            extension = resourceUrl.substring(resourceUrl.lastIndexOf(".") + 1);
+        }
+        
+        List<String> imageExtensions = Arrays.asList("jpg", "jpeg", "png", "gif", "bmp");
+
+        if (imageExtensions.contains(extension.toLowerCase())) {
+            return resourceUrl; 
+        } else {
+            return appResource.getId();          
+        }
     }
 
     @RequestMapping(value = "/console/app/(*:appId)/(~:version)/resource/delete", method = RequestMethod.POST)

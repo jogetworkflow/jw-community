@@ -71,7 +71,7 @@
                 var condition = $('#${var}_searchCondition').val();
                 filter(${var}, '&' + term.options[term.selectedIndex].value + '=', condition);
             }
-
+            
             function clear_${var}_${divToUpdate}(){
                 var condition = $('#${var}_searchCondition').val('');
                 filter(${var}, '', '');
