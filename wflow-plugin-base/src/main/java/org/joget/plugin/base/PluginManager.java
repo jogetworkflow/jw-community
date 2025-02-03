@@ -40,10 +40,14 @@ import freemarker.template.DefaultObjectWrapper;
 import freemarker.template.Template;
 import freemarker.template.TemplateModel;
 import freemarker.template.TemplateModelException;
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
 import java.io.StringWriter;
 import java.io.Writer;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.Dictionary;
 import java.util.Enumeration;
 import java.util.HashSet;
 import java.util.jar.JarEntry;
@@ -283,9 +287,13 @@ public class PluginManager implements ApplicationContextAware {
                 Thread.sleep(50);
             } while (prevSize < file.length());
             
+            //try uninstall first
+            uninstallBundle(file.toURI().toURL().toExternalForm());
+            
             Bundle bundle = installBundle(file.toURI().toURL().toExternalForm());
             if (bundle != null) {
                 startBundle(bundle);
+                checkDependency(bundle);
                 LogUtil.info(PluginManager.class.getName(), "Installed plugin " + file.getName());
             }
         } catch (Exception e) {
@@ -341,7 +349,16 @@ public class PluginManager implements ApplicationContextAware {
 
     protected void recurseDirectory(Collection<URL> urlList, File baseDirFile) {
         File[] files = baseDirFile.listFiles();
+        
         if (files != null) {
+            // Sort the files in alphanumeric order
+            Arrays.sort(files, new Comparator<File>() {
+                @Override
+                public int compare(File file1, File file2) {
+                    return file1.getName().compareToIgnoreCase(file2.getName());
+                }
+            });
+                
             for (File file : files) {
                 //LogUtil.info(getClass().getName(), " -" + file.getName());
                 if (file.isFile() && file.getName().toLowerCase().endsWith(".jar")) {
@@ -368,6 +385,7 @@ public class PluginManager implements ApplicationContextAware {
             } else {
                 newBundle.update();
             }  
+
             // clear cache
             clearCache();
             return newBundle;
@@ -377,6 +395,162 @@ public class PluginManager implements ApplicationContextAware {
         }
     }
     
+    /**
+     * Used to check dependency plugin for addon builder after upload or file change.
+     * 
+     * @param bundle
+     * @return 
+     */
+    protected void checkDependency(Bundle bundle) {
+        try {
+            BundleContext context = getOsgiContainer().getBundleContext();
+            
+            //if addon builder, relaod dependent plugins
+            if (isAddonBuilder(context, bundle)) {
+                if (reloadDependentPlugins(bundle)) {
+                    // clear cache
+                    clearCache();
+                }
+            }
+        } catch (Exception be) {
+            LogUtil.error(PluginManager.class.getName(), be, "Failed to check dependency: " + be.toString());
+        }
+    }
+    
+    /**
+     * Check the plugin bundle has any addon builder or not
+     * 
+     * @param bundle
+     * @return 
+     */
+    protected boolean isAddonBuilder(BundleContext context, Bundle bundle) {
+        boolean isAddonBuilder = false;
+        try {
+            Class addonBuilder = Class.forName("org.joget.apps.app.model.CustomBuilder");
+            
+            ServiceReference[] refs = bundle.getRegisteredServices();
+            if (refs != null) {
+                for (ServiceReference sr : refs) {
+                    LogUtil.debug(PluginManager.class.getName(), " bundle service: " + sr);
+                    Object obj = context.getService(sr);
+                    context.ungetService(sr);
+                    if (addonBuilder.isInstance(obj)) {
+                        isAddonBuilder = true;
+                        break;
+                    }
+                }
+            }
+        } catch (Exception be) {
+            LogUtil.error(PluginManager.class.getName(), be, "");
+        }
+        
+        return isAddonBuilder;
+    }
+    
+    /**
+     * Used to reload other dependent plugins of addon builder plugin after addon builder installed
+     * 
+     * @param bundle 
+     * @return  
+     */
+    protected boolean reloadDependentPlugins(Bundle bundle) {
+        boolean reloaded = false;
+        try {
+            String groupId = getBundleGroupId(bundle);
+            
+            if (groupId != null) {
+                BundleContext context = getOsgiContainer().getBundleContext();
+                for (Bundle b : context.getBundles()) {
+                    if (!b.equals(bundle) && isDependentPlugins(b, groupId)) {
+                        uninstallBundle(b.getLocation());
+                        Bundle newBundle = installBundle(b.getLocation());
+                        if (newBundle != null) {
+                            startBundle(newBundle);
+                        }
+                        
+                        reloaded = true;
+                        
+                        LogUtil.info(PluginManager.class.getName(), "Reloaded plugin " + b.getSymbolicName());
+                    }
+                }
+            }
+        } catch (Exception be) {
+            LogUtil.error(PluginManager.class.getName(), be, "");
+        }
+        return reloaded;
+    }
+    
+    /**
+     * To retrieve the pom file resource URL of a plugin bundle
+     * 
+     * @param bundle
+     * @param ext
+     * @return 
+     */
+    protected URL getBundlePomResourceUrl(Bundle bundle, String ext) {
+        String path = bundle.getSymbolicName();
+        path = path.substring(0, path.lastIndexOf(".")) + "/" + path.substring(path.lastIndexOf(".") + 1);
+        URL resourceUrl = bundle.getResource("META-INF/maven/"+path+"/pom." + ext);
+        if (resourceUrl == null) {
+            path = bundle.getSymbolicName();
+            
+            Dictionary<String,String> dic = bundle.getHeaders();
+            String name = dic.get("Bundle-Name");
+            path = path.substring(0, path.lastIndexOf(".")) + "/" + name;
+
+            resourceUrl = bundle.getResource("META-INF/maven/"+path+"/pom." + ext);
+        }
+        return resourceUrl;
+    }
+    
+    /**
+     * To retrieve the plugin group id of a plugin bundle
+     * 
+     * @param bundle
+     * @return 
+     */
+    protected String getBundleGroupId(Bundle bundle) {
+        try {
+            URL resourceUrl = getBundlePomResourceUrl(bundle, "properties");
+            if (resourceUrl != null) {
+                try (InputStream inputStream = resourceUrl.openStream()) {
+                    Properties properties = new Properties();
+                    properties.load(inputStream);
+
+                    return properties.getProperty("groupId");
+                }
+            }
+        } catch (Exception be) {
+            LogUtil.error(PluginManager.class.getName(), be, "");
+        }
+        return null;
+    }
+    
+    /**
+     * To check this plugin bundle is dependent on another add on bundle based on group id
+     * @param bundle
+     * @param groupId
+     * @return 
+     */
+    protected boolean isDependentPlugins(Bundle bundle, String groupId) {
+        URL resourceUrl = getBundlePomResourceUrl(bundle, "xml");
+        
+        if (resourceUrl != null) {
+            // Open the stream and read the content
+            try (BufferedReader reader = new BufferedReader(new InputStreamReader(resourceUrl.openStream()))) {
+                String line;
+                while ((line = reader.readLine()) != null) {
+                    if (line.contains("<groupId>"+groupId+"</groupId>")) {
+                        return true;
+                    }
+                }
+            } catch (Exception be) {
+                LogUtil.error(PluginManager.class.getName(), be, "");
+            }
+        }
+        return false;
+    }
+
     protected void uninstallBundle(String location) {
         try {
             BundleContext context = getOsgiContainer().getBundleContext();
@@ -411,7 +585,7 @@ public class PluginManager implements ApplicationContextAware {
         }
         return false;
     }
-
+    
     /**
      * List registered plugins
      * @return
@@ -672,6 +846,8 @@ public class PluginManager implements ApplicationContextAware {
                             } 
                         }
                     }
+                } else {
+                    uninstallBundle(location);
                 }
                 
                 isValid = true;
@@ -699,6 +875,7 @@ public class PluginManager implements ApplicationContextAware {
                 Bundle newBundle = installBundle(location);
                 if (newBundle != null) {
                     startBundle(newBundle);
+                    checkDependency(newBundle);
                 } else {
                     //delete invalid file
                     try {
@@ -1531,10 +1708,14 @@ public class PluginManager implements ApplicationContextAware {
     
     public static void registerCustomPluginInterface(CustomPluginInterface interfaceClass) {
         getCache().getCustomPluginInterfaces().put(interfaceClass.getClassname(), interfaceClass);
+        getCache().getPluginCache().remove(interfaceClass.getClassObj());
     }
     
     public static void unregisterCustomPluginInterface(String className) {
-        getCache().getCustomPluginInterfaces().remove(className);
+        if (getCache().getCustomPluginInterfaces().containsKey(className)) {
+            getCache().getPluginCache().remove(getCache().getCustomPluginInterfaces().get(className).getClassObj());
+            getCache().getCustomPluginInterfaces().remove(className);
+        }
     }
     
     public static CustomPluginInterface getCustomPluginInterface(String className) {
