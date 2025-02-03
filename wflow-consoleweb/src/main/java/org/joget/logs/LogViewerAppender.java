@@ -19,6 +19,7 @@ import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.TimeUnit;
 import jakarta.servlet.http.HttpServletRequest;
+import java.nio.file.NoSuchFileException;
 import org.apache.commons.lang.RandomStringUtils;
 import org.apache.http.client.HttpRequestRetryHandler;
 import org.apache.http.client.methods.HttpPost;
@@ -138,7 +139,7 @@ public class LogViewerAppender extends AbstractAppender {
         return qwCache;
     }
 
-    protected synchronized Writer getWriter(String appId) {
+    protected Writer getWriter(String appId) {
         try {
             String filename = getFileName(appId, null);
 
@@ -162,6 +163,9 @@ public class LogViewerAppender extends AbstractAppender {
             Writer writer = getCache().get(filename);
 
             return writer;
+        } catch (NoSuchFileException e) {
+            // ignore file already deleted
+            return null;
         } catch (Exception e) {
             e.printStackTrace();
             return null;
