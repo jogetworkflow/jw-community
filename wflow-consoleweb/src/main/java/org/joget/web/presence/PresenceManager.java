@@ -18,6 +18,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ExecutorService;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.TimeUnit;
 import jakarta.servlet.AsyncContext;
@@ -28,6 +29,7 @@ import org.apache.commons.io.FileUtils;
 import org.joget.commons.util.DynamicDataSourceManager;
 import org.joget.commons.util.HostManager;
 import org.joget.commons.util.LogUtil;
+import org.joget.commons.util.PluginThread;
 import org.joget.commons.util.ServerUtil;
 import org.joget.commons.util.SetupManager;
 import org.joget.directory.model.User;
@@ -85,6 +87,8 @@ public class PresenceManager {
 
     });   
 
+    static ExecutorService executorService = PluginThread.getAsyncExecutorService();
+        
     protected static void sendResponse(String path) {
         for (String key: asyncContexts.keySet()) {
             AsyncContext asyncContext = asyncContexts.get(key);
@@ -238,58 +242,68 @@ public class PresenceManager {
     }
     
     public static void join(String path, String sessionId, User user) {
-        Map<String, Map<String, UserEntry>> pathMap = loadPathMap();
-        Map<String, UserEntry> sessionMap = pathMap.get(path);
-        if (sessionMap == null) {
-            sessionMap = new HashMap<>();
-            pathMap.put(path, sessionMap);
-        }
-        
-        removeInactive(sessionMap, path);
-        
-        if (user != null) {
-            UserEntry userEntry = new UserEntry();
-            userEntry.setUsername(user.getUsername());
-            userEntry.setEmail(user.getEmail());
-            userEntry.setLastAccess(new Date());
-            sessionMap.put(sessionId, userEntry);
-            LogUtil.debug(PresenceManager.class.getName(), "join:" + path + ":" + user.getUsername() + ":" + sessionId);
-        } else {
-            sessionMap.remove(sessionId);
-            LogUtil.debug(PresenceManager.class.getName(), "remove:" + path + ":" + sessionId);
-        }
-        savePathMap(pathMap);
-        resumeNotifier();
+        executorService.submit(new Runnable() {
+            @Override
+            public void run() {        
+                Map<String, Map<String, UserEntry>> pathMap = loadPathMap();
+                Map<String, UserEntry> sessionMap = pathMap.get(path);
+                if (sessionMap == null) {
+                    sessionMap = new HashMap<>();
+                    pathMap.put(path, sessionMap);
+                }
+
+                removeInactive(sessionMap, path);
+
+                if (user != null) {
+                    UserEntry userEntry = new UserEntry();
+                    userEntry.setUsername(user.getUsername());
+                    userEntry.setEmail(user.getEmail());
+                    userEntry.setLastAccess(new Date());
+                    sessionMap.put(sessionId, userEntry);
+                    LogUtil.debug(PresenceManager.class.getName(), "join:" + path + ":" + user.getUsername() + ":" + sessionId);
+                } else {
+                    sessionMap.remove(sessionId);
+                    LogUtil.debug(PresenceManager.class.getName(), "remove:" + path + ":" + sessionId);
+                }
+                savePathMap(pathMap);
+                resumeNotifier();
+            }
+        });
     }
 
     public static void leave(String path, String sessionId) {
-        Map<String, Map<String, UserEntry>> pathMap = loadPathMap();
-        if (path != null) {
-            Map<String, UserEntry> sessionMap = pathMap.get(path);
-            
-            removeInactive(sessionMap, path);
-            
-            if (sessionMap != null) {
-                sessionMap.remove(sessionId);
-                if (sessionMap.isEmpty()) {
-                    pathMap.remove(path);
+        executorService.submit(new Runnable() {
+            @Override
+            public void run() {        
+                Map<String, Map<String, UserEntry>> pathMap = loadPathMap();
+                if (path != null) {
+                    Map<String, UserEntry> sessionMap = pathMap.get(path);
+
+                    removeInactive(sessionMap, path);
+
+                    if (sessionMap != null) {
+                        sessionMap.remove(sessionId);
+                        if (sessionMap.isEmpty()) {
+                            pathMap.remove(path);
+                        }
+                    }
+                } else {
+                    for (String tempPath : pathMap.keySet()) {
+                        Map<String, UserEntry> sessionMap = pathMap.get(tempPath);
+
+                        removeInactive(sessionMap, tempPath);
+
+                        sessionMap.remove(sessionId);
+                        if (sessionMap.isEmpty()) {
+                            pathMap.remove(tempPath);
+                        }
+                    }
                 }
+                savePathMap(pathMap);
+                resumeNotifier();
+                LogUtil.debug(PresenceManager.class.getName(), "leave:" + path + ":" + sessionId);
             }
-        } else {
-            for (String tempPath : pathMap.keySet()) {
-                Map<String, UserEntry> sessionMap = pathMap.get(tempPath);
-                
-                removeInactive(sessionMap, tempPath);
-        
-                sessionMap.remove(sessionId);
-                if (sessionMap.isEmpty()) {
-                    pathMap.remove(tempPath);
-                }
-            }
-        }
-        savePathMap(pathMap);
-        resumeNotifier();
-        LogUtil.debug(PresenceManager.class.getName(), "leave:" + path + ":" + sessionId);
+        });
     }
     
     protected static void removeInactive(Map<String, UserEntry> sessionMap, String path) {
