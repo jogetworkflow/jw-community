@@ -19,7 +19,7 @@
                 <div class="form-row">
                     <label for="file" class="upload"><fmt:message key="console.app.import.label.selectFile"/></label>
                     <span class="form-input">
-                        <input id="file" type="file" name="file"/>
+                        <input id="file" type="file" name="file" multiple/>
                     </span>
                 </div>
                 <div class="form-buttons">

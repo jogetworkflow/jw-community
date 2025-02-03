@@ -170,8 +170,12 @@ public class FileStore {
             LogUtil.info(FileStore.class.getName(), name + " - File size exceed limit.");
             throw new FileLimitException("File size exceed limit.");
         }
-        
-        return ((Map<String, MultipartFile[]>) fileStore.get()).get(name);
+        MultipartFile[] files = ((Map<String, MultipartFile[]>) fileStore.get()).get(name);
+        if (files != null && files.length > 0) {
+            return files;
+        } else {
+            return null;
+        }
     }
 
     /**

@@ -3189,3 +3189,362 @@ body[builder-theme='dark'] .guider_arrow {
 #builder-message .toast .close:focus-visible {
     outline: none;
 }
+
+body[builder-theme] #resources .view-toggle-button, 
+body[builder-theme] #resources .sort-toggle-button {
+    float: inline-end;
+}
+
+body[builder-theme] #resources .view-toggle-group, 
+body[builder-theme] #resources .sort-toggle-group {
+    display: inline-flex;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    overflow: hidden;
+    width: 60px; 
+}
+
+body[builder-theme] #resources .sort-toggle-group {
+    margin-left: 10px;
+    float: inherit;
+}
+
+body[builder-theme] #resources .view-toggle-group {
+    float: right;
+}
+
+body[builder-theme] #resources .view-toggle-button, 
+body[builder-theme] #resources .sort-toggle-button {
+    flex: 1;
+    text-align: center;
+    padding: 8px; 
+    cursor: pointer;
+    background-color: #f5f5f5;
+    border-right: 1px solid #ddd;
+    transition: background-color 0.2s ease;
+}
+
+body[builder-theme] #resources .view-toggle-button:last-child, 
+body[builder-theme] #resources .sort-toggle-button:last-child {
+    border-right: none;
+}
+
+body[builder-theme] #resources .view-toggle-button:hover, 
+body[builder-theme] #resources .sort-toggle-button:hover {
+    background-color: #e5e5e5;
+}
+
+body[builder-theme] #resources input[type="radio"]:checked + label {
+    background-color: #ddd;
+}
+
+body[builder-theme] #resources .view-toggle-button i, 
+body[builder-theme] #resources .sort-toggle-button i {
+    font-size: 14px; /* Adjust icon size */
+}
+
+body[builder-theme='dark'] #resources .view-toggle-button, 
+body[builder-theme='dark'] #resources .sort-toggle-button {
+    float: inline-end;
+    flex: 1;
+    text-align: center;
+    padding: 8px;
+    cursor: pointer;
+    background-color: #333;
+    color: #fff; 
+    border-right: 1px solid #444; 
+    transition: background-color 0.2s ease;
+}
+
+body[builder-theme='dark'] #resources .view-toggle-button:last-child, 
+body[builder-theme='dark'] #resources .sort-toggle-button:last-child {
+    border-right: none;
+}
+
+body[builder-theme='dark'] #resources .view-toggle-group, 
+body[builder-theme='dark'] #resources .sort-toggle-group {
+    display: inline-flex;
+    border: 1px solid #444; 
+    border-radius: 5px;
+    overflow: hidden;
+    width: 60px; 
+}
+
+body[builder-theme='dark'] #resources .sort-toggle-group {
+    margin-left: 10px;
+}
+
+body[builder-theme='dark'] #resources .view-toggle-button:hover, 
+body[builder-theme='dark'] #resources .sort-toggle-button:hover {
+    background-color: #555;
+}
+
+body[builder-theme='dark'] #resources input[type="radio"]:checked + label {
+    background-color: #555; 
+}
+
+body[builder-theme='dark'] #resources .view-toggle-button i, 
+body[builder-theme='dark'] #resources .sort-toggle-button i {
+    font-size: 14px; 
+    color: #fff;
+}
+
+body[builder-theme] #resources #resourcesGrid {
+    gap: 20px; 
+    padding: 20px 0 0 0;
+}
+
+body[builder-theme] #resources .sort-field-group {
+    margin-left: 5px;
+}
+
+body[builder-theme] .file-manager .file a:hover .hover,
+body[builder-theme] .file-manager .file .file-name small{
+    display: block
+}
+body[builder-theme] .file-manager .file {
+    padding: 0 !important
+}
+
+body[builder-theme] .file-manager .file .icon{
+    text-align: center
+}
+
+
+body[builder-theme] .file-manager .file {
+    position: relative;
+    border-radius: .55rem;
+    overflow: hidden
+}
+
+body[builder-theme] .file-manager .file .image,
+body[builder-theme] .file-manager .file .icon {
+    max-height: 180px;
+    overflow: hidden;
+    background-size: cover;
+    background-position: top
+}
+
+body[builder-theme] .file-manager .file .hover {
+    position: absolute;
+    right: 10px;
+    top: 10px;
+    display: none;
+    transition: all 0.2s ease-in-out
+}
+
+body[builder-theme] .file-manager .file a:hover .hover {
+    transition: all 0.2s ease-in-out
+}
+
+body[builder-theme] .file-manager .file .icon {
+    padding: 18px 10px;
+    display: table;
+    height: 138px    
+}
+
+body[builder-theme] .file-manager .file .icon i {
+    display: table-cell;
+    font-size: 60px;
+    vertical-align: middle;
+    color: #777;
+    line-height: 100px
+}
+body[builder-theme] .file-manager .file .file-name {
+    padding: 10px;
+    border-top: 2px solid #f7f7f7;
+    display: flex;            
+    flex-direction: column;   
+    width: -webkit-fill-available;              
+    max-width: 100%;        
+    align-items: flex-start; 
+}
+
+body[builder-theme='dark'] .file-manager .file .file-name {
+    border-top: 2px solid var(--theme-header-color-1);
+}
+
+body[builder-theme] .file-manager .file .file-name p {
+    margin: 0;
+    padding: 0;
+    flex-grow: 1;              
+    max-width: 100%;           
+    text-overflow: ellipsis;  
+    white-space: nowrap;      
+    overflow: hidden;
+}
+
+body[builder-theme] .file-manager .file .file-name small {
+    display: flex;
+    justify-content: space-between; 
+    width: 100%;                    
+}
+
+body[builder-theme] .file-manager .file .file-name small .date {
+    margin-left: auto;     
+}
+
+body[builder-theme] .file-manager .folder {
+    padding: 20px;
+    display: block;
+    color: #777
+}
+
+@media only screen and (max-width: 992px) {
+    body[builder-theme] .file-manager .nav-tabs {
+        padding-left: 0;
+        padding-right: 0
+    }
+    body[builder-theme] .file-manager .nav-tabs .nav-item {
+        display: inline-block
+    }
+}
+
+body[builder-theme] .file-manager .card {
+    background: #fff;
+    border: 0;
+    margin-bottom: 30px;
+    border-radius: .55rem;
+    position: relative;
+    width: 100%;
+    max-height: 100%;
+    box-shadow: rgba(0, 0, 0, 0.05) 0px 0px 0px 1px;
+}
+body[builder-theme='dark'] .file-manager .card {
+    background: var(--theme-primary-color-3);
+}
+
+body[builder-theme] a:hover {
+    text-decoration:none;
+}
+body[builder-theme] .row {
+    display: flex;
+    flex-wrap: wrap;
+}
+body[builder-theme] .file-manager .file-img {
+    width: 100%;
+    border-radius: 8px;
+    object-fit: contain;
+    text-align: center;
+}
+body[builder-theme] .file {
+    display: flex;
+    justify-content: flex-start; 
+    padding: 10px;
+    height: 225px; 
+    flex-direction: column;
+    flex-wrap: nowrap;
+    align-items: center;
+}
+
+@media (min-width: 1441px) { 
+     body[builder-theme] [class*="col-"] {
+         flex: 0 1 31%;
+         max-width: 14%;
+    }
+}
+
+@media (max-width: 1440px) { 
+    body[builder-theme] [class*="col-"] {
+         flex: 0 1 25%;
+         max-width: 17%;
+    }
+}
+@media (max-width: 1138px) { 
+ body[builder-theme] [class*="col-"] {
+         flex: 0 1 27%;
+         max-width: 21%;
+    }
+}
+
+@media (max-width:980px) and (min-width: 832px){
+ body[builder-theme] [class*="col-"] {
+         flex: 0 1 29%;
+         max-width: 29%;
+    }
+}
+
+@media only screen and (max-width: 850px) {
+    body[builder-theme] [class*="col-"] {
+         flex: 0 30 45%;
+         max-width: 44%;
+    }
+}
+
+@media only screen and (max-width: 643px) {
+    body[builder-theme] [class*="col-"] {
+         flex: 0 30 100%;
+         max-width: 92%;  
+    }
+    body[builder-theme] .file-manager .file .file-name {
+        width: -webkit-fill-available;
+        max-width: 100%;
+    }
+    body[builder-theme] .img-container{
+        max-height: 168px;
+    }
+}
+
+body[builder-theme] .img-container{
+    width:inherit;
+    height:inherit;
+    object-fit: contain;
+    min-height: 168px;
+    display: inline-block;
+}
+body[builder-theme] .img-container.portrait {
+    width: 123px;
+}
+
+body[builder-theme] .img-container.landscape {
+    width: 100%; 
+    height: 150px;
+}
+
+body[builder-theme] .img-container.square {
+    width: auto; 
+    height: 100px; 
+}
+body[builder-theme] [class*="col-"] {
+    padding-right: 30px;
+}
+body[builder-theme] .file a {
+    text-decoration:none !important;
+}
+
+body[builder-theme] .file-name .text-muted { 
+    color: #333333 !important; 
+}
+body[builder-theme='dark'] .file-name .text-muted { 
+    color: var(--theme-header-color-2)!important; 
+}
+body[builder-theme] .file-name small{ 
+    color:#6c757d!important; 
+}
+body[builder-theme] .card:hover {
+  background-color: #f0f0f0;  
+}
+body[builder-theme='dark'] .card:hover {
+  background-color: #000;  
+}
+body[builder-theme] .file-count {    
+    font-size: 1rem;
+    font-weight: 400;
+    line-height: 1.5;
+    list-style: none;
+    box-sizing: border-box;
+    display: flex;
+    margin-bottom: 25px;
+    margin-left: 0px;
+    padding: 0px 0 0;
+    color: #999;
+    position: relative;
+    float: right;
+    right: 30px;
+    bottom: 10px;
+}
+body[builder-theme] #resources .tooltip { 
+    margin-left: 5px;
+    margin-right: 5px;
+}
+
