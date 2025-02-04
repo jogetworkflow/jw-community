@@ -115,9 +115,6 @@ public class FormDefinitionDaoImpl extends AbstractAppVersionedObjectDao<FormDef
             FormDefinition formDef = load(id, appDefinition);
 
             if (formDef != null) {
-                if (shouldEvict(appDefinition)) {
-                    findSession().evict(formDef);
-                }
                 element = new Element(cacheKey, (Serializable) formDef);
                 cache.put(element, appDefinition);
             }
