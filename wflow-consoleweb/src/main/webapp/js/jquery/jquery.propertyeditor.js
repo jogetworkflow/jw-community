@@ -9321,6 +9321,12 @@ PropertyEditor.Type.CodeEditor.prototype = {
         $("#"+thisObj.id).parent().parent().find(".property-label").append(tooltip);
 
         resetHeight();
+
+        $("#" + thisObj.id).closest(".property-editor-property-container").siblings(".property-editor-page-title").on("click", function(){
+            setTimeout(function(){
+                thisObj.codeeditor.refresh();
+            }, 1)
+        })
     },
     pageShown: function() {
         this.codeeditor.refresh();

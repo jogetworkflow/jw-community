@@ -244,6 +244,27 @@
     }
 }
 
+  var throttleSearch = (func, limit) => {
+    let lastFunc;
+    let lastRan;
+    return function() {
+        const context = this;
+        const args = arguments;
+        if (!lastRan) {
+            func.apply(context, args);
+            lastRan = Date.now();
+        } else {
+            clearTimeout(lastFunc);
+            lastFunc = setTimeout(function() {
+                if (Date.now() - lastRan >= limit) {
+                    func.apply(context, args);
+                    lastRan = Date.now();
+                }
+            }, limit - (Date.now() - lastRan));
+        }
+    };
+  };
+
   var getFindBehaviour = function getFindBehaviour(cm, defaultText, callback) {
     if (!defaultText) {
       defaultText = '';
@@ -259,7 +280,7 @@
         if (!query) return;
         doSearch(cm, query, !!e.shiftKey);
       },
-      onInput: function onInput(inputs, e) {
+      onInput: throttleSearch(function onInput(inputs, e) {
         var query = inputs[0].value;
         if (!query) {
           resetCount(cm);
@@ -267,7 +288,7 @@
           return;
         };
         doSearch(cm, query, !!e.shiftKey, false);
-      }
+      }, 500)
     };
     if (!!callback) {
       behaviour.callback = callback;

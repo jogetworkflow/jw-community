@@ -1,7 +1,15 @@
 .CodeMirror-fullscreen {
   position: fixed !important;
-  top: 0; left: 0; right: 0 !important; bottom: 0 !important;
+  top: 0; left: 0; right: 0; bottom: 0;
   height: auto !important;
   z-index: 2147483646 !important;
   font-size:20px;
+}
+
+body.quick-nav-shown.quick-nav-position-left .CodeMirror-fullscreen {
+  left: 40px !important; right: 0 !important; bottom: 0 !important;
+}
+
+body.quick-nav-shown:not(.quick-nav-position-left) .CodeMirror-fullscreen {
+  left: 0 !important; right: 40px !important; bottom: 0 !important;
 }
