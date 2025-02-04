@@ -7,6 +7,7 @@ import org.joget.commons.util.LogUtil;
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.security.web.savedrequest.HttpSessionRequestCache;
 import org.springframework.security.web.savedrequest.SavedRequest;
+import org.springframework.util.ClassUtils;
 
 public class IdpMfaUtil {
 
@@ -107,5 +108,16 @@ public class IdpMfaUtil {
             LogUtil.debug(IdpMfaUtil.class.getName(), e.getMessage());
             return null;
         }
+    }
+
+    /**
+     * Get the class name of the plugin.<br>
+     * This method is introduced due to Joget multi-tenancy, which uses Aspect and messes with the class name.
+     *
+     * @param o the object to get the class name
+     * @return the actual class name of the object
+     */
+    public static String getClassName(Object o) {
+        return ClassUtils.getUserClass(o).getName();
     }
 }

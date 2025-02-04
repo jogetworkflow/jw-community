@@ -1,11 +1,10 @@
 package org.joget.directory.model.idp;
 
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpSession;
 import org.joget.commons.util.StringUtil;
 import org.joget.directory.model.service.IdpMfaUtil;
 import org.joget.plugin.base.ExtDefaultPlugin;
-
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpSession;
 
 /**
  * It is recommended that {@link IdentityProviderPlugin} implementations extend this class
@@ -80,8 +79,8 @@ public abstract class AbstractIdentityProviderPlugin extends ExtDefaultPlugin im
     }
 
     @Override
-    public String getClassName() {
-        return getClass().getName();
+    public final String getClassName() {
+        return IdpMfaUtil.getClassName(this);
     }
 
     @Override
