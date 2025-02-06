@@ -52,9 +52,6 @@
     </script>
 </#if>
 <div class="userProfile-body-content">
-    <div class="userProfile-body-header">
-        ${element.properties.headerTitle!}
-    </div>
     <#if element.properties.view! == 'reloadAfterSaved'>
         <script>
             top.location.href = "${element.properties.redirectURL!}";

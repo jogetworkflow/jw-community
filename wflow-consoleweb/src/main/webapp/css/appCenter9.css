@@ -2,6 +2,10 @@ body.popupBody{
     color:#333 !important;
 }
 
+body.popupBody #main-body-header {
+    color:#333 !important;
+}
+
 body#login #loginForm{
     background: transparent;
     box-shadow: none;
@@ -664,6 +668,11 @@ body:not(:has(#adminBar)) #home_column #home:has(#filters_applist){
     position: absolute;
     bottom: 0px;
     width: 100%;
+    transition: bottom 0.3s ease-in-out;
+}
+
+body.adminBarShown #sidebar .nav-tabs.user-menu {
+    bottom: 35px;
 }
 
 #mCSB_1_container{
@@ -768,6 +777,11 @@ body.dark-mode  .dataList#dataList_applist .column_2 {
     display: none !important;
 }
 
+body #sidebar .user-menu>li>a>small {
+    word-break:break-word;
+    display:block;
+}
+
 .breadcrumb{
     padding-bottom: 5px;
     padding-top: 0px;
@@ -868,6 +882,7 @@ body.dark-mode  .dataList#dataList_applist .column_2 {
     body.sidebar-minimized #sidebar .user-menu>li>a>span,
     body.sidebar-minimized #sidebar .user-menu>li>a>small{
         padding-left: 70px !important; 
+        word-break: initial;
     }
     body.sidebar-minimized #sidebar .nav>li>a.menu-link>span:not(.badge){
         padding-left: 60px;
@@ -1069,6 +1084,7 @@ body.rtl #navigation li.mm-profile.user-link small{
     display: block;
     width: 100%;
     text-align: right;
+    padding-left: 0px;
 }
 body.rtl .header-nav a.btn i{
     padding-right: 0px;
