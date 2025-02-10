@@ -6389,8 +6389,8 @@ _CustomBuilder.Builder = {
             
             if (self.component.builderTemplate.isAbsolutePosition(elementObj, self.component)) {
                 var position = $(self.dragElement).position();
-                elementObj.x_offset = position.left;
-                elementObj.y_offset = position.top;
+                elementObj.x_offset = position.left / self.zoom;
+                elementObj.y_offset = position.top / self.zoom;
             }
      
             var childsDataHolder = self.component.builderTemplate.getChildsDataHolder(elementObj, self.component);
@@ -6461,8 +6461,8 @@ _CustomBuilder.Builder = {
         if (self.component.builderTemplate.isAbsolutePosition(self.data, self.component)) {
             var elementObj = $(self.dragElement).data("data");
             var position = $(self.dragElement).position();
-            elementObj.x_offset = position.left;
-            elementObj.y_offset = position.top;
+            elementObj.x_offset = position.left / self.zoom;
+            elementObj.y_offset = position.top / self.zoom;
         }
         
         if (CustomBuilder.Builder.options.callbacks["moveElement"] !== undefined && CustomBuilder.Builder.options.callbacks["moveElement"] !== "") {
