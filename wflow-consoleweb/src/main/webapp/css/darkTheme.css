@@ -805,3 +805,24 @@ body.popupBody.dark-mode #section-actions .form-cell, body.popupBody.dark-mode .
 body.dark-mode #sidebar .nav > li > ul {
     background: var(--theme-background);
 }
+body.dark-mode .pika-single{
+    background: var(--theme-background);
+    border-color :var(--theme-border-color)
+}
+body.dark-mode .pika-label{
+    background: var(--theme-background);
+    color: var(--theme-font-color);
+}
+body.dark-mode .pika-next,
+body.dark-mode .pika-prev{
+    filter: invert(100%) sepia(3%) saturate(13%) hue-rotate(81deg) brightness(106%) contrast(106%);
+}
+body.dark-mode .pika-button{
+    background-color: var(--theme-content-background);
+}
+body.dark-mode .pika-button:hover{
+    background: #ff8000;
+}
+body.dark-mode .is-selected .pika-button{
+    background-color: var(--theme-sidebar-active-icon);
+}
