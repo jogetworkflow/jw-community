@@ -2,6 +2,33 @@ Joget DX COMMUNITY
 ====================
 For more information, please refer to https://community.joget.org
 
+8.1.10
+======
+d5c0f7620 Fixed: jw-community - Security - Update Apache Tomcat to 9.0.98 for CVE-2024-56337. T5585 @8.1-SNAPSHOT
+c21873e11 Fixed: wflow-commons - Security - Update Spring Security to 5.8.16. T5364 @7.1-SNAPSHOT
+f3f4c7a92 Fixed: wflow-core - JsonApiDatalistBinder - Fixed list filter not working as intended when the field id contains and/or. T5464 @8.1-SNAPSHOT
+b6410487a Fixed: wflow-consoleweb - Image radio properties - Fixed overflow when the screen size is small issue. @8.1-SNAPSHOT
+46d954d7e Modified: wflow-core - Text Field - Modified Disable Increment and Decrement feature. @8.1-SNAPSHOT
+a6ebffb50 Fixed: wflow-commons - Hash Variable - imageToBase64 escape format can't handle space in the URL. @8.1-SNAPSHOT
+c1fb7230d Fixed: wflow-core - Section - Visibility control always revert OR back to AND group condition upon editing. T5532 @8.1-SNAPSHOT
+714b821ba Fixed: wflow-wfengine - Monitoring Archived Processes - Activities list wrongly showing other process activities. @8.1-SNAPSHOT
+d341f8c13 Fixed: wflow-core - UserviewUtil - Offline cache URL query parameters not generated with same logic as hyperlink action buttons. @8.1-SNAPSHOT
+01a7d9f19 Fixed: wflow-consoleweb - X-Admin Theme - Fixed Daily Text not fully visible at Certain widths issue. @8.1-SNAPSHOT
+f1bf3d10a Fixed: wflow-core - FormHashVariable - Primary key not in request parameter for multipage partial saving. @8.1-SNAPSHOT
+8f6fff738 Fixed: wflow-core - Text Field - The increment and decrement feature in Text Field can't be removed. @8.1-SNAPSHOT
+e1354b9b7 Fixed: wflow-core - AppServiceImpl - No validation checking for clone app table prefix. @8.1-SNAPSHOT
+2a22971d3 Fixed: wflow-consoleweb - Analyzer Label UI Issue - Fixed analyzer label ui misposition in DX8 Themes, and XAdmin @8.1-SNAPSHOT
+d00db6fd2 Fixed: wflow-commons - SetupManager - deleteSetting method throws NullPointerException if property does not exist. @8.1-SNAPSHOT
+1c2ce5f04 Fixed: wflow-consoleweb - Rich Text Editor - Fixed Rich Text Editor fullscreen view issue in Userview Builder. @8.1-SNAPSHOT
+2104b4f06 Fixed: wflow-core - Beanshell Form Binder - Added missing tooltip for beanshell form load binder. @8.1-SNAPSHOT
+609e8866d Fixed: wflow-consoleweb - UI Builder - Rename AJAX Event disable scrolling to component label. @8.1-SNAPSHOT
+63845567e Fixed: wflow-consoleweb - App Composer - App version imported when git disabled is deleted when loading version list after enabling git. @8.1-SNAPSHOT
+e159a7df8 Fixed: wflow-consoleweb - Log4j2 - Removed deprecated package scanning in logs. @8.1-SNAPSHOT
+c7edcba40 Fixed: jw-community - Security - Exclude unused dependencies. T5364 @7.0-SNAPSHOT
+7e3ccb81f Fixed: wflow-consoleweb - App Generation - Arabic ID in generated userview menu item causes invalid URL. @7.0-SNAPSHOT
+c334224f5 Fixed: wflow-commons - commons-validator - Upgrade to 1.9.0 to add support for more TLDs. T5416 @7.0-SNAPSHOT
+b434d1922 Fixed: wflow-core - FormDataDaoImpl - Hibernate - Explicitly cast param to TextType to avoid null as bytea in Postgres. @7.0-SNAPSHOT
+
 8.1.9
 =====
 47384e87f Fixed: jw-community - Security - Update Quill JS to 1.3.7, commons-dbcp2 to 2.13.0 & guava to 33.3.1-jre. T5364 @7.1-SNAPSHOT
