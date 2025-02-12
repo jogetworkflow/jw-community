@@ -1,12 +1,6 @@
 <%@ include file="/WEB-INF/jsp/includes/taglibs.jsp" %>
 
 <commons:popupHeader bodyCssClass=" builder-popup no-header" builderTheme="true"/>
-<style>
-    body.rtl div#JsonPluginDefaultDataTable_pluginDefaultList-buttons,
-    body.rtl div#JsonDataTable_pluginList2-buttons {
-        float: right;
-    }
-</style>
 <div id="main-body-content">
     <div id="pluginstab">
         <ul>
