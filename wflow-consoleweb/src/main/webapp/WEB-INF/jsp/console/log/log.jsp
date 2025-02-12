@@ -11,6 +11,7 @@
     .rtl .followbuttondiv {left: 80px; right: unset;}
     .linenumber {display: inline-block; width: 45px; text-align: left; color: lightslategrey; font-size: 10px; vertical-align: top; padding-top: 2px;}
     .text {display: inline-block; width: calc(100% - 55px);}
+    body.no-header.builder-popup div#main-body {margin-top: 0;}
 </style>    
         
 <div id="main">

@@ -196,6 +196,10 @@
     a#licenseLink:hover, a#sysinfoLink:hover {
         background: var(--console-button-secondary-bg-hover)
     }
+
+    div#generalSetup:has(div#header-container > div#system.selected) div.form-buttons {
+        display: none;
+    } 
 </style>
 <div id="nav">
     <div id="nav-title">

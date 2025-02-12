@@ -188,14 +188,14 @@
                 }
             }
             var request = ConnectionManager.post('${pageContext.request.contextPath}/web/console/setting/plugin/uninstall', callback, 'selectedPlugins='+selectedList);
-            
-            localStorage.setItem('selectedList', selectedList);
+           
+            localStorage.setItem('selectedList', $("div#installed tr > td > div.selectionTd input[type='checkbox']:checked").map(function() { return $(this).closest("tr").find("td:nth-child(2)").text(); }).get());
         }
     }
     
     /* Update all selected plugin from marketplace */
     function update(selectedList){
-         if (confirm('<ui:msgEscJS key="cbuilder.seamless.marketplace.confirmPluginInstallation"/>')) {
+        if (confirm('<ui:msgEscJS key="cbuilder.seamless.marketplace.confirmPluginInstallation"/>')) {
             UI.blockUI(); 
             var installUrl = "${pageContext.request.contextPath}/web/json/apps/install";
             
@@ -218,11 +218,19 @@
                 ConnectionManager.post(installUrl, installCallback, installParams);
             }
             
+            var updateSelectedList = $("div#update tr > td > div.selectionTd input[type='checkbox']:checked").map(function() { return $(this).closest("tr").find("td:nth-child(2)").text(); }).get()
+
             //reload the table after all plugin updated
             $.when.apply($, deferreds).then(function(){
                 UI.unblockUI(); 
                 JsonDataTable.refresh();
                 JsonDataTable1.refresh();
+
+                if(updateSelectedList) {
+                    updateSelectedList.forEach(function(item, index){
+                        UI.showConsoleToast(index, item + '<ui:msgEscJS key="console.app.message.update.toast.message"/>', "fas fa-exclamation-circle", 2000, $("div#main")); 
+                    })
+                }
             });
         }
     }

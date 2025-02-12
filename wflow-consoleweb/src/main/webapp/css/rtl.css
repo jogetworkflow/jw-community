@@ -113,7 +113,7 @@ body.rtl .flexigrid div.hDivBox{
 }
 body.rtl .flexigrid div.pDiv div.pDiv2 {
     float: right;
-    width: auto;
+    width: auto !important;
 }
 body .flexigrid div.hDiv th > div{
     text-align: right;

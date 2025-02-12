@@ -360,8 +360,8 @@ AppBuilder = {
                     urlType = "cbuilder/" + type
                 }
                 ConnectionManager.post(CustomBuilder.contextPath+'/web/console/app'+CustomBuilder.appPath+'/'+urlType+'/delete', callback, 'ids=' + id);
-
-                CustomBuilder.showMessage($(item).attr("data-id")+ get_cbuilder_msg('console.app.message.delete.toast.message'), "success");
+        
+                CustomBuilder.showMessage($(item).attr("data-id")+ get_cbuilder_msg('ubuilder.message.delete.toast.message'), "success");
             });
         }
     },

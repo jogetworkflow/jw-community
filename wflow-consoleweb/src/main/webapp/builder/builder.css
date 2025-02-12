@@ -1303,6 +1303,9 @@ body:not(.quick-nav-position-left) #builderToolbar {
     z-index: 10;
     overflow: none;
 }
+body:not(.quick-nav-position-left) .builder-view {
+    right: 40px;
+}
 .builder-view-header h3 {
     font-size: 24px;
     color: #007bff;
@@ -1345,6 +1348,7 @@ body:not(.quick-nav-position-left) #builderToolbar {
     font-size: 12px;
     border: 1px solid #000;
     opacity: 1;
+    z-index: 100000051;
 }
 #filemanager .header .btn-group .btn i.text-dark.la-plus {
     font-size: 90%;
