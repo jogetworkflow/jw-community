@@ -1,6 +1,12 @@
 <%@ include file="/WEB-INF/jsp/includes/taglibs.jsp" %>
 
 <commons:popupHeader bodyCssClass=" builder-popup no-header" builderTheme="true"/>
+<style>
+    body.rtl div#JsonPluginDefaultDataTable_pluginDefaultList-buttons,
+    body.rtl div#JsonDataTable_pluginList2-buttons {
+        float: right;
+    }
+</style>
 <div id="main-body-content">
     <div id="pluginstab">
         <ul>
@@ -132,11 +138,19 @@
                     ConnectionManager.post(installUrl, installCallback, installParams);
                 }
 
+                var updateSelectedList = $("div#update tr > td > div.selectionTd input[type='checkbox']:checked").map(function() { return $(this).closest("tr").find("td:nth-child(2)").text(); }).get()
+
                 //reload the table after all plugin updated
                 $.when.apply($, deferreds).then(function(){
                     UI.unblockUI(); 
                     JsonDataTable.refresh();
                     JsonDataTable1.refresh();
+
+                    if(updateSelectedList) {
+                        updateSelectedList.forEach(function(item, index){
+                                parent.window.CustomBuilder.showMessage(item + '<ui:msgEscJS key="console.app.message.delete.toast.message"/>', "success",true); 
+                        })
+                    }
                 });
             }
         }
@@ -146,6 +160,7 @@
         }
         
         function pluginDefaultDelete(selectedList){
+            var deleteSelectedList = $("div#pluginDefault tr > td > div.selectionTd input[type='checkbox']:checked").map(function() { return $(this).closest("tr").find("td:nth-child(2)").text(); }).get()
             if (confirm('<ui:msgEscJS key="console.app.pluginDefault.delete.label.confirmation"/>')) {
                parent.UI.blockUI();
                var callback = {
@@ -157,9 +172,11 @@
                }
                var request = ConnectionManager.post('${pageContext.request.contextPath}/web/console/app/<c:out value="${appId}"/>/${appVersion}/pluginDefault/delete', callback, 'ids='+selectedList);
 
-               selectedList.forEach(function(item){
-                    parent.window.CustomBuilder.showMessage(item + '<ui:msgEscJS key="console.app.message.delete.toast.message"/>', "success");
-                })
+               if(deleteSelectedList) {
+                deleteSelectedList.forEach(function(item, index){
+                       parent.window.CustomBuilder.showMessage(item + '<ui:msgEscJS key="console.app.message.delete.toast.message"/>', "success",true); 
+                    })
+                }
             }
         }
         function closeDialog() {

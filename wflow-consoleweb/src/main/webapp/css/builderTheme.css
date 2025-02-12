@@ -454,6 +454,9 @@ body[builder-theme] .backToApp a {
     width: 40px;
     color: #03543D;
 }
+body[builder-theme] #dragIcon {
+    width: 40px;
+}
 body[builder-theme] .responsive-buttons{
     padding-top: 3px;
 }

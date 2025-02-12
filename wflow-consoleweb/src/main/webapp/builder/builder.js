@@ -3678,7 +3678,7 @@ _CustomBuilder = {
         $("#builder-quick-nav").prepend('<div class="backToApp"><a class="builder-link" href="'+CustomBuilder.contextPath+'/web/console/app'+CustomBuilder.appPath+'/builders"  target="_self" title="'+get_cbuilder_msg("abuilder.title")+'"><i class="far fa-edit"></i></a></div>');
         
         $("#builder-quick-nav div#dragIcon").remove();
-        $("<div id='dragIcon' style='text-align:center;width:35px;font-size:24px;color:#aaa' title='"+get_cbuilder_msg("abuilder.dragTooltipMessage")+"'><i class='las la-braille'></i></div>").insertAfter("#builder-quick-nav .backToApp");
+        $("<div id='dragIcon' style='text-align:center;font-size:24px;color:#aaa' title='"+get_cbuilder_msg("abuilder.dragTooltipMessage")+"'><i class='las la-braille'></i></div>").insertAfter("#builder-quick-nav .backToApp");
 
         CustomBuilder.builderTypes = [];
         for (var i in data) {

@@ -517,7 +517,7 @@ body::-webkit-scrollbar {
     height: 4px;
 }
 body::-webkit-scrollbar-track {
-    background: rgb(191, 191, 191, 50%);        
+    background: transparent;        
 }
 body::-webkit-scrollbar-thumb {
     background-color: #bfbfbf;    
@@ -1328,10 +1328,16 @@ body.builder-popup {
 .form-input > div.chosen-container {
     width: 100% !important;
 }
+.form-row .form-input label .chosen-container .chosen-results li{
+    white-space: normal;
+}
 .chosen-container .chosen-single,
 .chosen-container .chosen-results, 
-.chosen-container-single .chosen-search {
+.chosen-container-single .chosen-search,
+.chosen-container .chosen-drop {
     color: var(--console-default-font-color);
+    background: var(--console-secondary-background-color);
+    border-color: var(--console-border-color);
 }
 .form-row .form-input:after,
 .form-row:after {
@@ -1378,7 +1384,7 @@ body.builder-popup {
     position: relative;
 }
 .form-row .form-input.withPrefix .prefix {
-    background: #edecec;
+    background: var(--console-main-background-color);
     height: 32px;
     position: absolute;
     top: 0px;
@@ -1976,6 +1982,9 @@ body.webconsole #nav {
 }
 body.webconsole.adminBarShown #nav {
     height: calc(100% - 70px);
+}
+body.rtl.webconsole #main-header #home-link {
+    float: right;
 }
 body.webconsole #main-header, body.webconsole #footer {
     display: block !important;
