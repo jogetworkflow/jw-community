@@ -148,7 +148,7 @@ div#nv-apps h4 {
     display: inline-block;
     float: left;
     margin-top: 12px;
-    color: white;
+    color: var(--console-default-font-color);
     font-weight: bold;
     text-transform: uppercase;
 }
@@ -166,13 +166,13 @@ div#nv-apps h4 {
     margin: 2px 5px;
     display: inline-block;
     background: transparent;
-    color: white;
+    color: var(--console-default-font-color);
     text-decoration: none;
     font-size: 12px;
 }
 #header-links a:hover {
     background: #ddd;
-    color: #333;
+    color: var(--console-button-primary-bg-hover);
     border-radius: 4px;
 }
 
@@ -1320,9 +1320,6 @@ fieldset legend,
     display: block;
     line-height: 25px;
     width: 50%;
-}
-body.builder-popup {
-    white-space: nowrap;
 }
 .form-input input:not([type=checkbox]), .form-input textarea, 
 .form-input > div.chosen-container {
