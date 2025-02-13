@@ -30,12 +30,12 @@
             <fieldset>
                 <legend><fmt:message key="console.builder.create.label.details"><fmt:param value="${builder.objectLabel}"/></fmt:message></legend>
                 <div class="form-row">
-                    <label for="field1"><fmt:message key="console.datalist.common.label.id"/></label>
-                    <span class="form-input withPrefix"><span class="prefix">${builder.idPrefix}</span><form:input path="id" cssErrorClass="form-input-error" /> *</span>
+                    <label for="field1"><fmt:message key="console.datalist.common.label.id"/> <span class="mandatory">*</span></label>
+                    <span class="form-input withPrefix"><span class="prefix">${builder.idPrefix}</span><form:input path="id" cssErrorClass="form-input-error" /></span>
                 </div>
                 <div class="form-row">
-                    <label for="field1"><fmt:message key="console.datalist.common.label.name"/></label>
-                    <span class="form-input"><form:input path="name" cssErrorClass="form-input-error" /> *</span>
+                    <label for="field1"><fmt:message key="console.datalist.common.label.name"/> <span class="mandatory">*</span></label>
+                    <span class="form-input"><form:input path="name" cssErrorClass="form-input-error" /></span>
                 </div>
                 <div class="form-row">
                     <label for="field1"><fmt:message key="console.datalist.common.label.description"/></label>
