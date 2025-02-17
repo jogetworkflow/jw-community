@@ -1779,9 +1779,8 @@ body[builder-theme] button[onclick*="deleteVersion"]:before{
     border-color: #ff4d4f;
     color: #fff;
 }
-body[builder-theme] .flexigrid div.nBtn,
-body[system-theme] .flexigrid div.nBtn {
-    height: 42px;
+body[builder-theme] .flexigrid div.nBtn {
+    height: 41px;
     border-bottom: 1px solid var(--theme-border-color-1);
 }
 body[builder-theme].popupBody{
@@ -3548,3 +3547,22 @@ body[builder-theme] #resources .tooltip {
     margin-right: 5px;
 }
 
+body[builder-theme='dark'] .flexigrid div.nBtn.srtd,
+body[builder-theme='dark'] .flexigrid div.nBtn{
+    background:var(--theme-primary-color-2);
+    border-left:var(--theme-primary-color-2);
+}
+body[builder-theme='dark'] .flexigrid div.nBtn div{
+    filter: invert(100%) sepia(68%) saturate(1408%) hue-rotate(180deg) brightness(91%) contrast(91%);
+}
+body[builder-theme='dark'] .flexigrid div.nDiv{
+    background:var(--theme-primary-color-2);
+    border: 1px solid var(--theme-primary-color-1);
+}
+body[builder-theme='dark'] .flexigrid div.nDiv td{
+    border: 1px solid var(--theme-primary-color-1);
+    color: var(--theme-label-color-1);
+}
+body[builder-theme='dark'] .flexigrid div.nDiv tr:hover td{
+    color: #535353;
+}
