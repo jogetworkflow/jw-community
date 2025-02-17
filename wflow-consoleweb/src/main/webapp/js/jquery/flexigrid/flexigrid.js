@@ -65,9 +65,9 @@
 			rePosDrag: function () {
 
 			var cdleft = 0 - this.hDiv.scrollLeft;
-			if (this.hDiv.scrollLeft>0) cdleft -= Math.floor(p.cgwidth/2);
+			if (this.hDiv.scrollLeft>0) cdleft -= Math.ceil(p.cgwidth/2);
 			$(g.cDrag).css({top:g.hDiv.offsetTop+1});
-			var cdpad = this.cdpad;
+			var cdpad = Math.ceil(this.cdpad);
 
 			$('div',g.cDrag).hide();
 
@@ -77,13 +77,24 @@
 					{
 					var n = $('thead tr:first th:visible',g.hDiv).index(this);
 
-					var cdpos = parseInt($('div',this).width());
+					var cdpos = Math.ceil($('div',this).width());
 					var ppos = cdpos;
 					if (cdleft==0)
-							cdleft -= Math.floor(p.cgwidth/2);
-
-					cdpos = cdpos + cdleft + cdpad + 2;
-
+							cdleft -= Math.ceil(p.cgwidth/2);
+                                        
+                                        if ($("body").attr('builder-theme') == "dark" || $("body").attr('builder-theme') == "light"){
+                                            if(n == 0){
+                                                cdpos = cdpos + cdleft + cdpad;
+                                            }else{
+                                                cdpos = cdpos + cdleft + cdpad + 7;
+                                            }
+                                        } else{
+                                            if(n == 0){
+                                                cdpos = cdpos + cdleft + cdpad + 2;
+                                            }else{
+                                                cdpos = cdpos + cdleft + cdpad + 1.5;
+                                            }
+                                        }
 					$('div:eq('+n+')',g.cDrag).css({'left':cdpos+'px'}).show();
 
 					cdleft = cdpos;
@@ -981,7 +992,7 @@
 							}
 
 
-						 $(thdiv).css({textAlign:this.align, width: this.width + 'px'});
+						 $(thdiv).css({textAlign:this.align, width: Math.ceil(this.width) + 'px'});
 						 thdiv.innerHTML = this.innerHTML;
 
 						$(this).empty().append(thdiv).removeAttr('width')
