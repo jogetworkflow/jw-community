@@ -3156,3 +3156,10 @@ body[builder-theme='dark'].popupBody.builder-popup.dark-mode .chosen-container-m
 body[builder-theme='dark'].popupBody.builder-popup.dark-mode .chosen-container .chosen-results li.highlighted{
     background-color: #0075ff;
 }
+body[builder-theme='dark'] jmexpander{
+    color: #808080;
+}
+body[builder-theme='dark'] jmexpander:hover{
+    border-color: #fff;
+    color: #fff;
+}

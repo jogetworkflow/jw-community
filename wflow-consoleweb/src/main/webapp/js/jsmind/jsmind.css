@@ -50,12 +50,14 @@ jmnode {
     max-width: 400px;
 }
 jmexpander {
+    justify-content: center;      
+    align-items: center;
     position: absolute;
     width: 11px;
     height: 11px;
-    display: block;
+    display: flex;
     overflow: hidden;
-    line-height: 12px;
+    line-height: 11px;
     font-size: 10px;
     text-align: center;
     border-radius: 6px;
