@@ -66,7 +66,7 @@
         padding: 5px 5px 12px;
     }
     .loginMarketplace:hover {
-        color: #fff;
+        color: var(--console-button-primary-bg-hover);
         opacity: 0.6;
     }
     .loginMarketplace + #selectContainer{
@@ -269,6 +269,9 @@
     }
     ul#plugins-tabs li a span:not(.jgt-badge) {
         color: var(--theme-label-color-1, #99A1B7);
+    }
+    ul#plugins-tabs li a span:not(.jgt-badge):hover {
+        color: var(--console-button-primary-bg-hover);
     }
     body .boxy-wrapper .title-bar .close {
         top: 20px;

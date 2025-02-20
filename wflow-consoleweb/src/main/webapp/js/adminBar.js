@@ -21,6 +21,9 @@ var AdminBar = {
         }
         
         url = UrlUtil.updateUrlParam(url, "_ov", (new Date().getTime()));
+
+        $("div#adminBar").addClass("loading");
+
         var $quickOverlayFrame = $(parent.document).find("#quickOverlayFrame");
         if ($quickOverlayFrame.length === 0) {
             var overlayContainer = 
@@ -34,10 +37,14 @@ var AdminBar = {
                 $("body").addClass("fixiosframe");
             }
         }
+
+        $quickOverlayFrame.closest("#quickOverlayContainer").css({display: "none"});
+
         $quickOverlayFrame.attr("src", "about:blank");
         $quickOverlayFrame.attr("src", url);
 
         $quickOverlayFrame.addClass("iframeloading");
+
         $("#overlay, #quickOverlayButton, #quickOverlayFrameDiv").fadeIn();
         $quickOverlayFrame.on("load", function() {
             $quickOverlayFrame.contents().find('#spinner-container').remove();
@@ -78,6 +85,9 @@ var AdminBar = {
                 $(parent.document).find('#quickOverlayButton').attr('system-theme', UI.theme);
                 
                 clearInterval(intervalId);
+                $("div#adminBar").removeClass("loading");
+                $("div#adminBar").addClass("loaded");
+                $quickOverlayFrame.closest("#quickOverlayContainer").show();
             }
         }, 100); 
 
@@ -122,6 +132,8 @@ var AdminBar = {
         if (AdminBar.currentPageTitle !== "") {
             document.title = AdminBar.currentPageTitle;
         }
+        $("div#adminBar").removeClass("loading");
+        $("div#adminBar").removeClass("loaded");
         return false;
     },
     enableQuickEditMode: function() {
