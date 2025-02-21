@@ -2,6 +2,163 @@ Joget DX COMMUNITY
 ====================
 For more information, please refer to https://community.joget.org
 
+9.0-PREVIEW
+===========
+7d2a43115 Fixed: wflow-consoleweb - Universal/Progressive Theme - Fixed dropdown icon is not centered and navbar positioning is not aligned with header @8.1-SNAPSHOT
+234bece66 Fixed: wflow-consoleweb - Process Builder - Incorrect positions of process nodes after placing and saving. T5565 @8.1-SNAPSHOT
+849ed21f6 Fixed: wflow-core - File Upload - Regression of 76df9a23. PWA causing file upload progress bar not working. T5583 @8.1-SNAPSHOT
+13b455c2b Fixed: wflow-consoleweb - PostgreSQL - Unable to archive process or activity with too many workflow variables. @8.1-SNAPSHOT
+e98201fdc Fixed: wflow-core - Orphaned Form Data Table Check - It wrongly marked custom created table as orphaned table. @8.1-SNAPSHOT
+9d121f591 Fixed: wflow-consoleweb - UI Theme - Added dark theming to Spreadsheet Date calendar. @8.1-SNAPSHOT
+8d4468fc6 Fixed: wflow-consoleweb - App Composer Tags - Fixed long tag name blocking edit button issue. @8.1-SNAPSHOT
+911aae84f Fixed: wflow-plugin-base - Felix Config - Plugin requiring javax.cache causes error. @9.0-SNAPSHOT
+6a41c82fa Fixed: wflow-directory - IdP MFA - Multi-tenant aspect causes plugin class name to contain SpringCGLIB. @9.0-SNAPSHOT
+55daffd7f Fixed: jw-community - Performance - Memory leak - bitronix.tm.BitronixTransactionManager objects not being released in heap memory @9.0-SNAPSHOT
+e0067c342 Fixed: wflow-consoleweb - DX9 App Center - Fixed UI issues involving Quick Edit Mode @9.0-SNAPSHOT
+275eb968b Fixed: wflow-consoleweb/wflow-core - DX9 App Center - Fixed CSS Stylings, and removed form header from user profile @9.0-SNAPSHOT
+4f2c334de Fixed: wflow-consoleweb - App Center - Fixed search bar is not positioned on the correct place in RTL @9.0-SNAPSHOT
+8bbf7a60e Modified: wflow-consoleweb - App Center - Added new facelift. @9.0-SNAPSHOT
+f7c5ad41f Modified: wflow-consoleweb - UI Builder - Handle theme change in regards to Custom CSS & Custom JS. @9.0-SNAPSHOT
+e5e37acde Fixed: wflow-consoleweb - Property Code Editor - FIxed an issue with fullscreen, and improve search @9.0-SNAPSHOT
+5cd1e1f0b Modified: wflow-consoleweb - App Resouces - Enhance the UI. @9.0-SNAPSHOT
+ad2387560 Fixed: wflow-core - App Composer - Create new app version lead to error page. @9.0-SNAPSHOT
+f2822968d Fixed: wflow-consoleweb - System Setting - Locale does not change after saved. @9.0-SNAPSHOT
+ababd2478 Modified: wflow-consoleweb - UI - Added delete feedback/highlight when user hovers on the delete button in builder @9.0-SNAPSHOT
+6c747145e Fixed: wflow-consoleweb - Plugin Config - Inconsistent styling when showing in popup dialog. @9.0-SNAPSHOT
+08e3fa302 Fixed: jw-community - Security - Update Apache Tomcat to 11.0.2 for CVE-2024-56337. T5585 @9.0-SNAPSHOT
+584c612f9 Modified: wflow-consoleweb - UI - Added toast message when deletion happens. @9.0-SNAPSHOT
+eb4434c10 Fixed: wflow-consoleweb - Platform Translation - List can't load due to Hibernate update. @9.0-SNAPSHOT
+6d267b28a Fixed: wflow-core, wflow-consoleweb - App Composer - Newly created builder items do not appear @9.0-SNAPSHOT
+1c346e505 Fixed: jw-community - Security - Update Apache Tomcat to 9.0.98 for CVE-2024-56337. T5585 @7.0-SNAPSHOT
+c7edcba40 Fixed: jw-community - Security - Exclude unused dependencies. T5364 @7.0-SNAPSHOT
+7e3ccb81f Fixed: wflow-consoleweb - App Generation - Arabic ID in generated userview menu item causes invalid URL. @7.0-SNAPSHOT
+c334224f5 Fixed: wflow-commons - commons-validator - Upgrade to 1.9.0 to add support for more TLDs. T5416 @7.0-SNAPSHOT
+b434d1922 Fixed: wflow-core - FormDataDaoImpl - Hibernate - Explicitly cast param to TextType to avoid null as bytea in Postgres. @7.0-SNAPSHOT
+824f64f05 Modified: wflow-consoleweb - UI - Revamp the appearance of the Admin UI @9.0-SNAPSHOT
+f43870809 Fixed: wflow-consoleweb - DX9 Builder Theme - Handle notification dialog position in mobile view. @9.0-SNAPSHOT
+64e198d6a IDP: Added support for RP-initiated back-channel Single Log Out (SLO).
+bc083487c Fixed: jw-community - Ignite - Prevent transactional and stackoverflow errors during app generation and deletion on Hibernate 6 @9.0-SNAPSHOT
+4b06bd01e Fixed: wflow-shark - Workflow Manager - Update to Jakarta EE. @9.0-SNAPSHOT
+8821ee3e4 Fixed: wflow-core - Form Data - Condition using column with prefix is not working due to Hibernate update. @9.0-SNAPSHOT
+43be49078 Modified: jw-community - Ignite - Support Hibernate 7 by removing deprecated method calls and adding custom session factory bean @9.0-SNAPSHOT
+3215162ab Fixed: wflow-shark - WorkflowManager - WorkflowManagerImpl located at the wrong directory @9.0-SNAPSHOT
+0639bcd31 Modified: wflow-shark - In-Memory Cache - Hibernate L2 cache mistakenly cleared when calling WorkflowManager inbox methods @9.0-SNAPSHOT
+ad3578463 Modified: wflow-core - In-Memory Cache - Hibernate L2 cache not working for AppDefinition collections @9.0-SNAPSHOT
+d1d0b1971 Modified: wflow-core - Audit Trail - Prevent unnecessary audit records for WorkflowManager.processInboxSetting and WorkflowManager.buildInboxCondition @9.0-SNAPSHOT
+ac100b8a9 Modified: jw-community - In-Memory Cache - Refactored code to support pluggable in-memory cache implementations @9.0-SNAPSHOT
+7200c04ee Fixed: wflow-commons - Ehcache - java.lang.IllegalStateException cache is closed error after initial DB setup @7.0-SNAPSHOT
+923f8c747 Fixed: wflow-core - App Composer - Delete throw EntityNotFoundException. @9.0-SNAPSHOT
+b8c50c4d5 Fixed: wflow-commons - Cache - Fixed NoSuchMethodError for plugin cache usage backward compatible issue. @9.0-SNAPSHOT
+6d2624c90 Fixed: wflow-commons - Cache - Fixed NoSuchMethodError for plugin cache usage backward compatible issue. @9.0-SNAPSHOT
+57ba5224b Fixed: wflow-plugin-base - Plugin - Remove hibernate dependencies from plugin during migration. @9.0-SNAPSHOT
+56fe6f73c Fixed: wflow-commons - Transaction Manager - Exception due to trailing spaces in config file. @9.0-SNAPSHOT
+df92996e4 Fixed: wflow-core - Ignite - Hibernate L2 cache not cleared after app deletion causing org.hibernate.StaleObjectStateException errors @9.0-SNAPSHOT
+a05881bfc Fixed: wflow-commons - Bitronix - Set the correct timeout configuration bitronix.tm.timer.defaultTransactionTimeout @9.0-SNAPSHOT
+0c7b62a3a Fixed: wflow-core - Form Data - Regression of e468337c. Form Hash Variable and partial storing not working. @9.0-SNAPSHOT
+01499fc64 Fixed: wflow-core - Start Process - First workflow variable always having null value due to async changes. @9.0-SNAPSHOT
+34fee164b Fixed: wflow-consoleweb - Form - Newline not working for textarea using Firefox. @9.0-SNAPSHOT
+00b39989f Fixed: wflow-commons - Cache - Backward compatible for plugin using old cache implementation. @9.0-SNAPSHOT
+e7cc59964 Modified: wflow-consoleweb - Ignite - Set cache group for domain data to reduce event processing and memory usage @9.0-SNAPSHOT
+6d0cb6cc4 Modified: wflow-core - Ignite - Prevent redundant page refresh for page components during asynchronous requests @9.0-SNAPSHOT
+ea2ad45c4 Fixed: wflow-core - Import App - Form data & user group is not imported due to fail to install migrated plugin. @9.0-SNAPSHOT
+a4e1f24cf Fixed: wflow-core - Ignite - Fixed list export to CSV, Excel, XML, PDF not working for asynchronous requests @9.0-SNAPSHOT
+212356099 Fixed: wflow-consoleweb - List - Export to CSV, Excel, XML, PDF only opens an empty tab on Apache Tomcat 11 @9.0-SNAPSHOT
+6c63005a1 Fixed: wflow-core, wflow-consoleweb - Process Generation - Unable to generate process due to StackOverflowError. @9.0-SNAPSHOT
+a437abd38 Fixed: wflow-core - Spring Framework update caused default locale does not set correctly. @9.0-SNAPSHOT
+9ca5a5730 Fixed: jw-community - Security - Update Apache Tomcat to 11.0.1 for CVE-2024-52318. @9.0-SNAPSHOT
+c10af01b3 Fixed: wflow-commons, wflow-consoleweb - Open Liberty - Missing i18n labels because internal SRTServletRequestHelper is null @9.0-SNAPSHOT
+e8a9d2a36 Fixed: wflow-commons-jakarta, wflow-shark-jakarta - Sonar Maven plugin fails with error "Unable to determine structure of project" @9.0-SNAPSHOT
+dec9501b3 Fixed: wflow-shark - Process Archiving - WorkflowManagerImpl throws "jakarta.persistence.EntityExistsException: A different object with the same identifier value was already associated with the session" @9.0-SNAPSHOT
+55983ea85 Fixed: wflow-shark - DAO - JDK dynamic proxy cannot be cast to SharkWorkflowAssignmentDao @9.0-SNAPSHOT
+5e8f53f89 Fixed: wflow-core - Inbox - Error retrieving inbox data "Cannot compare left expression of type 'java.lang.Boolean' with right expression of type 'java.lang.Integer'" after Hibernate 6.6 upgrade @9.0-SNAPSHOT
+2a0c68635 Fixed: wflow-shark - Missing transaction aspect causing "Could not obtain transaction-synchronized Session for current thread" @9.0-SNAPSHOT
+a084ee8df Modified: wflow-wfengine - Decouple Shark engine to another module. @9.0-SNAPSHOT
+4e951f596 Modified: jw-community - Updated Spring Framework to 6.1.14 & Spring Security to 6.3.4. @9.0-SNAPSHOT
+0445a4054 Modified: wflow-plugin-base - PluginManager - Added locks during plugin transformation to support clustered environment. @9.0-SNAPSHOT
+938991302 Fixed: wflow-install - Installer - Window installer labels not updated. @9.0-SNAPSHOT
+d04801bda Fixed: wflow-install - Installer - Window installer labels not updated. @9.0-SNAPSHOT
+a0cf8b4e0 Modified: wflow-install - Installer - Update to Tomcat to 11.0.0 and JRE to 21.0.5 . @9.0-SNAPSHOT
+e07ab2774 Fixed: wflow-core - App Composer - Delete version thrown EntityExistsException. @9.0-SNAPSHOT
+51fa2bf86 Fixed: wflow-wfengine - Inbox - Oracle thrown column ambiguously defined error. @9.0-SNAPSHOT
+c80a7dcf5 Fixed: wflow-commons - File Upload - File uploads not working on Websphere Liberty @9.0-SNAPSHOT
+5c5e89b15 Modified: wflow-directory, wflow-consoleweb wflow-enterpriseweb - IdP & MFA - Set IdP & MFA Managers via Controller. @9.0-SNAPSHOT
+aae5c7bcb Modified: wflow-core, wflow-consoleweb - UserAuthenticationService - Refactored loginUser(Authentication) method. @9.0-SNAPSHOT
+523849cea Fixed: wflow-core - UserAuthenticationService - Unable to login due to SecurityContext not set in session. @9.0-SNAPSHOT
+1561ed392 Fixed: wflow-directory, wflow-consoleweb, wflow-enterprise-plugins - IdP & MFA - Error in Community Edition due to inadequate bean checking. @9.0-SNAPSHOT
+b9323db4c Fixed: wflow-commons - Database - Force Hibernate 6.6 dialect of Postgres, Oracle & MSSQL to change datatype and disable sequence. @9.0-SNAPSHOT
+0016aaca7 Fixed: wflow-commons, wflow-core, wflow-consoleweb - Ignite - Cache and async request not working after upgrade to Tomcat 10.1 and Hibernate 6.6 @9.0-SNAPSHOT
+3ca2e74d0 Modified: wflow-commons - Upgraded tomcat-jdbc to 10.1.31 @9.0-SNAPSHOT
+20ea705b9 Modified: wflow-commons - Upgraded aspectjweaver to 1.9.22 @9.0-SNAPSHOT
+1198a0f13 Modified: wflow-consoleweb - applicationContext.xml - Changed isAnonymous to permitAll for /web/desktop. @9.0-SNAPSHOT
+d4efa3428 Fixed: wflow-consoleweb - applicationContext.xml - Incorrect access permission for /web/desktop. @9.0-SNAPSHOT
+e10dc6b3b Fixed: wflow-core - App Composer - Delete throw exception and git source not update correctly. @9.0-SNAPSHOT
+6ce286d73 Fixed: wflow-consoleweb - JBoss EAP - Workaround for missing nested JSP include bug in JBoss EAP 8.0 @9.0-SNAPSHOT
+1d234910b Fixed: wflow-consoleweb - Exclude the WebSocket URL from POST checks so that authentication can be done using parameters. @8.1-SNAPSHOT
+257583c32 Modified: wflow-core - Bitronix - Reverted Bitronix configuration to set journal to null for multi-tenant support @9.0-SNAPSHOT
+43c479c29 Fixed: wflow-core - Inbox - Error retrieving inbox data "Cannot compare left expression of type 'java.lang.Boolean' with right expression of type 'java.lang.Integer'" after Hibernate 6.6 upgrade @9.0-SNAPSHOT
+a2bb981ce Fixed: wflow-app - Build - Exclude incorrect old library JARs from WEB-INF/lib when building wflow-app @9.0-SNAPSHOT
+afb364baa Modified: wflow-commons - Cache - Added caches for session nonce and identity provider @9.0-SNAPSHOT
+c422bd670 Fixed: wflow-consoleweb - Web Console - InvalidParameterException on Apache Tomcat 11 in JsonTable flexigrid due to empty parameter name &= in the URL query string @9.0-SNAPSHOT
+9718137e7 Modified: wflow-commons - Settings - Modified ID generation to prevent "Row was updated or deleted by another transaction" exception @9.0-SNAPSHOT
+b1b8cf5a0 Fixed: wflow-plugin-base, wflow-consoleweb - System Logs - Upgrade to Jakarta WebSocket 2.1 for Jakarta EE 10 @9.0-SNAPSHOT
+e89b91e74 Fixed: wflow-plugin-base - PluginManager - Prevent plugin from installing again after migration. @9.0-SNAPSHOT
+2eec1d48e Fixed: wflow-plugin-base - PluginManager - Felix unable to load plugins due to conflicting config.properties in classpath. @9.0-SNAPSHOT
+2470d1497 Fixed: wflow-core - Dao - Data fail to update. @9.0-SNAPSHOT
+2acaff0ce Fixed: wflow-core - Form Options/UI Content Cache - Dynamic cache time is not working. @9.0-SNAPSHOT
+37592cbfd Modified: wflow-plugin-base - PluginManager - Added support for plugin migration to all install procedures. @9.0-SNAPSHOT
+6ed496a78 Fixed: wflow-consoleweb - Form Builder - Can't load due to preview URL structure. @9.0-SNAPSHOT
+5866fc20d Fixed: wflow-consoleweb - App Composer - Failed to load due to cache issue. @9.0-SNAPSHOT
+33e22a7e7 Fixed: wflow-commons, wflow-consoleweb - JBoss EAP - Support for JBoss EAP 8 after Jakarta EE 10 upgrade @9.0-SNAPSHOT
+8d3291930 Fixed: wflow-consoleweb - Spring Security - Fixed invalid request matcher and authorization rules after Spring Security 6 upgrade @9.0-SNAPSHOT
+2b11ddae2 Fixed: wflow-commons - Setup - Fixed DB setup page not initializing due to unnecessary dependency @9.0-SNAPSHOT
+52f1b50fe Fixed: wflow-commons, wflow-consoleweb - Spring - Fixed form request parameters and file uploads not working after upgrade to Spring 6 @9.0-SNAPSHOT
+2abdba3b2 Fixed: wflow-core, wflow-consoleweb - Jakarta EE - Additional updates to support upgrade to Jakarta EE 10 and Spring 6 @9.0-SNAPSHOT
+cf7d80ca0 Fixed: wflow-core - Ehcache - Fixed invalid cache lookup after upgrade to Ehcache 3 @9.0-SNAPSHOT
+8a5d4af68 Fixed: wflow-commons - Test - Fixing TestSettings test cases is not isolated. @9.0-SNAPSHOT
+397c82cb6 Fixed: wflow-plugin-base - Plugin Manager - Support plugin migration to Jakarta EE. @9.0-SNAPSHOT
+8b001cde9 Modified: wflow-commons - Added test cases for Setup Manager. @9.0-SNAPSHOT
+9fc50dde2 Fixed: wflow-commons, wflow-core - Upgrade to Spring 6.1, Spring Security 6.3, Hibernate 6.6, Ehcache 3, Apache Felix 7.0 and Jakarta EE 10 @9.0-SNAPSHOT
+9aadaede1 Fixed: wflow-wfengine - Ignite - Hibernate query cache not updated when Shark makes direct database updates @9.0-SNAPSHOT
+837bb0cde Fixed: wflow-core - Ignite - Old content is not cleared from cache until 2nd request @9.0-SNAPSHOT
+c6e11d0e3 Fixed: wflow-core - Ignite - Fixed asynchronous request processing intermittently returning empty content on JBoss EAP @9.0-SNAPSHOT
+7fa51931f Modified: wflow-commons, wflow-core - Ignite - Changed undertow dependency scope to provided to avoid bundling unnecessary JARs @9.0-SNAPSHOT
+af610caf3 Fixed: wflow-consoleweb - Ignite - Missing zh_CN & zh_TW i18n labels. @9.0-SNAPSHOT
+3080a9f48 Fixed: wflow-consoleweb - Ignite - Missing zh_CN & zh_TW i18n labels. @9.0-SNAPSHOT
+4599e4b65 Modified: wflow-commons - Ignite - Added Ignite status in the APM page @9.0-SNAPSHOT
+e27e18096 Modified: wflow-commons - Ignite - Added flag wflow.igniteDataRegionMaxSize to set the data region maximum size (in MB) @9.0-SNAPSHOT
+ac763206e Fixed: wflow-commons - Ignite - Work directory does not support relative path @9.0-SNAPSHOT
+e9550c304 Fixed: wflow-consoleweb - Ignite - Server can't start when Ignite disabled. @9.0-SNAPSHOT
+5a75400f4 Added: wflow-commons, wflow-wfengine - Ignite - Added Websphere Liberty support for asynchronous request processing @9.0-SNAPSHOT
+ab2852a9f Modified: wflow-core - Ignite - Show timestamp only for cached content after asynchronous request processing @9.0-SNAPSHOT
+3ffe9a4f9 Added: jw-community - Ignite - Asynchronous request processing support for JBoss EAP and Wildfly @9.0-SNAPSHOT
+f88a064bd Added: jw-community - Ignite - Asynchronous request processing for process start and assignment completion @9.0-SNAPSHOT
+10bf3427b Added: jw-community - Ignite - Asynchronous request processing and caching for userview UI menu on Apache Tomcat @9.0-SNAPSHOT
+ec2653eff Modified: wflow-commons - Ignite - Added configuration option to enable near cache @8.0-SNAPSHOT
+084d6d062 Modified: wflow-commons - Ignite - Increased failure detection timeout to 30s @8.0-SNAPSHOT
+640a39e41 Added: wflow-commons - Ignite - Added IgniteJdbcCacheable interface to support JDBC query caching @8.0-SNAPSHOT
+0ec851f75 Modified: wflow-commons - Ignite - Added configuration options for thread pool size, partitions, partition backups, max node connections and paired connections @8.0-SNAPSHOT
+3f5632037 Modified: wflow-consoleweb - Ignite - Updated IgniteGeneralDataRegion to handle both asynchronous and synchronous operations @8.0-SNAPSHOT
+00dd795c9 Modified: wflow-commons - Ignite - Updated JDBC query cache region name and added null checks @8.0-SNAPSHOT
+75deaaaa7 Added: jw-community - Ignite - JDBC query cache implementation using AOP to intercept and cache JDBC queries @8.0-SNAPSHOT
+ff23ee97c Modified: jw-community - Ignite - Refactored ignite integration code to the org.joget.commons.ignite package @8.0-SNAPSHOT
+3fd933c51 Modified: wflow-commons, wflow-consoleweb - Ignite - Added options for replicated mode, asynchronous cache operations and cluster discovery using Kubernetes or static IP @8.0-SNAPSHOT
+f1ba6f587 Fixed: wflow-core - Ignite - User replacement query is not cached due to constantly changing time parameter @8.0-SNAPSHOT
+46fa96ce8 Fixed: wflow-core - Ignite - App import throws javax.persistence.OptimisticLockException @8.0-SNAPSHOT
+40f734306 Fixed: wflow-commons - Ignite - Cache clearing methods in IgniteCacheManager not accessible due to missing static modifier @8.0-SNAPSHOT
+5a217cdb2 Modified: jw-community - Performance - Added Hibernate caching using Apache Ignite @8.0-SNAPSHOT
+68ec34192 Added: wflow-directory - Added new plugin types to support IdP & MFA. @9.0-SNAPSHOT
+c7880b3e5 Modified: Properties Editor - Grid - Support switch to textarea to edit values in CSV format @9.0-SNAPSHOT
+a44cb22c8 Added: wflow-core/wflow-consoleweb - Added Theme Builder. @9.0-SNAPSHOT
+d84eb1888 Added: wflow-consoleweb/wflow-plugin-base - Added seamless marketplace support. @9.0-SNAPSHOT
+85357be0f Fixed: wflow-core - Color Admin - Fixed specific launching of an imported app failed in DX9. @9.0-SNAPSHOT
+50bec4a08 Modified: wflow-core - DX8 Theme - Removed default value from DX8 Theme's Color Customization @9.0-SNAPSHOT
+ca2aafcac Added: wflow-consoleweb - UI Builder - Support custom login page. @9.0-SNAPSHOT
+1673a8a99 Fixed: wflow-install - Installer - Window installation directory is still DX 8. @9.0-SNAPSHOT
+96cbf4c71 Added: wflow-consoleweb - Property Editor - Added codemirror as a new code editor @9.0-SNAPSHOT
+cb5e0e410 Modified: wflow-consoleweb - Form - Support field icon. @9.0-SNAPSHOT
+fe2fbf9d6 Modified: wflow-consoleweb - Platform Translation - Added export PO file feature. @9.0-SNAPSHOT
+c512754a5 Modified: wflow-consoleweb - UI Builder - Modified hide label field on page component. @9.0-SNAPSHOT
+
 8.1.10
 ======
 d5c0f7620 Fixed: jw-community - Security - Update Apache Tomcat to 9.0.98 for CVE-2024-56337. T5585 @8.1-SNAPSHOT
