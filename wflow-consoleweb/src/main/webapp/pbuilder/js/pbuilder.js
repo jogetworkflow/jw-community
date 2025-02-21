@@ -3261,13 +3261,13 @@ ProcessBuilder = {
             $(swimlane).find('.activities-container').append(self.dragElement);
             
             var containerOffset = $(swimlane).offset();
-            var x_offset = (offsetLeft - (containerOffset.left + viewportLeft)) * self.zoom;
-            var y_offset = (offsetTop - (containerOffset.top + viewportTop)) * self.zoom;
-            
+            var x_offset = (offsetLeft - (containerOffset.left + viewportLeft)) / self.zoom;
+            var y_offset = (offsetTop - (containerOffset.top + viewportTop)) / self.zoom;
+
             self.dragElement.css({
-               "top" : y_offset + "px",
-               "left" : x_offset + "px",
-               "position" : "absolute"
+                "top" : y_offset + "px",
+                "left" : x_offset + "px",
+                "position" : "absolute"
             });
             
             self.addElement(function(){

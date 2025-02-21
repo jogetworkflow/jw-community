@@ -17,11 +17,13 @@ import javax.xml.xpath.XPathConstants;
 import org.apache.commons.lang.StringUtils;
 import org.joget.apps.app.dao.AppDefinitionDao;
 import org.joget.apps.app.model.AppDefinition;
+import org.joget.apps.app.model.BuilderDefinition;
 import org.joget.apps.app.model.FormDefinition;
 import org.joget.apps.app.service.AppService;
 import org.joget.apps.app.service.AppUtil;
 import org.joget.apps.app.service.RegexMatchesFunctionResolver;
 import org.joget.apps.form.dao.FormDataDaoImpl;
+import org.joget.apps.form.service.CustomFormDataTableUtil;
 import org.joget.commons.util.LogUtil;
 import org.joget.commons.util.ResourceBundleUtil;
 import org.joget.governance.model.GovHealthCheckAbstract;
@@ -90,6 +92,15 @@ public class OrphanedFormDataCheck extends GovHealthCheckAbstract {
                     }
                 }
             }
+            
+            //handle custom added form data table
+            if (appDef.getBuilderDefinitionList() != null) {
+                for (BuilderDefinition c : appDef.getBuilderDefinitionList()) {
+                    if (c.getType().equals(CustomFormDataTableUtil.TYPE) && tables.contains(c.getName())) {
+                        tables.remove(c.getName());
+                    }
+                }
+            }
         }
         
         for (AppDefinition appDef : latestAppDefinitionList) {
@@ -97,6 +108,15 @@ public class OrphanedFormDataCheck extends GovHealthCheckAbstract {
                 for (FormDefinition f : appDef.getFormDefinitionList()) {
                     if (tables.contains(f.getTableName())) {
                         tables.remove(f.getTableName());
+                    }
+                }
+            }
+            
+            //handle custom added form data table
+            if (appDef.getBuilderDefinitionList() != null) {
+                for (BuilderDefinition c : appDef.getBuilderDefinitionList()) {
+                    if (c.getType().equals(CustomFormDataTableUtil.TYPE) && tables.contains(c.getName())) {
+                        tables.remove(c.getName());
                     }
                 }
             }

@@ -529,6 +529,10 @@ ul#category-container {
         overflow: hidden;
         display: block;
     }
+    body.horizontal_menu #header-name a {
+        white-space: wrap;
+        word-wrap: break-word;
+    }
     .sidebar-toggled #header-name .main-menu.nav-tabs > li.mm-profile > a {
         padding: 30px 20px 20px 65px;
     }
@@ -536,10 +540,10 @@ ul#category-container {
         padding: 30px 65px 20px 20px;
     }
     .sidebar-toggled #header-name .main-menu.nav-tabs>li>a {
-        padding: 14px 20px 14px 65px;
+        padding: 14px 30px 14px 65px;
     }
     .rtl.sidebar-toggled #header-name .main-menu.nav-tabs>li>a {
-        padding: 14px 65px 14px 20px;
+        padding: 14px 65px 14px 30px;
     }
     header.navbar .header-nav {
         height: 53px;
@@ -711,14 +715,15 @@ body#login #page > footer {
 }
 
 .main-menu.nav-tabs>li>a {
-    padding: 14px 20px 14px 65px;
+    padding: 14px 30px 14px 65px;
     display: block;
     position: relative;
     margin-right: 0px;
     font-weight: bold;
+    word-wrap: break-word;
 }
 .rtl .main-menu.nav-tabs>li>a {
-    padding: 14px 65px 14px 20px;
+    padding: 14px 65px 14px 30px;
 }
 .main-menu.nav-tabs a {
     -webkit-transition: color;
@@ -816,6 +821,7 @@ body.rtl .badge{
     max-width: 140px;
     display: inline-block;
     white-space: normal;
+    word-wrap: break-word;
 }
 body.rtl #sidebar li ul>li>a > span:first-child{
     float: right !important;

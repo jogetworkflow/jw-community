@@ -124,12 +124,15 @@ body.overview_view .builder-type ul li.item > a .item-id {visibility: visible;}
 }
 .nv-tag {
     min-width: 30px;
-    height: 18px;
     vertical-align: top;
     cursor: pointer;
     font-size: 14px;
     font-weight: 500;
     padding: 2px 12px;
+    min-height: 18px;
+    height: auto;
+    max-width: calc(100% - 10px);
+    word-wrap: break-word;
 }
 .nv-tag-plus{
     background: #999797;
@@ -217,7 +220,8 @@ body.overview_view .builder-type ul li.item > a .item-id {visibility: visible;}
     box-sizing: border-box;
     position: relative;
     cursor: pointer;
-    height: 30px;
+    min-height: 30px;
+    height: auto;
     margin-right: 10px;
 }
 #tooltip-tags .tag-options .nv-tag .check {
@@ -328,4 +332,12 @@ body.overview_view .builder-type ul li.item > a .item-id {visibility: visible;}
 }
 body[builder-theme] .nv-tag-plus {
     color: var(--theme-header-color-2) !important;
+}
+#tooltip-tags .tag-options .nv-tag > span{
+    width: calc(100% - 25px);
+    display: inline-block;
+    word-wrap: break-word;
+}
+body[builder-theme] .nv-tags > .nv-tag{
+    max-width: calc(100% - 15px);
 }
