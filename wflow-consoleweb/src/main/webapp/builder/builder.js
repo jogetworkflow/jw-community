@@ -5348,18 +5348,21 @@ _CustomBuilder.Builder = {
                         }
                         
                         if (!followCursor) {
-                            //check if the drag element is visible in the canvas
-                            if (dragLeft < scrollHMin) {
-                                $(self.frameDoc).scrollLeft(dragLeft);
-                            }
-                            if (dragRight > scrollHMax) {
-                                $(self.frameDoc).scrollLeft(scrollHMin + (dragRight - scrollHMax) + $(self.dragElement).width());
-                            }
-                            if (dragTop < scrollVMin) {
-                                $(self.frameDoc).scrollTop(dragTop);
-                            }
-                            if (dragBottom > scrollVMax) {
-                                $(self.frameDoc).scrollTop(scrollVMin + (dragBottom - scrollHMax) + $(self.dragElement).height());
+                            //check the element is already move into the drop area, else the page will auto scroll to top
+                            if ($(self.dragElement).closest('[data-cbuilder-'+parentContainerAttr+']').length > 0) {
+                                //check if the drag element is visible in the canvas
+                                if (dragLeft < scrollHMin) {
+                                    $(self.frameDoc).scrollLeft(dragLeft);
+                                }
+                                if (dragRight > scrollHMax) {
+                                    $(self.frameDoc).scrollLeft(scrollHMin + (dragRight - scrollHMax) + $(self.dragElement).width());
+                                }
+                                if (dragTop < scrollVMin) {
+                                    $(self.frameDoc).scrollTop(dragTop);
+                                }
+                                if (dragBottom > scrollVMax) {
+                                    $(self.frameDoc).scrollTop(scrollVMin + (dragBottom - scrollHMax) + $(self.dragElement).height());
+                                }
                             }
                         }
                       
