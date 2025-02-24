@@ -161,8 +161,7 @@ self.addEventListener('install', function (event) {
 
 self.addEventListener('fetch', function (event) {
     //https://stackoverflow.com/questions/48463483/what-causes-a-failed-to-execute-fetch-on-serviceworkerglobalscope-only-if
-    if ((event.request.cache === 'only-if-cached' && event.request.mode !== 'same-origin') 
-            || (event.request.method === 'POST' && event.request.headers.get('X-Requested-With').indexOf("XMLHttpRequest") !== -1)) { //for file upload progress bar
+    if (event.request.cache === 'only-if-cached' && event.request.mode !== 'same-origin') {
         return;
     }
 
