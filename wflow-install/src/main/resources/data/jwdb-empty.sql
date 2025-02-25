@@ -3149,7 +3149,7 @@ CREATE TABLE `wf_history_activity` (
   `state` varchar(255) DEFAULT NULL,
   `type` varchar(255) DEFAULT NULL,
   `due` datetime DEFAULT NULL,
-  `variables` text DEFAULT NULL,
+  `variables` longtext DEFAULT NULL,
   `processId` varchar(255) DEFAULT NULL,
   PRIMARY KEY (`activityId`),
   KEY `FK_7mmrnb28ugrdxpf0dpw35y73u` (`processId`),
@@ -3185,7 +3185,7 @@ CREATE TABLE `wf_history_process` (
   `limitDuration` varchar(255) DEFAULT NULL,
   `due` datetime DEFAULT NULL,
   `state` varchar(255) DEFAULT NULL,
-  `variables` text DEFAULT NULL,
+  `variables` longtext DEFAULT NULL,
   PRIMARY KEY (`processId`),
   CONSTRAINT `FK_prxyxtqy6byfrq3l5qght53l6` FOREIGN KEY (`processId`) REFERENCES `wf_process_link_history` (`processId`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
