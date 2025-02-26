@@ -355,7 +355,7 @@ AppBuilder = {
                         //delete tags
                         Nav.deleteItem(id, type);
                         
-                        CustomBuilder.showMessage(get_cbuilder_msg('abuilder.deleted'), "success");
+                        CustomBuilder.showMessage($(item).attr("data-id") + get_cbuilder_msg('ubuilder.message.delete.toast.message'), "success", true);
                     }
                 }
                 
@@ -363,9 +363,7 @@ AppBuilder = {
                 if (type !== "userview" && type !== "form" && type !== "datalist") {
                     urlType = "cbuilder/" + type
                 }
-                ConnectionManager.post(CustomBuilder.contextPath+'/web/console/app'+CustomBuilder.appPath+'/'+urlType+'/delete', callback, 'ids=' + id);
-        
-                CustomBuilder.showMessage($(item).attr("data-id")+ get_cbuilder_msg('ubuilder.message.delete.toast.message'), "success");
+                ConnectionManager.post(CustomBuilder.contextPath+'/web/console/app'+CustomBuilder.appPath+'/'+urlType+'/delete', callback, 'ids=' + id);        
             });
         }
     },

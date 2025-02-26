@@ -78,11 +78,10 @@
                         success : function() {
                             parent.$.unblockUI();
                             document.location.reload(true);
+                            parent.window.CustomBuilder.showMessage("App Version " + version + '<ui:msgEscJS key="console.app.message.delete.toast.message"/>', "success", true);
                         }
                     }
-                    ConnectionManager.post('${pageContext.request.contextPath}/web/console/app/<c:out value="${appId}"/>/'+ version +'/delete', callback, '');
-                    
-                    parent.window.CustomBuilder.showMessage("App Version " + version + '<ui:msgEscJS key="console.app.message.delete.toast.message"/>', "success", true);
+                    ConnectionManager.post('${pageContext.request.contextPath}/web/console/app/<c:out value="${appId}"/>/'+ version +'/delete', callback, '');                    
                 }
             }
             

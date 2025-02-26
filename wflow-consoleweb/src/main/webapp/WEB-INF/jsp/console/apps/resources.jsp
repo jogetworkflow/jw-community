@@ -385,13 +385,13 @@
                         gridContainer.empty();  
                         reloadResources();
                         parent.UI.unblockUI();
+
+                        selectedList.forEach(function(item){
+                            parent.window.CustomBuilder.showMessage(item + '<ui:msgEscJS key="console.app.message.delete.toast.message"/>', "success", true);
+                        })
                     }
                 }
                 var request = ConnectionManager.post('${pageContext.request.contextPath}/web/console/app/<c:out value="${appId}"/>/${appVersion}/resource/delete', callback, 'ids='+selectedList);
-                
-                selectedList.forEach(function(item){
-                    parent.window.CustomBuilder.showMessage(item + '<ui:msgEscJS key="console.app.message.delete.toast.message"/>', "success", true);
-                })
             }
         }
 
