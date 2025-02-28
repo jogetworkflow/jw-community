@@ -28,6 +28,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -37,6 +38,7 @@ import org.springframework.web.bind.annotation.RequestParam;
  * Data JSON API to cater to the loading, storing and deletion of Form and List data.
  */
 @Controller
+@Lazy
 public class FormListDataJsonController {
     
     @Autowired

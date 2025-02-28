@@ -8,7 +8,7 @@
        http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-2.5.xsd
 http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-2.5.xsd">
 
-    <bean id="pluginManager" class="org.joget.plugin.base.PluginManager" destroy-method="shutdown">
+    <bean id="pluginManager" class="org.joget.plugin.base.PluginManager" destroy-method="shutdown" lazy-init="true">
         <!--
         <property name="blackList">
              <set>

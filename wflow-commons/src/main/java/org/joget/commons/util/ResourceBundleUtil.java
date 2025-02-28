@@ -18,6 +18,7 @@ import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.context.MessageSource;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 import org.springframework.context.support.MessageSourceAccessor;
 import org.springframework.stereotype.Service;
@@ -28,6 +29,7 @@ import org.springframework.web.multipart.MultipartFile;
  * 
  */
 @Service("resourceBundleUtil")
+@Lazy
 public class ResourceBundleUtil implements ApplicationContextAware {
 
     private static ApplicationContext appContext;

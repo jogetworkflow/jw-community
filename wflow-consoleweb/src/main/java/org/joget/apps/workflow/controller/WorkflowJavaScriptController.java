@@ -13,6 +13,7 @@ import jakarta.servlet.http.HttpServletResponseWrapper;
 import org.apache.commons.lang.StringEscapeUtils;
 import org.joget.workflow.model.service.WorkflowUserManager;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 
@@ -20,6 +21,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
  * Controller to convert output into unicode escaped sequences output via JavaScript document.write
  */
 @Controller
+@Lazy
 public class WorkflowJavaScriptController {
 
     @Autowired

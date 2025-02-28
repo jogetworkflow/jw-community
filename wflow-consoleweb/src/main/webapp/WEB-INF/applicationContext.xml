@@ -151,21 +151,21 @@
         <security:custom-filter ref="workflowHttpAuthFilter" after="BASIC_AUTH_FILTER" /> 
     </security:http>
         
-    <bean id="workflowUserManager" class="org.joget.apps.workflow.security.EnhancedWorkflowUserManager">
+    <bean id="workflowUserManager" class="org.joget.apps.workflow.security.EnhancedWorkflowUserManager" lazy-init="true">
     </bean>                
     
-    <bean id="directoryManager" class="org.joget.apps.workflow.security.EnhancedDirectoryManagerProxyImpl" primary="true">
+    <bean id="directoryManager" class="org.joget.apps.workflow.security.EnhancedDirectoryManagerProxyImpl" lazy-init="true" primary="true">
         <qualifier value="main" />
         <property name="defaultDirectoryManagerImpl" ref="defaultDirectoryManager" />
         <property name="setupManager" ref="setupManager" />
         <property name="pluginManager" ref="pluginManager" />
     </bean>
 
-    <bean id="authenticationProvider" class="org.joget.apps.workflow.security.WorkflowAuthenticationProvider">
+    <bean id="authenticationProvider" class="org.joget.apps.workflow.security.WorkflowAuthenticationProvider" lazy-init="true">
         <property name="directoryManager" ref="directoryManager"/>
     </bean>
                                                                                                 
-    <bean id="workflowHttpAuthFilter" class="org.joget.apps.workflow.security.WorkflowHttpAuthProcessingFilter">
+    <bean id="workflowHttpAuthFilter" class="org.joget.apps.workflow.security.WorkflowHttpAuthProcessingFilter" lazy-init="true">
         <property name="authenticationManager" ref="authenticationManager" />
         <property name="workflowUserManager" ref="workflowUserManager"/>
         <property name="directoryManager" ref="directoryManager"/>
@@ -175,7 +175,7 @@
         <property name="allowSessionCreation" value="true" />
     </bean>
     
-    <bean id="authenticationProcessingFilterEntryPoint" class="org.springframework.security.web.authentication.LoginUrlAuthenticationEntryPoint">
+    <bean id="authenticationProcessingFilterEntryPoint" class="org.springframework.security.web.authentication.LoginUrlAuthenticationEntryPoint" lazy-init="true">
         <constructor-arg value="/web/login"/>
         <property name="forceHttps" value="false" />
     </bean>

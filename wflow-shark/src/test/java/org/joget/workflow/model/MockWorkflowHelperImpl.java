@@ -7,9 +7,11 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import org.joget.workflow.model.dao.WorkflowHelper;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 
 @Service("workflowHelper")
+@Lazy
 public class MockWorkflowHelperImpl implements WorkflowHelper {
 
     public boolean executeTool(WorkflowAssignment assignment) {

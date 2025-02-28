@@ -4,9 +4,11 @@ import java.util.Map;
 import org.joget.apps.app.model.HashVariableSupportedMapImpl;
 import org.joget.plugin.base.HashVariableSupportedMap;
 import org.joget.plugin.property.service.PluginHashVariableHelper;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 
 @Service("pluginHashVariableHelper")
+@Lazy
 public class PluginHashVariableHelperImpl implements PluginHashVariableHelper {
     static ThreadLocal disableHashVariable = new ThreadLocal();
     

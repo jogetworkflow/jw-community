@@ -41,11 +41,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.joget.apps.datalist.model.DataListDisplayColumn;
 import org.joget.commons.util.StringUtil;
+import org.springframework.context.annotation.Lazy;
 
 /**
  * Service class to manage data lists
  */
 @Service
+@Lazy
 public class DataListService {
 
     @Autowired

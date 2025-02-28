@@ -13,6 +13,7 @@ import org.joget.commons.util.ResourceBundleUtil;
 import org.joget.workflow.model.WorkflowAssignment;
 import org.joget.workflow.model.service.WorkflowManager;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -23,6 +24,7 @@ import org.xml.sax.helpers.AttributesImpl;
  * Controller to output RSS
  */
 @Controller
+@Lazy
 public class WorkflowRssController {
 
     @Autowired

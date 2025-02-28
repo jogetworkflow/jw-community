@@ -28,12 +28,14 @@ import org.joget.commons.util.StringUtil;
 import org.joget.plugin.base.PluginManager;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 @Controller
+@Lazy
 public class UserviewWebController {
 
     @Autowired

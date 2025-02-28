@@ -41,10 +41,12 @@ import org.joget.workflow.util.WorkflowUtil;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.ModelMap;
 
 @Controller
+@Lazy
 public class WorkflowJsonController {
 
     @Autowired

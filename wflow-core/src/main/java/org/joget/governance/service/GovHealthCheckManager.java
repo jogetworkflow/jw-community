@@ -48,10 +48,12 @@ import org.joget.plugin.base.ProfilePluginCache;
 import org.joget.plugin.property.model.PropertyEditable;
 import org.joget.plugin.property.service.PropertyUtil;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler;
 import org.springframework.stereotype.Service;
 
 @Service
+@Lazy
 public class GovHealthCheckManager {
     
     public static final long INTERVAL_MINIMUM = 300; // 5 mins

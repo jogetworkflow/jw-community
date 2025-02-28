@@ -1,9 +1,11 @@
 package org.joget.plugin.property.service;
 
 import java.util.Map;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 
 @Service("pluginHashVariableHelper")
+@Lazy
 public class MockPluginHashVariableHelperImpl implements PluginHashVariableHelper {
 
     @Override

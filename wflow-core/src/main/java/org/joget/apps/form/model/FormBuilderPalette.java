@@ -10,12 +10,14 @@ import java.util.TreeMap;
 import org.joget.plugin.base.Plugin;
 import org.joget.plugin.base.PluginManager;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
 
 /**
  * Represents the form builder palette, storing elements in sorted order
  */
 @Component
+@Lazy
 public class FormBuilderPalette {
 
     /**
