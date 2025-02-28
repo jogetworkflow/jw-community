@@ -1,6 +1,7 @@
 package org.joget.commons.cache;
 
 import java.util.Properties;
+import org.springframework.core.task.SimpleAsyncTaskExecutor;
 
 /**
  * Custom Hibernate LocalSessionFactoryBean for in-memory cache integration.
@@ -16,6 +17,13 @@ public class InMemoryCacheSessionFactoryBean extends org.springframework.orm.hib
             hibernateProperties.putAll(cacheManagerProperties);
         }
         super.setHibernateProperties(hibernateProperties);
+        
+        SimpleAsyncTaskExecutor executor = new SimpleAsyncTaskExecutor();
+        if (Runtime.version().feature() >= 21) {
+            // use virtual threads for Java 21 and above
+            executor.setVirtualThreads(true);
+        }
+        setBootstrapExecutor(executor);
     }
         
 }
