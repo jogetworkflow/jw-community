@@ -3163,3 +3163,6 @@ body[builder-theme='dark'] jmexpander:hover{
     border-color: #fff;
     color: #fff;
 }
+body[builder-theme] input[type=number].withUnitSlector:focus{
+    position: relative;
+}
