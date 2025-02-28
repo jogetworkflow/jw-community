@@ -13,23 +13,23 @@
     <import resource="classpath:wfengineApplicationContext.xml" />
     <import resource="classpath:wfsharkApplicationContext.xml" />
 
-    <bean id="formService" class="org.joget.apps.form.service.FormServiceImpl">
+    <bean id="formService" class="org.joget.apps.form.service.FormServiceImpl" lazy-init="true">
     </bean>
 
-    <bean id="appFluCache" class="org.joget.apps.app.dao.AppDefCache">
+    <bean id="appFluCache" class="org.joget.apps.app.dao.AppDefCache" lazy-init="true">
         <property name="cacheManager" ref="cacheManager" />
     </bean>
 
-    <bean id="formColumnCache" class="org.joget.apps.form.model.FormColumnCache">
+    <bean id="formColumnCache" class="org.joget.apps.form.model.FormColumnCache" lazy-init="true">
         <property name="cache" ref="longTermCache"/>
     </bean>
     
-    <bean id="formOptionsCacheExecutor" class="org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler">
+    <bean id="formOptionsCacheExecutor" class="org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler" lazy-init="true">
         <property name="poolSize" value="10" />
         <property name="waitForTasksToCompleteOnShutdown" value="false" />
     </bean>
     
-    <bean id="formDataDao" class="org.joget.apps.form.dao.FormDataDaoImpl" >
+    <bean id="formDataDao" class="org.joget.apps.form.dao.FormDataDaoImpl" lazy-init="true">
         <property name="formDefinitionDao" ref="formDefinitionDao" />
         <property name="builderDefinitionDao" ref="builderDefinitionDao" />
         <property name="formService" ref="formService" />
@@ -37,7 +37,7 @@
         <property name="cacheManager" ref="cacheManager" />
     </bean>
     
-    <bean id="formDataSessionFactory" class="org.joget.commons.cache.InMemoryCacheSessionFactoryBean">
+    <bean id="formDataSessionFactory" class="org.joget.commons.cache.InMemoryCacheSessionFactoryBean" lazy-init="true">
         <property name="dataSource" ref="setupDataSource"/>
         <property name="mappingResources">
             <list>
@@ -61,61 +61,61 @@
         </property>
     </bean>
 
-    <bean id="appDefinitionDao" class="org.joget.apps.app.dao.AppDefinitionDaoImpl">
+    <bean id="appDefinitionDao" class="org.joget.apps.app.dao.AppDefinitionDaoImpl" lazy-init="true">
         <property name="sessionFactory" ref="appSessionFactory"/>
         <property name="cache" ref="appFluCache" />
     </bean>
 
-    <bean id="formDefinitionDao" class="org.joget.apps.app.dao.FormDefinitionDaoImpl">
+    <bean id="formDefinitionDao" class="org.joget.apps.app.dao.FormDefinitionDaoImpl" lazy-init="true">
         <property name="sessionFactory" ref="appSessionFactory"/>
         <property name="formColumnCache" ref="formColumnCache" />
         <property name="cache" ref="appFluCache" />
     </bean>
 
-    <bean id="userviewDefinitionDao" class="org.joget.apps.app.dao.UserviewDefinitionDaoImpl">
+    <bean id="userviewDefinitionDao" class="org.joget.apps.app.dao.UserviewDefinitionDaoImpl" lazy-init="true">
         <property name="sessionFactory" ref="appSessionFactory"/>
         <property name="cache" ref="appFluCache" />
     </bean>
 
-    <bean id="datalistDefinitionDao" class="org.joget.apps.app.dao.DatalistDefinitionDaoImpl">
+    <bean id="datalistDefinitionDao" class="org.joget.apps.app.dao.DatalistDefinitionDaoImpl" lazy-init="true">
         <property name="sessionFactory" ref="appSessionFactory"/>
         <property name="cache" ref="appFluCache" />
     </bean>
     
-    <bean id="builderDefinitionDao" class="org.joget.apps.app.dao.BuilderDefinitionDaoImpl">
+    <bean id="builderDefinitionDao" class="org.joget.apps.app.dao.BuilderDefinitionDaoImpl" lazy-init="true">
         <property name="sessionFactory" ref="appSessionFactory"/>
         <property name="cache" ref="appFluCache" />
     </bean>
 
-    <bean id="packageDefinitionDao" class="org.joget.apps.app.dao.PackageDefinitionDaoImpl">
+    <bean id="packageDefinitionDao" class="org.joget.apps.app.dao.PackageDefinitionDaoImpl" lazy-init="true">
         <property name="sessionFactory" ref="appSessionFactory"/>
         <property name="appDefinitionDao" ref="appDefinitionDao"/>
     </bean>
 
-    <bean id="messageDao" class="org.joget.apps.app.dao.MessageDaoImpl">
+    <bean id="messageDao" class="org.joget.apps.app.dao.MessageDaoImpl" lazy-init="true">
         <property name="sessionFactory" ref="appSessionFactory"/>
         <property name="cache" ref="appFluCache" />
     </bean>
 
-    <bean id="environmentVariableDao" class="org.joget.apps.app.dao.EnvironmentVariableDaoImpl">
+    <bean id="environmentVariableDao" class="org.joget.apps.app.dao.EnvironmentVariableDaoImpl" lazy-init="true">
         <property name="sessionFactory" ref="appSessionFactory"/>
     </bean>
 
-    <bean id="pluginDefaultPropertiesDao" class="org.joget.apps.app.dao.PluginDefaultPropertiesDaoImpl">
+    <bean id="pluginDefaultPropertiesDao" class="org.joget.apps.app.dao.PluginDefaultPropertiesDaoImpl" lazy-init="true">
         <property name="sessionFactory" ref="appSessionFactory"/>
         <property name="cache" ref="appFluCache" />
     </bean>
     
-    <bean id="appResourceDao" class="org.joget.apps.app.dao.AppResourceDaoImpl">
+    <bean id="appResourceDao" class="org.joget.apps.app.dao.AppResourceDaoImpl" lazy-init="true">
         <property name="sessionFactory" ref="appSessionFactory"/>
         <property name="cache" ref="appFluCache" />
     </bean>
 
-    <bean id="AuditTrailDao" class="org.joget.apps.app.dao.AuditTrailDaoImpl">
+    <bean id="AuditTrailDao" class="org.joget.apps.app.dao.AuditTrailDaoImpl" lazy-init="true">
         <property name="sessionFactory" ref="reportSessionFactory"/>
     </bean>
 
-    <bean id="appSessionFactory" class="org.joget.commons.cache.InMemoryCacheSessionFactoryBean">
+    <bean id="appSessionFactory" class="org.joget.commons.cache.InMemoryCacheSessionFactoryBean" lazy-init="true">
         <qualifier value="app"/>
         <property name="dataSource" ref="setupDataSource"/>
         <property name="mappingResources">
@@ -152,7 +152,7 @@
     </bean>
     
     <!-- Hibernate SessionFactory for report-->
-    <bean id="reportSessionFactory" class="org.joget.commons.cache.InMemoryCacheSessionFactoryBean">
+    <bean id="reportSessionFactory" class="org.joget.commons.cache.InMemoryCacheSessionFactoryBean" lazy-init="true">
         <qualifier value="report"/>
         <property name="dataSource" ref="setupDataSource"/>
         <property name="mappingResources">
@@ -181,66 +181,66 @@
         </property>
     </bean>
     
-    <bean id="reportAppDao" class="org.joget.report.dao.ReportAppDaoImpl">
+    <bean id="reportAppDao" class="org.joget.report.dao.ReportAppDaoImpl" lazy-init="true">
         <property name="sessionFactory" ref="reportSessionFactory"/>
     </bean>
     
-    <bean id="reportWorkflowPackageDao" class="org.joget.report.dao.ReportWorkflowPackageDaoImpl">
+    <bean id="reportWorkflowPackageDao" class="org.joget.report.dao.ReportWorkflowPackageDaoImpl" lazy-init="true">
         <property name="sessionFactory" ref="reportSessionFactory"/>
     </bean>
     
-    <bean id="reportWorkflowProcessDao" class="org.joget.report.dao.ReportWorkflowProcessDaoImpl">
+    <bean id="reportWorkflowProcessDao" class="org.joget.report.dao.ReportWorkflowProcessDaoImpl" lazy-init="true">
         <property name="sessionFactory" ref="reportSessionFactory"/>
     </bean>
     
-    <bean id="reportWorkflowActivityDao" class="org.joget.report.dao.ReportWorkflowActivityDaoImpl">
+    <bean id="reportWorkflowActivityDao" class="org.joget.report.dao.ReportWorkflowActivityDaoImpl" lazy-init="true">
         <property name="sessionFactory" ref="reportSessionFactory"/>
     </bean>
     
-    <bean id="reportWorkflowProcessInstanceDao" class="org.joget.report.dao.ReportWorkflowProcessInstanceDaoImpl">
+    <bean id="reportWorkflowProcessInstanceDao" class="org.joget.report.dao.ReportWorkflowProcessInstanceDaoImpl" lazy-init="true">
         <property name="sessionFactory" ref="reportSessionFactory"/>
     </bean>
     
-    <bean id="reportWorkflowActivityInstanceDao" class="org.joget.report.dao.ReportWorkflowActivityInstanceDaoImpl">
+    <bean id="reportWorkflowActivityInstanceDao" class="org.joget.report.dao.ReportWorkflowActivityInstanceDaoImpl" lazy-init="true">
         <property name="sessionFactory" ref="reportSessionFactory"/>
     </bean>
     
-    <bean id="reportExecutor" class="org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor">
+    <bean id="reportExecutor" class="org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor" lazy-init="true">
         <property name="maxPoolSize" value="10" />
         <property name="waitForTasksToCompleteOnShutdown" value="true" />
     </bean>
     
-    <bean id="commonTaskScheduler" class="org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler">
+    <bean id="commonTaskScheduler" class="org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler" lazy-init="true">
         <property name="poolSize" value="10" />
         <property name="waitForTasksToCompleteOnShutdown" value="true" />
         <property name="removeOnCancelPolicy" value="true" />
         <property name="threadNamePrefix" value="CommonScheduler-" />
     </bean>
     
-    <bean id="formDataAuditTrailDao" class="org.joget.apps.form.dao.FormDataAuditTrailDaoImpl">
+    <bean id="formDataAuditTrailDao" class="org.joget.apps.form.dao.FormDataAuditTrailDaoImpl" lazy-init="true">
         <property name="sessionFactory" ref="reportSessionFactory"/>
     </bean>
     
-    <bean id="userReplacementDao" class="org.joget.apps.app.dao.UserReplacementDaoImpl">
+    <bean id="userReplacementDao" class="org.joget.apps.app.dao.UserReplacementDaoImpl" lazy-init="true">
         <property name="sessionFactory" ref="appSessionFactory"/>
     </bean>
 
-    <bean id="workflowHelper" class="org.joget.apps.app.service.AppWorkflowHelper">
+    <bean id="workflowHelper" class="org.joget.apps.app.service.AppWorkflowHelper" lazy-init="true">
     </bean>
     
-    <bean id="pluginHashVariableHelper" class="org.joget.apps.app.service.PluginHashVariableHelperImpl">
+    <bean id="pluginHashVariableHelper" class="org.joget.apps.app.service.PluginHashVariableHelperImpl" lazy-init="true">
     </bean>
 
     <bean id="appPluginUtil" class="org.joget.apps.app.service.AppPluginUtil">
     </bean>
 
-    <bean id="auditTrailManager" class="org.joget.apps.app.service.AuditTrailManagerImpl">
+    <bean id="auditTrailManager" class="org.joget.apps.app.service.AuditTrailManagerImpl" lazy-init="true">
     </bean>
 
-    <bean id="auditTrailInterceptor" class="org.joget.apps.app.service.AuditTrailInterceptor">
+    <bean id="auditTrailInterceptor" class="org.joget.apps.app.service.AuditTrailInterceptor" lazy-init="true">
     </bean>
     
-    <bean id="sqlFilterAspect" class="org.joget.apps.app.service.SqlFilterAspect">
+    <bean id="sqlFilterAspect" class="org.joget.apps.app.service.SqlFilterAspect" lazy-init="true">
     </bean>
    
     <bean id="pushService" class="org.joget.apps.app.service.PushServiceUtil">
@@ -260,20 +260,20 @@
         <property name="arguments" value="org.joget.apps.util.ThreadLocalSecurityContextHolderStrategy" />
     </bean>
             
-    <bean id="setupManagerHelper" class="org.joget.apps.app.service.AppSetupManagerHelperImpl">
+    <bean id="setupManagerHelper" class="org.joget.apps.app.service.AppSetupManagerHelperImpl" lazy-init="true">
     </bean>
     
-    <bean id="govHealthCheckScheduler" class="org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler">
+    <bean id="govHealthCheckScheduler" class="org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler" lazy-init="true">
         <property name="poolSize" value="10" />
         <property name="waitForTasksToCompleteOnShutdown" value="false" />
     </bean>
     
-    <bean id="govHealthCheckManager" class="org.joget.governance.service.GovHealthCheckManager" depends-on="govHealthCheckScheduler, setupManager">
+    <bean id="govHealthCheckManager" class="org.joget.governance.service.GovHealthCheckManager" depends-on="govHealthCheckScheduler, setupManager" lazy-init="true">
         <constructor-arg><ref bean="govHealthCheckScheduler" /></constructor-arg>
         <constructor-arg><ref bean="setupManager" /></constructor-arg>
     </bean>
 
-    <bean id="userAuthenticationService" class="org.joget.apps.util.UserAuthenticationService"/>
+    <bean id="userAuthenticationService" class="org.joget.apps.util.UserAuthenticationService" lazy-init="true"/>
    
     <aop:config>
         <aop:advisor advice-ref="txAdvice" pointcut="execution(* org.joget.apps.app.dao.*Dao.*(..)) and !(execution(* org.joget.apps.app.dao.AppDefinitionDao.updateDateModified(..)))" order="1" />

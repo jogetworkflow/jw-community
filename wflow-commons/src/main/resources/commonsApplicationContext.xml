@@ -22,19 +22,19 @@
         <property name="cacheManager" ref="cacheManager"/>
     </bean>
     
-    <bean id="hostManager" class="org.joget.commons.util.HostManager" depends-on="staticInitOfDynamicDataSourceManager">
+    <bean id="hostManager" class="org.joget.commons.util.HostManager" depends-on="staticInitOfDynamicDataSourceManager" lazy-init="true">
     </bean>
 
     <bean id="bitronixTransactionManager" factory-method="getTransactionManager" 
-        class="bitronix.tm.TransactionManagerServices" destroy-method="shutdown" /> 
+        class="bitronix.tm.TransactionManagerServices" destroy-method="shutdown" lazy-init="true" /> 
 
-    <bean id="transactionManager" class="org.springframework.transaction.jta.JtaTransactionManager">
+    <bean id="transactionManager" class="org.springframework.transaction.jta.JtaTransactionManager" lazy-init="true">
         <property name="transactionManager" ref="bitronixTransactionManager" />
         <property name="userTransaction" ref="bitronixTransactionManager" />
         <property name="allowCustomIsolationLevels" value="true"/>
     </bean>
     
-    <bean id="transactionTemplate" class="org.springframework.transaction.support.TransactionTemplate">
+    <bean id="transactionTemplate" class="org.springframework.transaction.support.TransactionTemplate" lazy-init="true">
         <property name="transactionManager" ref="transactionManager"></property>
     </bean>
     
@@ -53,7 +53,7 @@
         <aop:advisor advice-ref="txAdvice" pointcut="execution(* org.joget.commons.spring.model.*Dao.*(..))" order="1" />
     </aop:config>
 
-    <bean id="setupDataSource" class="org.joget.commons.util.DynamicDataSource" destroy-method="close" depends-on="staticInitOfDynamicDataSourceManager">
+    <bean id="setupDataSource" class="org.joget.commons.util.DynamicDataSource" destroy-method="close" depends-on="staticInitOfDynamicDataSourceManager" lazy-init="true">
         <property name="driverClassName" value="com.mysql.jdbc.Driver" />
         <property name="url" value="jdbc:mysql://127.0.0.1:3306/jwdb?characterEncoding=UTF-8&amp;useSSL=false" />
         <property name="username" value="root" />
@@ -78,7 +78,7 @@
     -->
     
     <!-- Hibernate SessionFactory -->
-    <bean id="setupSessionFactory" class="org.joget.commons.cache.InMemoryCacheSessionFactoryBean" autowire-candidate="false" depends-on="staticInitOfDynamicDataSourceManager,securityUtil">
+    <bean id="setupSessionFactory" class="org.joget.commons.cache.InMemoryCacheSessionFactoryBean" lazy-init="true" autowire-candidate="false" depends-on="staticInitOfDynamicDataSourceManager">
         <property name="dataSource" ref="setupDataSource"/>
         <property name="mappingResources">
             <list>
@@ -100,7 +100,7 @@
         </property>
     </bean>
 
-    <bean id="resourceBundleMessageDao" class="org.joget.commons.spring.model.ResourceBundleMessageDao" depends-on="staticInitOfDynamicDataSourceManager">
+    <bean id="resourceBundleMessageDao" class="org.joget.commons.spring.model.ResourceBundleMessageDao" lazy-init="true" depends-on="staticInitOfDynamicDataSourceManager">
         <property name="sessionFactory" ref="setupSessionFactory"/>
         <property name="cache">
             <ref bean="longTermCache" />
@@ -110,14 +110,14 @@
     <bean id="resourceBundleUtil" class="org.joget.commons.util.ResourceBundleUtil">
     </bean>
 
-    <bean id="setupDao" class="org.joget.commons.util.SetupDao" depends-on="staticInitOfDynamicDataSourceManager">
+    <bean id="setupDao" class="org.joget.commons.util.SetupDao" depends-on="staticInitOfDynamicDataSourceManager" lazy-init="true">
         <property name="sessionFactory" ref="setupSessionFactory"/>
     </bean>
     
-    <bean id="setupManagerHelper" class="org.joget.commons.util.SetupManagerHelperImpl">
+    <bean id="setupManagerHelper" class="org.joget.commons.util.SetupManagerHelperImpl" lazy-init="true">
     </bean>
 
-    <bean id="setupManager" class="org.joget.commons.util.SetupManager" depends-on="staticInitOfDynamicDataSourceManager">
+    <bean id="setupManager" class="org.joget.commons.util.SetupManager" depends-on="staticInitOfDynamicDataSourceManager" lazy-init="true">
         <property name="setupDao" ref="setupDao"/>
         <property name="setupManagerHelper" ref="setupManagerHelper"/>
         <property name="cacheManager" ref="cacheManager"/>
@@ -125,67 +125,67 @@
 
     <bean id="cacheProvider" class="org.ehcache.jsr107.EhcacheCachingProvider" />
 
-    <bean id="cacheManager" class="org.springframework.cache.jcache.JCacheManagerFactoryBean">
+    <bean id="cacheManager" class="org.springframework.cache.jcache.JCacheManagerFactoryBean" lazy-init="true">
         <property name="cacheManagerUri">
             <value>classpath:ehcache.xml</value>
         </property>
    </bean>
 
-    <bean id="longTermCache" class="org.joget.commons.util.LongTermCache" depends-on="setupManager">
+    <bean id="longTermCache" class="org.joget.commons.util.LongTermCache" depends-on="setupManager" lazy-init="true">
         <property name="setupManager" ref="setupManager"/>
         <property name="cacheManager" ref="cacheManager"/>
     </bean>
     
     <!-- for cache backward compatible -->
-    <bean id="dynamicDataSourceManagerCache" class="org.joget.commons.util.EhCacheFactoryBean" depends-on="cacheManager">
+    <bean id="dynamicDataSourceManagerCache" class="org.joget.commons.util.EhCacheFactoryBean" depends-on="cacheManager" lazy-init="true">
         <property name="cacheManager" ref="cacheManager"/>
         <property name="cacheName" value="org.joget.cache.DATASOURCE_CACHE"/>
     </bean>
-    <bean id="setupManagerCache" class="org.joget.commons.util.EhCacheFactoryBean" depends-on="cacheManager">
+    <bean id="setupManagerCache" class="org.joget.commons.util.EhCacheFactoryBean" depends-on="cacheManager" lazy-init="true">
         <property name="cacheManager" ref="cacheManager"/>
         <property name="cacheName" value="org.joget.cache.SETUP_CACHE"/>
     </bean>
-    <bean id="fluCache" class="org.joget.commons.util.EhCacheFactoryBean" depends-on="cacheManager">
+    <bean id="fluCache" class="org.joget.commons.util.EhCacheFactoryBean" depends-on="cacheManager" lazy-init="true">
         <property name="cacheManager" ref="cacheManager"/>
         <property name="cacheName" value="org.joget.cache.FLU_CACHE"/>
     </bean>
-    <bean id="userviewMenuCache" class="org.joget.commons.util.EhCacheFactoryBean" depends-on="cacheManager">
+    <bean id="userviewMenuCache" class="org.joget.commons.util.EhCacheFactoryBean" depends-on="cacheManager" lazy-init="true">
         <property name="cacheManager" ref="cacheManager"/>
         <property name="cacheName" value="org.joget.cache.USERVIEW_CACHE"/>
     </bean>
-    <bean id="formOptionsCache" class="org.joget.commons.util.EhCacheFactoryBean" depends-on="cacheManager">
+    <bean id="formOptionsCache" class="org.joget.commons.util.EhCacheFactoryBean" depends-on="cacheManager" lazy-init="true">
         <property name="cacheManager" ref="cacheManager"/>
         <property name="cacheName" value="org.joget.cache.FORM_OPTIONS_CACHE"/>
     </bean>
-    <bean id="cssCache" class="org.joget.commons.util.EhCacheFactoryBean" depends-on="cacheManager">
+    <bean id="cssCache" class="org.joget.commons.util.EhCacheFactoryBean" depends-on="cacheManager" lazy-init="true">
         <property name="cacheManager" ref="cacheManager"/>
         <property name="cacheName" value="org.joget.cache.CSS_CACHE"/>
     </bean>
-    <bean id="formSessionFactoryCache" class="org.joget.commons.util.EhCacheFactoryBean" depends-on="cacheManager">
+    <bean id="formSessionFactoryCache" class="org.joget.commons.util.EhCacheFactoryBean" depends-on="cacheManager" lazy-init="true">
         <property name="cacheManager" ref="cacheManager"/>
         <property name="cacheName" value=" org.joget.cache.SF_CACHE"/>
     </bean>
-    <bean id="joinFormSessionFactoryCache" class="org.joget.commons.util.EhCacheFactoryBean" depends-on="cacheManager">
+    <bean id="joinFormSessionFactoryCache" class="org.joget.commons.util.EhCacheFactoryBean" depends-on="cacheManager" lazy-init="true">
         <property name="cacheManager" ref="cacheManager"/>
         <property name="cacheName" value=" org.joget.cache.SF_CACHE"/>
     </bean>
-    <bean id="formPersistentClassCache" class="org.joget.commons.util.EhCacheFactoryBean" depends-on="cacheManager">
+    <bean id="formPersistentClassCache" class="org.joget.commons.util.EhCacheFactoryBean" depends-on="cacheManager" lazy-init="true">
         <property name="cacheManager" ref="cacheManager"/>
     </bean>
-    <bean id="resourceBundleMessageCache" class="org.joget.commons.util.EhCacheFactoryBean" depends-on="cacheManager">
+    <bean id="resourceBundleMessageCache" class="org.joget.commons.util.EhCacheFactoryBean" depends-on="cacheManager" lazy-init="true">
         <property name="cacheManager" ref="cacheManager"/>
     </bean>
-    <bean id="nonceCache" class="org.joget.commons.util.EhCacheFactoryBean" depends-on="cacheManager">
+    <bean id="nonceCache" class="org.joget.commons.util.EhCacheFactoryBean" depends-on="cacheManager" lazy-init="true">
         <property name="cacheManager" ref="cacheManager"/>
     </bean>
     
-    <bean id="fileManager" class="org.joget.commons.util.FileManager" depends-on="setupManager">
+    <bean id="fileManager" class="org.joget.commons.util.FileManager" depends-on="setupManager" lazy-init="true">
     </bean>
 
     <bean id="securityUtil" class="org.joget.commons.util.SecurityUtil">
     </bean>
 
-    <bean id="inMemoryCacheManager" class="org.joget.commons.cache.NoInMemoryCacheManager">
+    <bean id="inMemoryCacheManager" class="org.joget.commons.cache.NoInMemoryCacheManager" lazy-init="true">
         <qualifier value="default"/>
     </bean>
     

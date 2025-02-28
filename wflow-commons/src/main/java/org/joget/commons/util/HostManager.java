@@ -5,6 +5,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.context.request.RequestContextHolder;
@@ -15,6 +16,7 @@ import org.springframework.web.context.request.ServletRequestAttributes;
  * 
  */
 @Service
+@Lazy
 public class HostManager implements ApplicationContextAware {
 
     public static final String SYSTEM_PROPERTY_VIRTUALHOST = "wflow.virtualhost";

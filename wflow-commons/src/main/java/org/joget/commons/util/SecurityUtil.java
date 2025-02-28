@@ -11,6 +11,7 @@ import org.owasp.csrfguard.session.LogicalSession;
 import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 
 /**
@@ -18,6 +19,7 @@ import org.springframework.stereotype.Service;
  * 
  */
 @Service("securityUtil")
+@Lazy
 public class SecurityUtil implements ApplicationContextAware {
 
     public final static String ENVELOPE = "%%%%";

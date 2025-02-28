@@ -48,10 +48,12 @@ import org.joget.workflow.model.service.WorkflowManager;
 import org.joget.workflow.model.service.WorkflowUserManager;
 import org.joget.workflow.util.WorkflowUtil;
 import org.springframework.context.ApplicationContext;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 import org.springframework.util.ClassUtils;
 
 @Service("workflowHelper")
+@Lazy
 public class AppWorkflowHelper implements WorkflowHelper {
     
     protected Map<String, AppDefinition> deadlineAppDefinitionCache = new HashMap<String, AppDefinition>();

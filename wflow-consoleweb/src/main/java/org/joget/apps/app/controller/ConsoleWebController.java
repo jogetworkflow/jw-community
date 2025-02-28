@@ -85,8 +85,10 @@ import static org.joget.apps.app.controller.UserviewWebController.isBackendLicen
 import static org.joget.apps.app.service.AppDevUtil.*;
 import org.joget.apps.app.web.GitRequestFilter;
 import org.joget.plugin.base.SystemConfigurablePlugin;
+import org.springframework.context.annotation.Lazy;
 
 @Controller
+@Lazy
 public class ConsoleWebController {
 
     public static final String APP_ZIP_PREFIX = "APP_";

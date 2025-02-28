@@ -3,11 +3,13 @@ package org.joget.commons.spring.web;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import org.springframework.beans.propertyeditors.CustomDateEditor;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.InitBinder;
 
 @Controller
+@Lazy
 public abstract class AbstractWebController {
 
     @InitBinder

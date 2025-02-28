@@ -16,10 +16,10 @@
         <aop:advisor advice-ref="txAdvice" pointcut="execution(* org.joget.workflow.shark.model.dao.*Dao.*(..))" order="1" />
     </aop:config>
         
-    <bean id="deadlineThreadManager" class="org.joget.workflow.shark.SharkDeadlineThreadManager">
+    <bean id="deadlineThreadManager" class="org.joget.workflow.shark.SharkDeadlineThreadManager" lazy-init="true">
     </bean>
     
-    <bean id="workflowManager" class="org.joget.workflow.model.service.WorkflowManagerImpl">
+    <bean id="workflowManager" class="org.joget.workflow.model.service.WorkflowManagerImpl" lazy-init="true">
         <constructor-arg><ref bean="setupDataSource" /></constructor-arg>
         <constructor-arg><ref bean="transactionManager" /></constructor-arg>
         <property name="workflowUserManager" ref="workflowUserManager"/>
@@ -29,7 +29,7 @@
     </bean>
 
     <!-- Hibernate SessionFactory -->
-    <bean id="workflowSessionFactory" class="org.joget.commons.cache.InMemoryCacheSessionFactoryBean">
+    <bean id="workflowSessionFactory" class="org.joget.commons.cache.InMemoryCacheSessionFactoryBean" lazy-init="true">
         <qualifier value="workflow"/>
         <property name="dataSource" ref="setupDataSource"/>
         <property name="mappingResources">
@@ -68,7 +68,7 @@
     </bean> 
     
     <!-- Hibernate SessionFactory added redundantly to create index & schema -->
-    <bean id="sharkWorkflowUpdateSessionFactory" class="org.joget.commons.cache.InMemoryCacheSessionFactoryBean">
+    <bean id="sharkWorkflowUpdateSessionFactory" class="org.joget.commons.cache.InMemoryCacheSessionFactoryBean" lazy-init="true">
         <qualifier value="workflow"/>
         <property name="dataSource" ref="setupDataSource"/>
         <property name="mappingResources">
@@ -94,7 +94,7 @@
         </property>
     </bean>
     
-    <bean id="sharkIdSessionFactory" class="org.joget.commons.cache.InMemoryCacheSessionFactoryBean">
+    <bean id="sharkIdSessionFactory" class="org.joget.commons.cache.InMemoryCacheSessionFactoryBean" lazy-init="true">
         <qualifier value="sharkId"/>
         <property name="dataSource" ref="setupDataSource"/>
         <property name="mappingResources">
@@ -119,20 +119,20 @@
         </property>
     </bean>
 
-    <bean id="workflowAssignmentDao" class="org.joget.workflow.shark.model.dao.SharkWorkflowAssignmentDaoImpl">
+    <bean id="workflowAssignmentDao" class="org.joget.workflow.shark.model.dao.SharkWorkflowAssignmentDaoImpl" lazy-init="true">
         <property name="sessionFactory" ref="workflowSessionFactory"/>
         <property name="workflowProcessLinkDao" ref="workflowProcessLinkDao"/>
     </bean>
     
-    <bean id="deadlineDao" class="org.joget.workflow.shark.model.dao.DeadlineDao">
+    <bean id="deadlineDao" class="org.joget.workflow.shark.model.dao.DeadlineDao" lazy-init="true">
         <property name="sessionFactory" ref="workflowSessionFactory"/>
     </bean>
     
-    <bean id="sharkObjectIdDao" class="org.joget.workflow.shark.model.dao.SharkObjectIdDao">
+    <bean id="sharkObjectIdDao" class="org.joget.workflow.shark.model.dao.SharkObjectIdDao" lazy-init="true">
         <property name="sessionFactory" ref="sharkIdSessionFactory"/>
     </bean>
     
-    <bean id="sharkCounterDao" class="org.joget.workflow.shark.model.dao.SharkCounterDao">
+    <bean id="sharkCounterDao" class="org.joget.workflow.shark.model.dao.SharkCounterDao" lazy-init="true">
         <property name="sessionFactory" ref="sharkIdSessionFactory"/>
     </bean>
 </beans>

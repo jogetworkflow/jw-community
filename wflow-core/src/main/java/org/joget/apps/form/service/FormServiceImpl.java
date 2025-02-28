@@ -33,11 +33,13 @@ import org.joget.plugin.property.service.PropertyUtil;
 import org.joget.workflow.model.service.WorkflowManager;
 import org.json.JSONObject;
 import org.joget.workflow.util.WorkflowUtil;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 @Service("formService")
+@Lazy
 public class FormServiceImpl implements FormService {
 
 

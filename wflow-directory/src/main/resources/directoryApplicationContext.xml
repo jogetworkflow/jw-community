@@ -11,7 +11,7 @@
     <import resource="classpath:commonsApplicationContext.xml" />
     <import resource="classpath:pluginBaseApplicationContext.xml" />
 
-    <bean id="directorySessionFactory" class="org.joget.commons.cache.InMemoryCacheSessionFactoryBean">
+    <bean id="directorySessionFactory" class="org.joget.commons.cache.InMemoryCacheSessionFactoryBean" lazy-init="true">
         <property name="dataSource" ref="setupDataSource"/>
         <property name="mappingResources">
             <list>
@@ -41,11 +41,11 @@
         </property>
     </bean>
     
-    <bean id="userMetaDataDao" class="org.joget.directory.dao.UserMetaDataDaoImpl">
+    <bean id="userMetaDataDao" class="org.joget.directory.dao.UserMetaDataDaoImpl" lazy-init="true">
         <property name="sessionFactory" ref="directorySessionFactory" />
     </bean>
     
-    <bean id="userDao" class="org.joget.directory.dao.UserDaoImpl">
+    <bean id="userDao" class="org.joget.directory.dao.UserDaoImpl" lazy-init="true">
         <property name="groupDao" ref="groupDao" />
         <property name="employmentDao" ref="employmentDao" />
         <property name="roleDao" ref="roleDao" />
@@ -54,7 +54,7 @@
         <property name="sessionFactory" ref="directorySessionFactory" />
     </bean>
 
-    <bean id="employmentDao" class="org.joget.directory.dao.EmploymentDaoImpl">
+    <bean id="employmentDao" class="org.joget.directory.dao.EmploymentDaoImpl" lazy-init="true">
         <property name="employmentReportToDao" ref="employmentReportToDao" />
         <property name="userDao" ref="userDao" />
         <property name="organizationDao" ref="organizationDao" />
@@ -63,21 +63,21 @@
         <property name="sessionFactory" ref="directorySessionFactory" />
     </bean>
 
-    <bean id="employmentReportToDao" class="org.joget.directory.dao.EmploymentReportToDaoImpl">
+    <bean id="employmentReportToDao" class="org.joget.directory.dao.EmploymentReportToDaoImpl" lazy-init="true">
         <property name="sessionFactory" ref="directorySessionFactory"/>
     </bean>
     
-    <bean id="departmentDao" class="org.joget.directory.dao.DepartmentDaoImpl">
+    <bean id="departmentDao" class="org.joget.directory.dao.DepartmentDaoImpl" lazy-init="true">
         <property name="organizationDao" ref="organizationDao" />
         <property name="employmentDao" ref="employmentDao"/>
         <property name="sessionFactory" ref="directorySessionFactory" />
     </bean>
     
-    <bean id="groupDao" class="org.joget.directory.dao.GroupDaoImpl">
+    <bean id="groupDao" class="org.joget.directory.dao.GroupDaoImpl" lazy-init="true">
         <property name="sessionFactory" ref="directorySessionFactory" />
     </bean>
     
-    <bean id="organizationDao" class="org.joget.directory.dao.OrganizationDaoImpl">
+    <bean id="organizationDao" class="org.joget.directory.dao.OrganizationDaoImpl" lazy-init="true">
         <property name="gradeDao" ref="gradeDao" />
         <property name="groupDao" ref="groupDao" />
         <property name="employmentDao" ref="employmentDao" />
@@ -85,24 +85,24 @@
         <property name="sessionFactory" ref="directorySessionFactory" />
     </bean>
     
-    <bean id="gradeDao" class="org.joget.directory.dao.GradeDaoImpl">
+    <bean id="gradeDao" class="org.joget.directory.dao.GradeDaoImpl" lazy-init="true">
         <property name="organizationDao" ref="organizationDao" />
         <property name="employmentDao" ref="employmentDao" />
         <property name="sessionFactory" ref="directorySessionFactory" />
     </bean>
     
-    <bean id="roleDao" class="org.joget.directory.dao.RoleDaoImpl">
+    <bean id="roleDao" class="org.joget.directory.dao.RoleDaoImpl" lazy-init="true">
         <property name="sessionFactory" ref="directorySessionFactory" />
     </bean>
 
-    <bean id="directoryManager" class="org.joget.directory.model.service.DirectoryManagerProxyImpl" primary="true">
+    <bean id="directoryManager" class="org.joget.directory.model.service.DirectoryManagerProxyImpl" lazy-init="true" primary="true">
         <qualifier value="main" />
         <property name="defaultDirectoryManagerImpl" ref="defaultDirectoryManager" />
         <property name="setupManager" ref="setupManager" />
         <property name="pluginManager" ref="pluginManager" />
     </bean>
 
-    <bean id="defaultDirectoryManager" class="org.joget.directory.model.service.DirectoryManagerImpl" primary="true" >
+    <bean id="defaultDirectoryManager" class="org.joget.directory.model.service.DirectoryManagerImpl" lazy-init="true" primary="true" >
         <qualifier value="default" />
         <property name="userDao" ref="userDao" />
         <property name="employmentDao" ref="employmentDao" />
@@ -113,7 +113,7 @@
         <property name="roleDao" ref="roleDao" />
     </bean>
 
-    <bean id="workflowUserManager" class="org.joget.workflow.model.service.WorkflowUserManager">
+    <bean id="workflowUserManager" class="org.joget.workflow.model.service.WorkflowUserManager" lazy-init="true">
     </bean>
 
     <aop:config>

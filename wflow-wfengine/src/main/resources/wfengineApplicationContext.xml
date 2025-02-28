@@ -21,7 +21,7 @@
         <aop:advisor advice-ref="txAdvice" pointcut="execution(* org.joget.workflow.model.dao.*Dao.*(..))" order="1" />
     </aop:config>
 
-    <bean id="workflowUpdateSessionFactory" class="org.joget.commons.cache.InMemoryCacheSessionFactoryBean">
+    <bean id="workflowUpdateSessionFactory" class="org.joget.commons.cache.InMemoryCacheSessionFactoryBean" lazy-init="true">
         <qualifier value="workflow"/>
         <property name="dataSource" ref="setupDataSource"/>
         <property name="mappingResources">
@@ -45,7 +45,7 @@
         </property>
     </bean>
 
-    <bean id="workflowProcessLinkDao" class="org.joget.workflow.model.dao.WorkflowProcessLinkDao">
+    <bean id="workflowProcessLinkDao" class="org.joget.workflow.model.dao.WorkflowProcessLinkDao" lazy-init="true">
         <property name="sessionFactory" ref="workflowUpdateSessionFactory"/>
     </bean>
 </beans>

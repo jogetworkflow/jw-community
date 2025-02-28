@@ -62,8 +62,10 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.joget.apps.datalist.model.DataListDisplayColumn;
 import org.joget.apps.datalist.model.DataListDisplayColumnProxy;
 import org.joget.commons.util.SetupManager;
+import org.springframework.context.annotation.Lazy;
 
 @Controller
+@Lazy
 public class DatalistBuilderWebController {
 
     public static final String PREFIX_SELECTED = "selected_";
