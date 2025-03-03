@@ -2,6 +2,18 @@ Joget DX COMMUNITY
 ====================
 For more information, please refer to https://community.joget.org
 
+8.1.11
+======
+0f7f14626 Fixed: wflow-consoleweb - Mandatory Fields Icon Placement - Fixed inconsistent icon placement to denote Mandatory Fields in Custom Builder. @8.1-SNAPSHOT
+68db71f95 Fixed: wflow-core - Form Builder - Can't save in non sticky session cluster env. T5312 @8.1-SNAPSHOT
+605563f7a Fixed: wflow-consoleweb - Builder - Page scroll to top when drop new element. @8.1-SNAPSHOT
+7d2a43115 Fixed: wflow-consoleweb - Universal/Progressive Theme - Fixed dropdown icon is not centered and navbar positioning is not aligned with header @8.1-SNAPSHOT
+234bece66 Fixed: wflow-consoleweb - Process Builder - Incorrect positions of process nodes after placing and saving. T5565 @8.1-SNAPSHOT
+13b455c2b Fixed: wflow-consoleweb - PostgreSQL - Unable to archive process or activity with too many workflow variables. @8.1-SNAPSHOT
+e98201fdc Fixed: wflow-core - Orphaned Form Data Table Check - It wrongly marked custom created table as orphaned table. @8.1-SNAPSHOT
+9d121f591 Fixed: wflow-consoleweb - UI Theme - Added dark theming to Spreadsheet Date calendar. @8.1-SNAPSHOT
+8d4468fc6 Fixed: wflow-consoleweb - App Composer Tags - Fixed long tag name blocking edit button issue. @8.1-SNAPSHOT
+
 8.1.10
 ======
 d5c0f7620 Fixed: jw-community - Security - Update Apache Tomcat to 9.0.98 for CVE-2024-56337. T5585 @8.1-SNAPSHOT
