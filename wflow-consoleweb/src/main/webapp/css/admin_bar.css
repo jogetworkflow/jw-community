@@ -730,7 +730,6 @@ body.quickEditModeActive .analyzer-page {
     position: absolute;
     max-width: 600px;
     z-index: 5;
-    left: 5px;
 }
 
 .analyzer-label, #form-canvas .analyzer-label {

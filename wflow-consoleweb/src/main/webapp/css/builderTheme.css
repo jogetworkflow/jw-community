@@ -3152,9 +3152,6 @@ body[builder-theme] .api-container .plugin-label .errorMsg {
 body[builder-theme] .api-container .element-operations .operation {
     font-size: 14px;
 }
-body[builder-theme]#cbuilder.tox-fullscreen > #top-panel{
-    display: none;
-}
 body[builder-theme] .info-text{
     color: var(--theme-input-color-1);
 }
@@ -3163,6 +3160,9 @@ body[builder-theme]#cbuilder.quick-nav-shown.quick-nav-position-left .builder-vi
 }
 body[builder-theme]#cbuilder:not(.no-right-panel) div#adminBar > a#quickEditMode > span#environmentName {
     opacity: 0;
+}
+body[builder-theme]#cbuilder.tox-fullscreen > #top-panel{
+    display: none;
 }
 /* Guider Dark Theme */
 body[builder-theme='dark'] .guider {
