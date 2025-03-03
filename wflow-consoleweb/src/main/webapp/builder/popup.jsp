@@ -23,7 +23,11 @@
                 if (window.self !== window.top && $("#main-body-header").length > 0) {
                     var wh = $(window.self).height() - $("#main-body-header").outerHeight(true) - 40;
                     $("body.popupBody").css("width", "99.9%");
-                    $("body.popupBody").css("padding-top", $("#main-body-header").outerHeight(true) + "px");
+                    if($("#main-body-header").outerHeight(true) > 0){
+                        $("body.popupBody").css("padding-top", $("#main-body-header").outerHeight(true) + "px");
+                    }else{
+                        $("body.popupBody").css("padding-top", "revert-layer");
+                    }
                     $("#main-body-content").css("height", wh + "px");
                 }
             });
