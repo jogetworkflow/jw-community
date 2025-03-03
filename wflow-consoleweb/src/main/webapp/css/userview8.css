@@ -2190,3 +2190,18 @@ body.rtl [class*=-selection].dropdown .dropdown-menu i.zmdi-check{
 [class*=-selection].dropdown .dropdown-menu {
     width: 220px;
 }
+
+body.popupBody.builder-popup #main-body-header{
+    background: #394249;
+    color: #fff;
+    padding: 15px;
+    position: fixed;
+    text-transform: uppercase;
+    font-size: 16px;
+    font-weight: bold;
+    top: 0;
+    left: 0;
+    width: 100%;
+    box-sizing: border-box;
+    z-index: 1000;
+}
