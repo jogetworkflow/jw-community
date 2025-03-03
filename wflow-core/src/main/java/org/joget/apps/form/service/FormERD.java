@@ -133,8 +133,12 @@ public class FormERD {
         if (field != null) {
             if (!(field instanceof FormContainer)) {
                 String id = field.getPropertyString(FormUtil.PROPERTY_ID);
-                if (id != null && (!entity.hasField(id) || entity.getField(id).getPluginLabel().isEmpty())) {
-                    Field entityField = new Field(id, field.getClassName(), field.getI18nLabel());
+                String label = field.getPropertyString(FormUtil.PROPERTY_LABEL);
+                if (id != null && entity.hasField(id) && entity.getField(id).getLabel().isEmpty()) {
+                    //to populate label
+                    entity.getField(id).setLabel(label);
+                } else if (id != null && (!entity.hasField(id) || entity.getField(id).getPluginLabel().isEmpty())) {
+                    Field entityField = new Field(id, field.getClassName(), field.getI18nLabel(), label);
                     
                     if (field instanceof FormReferenceDataRetriever) {
                         Relation r = getRelationFromDatalist(field, entity.getTableName(), id, true);
@@ -640,11 +644,17 @@ public class FormERD {
     }
     
     public static class Field extends HashMap<String, String> {
+        
         public Field(String id, String className, String pluginLabel) {
+            this(id, className, pluginLabel, id);
+        }
+        
+        public Field(String id, String className, String pluginLabel, String label) {
             super();
             this.put("id", id);
             this.put("pluginClassName", className);
             this.put("pluginLabel", pluginLabel);
+            this.put("label", label);
         }
         
         public String getId() {
@@ -657,6 +667,14 @@ public class FormERD {
         
         public String getPluginLabel() {
             return this.get("pluginLabel");
+        }
+        
+        public void setLabel(String label) {
+            this.put("label", label);
+        }
+        
+        public String getLabel() {
+            return this.containsKey("label")?this.get("label"):"";
         }
     }
     
