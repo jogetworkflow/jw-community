@@ -836,3 +836,6 @@ body.dark-mode .pika-button:hover{
 body.dark-mode .is-selected .pika-button{
     background-color: var(--theme-sidebar-active-icon);
 }
+body.dark-mode .numeric_field_control{
+    filter: brightness(0) saturate(100%) invert(60%) sepia(11%) saturate(339%) hue-rotate(196deg) brightness(101%) contrast(95%);
+}

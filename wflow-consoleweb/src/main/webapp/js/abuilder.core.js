@@ -53,6 +53,16 @@ AppBuilder = {
             
             if (!$(this).hasClass("disabled")) {
                 var url = CustomBuilder.contextPath + '/web/client/app' + CustomBuilder.appPath + '/process/' + $(this).closest(".item").attr("data-id");
+                if ($('body').attr('builder-theme') === undefined){
+                    url += "?__a_="+CustomBuilder.appId+"&__u_=_builder_classic_mode";
+                }
+                if ($('body').attr('builder-theme') === "light") {
+                    url += "?__a_="+CustomBuilder.appId+"&__u_=_builder_light_mode";
+                }
+                //dark mode
+                if ($('body').attr('builder-theme') === "dark") {
+                    url += "?__a_="+CustomBuilder.appId+"&__u_=_builder_dark_mode";
+                }
                 JPopup.show("runProcessDialog", url, {}, "");
             }
             return false;

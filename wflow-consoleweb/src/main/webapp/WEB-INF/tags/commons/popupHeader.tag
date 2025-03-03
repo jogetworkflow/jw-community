@@ -10,6 +10,10 @@
 <c:set var="systemTheme" value='<%= AppUtil.getSystemTheme() %>'/>
 <c:if test="${empty title}"><c:set var="title"><fmt:message key="console.header.browser.title"/></c:set></c:if>
 
+<c:if test="${param.__u_ eq '_builder_dark_mode'}">
+    <c:set var="bodyCssClass" value="${bodyCssClass} dark-mode"/>
+</c:if>
+
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
 <html lang="${lang}" system-theme="${systemTheme}">
     <head>
