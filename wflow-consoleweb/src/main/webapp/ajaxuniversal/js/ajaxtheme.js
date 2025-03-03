@@ -15,6 +15,7 @@ AjaxUniversalTheme = {
         };
         
         $("body").append('<div id="ajaxtheme_dynamic_elements_after_this" style="display:none;"></div>');
+        history.replaceState({url: location.href}, "", location.href);
     },
     
     scrollBar : function(selector, mousewheelaxis) {
