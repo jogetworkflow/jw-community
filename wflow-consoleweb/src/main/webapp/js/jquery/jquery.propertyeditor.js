@@ -9253,7 +9253,7 @@ PropertyEditor.Type.ElementSelect.prototype = {
         var isNotEmpty = (value !== "" && value !== undefined && value !== null);
 
         //if properties page not found, render it now. If this is used for plugin, don't render when value is empty
-        if ($(this.editor).find('.property-editor-page[elementid=' + this.id + ']').length === 0 && ((isDefault && isNotEmpty) || !isDefault) && !$(anchor).hasClass("loading")) {
+        if ($(this.editor).find('.property-editor-page[elementid=' + this.id + ']').length === 0 && ((isDefault && isNotEmpty) || !isDefault) && (!$(anchor).hasClass("loading") || $(existing).attr('elementvalue') !== value)) {
             $(anchor).addClass("loading");
             var deferreds = [];
 
