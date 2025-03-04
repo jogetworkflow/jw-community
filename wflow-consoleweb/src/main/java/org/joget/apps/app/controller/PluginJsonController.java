@@ -7,10 +7,11 @@ import java.io.Writer;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
+import java.util.TreeMap;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -43,7 +44,7 @@ public class PluginJsonController {
 
     @RequestMapping("/json/plugin/listDefault")
     public void pluginListDefault(Writer writer, @RequestParam(value = "className", required = false) String className, @RequestParam(value = "name", required = false) String filter, @RequestParam(value = "start", required = false) Integer start, @RequestParam(value = "rows", required = false) Integer rows) throws JSONException {
-        Collection<Plugin> pluginList = null;
+        List<Plugin> pluginList = null;
 
         try {
             if (className != null && !className.trim().isEmpty()) {
@@ -53,7 +54,7 @@ public class PluginJsonController {
                 } else {
                     clazz = Class.forName(className);
                 }
-                pluginList = pluginManager.list(clazz);
+                pluginList = new ArrayList<Plugin>(pluginManager.list(clazz));
             } else {
                 pluginList = new ArrayList<Plugin>();
 
@@ -65,23 +66,27 @@ public class PluginJsonController {
                     }
                 }
             }
+            
+            Map<String, Plugin> sortedPluginList = sortPluginList(pluginList);
 
             JSONObject jsonObject = new JSONObject();
             int counter = 0;
 
             Map<String, String> pluginType = PluginManager.getPluginType();
-            for (Plugin plugin : pluginList) {
-                if (plugin.getI18nLabel() == null || plugin.getI18nLabel().isEmpty()) {
+            for (Entry<String, Plugin> entry : sortedPluginList.entrySet()) {
+                String label = entry.getKey();
+                Plugin plugin = entry.getValue();
+                if (label == null || label.isEmpty()) {
                     continue;
                 }
-                if (filter != null && !filter.isEmpty() && !plugin.getI18nLabel().toLowerCase().contains(filter.toLowerCase())) {
+                if (filter != null && !filter.isEmpty() && !label.toLowerCase().contains(filter.toLowerCase())) {
                     continue;
                 }
                 
                 if (counter >= start && counter < start + rows) {
                     Map data = new HashMap();
                     data.put("id", ClassUtils.getUserClass(plugin).getName());
-                    data.put("name", plugin.getI18nLabel());
+                    data.put("name", label);
                     data.put("description", plugin.getI18nDescription());
                     data.put("version", plugin.getVersion());
                     
@@ -132,38 +137,27 @@ public class PluginJsonController {
                 pluginList = new ArrayList<Plugin>(pluginManager.list());
             }
 
-            try {
-                //sort with plugin label
-                Collections.sort(pluginList, new Comparator<Plugin>() {
-
-                    public int compare(Plugin o1, Plugin o2) {
-                        if (o1.getI18nLabel() == null || o1.getI18nLabel().isEmpty() || o2.getI18nLabel() == null || o2.getI18nLabel().isEmpty()) {
-                            return 0;
-                        }
-                        return o1.getI18nLabel().compareTo(o2.getI18nLabel());
-                    }
-                });
-            } catch (Exception ex) {
-                //exception because of plugin uninstalled in other request, just ignore it
-            }
-            
+            Map<String, Plugin> sortedPluginList = sortPluginList(pluginList);
+           
             JSONObject jsonObject = new JSONObject();
             int counter = 0;
             
             Map<String, String> pluginType = PluginManager.getPluginType();
-            for (Plugin plugin : pluginList) {
+            for (Entry<String, Plugin> entry : sortedPluginList.entrySet()) {
                 try {
-                    if (plugin.getI18nLabel() == null || plugin.getI18nLabel().isEmpty()) {
+                    String label = entry.getKey();
+                    Plugin plugin = entry.getValue();
+                    if (label == null || label.isEmpty()) {
                         continue;
                     }
-                    if (filter != null && !filter.isEmpty() && !plugin.getI18nLabel().toLowerCase().contains(filter.toLowerCase())) {
+                    if (filter != null && !filter.isEmpty() && !label.toLowerCase().contains(filter.toLowerCase())) {
                         continue;
                     }
 
                     if (counter >= start && counter < start + rows) {
                         Map data = new HashMap();
                         data.put("id", ClassUtils.getUserClass(plugin).getName());
-                        data.put("name", plugin.getI18nLabel());
+                        data.put("name", label);
                         data.put("description", plugin.getI18nDescription());
                         data.put("version", plugin.getVersion());
 
@@ -218,39 +212,28 @@ public class PluginJsonController {
             } else {
                 pluginList = new ArrayList<Plugin>(pluginManager.listOsgiPlugin(null));
             }
-        
-            try {
-                //sort with plugin label
-                Collections.sort(pluginList, new Comparator<Plugin>() {
 
-                    public int compare(Plugin o1, Plugin o2) {
-                        if (o1.getI18nLabel() == null || o1.getI18nLabel().isEmpty() || o2.getI18nLabel() == null || o2.getI18nLabel().isEmpty()) {
-                            return 0;
-                        }
-                        return o1.getI18nLabel().compareTo(o2.getI18nLabel());
-                    }
-                });
-            } catch (Exception ex) {
-                //exception because of plugin uninstalled in other request, just ignore it
-            }
+            Map<String, Plugin> sortedPluginList = sortPluginList(pluginList);
             
             JSONObject jsonObject = new JSONObject();
             int counter = 0;
 
             Map<String, String> pluginType = PluginManager.getPluginType();
-            for (Plugin plugin : pluginList) {
+            for (Entry<String, Plugin> entry : sortedPluginList.entrySet()) {
                 try {
-                    if (plugin.getI18nLabel() == null || plugin.getI18nLabel().isEmpty()) {
+                    String label = entry.getKey();
+                    Plugin plugin = entry.getValue();
+                    if (label == null || label.isEmpty()) {
                         continue;
                     }
-                    if (filter != null && !filter.isEmpty() && !plugin.getI18nLabel().toLowerCase().contains(filter.toLowerCase())) {
+                    if (filter != null && !filter.isEmpty() && !label.toLowerCase().contains(filter.toLowerCase())) {
                         continue;
                     }
 
                     if (counter >= start && counter < start + rows) {
                         Map data = new HashMap();
                         data.put("id", ClassUtils.getUserClass(plugin).getName());
-                        data.put("name", plugin.getI18nLabel());
+                        data.put("name", label);
                         data.put("description", plugin.getI18nDescription());
                         data.put("version", plugin.getVersion());
 
@@ -346,5 +329,21 @@ public class PluginJsonController {
         } catch (Exception e) {
             LogUtil.error(this.getClass().getName(), e, "");
         }
+    }
+    
+    /**
+     * Sort the list with label using treemap
+     * @param pluginList
+     * @return 
+     */
+    protected Map<String, Plugin> sortPluginList(List<Plugin> pluginList) {
+        Map<String, Plugin> sorted = new TreeMap<String, Plugin>();
+        for (Plugin plugin : pluginList) {
+            String label = plugin.getI18nLabel();
+            if (label != null) {
+                sorted.put(label, plugin);
+            }
+        }
+        return sorted;
     }
 }
