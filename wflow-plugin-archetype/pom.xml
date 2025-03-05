@@ -6,11 +6,18 @@
     <version>9.0-SNAPSHOT</version>
     <packaging>jar</packaging>
     <name>wflow-plugin-archetype</name>
-    <url>http://www.joget.org</url>
+    <url>https://www.joget.org</url>
     <properties>
         <dollar>$</dollar>
     </properties>
     <build>
+        <extensions>
+            <extension>
+                <groupId>org.apache.maven.archetype</groupId>
+                <artifactId>archetype-packaging</artifactId>
+                <version>3.3.1</version>
+            </extension>
+        </extensions>
         <resources>
             <resource>
                 <directory>src/main/resources</directory>
