@@ -1,6 +1,15 @@
-<archetype-descriptor name="basic">
+<?xml version="1.0" encoding="UTF-8"?>
+<archetype-descriptor name="wflow-plugin-archetype">
   <requiredProperties>
     <requiredProperty key="label" />
     <requiredProperty key="description"/>
   </requiredProperties>
+  <fileSets>
+    <fileSet filtered="true" packaged="true">
+      <directory>src/main/java</directory>
+      <includes>
+        <include>**/*.java</include>
+      </includes>
+    </fileSet>
+  </fileSets>
 </archetype-descriptor>
