@@ -407,7 +407,7 @@ ul#category-container {
     text-align: center;
 }
 
-@media (max-width:767px) {
+@media (max-width:767.999px) {
     #sidebar {
         -webkit-transform: translate3d(-268px, 0, 0);
         transform: translate3d(-268px, 0, 0);
@@ -498,7 +498,7 @@ ul#category-container {
     }
 }
 
-@media (max-width:767px) {
+@media (max-width:767.999px) {
     header.navbar {
         padding: 0 0 0 8px;
         max-height: 65px;
@@ -1029,7 +1029,7 @@ body#login #page > footer {
         margin-top: 40px;
     }
 }
-@media (max-width:767px) {
+@media (max-width:767.999px) {
     body.horizontal_menu #sidebar li.toggled>a.dropdown:before {
         -webkit-transform: scale(0);
         -ms-transform: scale(0);
