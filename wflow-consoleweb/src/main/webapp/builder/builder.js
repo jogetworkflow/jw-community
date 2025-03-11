@@ -5169,15 +5169,21 @@ _CustomBuilder.Builder = {
                                 if (elementsContainer.find(self.dragElement).length === 0) {
                                     elementsContainer.append(self.dragElement);
                                 }
+                                
+                                var containerOffset = elementsContainer.offset();
+                                
                                 var cursorPos = self.dragElement.data("cursorPosition");
                                 if (!cursorPos) {
-                                    cursorPos = {x: 10, y : 10};
+                                    var frameOffset = $(self.iframe).offset();
+                                    //need to consider the scroll position and the element center
+                                    cursorPos = {
+                                        x: - $(self.frameDoc).scrollLeft() + (self.dragElement.width()/2),  
+                                        y : - $(self.frameDoc).scrollTop() + (self.dragElement.height()/2)
+                                    };
                                 }
 
-                                var containerOffset = elementsContainer.offset();
                                 var x_offset = (x - containerOffset.left - cursorPos.x) / self.zoom;
                                 var y_offset = (y - containerOffset.top - cursorPos.y) / self.zoom;
-
                                 self.dragElement.css({
                                    "top" : y_offset + "px",
                                    "left" : x_offset + "px",
@@ -5366,8 +5372,11 @@ _CustomBuilder.Builder = {
                             }
                         }
                       
-                        if (self.iconDrag)
-                            self.iconDrag.css({'left': x + 238, 'top': y + 20});
+                        if (self.iconDrag) {
+                            var frameOffset = $(self.iframe).offset();
+                            //the icon does not follow the cursor after move from pallete into canvas due to frame offset
+                            self.iconDrag.css({'left': x + frameOffset.left - 50, 'top': y  + frameOffset.top - 50});
+                        }
                     } catch (err) {
                         console.log(err);
                         return false;
