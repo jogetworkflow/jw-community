@@ -54,7 +54,7 @@ public class FormOptionsCacheAspect {
                     }
                 });
                 startThread.setDaemon(true);
-                startThread.start();
+                PluginThread.start(startThread);
             }
         }
         

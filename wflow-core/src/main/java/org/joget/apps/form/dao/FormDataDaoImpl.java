@@ -1496,7 +1496,7 @@ public class FormDataDaoImpl implements FormDataDao {
                     }
                 });
                 startThread.setDaemon(true);
-                startThread.start();
+                PluginThread.start(startThread);
             }
         }
         return columnList;

@@ -156,7 +156,7 @@ public class GitRequestFilter implements Filter {
                     }
                 });
                 gitThread.setDaemon(false);
-                gitThread.start();
+                PluginThread.start(gitThread);
 
                 // await for synchronous commit to complete before continuing
                 if (enableSynchronousCommit) {

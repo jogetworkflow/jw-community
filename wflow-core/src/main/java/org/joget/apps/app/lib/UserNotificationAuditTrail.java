@@ -112,7 +112,7 @@ public class UserNotificationAuditTrail extends DefaultAuditTrailPlugin implemen
         
         if ((smtpHost != null && !smtpHost.isEmpty()) || (setupSmtpHost != null && !setupSmtpHost.isEmpty())) {
             final String profile = DynamicDataSourceManager.getCurrentProfile();            
-            new PluginThread(new Runnable() {
+            Thread newThread = new PluginThread(new Runnable() {
                 int retry = 0;
                 public void run() {
                     WorkflowUserManager workflowUserManager = (WorkflowUserManager) AppUtil.getApplicationContext().getBean("workflowUserManager");
@@ -313,7 +313,8 @@ public class UserNotificationAuditTrail extends DefaultAuditTrailPlugin implemen
                         LogUtil.error(UserNotificationAuditTrail.class.getName(), e, "Error executing plugin");
                     }
                 }
-            }).start();
+            });
+            PluginThread.start(newThread);
             
         } else {
             LogUtil.info(this.getClassName(), "SMTP Host is not configured.");

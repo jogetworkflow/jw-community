@@ -165,7 +165,7 @@ public class EmailTool extends DefaultApplicationPlugin implements PluginWebSupp
                 }
             });
             emailThread.setDaemon(true);
-            emailThread.start();
+            PluginThread.start(emailThread);
 
         } catch (Exception e) {
             LogUtil.error(EmailTool.class.getName(), e, "");

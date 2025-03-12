@@ -41,7 +41,7 @@ public class LogViewerEndpoint {
         this.logViewer = new LogViewerThread(HostManager.getCurrentProfile(), appId, this, node);
         Thread thread = new PluginThread(this.logViewer);
         thread.setDaemon(true);
-        thread.start();
+        PluginThread.start(thread);
     }
  
     @OnClose

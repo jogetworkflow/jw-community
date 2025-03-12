@@ -5581,7 +5581,7 @@ public class WorkflowManagerImpl implements SharkWorkflowManager {
                 }
             });
             stuckActivitiesRecover.setDaemon(true);
-            stuckActivitiesRecover.start();
+            PluginThread.start(stuckActivitiesRecover);
         }
     }
 
@@ -6656,7 +6656,7 @@ public class WorkflowManagerImpl implements SharkWorkflowManager {
                     }
                 });
                 thread.setDaemon(true);
-                thread.start();
+                PluginThread.start(thread);
             } else {
                 LogUtil.info(WorkflowManagerImpl.class.getName(), "Process history record migration can't start due to there is already another thread running.");
             }
