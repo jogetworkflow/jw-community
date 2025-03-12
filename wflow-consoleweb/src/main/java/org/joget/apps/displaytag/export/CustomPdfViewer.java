@@ -165,13 +165,14 @@ public class CustomPdfViewer implements BinaryExportView {
      * @see org.displaytag.export.BinaryExportView#doExport(OutputStream)
      */
     public void doExport(OutputStream out) throws JspException {
-        
+        Document document = null;
+
         try {
             // Initialize the table with the appropriate number of columns
             initTable();
 
             // Initialize the Document and register it with PdfWriter listener and the OutputStream
-            Document document = new Document(PageSize.A4.rotate(), 60, 60, 40, 40);
+            document = new Document(PageSize.A4.rotate(), 60, 60, 40, 40);
             document.addCreationDate();
 
             HeaderFooter footer = new HeaderFooter(writer.getSelector().process(TagConstants.EMPTY_STRING), true);
@@ -184,9 +185,12 @@ public class CustomPdfViewer implements BinaryExportView {
             // Fill the virtual PDF table with the necessary data
             document.open();
             generatePDFTable(document);
-            document.close();
         } catch (Exception e) {
             throw new PdfGenerationException(e);
+        } finally {
+            if (document != null) {
+                document.close();
+            }  
         }
     }
 

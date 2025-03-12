@@ -199,7 +199,7 @@ public class AppUtil implements ApplicationContextAware {
                     currentAssignmentRequiredReset.set(Boolean.TRUE);
                 }
             } else {
-                currentAssignmentRequiredReset.set(null); //it is same, no need reset
+                currentAssignmentRequiredReset.remove(); //it is same, no need reset 
             }
         }
         
@@ -216,9 +216,9 @@ public class AppUtil implements ApplicationContextAware {
             if (resetAssignment instanceof WorkflowAssignment) {
                 currentAssignment.set((WorkflowAssignment) resetAssignment);
             } else {
-                currentAssignment.set(null);
+                currentAssignment.remove(); 
             }
-            currentAssignmentRequiredReset.set(null);
+            currentAssignmentRequiredReset.remove(); 
         }
     }
 
@@ -238,7 +238,7 @@ public class AppUtil implements ApplicationContextAware {
      */
     public static void setCurrentAppDefinition(AppDefinition appDef) throws BeansException {
         currentAppDefinition.set(appDef);
-        resetAppDefinition.set(null);
+        resetAppDefinition.remove(); 
     }
 
     /**
@@ -1180,8 +1180,8 @@ public class AppUtil implements ApplicationContextAware {
     public static void initRequest() {
         // clear current app in thread
         AppUtil.resetAppDefinition();
-        currentAssignment.set(null);
-        currentAssignmentRequiredReset.set(null);
+        currentAssignment.remove();
+        currentAssignmentRequiredReset.remove();
     }
 
     /**
