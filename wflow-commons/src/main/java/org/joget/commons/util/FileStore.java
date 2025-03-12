@@ -178,9 +178,9 @@ public class FileStore {
      * Method used by the system to clear the ThreadLocal object after a HTTP
      * request is finish processing
      */
-    public static void clear() {
-        fileStore.set(new HashMap<String, MultipartFile>());
-        filesExceedLimit.set(new ArrayList<String>());
+    public static void clear() {     
+        fileStore.remove();
+        filesExceedLimit.remove(); 
     }
     
     /**
