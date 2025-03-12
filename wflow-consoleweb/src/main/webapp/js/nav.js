@@ -435,7 +435,7 @@
             $("#tooltip-tags .editLabel, #tooltip-tags .addLabel").remove();
         },
         deleteItem: function(id, type) {
-            if (Nav.definition["datas"] !== undefined && Nav.definition["datas"][type] !== undefined && Nav.definition["datas"][type][id] !== undefined) {
+            if (Nav.definition && Nav.definition["datas"] !== undefined && Nav.definition["datas"][type] !== undefined && Nav.definition["datas"][type][id] !== undefined) {
                 delete Nav.definition["datas"][type][id];
                 Nav.patch.push({
                     op : 'remove',
