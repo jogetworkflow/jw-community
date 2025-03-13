@@ -272,8 +272,13 @@ public class TensorFlowUtil {
         } else {
             dictionary = getDictionaryCsv(dictInputStream);
         }
-        
-        DataBuffer buffer = null;
+
+        // Null check for dictionary
+        if (dictionary == null) {
+            throw new IOException("Dictionary could not be loaded from the provided input stream.");
+        }
+
+        DataBuffer buffer;
         if ("Integer".equalsIgnoreCase(type) || "UInt8".equalsIgnoreCase(type)) {
             buffer = DataBuffers.ofInts(maxLength);
         } else if ("Long".equalsIgnoreCase(type)) {
@@ -286,8 +291,8 @@ public class TensorFlowUtil {
         
         int index = 0;
         int start = 0;
-        
-        if (fillBack != null && fillBack) {
+
+        if (Boolean.TRUE.equals(fillBack)) {  // Safer null check for Boolean
             start = maxLength - Math.min(maxLength, words.size());
         }
         

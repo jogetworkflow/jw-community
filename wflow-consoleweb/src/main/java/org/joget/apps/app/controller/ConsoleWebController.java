@@ -5924,7 +5924,7 @@ public class ConsoleWebController {
         appId = SecurityUtil.validateStringInput(appId);
         version = SecurityUtil.validateStringInput(version);
         userviewId = SecurityUtil.validateStringInput(userviewId);
-        
+
         version = (version != null) ? version : "";
         String filename = SecurityUtil.normalizedFileName(appId + "_" + version + "_" + userviewId + ".png");
         String path = SetupManager.getBaseDirectory() + File.separator + "app_screenshots";
@@ -5939,27 +5939,45 @@ public class ConsoleWebController {
                 imageInput = new FileInputStream(f);
             }
 
+            // Check if imageInput is null before proceeding
+            if (imageInput == null) {
+                LogUtil.error(getClass().getName(), null, "Failed to load image resource");
+                response.sendError(HttpServletResponse.SC_NOT_FOUND);
+                return;
+            }
+
             response.setContentType("image/png");
             out = response.getOutputStream();
+
+            // Check if out is null before proceeding
+            if (out == null) {
+                LogUtil.error(getClass().getName(), null, "Failed to get response output stream");
+                return;
+            }
+
             byte[] bbuf = new byte[65536];
             DataInputStream in = new DataInputStream(imageInput);
             int length = 0;
-            while ((in != null) && ((length = in.read(bbuf)) != -1)) {
+            while ((length = in.read(bbuf)) != -1) {
                 out.write(bbuf, 0, length);
             }
         } finally {
-            try {
-                imageInput.close();
-            } catch(Exception e) {  
-                LogUtil.error(getClass().getName(), e, "");
+            if (imageInput != null) {
+                try {
+                    imageInput.close();
+                } catch(Exception e) {  
+                    LogUtil.error(getClass().getName(), e, "");
+                }
             }
-            try {
-                out.close();        
-            } catch(Exception e) {                
-                LogUtil.error(getClass().getName(), e, "");
+            if (out != null) {
+                try {
+                    out.close();        
+                } catch(Exception e) {                
+                    LogUtil.error(getClass().getName(), e, "");
+                }
             }
         }
-    }        
+    }
     
     @RequestMapping("/console/app/(*:appId)/(~:version)/navigator")
     public String consoleAppNavigator(ModelMap map, @RequestParam(value = "appId") String appId, @RequestParam(value = "version", required = false) String version) {

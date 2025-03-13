@@ -666,7 +666,7 @@ public class XadminTheme extends UniversalTheme {
         String navRightIcon = AppUtil.isRTL() ? "&#xe6a7;" : "&#xe697;";
         return icon + "<cite>" + label + "</cite><i class=\"iconfont nav_right\">"+navRightIcon+"</i>";
     }
-    
+
     @Override
     public String decorateMenu(UserviewCategory category, UserviewMenu menu) {
         if (menu.getProperties().containsKey("rowCount") && Boolean.parseBoolean(menu.getPropertyString("rowCount"))) {
@@ -680,11 +680,13 @@ public class XadminTheme extends UniversalTheme {
             }
         }
     }
-    
+
     protected String getMenuHtml(UserviewCategory category, UserviewMenu menu, String extra, String onclick) {
         // sanitize label
         String label = menu.getPropertyString("label");
-        if (label != null) {
+        if (label == null) {
+            label = "";  // Prevents NPE
+        } else {
             label = StringUtil.stripHtmlRelaxed(label);
         }
         String icon = "";

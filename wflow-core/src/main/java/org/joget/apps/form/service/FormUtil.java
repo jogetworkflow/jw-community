@@ -1208,14 +1208,17 @@ public class FormUtil implements ApplicationContextAware {
     public static boolean isElementPropertyValuesChanges(Element element, FormData formData, String[] updatedValues) {
         // get value
         String id = element.getPropertyString(FormUtil.PROPERTY_ID);
-        
+
         String primaryKeyValue = element.getPrimaryKeyValue(formData);
         String uniqueId = "";
+        // Find root form safely
         Form rootForm = findRootForm(element);
-        if (rootForm.getParent() != null) {
+        if (rootForm != null && rootForm.getParent() != null) {
             uniqueId = rootForm.getCustomParameterName();
-        }
-        if (primaryKeyValue != null && !primaryKeyValue.equals(formData.getRequestParameter(uniqueId + FormUtil.FORM_META_ORIGINAL_ID))) {
+        } 
+
+        // Prevent NPE when accessing formData
+        if (primaryKeyValue != null && formData != null && !primaryKeyValue.equals(formData.getRequestParameter(uniqueId + FormUtil.FORM_META_ORIGINAL_ID))) {
             return true;
         }
 

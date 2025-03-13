@@ -119,9 +119,9 @@ public class RulesDecisionPlugin extends DecisionPluginDefault implements Plugin
         String operation = (String) rule.get("operation");
         String value = (String) rule.get("value");
         boolean result = false;
-        
+
         variable = AppPluginUtil.getVariable(variable, variables);
-        
+
         if (variable != null) {
             Double variableNumber = null;
             Double valueNumber = null;
@@ -135,7 +135,7 @@ public class RulesDecisionPlugin extends DecisionPluginDefault implements Plugin
                     //ignore
                 }
             }
-        
+
             if (isNumeric) {
                 int compare = Double.compare(variableNumber, valueNumber);
                 if ("==".equals(operation)) {
@@ -156,23 +156,23 @@ public class RulesDecisionPlugin extends DecisionPluginDefault implements Plugin
                     result = variable.equalsIgnoreCase("true") || variable.equals("1");
                 } else if ("false".equals(operation)) {
                     result = variable.equalsIgnoreCase("false") || variable.equals("0");
-                } else if ("contains".equals(operation)) {
+                } else if ("contains".equals(operation) && value != null) { // Check null before use
                     result = variable.contains(value);
-                } else if ("listContains".equals(operation)) {
+                } else if ("listContains".equals(operation) && value != null) { // Check null before use
                     String[] list = variable.split(";");
                     result = ArrayUtils.contains(list, value);
-                } else if ("in".equals(operation)) {
+                } else if ("in".equals(operation) && value != null) { // Check null before use
                     String[] list = value.split(";");
                     result = ArrayUtils.contains(list, variable);
-                } else if ("regex".equals(operation)) {
+                } else if ("regex".equals(operation) && value != null) { // Check null before use
                     result = variable.matches(StringEscapeUtils.unescapeJavaScript(value));
                 }
             }
         }
-        
+
         return ("true".equalsIgnoreCase(rule.get("revert").toString()))?!result:result;
     }
-    
+
     public DecisionResult getResult(Object[] actions, Map<String, String> variables) {
         DecisionResult result = null;
         if (actions != null && actions.length > 0) {

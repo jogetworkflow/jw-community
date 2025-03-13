@@ -135,6 +135,10 @@ public class FileManager {
      */
     public static void deleteFileByPath(String path) {
         File file = getFileByPath(path);
+        if (file == null) {  // Ensure 'file' is not null before using it
+            return;
+        }
+
         File directory = file.getParentFile();
         
         if (file != null && file.exists()) {

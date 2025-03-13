@@ -44,23 +44,27 @@ public class AppSetupManagerHelperImpl implements SetupManagerHelper {
 
                 //Check deadline interval 
                 Setting deadline = settingMaps.get("deadlineCheckerInterval");
-                if (getWorkflowManager() != null && deadline != null && deadline.getValue() != null && !deadline.getValue().equals(oldSettings.get("deadlineCheckerInterval"))) {
+                WorkflowManager workflowManager = getWorkflowManager(); // Store in variable
+                if (workflowManager != null && deadline != null && deadline.getValue() != null &&
+                    !deadline.getValue().equals(oldSettings.get("deadlineCheckerInterval"))) {
                     oldSettings.put("deadlineCheckerInterval", deadline.getValue());
-                    getWorkflowManager().internalUpdateDeadlineChecker();
+                    workflowManager.internalUpdateDeadlineChecker(); //  Safe to use
                 }
-                
+
                 //check health check interval
                 Setting healthCheck = settingMaps.get(GovHealthCheckManager.SETTING);
-                if (getGovHealthCheckManager() != null && healthCheck != null && healthCheck.getValue() != null && !healthCheck.getValue().equals(oldSettings.get(GovHealthCheckManager.SETTING))) {
+                GovHealthCheckManager healthCheckManager = getGovHealthCheckManager(); // Store in variable
+                if (healthCheckManager != null && healthCheck != null && healthCheck.getValue() != null &&
+                    !healthCheck.getValue().equals(oldSettings.get(GovHealthCheckManager.SETTING))) {
                     oldSettings.put(GovHealthCheckManager.SETTING, healthCheck.getValue());
-                    getGovHealthCheckManager().updateCheckInterval(healthCheck.getValue());
+                    healthCheckManager.updateCheckInterval(healthCheck.getValue()); // Safe to use
                 }
             }
         } catch (Exception e) {
             LogUtil.error(AppSetupManagerHelperImpl.class.getName(), e, "");
         }
     }
-    
+
     /**
      * Check and add audit trail record if setting changed
      * 
