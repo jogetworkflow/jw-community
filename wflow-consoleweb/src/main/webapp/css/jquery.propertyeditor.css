@@ -852,10 +852,22 @@ body.rtl .property-input > span.icon > span > span.dropdown{
 .property-editor-container .property-type-file input.image{
     padding-right: 60px;
 }
+.rtl .property-editor-container .property-type-file input.image{
+    padding-right: unset;
+    padding-left: 60px;
+}
 .property-editor-container .property-type-file input.image + .file-picker-actions .clearfile {
     position: absolute;
-    left: -55px;
-    top: -11px;
+    left: -60px;
+    top: -14px;
+}
+.rtl .property-editor-container .property-type-file input.image + .file-picker-actions .clearfile {
+    left: unset;
+    right: -60px;
+    top: -8px;
+}
+.property-editor-container .property-type-file input.image:placeholder-shown + .file-picker-actions .clearfile{
+    display: none;
 }
 .property-editor-container .button {
     background: #d8d8d8;
@@ -2206,8 +2218,12 @@ body .ui-dialog .button_form.editor-panel-mode #main-body-header {
     border: 1px solid #ced4da;
     border-radius: 0.25rem;
 }
-.editor-panel-mode .property-type-image i.assist_icon {
-    right: 45px;
+.editor-panel-mode i.assist_icon.input-left-control {
+    right: 65px;
+}
+.rtl .editor-panel-mode i.assist_icon.input-left-control {
+    right: unset;
+    left: 65px;
 }
 
 /* property assistant */

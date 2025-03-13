@@ -190,7 +190,7 @@ body[builder-theme] .builder-type ul li {
 body[builder-theme] .builder-type ul li.item:hover {
     border-color: var(--theme-primary-color-4);
 }
-body[builder-theme].viewport-enabled {
+body[builder-theme].default-builder {
     background: var(--theme-primary-color-2);
 }
 body[builder-theme].quick-nav-shown {
@@ -1274,12 +1274,21 @@ body[builder-theme] .property-editor-container input.image + .file-picker-action
     top: -2px;
     position: relative;
 }
+body[builder-theme] .property-editor-container input.image + .file-picker-actions .clearfile{
+    top:4px;
+}
+body[builder-theme].rtl .property-editor-container input.image + .file-picker-actions .clearfile{
+    top:7px;
+}
 body[builder-theme].rtl .property-editor-container input.image + .file-picker-actions .choosefile {
     top: 1px;
     left: -9px;
     border-left: 0px;
     border-right: 1px solid var(--theme-border-color-1);
     border-radius: 5px 0px 0px 5px;
+}
+body[builder-theme].rtl .property-editor-container.editor-panel-mode input.image + .file-picker-actions .choosefile {
+    left: 43px;
 }
 body[builder-theme] .editor-panel-mode .repeater-row > .inputs > .inputs-container > div > .element-pages {
     margin: 15px 0px;

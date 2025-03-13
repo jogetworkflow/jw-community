@@ -10186,7 +10186,7 @@ PropertyEditor.Type.File.prototype = {
             maxlength += " readonly";
         }
 
-        return '<input type="text" class="image" id="' + this.id + '" name="' + this.id + '"' + size + maxlength + ' value="' + PropertyEditor.Util.escapeHtmlTag(this.value) + '"/><div class="file-picker-actions"><a class="choosefile btn button small"><i class="fas fa-folder-open"></i></a><a class="clearfile"><i class="fas fa-undo"></i></a></div>';
+        return '<input type="text" class="image input-left-control" placeholder=" " id="' + this.id + '" name="' + this.id + '"' + size + maxlength + ' value="' + PropertyEditor.Util.escapeHtmlTag(this.value) + '"/><div class="file-picker-actions"><a class="choosefile btn button small"><i class="fas fa-folder-open"></i></a><a class="clearfile"><i class="fas fa-times"></i></a></div>';
     },
     initScripting: function() {
         var thisObj = this;
@@ -10259,7 +10259,7 @@ PropertyEditor.Type.Image.prototype = {
             style += " background-image:url('" + PropertyEditor.Util.escapeHtmlTag(path) + "')";
         }
 
-        return '<input type="text" class="image" id="' + this.id + '" name="' + this.id + '"' + size + maxlength + ' value="' + PropertyEditor.Util.escapeHtmlTag(this.value) + '"/><div class="file-picker-actions"><a class="choosefile btn button small"><i class="fas fa-folder-open"></i></a></div><div class="image-placeholder" style="' + style + '"><a class="image-remove"><i class="fas fa-times"></i></a></div>';
+        return '<input type="text" class="image input-left-control" id="' + this.id + '" name="' + this.id + '"' + size + maxlength + ' value="' + PropertyEditor.Util.escapeHtmlTag(this.value) + '"/><div class="file-picker-actions"><a class="choosefile btn button small"><i class="fas fa-folder-open"></i></a></div><div class="image-placeholder" style="' + style + '"><a class="image-remove"><i class="fas fa-times"></i></a></div>';
     },
     initScripting: function() {
         var thisObj = this;
@@ -11010,6 +11010,11 @@ PropertyAssistant = {
             }
             
             $(container).append('<i class="assist_icon la la-user-astronaut" title="'+get_peditor_msg('peditor.assit')+'"></i>');
+            
+            //to prevent the icon overlap the control
+            if ($(field).hasClass("input-left-control")) {
+                $(container).find(".assist_icon").addClass("input-left-control");
+            }
             
             $(container).find(".assist_icon").off("click");
             $(container).find(".assist_icon").on("click", function(){
