@@ -684,6 +684,10 @@ public abstract class Element extends ExtDefaultPlugin implements PropertyEditab
         
         //check is there a same field id under same parent, make it unique by adding index
         if (getParent() != null) {
+            if (getParent().childsUniqueKeys == null) { //Cloud security AOP may caused this not initiallized 
+                getParent().childsUniqueKeys = new HashSet<String>();
+            }
+            
             if (getParent().childsUniqueKeys.contains(uniqueKey)) {
                 uniqueKey += getParent().childsUniqueKeys.size();
             }
