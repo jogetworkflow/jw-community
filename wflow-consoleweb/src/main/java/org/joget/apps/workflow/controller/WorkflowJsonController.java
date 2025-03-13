@@ -792,6 +792,7 @@ public class WorkflowJsonController {
         WorkflowAssignment assignment = workflowManager.getAssignment(activityId);
         if (assignment == null) {
             response.sendError(HttpServletResponse.SC_NOT_FOUND, "Assignment does not exist.");
+            return; // Prevent further execution
         }
         JSONObject jsonObject = new JSONObject();
         jsonObject.accumulate("activityId", assignment.getActivityId());
@@ -826,6 +827,7 @@ public class WorkflowJsonController {
         WorkflowAssignment assignment = workflowManager.getAssignmentByProcess(processId);
         if (assignment == null) {
             response.sendError(HttpServletResponse.SC_NOT_FOUND, "Assignment does not exist.");
+            return; // Prevent further execution
         }
         JSONObject jsonObject = new JSONObject();
         jsonObject.accumulate("activityId", assignment.getActivityId());
@@ -877,6 +879,7 @@ public class WorkflowJsonController {
         WorkflowAssignment assignment = workflowManager.getAssignment(activityId);
         if (assignment == null) {
             response.sendError(HttpServletResponse.SC_NOT_FOUND, "Assignment does not exist.");
+            return; // Prevent further execution
         }
         
         appService.getAppDefinitionForWorkflowActivity(activityId);
@@ -894,6 +897,7 @@ public class WorkflowJsonController {
         WorkflowAssignment assignment = workflowManager.getAssignment(activityId);
         if (assignment == null) {
             response.sendError(HttpServletResponse.SC_NOT_FOUND, "Assignment does not exist.");
+            return; // Prevent further execution
         }
         
         appService.getAppDefinitionForWorkflowActivity(activityId);
@@ -929,6 +933,7 @@ public class WorkflowJsonController {
             WorkflowAssignment assignment = workflowManager.getAssignment(activityId);
             if (assignment == null) {
                 response.sendError(HttpServletResponse.SC_NOT_FOUND, "Assignment does not exist.");
+                return; // Prevent further execution
             }
 
             appService.getAppDefinitionForWorkflowActivity(activityId);
@@ -971,6 +976,7 @@ public class WorkflowJsonController {
             WorkflowAssignment assignment = workflowManager.getAssignment(activityId);
             if (assignment == null) {
                 response.sendError(HttpServletResponse.SC_NOT_FOUND, "Assignment does not exist.");
+                return; // Prevent further execution
             }
 
             appService.getAppDefinitionForWorkflowActivity(activityId);
@@ -1198,7 +1204,9 @@ public class WorkflowJsonController {
             }
         } finally {
             try {
-                in.close();
+                if (in != null) { // Check if 'in' is not null before closing
+                    in.close();
+                }
             } catch(IOException e) {
             }
             try {

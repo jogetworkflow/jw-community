@@ -61,15 +61,23 @@ public class WorkflowHttpAuthProcessingFilter extends UsernamePasswordAuthentica
 
     @Override
     public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse, FilterChain chain) throws IOException, ServletException {
-        HttpServletRequest request = (HttpServletRequest)servletRequest;
-        HttpServletResponse response = (HttpServletResponse)servletResponse;
+        if (!(servletRequest instanceof HttpServletRequest) || !(servletResponse instanceof HttpServletResponse)) {
+            chain.doFilter(servletRequest, servletResponse);
+            return;
+        }
+
+        HttpServletRequest request = (HttpServletRequest) servletRequest;
+        HttpServletResponse response = (HttpServletResponse) servletResponse;
+
+        if (request == null || response == null) {
+            return; // Avoid further processing if request/response is null
+        }
+
         Boolean requiresAuthentication;
         try {
-            if (request != null) {
-                // reset profile and set hostname
-                HostManager.initHost();
-            }
-            
+            // Reset profile and set hostname
+            HostManager.initHost();
+
             // clear current user
             workflowUserManager.clearCurrentThreadUser();
             

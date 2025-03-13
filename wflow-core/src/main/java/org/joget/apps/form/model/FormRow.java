@@ -169,13 +169,19 @@ public class FormRow extends Properties {
 
     @Override
     public boolean equals(Object obj) {
-        FormRow row = (FormRow) obj;
-        if (row.getId() != null && getId() != null && getId().equals(row.getId())) {
-            return true;
+        if (this == obj) {
+            return true; 
         }
-        return false;
-    }
 
+        if (obj == null || !(obj instanceof FormRow)) {
+            return false; // Null or not a FormRow, return false
+        }
+
+        FormRow row = (FormRow) obj; // Safe casting
+        boolean result = getId() != null && row.getId() != null && getId().equals(row.getId());
+        return result;
+    }
+    
     @Override
     public synchronized int hashCode() {
         return super.hashCode();
