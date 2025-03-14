@@ -34,6 +34,11 @@ public class DynamicDataSource extends XADataSource {
             tempPassword = "";
         }
 
+        if (tempUrl.contains(":mysql")) {
+            // replace jdbc:mysql with jdbc:mariadb for MariaDB Connector/J 3
+            tempUrl = tempUrl.replace(":mysql", ":mariadb");
+        }
+        
         if (!getUrl().equals(tempUrl)) {
             if (getUrl() != null && !getUrl().isEmpty()) {
                 // clear cache
