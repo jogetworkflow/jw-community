@@ -66,6 +66,21 @@
                         options.resizeMethod = o.resizeMethod;
                     }
                 }
+                if (o.multiple !== "true") {
+                    options.maxFiles = 1;
+                    options.init = function() { 
+                        this.on('addedfile', function(file) {
+                            if (this.files.length > 1) {
+                                this.removeFile(this.files[0]);
+                                $(target).find("li").each(function() {
+                                    if (!$(this).is($(file.previewElement))) {
+                                        $(this).remove();
+                                    }
+                                });
+                            }
+                        });
+                    }
+                }
                 
                 options.timeout = 0;
                 
