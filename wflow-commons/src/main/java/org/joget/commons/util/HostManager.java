@@ -58,7 +58,7 @@ public class HostManager implements ApplicationContextAware {
     public static void setCurrentProfile(String profile) {
         profile = SecurityUtil.validateStringInput(profile);
         if (profile == null) {
-            previousProfile.set(null);
+            previousProfile.remove();
         } else {
             String previous = (String)previousProfile.get();
             if (previous == null) {
@@ -69,7 +69,7 @@ public class HostManager implements ApplicationContextAware {
             }
         }
         currentProfile.set(profile);
-        currentHost.set(null);
+        currentHost.remove();
     }
 
     /**
@@ -89,8 +89,8 @@ public class HostManager implements ApplicationContextAware {
         String previous = (String)previousProfile.get();
         if (previous != null) {
             currentProfile.set(previous);
-            previousProfile.set(null);
-            currentHost.set(null);
+            previousProfile.remove();
+            currentHost.remove();
         }
     }
     

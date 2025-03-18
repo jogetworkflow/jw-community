@@ -6566,7 +6566,7 @@ public class WorkflowManagerImpl implements WorkflowManager {
             }
         });
          
-        return result;
+        return Boolean.TRUE.equals(result); // Safe unboxing
     }
     
     @Override

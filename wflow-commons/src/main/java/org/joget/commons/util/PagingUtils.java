@@ -30,7 +30,7 @@ public class PagingUtils {
             
             if (list.get(0) instanceof Map) {
                 final String f = field;
-                final boolean d = desc;
+                final boolean d = (desc != null) ? desc : false; // Prevents NPE
                 Collections.sort(list, new Comparator<Map<String, Object>>() {
                     public int compare(Map<String, Object> m1, Map<String, Object> m2) {
                         if (m2.get(f) != null && m1.get(f) != null) {
@@ -53,7 +53,7 @@ public class PagingUtils {
             }
         }
     }
-    
+
     /**
      * Sorts a map based on a value
      * @param map

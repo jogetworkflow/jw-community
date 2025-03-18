@@ -181,13 +181,16 @@ public class UserProfileMenu extends UserviewMenu {
         }
         
         UserMetaDataDao umdd = (UserMetaDataDao) AppUtil.getApplicationContext().getBean("userMetaDataDao");
-        UserMetaData data = umdd.getUserMetaData(user.getUsername(), "dateFormatUseEnglish");
-        if (data != null) {
-            setProperty("dateFormatUseEnglish", data.getValue());
-        } else {
-            setProperty("dateFormatUseEnglish", "");
-        }
-        
+        // Add null check for user here
+        if (user != null) {
+            UserMetaData data = umdd.getUserMetaData(user.getUsername(), "dateFormatUseEnglish");
+            if (data != null) {
+                setProperty("dateFormatUseEnglish", data.getValue());
+            } else {
+                setProperty("dateFormatUseEnglish", "");
+            }
+        } 
+
         setProperty("nonWesternDigitLocale", StringUtils.join(nonWesternDigitLocale, ";"));
         setProperty("enableUserLocale", enableUserLocale);
         setProperty("localeStringList", localeStringList);
@@ -201,7 +204,9 @@ public class UserProfileMenu extends UserviewMenu {
         UserSecurity us = DirectoryUtil.getUserSecurity();
         if (us != null) {
             setProperty("policies", us.passwordPolicies());
-            sbProfileFooter.append(us.getUserProfileFooter(user));
+            // Add null check for user before passing to getUserProfileFooter
+            String userProfileFooter = (user != null) ? us.getUserProfileFooter(user) : "";
+            sbProfileFooter.append(userProfileFooter);
         }
 
         setProperty("userProfileFooter", sbProfileFooter.toString());

@@ -1770,6 +1770,10 @@ public class JSONObject {
     }
 
     private static String getKeyNameFromMethod(Method method) {
+        if (method == null) {  // Add this null check
+            return null;
+        }
+
         final int ignoreDepth = getAnnotationDepth(method, JSONPropertyIgnore.class);
         if (ignoreDepth > 0) {
             final int forcedNameDepth = getAnnotationDepth(method, JSONPropertyName.class);

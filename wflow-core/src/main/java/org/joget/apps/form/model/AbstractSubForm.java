@@ -2,6 +2,7 @@ package org.joget.apps.form.model;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Objects;
 import org.joget.apps.app.dao.FormDefinitionDao;
 import org.joget.apps.app.model.AppDefinition;
 import org.joget.apps.app.model.FormDefinition;
@@ -234,8 +235,8 @@ public abstract class AbstractSubForm extends Element implements FormContainer {
                 }
 
                 // set value into root form's data
-                if (subFormPrimaryKeyValue != null && !subFormPrimaryKeyValue.isEmpty() && !parentSubFormIdElementValue.equals(subFormPrimaryKeyValue)) {
-                    
+                if (subFormPrimaryKeyValue != null && !subFormPrimaryKeyValue.isEmpty() && !Objects.equals(parentSubFormIdElementValue, subFormPrimaryKeyValue)) {  // Prevents NPE
+
                     FormStoreBinder rootStoreBinder = rootForm.getStoreBinder();
                     if (rootStoreBinder != null) {
                         FormRowSet rootFormRowSet = formData.getStoreBinderData(rootStoreBinder);
@@ -249,12 +250,12 @@ public abstract class AbstractSubForm extends Element implements FormContainer {
                         String paramName = FormUtil.getElementParameterName(parentSubFormIdElement);
                         formData.addRequestParameterValues(paramName, new String[]{subFormPrimaryKeyValue});
                     }
-                    
+
                     //set to form data primary key if the parent field is id field and the parent form is root form
                     if (FormUtil.PROPERTY_ID.equals(parentSubFormId) && rootForm.getParent() == null) {
                         formData.setPrimaryKeyValue(subFormPrimaryKeyValue);
                     }
-                    
+
                     //if readonly hidden field
                     if (parentSubFormIdElement instanceof HiddenField && FormUtil.isReadonly(parentSubFormIdElement, formData)) {
                         parentSubFormIdElement.setProperty("value", subFormPrimaryKeyValue);

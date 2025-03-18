@@ -174,7 +174,9 @@ public class MarketplaceController {
             }
         } finally {
             try {
-                in.close();
+                if (in != null) { // Check if 'in' is not null before closing
+                    in.close();
+                }
             } catch(IOException e) {
             }
             try {

@@ -25,7 +25,7 @@ public class PluginHashVariableHelperImpl implements PluginHashVariableHelper {
         if (disable) {
             disableHashVariable.set(true);
         } else {
-            disableHashVariable.set(null);
+            disableHashVariable.remove(); 
         }
     }
 }
