@@ -3,7 +3,6 @@ package org.joget.plugin.base;
 import freemarker.template.ObjectWrapper;
 import freemarker.template.SimpleHash;
 import java.util.Map;
-import org.apache.commons.collections.SequencedHashMap;
 import org.apache.commons.collections.map.ListOrderedMap;
 
 /**
@@ -28,16 +27,12 @@ public class ListOrderedHash extends SimpleHash {
     }
 
     @Override
-    protected Map copyMap(Map map) {
-        if (map instanceof ListOrderedMap || map.getClass().getName().equals(ListOrderedMap.class.getName())) {
+    protected Map copyMap(Map map) { 
+        if (ListOrderedMap.class.isAssignableFrom(map.getClass())) {
             Map newMap = new ListOrderedMap();
             newMap.putAll(map);
             return newMap;
-        } else if (map instanceof SequencedHashMap || map.getClass().getName().equals(SequencedHashMap.class.getName())) {
-            Map newMap = new SequencedHashMap();
-            newMap.putAll(map);
-            return newMap;
-        } else if (map instanceof HashVariableSupportedMap || map.getClass().getName().equals(HashVariableSupportedMap.class.getName())) {
+        } else if (HashVariableSupportedMap.class.isAssignableFrom(map.getClass())) {
             return (Map)((HashVariableSupportedMap) map).clone();
         } else {
             return super.copyMap(map);

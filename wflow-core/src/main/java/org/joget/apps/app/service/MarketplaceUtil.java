@@ -302,7 +302,7 @@ public class MarketplaceUtil {
                         String jsonResponse = EntityUtils.toString(httpResponse.getEntity(), "UTF-8");
 
                         JSONObject data = new JSONObject(jsonResponse);
-                        if (cache == null || (data.has("lastUpdateDate") && !cache.get("lastUpdateDate").equals(cache.get("lastUpdateDate")))) {
+                        if (cache == null || (data.has("lastUpdateDate") && !cache.get("lastUpdateDate").equals(data.get("lastUpdateDate")))){
                             cache = data;
                         }
                     }

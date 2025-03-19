@@ -99,7 +99,7 @@ public abstract class MfaAuthenticator extends ExtDefaultPlugin implements Prope
         
         if (PropertyUtil.PASSWORD_PROTECTED_VALUE.equals(submittedValue)) {
             //ignore
-        } else if (submittedValue != null & !submittedValue.isEmpty()) {
+        } else if (submittedValue != null && !submittedValue.isEmpty()) {
             if (data == null) {
                 data = new UserMetaData();
                 data.setUsername(username);

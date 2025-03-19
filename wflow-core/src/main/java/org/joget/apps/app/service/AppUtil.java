@@ -754,7 +754,7 @@ public class AppUtil implements ApplicationContextAware {
 
                                     if (value != null) {
                                         //escape based on hash variable
-                                        if (hashFormat != null & !hashFormat.isEmpty()) {
+                                        if (hashFormat != null && !hashFormat.isEmpty()) {
                                             value = StringUtil.escapeString(value, hashFormat, null);
                                         }
 
