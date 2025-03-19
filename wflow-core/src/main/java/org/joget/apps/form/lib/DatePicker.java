@@ -2,6 +2,7 @@ package org.joget.apps.form.lib;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.text.DateFormatSymbols;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.HashSet;
@@ -345,14 +346,35 @@ public class DatePicker extends Element implements FormBuilderPaletteElement, Pw
             
             String type = getPropertyString("currentDateAs");
             if (!type.isEmpty()) {
-                String formattedCompare = TimeZoneUtil.convertToTimeZone(new Date(), null, displayFormat);               
+                String formattedCompare = TimeZoneUtil.convertToTimeZone(new Date(), null, displayFormat);
                 Locale currentLocale = LocaleContextHolder.getLocale();
-                if (!Locale.ENGLISH.getLanguage().equals(currentLocale.getLanguage())) {
+                Locale tagLocale = Locale.forLanguageTag("th-TH");
+                boolean isThaiLocale = tagLocale.equals(currentLocale);
+
+                if (!Locale.ENGLISH.getLanguage().equals(currentLocale.getLanguage()) && !isThaiLocale) {
                     try {
                         SimpleDateFormat localeDateFormat = new SimpleDateFormat(displayFormat, currentLocale);
                         SimpleDateFormat englishDateFormat = new SimpleDateFormat(displayFormat, Locale.ENGLISH);
                         Date date = localeDateFormat.parse(formattedCompare);                  
                         formattedCompare = englishDateFormat.format(date);
+                    } catch (Exception e) {
+                        LogUtil.error(DatePicker.class.getName(), e, e.getMessage());
+                    }
+                }
+                if ("dateTime".equalsIgnoreCase(getPropertyString("datePickerType")) && isThaiLocale) {
+                    try {
+                        DateFormatSymbols thaiSymbols = DateFormatSymbols.getInstance(tagLocale);
+                        SimpleDateFormat thaiFormat = new SimpleDateFormat(displayFormat, tagLocale);
+                        thaiFormat.setDateFormatSymbols(thaiSymbols);
+
+                        Date parsedDate = thaiFormat.parse(formattedCompare);
+
+                        DateFormatSymbols englishSymbols = DateFormatSymbols.getInstance(Locale.ENGLISH);
+                        SimpleDateFormat thaiWithEnglishAmPm = new SimpleDateFormat(displayFormat, tagLocale);
+                        // Overwrite the Thai ก่อนเที่ยง/หลังเที่ยง markers with AM/PM
+                        thaiWithEnglishAmPm.setDateFormatSymbols(englishSymbols);
+
+                        formattedCompare = thaiWithEnglishAmPm.format(parsedDate);
                     } catch (Exception e) {
                         LogUtil.error(DatePicker.class.getName(), e, e.getMessage());
                     }
