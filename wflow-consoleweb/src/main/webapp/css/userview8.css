@@ -1342,7 +1342,6 @@ body#login #loginForm table td:after{
     clear: both;
 }
 body#login #loginForm table td input[type='submit'] {
-    float: right;
     background-color: var(--theme-button-bg, #007bff);
     color: var(--theme-button, #ffffff);
     border-color: transparent;
