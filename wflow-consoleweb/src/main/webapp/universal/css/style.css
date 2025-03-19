@@ -650,7 +650,7 @@ body#login #page > footer {
     display:block;
 }
 
-#loginForm .form-button{
+#loginForm .form-button:has(input[type='submit']){
     width: 50px;
     height: 50px;
     border-radius: 50%;
@@ -660,19 +660,19 @@ body#login #page > footer {
     position: absolute;
 }
 
-.rtl #loginForm .form-button{
+.rtl #loginForm .form-button:has(input[type='submit']){
     left: -25px;
     right: auto;
 }
 
-#loginForm .form-button .waves-button-input{
+#loginForm .form-button:has(input[type='submit']) .waves-button-input{
     width: 50px;
     height: 50px;
     border-radius: 50%;
     color: transparent;
 }
 
-#loginForm .form-button:after {
+#loginForm .form-button:has(input[type='submit']):after {
     content: '\f2ee';
     display: inline-block;
     font: normal normal normal 14px/1 'Material-Design-Iconic-Font';
@@ -688,11 +688,11 @@ body#login #page > footer {
     left: 18px;
     top: 16px;
 }
-.rtl #loginForm .form-button:after {
+.rtl #loginForm .form-button:has(input[type='submit']):after {
     content: '\f2ea';
 }
 
-#loginForm .form-button:hover:after {
+#loginForm .form-button:has(input[type='submit']):hover:after {
     -webkit-transform: rotate(360deg);
     -ms-transform: rotate(360deg);
     -o-transform: rotate(360deg);
