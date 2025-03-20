@@ -168,7 +168,7 @@ public class FormRow extends Properties {
     }
 
     @Override
-    public boolean equals(Object obj) {
+    public synchronized boolean equals(Object obj) {
         if (this == obj) {
             return true; 
         }
