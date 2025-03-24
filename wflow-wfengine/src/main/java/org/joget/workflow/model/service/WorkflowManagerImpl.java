@@ -6230,7 +6230,7 @@ public class WorkflowManagerImpl implements WorkflowManager {
             JSONObject avar = new JSONObject();
             for (Iterator j = avarMap.keySet().iterator(); j.hasNext();) {
                 String key = (String) j.next();
-                Object valObj = varMap.get(key);
+                Object valObj = avarMap.get(key);
                 String val = (valObj != null)?valObj.toString():"";
                 avar.put(key, val);
             }
