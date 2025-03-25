@@ -277,48 +277,14 @@ public abstract class UserviewV5Theme extends UserviewTheme {
                 String style = "<style>#custom_login {height: 100vh !important;}</style>";
                 
                 html += infoTile.render("custom_login", "", style, "", false);
+                
+                //Handle login footer to inject before the form end tag
+                String footerContent = (String) data.get("login_form_footer");
+                html = html.replaceFirst("</form>", StringUtil.escapeRegex(footerContent+ "</form>"));
+                data.put("login_form_footer", ""); //empty it to prevent double insert
 
-                html += "<script>\n" +
-                                "$(window).on('page_loaded', function() {\r\n" + 
-                                "      $('body').removeClass('dark-mode'); " +
-                                "})\n" +
-                                "$(document).ready(function(){\n" +
-                                "  $('body').removeClass('rtl'); \n" +
-                                "  $('html').removeAttr('dir'); \n" +
-                                "  $('#loginButton').on('click', function(){\n" +
-                                "    $('input[name=\"submit\"]').click();\n" +
-                                "  })\n" +
-                                "  $('#customUsername').on('change', function(e){\n" +
-                                "    $('#j_username').val($(this).val());\n" +
-                                "  })\n" +
-                                "  $('#customPassword').on('change', function(e){\n" +
-                                "    $('#j_password').val($(this).val());\n" +
-                                "  })\n" +
-                                " $(\"input\").off('keyup').on('keyup', function(e) {\n" +
-                                "    if (e.which === 13) {\n" +
-                                "      $('#loginButton').click();\n" +
-                                "    }\n" +
-                                "  }); \n" +
-                                "$(\"body#login #main > div\").css({maxWidth: \"100%\"})\n"+
-                                "$(\"html\").css({\n" + //
-                                "    \"-ms-overflow-style\": \"none\",\n" + //
-                                "    \"scrollbar-width\": \"none\",\n" + //
-                                "})\n" + //
-                                "$('<style>' +\n" + //
-                                "  'html::-webkit-scrollbar { width: 0px; }' +\n" + //
-                                "  'html::-webkit-scrollbar-thumb { background: transparent; }' +\n" + //
-                                "  '</style>').appendTo('head');";
-
-                //Handle login footer
-                String footerContent = DirectoryUtil.getLoginFormFooter();
-                footerContent = footerContent.replace("</script>", "<\\/script>");
-                if (!footerContent.equalsIgnoreCase("")){
-                    html += "$(`<table> <tbody> <tr> <td colspan=\"2\">" + footerContent + "</td> </tr> </tbody> </table>`).insertAfter($('#loginButton'));";
-                }
-                                
-                html +=         "});\n" +
-                                "</script>";
-
+                html += UserviewUtil.getTemplate(this, data, "/templates/userview/customLoginScript.ftl");;
+                
                 data.put("login_form_before", html);
             }
         }
