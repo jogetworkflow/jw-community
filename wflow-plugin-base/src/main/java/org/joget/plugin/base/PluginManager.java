@@ -1072,6 +1072,32 @@ public class PluginManager implements ApplicationContextAware {
     }
     
     /**
+     * Returns a plugin by type and name, from either the OSGI container and the classpath.
+     * 
+     * @param pluginType
+     * @param name name of the required plugin
+     * @return
+     */
+    public Plugin getPluginByTypeAndName(Class pluginType, String name) {
+        if (pluginType != null && name != null && !name.isEmpty()) {
+            Map<String, Plugin> pluginMap = getCache().getPluginCache().get(pluginType);
+            if (pluginMap == null) {
+                // load plugins
+                pluginMap = internalLoadPluginMap(pluginType);
+
+                // store in cache
+                getCache().getPluginCache().put(pluginType, pluginMap);
+            }
+            
+            Plugin plugin = pluginMap.get(name);
+            if (plugin != null) {
+                return getPlugin(ClassUtils.getUserClass(plugin).getName());
+            }
+        }
+        return null;
+    }
+
+    /**
      * Retrieve a plugin from the OSGI container
      * @param name Fully qualified class name for the required plugin
      * @return
@@ -1739,6 +1765,7 @@ public class PluginManager implements ApplicationContextAware {
         pluginTypeMap.put("org.joget.plugin.base.PluginWebSocket", ResourceBundleUtil.getMessage("setting.plugin.webSocket"));
         pluginTypeMap.put("org.joget.apps.app.model.CreateAppOption", ResourceBundleUtil.getMessage("setting.plugin.createAppOption"));
         pluginTypeMap.put("org.joget.plugin.base.UiHtmlInjectorPlugin", ResourceBundleUtil.getMessage("setting.plugin.uiHtmlInjectorPlugin"));
+        pluginTypeMap.put("org.joget.plugin.base.ConsolePagePlugin", ResourceBundleUtil.getMessage("setting.plugin.consolePagePlugin"));
        
         if (!getCache().getCustomPluginInterfaces().isEmpty()) {
             for (String className : getCache().getCustomPluginInterfaces().keySet()) {
