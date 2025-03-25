@@ -36,24 +36,46 @@
 <%@ attribute name="dynamicColumn"%>
 <%@ tag dynamic-attributes="attributeMap" %>
 
-<c:if test="${empty var}"><c:set var="var" value="jsonTable"/></c:if>
-<c:if test="${empty useRp}"><c:set var="useRp" value="true"/></c:if>
-<c:if test="${empty rowsPerPage}"><c:set var="rowsPerPage" value="10"/></c:if>
-<c:if test="${empty jsonData}"><c:set var="jsonData" value="data"/></c:if>
-<c:if test="${empty hrefQuery}"><c:set var="hrefQuery" value="false"/></c:if>
-<c:if test="${empty hrefDialog}"><c:set var="hrefDialog" value="false"/></c:if>
+<%-- support dynamically set attribute using map--%>
+<%@ attribute name="dynamicAttributes" type="java.util.Map"%>
+<jsp:useBean id="attributeMap" class="java.util.HashMap" />
+<c:if test="${not empty dynamicAttributes}">
+    <c:forEach var="entry" items="${dynamicAttributes}">
+        <c:set target="${attributeMap}" property="${entry.key}" value="${entry.value}" />
+    </c:forEach>
+</c:if>
+<c:if test="${empty height && !empty attributeMap['height']}"><c:set var="height" value="${attributeMap['height']}"/></c:if>
+<c:if test="${empty href && !empty attributeMap['href']}"><c:set var="href" value="${attributeMap['href']}"/></c:if>
+<c:if test="${empty hrefParam && !empty attributeMap['hrefParam']}"><c:set var="hrefParam" value="${attributeMap['hrefParam']}"/></c:if>
+<c:if test="${empty hrefQuery && !empty attributeMap['hrefQuery']}"><c:set var="hrefQuery" value="${attributeMap['hrefQuery']}"/></c:if>
+<c:if test="${empty hrefSuffix && !empty attributeMap['hrefSuffix']}"><c:set var="hrefSuffix" value="${attributeMap['hrefSuffix']}"/></c:if>
+<c:if test="${empty hrefDialogTitle && !empty attributeMap['hrefDialogTitle']}"><c:set var="hrefDialogTitle" value="${attributeMap['hrefDialogTitle']}"/></c:if>
+<c:if test="${empty hrefDialogWindowName && !empty attributeMap['hrefDialogWindowName']}"><c:set var="hrefDialogWindowName" value="${attributeMap['hrefDialogWindowName']}"/></c:if>
+<c:if test="${empty hrefDialogTab && !empty attributeMap['hrefDialogTab']}"><c:set var="hrefDialogTab" value="${attributeMap['hrefDialogTab']}"/></c:if>
+<c:if test="${empty hrefPost && !empty attributeMap['hrefPost']}"><c:set var="hrefPost" value="${attributeMap['hrefPost']}"/></c:if>
+<c:if test="${empty sort && !empty attributeMap['sort']}"><c:set var="sort" value="${attributeMap['sort']}"/></c:if>
+<c:if test="${empty desc && !empty attributeMap['desc']}"><c:set var="desc" value="${attributeMap['desc']}"/></c:if>
+<c:if test="${empty searchItems && !empty attributeMap['searchItems']}"><c:set var="searchItems" value="${attributeMap['searchItems']}"/></c:if>
+<c:if test="${empty dateComparison && !empty attributeMap['dateComparison']}"><c:set var="dateComparison" value="${attributeMap['dateComparison']}"/></c:if>
+<c:if test="${empty dynamicColumn && !empty attributeMap['dynamicColumn']}"><c:set var="dynamicColumn" value="${attributeMap['dynamicColumn']}"/></c:if>
+
+<c:if test="${empty width}"><c:set var="width" value="${!empty attributeMap['width'] ? attributeMap['width'] : '100%' }"/></c:if>    
+<c:if test="${empty var}"><c:set var="var" value="${!empty attributeMap['var'] ? attributeMap['var'] : 'jsonTable' }"/></c:if>
+<c:if test="${empty useRp}"><c:set var="useRp" value="${!empty attributeMap['useRp'] ? attributeMap['useRp'] : 'true' }"/></c:if>
+<c:if test="${empty rowsPerPage}"><c:set var="rowsPerPage" value="${!empty attributeMap['rowsPerPage'] ? attributeMap['rowsPerPage'] : '15' }"/></c:if>
+<c:if test="${empty jsonData}"><c:set var="jsonData" value="${!empty attributeMap['jsonData'] ? attributeMap['jsonData'] : 'data' }"/></c:if>
+<c:if test="${empty hrefQuery}"><c:set var="hrefQuery" value="${!empty attributeMap['hrefQuery'] ? attributeMap['hrefQuery'] : 'false' }"/></c:if>
+<c:if test="${empty hrefDialog}"><c:set var="hrefDialog" value="${!empty attributeMap['hrefDialog'] ? attributeMap['hrefDialog'] : 'false' }"/></c:if>
 <c:if test="${empty hrefDialogWidth && !hrefDialogTab}"><c:set var="hrefDialogWidth" value="450px"/></c:if>
 <c:if test="${empty hrefDialogHeight && !hrefDialogTab}"><c:set var="hrefDialogHeight" value="400px"/></c:if>
-<c:if test="${empty checkbox}"><c:set var="checkbox" value="false"/></c:if>
-<c:if test="${empty checkboxId}"><c:set var="checkboxId" value="id"/></c:if>
-<c:if test="${empty checkboxSelectSingle}"><c:set var="checkboxSelectSingle" value="false"/></c:if>
-<c:if test="${empty checkboxSelection}"><c:set var="checkboxSelection" value="false"/></c:if>
-<c:if test="${empty checkboxSelectionTitle}"><c:set var="checkboxSelectionTitle" value="Selected Items"/></c:if>
-<c:if test="${empty customPreProcessor}"><c:set var="customPreProcessor" value="null"/></c:if>
+<c:if test="${empty checkbox}"><c:set var="checkbox" value="${!empty attributeMap['checkbox'] ? attributeMap['checkbox'] : 'false' }"/></c:if>
+<c:if test="${empty checkboxId}"><c:set var="checkboxId" value="${!empty attributeMap['checkboxId'] ? attributeMap['checkboxId'] : 'id' }"/></c:if>
+<c:if test="${empty checkboxSelectSingle}"><c:set var="checkboxSelectSingle" value="${!empty attributeMap['checkboxSelectSingle'] ? attributeMap['checkboxSelectSingle'] : 'false' }"/></c:if>
+<c:if test="${empty checkboxSelection}"><c:set var="checkboxSelection" value="${!empty attributeMap['checkboxSelection'] ? attributeMap['checkboxSelection'] : 'false' }"/></c:if>
+<c:if test="${empty checkboxSelectionTitle}"><c:set var="checkboxSelectionTitle" value="${!empty attributeMap['checkboxSelectionTitle'] ? attributeMap['checkboxSelectionTitle'] : 'Selected Items' }"/></c:if>
+<c:if test="${empty customPreProcessor}"><c:set var="customPreProcessor" value="${!empty attributeMap['customPreProcessor'] ? attributeMap['customPreProcessor'] : 'null' }"/></c:if>
 
 <c:if test="${checkboxSelectSingle}"><c:set var="checkboxSelection" value="false"/></c:if>
-
-<jsp:include page="/WEB-INF/jsp/includes/scripts.jsp" />
 
 <div id="${var}_${divToUpdate}-search" >
     <c:if test="${!empty searchItems}">
@@ -155,7 +177,11 @@
                     ${attributeMap[callback]}(selectedRows);
                 }
             </script>
-            <button type="button" onclick="${var}_${divToUpdate}_${attributeMap[callback]}_callback()"><fmt:message key="${attributeMap[button]}"/></button>
+            <fmt:message var="checkboxButtonLabel" key="${attributeMap[button]}"/>
+            <c:if test="${fn:startsWith(checkboxButtonLabel, '???') && fn:endsWith(checkboxButtonLabel, '???') && !fn:contains(attributeMap[button], '.')}">
+                <c:set var="checkboxButtonLabel">${attributeMap[button]}</c:set>
+            </c:if>  
+            <button type="button" onclick="${var}_${divToUpdate}_${attributeMap[callback]}_callback()">${checkboxButtonLabel}</button>
         </c:if>
     </c:forEach>
 </div>
@@ -208,6 +234,10 @@
                     %>
                     <c:set var="labelMessageKey" value="<%= labelMessageKey %>"/>
                     <c:set var="message"><ui:msgEscJS key="${labelMessageKey}"/></c:set>
+                    <%-- allow hardcoded label --%>
+                    <c:if test="${fn:startsWith(message, '???') && fn:endsWith(message, '???') && !fn:contains(labelMessageKey, '.')}">
+                        <c:set var="message">${labelMessageKey}</c:set>
+                    </c:if>    
                     <c:set var="finalMessage" value="${fn:replace(attributeMap[attrName], labelMessageKey, message)}"/>
                     ${finalMessage}
                     <c:set var="first" value="false"/>
