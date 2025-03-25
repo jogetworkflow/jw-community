@@ -13,11 +13,6 @@
         } else if (parent && parent.AdminBar !== undefined && parent.AdminBar.isAdminBarOpen()) {
             parent.PopupDialog.closeDialog();
             parent.AdminBar.showQuickOverlay('<c:out value="${url}"/>');
-        } else if (parent && parent.reloadTable) {
-            if(parent.PopupDialog) {
-                parent.PopupDialog.closeDialog();
-            }
-            parent.reloadTable();
         } else {
             if (parent != self) {
                 parent.location.href="<c:out value="${url}"/>";
@@ -30,7 +25,12 @@
         ${script}
     </c:when>   
     <c:otherwise>
-        if (parent && parent.PopupDialog.closeDialog) {
+        if (parent && parent.reloadTable) {
+            if(parent.PopupDialog) {
+                parent.PopupDialog.closeDialog();
+            }
+            parent.reloadTable();
+        } else if (parent && parent.PopupDialog.closeDialog) {
             parent.PopupDialog.closeDialog();
         }
     </c:otherwise>
