@@ -262,10 +262,10 @@ public class PluginManager implements ApplicationContextAware {
                 prevSize = file.length();
                 Thread.sleep(50);
             } while (prevSize < file.length());
-          
+            
             //try uninstall first
             uninstallBundle(file.toURI().toURL().toExternalForm());
-
+            
             Bundle bundle = installBundle(file.toURI().toURL().toExternalForm());
             if (bundle != null) {
                 startBundle(bundle);

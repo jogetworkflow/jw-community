@@ -2461,3 +2461,10 @@ body.rtl .toast.console #close {
     left: 10px; 
     right: initial;
 }
+
+body.popupBody > #main-body-header + #main-body-content > pre{
+    margin: 0px;
+}
+body.popupBody:has( > #main-body-header > .btn.edit_link) {
+    padding-top: 53px;
+}
