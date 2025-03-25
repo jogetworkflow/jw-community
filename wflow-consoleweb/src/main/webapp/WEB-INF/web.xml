@@ -85,6 +85,15 @@
         <url-pattern>/setup/*</url-pattern>
     </servlet-mapping>
     <filter>
+        <filter-name>PluginWebFilterChainProxy</filter-name>
+        <filter-class>org.joget.apps.app.web.PluginWebFilterChainProxy</filter-class>
+        <async-supported>true</async-supported>
+    </filter>
+    <filter-mapping>
+        <filter-name>PluginWebFilterChainProxy</filter-name>
+        <url-pattern>/*</url-pattern>
+    </filter-mapping>
+    <filter>
         <filter-name>charsetFilter</filter-name>
         <filter-class>org.joget.apps.app.web.CustomCharacterEncodingFilter</filter-class>
         <async-supported>true</async-supported>
@@ -155,6 +164,15 @@
         <url-pattern>/j_spring_security_logout</url-pattern>
         <dispatcher>FORWARD</dispatcher>
         <dispatcher>REQUEST</dispatcher>
+    </filter-mapping>
+    <filter>
+        <filter-name>AfterSecurityChainPluginWebFilterChainProxy</filter-name>
+        <filter-class>org.joget.apps.app.web.AfterSecurityChainPluginWebFilterChainProxy</filter-class>
+        <async-supported>true</async-supported>
+    </filter>
+    <filter-mapping>
+        <filter-name>AfterSecurityChainPluginWebFilterChainProxy</filter-name>
+        <url-pattern>/*</url-pattern>
     </filter-mapping>
     <filter>
 	<filter-name>MultipartFilter</filter-name>
