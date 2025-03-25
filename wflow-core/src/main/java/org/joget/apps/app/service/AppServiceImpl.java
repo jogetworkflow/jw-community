@@ -827,10 +827,13 @@ public class AppServiceImpl implements AppService {
      * @return
      */
     public PackageActivityForm retrieveMappedForm(String appId, String version, String processDefId, String activityDefId) {
+        PackageActivityForm paf = null;
         String processDefIdWithoutVersion = WorkflowUtil.getProcessDefIdWithoutVersion(processDefId);
         AppDefinition appDef = getAppDefinition(appId, version);
         PackageDefinition packageDef = appDef.getPackageDefinition();
-        PackageActivityForm paf = packageDef.getPackageActivityForm(processDefIdWithoutVersion, activityDefId);
+        if (packageDef != null) {
+             paf = packageDef.getPackageActivityForm(processDefIdWithoutVersion, activityDefId);
+        }
         if (paf != null) {
             try {
                 paf = (PackageActivityForm)paf.clone();
