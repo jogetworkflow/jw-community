@@ -62,10 +62,12 @@ import org.apache.commons.io.monitor.FileAlterationObserver;
 import org.apache.commons.lang.StringEscapeUtils;
 import org.aspectj.lang.NoAspectBoundException;
 import org.joget.commons.spring.model.ResourceBundleMessageDao;
+import org.joget.commons.spring.model.Setting;
 import org.joget.commons.util.PagingUtils;
 import org.joget.commons.util.ResourceBundleUtil;
 import org.joget.commons.util.SecurityUtil;
 import org.joget.commons.util.StringUtil;
+import org.joget.plugin.property.service.PropertyUtil;
 import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.util.ClassUtils;
 import org.springframework.web.context.request.RequestContextHolder;
@@ -386,7 +388,7 @@ public class PluginManager implements ApplicationContextAware {
             } else {
                 newBundle.update();
             }  
-
+            
             // clear cache
             clearCache();
             return newBundle;
@@ -557,6 +559,22 @@ public class PluginManager implements ApplicationContextAware {
             BundleContext context = getOsgiContainer().getBundleContext();
             Bundle bundle = context.getBundle(location);
             if (bundle != null && uninstallable(bundle.getSymbolicName())) {
+                
+                //find ActivationAwarePlugin plugin to call beforeUnregister method
+                ServiceReference[] refs = bundle.getRegisteredServices();
+                if (refs != null) {
+                    for (ServiceReference sr : refs) {
+                        Object obj = context.getService(sr);
+                        if (obj instanceof ActivationAwarePlugin) {
+                            Plugin plugin = weavePluginAspect((Plugin) obj); //plugin could be null if having error in multitenant
+                            if (plugin != null) {
+                                ((ActivationAwarePlugin) obj).beforeUnregister();
+                            }
+                        }
+                        context.ungetService(sr);
+                    }
+                }
+                
                 bundle.stop();
                 bundle.uninstall();
                 
@@ -587,6 +605,22 @@ public class PluginManager implements ApplicationContextAware {
             bundle.start();
             LogUtil.info(PluginManager.class.getName(), "Bundle " + bundle.getSymbolicName() + " started");
             
+            //find ActivationAwarePlugin plugin to call afterRegister method
+            BundleContext context = getOsgiContainer().getBundleContext();
+            ServiceReference[] refs = bundle.getRegisteredServices();
+            if (refs != null) {
+                for (ServiceReference sr : refs) {
+                    Object obj = context.getService(sr);
+                    if (obj instanceof ActivationAwarePlugin) {
+                        Plugin plugin = weavePluginAspect((Plugin) obj); //plugin could be null if having error in multitenant
+                        if (plugin != null) {
+                            ((ActivationAwarePlugin) obj).afterRegister();
+                        }
+                    }
+                    context.ungetService(sr);
+                }
+            }
+
             // clear cache
             clearCache();
         } catch (Exception be) {
@@ -1026,7 +1060,7 @@ public class PluginManager implements ApplicationContextAware {
             return null;
         }
     }
-
+    
     /**
      * Retrieve a plugin from the OSGI container
      * @param name Fully qualified class name for the required plugin
@@ -1446,7 +1480,7 @@ public class PluginManager implements ApplicationContextAware {
 
         return url;
     }
-
+    
     /**
      * Execute a plugin
      * @param name The fully qualified class name of the plugin
