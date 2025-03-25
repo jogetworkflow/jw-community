@@ -3,6 +3,7 @@ package org.joget.plugin.base;
 import java.util.HashMap;
 import java.util.Map;
 import org.joget.plugin.property.service.PropertyUtil;
+import org.springframework.util.ClassUtils;
 
 /**
  * A base abstract class that must be extended by every plugins
@@ -59,6 +60,10 @@ public abstract class ExtDefaultPlugin extends DefaultPlugin {
             properties = new HashMap<String, Object>();
         }
         properties.put(property, value);
+    }
+    
+    public String getClassName() {
+        return ClassUtils.getUserClass(this).getName();
     }
     
     /**
