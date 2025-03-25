@@ -17,4 +17,9 @@
     <#if analyzer??>
         <textarea id="ajaxAnalyzerJson" rows="1" cols="1" style="display:none;">${analyzer!?html}</textarea>
     </#if>
+    <#if injectedHtml??>
+        <div data-injected-htmls>
+            ${injectedHtml!}
+        </div>
+    </#if>
 </div>

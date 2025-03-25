@@ -188,6 +188,7 @@
                 </c:choose>
             </div>
         </div>
-        <%= AppUtil.getSystemAlert() %>                  
+        <%= AppUtil.getSystemAlert() %> 
+        <%= AppUtil.getInjectionHtml() %>   
     </body>
 </html>

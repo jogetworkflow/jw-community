@@ -93,6 +93,8 @@ import org.joget.directory.model.User;
 import org.joget.directory.model.service.DirectoryManager;
 import org.joget.plugin.base.Plugin;
 import org.joget.plugin.base.PluginManager;
+import org.joget.plugin.base.SystemConfigurablePlugin;
+import org.joget.plugin.base.UiHtmlInjectorPlugin;
 import org.joget.plugin.property.model.PropertyEditable;
 import org.joget.plugin.property.service.PropertyUtil;
 import org.joget.workflow.model.WorkflowAssignment;
@@ -110,6 +112,7 @@ import org.springframework.context.ApplicationContextAware;
 import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.AntPathMatcher;
 import org.springframework.util.ClassUtils;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
@@ -2200,5 +2203,77 @@ public class AppUtil implements ApplicationContextAware {
         } else {
             o.put("properties", new JSONObject());
         }
+    }
+    
+    /**
+     * Retrieve the HTML to inject based on UiHtmlInjectorPlugin plugin and its URL patterns
+     * @return 
+     */
+    public static String getInjectionHtml() {
+        StringBuilder sb = new StringBuilder();
+        PluginManager pluginManager = (PluginManager) AppUtil.getApplicationContext().getBean("pluginManager");
+        Collection<Plugin> injectors = pluginManager.list(UiHtmlInjectorPlugin.class);
+        
+        if (injectors != null && !injectors.isEmpty()) {
+            HttpServletRequest request = WorkflowUtil.getHttpServletRequest();
+            
+            //the URL cloud be empty due to jsp:incldue
+            String url = (String) request.getAttribute("javax.servlet.forward.request_uri");
+            if (url == null) {
+                url = request.getRequestURI();
+            }
+            url = url.replaceFirst("^"+request.getContextPath(), "");
+            
+            boolean isAjaxThemeLoading = "true".equalsIgnoreCase(request.getHeader("__ajax_theme_loading"));
+            
+            Map<String, Boolean> urlMatchResult = new HashMap<>();
+            AntPathMatcher matcher = new AntPathMatcher();
+            for (Plugin i : injectors) {
+                try {
+                    UiHtmlInjectorPlugin injector = (UiHtmlInjectorPlugin) i;
+                    String[] patterns = injector.getInjectUrlPatterns();
+
+                    //load all patterns and find matched injectors 
+                    if (patterns != null) {
+                        for (String p : patterns) {
+                            Boolean match = false;
+
+                            //check the url pattern is match with the current request
+                            if (urlMatchResult.containsKey(p)) {
+                                match = urlMatchResult.get(p);
+                            } else {
+                                match = matcher.match(p, url);
+
+                                //store the result for later use
+                                urlMatchResult.put(p, match);
+                            }
+
+                            //if match, add the html to the injection
+                            if (match) {
+                                //get plugin again to set the system properties
+                                if (injector instanceof SystemConfigurablePlugin) {
+                                    injector = (UiHtmlInjectorPlugin) pluginManager.getPlugin(ClassUtils.getUserClass(injector).getName());
+                                }
+
+                                boolean includeAjax = injector.isIncludeForAjaxThemePageSwitching();
+                                if (includeAjax 
+                                        || !isAjaxThemeLoading) {
+                                    sb.append("<div data-injected-html=\"")
+                                            .append(StringUtil.escapeString(injector.getName(), StringUtil.TYPE_HTML))
+                                            .append("\">")
+                                            .append(injector.getHtml(request))
+                                            .append("</div>\n");
+                                }
+                                break;
+                            }
+                        }
+                    }
+                } catch (Exception e) {
+                    LogUtil.error(AppUtil.class.getName(), e, i.getName());
+                }
+            }
+        }
+        
+        return sb.toString();
     }
 }

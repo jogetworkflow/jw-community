@@ -380,13 +380,18 @@
                 }
                 
                 //load css and js
-                $("style[data-cbuilder-style], link[data-cbuilder-style],script[data-cbuilder-script]").remove();
+                $("style[data-cbuilder-style], link[data-cbuilder-style], script[data-cbuilder-script], div[data-cbuilder-uiinjection]").remove();
                 $("head").append('<script data-cbuilder-script type="text/javascript" src="'+CustomBuilder.contextPath+'/web/console/i18n/cbuilder?type='+CustomBuilder.builderType+'&build='+CustomBuilder.buildNumber+'"></script>');
                 if (data.builderCSS !== "") {
                     $("head").append(data.builderCSS);
                 }
                 if (data.builderJS !== "") {
                     $("head").append(data.builderJS);
+                }
+                
+                //ui html injection
+                if (data.uiInjectionHtml !== "") {
+                    $("body").append(data.uiInjectionHtml);
                 }
             }
             if(rtl === true) {

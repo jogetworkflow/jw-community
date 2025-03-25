@@ -127,6 +127,7 @@
 </script>
 
 <%= AppUtil.getSystemAlert() %>
+<%= AppUtil.getInjectionHtml() %>
 
 </body>
 </html>
