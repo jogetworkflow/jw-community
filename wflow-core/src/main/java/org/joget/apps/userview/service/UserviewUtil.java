@@ -42,6 +42,7 @@ import javax.servlet.http.HttpServletResponseWrapper;
 import java.io.File;
 import java.io.StringWriter;
 import java.util.*;
+import org.joget.commons.util.StringUtil;
 
 /**
  * Utility methods used by userview for rendering
@@ -172,10 +173,18 @@ public class UserviewUtil implements ApplicationContextAware, ServletContextAwar
             swallowingResponse.setContentType("text/html; charset=utf-8");
 
             RequestDispatcher dispatcher = servletContext.getRequestDispatcher("/WEB-INF/jsp/" + viewName);
-
+            
             dispatcher.include(request, wrapper);
 
             result = sbuffer.toString();
+            
+            //fix fmt:message labels become ???
+            if (result != null && result.contains("???")) {
+                PluginManager pluginManager = (PluginManager) AppUtil.getApplicationContext().getBean("pluginManager");
+                result = result.replaceAll(StringUtil.escapeRegex("???"), StringUtil.escapeRegex("@@"));
+                result = pluginManager.processPluginTranslation(result, "org.joget.apps.userview.lib.AjaxUniversalTheme", null); //using an exisitng theme plugin
+                result = result.replaceAll(StringUtil.escapeRegex("@@"), StringUtil.escapeRegex("???"));
+            }
         } catch (Exception e) {
             LogUtil.error("UserviewUtil", e, viewName);
         }
