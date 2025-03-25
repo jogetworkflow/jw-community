@@ -67,7 +67,7 @@ public class UuidGenerator {
     @Deprecated
     public synchronized String getOldUuid() {
         long timeNow = System.currentTimeMillis();
-        int timeLow = (int) timeNow & -1;
+        int timeLow = (int) timeNow;  //Removed unnecessary bitwise operation
         int node = seeder.nextInt();
         return hexFormat(timeLow, 8) + "-" + midValue + "-" + hexFormat(node, 8);
     }

@@ -21,12 +21,10 @@ import org.w3c.dom.NodeList;
 
 public class DependenciesUtil {
     
-    private static final XPath XPATH;
-    
-    static {
+    private static XPath createXPath() {
         XPath xpath = XPathFactory.newInstance().newXPath();
         xpath.setXPathFunctionResolver(new RegexMatchesFunctionResolver());
-        XPATH = xpath;
+        return xpath;
     }
     
     private static void findKeywords(JSONArray keywords, String text, String keyword) {
@@ -77,6 +75,7 @@ public class DependenciesUtil {
     
     public static JSONArray getDependencies(String appId, String version, String type, String keyword, HttpServletRequest request) {
         keyword = SecurityUtil.validateStringInput(keyword);
+        XPath xpath = createXPath(); // Create a new instance per method call
         
         AppService appService = (AppService) AppUtil.getApplicationContext().getBean("appService");
         
@@ -123,8 +122,7 @@ public class DependenciesUtil {
                 expression += " | //json[contains(text(),'form."+keyword+".')]";
                 expression += " | //pluginProperties[contains(text(),'form."+keyword+".')] ";
             }
-            NodeList nodeList = (NodeList) XPATH.compile(expression).evaluate(xml, XPathConstants.NODESET);
-            
+            NodeList nodeList = (NodeList) xpath.compile(expression).evaluate(xml, XPathConstants.NODESET);
             if (nodeList.getLength() > 0) {
                 for (int i = 0; i < nodeList.getLength(); i++) {
                     JSONObject obj = new JSONObject();

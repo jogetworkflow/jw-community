@@ -362,6 +362,10 @@ body.rtl .dataList .pagelinks > *:first-child{
     z-index: 2;
     position: relative;
 }
+.slatooltip {
+    position: absolute;
+    z-index: 99999; /* Ensure tooltip is always on top */
+}
 .dataList .stretched-link:focus, 
 .dataList .stretched-link:hover, 
 .dataList .stretched-link:active,
