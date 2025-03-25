@@ -225,22 +225,32 @@
                     }
                 </#if>
 
-                UI.validateEmail('#email', true, function(isValid) {
-                    if (!isValid) {
-                        if (alertString != "") {
-                            alertString += '\n';
+                // Validate Email (if the field is not hidden and not readonly)
+                <#if element.properties.f_email! != 'hide' && element.properties.f_email! != 'readonly'>
+                    UI.validateEmail('#email', true, function(isValid) {
+                        if (!isValid) {
+                            if (alertString != "") {
+                                alertString += '\n';
+                            }
+                            alertString += '@@app.edm.message.invalidEmailFormat@@';
+                            valid = false;
                         }
-                        alertString += '@@app.edm.message.invalidEmailFormat@@';
-                        valid = false;
-                    }
 
-                    // Submit the form if everything is valid
+                        // Submit the form if everything is valid
+                        if (valid) {
+                            $("form#profile").submit();
+                        }else{
+                            alert(alertString);
+                        }
+                    });
+                <#else>
+                    // If email validation is not required, check validity before submitting
                     if (valid) {
                         $("form#profile").submit();
-                    }else{
+                    } else {
                         alert(alertString);
                     }
-                });
+                </#if>
             }
 
             // show/hide the field based on current locale and the chosen locale

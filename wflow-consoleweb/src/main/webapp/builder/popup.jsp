@@ -22,9 +22,14 @@
             $(function() {
                 if (window.self !== window.top && $("#main-body-header").length > 0) {
                     $("body.popupBody").css("width", "99.9%");
-                    $("body.popupBody").css("padding-top", $("#main-body-header").outerHeight(true) + "px");
+                    if($("#main-body-header").outerHeight(true) > 0){
+                        $("body.popupBody").css("padding-top", $("#main-body-header").outerHeight(true) + "px");
+                    }else{
+                        $("body.popupBody").css("padding-top", "revert-layer");
+                    }
                     $("body.popupBody").css("height", "calc(100vh - " + $("#main-body-header").outerHeight(true) + "px)");
                     $("body.popupBody").css("overflow", "auto");
+                    
                 }
             });
             UI.base = "${pageContext.request.contextPath}";

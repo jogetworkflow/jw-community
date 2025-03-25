@@ -54,3 +54,6 @@ body #page.page-content-wrapper {
         width: calc(100% - 280px);
     }
 }
+[data-cbuilder-menus]:empty{
+    min-height: 50px;
+}

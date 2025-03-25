@@ -228,7 +228,7 @@ AjaxComponent = {
     /*
      * Ajax call to retrieve the component html
      */
-    call : function(element, url, method, formData, customCallback, customErrorCallback, isTriggerByEvent) {
+    call : function(element, url, method, formData, customCallback, customErrorCallback, isTriggerByEvent, isOnPopState) {
         if (url.indexOf("?") === 0) {
             var currentUrl = window.location.href;
             if (currentUrl.indexOf("?") > 0) {
@@ -396,7 +396,7 @@ AjaxComponent = {
                     return null;
                 } else if ((method === "GET" || response.redirected) && response.status === 200) {
                     //only change url if is page change or main component
-                    if (!isAjaxComponent || $(contentConatiner).hasClass("main-component")) {
+                    if ((!isAjaxComponent || $(contentConatiner).hasClass("main-component")) && !isOnPopState) {
                         var resUrl = response.url;
                         history.pushState({url: resUrl}, "", resUrl); //handled redirected URL
                     }

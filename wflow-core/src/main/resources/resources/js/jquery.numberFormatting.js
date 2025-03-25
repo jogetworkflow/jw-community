@@ -6,7 +6,7 @@
                 if (value !== "") {
                     var formatted = FormUtil.numberFormat(value, o);
                     $(element).val(formatted);
-                    
+
                     if ($(element).parent().find(".form-cell-value, .subform-cell-value").length > 0) {
                         $(element).parent().find(".form-cell-value > span, .subform-cell-value > span").text(formatted);
                         $(element).closest(".grid").trigger("change");
@@ -15,13 +15,18 @@
                     }
                 }
             };
-            
+
             this.each(function(){
                 var element = $(this);
-                
+
                 formatValue(element, o);
                 $(element).on("focusout.numberFormatting", function() {
                     formatValue(element, o);
+                });
+                $(element).on("keypress.numberFormatting", function(e) {
+                    if (e.which === 13) {
+                        formatValue(element, o);
+                    }
                 });
             });
         }

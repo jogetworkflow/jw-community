@@ -264,7 +264,7 @@ body .filter-cell select:not([class^=ui]){
     max-width: none;
 }
 
-@media screen and (max-width: 767px) {
+@media screen and (max-width: 767.999px) {
     body .form-container input:not([type]),
     body .form-container input[type=text],
     body .form-container input[type=password],
@@ -907,7 +907,7 @@ body.rtl .multiPagedForm.wizard .page-nav-panel .nav_item.current:after, body .m
     }
 }
 
-@media (max-width: 767px){
+@media (max-width: 767.999px){
     body .multiPagedForm.wizard .page-nav-panel .nav_item button, body .multiPagedForm.tab .page-nav-panel .nav_item button {
         background: none;
         border-bottom:0;

@@ -10,10 +10,12 @@
             var inputValue = inputElement.value;
             var errorMsg = "";
             
-            if (inputValue.startsWith("#") && inputValue.endsWith("#") || inputValue === "" || !inputValue.includes('@')) {
+            const hashVariablePattern = /^\$.*\$|^#.*#|^\${.*}|^%.*%|^\[.*\]|^<.*>$/;
+
+            if (inputValue === "" || hashVariablePattern.test(inputValue) || !inputValue.includes('@')) {
                 return "";
             }
-
+            
             $.ajax({
                 url: UI.base + "/web/api/validateEmail",
                 type: 'POST',
@@ -97,8 +99,10 @@
             var inputElement = parentElement.querySelector('input');
             var inputValue = inputElement.value;
             var errorMsg = "";
+            
+            const hashVariablePattern =/^\$.*\$|^#.*#|^\${.*}|^%.*%|^\[.*\]|^<.*>$/;
 
-            if (inputValue === "" || inputValue.startsWith("#") && inputValue.endsWith("#")) {
+            if (inputValue === "" || hashVariablePattern.test(inputValue)) {
                 return "";
             }
 

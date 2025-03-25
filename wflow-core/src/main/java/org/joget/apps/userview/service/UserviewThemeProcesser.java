@@ -534,11 +534,14 @@ public class UserviewThemeProcesser {
     }
 
     protected String getLoginLink() {
-        String key = userview.getParamString("key");
+        String appId = StringUtil.escapeString(userview.getParamString("appId"), StringUtil.TYPE_HTML, null);
+        String id = StringUtil.escapeString(userview.getPropertyString("id"), StringUtil.TYPE_HTML, null);
+        String menuId = StringUtil.escapeString(userview.getParamString("menuId"), StringUtil.TYPE_HTML, null);
+        String key = StringUtil.escapeString(userview.getParamString("key"), StringUtil.TYPE_HTML, null);
         if (key.isEmpty()) {
             key = Userview.USERVIEW_KEY_EMPTY_VALUE;
         }
-        return "/web/" + ("true".equalsIgnoreCase(userview.getParamString("embed")) ? "embed/" : "") + "ulogin/" + userview.getParamString("appId") + "/" + userview.getPropertyString("id") + "/" + key + "/" + userview.getParamString("menuId");
+        return "/web/" + ("true".equalsIgnoreCase(userview.getParamString("embed")) ? "embed/" : "") + "ulogin/" + appId + "/" + id + "/" + key + "/" + menuId;
     }
 
     protected String getMetas(Map<String, Object> data) {
