@@ -10,9 +10,11 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.Enumeration;
 import java.util.HashMap;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.TreeMap;
 import javax.servlet.AsyncContext;
 import javax.servlet.DispatcherType;
 import javax.servlet.RequestDispatcher;
@@ -25,6 +27,7 @@ import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
+import javax.servlet.http.HttpUpgradeHandler;
 import javax.servlet.http.Part;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
@@ -98,7 +101,10 @@ public final class PluginThread extends Thread {
         private String localAddr;
         private String localName;
         private int localPort;
-        
+        private HttpSession session;
+        private ServletContext servletContext;
+        private DispatcherType dispatcherType;
+
         public PluginThreadHttpRequest(HttpServletRequest request) {
             this.method = request.getMethod();
             this.pathInfo = request.getPathInfo();
@@ -109,7 +115,7 @@ public final class PluginThread extends Thread {
             this.requestURL = request.getRequestURL();
             this.servletPath = request.getServletPath();
             this.characterEncoding = request.getCharacterEncoding();
-            this.parameterMap = Collections.unmodifiableMap(request.getParameterMap());
+            this.parameterMap = new TreeMap<>(request.getParameterMap());
             this.protocol = request.getProtocol();
             this.schema = request.getScheme();
             this.serverName = request.getServerName();
@@ -119,6 +125,9 @@ public final class PluginThread extends Thread {
             this.localPort = request.getLocalPort();
             this.locale = request.getLocale();
             this.remoteAddr = request.getRemoteAddr();
+            this.servletContext = request.getServletContext();
+            this.dispatcherType = request.getDispatcherType();
+            this.session = request.getSession();
             
             // Copy all the headers from the original request to the new request
             Enumeration<String> headerNames = request.getHeaderNames();
@@ -274,12 +283,12 @@ public final class PluginThread extends Thread {
 
         @Override
         public HttpSession getSession(boolean create) {
-            return null;
+            return session;
         }
 
         @Override
         public HttpSession getSession() {
-            return null;
+            return session;
         }
 
         @Override
@@ -297,7 +306,6 @@ public final class PluginThread extends Thread {
             return false;
         }
 
-        @Override
         public boolean isRequestedSessionIdFromUrl() {
             return false;
         }
@@ -339,7 +347,7 @@ public final class PluginThread extends Thread {
 
         @Override
         public Enumeration<String> getAttributeNames() {
-            return Collections.enumeration(attributes.keySet());
+            return Collections.enumeration(new LinkedHashSet<>(attributes.keySet()));
         }
 
         @Override
@@ -388,7 +396,7 @@ public final class PluginThread extends Thread {
 
         @Override
         public Map<String, String[]> getParameterMap() {
-            return parameterMap;
+            return new TreeMap<>(parameterMap);
         }
 
         @Override
@@ -428,12 +436,12 @@ public final class PluginThread extends Thread {
 
         @Override
         public void setAttribute(String name, Object o) {
-            
+            attributes.put(name, o);
         }
 
         @Override
         public void removeAttribute(String name) {
-            
+            attributes.remove(name);
         }
 
         @Override
@@ -453,7 +461,7 @@ public final class PluginThread extends Thread {
 
         @Override
         public RequestDispatcher getRequestDispatcher(String path) {
-            return null;
+            return request.getRequestDispatcher(path);
         }
 
         @Override
@@ -468,22 +476,22 @@ public final class PluginThread extends Thread {
 
         @Override
         public String getLocalName() {
-            return this.localName;
+            return null;
         }
 
         @Override
         public String getLocalAddr() {
-            return this.localAddr;
+            return null;
         }
 
         @Override
         public int getLocalPort() {
-            return this.localPort;
+            return 0;
         }
 
         @Override
         public ServletContext getServletContext() {
-            return null;
+            return this.servletContext;
         }
 
         @Override
@@ -513,7 +521,22 @@ public final class PluginThread extends Thread {
 
         @Override
         public DispatcherType getDispatcherType() {
+            return dispatcherType;
+        }
+
+        @Override
+        public String changeSessionId() {
+            return request.changeSessionId();
+        }
+
+        @Override
+        public <T extends HttpUpgradeHandler> T upgrade(Class<T> type) throws IOException, ServletException {
             return null;
+        }
+
+        @Override
+        public long getContentLengthLong() {
+            return (long)getContentLength();
         }
     }
 }
