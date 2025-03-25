@@ -1055,6 +1055,16 @@ public class PluginManager implements ApplicationContextAware {
             if (plugin == null) {
                 plugin = loadClassPathPlugin(name);
             }
+            
+            //if it is system configurable plugin, retrieve the global setting 
+            if (plugin instanceof SystemConfigurablePlugin) {
+                SetupManager setupManager = (SetupManager) applicationContext.getBean("setupManager");
+                Setting setting = setupManager.getSettingByProperty("plugin_config_" + name);
+                if (setting != null) {
+                    ((SystemConfigurablePlugin) plugin).setProperties(PropertyUtil.getPropertiesValueFromJson(setting.getValue()));
+                }
+            }
+            
             return plugin;
         } else {
             return null;
@@ -1767,6 +1777,10 @@ public class PluginManager implements ApplicationContextAware {
             }
         }
         return path;
+    }
+    
+    public boolean hasConfigurablePlugins() {
+        return !list(SystemConfigurablePlugin.class).isEmpty();
     }
     
     public static void registerCustomPluginInterface(CustomPluginInterface interfaceClass) {
