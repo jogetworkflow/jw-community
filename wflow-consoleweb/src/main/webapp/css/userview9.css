@@ -1716,14 +1716,18 @@ form.form .btn {
 }
 
 .form-errors {
-    border: 1px solid transparent;
-    color: #721c24;
-    background-color: #f8d7da;
-    border-color: #f5c6cb;
-    position: relative;
-    padding: 0.75rem 1.25rem;
-    margin-bottom: 1rem;
-    border-radius: 0.25rem;
+    border: 1px solid transparent !important;
+    color: #721c24 !important;
+    background-color: #f8d7da !important;
+    border-color: #f5c6cb !important;
+    position: relative !important;
+    padding: 0.75rem 1.25rem !important;
+    margin-bottom: 1rem !important;
+    border-radius: 0.25rem !important;
+}
+
+#main-body-message.form-errors{
+    margin-bottom: 0px !important;
 }
 
 .form-error-message {
@@ -1739,6 +1743,10 @@ form.form .btn {
 
 .form-row label span.mandatory {
     color: red;
+}
+
+#custom_login{
+    position: relative !important;
 }
 
 body .form-container [class*="form-cell-value"] {
