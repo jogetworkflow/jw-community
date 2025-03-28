@@ -1012,21 +1012,16 @@ public class PluginManager implements ApplicationContextAware {
         if (sr != null) {
             try {
                 Bundle bundle = sr.getBundle();
-                if (uninstallable(bundle.getSymbolicName())) {
-                    bundle.stop();
-                    bundle.uninstall();
+                if (bundle != null && uninstallable(bundle.getSymbolicName())) {
                     String location = bundle.getLocation();
-                    context.ungetService(sr);
+                    uninstallBundle(location);
 
                     // delete location
                     if (deleteFile) {
                         File file = new File(new URI(location));
-                        boolean deleted = file.delete();
+                        file.delete();
                     }
                     result = true;
-
-                    // clear cache
-                    clearCache();
                 }
             } catch (Exception ex) {
                 LogUtil.error(PluginManager.class.getName(), ex, "");
@@ -1766,6 +1761,7 @@ public class PluginManager implements ApplicationContextAware {
         pluginTypeMap.put("org.joget.apps.app.model.CreateAppOption", ResourceBundleUtil.getMessage("setting.plugin.createAppOption"));
         pluginTypeMap.put("org.joget.plugin.base.UiHtmlInjectorPlugin", ResourceBundleUtil.getMessage("setting.plugin.uiHtmlInjectorPlugin"));
         pluginTypeMap.put("org.joget.plugin.base.ConsolePagePlugin", ResourceBundleUtil.getMessage("setting.plugin.consolePagePlugin"));
+        pluginTypeMap.put("org.joget.plugin.base.PluginWebFilter", ResourceBundleUtil.getMessage("setting.plugin.pluginWebFilter"));
        
         if (!getCache().getCustomPluginInterfaces().isEmpty()) {
             for (String className : getCache().getCustomPluginInterfaces().keySet()) {
