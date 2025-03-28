@@ -15,6 +15,8 @@ public interface ConsolePagePlugin {
     /**
      * Annotation to put on method to mark the method as additional URL path 
      * and using the method to handle the path request.
+     * 
+     * The value is using AntPathMatcher syntax
      */
     @Retention(RetentionPolicy.RUNTIME)
     @Target(ElementType.METHOD)

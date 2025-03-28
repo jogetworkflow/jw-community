@@ -13,12 +13,12 @@ public abstract class PluginWebFilterAbstract extends ExtDefaultPlugin implement
 
     @Override
     public void init(FilterConfig fc) throws ServletException {
-        //not using
+        //not using, added to prevent OSGI plugin build error
     }
     
     @Override
     public void destroy() {
-        //not using
+        //not using, added to prevent OSGI plugin build error
     }
 
     @Override
