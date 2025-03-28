@@ -839,3 +839,39 @@ body.dark-mode .is-selected .pika-button{
 body.dark-mode .numeric_field_control{
     filter: brightness(0) saturate(100%) invert(60%) sepia(11%) saturate(339%) hue-rotate(196deg) brightness(101%) contrast(95%);
 }
+
+body.dark-mode .signature-pad--actions{
+    background-color: var(--theme-heading-bg);
+}
+
+body.dark-mode .signature-pad--body{
+    border: 1px solid var(--theme-border-color);
+}
+
+body.dark-mode .signature-pad--actions .button{
+    background-color: var(--theme-heading-bg) !important;
+    color: var(--theme-field-font-color) !important;
+}
+
+body.dark-mode #widthSelect{
+    background-color: var(--theme-background);
+    color: var(--theme-field-font-color);
+}
+
+body.dark-mode select.signature-pad--exportOptions{
+    background-color: var(--theme-heading-bg) !important;
+}
+
+body.dark-mode .signature-pad--actions select:focus-visible{
+    outline: none !important;
+}
+
+body.dark-mode .signature-pad--exportOptions option {
+    background-color: var(--theme-background) !important;
+    color: var(--theme-field-font-color) !important;
+}
+
+body.dark-mode .signature-pad--body.fullscreen-active .signature-pad--actions,
+body.dark-mode .signature-pad--body.fullscreen-active {
+    background-color: var(--theme-background);
+}
