@@ -70,7 +70,7 @@ public class UserviewDefinitionDaoImpl extends AbstractAppVersionedObjectDao<Use
     @Override
     public UserviewDefinition loadById(String id, AppDefinition appDefinition) {
         String cacheKey = getCacheKey(id, appDefinition.getAppId(), appDefinition.getVersion());
-        UserviewDefinition cachedDef = (UserviewDefinition)cache.get(cacheKey, appDefinition);
+        UserviewDefinition cachedDef = (UserviewDefinition) cache.getObject(cacheKey, appDefinition);
 
         if (cachedDef == null) {
             UserviewDefinition uvDef = super.loadById(id, appDefinition);

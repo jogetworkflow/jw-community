@@ -103,7 +103,7 @@ public class FormDefinitionDaoImpl extends AbstractAppVersionedObjectDao<FormDef
     @Override
     public FormDefinition loadById(String id, AppDefinition appDefinition) {
         String cacheKey = getCacheKey(id, appDefinition.getAppId(), appDefinition.getVersion());
-        FormDefinition formDefinition = (FormDefinition)cache.get(cacheKey, appDefinition);
+        FormDefinition formDefinition = (FormDefinition)cache.getObject(cacheKey, appDefinition);
 
         if (formDefinition == null) {
             FormDefinition formDef = load(id, appDefinition);

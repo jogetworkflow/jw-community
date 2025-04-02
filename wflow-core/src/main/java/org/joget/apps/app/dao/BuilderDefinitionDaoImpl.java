@@ -85,7 +85,7 @@ public class BuilderDefinitionDaoImpl extends AbstractAppVersionedObjectDao<Buil
     @Override
     public BuilderDefinition loadById(String id, AppDefinition appDefinition) {
         String cacheKey = getCacheKey(id, appDefinition.getAppId(), appDefinition.getVersion());
-        BuilderDefinition builderDef = (BuilderDefinition)cache.get(cacheKey, appDefinition);
+        BuilderDefinition builderDef = (BuilderDefinition) cache.getObject(cacheKey, appDefinition);
 
         if (builderDef == null) {
             BuilderDefinition def = super.loadById(id, appDefinition);            

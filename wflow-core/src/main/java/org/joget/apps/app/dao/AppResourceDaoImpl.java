@@ -45,7 +45,7 @@ public class AppResourceDaoImpl extends AbstractAppVersionedObjectDao<AppResourc
     @Override
     public AppResource loadById(String id, AppDefinition appDefinition) {
         String cacheKey = getCacheKey(id, appDefinition.getAppId(), appDefinition.getVersion());
-        AppResource appResource = (AppResource)cache.get(cacheKey, appDefinition);
+        AppResource appResource = (AppResource) cache.getObject(cacheKey, appDefinition);
 
         if (appResource == null) {
             AppResource r = super.loadById(id, appDefinition);            

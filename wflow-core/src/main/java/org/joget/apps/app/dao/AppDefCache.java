@@ -1,8 +1,10 @@
 package org.joget.apps.app.dao;
 
+import java.io.Serializable;
 import java.util.Iterator;
 import javax.cache.Cache;
 import javax.cache.CacheManager;
+import net.sf.ehcache.Element;
 import org.joget.apps.app.model.AppDefinition;
 import org.joget.commons.util.DynamicDataSourceManager;
 import org.joget.commons.util.LogUtil;
@@ -14,7 +16,7 @@ public class AppDefCache {
         this.cache = cacheManager.getCache("org.joget.cache.FLU_CACHE");
     }
     
-    public Object get(String key, AppDefinition appDef) {
+    public Object getObject(String key, AppDefinition appDef) {
         Object value = null;
         CacheElement element = (CacheElement)cache.get(key);
         if (element != null) {
@@ -69,4 +71,31 @@ public class AppDefCache {
         }
     }
 
+    /**
+     * Backward compatible method to get a cache element
+     * @param key
+     * @param appDef
+     * @return 
+     */
+    public Element get(String key, AppDefinition appDef) {
+        Object value = getObject(key, appDef);
+        if (value != null) {
+            if (value instanceof Element) {
+                return (Element) value;
+            } else {
+                Element newValue = new Element(key, (Serializable) value);
+                return newValue;
+            }
+        }
+        return null;
+    }
+    
+    /**
+     * Backward compatible method to put a cache element
+     * @param value
+     * @param appDef 
+     */
+    public void put(Element value, AppDefinition appDef) {
+        put(value.getKey(), value.getObjectValue(), appDef);
+    }
 }
