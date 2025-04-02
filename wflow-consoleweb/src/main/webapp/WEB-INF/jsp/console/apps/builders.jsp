@@ -59,7 +59,8 @@
     {
         "builder" : {
             "options" : {
-                "marketplaceUrl" : "<ui:msgEscJS key="appCenter.link.marketplace.url"/>"
+                "marketplaceUrl" : "<ui:msgEscJS key="appCenter.link.marketplace.url"/>",
+                "marketplacePaletteClass" : "org.joget.apps.app.model.CustomBuilder"
             },
             "callbacks" : {
                 "initBuilder" : "AppBuilder.initBuilder",
@@ -72,7 +73,8 @@
                 "unpublishApp" : "AppBuilder.unpublishApp",
                 "exportApp" : "AppBuilder.exportApp",
                 "overviewViewBeforeClosed" : "AppBuilder.overviewViewBeforeClosed",
-                "overviewMapViewInit" : "AppBuilder.overviewMapViewInit"
+                "overviewMapViewInit" : "AppBuilder.overviewMapViewInit",
+                "marketplaceReloadPalette" : "AppBuilder.load"
             }
         },
         "advanced_tools" : {

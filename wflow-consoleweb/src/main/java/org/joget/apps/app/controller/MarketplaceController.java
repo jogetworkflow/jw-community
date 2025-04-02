@@ -191,6 +191,10 @@ public class MarketplaceController {
             @RequestParam(value = "username", required = false) String username, @RequestParam(value = "password", required = false) String password, 
             @RequestParam(value = "login", required = false) Boolean login) {
         
+        if ("app".equals(type)) {
+            type = "platform";
+        }
+        
         model.addAttribute("type", type);
         model.addAttribute("pluginType", pluginType);
         

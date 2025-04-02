@@ -3697,7 +3697,7 @@ _CustomBuilder = {
         
         var appTools = $("#builder-menu > ul.app_tools");
         appTools.find("#marketplace-btn").parent().remove();
-        if ($('body').hasClass('default-builder')){
+        if ($('body').hasClass('default-builder') || CustomBuilder.config.builder.options['marketplacePaletteClass'] !== undefined){
             appTools.append('<li><a title="Get add-ons" id="marketplace-btn" onclick="CustomBuilder.Builder.loadSeamlessMarketplace()" data-cbuilder-view="marketplace"><i class="las la-plus"></i></a></li>');
         }
         appTools.append('<li><a title="'+get_cbuilder_msg('abuilder.notes')+'" id="appDesc-btn" data-cbuilder-view="appDesc" href="'+CustomBuilder.contextPath+'/web/console/app'+CustomBuilder.appPath+'/note" data-cbuilder-action="switchView" data-hide-tool=""><i class="las la-sticky-note"></i></a></li>');
@@ -7819,6 +7819,8 @@ _CustomBuilder.Builder = {
             url += "&login=true";
         }
         JPopup.show("navCreateNewDialog", url, {}, "");
+        
+        return false;
     },
     
     //when link onclick get the plugin category and load it on seamless marketplace
