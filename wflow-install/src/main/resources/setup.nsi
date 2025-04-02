@@ -181,7 +181,7 @@ Section "Joget DX" SecJoget
   ${EndIf}
 
   ;Joget Files Here
-  File /r apache-ant-1.7.1
+  File /r apache-ant-1.10.15
   CreateDirectory "$INSTDIR\apache-tomcat-11.0.5\webapps"
   File /oname=apache-tomcat-11.0.5\webapps\jw.war apache-tomcat-11.0.5\webapps\jw.war
   CreateDirectory "$INSTDIR\data"
@@ -393,7 +393,7 @@ Section "Uninstall"
   ;Uninstall Files Here
   RMDir /r "$SMPROGRAMS\Joget DX 9"
 
-  RmDir /r "$INSTDIR\apache-ant-1.7.1"
+  RmDir /r "$INSTDIR\apache-ant-1.10.15"
   RmDir /r "$INSTDIR\jre21.0.5"
   RmDir /r "$INSTDIR\apache-tomcat-11.0.5\webapps\jw"
   Delete "$INSTDIR\apache-tomcat-11.0.5\webapps\jw.war"
