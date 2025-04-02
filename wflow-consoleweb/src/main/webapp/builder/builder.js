@@ -7874,6 +7874,8 @@ _CustomBuilder.Builder = {
             url += "&login=true";
         }
         JPopup.show("navCreateNewDialog", url, {}, "");
+        
+        return false;
     },
     
     //when link onclick get the plugin category and load it on seamless marketplace
