@@ -47,6 +47,7 @@ import java.io.Writer;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.Date;
 import java.util.Dictionary;
 import java.util.Enumeration;
 import java.util.HashSet;
@@ -569,6 +570,15 @@ public class PluginManager implements ApplicationContextAware {
     
     public void clearCache() {
         getCache().clearCache();
+    }
+    
+    /**
+     * Retrieve the cache last cleared date
+     * 
+     * @return 
+     */
+    public Date lastClearedCache() {
+        return getCache().getLastCleared();
     }
 
     protected boolean startBundle(Bundle bundle) {
