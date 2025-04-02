@@ -1,6 +1,6 @@
-#/bin/sh
+#!/bin/sh
 
-apache-ant-1.7.1/bin/ant setup
+apache-ant-1.10.15/bin/ant setup
 
  
 
