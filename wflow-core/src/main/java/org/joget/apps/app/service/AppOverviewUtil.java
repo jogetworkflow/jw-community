@@ -76,12 +76,14 @@ public class AppOverviewUtil {
             if (def == null) {
                 def = new BuilderDefinition();
                 def.setId(APP_OVERVIEW_DEFINITION + lang);
+                def.setType(APP_OVERVIEW_DEFINITION);
                 def.setName(Integer.toString(toolsList.hashCode()));
                 def.setAppDefinition(appDef);
                 def.setJson(json);
                 
                 builderDefinitionDao.add(def);
             } else {
+                def.setType(APP_OVERVIEW_DEFINITION);
                 def.setName(Integer.toString(toolsList.hashCode()));
                 def.setJson(json);
                 builderDefinitionDao.update(def);
