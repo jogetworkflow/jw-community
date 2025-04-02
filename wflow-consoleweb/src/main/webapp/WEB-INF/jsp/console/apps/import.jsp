@@ -87,7 +87,8 @@
                                 <fmt:message key="console.app.import.label.doNotImportUserGroups"/>
                             </label>
                         </span>
-                    </div>        
+                    </div> 
+                    ${pluginImportConfig}        
                 </div>
             </fieldset>
             <div class="form-buttons">

@@ -763,4 +763,20 @@ public interface AppService {
      * @param appDef 
      */
     public boolean hasProcessUpdate(AppDefinition appDef);
+    
+    /**
+     * Handle AppImportExportAwarePlugins during app import 
+     * 
+     * @param newAppDef
+     * @param zip 
+     */
+    public void handleAppImportExportAwarePluginsDuringImport(AppDefinition newAppDef, byte[] zip);
+    
+    /**
+     * Handle AppImportExportAwarePlugins during app export 
+     * 
+     * @param exportAppDef
+     * @param zip 
+     */
+    public void handleAppImportExportAwarePluginsDuringExport(AppDefinition exportAppDef, ZipOutputStream zip);
 }

@@ -47,6 +47,7 @@ import org.joget.apps.app.dao.PluginDefaultPropertiesDao;
 import org.joget.apps.app.dao.UserviewDefinitionDao;
 import org.joget.apps.app.dao.DatalistDefinitionDao;
 import org.joget.apps.app.model.AppDefinition;
+import org.joget.apps.app.model.AppImportExportAwarePlugin;
 import org.joget.apps.app.model.AppOverviewTool;
 import org.joget.apps.app.model.AppResource;
 import org.joget.apps.app.model.BuilderDefinition;
@@ -1812,6 +1813,21 @@ public class ConsoleWebController {
         Collection<Group> userGroups = appService.getAppUserGroups(appDef);
         map.addAttribute("userGroups", userGroups);
         
+        StringBuilder sb = new StringBuilder();
+        
+        //handle AppImportExportAwarePlugin
+        Collection<Plugin> plugins = pluginManager.list(AppImportExportAwarePlugin.class);
+        for (Plugin plugin : plugins) {
+            if (plugin instanceof AppImportExportAwarePlugin) {
+                String html = ((AppImportExportAwarePlugin) plugin).exportAppConfigHtml();
+                if (html != null && !html.isEmpty()) {
+                    sb.append(html).append("\n");
+                }
+            }
+        }
+        
+        map.put("pluginExportConfig", sb.toString());
+        
         return "console/apps/exportConfig";
     }
 
@@ -1849,7 +1865,23 @@ public class ConsoleWebController {
     }
 
     @RequestMapping("/console/app/import")
-    public String consoleAppImport() {
+    public String consoleAppImport(ModelMap map) {
+        
+        StringBuilder sb = new StringBuilder();
+        
+        //handle AppImportExportAwarePlugin
+        Collection<Plugin> plugins = pluginManager.list(AppImportExportAwarePlugin.class);
+        for (Plugin plugin : plugins) {
+            if (plugin instanceof AppImportExportAwarePlugin) {
+                String html = ((AppImportExportAwarePlugin) plugin).importAppConfigHtml();
+                if (html != null && !html.isEmpty()) {
+                    sb.append(html).append("\n");
+                }
+            }
+        }
+        
+        map.put("pluginImportConfig", sb.toString());
+        
         return "console/apps/import";
     }
 

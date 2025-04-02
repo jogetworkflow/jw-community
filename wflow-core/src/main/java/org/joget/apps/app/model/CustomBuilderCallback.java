@@ -1,28 +1,10 @@
 package org.joget.apps.app.model;
 
-import java.util.zip.ZipOutputStream;
-
 /**
  * Interface to provide additional builder to perform extra processing in some events
  * 
  */
-public interface CustomBuilderCallback {
-    
-    /**
-     * To do some post processing after import based on the import app definition and the zip file
-     * 
-     * @param appDef
-     * @param zip 
-     */
-    public void importAppPostProcessing(AppDefinition appDef, byte[] zip);
-    
-    /**
-     * To do some post processing to the exported zip based on the app definition
-     * 
-     * @param appDef
-     * @param zip 
-     */
-    public void exportAppPostProcessing(AppDefinition appDef, ZipOutputStream zip);
+public interface CustomBuilderCallback extends AppImportExportAwarePlugin {
     
     /**
      * To do some post processing after a definition is added
