@@ -52,7 +52,7 @@ public class MessageDaoImpl extends AbstractAppVersionedObjectDao<Message> imple
     public Map<String, Message> getCachedMessageList(String locale, AppDefinition appDefinition) {
         Map<String, Message> messageMap = new HashMap<String, Message>();
         String cacheKey = getCacheKey(locale, appDefinition.getAppId(), appDefinition.getVersion().toString());
-        HashMap<String, Message> cachedMap = (HashMap<String, Message>)cache.get(cacheKey, appDefinition);
+        HashMap<String, Message> cachedMap = (HashMap<String, Message>) cache.getObject(cacheKey, appDefinition);
         if (cachedMap == null) {
             messageMap = new HashMap<String, Message>();
             

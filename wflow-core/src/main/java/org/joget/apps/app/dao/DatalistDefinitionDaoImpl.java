@@ -70,7 +70,7 @@ public class DatalistDefinitionDaoImpl extends AbstractAppVersionedObjectDao<Dat
     @Override
     public DatalistDefinition loadById(String id, AppDefinition appDefinition) {
         String cacheKey = getCacheKey(id, appDefinition.getAppId(), appDefinition.getVersion());
-        DatalistDefinition dataListDef = (DatalistDefinition)cache.get(cacheKey, appDefinition);
+        DatalistDefinition dataListDef = (DatalistDefinition) cache.getObject(cacheKey, appDefinition);
 
         if (dataListDef == null) {
             DatalistDefinition listDef = super.loadById(id, appDefinition);            

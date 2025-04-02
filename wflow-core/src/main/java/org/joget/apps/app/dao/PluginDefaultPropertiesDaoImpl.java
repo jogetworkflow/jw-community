@@ -45,7 +45,7 @@ public class PluginDefaultPropertiesDaoImpl extends AbstractAppVersionedObjectDa
     @Override
     public PluginDefaultProperties loadById(String id, AppDefinition appDefinition) {
         String cacheKey = getCacheKey(id, appDefinition.getAppId(), appDefinition.getVersion());
-        PluginDefaultProperties cachedProps = (PluginDefaultProperties)cache.get(cacheKey, appDefinition);
+        PluginDefaultProperties cachedProps = (PluginDefaultProperties) cache.getObject(cacheKey, appDefinition);
 
         if (cachedProps == null) {
             PluginDefaultProperties props = super.loadById(id, appDefinition);            
