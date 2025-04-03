@@ -268,6 +268,29 @@ public class FormBuilderWebController {
         
         return "fbuilder/previewForm";
     }
+    
+    // Called From Process Builder
+    @RequestMapping("/fbuilder/app/(*:appId)/(~:appVersion)/form/(*:formId)/previewForm")
+    public String previewForm(Writer writer, ModelMap model, HttpServletResponse response, @RequestParam("appId") String appId, @RequestParam(value = "appVersion", required = false) String appVersion, @RequestParam("formId") String formId) {
+        try {
+            AppDefinition appDef = appService.getAppDefinition(appId, appVersion);
+            
+            FormDefinition formDef = formDefinitionDao.loadById(formId, appDef);
+            FormUtil.setProcessedFormJson(formDef.getJson());
+
+            String elementHtml = formService.previewElement(formDef.getJson(), false);
+            model.addAttribute("appId", appId);
+            model.addAttribute("appVersion", appVersion);
+            model.addAttribute("elementTemplate", elementHtml);
+            model.addAttribute("elementJson", formDef.getJson());
+        } finally {
+            FormUtil.clearProcessedFormJson();
+        }
+
+        response.addHeader("X-XSS-Protection", "0");
+
+        return "fbuilder/previewForm";
+    }
 
     @RequestMapping("/fbuilder/app/(*:appId)/(~:appVersion)/form/(*:formId)/element/preview")
     public String previewElement(ModelMap model, HttpServletResponse response, @RequestParam("appId") String appId, @RequestParam(value = "appVersion", required = false) String appVersion, @RequestParam("formId") String formId, @RequestParam("json") String json) {

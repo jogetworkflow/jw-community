@@ -1,292 +1,49 @@
-.participant > .participant_inner {
-    min-height: 150px;
-    border-top: solid 1px gray;
-    border-bottom: solid 1px gray;
-    border-right: solid 1px gray;
-    margin-top: -1px;
-    min-width: 100%;
-    position: relative;
+body.show-node-details foreignObject.xray-view.current .cbuilder-node-details {
+    display: block !important;
 }
-.participant > .participant_inner:before {
-    content: "";
-    opacity: 0.8;
-    top: 0;
-    left: 0;
-    bottom: 0;
-    right: 0;
-    position: absolute;
-    z-index: -1;   
+body.show-node-details [data-cbuilder-absolute-position] .cbuilder-node-details .cbuilder-node-details-list {
+    width: unset;
 }
-.participant_handle{
-    position: absolute;
-    top:0;
-    left:0;
-    bottom: 0;
-    width: 32px;
-    border: solid 1px gray;
-    background: #dcdcdc;
-    padding: 5px 10px;
-    border-top:0px;
-    border-bottom: 0px;
+body.show-node-details [data-cbuilder-absolute-position]:hover .cbuilder-node-details {
+    bottom: unset;
 }
-.participant_handle .participant_label {
-    display: inline;
-    font-size: 12px;
-    position: absolute;
-    white-space: nowrap; 
-    top:50%;
-    left:50%;
-    -webkit-transform: rotate(-90deg) translate(-50%, -50%);
-    -moz-transform: rotate(-90deg) translate(-50%, -50%);
-    -ms-transform: rotate(-90deg) translate(-50%, -50%);
-    -o-transform: rotate(-90deg) translate(-50%, -50%);
-    transform: rotate(-90deg) translate(-50%, -50%);   
-    transform-origin: 0 0;
-    -webkit-transform-origin: 0 0;
-    -moz-transform-origin: 0 0;
-    -ms-transform-origin: 0 0;
-    -o-transform-origin: 0 0;
-}
-.activities-container {
-    width: 100%;
-    height: 100%;
-    padding-left: 32px;
-}
-.activity, .tool, .route, .subflow {
-    border-radius: 10px;
-    border: solid 2px #ccc;
-    background: white;
-    padding: 15px;
-    min-height: 60px;
-    max-height: 220px;
-    min-width: 100px;
-    max-width: 120px;
-    z-index: 10;
-    cursor: pointer;
-    font-size: 12px;
-}
-.activity, .tool, .subflow {
-    display: table;
-}
-.tool {
-    background: #E1FFE0;
-}
-.route {
-    min-height: 55px;
-    max-height: 55px;
-    min-width: 55px;
-    max-width: 55px;
-    background: none;
-    border: none;
-    font-size: 0.8em;
-    text-align: center;
-    background: url(images/route.png);
-    background-size: cover;
-}
-.route .node_label {
-    width: 35px;
-    height: 35px;
-}
-.route .node_route_icon {
-    font-size: 40px;
-    padding: 0px;
-    margin: auto;
-    position: absolute;
-    left: 16px;
-    top: -6px;
-    color: #999;
-    opacity: 0.3;   
-    z-index: -1;
-}
-.node_limit{
-    color:gray;
-    font-size: 10px;
-    position: absolute;
-    top: 5px;
-    right: 5px;
-}
-.subflow {
-    border: double 5px gray;
-}
-.start{
-    width: 30px;
-    height: 30px;
-    background: lightgreen;
-    border-radius: 15px;
-}
-.end{
-    width: 30px;
-    height: 30px;
-    min-height: 30px !important;
-    background: orangered;
-    border-radius: 20px;
-    border: double 5px white;
-}
-.end:after{
+body#cbuilder.default-builder #process-selector + #builder_canvas #iframe-wrapper{
     display: none !important;
 }
-.node_label {
-    overflow: hidden;
-    text-align: center;
-    vertical-align: middle;
-    display: table-cell;
+[data-cbuilder-absolute-position] .cbuilder-node-details{
+    visibility: visible !important;
 }
-.activity .node_label, 
-.tool .node_label, 
-.subflow .node_label {
-    height: 40px;
+#cbuilder #top-panel .btn-group .btn.active{
+    color:#fff;
+    background-color: var(--theme-active-color-2) !important;
+    border-color: var(--theme-primary-color-1) !important;
+    color: var(--theme-primary-color-1) !important;
 }
-.endpoint {
-    display: none; 
-    position: absolute; 
-    width:12px; 
-    height: 12px; 
-    border-radius: 50%; 
-    background: #54c5fd; 
-    box-sizing: border-box; 
-    z-index: 20; 
-    pointer-events: auto;
+.lf-label-overlay .lf-label-editor{
+    font-size:14px
 }
-.node:hover .endpoint {
-    display: block;
+#cbuilder #builder_canvas #lf-container{
+    height: 100%
 }
-.endpoint:hover {
-    background: #FABB3D; 
+#lf-container .lf-node-content i.previewForm:hover{
+    color: rgb(24, 125, 255);
     cursor: pointer;
+    transform: scale(1.1);
+    transition: all 0.2s ease-in-out;
 }
-.endpoint.endtop {
-    top:0px; 
-    left:70%; 
-    transform: translateX(-50%);
-}
-.endpoint.endleft {
-    top:30%; 
-    left:0px; 
-    transform: translateY(-50%);
-}
-.endpoint.endright {
-    top:70%; 
-    right:0px; 
-    transform: translateY(-50%);
-}
-.endpoint.endbottom {
-    bottom:0px; 
-    left:30%; 
-    transform: translateX(-50%);
-}
-.transition_label {
-    min-height: 1px;
-    font-size: 10px;
-    color: #666;
-    max-width: 300px;
-    min-width: 120px;
-    text-align: center;
-    z-index: 99;
-}
-._jsPlumb_connector,
-._jsPlumb_endpoint {
-    z-index: 100;
-}
-.endpoint_hover svg circle{
-    fill : #FABB3D;
-}
-.invalidNode {
-    border-color: red;
-}
-.invalidNodeMessage {
+#lf-container .lf-node-content .invalidNodeMessage {
     position: absolute;
-    top : 102%;
     left: 0px;
     width: 100%;
     min-width: 100px;
     color: white;
-    background: red;
-    opacity: 0.5;
+    background: #ff4d4f;
     z-index: -1;
-    font-size: 9px;
+    font-size: 11px;
     padding: 3px;
     border-radius: 3px;
 }
-.invalidNodeMessage p {
+#lf-container .lf-node-content .invalidNodeMessage p {
     margin-bottom: 0;
-}
-.invalidNodeMessage p + p {
-    margin-top: 5px;
-}
-.show-node-details.show-node-details-single{
-    padding-top: 70px !important;
-}
-body.readonly .endpoint{
-    display:none !important;
-}
-body.readonly .endpoint_hover svg circle{
-    fill : #EBEBEB;
-}
-body.readonly *{
-    cursor: default;
-}
-body.readonly .running_activity{
-    background: yellow;
-    border: solid 3px #555;
-}
-.node_mapping {
-    font-size: 12px;
-    position: absolute;
-    bottom: 4px;
-    left:50%;
-    transform: translateX(-50%);
-}
-.activity .node_mapping, .tool .node_mapping{
-    transform: none;
-    left:auto;
-    right: 5px;
-}
-body[builder-theme] .builder-type ul li .builder-actions a {
-    font-size: 20px;
-}
-body[builder-theme] .participant_handle .participant_label{
-    font-weight: 500;
-    font-size: 13px;
-}
-body[builder-theme] .activity .node_label, body[builder-theme] .tool .node_label, body[builder-theme] .subflow .node_label {
-    font-size: 13px;
-}
-body[builder-theme] .transition_label {
-    font-size: 12px;
-}
-body[builder-theme] .tool {
-    background: #d9f8ea;
-}   
-body[builder-theme] .activity, body[builder-theme] .tool, body[builder-theme] .subflow {
-    border: solid 1px #cbd5e0;
-}
-body[builder-theme] .participant_handle {
-    background: #F9F9F9;
-}
-body[builder-theme] .participant > .participant_inner{
-    background-color: #f6f8fc;
-}
-body[builder-theme='dark'] .participant > .participant_inner {
-    background-color: #343a40;
-}
-body[builder-theme='dark'] {
-    background-color: #0F1014;
-}
-body[builder-theme='dark'] .participant_handle {
-    background: #1B1C22;
-    border: solid 1px #26272F;
-}
-body[builder-theme='dark'] .participant_handle .participant_label {
-    color: #CDCDDE;
-}
-body[builder-theme='dark'] .participant > .participant_inner {
-    border-top: solid 1px #26272F;
-    border-bottom: solid 1px #26272F;
-    border-right: solid 1px #26272F;
-}
-body[builder-theme='dark'] .participant{
-    background-color: #15171C;
-}
-body[builder-theme='dark'] .transition_label {
-    color: #CDCDDE;
+    color: white;
 }

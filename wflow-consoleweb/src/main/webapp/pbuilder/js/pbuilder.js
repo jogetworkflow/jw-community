@@ -1,8 +1,10 @@
 ProcessBuilder = {
     currentProcessData : {},
+    draggingElementId : null,
     jsPlumb: null,
     readonly: false,
     refreshTimeout: null,
+    updatePasteElement: true,
     
     /*
      * Intialize the builder, called from CustomBuilder.initBuilder
@@ -37,12 +39,28 @@ ProcessBuilder = {
             callbacks : {
                 "initComponent" : "ProcessBuilder.initComponent",
                 "renderElement" : "ProcessBuilder.renderElement",
+                "decorateBoxActions": "ProcessBuilder.decorateBoxActions",
                 "updateElementId" : "ProcessBuilder.updateElementId",
+                "copyNode" : "ProcessBuilder.copyNode",
                 "unloadElement" : "ProcessBuilder.unloadElement",
-                "renderXray" : "ProcessBuilder.renderXray"
+                "renderXray" : "ProcessBuilder.renderXray",
+                "pasteElement" : "ProcessBuilder.pasteElement",
+                "renderTreeMenuAdditionalNode" : "ProcessBuilder.renderTreeMenuAdditionalNode",
+                "pasteNode" : "ProcessBuilder.pasteNode",
+                "removeAdditionalNode" : "ProcessBuilder.removeAdditionalNode",
+                "getScreenshot" : "ProcessBuilder.getScreenshot",
+                "renderNodeAddtionalData" : "ProcessBuilder.renderNodeAddtionalData",
+                "afterRenderNodeAdditional" : "ProcessBuilder.afterRenderNodeAdditional",
+                "beforeRenderNodeAdditional" : "ProcessBuilder.beforeRenderNodeAdditional",
+                "changeNodeAddtionalTarget" : "ProcessBuilder.changeNodeAddtionalTarget",
+                "modifyShowPropertiesData" : "ProcessBuilder.modifyShowPropertiesData"
             }
         }, function() {
             $("#builder_canvas").before('<div id="process-selector"></div>');
+            $("#builder_canvas #iframe-wrapper").css('display', 'none');
+            $("#builder_canvas").append(`
+                <div id="lf-container"></div>
+            `);
             
             $("#style-properties-tab-link").find("i").replaceWith('<i class="las la-handshake"></i>');
             $("#style-properties-tab-link").find("span").text(get_cbuilder_msg('pbuilder.label.mapping'));
@@ -51,39 +69,20 @@ ProcessBuilder = {
             
             $("#json-def-btn").after('<button class="btn btn-light" title="'+get_cbuilder_msg('pbuilder.label.xpdl')+'" id="xpdl-btn" type="button" data-toggle="button" aria-pressed="false" data-cbuilder-view="xpdl" data-cbuilder-action="switchView" data-hide-tool data-view-control><i class="la la-code"></i></button>');
             
+            $(".advanced-tools").after('<div class="btn-group toolbar-group" role="group">\
+                <button id="auto-layout" class="btn btn-light"  title="'+get_cbuilder_msg('pbuilder.label.autoLayout')+'" data-cbuilder-action="autoLayout"><i class="las la-magic"></i></button>\
+                <button id="hightlight" class="btn btn-light"  title="'+get_cbuilder_msg('pbuilder.label.highlight')+'" data-cbuilder-action="highlight"><i class="las la-highlighter"></i></button>\
+                <button id="navigator" class="btn btn-light"  title="'+get_cbuilder_msg('pbuilder.label.navigator')+'" data-cbuilder-action="navigator"><i class="las la-map"></i></button></div>');
+
             $(".responsive-buttons").after('<div class="btn-group mr-3 light-tools toolbar-group toolzoom-buttons float-right" role="group">\
+                <button id="fit-screen" class="btn btn-light"  title="'+get_cbuilder_msg('pbuilder.label.fitScreen')+'" data-cbuilder-action="fitScreen"><i class="zmdi zmdi-aspect-ratio-alt"></i></button>\
                 <button id="zoom-minus" class="btn btn-light"  title="'+get_cbuilder_msg('pbuilder.label.zoomOut')+' (90%)" data-cbuilder-action="zoomMinus"><i class="las la-search-minus"></i></button>\
                 <button id="zoom-plus" class="btn btn-light"  title="'+get_cbuilder_msg('pbuilder.label.zoomIn')+' (110%)" data-cbuilder-action="zoomPlus"><i class="las la-search-plus"></i></button></div>');
             
             ProcessBuilder.initComponents();
             CustomBuilder.Builder.setHead('<link data-pbuilder-style href="' + CustomBuilder.contextPath + '/pbuilder/css/pbuilder.css" rel="stylesheet" />');
-            CustomBuilder.Builder.setHead('<script data-jsPlumb-script src="' + CustomBuilder.contextPath + '/pbuilder/js/jquery.jsPlumb-1.6.4-min.js"></script>');
 
-            //wait for jsplumb available
-            while (!ProcessBuilder.jsPlumb) {
-                ProcessBuilder.jsPlumb = CustomBuilder.Builder.iframe.contentWindow.jsPlumb;
-            }
-            
-            // init jsPlumb
-            ProcessBuilder.jsPlumb.importDefaults({
-                Container: "canvas",
-                Anchor: "Continuous",
-                Endpoint: ["Dot", {radius: 4}],
-                Connector: ["StateMachine", {curviness:0.1}],
-                PaintStyle: {strokeStyle: "#999", lineWidth: 1, outlineWidth: 15, outlineColor: 'transparent'},
-                HoverPaintStyle: {lineWidth: 4},
-                ConnectionOverlays: [
-                    ["Arrow", {
-                        location: 0.99,
-                        id: "arrow",
-                        length: 10,
-                        width: 10,
-                        foldback: 0.8
-                    }]
-                ],
-                ConnectionsDetachable: true
-            });
-            
+            ProcessBuilder.initialLogicFlow();
             CustomBuilder.Builder.bindEvent("change.builder", function(){
                 ProcessBuilder.refresh();
             });
@@ -104,16 +103,6 @@ ProcessBuilder = {
             var wait = $.Deferred();
             deferreds.push(wait);
             
-            var jsPlumbReady = $.Deferred();
-            deferreds.push(jsPlumbReady);
-            ProcessBuilder.jsPlumb.ready(function() {
-                //make some delay for css to load
-                setTimeout(function(){
-                    jsPlumbReady.resolve();
-                }, 20);
-                
-            });
-            
             ProcessBuilder.cachePlugins(deferreds);
             ProcessBuilder.getMultiToolsProps(deferreds);
             ProcessBuilder.getForms(deferreds);
@@ -127,7 +116,50 @@ ProcessBuilder = {
             });
         });
     },
-    
+
+    initTools: function () {
+        const tools = ProcessBuilder.availableTools;
+        for (const key in tools) {
+            if (tools.hasOwnProperty(key)) {
+                const tool = tools[key];
+                //Tool
+                CustomBuilder.initPaletteElement(get_cbuilder_msg('pbuilder.label.presetTool'), "Tool_" + key, tool.label, tool.icon,
+                    [], { 'join': '', 'split': '' }, true, "", {
+                    builderTemplate: {
+                        'dragHtml': '<div class="node tool"><div class="node_label">' + tool.label + '</div></div>',
+                        'draggable': true,
+                        'movable': false,
+                        'deletable': true,
+                        'copyable': true,
+                        'navigable': false,
+                        'absolutePosition': true,
+                        'parentContainerAttr': 'activities',
+                        'parentDataHolder': 'activities',
+                        'dragging': ProcessBuilder.dragActivity,
+                        'render': ProcessBuilder.renderActivity,
+                        'unload': ProcessBuilder.unloadActivity,
+                        'getStylePropertiesDefinition': ProcessBuilder.getToolDef,
+                        'nodeDetailContainerColorNumber': function () {
+                            return 4;
+                        }
+                    }
+                });
+
+                setTimeout(() => { // Delay to ensure DOM has been updated
+                    let newStr = key.replace(/\./g, "_");
+                    const paletteElement = document.querySelector("#Tools_Tool_" + newStr);
+        
+                    paletteElement.addEventListener('mousedown', (event) => {
+                        ProcessBuilder.lf.dnd.startDrag({
+                            type: "bpmn:serviceTask",
+                        });
+                        ProcessBuilder.draggingElementId = "Tool_" + key;
+                    });
+                }, 100);
+            }
+        }
+    },
+
     cachePlugins : function(deferreds) {
         ProcessBuilder.getAssignmentFormModifier(deferreds);
         ProcessBuilder.getStartProcessFormModifier(deferreds);
@@ -135,37 +167,2168 @@ ProcessBuilder = {
         ProcessBuilder.getDecisionPlugin(deferreds);
         ProcessBuilder.getParticipants(deferreds);
     },
-    
-    /*
-     * bind event for the js plumb library
-     */
-    initJsPlumb : function() {
-        // single click on any endpoint
-        ProcessBuilder.jsPlumb.unbind("endpointClick");
-        ProcessBuilder.jsPlumb.bind("endpointClick", function(endpoint, originalEvent) {
+
+    initialLogicFlow: function () {
+        const { DndPanel } = Extension;
+        const { MiniMap } = Extension;
+        const { Snapshot } = Extension;
+        const { DynamicGroup } = Extension;
+        const { ContextMenu } = Extension;
+        const { BpmnElement } = Extension;
+        const { AutoLayout } = Extension;
+        const { FlowPath } = Extension;
+        const { BPMNElements } = Extension;
+        const { Menu } = Extension;
+        const { Group } = Extension;
+        const { Highlight } = Extension;
+        const {TaskNodeFactory} = Extension;
+        const {sequenceFlowFactory} = Extension;
+        const {h} = Core;
+        const {RectNode} = Core;
+        const {RectNodeModel} = Core;
+        const miniMapOptions = {
+            isShowHeader: false,
+            isShowCloseIcon: false,
+            headerTitle: 'MiniMap',
+            width: 200,
+            height: 120,
+            rightPosition: 10,
+            topPosition: 5
+        };
+        const theme = {
+            arrow: {
+                offset: 8, // arrow length
+                verticalLength: 4, // distance of the arrow perpendicular to the edge
+                fill: "none",
+                stroke: "#282828"
+            },
+            baseEdge: {
+                strokeWidth: 1,
+                stroke: "red"
+            },
+            polyline: {
+                stroke: '#282828'
+            },
+            edgeText: {
+                textWidth: 100,
+                overflowMode: "default",
+                fontSize: 20,
+                background: {
+                  fill: "transparent"
+                }
+            }
+        };
+
+        ProcessBuilder.lf = new Core.default({
+            container: document.querySelector('#lf-container'),
+            grid: true,
+            grid: {
+                type: 'dot',
+                size: 20
+            },
+            style: theme,
+            background: {
+                backgroundColor: "#ffffff"
+            },
+            plugins: [
+                AutoLayout,
+                Group,
+                BPMNElements,
+                ContextMenu,
+                DndPanel,
+                Menu,
+                MiniMap,
+                Snapshot,
+                DynamicGroup,
+                BpmnElement,
+                Highlight,
+                TaskNodeFactory,
+                sequenceFlowFactory,
+                FlowPath],
+            pluginsOptions: {
+                label: {
+                    isMultiple: false,
+                    labelWidth: 90,
+                    // textOverflowMode -> 'ellipsis' | 'wrap' | 'clip' | 'nowrap' | 'default'
+                    textOverflowMode: 'default',
+                    allowRotate: true,
+                    allowResize: true,
+                    style: {
+                        "backgroundColor": "transparent"
+                    }
+                },
+                miniMap: {
+                    ...miniMapOptions
+                }
+            }
         });
-        //check for invalid connection
-        ProcessBuilder.jsPlumb.unbind("beforeDrop");
-        ProcessBuilder.jsPlumb.bind("beforeDrop", function(info) {
-            var connection = info.connection;
-            if ($(connection.source).hasClass("start")) {
-                //disallow duplicate transitions from start node
-                var connSet = ProcessBuilder.jsPlumb.getConnections({source: $(connection.source)});
-                if (connSet.length > 0) {
-                    return false;
+
+        const icon = '';
+        const activityNode = TaskNodeFactory('bpmn:userTask', icon);
+        const toolNode = TaskNodeFactory('bpmn:serviceTask', icon);
+        const startNode = TaskNodeFactory('bpmn:startEvent', icon);
+        const routeNode = TaskNodeFactory('bpmn:exclusiveGateway', icon);
+        const endNode = TaskNodeFactory('bpmn:endEvent', icon);
+        const participantNode = TaskNodeFactory('group', icon);
+        const transition = sequenceFlowFactory('bpmn:sequenceFlow', icon);
+
+        class activityNodeView extends activityNode.view{
+            // customize node appearance
+            getShape() {
+                const { model } = this.props;
+                const { x, y, width, height, properties, isHovered, isSelected} = model;
+                const { limit, mapping_act_formId } = properties;
+                var newWidth = 120;
+                const style = model.getNodeStyle();
+                const { opacity = 1 } = style;
+            
+                // Conditionally rendering the text element based on the 'limit' property
+                const textElement = limit ? h('text', {
+                    x: x + newWidth / 2 - 15,  // Positioning at the top-right (20px from the right edge)
+                    y: y - height / 2 + 15,    // Positioning 15px down from the top edge
+                    fill: style.stroke,         // Text color (same as stroke color)
+                    fontSize: '12',             // Font size for the text
+                    fontWeight: 'normal',       // Text style
+                    textAnchor: 'middle',       // Horizontal alignment
+                    alignmentBaseline: 'middle',// Vertical alignment
+                    opacity
+                }, limit + ProcessBuilder.currentProcessData.properties.durationUnit.toLowerCase()) : null;
+                
+
+                const xrayView = h('foreignObject', {
+                    class: isSelected?'xray-view current':'xray-view',
+                    x: x - newWidth / 2,
+                    y: y - height / 2,
+                    width: newWidth,
+                    height: height,
+                    opacity: isHovered ? 1 : 0.6
+                });
+
+                const invalidNode = h('foreignObject', {
+                    class: 'invalidNodeMsg',
+                    x: x - newWidth / 2,
+                    y: y - height / 2,
+                    width: newWidth,
+                    height: height,
+                    opacity: 1
+                });
+
+                return h('g', {id: model.id, 
+                                class: 'node ' + properties.className, 
+                                'data-cbuilder-visible': true,
+                                'data-cbuilder-classname':properties.className,
+                                'data-cbuilder-id': model.id,
+                                'data-cbuilder-label': model.properties.label,
+                                'data-cbuilder-absolute-position': true,
+                                x: x - newWidth / 2,   // Centering the rectangle
+                                y: y - height / 2,
+                                height: height}, [
+                                xrayView,
+                                invalidNode,
+                    h('rect', {
+                        ...style,
+                        x: x - newWidth / 2,   // Centering the rectangle
+                        y: y - height / 2,
+                        rx: 5,
+                        ry: 5,
+                        width: newWidth,
+                        height
+                    }),
+
+                    // Optional font icon if `mapping_act_formId` is defined and non-empty
+                    mapping_act_formId && mapping_act_formId !== "" ? h('foreignObject', {
+                        x: x + (newWidth / 2) - 25, // Adjust to center horizontally
+                        y: y + (height / 2) - 25, // Adjust to center vertically
+                        width: 24,
+                        height: 24
+                    }, [
+                        h('div', {
+                            xmlns: 'http://www.w3.org/1999/xhtml', // Required for embedding HTML
+                            title: ProcessBuilder.availableForms[mapping_act_formId],
+                            style: {
+                                fontSize: '18px',       // Icon size
+                                color: style.stroke,       // Icon color
+                                textAlign: 'center',
+                                lineHeight: '24px',     // Vertically aligns the icon
+                                width: '24px',
+                                height: '24px',
+                                opacity
+                            }
+                        }, [
+                            h('i', {
+                                className: 'previewForm las la-file-alt',
+                                formId: mapping_act_formId,
+                                'data-cbuilder-action': 'previewForm'
+                            })
+                        ])
+                    ]) : null, // Render nothing if condition is not met
+                    textElement      // Conditionally added text element
+                ]);
+            }
+        }
+
+        class toolNodeView extends toolNode.view {
+            // Custom node appearance
+            getShape() {
+                const { model } = this.props;
+                const { x, y, width, height, radius, properties, isHovered, isSelected} = model;
+                const { tools } = properties;
+        
+                const newWidth = 120;
+                const style = model.getNodeStyle();
+                const { opacity = 1 } = style;
+        
+                // Variables for the icon and label
+                let icon = "";
+                let label = "";
+                let iconClass = "";
+                let toolLength = "";
+                let adjustX = "";
+                let iconColor = "#386f5c";
+        
+                // Process tools if they exist
+                if (properties !== undefined && tools !== undefined && tools.length > 0) {
+                    for (let i in tools) {
+                        if (label !== "") {
+                            label += "\n";
+                        }
+                        if (tools.length > 1) {
+                            label += `${parseInt(i) + 1}. `;
+                        }
+        
+                        const p = tools[i];
+                        const plugin = ProcessBuilder.availableTools[p.className];
+                        if (plugin === undefined) {
+                            icon = '<i class="las la-exclamation-triangle" style="color:red;"></i>';
+                            label += `${p.className} (${get_advtool_msg('dependency.tree.Missing.Plugin')})`;
+                            iconColor = "#ff4d4f";
+                        } else {
+                            if (icon === "" && plugin.icon !== undefined && plugin.icon !== "") {
+                                icon = plugin.icon;
+                            }
+                            label += plugin.label;
+                        }
+                    }
+        
+                    if (icon === undefined || icon === "") {
+                        icon = '<i class="las la-cog"></i>';
+                    }
+                    if (tools.length > 1) {
+                        toolLength = ` ${tools.length}`;
+                        adjustX = 5;
+                    }
+        
+                    // Extract icon class from the HTML string
+                    const tempElement = document.createElement('div');
+                    tempElement.innerHTML = icon;
+                    iconClass = tempElement.firstElementChild?.getAttribute('class') || '';
                 }
-            } else if ($(connection.target).hasClass("end")) {
-                //disallow duplicate transitions to end node
-                var connSet = ProcessBuilder.jsPlumb.getConnections({target: $(connection.target)});
-                if (connSet.length > 0) {
-                    return false;
+
+                const xrayView = h('foreignObject', {
+                    class: isSelected?'xray-view current':'xray-view',
+                    x: x - newWidth / 2,
+                    y: y - height / 2,
+                    width: newWidth,
+                    height: height,
+                    opacity: isHovered ? 1 : 0.6
+                });
+
+                const invalidNode = h('foreignObject', {
+                    class: 'invalidNodeMsg',
+                    x: x - newWidth / 2,
+                    y: y - height / 2,
+                    width: newWidth,
+                    height: height,
+                    opacity: 1
+                });
+        
+                // Return the shape with the custom icon and label
+                return h('g', {id: model.id, class: 'node ' + properties.className, 
+                    'data-cbuilder-visible': true,
+                    'data-cbuilder-classname':properties.className,
+                    'data-cbuilder-id': model.id,
+                    'data-cbuilder-label': model.properties.label,
+                    'data-cbuilder-absolute-position': true,
+                    x: x - newWidth / 2, // Center the rectangle
+                    y: y - height / 2,
+                    height: height}, [
+                    xrayView,
+                    invalidNode,
+                    h('rect', {
+                        ...style,
+                        x: x - newWidth / 2, // Center the rectangle
+                        y: y - height / 2,
+                        rx: 5,
+                        ry: 5,
+                        width: newWidth,
+                        height
+                    }),
+                    h('foreignObject',
+                        {
+                            x: x + 30 - adjustX,
+                            y: y + 10,
+                            width: 32,
+                            height: 32
+                        },
+                        [
+                            h('div',
+                                {
+                                    xmlns: 'http://www.w3.org/1999/xhtml',
+                                    title: label,
+                                    style: {
+                                        display: 'flex',
+                                        alignItems: 'center',
+                                        justifyContent: 'center',
+                                        fontSize: '18px',
+                                        color: iconColor,
+                                        textAlign: 'center',
+                                        lineHeight: '24px',
+                                        width: '32px',
+                                        height: '32px',
+                                        opacity,
+                                        gap: '4px' // Spacing between icon and number
+                                    }
+                                },
+                                [
+                                    h('i', {
+                                        className: iconClass,
+                                        opacity
+                                    }),
+        
+                                    // Conditional rendering for the number (toolLength)
+                                    ...(toolLength
+                                        ? [
+                                            h('span', {
+                                                style: { fontSize: '12px', color: 'black' } // Style for the number
+                                            }, toolLength)
+                                        ]
+                                        : []
+                                    )
+                                ]
+                            )
+                        ]
+                    )
+                ]);
+            }
+        }
+
+        class startNodeView extends startNode.view {
+            // Custom node appearance
+            getShape() {
+                const { model } = this.props;
+                const { x, y, width, height, properties, isHovered, isSelected} = model;
+                const style = model.getNodeStyle();
+                const { opacity = 1 } = style;
+                const { mapping_act_formId } = properties;
+                
+                const xrayView = h('foreignObject', {
+                    class: isSelected?'xray-view current':'xray-view',
+                    x: x - width / 2,
+                    y: y - height / 2,
+                    width: width,
+                    height: height,
+                    opacity: isHovered ? 1 : 0.6
+                });
+
+                const invalidNode = h('foreignObject', {
+                    class: 'invalidNodeMsg',
+                    x: x - width / 2,
+                    y: y - height / 2,
+                    width: width,
+                    height: height,
+                    opacity: 1
+                });
+        
+                return h('g', {id: model.id, class: 'node ' + properties.className, 
+                    'data-cbuilder-visible': true,
+                    'data-cbuilder-classname':properties.className,
+                    'data-cbuilder-id': model.id,
+                    'data-cbuilder-label': model.properties.label,
+                    'data-cbuilder-absolute-position': true,
+                    x: x - width / 2, // Centering the rectangle
+                    y: y - height / 2,
+                    height: height}, [
+                    xrayView,
+                    invalidNode,
+                    h('rect', {
+                        ...style,
+                        x: x - width / 2, // Centering the rectangle
+                        y: y - height / 2,
+                        rx: 20, // Rounded corners
+                        ry: 20,
+                        width: width,
+                        height: height
+                    }),
+        
+                    // Optional font icon if `mapping_act_formId` is defined and non-empty
+                    mapping_act_formId && mapping_act_formId !== "" ? h('foreignObject', {
+                        x: x - 12, // Adjust to center horizontally
+                        y: y - 12, // Adjust to center vertically
+                        width: 24,
+                        height: 24
+                    }, [
+                        h('div', {
+                            xmlns: 'http://www.w3.org/1999/xhtml', // Required for embedding HTML
+                            title: ProcessBuilder.availableForms[mapping_act_formId],
+                            style: {
+                                fontSize: '18px',       // Icon size
+                                color: '#52c41a',       // Icon color
+                                textAlign: 'center',
+                                lineHeight: '24px',     // Vertically aligns the icon
+                                width: '24px',
+                                height: '24px',
+                                opacity
+                            }
+                        }, [
+                            h('i', {
+                                className: 'las la-file-alt', // Replace with your desired Font Awesome icon class
+                                opacity
+                            })
+                        ])
+                    ]) : null // Render nothing if condition is not met
+                ]);
+            }
+        }
+
+        class routeNodeView extends routeNode.view {
+            // Custom icon for the gateway
+            getLabelShape() {
+                const { model } = this.props;
+                const { x, y, width, height, properties} = model;
+                const { join, split } = properties;
+                const style = model.getNodeStyle();
+                const { opacity = 1 } = style; // Default opacity
+
+                const children = [
+                    h('polygon', {
+                        fill: style.fill,
+                        stroke: style.stroke,
+                        strokeWidth: 2,
+                        points: '25,0 50,25 25,50 0,25', // Diamond coordinates
+                        opacity
+                    })
+                ];
+
+                if (join === 'AND' || split === 'AND') {
+                    children.push(
+                        h('path', {
+                            d: 'm 16,15 7.42857142857143,9.714285714285715 -7.42857142857143,9.714285714285715 3.428571428571429,0 5.714285714285715,-7.464228571428572 5.714285714285715,7.464228571428572 3.428571428571429,0 -7.42857142857143,-9.714285714285715 7.42857142857143,-9.714285714285715 -3.428571428571429,0 -5.714285714285715,7.464228571428572 -5.714285714285715,-7.464228571428572 -3.428571428571429,0 z',
+                            fill: style.fill,
+                            stroke: style.stroke,
+                            strokeWidth: 2,
+                            opacity
+                        })
+                    );
                 }
-            } else if ($(connection.source).hasClass("start") && $(connection.target).hasClass("end")) {
-                //disallow from start to end
+
+                return h(
+                    'g',
+                    { transform: `translate(${x - width / 2}, ${y - height / 2})` },
+                    children
+                );
+            }
+
+            // Custom node appearance
+            getShape() {
+                const { model } = this.props;
+                const { x, y, width, height, properties, isHovered, isSelected} = model;
+                const { mapping_act_plugin } = properties;
+
+                const xrayView = h('foreignObject', {
+                    class: isSelected?'xray-view current':'xray-view',
+                    x: x - width / 2,
+                    y: y - height / 2,
+                    width: width,
+                    height: height,
+                    opacity: isHovered ? 1 : 0.6
+                });
+
+                const invalidNode = h('foreignObject', {
+                    class: 'invalidNodeMsg',
+                    x: x - width / 2,
+                    y: y - height / 2,
+                    width: width,
+                    height: height,
+                    opacity: 1
+                });
+            
+                return h('g', {id: model.id, class: 'node ' + properties.className, 
+                    'data-cbuilder-visible': true,
+                    'data-cbuilder-classname':properties.className,
+                    'data-cbuilder-id': model.id,
+                    'data-cbuilder-label': model.properties.label,
+                    'data-cbuilder-absolute-position': true,
+                    x: x - width / 2,
+                    y: y - height / 2,
+                    height: height}, [
+                    xrayView,
+                    invalidNode,
+                    this.getLabelShape(),
+                    
+                    // Add icon if `mapping_act_plugin` is defined
+                    mapping_act_plugin &&
+                    mapping_act_plugin !== "" &&
+                    mapping_act_plugin.className !== "" &&
+                    mapping_act_plugin.className !== undefined
+                        ? (() => {
+                              const plugin =
+                                  ProcessBuilder.availableDecisionPlugin[
+                                      mapping_act_plugin.className
+                                  ];
+                              if (plugin === undefined) {
+                                  return h(
+                                      'foreignObject',
+                                      {
+                                          x: x + 8,
+                                          y: y + 8,
+                                          width: 24,
+                                          height: 24
+                                      },
+                                      [
+                                          h(
+                                              'div',
+                                              {
+                                                  xmlns: 'http://www.w3.org/1999/xhtml',
+                                                  title:
+                                                      mapping_act_plugin.className +
+                                                      " (" +
+                                                      get_advtool_msg(
+                                                          'dependency.tree.Missing.Plugin'
+                                                      ) +
+                                                      ")",
+                                                  style: {
+                                                      fontSize: '14px',
+                                                      color: '#ff4d4f',
+                                                      textAlign: 'center',
+                                                      lineHeight: '24px',
+                                                      width: '24px',
+                                                      height: '24px'
+                                                  }
+                                              },
+                                              [
+                                                  h('i', {
+                                                      className:
+                                                          'las la-exclamation-triangle'
+                                                  })
+                                              ]
+                                          )
+                                      ]
+                                  );
+                              } else {
+                                  const icon = plugin.icon || '<i class="las la-cog"></i>';
+                                  const tempElement = document.createElement('div');
+                                  tempElement.innerHTML = icon;
+
+                                  // Retrieve the class of the first child (the <i> element)
+                                  const iconClass = tempElement.firstElementChild?.getAttribute('class') || '';
+                                  return h(
+                                      'foreignObject',
+                                      {
+                                          x: x + 8,
+                                          y: y + 8,
+                                          width: 24,
+                                          height: 24
+                                      },
+                                      [
+                                          h(
+                                              'div',
+                                              {
+                                                  xmlns: 'http://www.w3.org/1999/xhtml',
+                                                  title: mapping_act_plugin.className,
+                                                  style: {
+                                                      fontSize: '14px',
+                                                      color: '#4c90ff',
+                                                      textAlign: 'center',
+                                                      lineHeight: '24px',
+                                                      width: '24px',
+                                                      height: '24px'
+                                                  }
+                                              },
+                                              [
+                                                  h('i', {
+                                                      className: iconClass
+                                                  })
+                                              ]
+                                          )
+                                      ]
+                                  );
+                              }
+                          })()
+                        : null
+                ]);
+            }
+        }
+
+        class endNodeView extends endNode.view {
+            // Custom label for the inner circles
+            getLabelShape() {
+                const { model } = this.props;
+                const { x, y} = model; // Coordinates of the node
+                const style = model.getNodeStyle();
+                const { opacity = 1 } = style;
+        
+                return h('g', {}, [
+                    // Outer circle
+                    h('circle', {
+                        cx: x,
+                        cy: y,
+                        r: 18, // Radius of the outer circle
+                        fill: '#fff',
+                        fillOpacity: 1,
+                        stroke: style.stroke,
+                        strokeWidth: 2,
+                        strokeOpacity: 1,
+                        opacity
+                    }),
+                    // Inner circle
+                    h('circle', {
+                        cx: x,
+                        cy: y,
+                        r: 13, // Radius of the inner circle
+                        fill: style.stroke,
+                        stroke: style.stroke,
+                        strokeWidth: 2,
+                        opacity
+                    })
+                ]);
+            }
+        
+            // Node shape including the circles
+            getShape() {
+                const { model } = this.props;
+                const { x, y, width, height, properties, isHovered, isSelected} = model;
+
+                const xrayView = h('foreignObject', {
+                    class: isSelected?'xray-view current':'xray-view',
+                    x: x - width / 2,
+                    y: y - height / 2,
+                    width: width,
+                    height: height,
+                    opacity: isHovered ? 1 : 0.6
+                });
+
+                const invalidNode = h('foreignObject', {
+                    class: 'invalidNodeMsg',
+                    x: x - width / 2,
+                    y: y - height / 2,
+                    width: width,
+                    height: height,
+                    opacity: 1
+                });
+        
+                return h('g', {id: model.id, class: 'node ' + properties.className,
+                    'data-cbuilder-visible': true,
+                    'data-cbuilder-classname':properties.className,
+                    'data-cbuilder-id': model.id,
+                    'data-cbuilder-label': model.properties.label,
+                    'data-cbuilder-absolute-position': true,
+                    x: x - width / 2,
+                    y: y - (height/2),
+                    height: height}, [
+                    xrayView,
+                    invalidNode,
+                    // Outer container or other elements if needed
+                    this.getLabelShape() // The double-circle shape
+                ]);
+            }
+        }
+
+        class subflowView extends RectNode {
+            // Custom label for the inner rectangles
+            getLabelShape() {
+                const { model } = this.props;
+                const { x, y, width, height } = model;
+                const style = model.getNodeStyle();
+                const { opacity = 1 } = style;
+        
+                return h('g', {}, [
+                    // Outer rectangle
+                    h('rect', {
+                        x: x - width / 2,
+                        y: y - height / 2,
+                        width: width,
+                        height: height,
+                        fill: '#fff',
+                        fillOpacity: 1,
+                        stroke: style.stroke,
+                        strokeWidth: 1,
+                        strokeOpacity: 1,
+                        opacity,
+                        rx: 3, // Optional: Rounded corners
+                        ry: 3
+                    }),
+                    // Inner rectangle
+                    h('rect', {
+                        x: (x - width / 2) + 5,
+                        y: (y - height / 2) + 5,
+                        width: width - 10,
+                        height: height - 10,
+                        fill: '#fff',
+                        stroke: style.stroke,
+                        strokeWidth: 1,
+                        opacity,
+                        rx: 3, // Rounded corners
+                        ry: 3
+                    })
+                ]);
+            }
+        
+            // Node shape including the rectangles
+            getShape() {
+                const { model } = this.props;
+                const { x, y, width, height, properties, isHovered, isSelected} = model;
+
+                const xrayView = h('foreignObject', {
+                    class: isSelected?'xray-view current':'xray-view',
+                    x: x - width / 2,
+                    y: y - height / 2,
+                    width: width,
+                    height: height,
+                    opacity: isHovered ? 1 : 0.6
+                });
+
+                const invalidNode = h('foreignObject', {
+                    class: 'invalidNodeMsg',
+                    x: x - width / 2,
+                    y: y - height / 2,
+                    width: width,
+                    height: height,
+                    opacity: 1
+                });
+        
+                return h('g', {id: model.id, class: 'node ' + properties.className, 
+                    'data-cbuilder-visible': true,
+                    'data-cbuilder-classname':properties.className,
+                    'data-cbuilder-id': model.id,
+                    'data-cbuilder-label': model.properties.label,
+                    'data-cbuilder-absolute-position': true,
+                    x: x - width / 2,
+                    y: y - height / 2,
+                    height: height}, [
+                    xrayView,
+                    invalidNode,
+                    // Outer container or other elements if needed
+                    this.getLabelShape() // The double-rectangle shape
+                ]);
+            }
+        }
+
+        class transitionView extends transition.view {
+            // Define how the edge should render
+            getEdge() {
+                const { model } = this.props;
+                const style = model.getEdgeStyle();
+                const { opacity = 1 } = style;
+                const { properties, arrowConfig, points } = model;
+
+                return h('g', {id: properties.id, class: properties.className},
+                    h('polyline', { 
+                        points,
+                        fill: 'none',
+                        stroke: style.stroke, // Default stroke color
+                        opacity,
+                        'stroke-width': style.strokeWidth, // Default stroke width
+                        hoverStroke: style.fill, // Custom hover stroke
+                        selectedStroke: style.fill, // Custom selected stroke
+                        'marker-end': arrowConfig.markerEnd, // Marker for the end
+                        'marker-start': arrowConfig.markerStart // Marker for the start
+                    })
+                );
+            }
+        }
+
+        class activityNodeModel extends activityNode.model {
+            initNodeData(data) {
+                super.initNodeData(data);                
+                this.text.editable = false; 
+            }
+
+            // Set the model shape attribute, triggered every time properties change, including during initialization.
+            setAttributes() {
+                const { scale = 1, width = 120, height = 80 } = this.properties;
+                // manually set the shape attribute
+                this.width = width * scale;
+                this.height = height * scale;
+                this.zIndex = 0;
+            }
+
+            // Customize text style
+            getTextStyle() {
+                const style = super.getTextStyle();
+                const nodeStyle = super.getNodeStyle();
+                const { opacity = 1 } = nodeStyle;
+
+                style.opacity = opacity;
+                style.fontSize = 12;
+                style.overflowMode = 'ellipsis';
+                style.lineHeight = 1.2;
+                style.width = '100px';
+                const { isClicked } = this.properties;
+                style.color = isClicked ? 'red' : '#000000';
+                return style;
+            }
+
+            // Customize node style
+            getNodeStyle() {
+                const style = super.getNodeStyle();
+                let { status } = this.properties;
+                if (status === 'invalid') {
+                    style.stroke = '#ff4d4f';
+                } else {
+                    style.stroke = '#282828';
+                }
+                style.fill = '#ffffff';
+                style.strokeWidth = '1',
+                style.rx = '18';
+                return style;
+            }
+
+            // Customize anchor point style attributes
+            getAnchorStyle() {
+                const style = super.getAnchorStyle();
+                const newStyle = Object.assign({}, style, {
+                    stroke: 'rgb(24, 125, 255)',
+                    r: 4.5,
+                    hover: {
+                        r: 7,
+                        fill: 'rgb(24, 125, 255)',
+                        stroke: 'rgb(24, 125, 255)'
+                    }
+                });
+                return newStyle;
+            }
+
+            // Customize the style attributes of the connection line dragged from the node anchor point
+            getAnchorLineStyle() {
+                const style = super.getAnchorLineStyle();
+                style.stroke = '#282828';
+                return style;
+            }
+
+            // Customize the style attributes of the node outline box
+            getOutlineStyle() {
+                const style = super.getOutlineStyle();
+                style.stroke = '#4285f4';
+                style.fill = 'rgba(66, 133, 244, 0.1)';
+                style.strokeWidth = 2;
+                style.strokeDasharray = '0';
+                style.rx = '10';
+                if (!style.hover) {
+                    style.hover = {};
+                    style.fill = {};
+                }
+                style.hover.stroke = '#54c5fc';
+                style.hover.fill = 'rgba(255, 255, 255, 0.1)';
+            
+                return style;
+            }
+        }
+
+        class toolNodeModel extends toolNode.model {
+            initNodeData(data) {
+                super.initNodeData(data);                
+                this.text.editable = false; 
+            }
+
+            // Set the model shape attribute, triggered every time properties change, including during initialization.
+            setAttributes() {
+                const { scale = 1, width = 120, height = 80 } = this.properties;
+                // manually set the shape attribute
+                this.width = width * scale;
+                this.height = height * scale;
+                this.zIndex = 0;
+            }
+
+            // Customize text style
+            getTextStyle() {
+                const style = super.getTextStyle();
+                const nodeStyle = super.getNodeStyle();
+                const { opacity = 1 } = nodeStyle;
+                
+                style.opacity = opacity;
+                style.fontSize = 12;
+                style.overflowMode = 'ellipsis';
+                style.width = '100px';
+                style.lineHeight = 1.2;
+                style.fontWeight = 500;
+                style.color = '#386f5c';
+                return style;
+            }
+
+            // Customize node style
+            getNodeStyle() {
+                const style = super.getNodeStyle();
+                let { status } = this.properties;
+                if (status === 'invalid') {
+                    style.stroke = '#ff4d4f';
+                } else {
+                    style.stroke = '#386f5c';
+                }
+                style.fill = '#ebfdf2';
+                style.strokeWidth = '1';
+                style.rx = '18';
+                return style;
+            }
+
+            // Customize anchor point style attributes
+            getAnchorStyle() {
+                const style = super.getAnchorStyle();
+                const newStyle = Object.assign({}, style, {
+                    stroke: 'rgb(24, 125, 255)',
+                    r: 4.5,
+                    hover: {
+                        r: 7,
+                        fill: 'rgb(24, 125, 255)',
+                        stroke: 'rgb(24, 125, 255)'
+                    }
+                });
+                return newStyle;
+            }
+
+            // Customize the style attributes of the connection line dragged from the node anchor point
+            getAnchorLineStyle() {
+                const style = super.getAnchorLineStyle();
+                style.stroke = '#282828';
+                return style;
+            }
+
+            // Customize the style attributes of the node outline box
+            getOutlineStyle() {
+                const style = super.getOutlineStyle();
+            
+                style.stroke = '#4285f4';
+                style.fill = 'rgba(66, 133, 244, 0.1)';
+                style.strokeWidth = 2;
+                style.strokeDasharray = '0';
+                style.rx = '10';
+            
+                // Ensure hover effect is defined correctly
+                if (!style.hover) {
+                    style.hover = {};
+                    style.fill = {};
+                }
+                style.hover.stroke = '#54c5fc';
+                style.hover.fill = 'rgba(255, 255, 255, 0.1)';
+            
+                return style;
+            }
+        }
+
+        class subflowNodeModel extends RectNodeModel {
+            initNodeData(data) {
+                super.initNodeData(data);
+                this.text.editable = false; 
+            }
+
+            // Set the model shape attribute, triggered every time properties change, including during initialization.
+            setAttributes() {
+                const { scale = 1, width = 120, height = 80 } = this.properties;
+                // manually set the shape attribute
+                this.width = width * scale;
+                this.height = height * scale;
+                this.zIndex = 0;
+            }
+
+            // Customize text style
+            getTextStyle() {
+                const style = super.getTextStyle();
+                const nodeStyle = super.getNodeStyle();
+                const { opacity = 1 } = nodeStyle;
+                
+                style.opacity = opacity;
+                style.fontSize = 12;
+                style.overflowMode = 'ellipsis';
+                style.lineHeight = 1.2;
+                style.width = '100px';
+                const { isClicked } = this.properties;
+                style.color = isClicked ? 'red' : '#000000';
+                return style;
+            }
+
+            // Customize node style
+            getNodeStyle() {
+                const style = super.getNodeStyle();
+                let { status } = this.properties;
+                if (status === 'invalid') {
+                    style.stroke = '#ff4d4f';
+                } else {
+                    style.stroke = '#282828';
+                }
+                style.fill = '#ffffff';
+                style.strokeWidth = '1',
+                style.rx = '18';
+                return style;
+            }
+
+            // Customize anchor point style attributes
+            getAnchorStyle() {
+                const style = super.getAnchorStyle();
+                const newStyle = Object.assign({}, style, {
+                    stroke: 'rgb(24, 125, 255)',
+                    r: 4.5,
+                    hover: {
+                        r: 7,
+                        fill: 'rgb(24, 125, 255)',
+                        stroke: 'rgb(24, 125, 255)'
+                    }
+                });
+                return newStyle;
+            }
+
+            // Customize the style attributes of the connection line dragged from the node anchor point
+            getAnchorLineStyle() {
+                const style = super.getAnchorLineStyle();
+                style.stroke = '#282828';
+                return style;
+            }
+
+            // Customize the style attributes of the node outline box
+            getOutlineStyle() {
+                const style = super.getOutlineStyle();
+            
+                style.stroke = '#4285f4';
+                style.fill = 'rgba(66, 133, 244, 0.1)';
+                style.strokeWidth = 2;
+                style.strokeDasharray = '0';
+                style.rx = '10';
+            
+                // Ensure hover effect is defined correctly
+                if (!style.hover) {
+                    style.hover = {};
+                    style.fill = {};
+                }
+                style.hover.stroke = '#54c5fc';
+                style.hover.fill = 'rgba(255, 255, 255, 0.1)';
+            
+                return style;
+            }
+        }
+
+        class startNodeModel extends startNode.model {
+            initNodeData(data) {
+                super.initNodeData(data);
+                this.text.editable = false; 
+            }
+
+            // Set the model shape attribute, triggered every time properties change, including during initialization.
+            setAttributes() {
+                const { scale = 1, width = 36, height = 36 } = this.properties;
+                // manually set the shape attribute
+                this.width = width * scale;
+                this.height = height * scale;
+                this.zIndex = 0;
+            }
+
+            // Customize text style
+            getTextStyle() {
+                const style = super.getTextStyle();
+                const nodeStyle = super.getNodeStyle();
+                const { opacity = 1 } = nodeStyle;
+                
+                style.opacity = opacity;
+                style.fontSize = 12;
+                style.overflowMode = 'ellipsis';
+                style.lineHeight = 1.2;
+                const { isClicked } = this.properties;
+                style.color = isClicked ? 'red' : '#000000';
+                return style;
+            }
+
+            // Customize node style
+            getNodeStyle() {
+                const style = super.getNodeStyle();
+                let { status } = this.properties;
+                if (status === 'invalid') {
+                    style.stroke = '#ff4d4f';
+                } else {
+                    style.stroke = '#52c41a';
+                }
+                style.rx = '30';
+                style.fill = '#f6ffed';
+                return style;
+            }
+
+            // Customize anchor point style attributes
+            getAnchorStyle() {
+                const style = super.getAnchorStyle();
+                const newStyle = Object.assign({}, style, {
+                    stroke: 'rgb(24, 125, 255)',
+                    r: 4.5,
+                    hover: {
+                        r: 7,
+                        fill: 'rgb(24, 125, 255)',
+                        stroke: 'rgb(24, 125, 255)'
+                    }
+                });
+                return newStyle;
+            }
+
+            // Customize the style attributes of the connection line dragged from the node anchor point
+            getAnchorLineStyle() {
+                const style = super.getAnchorLineStyle();
+                style.stroke = '#282828';
+                return style;
+            }
+
+            // Customize the style attributes of the node outline box
+            getOutlineStyle() {
+                const style = super.getOutlineStyle();
+            
+                style.stroke = '#4285f4';
+                style.fill = 'rgba(66, 133, 244, 0.1)';
+                style.strokeWidth = 2;
+                style.strokeDasharray = '0';
+                style.rx = '25';
+            
+                // Ensure hover effect is defined correctly
+                if (!style.hover) {
+                    style.hover = {};
+                    style.fill = {};
+                }
+                style.hover.stroke = '#54c5fc';
+                style.hover.fill = 'rgba(255, 255, 255, 0.1)';
+            
+                return style;
+            }
+        }
+
+        class routeNodeModel extends routeNode.model {
+            initNodeData(data) {
+                super.initNodeData(data);
+                this.text.editable = false; 
+            }
+
+            // Set the model shape attribute, triggered every time properties change, including during initialization.
+            setAttributes() {
+                const { scale = 1, width = 50, height = 50 } = this.properties;
+                // manually set the shape attribute
+                this.width = width * scale;
+                this.height = height * scale;
+                this.zIndex = 0;
+            }
+
+            // Customize text style
+            getTextStyle() {
+                const style = super.getTextStyle();
+                const nodeStyle = super.getNodeStyle();
+                const { opacity = 1 } = nodeStyle;
+                
+                style.opacity = opacity;
+                style.fontSize = 12;
+                style.overflowMode = 'ellipsis';
+                style.lineHeight = 1.2;
+                const { isClicked } = this.properties;
+                style.color = isClicked ? 'red' : '#000000';
+                return style;
+            }
+
+            // Customize node style
+            getNodeStyle() {
+                const style = super.getNodeStyle();
+                let { status } = this.properties;
+                if (status === 'invalid') {
+                    style.stroke = '#ff4d4f';
+                } else {
+                    style.stroke = '#faad14';
+                }
+                style.fill = '#fffbe6';
+                return style;
+            }
+
+            // Customize anchor point style attributes
+            getAnchorStyle() {
+                const style = super.getAnchorStyle();
+                const newStyle = Object.assign({}, style, {
+                    stroke: 'rgb(24, 125, 255)',
+                    r: 4.5,
+                    hover: {
+                        r: 7,
+                        fill: 'rgb(24, 125, 255)',
+                        stroke: 'rgb(24, 125, 255)'
+                    }
+                });
+                return newStyle;
+            }
+
+            // Customize the style attributes of the connection line dragged from the node anchor point
+            getAnchorLineStyle() {
+                const style = super.getAnchorLineStyle();
+                style.stroke = '#282828';
+                return style;
+            }
+
+            // Customize the style attributes of the node outline box
+            getOutlineStyle() {
+                const style = super.getOutlineStyle();
+            
+                style.stroke = '#4285f4';
+                style.fill = 'rgba(66, 133, 244, 0.1)';
+                style.strokeWidth = 2;
+                style.strokeDasharray = '0';
+                style.rx = '10';
+            
+                // Ensure hover effect is defined correctly
+                if (!style.hover) {
+                    style.hover = {};
+                    style.fill = {};
+                }
+                style.hover.stroke = '#54c5fc';
+                style.hover.fill = 'rgba(255, 255, 255, 0.1)';
+            
+                return style;
+            }
+        }
+
+        class endNodeModel extends endNode.model {
+            // Set the model shape attribute, triggered every time properties change, including during initialization.
+            setAttributes() {
+                const { scale = 1, width = 36, height = 36 } = this.properties;
+                // manually set the shape attribute
+                this.text.editable = false; 
+                this.width = width * scale;
+                this.height = height * scale;
+                this.zIndex = 0;
+            }
+
+            // Customize text style
+            getTextStyle() {
+                const style = super.getTextStyle();
+                const nodeStyle = super.getNodeStyle();
+                const { opacity = 1 } = nodeStyle;
+                
+                style.opacity = opacity;
+                style.fontSize = 12;
+                style.overflowMode = 'ellipsis';
+                style.lineHeight = 1.2;
+                const { isClicked } = this.properties;
+                style.color = isClicked ? 'red' : '#000000';
+                return style;
+            }
+
+            // Customize node style
+            getNodeStyle() {
+                const style = super.getNodeStyle();
+                let { status } = this.properties;
+                if (status === 'invalid') {
+                    style.stroke = '#ff4d4f';
+                } else {
+                    style.stroke = '#ff4d4f';
+                }
+                return style;
+            }
+
+            // Customize anchor point style attributes
+            getAnchorStyle() {
+                return {
+                  visibility: 'hidden' // Hide anchors
+                };
+              }
+
+            getAnchorPoints() {
+                return [];
+            }
+
+            // Customize the style attributes of the connection line dragged from the node anchor point
+            getAnchorLineStyle() {
+                return null;
+            }
+
+            // Customize the style attributes of the node outline box
+            getOutlineStyle() {
+                const style = super.getOutlineStyle();
+            
+                style.stroke = '#4285f4';
+                style.fill = 'rgba(66, 133, 244, 0.1)';
+                style.strokeWidth = 2;
+                style.strokeDasharray = '0';
+                style.rx = '25';
+            
+                // Ensure hover effect is defined correctly
+                if (!style.hover) {
+                    style.hover = {};
+                    style.fill = {};
+                }
+                style.hover.stroke = '#54c5fc';
+                style.hover.fill = 'rgba(255, 255, 255, 0.1)';
+            
+                return style;
+            }
+        }
+
+        class participantNodeModel extends participantNode.model {
+            // Set the model shape attribute, triggered every time properties change, including during initialization.
+            setAttributes() {
+                const { scale = 1, width = 36, height = 36 } = this.properties;
+                // manually set the shape attribute
+                this.width = width * scale;
+                this.height = height * scale;
+                this.text.editable = false; 
+            }
+
+            // Customize text style
+            getTextStyle() {
+                const style = super.getTextStyle();
+                const nodeStyle = super.getNodeStyle();
+                const { opacity = 1 } = nodeStyle;
+                
+                style.opacity = opacity;
+                style.fontSize = 20;
+                style.overflowMode = 'ellipsis';
+                style.lineHeight = 1.2;
+                const { isClicked } = this.properties;
+                style.color = isClicked ? 'red' : '#000000';
+                return style;
+            }
+
+            // Customize node style
+            getNodeStyle() {
+                const style = super.getNodeStyle();
+                const { isClicked } = this.properties;
+                if (isClicked) {
+                    style.stroke = 'red';
+                } else {
+                    style.stroke = '#AAAAAA';
+                }
+                return style;
+            }
+
+            // Customize anchor point style attributes
+            getAnchorStyle() {
+                const style = super.getAnchorStyle();
+                const newStyle = Object.assign({}, style, {
+                    stroke: 'rgb(24, 125, 255)',
+                    r: 4.5,
+                    hover: {
+                        r: 7,
+                        fill: 'rgb(24, 125, 255)',
+                        stroke: 'rgb(24, 125, 255)'
+                    }
+                });
+                return newStyle;
+            }
+
+            // Customize the style attributes of the connection line dragged from the node anchor point
+            getAnchorLineStyle() {
+                const style = super.getAnchorLineStyle();
+                style.stroke = '#282828';
+                return style;
+            }
+
+            // Customize the style attributes of the node outline box
+            getOutlineStyle() {
+                const style = super.getOutlineStyle();
+            
+                style.stroke = '#4285f4';
+                style.fill = 'rgba(66, 133, 244, 0.1)';
+                style.strokeWidth = 2;
+                style.strokeDasharray = '0';
+            
+                // Ensure hover effect is defined correctly
+                if (!style.hover) {
+                    style.hover = {};
+                    style.fill = {};
+                }
+                style.hover.stroke = '#54c5fc';
+                style.hover.fill = 'rgba(255, 255, 255, 0.1)';
+            
+                return style;
+            }
+        }
+
+        class transitionModel extends transition.model {
+            customTextPosition = true;
+
+            setAttributes(data) {
+                super.setAttributes(data);
+                const { properties } = this;
+                if(properties.type === "startend"){
+                    this.isHitable = false;
+                }
+                this.text.editable = false; 
+            }
+            
+            // Set transition style
+            getEdgeStyle() {
+                const style = super.getEdgeStyle();
+                const { properties } = this;
+                if (properties.type === "CONDITION") {
+                    style.stroke = '#4096ff';
+                    style.strokeWidth = 2;
+                } else if (properties.type === "OTHERWISE") {
+                    style.stroke = '#db973d';
+                    style.strokeWidth = 2;
+                } else if (properties.type === "EXCEPTION") {
+                    style.stroke = '#ff4d4f';
+                    style.strokeWidth = 2;
+                } else if (properties.type === "startend") {
+                    style.stroke = 'rgb(177, 177, 177)';
+                    style.strokeWidth = 2;
+                } else {
+                    style.stroke = '#000000';
+                }
+                style.zIndex = 2;
+                return style;
+            }
+
+            getArrowStyle() {
+                const style = super.getArrowStyle();
+                const { properties } = this;
+                if (properties.type === "CONDITION") {
+                    style.stroke = '#4096ff';
+                } else if (properties.type === "OTHERWISE") {
+                    style.stroke = '#db973d';
+                } else if (properties.type === "EXCEPTION") {
+                    style.stroke = '#ff4d4f';
+                } else if (properties.type === "startend") {
+                    style.stroke = 'rgb(177, 177, 177)';
+                    style.strokeWidth = 2;
+                } else {
+                    style.stroke = '#000000';
+                }
+
+                return style;
+            }
+
+            // Set transition text style
+            getTextStyle() {
+                const style = super.getTextStyle();
+                const edgeStyle = super.getEdgeStyle();
+                const { opacity = 1 } = edgeStyle;
+                
+                style.opacity = opacity;
+                style.color = '#000000';
+                style.fontSize = 12;
+                style.background = Object.assign({}, style.background, {
+                    fill: 'transparent'
+                });
+                return style;
+            }
+
+            getTextPosition() {
+                const position = super.getTextPosition();
+                position.y = position.y - 15;
+                return position;
+            }
+
+            // Set hover outline style
+            getOutlineStyle() {
+                const style = super.getOutlineStyle();
+            
+                style.stroke = '#4285f4';
+                style.fill = 'rgba(66, 133, 244, 0.1)';
+                style.strokeWidth = 2;
+                style.strokeDasharray = '0';
+            
+                // Ensure hover effect is defined correctly
+                if (!style.hover) {
+                    style.hover = {};
+                    style.fill = {};
+                }
+                style.hover.stroke = '#54c5fc';
+                style.hover.fill = 'rgba(255, 255, 255, 0.1)';
+            
+                return style;
+            }
+        }
+
+        ProcessBuilder.lf.register({
+            ...activityNode,
+            view: activityNodeView,
+            model: activityNodeModel
+        });
+        ProcessBuilder.lf.register({
+            ...toolNode,
+            view: toolNodeView,
+            model: toolNodeModel
+        });
+        ProcessBuilder.lf.register({
+            ...startNode,
+            view: startNodeView,
+            model: startNodeModel
+        });
+        ProcessBuilder.lf.register({
+            ...routeNode,
+            view: routeNodeView,
+            model: routeNodeModel
+        });
+        ProcessBuilder.lf.register({
+            ...endNode,
+            view: endNodeView,
+            model: endNodeModel
+        });
+        ProcessBuilder.lf.register({
+            type: 'bpmn:subflow',
+            view: subflowView,
+            model: subflowNodeModel
+        });
+        ProcessBuilder.lf.register({
+            ...participantNode,
+            view: participantNode.view,
+            model: participantNodeModel
+        });
+        ProcessBuilder.lf.register({
+            ...transition,
+            view: transitionView,
+            model: transitionModel
+        });
+
+        ProcessBuilder.lf.extension.highlight.setMode('neighbour');
+        ProcessBuilder.lf.extension.highlight.setEnable(false);
+
+        // Define the common menu configuration
+        const commonMenuConfig = {
+            icon: '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="17" height="17" fill="currentColor" style="margin-left: 3px;margin-top: 3px;"><path pointer-events="none" d="M15.3,1.4 L12.6,1.4 L12.6,0 L5.4,0 L5.4,1.4 L0,1.4 L0,2.8 L2,2.8 L2,17.3 C2,17.6865993 2.31340068,18 2.7,18 L15.3,18 C15.6865993,18 16,17.6865993 16,17.3 L16,2.8 L18,2.8 L18,1.4 L15.3,1.4 Z M14.6,16.6 L3.4,16.6 L3.4,2.8 L14.6,2.8 L14.6,16.6 Z"></path><path pointer-events="none" d="M6,5.4 L7.4,5.4 L7.4,14.4 L6,14.4 L6,5.4 Z M10.6,5.4 L12,5.4 L12,14.4 L10.6,14.4 L10.6,5.4 Z"></path></svg>',
+            // Callback function to delete the element and hide the context menu
+            callback: function (data) {
+                if (data.properties.className !== 'transition') {
+                    ProcessBuilder.removeNode(data);
+                } else {
+                    ProcessBuilder.removeConnection(data);
+                }
+                ProcessBuilder.lf.hideContextMenu();        // Hides the context menu
+            }
+        };
+
+        ProcessBuilder.lf.extension.menu.setMenuConfig({
+            nodeMenu: [],
+            edgeMenu: false,
+            graphMenu: []
+        });
+
+        ProcessBuilder.lf.setContextMenuByType('bpmn:userTask', [commonMenuConfig]);
+        ProcessBuilder.lf.setContextMenuByType('bpmn:serviceTask', [commonMenuConfig]);
+        ProcessBuilder.lf.setContextMenuByType('bpmn:exclusiveGateway', [commonMenuConfig]);
+        ProcessBuilder.lf.setContextMenuByType('bpmn:startEvent', [commonMenuConfig]);
+        ProcessBuilder.lf.setContextMenuByType('bpmn:subflow', [commonMenuConfig]);
+        ProcessBuilder.lf.setContextMenuByType('bpmn:endEvent', [commonMenuConfig]);
+        ProcessBuilder.lf.setContextMenuByType('bpmn:sequenceFlow', [commonMenuConfig]);
+
+        // Variable to track the previous selected node
+        ProcessBuilder.previousSelectedNodeId = null;
+
+        // Handle node drop
+        ProcessBuilder.lf.on('node:drop', ({ data }) => {   
+            if (ProcessBuilder.getNodeLaneID(data.id) === null) {
+                ProcessBuilder.removeNode(data);
+                return;
+            } 
+            const { id: nodeId } = data;
+            
+            const processData = ProcessBuilder.currentProcessData;
+        
+            const currentLaneId = ProcessBuilder.getNodeLaneID(nodeId);
+            const nodeLane = ProcessBuilder.getActivityLane(nodeId);
+        
+            if (currentLaneId !== `laneID_${nodeLane.properties.id}`) {
+                const targetLane = ProcessBuilder.getLane(currentLaneId);
+                const sourceLane = ProcessBuilder.getLane(nodeLane.properties.id);
+                const movingNode = ProcessBuilder.getActivity(nodeId);
+        
+                // Remove the node from the source lane
+                sourceLane.activities = sourceLane.activities.filter(activity => activity.properties.id !== movingNode.properties.id);
+        
+                // Add the selected node to target lane
+                targetLane.activities.push(movingNode);
+        
+                CustomBuilder.update();
+            }
+            ProcessBuilder.adjustLane(true, null);
+        });
+
+        ProcessBuilder.lf.on('node:drop', ({ data }) => {
+            const nodeModel = ProcessBuilder.lf.getNodeModelById(data.properties.id);
+            if (nodeModel) {
+                let node = ProcessBuilder.getActivity(data.properties.id);
+                if (node) {
+                    node.x_offset = nodeModel.x;
+                    node.y_offset = nodeModel.y;
+                    CustomBuilder.update();
+                }
+            }
+        });
+        
+        // Handle adding a new edge
+        ProcessBuilder.lf.on('edge:add', ({ data }) => {
+            if (data.targetNodeId.startsWith("poolID_") || data.targetNodeId.startsWith("laneID_")) {
+                let sourceNode = ProcessBuilder.lf.getNodeDataById(data.sourceNodeId);
+                ProcessBuilder.lf.deleteEdge(data.id);
+                ProcessBuilder.showContextMenu(sourceNode);
                 return false;
             }
-            return true;
+            let transitionID = ProcessBuilder.addConnection(data);
+            var result = ProcessBuilder.getConnection(transitionID);
+            ProcessBuilder.lf.setProperties(transitionID, result.properties);
+            ProcessBuilder.lf.setProperties(transitionID, {xpdlObj: result.xpdlObj});
         });
+        
+        // Handle adding a new node from the drag-and-drop menu
+        ProcessBuilder.lf.on('node:dnd-add', ({ data }) => {
+            ProcessBuilder.renderLFNode(data);
+        });
+        
+        // Handle adding a new node
+        ProcessBuilder.lf.on('node:add', ({ data }) => {
+            if (data.type !== 'lane') {
+                ProcessBuilder.renderLFNode(data);
+            } else {
+                let laneID = ProcessBuilder.renderLFNode(data);
+                setTimeout(() => {
+                    ProcessBuilder.resizePool();
+                    ProcessBuilder.adjustLane(true, laneID, data.properties.height);
+                }, 0);
+            }
+        });
+        
+        //Handle adding new lane
+        ProcessBuilder.lf.on('node:dnd-add', ({ data }) => {
+            const {x, y, type, id} = data;
+            if (type === 'pool') {
+                ProcessBuilder.lf.setProperties(data.id, {});
+                const poolModel = ProcessBuilder.lf.getNodeModelById(id);
+                const {width, height} = poolModel;
+                const {id: laneId} = ProcessBuilder.lf.addNode({
+                    type: 'lane',
+                    properties: {
+                        nodeSize: {
+                            width: width - 30,
+                            height
+                        }
+                    },
+                    x: x + 15,
+                    y
+                });
+                poolModel.addChild(laneId);
+            }
+        });
+
+        // Handle for lane delete
+        ProcessBuilder.lf.on('node:delete', ({ data }) => {
+            if(data.type === 'lane'){
+                let previousParticipant;
+                let index = ProcessBuilder.getLaneIndex(data.id);
+                if (index > 0) {
+                    let participants = ProcessBuilder.currentProcessData.participants;
+                    previousParticipant = participants[index - 1].properties.id;
+                } else {
+                    previousParticipant = data.id;
+                }
+                ProcessBuilder.deleteLane(data);
+                ProcessBuilder.removeNode(data);
+                let adjustHeight = (data.properties.height)* -1;
+                setTimeout(() => {
+                    ProcessBuilder.adjustLane(true, previousParticipant, adjustHeight);
+                }, 0);
+            }
+        });
+        
+        // Handle for node and edge click
+        ProcessBuilder.lf.on('node:click,edge:click', (data, e) => {
+            var selectedNode = data;
+            if ($(data).length > 0) {
+                try {
+                    CustomBuilder.checkChangeBeforeCloseElementProperties(function (hasChange) {
+                        self.mousedown = true;
+                        if (hasChange) {
+                            self.mousedown = false;
+                        }
+                        if (self.mousedown) {
+                            CustomBuilder.Builder.selectNodeAndShowProperties(selectedNode, false, true);
+                        } else {
+                            var data = $(target).data("data");
+                            if (data !== undefined) {
+                                self.selectNode(target);
+                            }
+                        }
+                    });
+                } catch (err) { }
+
+                if ($('body').hasClass('treeViewer-builder-view') || $('body').hasClass('xray-builder-view')) {
+                    var activeNodeId = selectedNode.data.properties.id;
+                    ProcessBuilder.selectActiveTreeItem(activeNodeId);
+                }
+            } else {
+                CustomBuilder.checkChangeBeforeCloseElementProperties(function (hasChange) {
+                    self.selectNode(false);
+                });
+            }
+
+            setTimeout(() => {
+                if ($('.element-properties .nav-tabs .nav-link.has-properties-errors').length > 0 && self.selectedEl) {
+                    if (self.selectedEl) {
+                        ProcessBuilder.selectElementById(self.selectedEl.data.id);
+                    }
+                } else {
+                    self.selectedEl = data;
+                }
+            }, 100);
+            return false;
+        });
+    },
+    
+    /**
+     * Gets the current mouse position relative to the LogicFlow canvas.
+     */
+    getMousePosition: function () {
+        return ProcessBuilder.lf.getPointByClient(window.event.clientX, window.event.clientY);
+    },
+
+    decorateBoxActions: function (element, data, component, box, boxOffset) {
+        $("#paste-element-btn").addClass("disabled");
+        if (ProcessBuilder.isPastable(data, component)) {
+            $("#paste-element-btn").removeClass("disabled");
+        }
+
+        $("#copy-element-btn").addClass("disabled");
+        if (component.builderTemplate.isCopyable(data, component)) {
+            $("#copy-element-btn").removeClass("disabled");
+        }
+    },
+    
+    /**
+     * Adds a new node to the process builder via the menu
+     */
+    addNodeFromMenu: function (node, type, x, y) {
+        let graphData = ProcessBuilder.lf.getGraphData();
+        let lanes = graphData.nodes.filter(lane => lane.type === "lane");
+        let pool = graphData.nodes.filter(pool => pool.type === "pool");
+        let targetLane;
+        let yGap = 70;
+        let xGap = 50;
+        let extendWidth = 150;
+        let extendHeight = 40;
+
+        lanes = lanes.sort((a, b) => a.y - b.y);
+        for (const lane of lanes) {
+            let laneYEnd = lane.y + (lane.properties.height / 2);
+            if (laneYEnd > y) {
+                targetLane = lane;
+                break; // Stop looping once a lane is found
+            }
+        }
+        
+        let targetLaneYStart = targetLane.y - (targetLane.properties.height / 2);
+        let targetLaneYEnd = targetLane.y + (targetLane.properties.height / 2);
+        let targetLaneXStart = targetLane.x - (targetLane.properties.width / 2);
+        let targetLaneXEnd = targetLane.x + (targetLane.properties.width / 2);
+
+
+        let nodeYStart = y - 40;
+        let nodeYEnd = y + 40;
+        let nodeXStart = x - 60;
+        let nodeXEnd = x + 60;
+        let addHeight = 0;
+
+        if (nodeYStart <= targetLaneYStart) {
+            y = targetLaneYStart + yGap;
+        } else if (targetLaneYEnd <= nodeYEnd) {
+            addHeight = nodeYEnd - targetLaneYEnd + extendHeight;
+        }
+
+        if (nodeXStart <= targetLaneXStart) {
+            x = targetLaneXStart + xGap;
+        } else if (targetLaneXEnd <= nodeXEnd) {
+            let newWidth = targetLane.properties.width + (nodeXEnd - targetLaneXEnd + extendWidth);
+
+            pool[0].properties.width = newWidth;
+            pool[0].properties.nodeSize.width = newWidth;
+            lanes.forEach(lane => {
+                lane.properties.width = newWidth;
+                lane.properties.nodeSize.width = newWidth;
+            });
+            ProcessBuilder.lf.render(graphData);
+            ProcessBuilder.resizePool();
+        }
+
+        if (addHeight > 0) {
+            const laneModel = ProcessBuilder.lf.getNodeModelById(targetLane.id);
+            laneModel.changeAttribute({ width: targetLane.properties.width, height: targetLane.properties.height + addHeight, x: targetLane.x, y: targetLane.y });
+            ProcessBuilder.lf.updateAttributes(targetLane.id, laneModel);
+            ProcessBuilder.resizePool();
+        }
+
+        setTimeout(function () {
+            let newNode = ProcessBuilder.lf.addNode({
+                type: type, // Change based on your node type
+                x: x,  // Adjust position
+                y: y,
+                text: 'Node',
+                properties: {}
+            });
+    
+            ProcessBuilder.lf.addEdge({
+                sourceNodeId: node.id,
+                targetNodeId: newNode.id
+            });
+
+            CustomBuilder.update();
+            ProcessBuilder.adjustLane(true);
+        }, 0);
+
+        ProcessBuilder.lf.extension.menu.setMenuConfig({
+            nodeMenu: [],
+            edgeMenu: false,
+            graphMenu: []
+        });
+    },
+    
+    /**
+     * Displays the context menu
+     */
+    showContextMenu: function (node) {
+        if (!node) return;
+        const lfContainer = document.getElementById('lf-container'); // Replace with your actual container ID
+
+        if (lfContainer) {
+            let mousePosition = ProcessBuilder.getMousePosition();
+            const rect = lfContainer.getBoundingClientRect();
+            const x = mousePosition.canvasOverlayPosition.x;
+            const y = mousePosition.canvasOverlayPosition.y;
+
+            // Define the common menu configuration for activity node
+            const activityConfig = {
+                text: get_cbuilder_msg('pbuilder.label.activity'),
+                callback(node) {
+                    ProcessBuilder.addNodeFromMenu(node, 'bpmn:userTask', x, y);
+                }
+            };
+
+            // Define the common menu configuration for tool node
+            const toolConfig = {
+                text: get_cbuilder_msg('pbuilder.label.tool'),
+                callback(node) {
+                    ProcessBuilder.addNodeFromMenu(node, 'bpmn:serviceTask', x, y);
+                }
+            };
+
+            // Define the common menu configuration for subflow node
+            const subflowConfig = {
+                text: get_cbuilder_msg('pbuilder.label.subflow'),
+                callback(node) {
+                    ProcessBuilder.addNodeFromMenu(node, 'bpmn:subflow', x, y);
+                }
+            };
+
+            // Define the common menu configuration for route node
+            const routeConfig = {
+                text: get_cbuilder_msg('pbuilder.label.route'),
+                callback(node) {
+                    ProcessBuilder.addNodeFromMenu(node, 'bpmn:exclusiveGateway', x, y);
+                }
+            };
+
+            // Define the common menu configuration for end node
+            const endConfig = {
+                text: get_cbuilder_msg('pbuilder.label.end'),
+                callback(node) {
+                    ProcessBuilder.addNodeFromMenu(node, 'bpmn:endEvent', x, y);
+                }
+            };
+
+            // Add the menu before showing the menu
+            ProcessBuilder.lf.extension.menu.setMenuConfig({
+                nodeMenu: [activityConfig, toolConfig, subflowConfig, routeConfig, endConfig],
+                edgeMenu: false,
+                graphMenu: []
+            });
+            
+            const event = new MouseEvent('contextmenu', {
+                bubbles: true,
+                cancelable: true,
+                clientX: mousePosition.domOverlayPosition.x + rect.left, // Adjust based on the element position
+                clientY: mousePosition.domOverlayPosition.y + rect.top
+            });
+
+            const nodeElement = document.querySelector(`[data-cbuilder-id="${node.id}"]`);
+            if (nodeElement) {
+                nodeElement.dispatchEvent(event);
+            }
+        }
+    },
+
+    /*
+     * Check if copied element is pastable
+     */
+    isPastable: function (elementObj, component) {
+        var copied = CustomBuilder.getCopiedElement();
+        if (copied !== null && copied !== undefined) {
+            var copiedComponent = CustomBuilder.Builder.parseDataToComponent(copied.object.properties);
+            if (copiedComponent !== null && copiedComponent !== undefined && component.builderTemplate.getChildsContainerAttr(elementObj, component) === copiedComponent.builderTemplate.getParentContainerAttr(copied.object, copiedComponent)) {
+                return true;
+            } else if (copiedComponent !== null && copiedComponent !== undefined && component.builderTemplate.getParentContainerAttr(elementObj, component) === copiedComponent.builderTemplate.getParentContainerAttr(copied.object, copiedComponent)) {
+                return true; //sibling
+            }
+        }
+        return false;
+    },
+    
+    /**
+     * Renders the LogicFlow graph with optional auto-layout.
+     */
+    renderLFWithAutoLayout: function (graphData, enableAutoLayout) {
+        graphData = ProcessBuilder.updatePoolHeight(graphData);
+        ProcessBuilder.lf.render(graphData);
+        ProcessBuilder.resizePool();
+        ProcessBuilder.currentLFProcessData = ProcessBuilder.lf.getGraphData();
+        if (enableAutoLayout) {
+            ProcessBuilder.autoLayout();    
+        }
+        ProcessBuilder.adjustLane(false, null);
+        ProcessBuilder.recenter();
+    },
+    
+    /**
+     * Renders the LogicFlow graph with the provided data.
+     */
+    renderLFWithData: function (graphData) {
+        graphData = ProcessBuilder.updatePoolHeight(graphData);
+        ProcessBuilder.lf.render(graphData);
+        ProcessBuilder.resizePool();
+        ProcessBuilder.currentLFProcessData = ProcessBuilder.lf.getGraphData();
+        ProcessBuilder.adjustLane(false, null);
+    },
+    
+    /**
+     * Adjusts the size and position of lanes and the pool dynamically based on child nodes.
+     * Ensures that lanes expand or contract to fit their contained nodes while maintaining alignment.
+     *
+     * @param {boolean} adjustNode - Whether to adjust child node positions.
+     * @param {string|null} targetLane - ID of the lane to be adjusted (if applicable).
+     * @param {number} adjustHeight - Height adjustment value for the target lane.
+     */
+    adjustLane: function (adjustNode, targetLane, adjustHeight) {
+        let graphData = ProcessBuilder.lf.getGraphData();
+        let lanes = graphData.nodes.filter(lane => lane.type === "lane");
+        let pool = graphData.nodes.filter(pool => pool.type === "pool");
+        let poolHeight = 0;
+        let finalLaneWidth = 0;
+        let initialY = 0;
+        let initialX = 0;
+        let laneDefaultHeight = 216;
+        let totalLaneHeightAdjusted = 0;
+        let extraSpaceForLane = 70;
+        lanes = lanes.sort((a, b) => a.y - b.y);
+        // Adjust the lane height and width
+        lanes.forEach(lane => { 
+            let laneYStart = 0;
+            let laneYEnd = 0;
+            let laneXStart = lane.x - (lane.properties.width / 2);
+            let laneXEnd = lane.x + (lane.properties.width / 2);
+            let yChanges = false;
+            let xChanges = false;
+            if (lane.children.length > 0) {
+                lane.children.forEach(child => {
+                    let node = graphData.nodes.filter(node => node.id === child)[0];
+                    if (laneYStart === 0 && laneYEnd === 0) {
+                        laneYStart = node.y - (laneDefaultHeight / 2);
+                        laneYEnd = node.y + (laneDefaultHeight / 2);
+                    }
+
+                    let nodeYStart = node.y - (node.properties.height / 2);
+                    let nodeYEnd = node.y + (node.properties.height / 2);
+                    let nodeXStart = node.x - (node.properties.width / 2);
+                    let nodeXEnd = node.x + (node.properties.width / 2) + 100;
+
+                    if (nodeYStart < laneYStart || nodeYEnd > laneYEnd || (laneYEnd - nodeYEnd < 30)) {
+                        yChanges = true;
+                        if (nodeYStart < laneYStart) {
+                            laneYStart = nodeYStart;
+                        } else {
+                            laneYEnd = nodeYEnd;
+                        }
+                    }
+
+                    if (nodeXStart < laneXStart || nodeXEnd > laneXEnd) {
+                        xChanges = true;
+                        if (nodeXStart < laneXStart) {
+                            laneXStart = nodeXStart;
+                        } else {
+                            laneXEnd = nodeXEnd;
+                        }
+                    }
+                    // Adjust the node position based on the previous Lane Height Adjusted
+                    if (totalLaneHeightAdjusted && adjustNode) {
+                        node.y = node.y + totalLaneHeightAdjusted;
+                        if (node.text) {
+                            node.text.y = node.text.y + totalLaneHeightAdjusted;
+                        }
+                    }
+                });
+            } 
+
+            let originalLaneHeight = lane.properties.height;
+            let laneHeight = laneYEnd - laneYStart;
+            if (laneHeight > 0) {
+                lane.properties.height = laneHeight;
+                lane.properties.nodeSize.height = laneHeight;
+            }  
+
+            if (targetLane !== null && lane.properties.id === targetLane) {
+                totalLaneHeightAdjusted += adjustHeight;
+            }
+            
+            lane.properties.width = laneXEnd - laneXStart;
+            lane.properties.nodeSize.width = laneXEnd - laneXStart;
+            if (yChanges) {
+                lane.properties.height = lane.properties.height + 100;
+                lane.properties.nodeSize.height = lane.properties.nodeSize.height + 100;
+            }
+            if (xChanges) {
+                finalLaneWidth = lane.properties.width + 100;
+            }
+
+            if (originalLaneHeight !== lane.properties.height) {
+                if (originalLaneHeight < lane.properties.height) {
+                    // If the lane height is increased, add the difference to the totalLaneHeightAdjusted
+                    totalLaneHeightAdjusted += lane.properties.height - originalLaneHeight;
+                } else {
+                    // If the lane height is decreased, subtract the difference from the totalLaneHeightAdjusted
+                    totalLaneHeightAdjusted += (originalLaneHeight - lane.properties.height) * -1;
+                }
+            }
+            poolHeight += lane.properties.height;
+        });
+
+        lanes.forEach(lane => {
+            lane.children.forEach(child => {
+                let node = graphData.nodes.filter(node => node.id === child)[0];
+                let nodeStartX = node.x - (node.properties.width / 2);
+                if (nodeStartX < initialX || initialX === 0) {
+                    initialX = nodeStartX;
+                }
+            });
+        });
+
+        // resize pool and lanes width
+        if (finalLaneWidth > 0) {
+            pool[0].properties.width = finalLaneWidth;
+            pool[0].properties.nodeSize.width = finalLaneWidth;
+            lanes.forEach(lane => {
+                lane.properties.width = finalLaneWidth;
+                lane.properties.nodeSize.width = finalLaneWidth;
+            });
+            pool[0].x = initialX - 100 + (finalLaneWidth / 2);
+        }
+
+        // Get the initial Y position of the pool
+        let stopLoop = false;
+        let previousLaneHeight = 0;
+        lanes.forEach(lane => {
+            if (stopLoop) return;
+            lane.children.forEach(child => {
+                let initPoolYStart = 0;
+                let node = graphData.nodes.filter(node => node.id === child)[0];
+                if ((node.y - (node.properties.height / 2)) < initialY || initialY === 0) {
+                    initPoolYStart = node.y - (node.properties.height / 2) - extraSpaceForLane;
+                    if ((node.y - (node.properties.height / 2)) > initPoolYStart) {
+                        initialY = initPoolYStart;
+                    }
+                }
+            });
+            if (initialY !== 0) {
+                initialY = initialY - previousLaneHeight;
+                stopLoop = true; // Set flag to stop further execution
+                return; // Break the inner loop
+            } else {
+                previousLaneHeight += lane.properties.height;
+            }
+        });
+
+        // Adjust the pool height and position
+        if (poolHeight > 0) {
+            pool[0].properties.height = poolHeight;
+            pool[0].properties.nodeSize.height = poolHeight;
+            pool[0].y = initialY + (poolHeight / 2);
+        }
+        
+        graphData = ProcessBuilder.updateEdges(graphData);
+        ProcessBuilder.updateNodePosition(graphData);
+        ProcessBuilder.lf.render(graphData);
+        ProcessBuilder.resizePool();
+    },
+
+    /*
+     * Resize Pool based on lane changed
+     */
+    resizePool: function () {
+        const resizeDir = 'below';
+        const deltaHeight = 0;
+        const data = ProcessBuilder.lf.getGraphData();
+        var poolId = ProcessBuilder.getPoolId(data);
+        if (poolId !== null) {
+            ProcessBuilder.lf.getNodeModelById(poolId).resizeChildren({
+                resizeDir,
+                deltaHeight
+            });
+        }
+    },
+    
+    /*
+     * Get Pool node ID
+     */
+    getPoolId: function (data) {
+        // Find the node with type 'pool'
+        const poolElement = data.nodes.find(node => node.type === 'pool');
+        
+        // Return the id if the pool element exists, otherwise return null
+        return poolElement ? poolElement.id : null;
+    },
+    
+    /*
+     * Render new node and update it properties
+     */
+    renderLFNode: function (data) {
+        let nodeID = null;
+        if (ProcessBuilder.getNodeLaneID(data.id) === null && data.type !== 'lane') {
+            ProcessBuilder.lf.deleteElement(data.id);
+        } else {
+            var toolClass = null;
+            if (ProcessBuilder.draggingElementId !== null && ProcessBuilder.draggingElementId !== undefined && ProcessBuilder.draggingElementId.startsWith("Tool_")) {
+                toolClass = ProcessBuilder.draggingElementId.replace("Tool_", "");
+            }
+            ProcessBuilder.addElement(data, ProcessBuilder.updatePasteElement);
+            CustomBuilder.update();
+            var result;
+            if (data.type === 'lane') {
+                result = ProcessBuilder.getLane(ProcessBuilder.draggingElementId);
+            } else {
+                result = ProcessBuilder.getActivity(ProcessBuilder.draggingElementId);
+            }
+            
+            if (result) {
+                let label = result.properties.label;
+                // check if preset tool is added
+                if (toolClass !== null) {
+                    result.properties.tools = result.properties.tools || [];
+                    const newTool = [
+                        {
+                            "className": toolClass
+                        }
+                    ];
+                    result.properties.tools.push(...newTool);
+                    label = ProcessBuilder.availableTools[toolClass].label;
+                    result.properties.label = label;
+                }
+
+                ProcessBuilder.lf.setProperties(data.id, result.properties);
+                ProcessBuilder.lf.setProperties(data.id, { xpdlObj: result.xpdlObj });
+                ProcessBuilder.lf.updateText(data.id, label);
+                if (data.type === 'lane') {
+                    ProcessBuilder.lf.updateAttributes(data.id, { id: "laneID_" + result.properties.id });
+                } else {
+                    ProcessBuilder.lf.updateAttributes(data.id, { id: result.properties.id });
+                }
+
+                let currentLane = ProcessBuilder.getActivityLane(result.properties.id);
+                if (currentLane) {
+                    let lfLane = ProcessBuilder.getLFLane("laneID_" + currentLane.properties.id);
+                    lfLane.children.push(result.properties.id);
+                    lfLane.children = lfLane.children.filter(id => id !== data.id);
+                    ProcessBuilder.lf.updateAttributes("laneID_" + currentLane.properties.id, { children: lfLane.children });
+                }
+                nodeID = result.properties.id;
+            }
+        }
+        return nodeID;
     },
     
     /*
@@ -227,7 +2390,7 @@ ProcessBuilder = {
                         $(this).html('<span style="color:red">'+$(this).html()+'</span>');
                     }
                 });
-            }
+            };
             $(selector).on("chosen:showing_dropdown chosen:hiding_dropdown chosen:ready chosen:updated change", function(evt) {
                 updateLabel($(selector).data("chosen"));
             });
@@ -384,6 +2547,11 @@ ProcessBuilder = {
      * Generate process model from XPDL
      */
     generateProcessData : function(id) {
+        var graphData = {};
+        var lfLane = [];
+        var lfNode = [];
+        var lfEdges = [];
+
         var xpdlProcess = null;
         ProcessBuilder.currentProcessData = null;
         var xpdl = CustomBuilder.data.xpdl['Package'];
@@ -410,7 +2578,6 @@ ProcessBuilder = {
             $('#process-selector select').val(id);
             $('#process-selector select').trigger("chosen:updated");
         }
-        
         var process = {
             className : 'process',
             properties : {
@@ -422,6 +2589,21 @@ ProcessBuilder = {
             xpdlObj : xpdlProcess
         };
         ProcessBuilder.currentProcessData = process;
+
+        var pool = {
+            id : 'poolID_' + id,
+            type: "pool",
+            x: 840,
+            y: 280,
+            properties: {
+                nodeSize: {
+                    width: 1479,
+                    height: 432
+                },
+                width: 1479,
+                height: 432
+            }
+        };
         
         //adding workflow variable
         if (xpdlProcess['DataFields'] !== undefined) {
@@ -473,7 +2655,18 @@ ProcessBuilder = {
             };
         }
         
+        // check if auto layout is trigger before
         var xpdlProcessesAttrs = ProcessBuilder.getArray(xpdlProcess['ExtendedAttributes'], 'ExtendedAttribute');
+        for (var p = 0; p < xpdlProcessesAttrs.length; p++) {
+            if (xpdlProcessesAttrs[p]['-Name'] === "Auto_Layout") {
+                ProcessBuilder.currentProcessData.properties.autoLayout = false;
+                break;
+            } else {
+                ProcessBuilder.currentProcessData.properties.autoLayout = true;
+            }
+        }
+
+        let LFparticipant = [];
         for (var p = 0; p < xpdlProcessesAttrs.length; p++) {
             if (xpdlProcessesAttrs[p]['-Name'] === "JaWE_GRAPH_WORKFLOW_PARTICIPANT_ORDER") {
                 var orders = xpdlProcessesAttrs[p]['-Value'].split(";");
@@ -493,17 +2686,52 @@ ProcessBuilder = {
                             activities : []
                         };
                     }
-                    
+                    var label = participants[orders[o]].properties.label;
+                    const LFLaneobject = {
+                        id: "laneID_" + orders[o],
+                        type: "lane",
+                        x: 855,
+                        y: -44,
+                        properties: {
+                            className: 'participant',
+                            id: orders[o],
+                            label: label,
+                            activities: [],
+                            nodeSize: {
+                                "width": 1449,
+                                "height": 216
+                            },
+                            processRef: "",
+                            panels: [
+                                "processRef"
+                            ],
+                            width: 1449,
+                            height: 216,
+                            xpdlObj : participants[orders[o]].xpdlObj
+                        },
+                        children: [],
+                        text: {
+                            value: label
+                        }
+                    };
+                    lfNode.push(LFLaneobject);
+                    LFparticipant.push("laneID_" + participants[orders[o]].properties.id);
+
                     ProcessBuilder.currentProcessData['participants'].push(participants[orders[o]]);
                         
                     if (!ProcessBuilder.readonly) {
                         //find mapping
                         ProcessBuilder.populateParticipantMapping(participants[orders[o]]);
+                        const laneID = "laneID_" + participants[orders[o]].properties.id; // replace with the desired id
+                        const foundObject = lfNode.find(item => item.id === laneID);
+                        ProcessBuilder.populateParticipantMapping(foundObject);
                     }
                 }
                 break;
             }
         }
+        pool.children = LFparticipant;
+        lfNode.push(pool);
         
         //populate activities
         var xpdlActivities = ProcessBuilder.getArray(xpdlProcess['Activities'], 'Activity');
@@ -537,7 +2765,7 @@ ProcessBuilder = {
             if (xpdlActivities[a]["Performer"] === undefined) {
                 xpdlActivities[a]["Performer"] = participantId;
             }
-            
+
             var obj = {
                 className : type,
                 properties : {
@@ -547,9 +2775,31 @@ ProcessBuilder = {
                 y_offset : y,
                 xpdlObj : xpdlActivities[a]      
             };
+
+            var logicFlowType = ProcessBuilder.getLFNodeType(type);
+            var logicFlowObj = {
+                id: act['-Id'],
+                type: logicFlowType,
+                properties: {
+                    id: act['-Id'],
+                    className: type,
+                    xpdlObj: xpdlActivities[a]
+                },
+                x: Number(x),
+                y: Number(y)
+            };
+
+            if (logicFlowType !== 'bpmn:exclusiveGateway') {
+                logicFlowObj.text = {
+                    x: Number(x),
+                    y: Number(y),
+                    value: act['-Name']
+                };
+            }
             
             if (act['-Name'] !== undefined) {
                 obj.properties.label = act['-Name'];
+                logicFlowObj.properties.label = act['-Name'];
             }
             
             //set join & split
@@ -566,10 +2816,13 @@ ProcessBuilder = {
             }
             obj.properties.join = join;
             obj.properties.split = split;
+            logicFlowObj.properties.join = join;
+            logicFlowObj.properties.split = split;
             
             //set limit
             if (act['Limit'] !== undefined) {
                 obj.properties.limit = act['Limit'];
+                logicFlowObj.properties.limit = act['Limit'];
             }
             
             //set deadline
@@ -633,6 +2886,7 @@ ProcessBuilder = {
                     deadlineLimit : deadlineLimit
                 });
                 obj.properties.deadlines = deadlines;
+                logicFlowObj.properties.deadlines = deadlines;
             }
             
             //set subflow properties
@@ -640,6 +2894,8 @@ ProcessBuilder = {
                 var subflow = act['Implementation']['SubFlow'];
                 obj.properties.subflowId = subflow['-Id'];
                 obj.properties.execution = subflow['-Execution'];
+                logicFlowObj.properties.deadlines = subflow['-Id'];
+                logicFlowObj.properties.deadlines = subflow['-Execution'];
                 
                 if (subflow['ActualParameters'] !== undefined) {
                     var actualParameters = new Array();
@@ -650,25 +2906,51 @@ ProcessBuilder = {
                         });
                     }
                     obj.properties.actualParameters = actualParameters;
+                    logicFlowObj.properties.actualParameters = actualParameters;
                 }
             }
             
             if (!ProcessBuilder.readonly) {
                 //find mapping
                 ProcessBuilder.populateActivityMapping(obj);
+                ProcessBuilder.populateActivityMapping(logicFlowObj);
             }
             
+            var currentLFParticipants;
             //if participant not exist add to the first participant
             if (participants[participantId] !== undefined) {
                 participants[participantId]['activities'].push(obj);
+                currentLFParticipants = participants[participantId].properties.id;
+                const lane = lfNode.find(lane => lane.id === 'laneID_' + currentLFParticipants);
+                lane.properties.activities.push(obj);
             } else {
                 participants[Object.keys(participants)[0]]['activities'].push(obj);
+                currentLFParticipants = participants[Object.keys(participants)[0]].properties.id;
+                const lane = lfNode.find(lane => lane.id === 'laneID_' + currentLFParticipants);
+                lane.properties.activities.push(obj);
             }
+
+            // Find the lane with id
+            const laneRequester = $.grep(lfNode, function (element) {
+                return element.type === 'lane' && element.id === 'laneID_'+currentLFParticipants;
+            });
+
+            // Check if the lane exists
+            if (laneRequester.length > 0) {
+                const requesterLane = laneRequester[0];
+                // Check if the 'children' property exists, if not, initialize it as an array
+                if (!requesterLane.children) {
+                    requesterLane.children = [];
+                }
+                // Add the new value to the children array
+                requesterLane.children.push(act['-Id']);
+            } 
+            lfNode.push(logicFlowObj);
         }
-        
         //add start and end node
         for (var p in xpdlProcessesAttrs) {
             if (xpdlProcessesAttrs[p]['-Name'] === "JaWE_GRAPH_END_OF_WORKFLOW" || xpdlProcessesAttrs[p]['-Name'] === "JaWE_GRAPH_START_OF_WORKFLOW") {
+                var participantId;
                 var values = xpdlProcessesAttrs[p]['-Value'].split(",");
                 var obj = {
                     className : (xpdlProcessesAttrs[p]['-Name'] === "JaWE_GRAPH_END_OF_WORKFLOW")?"end":"start",
@@ -676,16 +2958,31 @@ ProcessBuilder = {
                     xpdlObj : xpdlProcessesAttrs[p]
                 };
                 
+                var logicFlowObj = {
+                    className : (xpdlProcessesAttrs[p]['-Name'] === "JaWE_GRAPH_END_OF_WORKFLOW")?"end":"start",
+                    type: (xpdlProcessesAttrs[p]['-Name'] === "JaWE_GRAPH_END_OF_WORKFLOW")?"bpmn:endEvent":"bpmn:startEvent",
+                    properties : {
+                        className : (xpdlProcessesAttrs[p]['-Name'] === "JaWE_GRAPH_END_OF_WORKFLOW")?"end":"start",
+                        xpdlObj : xpdlProcessesAttrs[p]
+                    }
+                };
+
                 obj.properties.id = obj.className;
+                logicFlowObj.id = obj.className;
                 
                 for (var v in values) {
                     var attr = values[v].split("=");
                     if (attr[0] === "JaWE_GRAPH_PARTICIPANT_ID") {
                         participants[attr[1]]['activities'].push(obj);
+                        participantId = attr[1];
+                        const lane = lfNode.find(lane => lane.id === 'laneID_' + participantId);
+                        lane.properties.activities.push(obj);
                     } else if (attr[0] === "CONNECTING_ACTIVITY_ID") {
                         if (attr[1] !== "") {
                             obj.properties.id = obj.className + "_" + attr[1];
-
+                            logicFlowObj.id = logicFlowObj.className + "_" + attr[1];
+                            logicFlowObj.properties.id = logicFlowObj.className + "_" + attr[1];
+                            
                             var transition = {
                                 className :'transition',
                                 properties : {
@@ -693,32 +2990,70 @@ ProcessBuilder = {
                                     type : 'startend'
                                 }
                             };
+
+                            var lfTransition = {
+                                id: "transition_" + obj.properties.id,
+                                type: 'bpmn:sequenceFlow',
+                                properties : {
+                                    className :'transition',
+                                    id : "transition_" + obj.properties.id,
+                                    type : 'startend'
+                                }                                
+                            };
+
                             if (xpdlProcessesAttrs[p]['-Name'] === "JaWE_GRAPH_END_OF_WORKFLOW") {
                                 transition.properties.from = attr[1];
                                 transition.properties.to = obj.properties.id;
+                                lfTransition.sourceNodeId = attr[1];
+                                lfTransition.targetNodeId = obj.properties.id;
                             } else {
                                 transition.properties.from = obj.properties.id;
                                 transition.properties.to = attr[1];
+                                lfTransition.sourceNodeId = obj.properties.id;
+                                lfTransition.targetNodeId = attr[1];
                             }
 
                             process['transitions'].push(transition);
+                            lfEdges.push(lfTransition);
                         }
                     } else if (attr[0] === "X_OFFSET") {
                         obj.x_offset = attr[1];
+                        logicFlowObj.x = Number(attr[1]);
                     } else if (attr[0] === "Y_OFFSET") {
                         obj.y_offset = attr[1];
+                        logicFlowObj.y = Number(attr[1]);
                     }
                 }
+                const laneRequester = $.grep(lfNode, function (element) {
+                    return element.type === 'lane' && element.id === 'laneID_'+participantId;
+                });
+    
+                // Check if the lane exists
+                if (laneRequester.length > 0) {
+                    const requesterLane = laneRequester[0];
+    
+                    // Check if the 'children' property exists, if not, initialize it as an array
+                    if (!requesterLane.children) {
+                        requesterLane.children = [];
+                    }
+    
+                    // Add the new value to the children array
+                    requesterLane.children.push(logicFlowObj.id);
+                }         
                 
                 if (!ProcessBuilder.readonly) {
                     //find mapping
                     ProcessBuilder.populateActivityMapping(obj);
+                    ProcessBuilder.populateActivityMapping(logicFlowObj);
                     if (obj.className === "start") {
                         ProcessBuilder.populateParticipantMapping(obj);
+                        ProcessBuilder.populateParticipantMapping(logicFlowObj);
                     }
                 }
+                lfNode.push(logicFlowObj);
             }
         }
+        graphData["nodes"] = lfNode;
         
         //populate transitions
         var xpdlTransitions = ProcessBuilder.getArray(xpdlProcess['Transitions'], 'Transition');
@@ -733,7 +3068,24 @@ ProcessBuilder = {
                 },
                 xpdlObj : xpdlTransitions[t]
             };
-            
+
+            var lfTransition = {
+                id : xpdlTransitions[t]['-Id'],
+                properties : {
+                    className :'transition',
+                    id : xpdlTransitions[t]['-Id'],
+                    label : (xpdlTransitions[t]['-Name'] !== undefined)?xpdlTransitions[t]['-Name']:"",
+                    from : xpdlTransitions[t]['-From'],
+                    to : xpdlTransitions[t]['-To'],
+                    xpdlObj : xpdlTransitions[t]
+                },
+                text : (xpdlTransitions[t]['-Name'] !== undefined)?xpdlTransitions[t]['-Name']:"",
+                type :'bpmn:sequenceFlow',
+                sourceNodeId : xpdlTransitions[t]['-From'],
+                targetNodeId : xpdlTransitions[t]['-To'],
+                zIndex: 2
+            };
+
             //type
             var type = "";
             var condition = "";
@@ -749,6 +3101,9 @@ ProcessBuilder = {
             transition.properties.type = type;
             transition.properties.condition = condition;
             transition.properties.exceptionName = exceptionName;
+            lfTransition.properties.type = type;
+            lfTransition.properties.condition = condition;
+            lfTransition.properties.exceptionName = exceptionName;
             
             var style = "straight";
             var transitionConditions = "";
@@ -764,12 +3119,30 @@ ProcessBuilder = {
             if (transitionConditions !== "") {
                 transition.properties.conditions = JSON.decode(transitionConditions);
                 transition.properties.conditionHelper = "yes";
+                lfTransition.properties.conditions = JSON.decode(transitionConditions);
+                lfTransition.properties.conditionHelper = "yes";
             }
-
+            if (condition) {
+                if(lfTransition.text){
+                    lfTransition.text = lfTransition.text + '\n' + transition.properties.condition + '\n';
+                } else {
+                    lfTransition.text = transition.properties.condition;
+                }
+            } else if (lfTransition.properties.type === 'OTHERWISE' || lfTransition.properties.type === 'EXCEPTION'){
+                if(lfTransition.text){
+                    lfTransition.text = lfTransition.text + '\n' + '[' + transition.properties.type + ']' + '\n';
+                } else {
+                    lfTransition.text = transition.properties.type;
+                }
+            }
+            
             process['transitions'].push(transition);
+            lfEdges.push(lfTransition);
         }
+        graphData["edges"] = lfEdges;
+        ProcessBuilder.currentLFProcessData = graphData;
     },
-    
+
     /*
      * Check whether the process is a new process without any activities and set the process start whitelits to admin
      */
@@ -803,7 +3176,7 @@ ProcessBuilder = {
      * Convert the process data back to xpdl in JSON definition
      */
     updateXpdl : function() {
-        
+
         //make sure package id is still same
         CustomBuilder.data.xpdl['Package']['-Id'] = CustomBuilder.appId;
         
@@ -821,7 +3194,7 @@ ProcessBuilder = {
 
             //update duration unit
             if (data.properties.durationUnit !== undefined && data.properties.durationUnit !== "") {
-                xpdlProcess['ProcessHeader']['-DurationUnit'] = data.properties.durationUnit
+                xpdlProcess['ProcessHeader']['-DurationUnit'] = data.properties.durationUnit;
             }
 
             //update limit
@@ -876,21 +3249,24 @@ ProcessBuilder = {
             //update participants
             var order = "";
             var xpdlParticipants = ProcessBuilder.getArray(xpdl['Participants'], 'Participant');
+            
             for (var p in data.participants) {
                 var participant = data.participants[p];
                 order += (order !== ""?";":"") + participant.properties.id;
                 if (participant.xpdlObj !== undefined) {
                     participant.xpdlObj['-Id'] = participant.properties.id;
                     participant.xpdlObj['-Name'] = participant.properties.label;
+                    participant.xpdlObj['-Height'] = participant.properties.height;
                 } else {
                     participant.xpdlObj = {
                         "-Name": participant.properties.label,
                         "-Id": participant.properties.id,
+                        '-Height': participant.properties.height,
                         "ParticipantType": {
                             "-Type": "ROLE",
                             "-self-closing": "true"
                         }
-                    }
+                    };
                     xpdlParticipants.push(participant.xpdlObj);
                 }
 
@@ -909,6 +3285,17 @@ ProcessBuilder = {
                     break;
                 }
             }
+            if (ProcessBuilder.currentProcessData.properties.autoLayout && xpdlProcessesAttrs.find(attr => attr['-Name'] === "Auto_Layout") === undefined) {
+                // New attribute to add
+                const newAttribute = {
+                    "-Name": "Auto_Layout",
+                    "-Value": "true",
+                    "-self-closing": "true"
+                };
+                // Add new attribute
+                xpdlProcessesAttrs.push(newAttribute);
+            }
+
             ProcessBuilder.setArray(xpdlProcess, 'ExtendedAttributes', 'ExtendedAttribute', xpdlProcessesAttrs);
             
             //update transitions
@@ -1031,7 +3418,7 @@ ProcessBuilder = {
      * Set the participant mapping to object properties
      */
     populateParticipantMapping : function (participant) {
-        var id = ProcessBuilder.currentProcessData.properties.id + "::" + ((participant.className === "start")?"processStartWhiteList":participant.properties.id);
+        var id = ProcessBuilder.currentProcessData.properties.id + "::" + ((participant.properties.className === "start")?"processStartWhiteList":participant.properties.id);
         var mapping = CustomBuilder.data['participants'][id];
         if (mapping !== undefined) {
             participant.properties['mapping_par_type'] = mapping.type; //user, group, department, hod, performer, workflow variable, plugin, role, 
@@ -1058,8 +3445,7 @@ ProcessBuilder = {
                 participant.properties['mapping_par_type'] = "";
                 participant.properties['mapping_par_role'] = mapping.value;
             }
-
-            participant.mapping = mapping;
+            participant.properties.mapping = mapping;
         }
     },
     
@@ -1067,7 +3453,7 @@ ProcessBuilder = {
      * Update the participant mapping back to data
      */
     updateParticipantMapping : function (participant) {
-        var id = ProcessBuilder.currentProcessData.properties.id + "::" + ((participant.className === "start")?"processStartWhiteList":participant.properties.id);
+        var id = ProcessBuilder.currentProcessData.properties.id + "::" + ((participant.properties.className === "start")?"processStartWhiteList":participant.properties.id);
         var mapping = CustomBuilder.data['participants'][id];
         if (mapping === undefined) {
             mapping = {};
@@ -1098,7 +3484,7 @@ ProcessBuilder = {
                 mapping.value = participant.properties['mapping_par_plugin']['className'];
                 mapping.properties = $.extend(true, {}, participant.properties['mapping_par_plugin']['properties']);
             }
-        } else if (participant.className === "start" && participant.properties['mapping_par_type'] === "" && participant.properties['mapping_par_role'] !== "") {
+        } else if (participant.properties.className === "start" && participant.properties['mapping_par_type'] === "" && participant.properties['mapping_par_role'] !== "") {
             mapping.type = "role";
             mapping.value = participant.properties['mapping_par_role'];
         }
@@ -1114,10 +3500,15 @@ ProcessBuilder = {
      * Set the activity mapping to object properties
      */
     populateActivityMapping : function (activity) {
-        var id = ProcessBuilder.currentProcessData.properties.id + "::" + ((activity.className === "start")?"runProcess":activity.properties.id);
+        var id;
+        if (activity.className){
+            id = ProcessBuilder.currentProcessData.properties.id + "::" + ((activity.className === "start")?"runProcess":activity.properties.id);
+        } else {
+            id = ProcessBuilder.currentProcessData.properties.id + "::" + ((activity.properties.className === "start")?"runProcess":activity.properties.id);
+        }
         var mapping = CustomBuilder.data['activityPlugins'][id];
         
-        if (activity.className === "activity" || activity.className === "start") {
+        if (activity.properties.className === "activity" || activity.properties.className === "start" || activity.className === "activity" || activity.className === "start") {
             var formMapping = CustomBuilder.data['activityForms'][id];
             
             if (formMapping !== undefined) {
@@ -1128,6 +3519,7 @@ ProcessBuilder = {
                 activity.properties['mapping_act_disableSaveAsDraft'] = formMapping.disableSaveAsDraft + "";
                 activity.properties['mapping_act_autoContinue'] = formMapping.autoContinue + "";
                         
+                activity.properties.formMapping = formMapping;
                 activity.formMapping = formMapping;
             }
             if (mapping !== undefined) {
@@ -1136,7 +3528,7 @@ ProcessBuilder = {
                     properties : $.extend(true, {}, mapping.properties)
                 };
             }
-        } else if (activity.className === "tool") {
+        } else if (activity.properties.className === "tool" || activity.className === "tool") {
             //convert to multi tools by default
             if (mapping !== undefined) {
                 if (mapping.className !== "org.joget.apps.app.lib.MultiTools") {
@@ -1150,7 +3542,7 @@ ProcessBuilder = {
                     $.extend(true, activity.properties, mapping.properties);
                 }
             }
-        } else if (activity.className === "route") {
+        } else if (activity.properties.className === "route" || activity.className === "route") {
             if (mapping !== undefined) {
                 activity.properties['mapping_act_plugin'] = {
                     className : mapping.className,
@@ -1160,7 +3552,8 @@ ProcessBuilder = {
         }
         
         if (mapping !== undefined) {
-            activity.mapping = mapping;
+            activity.properties.mapping = mapping;
+            activity.mapping = mapping; 
         }
     },
     
@@ -1405,9 +3798,10 @@ ProcessBuilder = {
                     transitionRestriction = xpdlObj['TransitionRestrictions']['TransitionRestriction'];
                 }
                 var actElement = self.frameBody.find("#" + activity.properties.id);
-                var sourceConnSet = ProcessBuilder.jsPlumb.getConnections({source: $(actElement)});
+                var sourceConnSet =  ProcessBuilder.lf.getNodeOutgoingEdge(activity.properties.id);
                 for (var i = sourceConnSet.length - 1; i >= 0; i--) {
-                    if ($(sourceConnSet[i].target).hasClass("end")) { 
+                    let node = ProcessBuilder.getActivity(sourceConnSet[i].targetNodeId);
+                    if (node.className === 'end') { 
                         sourceConnSet.splice(i, 1);
                     }
                 }
@@ -1431,7 +3825,7 @@ ProcessBuilder = {
                     }
                     var tids = [];
                     for (var c in sourceConnSet) {
-                        tids.push($(sourceConnSet[c].canvas).data("data").properties.id);
+                        tids.push(sourceConnSet[c].id);
                     }
                     var transitionRefs = ProcessBuilder.getArray(transitionRestriction['Split']["TransitionRefs"], "TransitionRef");
                     transitionRefs.forEach(function(transitionRef, index, object) {
@@ -1455,7 +3849,7 @@ ProcessBuilder = {
                         delete transitionRestriction['Split'];
                     }
                 }
-                var targetConnSet = ProcessBuilder.jsPlumb.getConnections({target: $(actElement)});
+                var targetConnSet = ProcessBuilder.lf.getNodeIncomingEdge(activity.properties.id);
                 if (targetConnSet.length > 1) {
                     if (activity.properties.join === "") {
                         activity.properties.join = "XOR";
@@ -1507,16 +3901,16 @@ ProcessBuilder = {
                 var actElement = self.frameBody.find("#" + activity.properties.id);
                 var actId = "";
                 if (activity.className === "start") {
-                    var connSet = ProcessBuilder.jsPlumb.getConnections({source: $(actElement)});
+                    var connSet =  ProcessBuilder.lf.getNodeOutgoingEdge(activity.properties.id);
                     if (connSet.length > 0) {
-                        actId = $(connSet[0].target).attr("id");
+                        actId = connSet[0].targetNodeId;
                     }
                     
                     ProcessBuilder.updateParticipantMapping(activity);
                 } else {
-                    var connSet = ProcessBuilder.jsPlumb.getConnections({target: $(actElement)});
+                    var connSet = ProcessBuilder.lf.getNodeIncomingEdge(activity.properties.id);
                     if (connSet.length > 0) {
-                        actId = $(connSet[0].source).attr("id");
+                        actId = connSet[0].sourceNodeId;
                     }
                 }
                 xpdlObj['-Value'] = "JaWE_GRAPH_PARTICIPANT_ID="+participant.properties.id+",CONNECTING_ACTIVITY_ID="+actId+",X_OFFSET="+activity.x_offset+",Y_OFFSET="+activity.y_offset+",JaWE_GRAPH_TRANSITION_STYLE=NO_ROUTING_ORTHOGONAL,TYPE="+activity.className.toUpperCase()+"_DEFAULT";
@@ -1652,7 +4046,7 @@ ProcessBuilder = {
                         }
                     }
                 }
-            },
+            }
         };
         xpdlProcesses.push(emptyProcess);
         
@@ -1843,6 +4237,8 @@ ProcessBuilder = {
         ProcessBuilder.updateProcessSelector();
         self.triggerChange();
         
+        let graphData = ProcessBuilder.lf.getGraphData();
+        ProcessBuilder.renderLFWithAutoLayout(graphData);
         window.location.hash = process['-Id'];
     },
     
@@ -1851,7 +4247,7 @@ ProcessBuilder = {
      */
     initComponents : function() {
         //Process
-        CustomBuilder.initPaletteElement("", "process", get_cbuilder_msg('pbuilder.label.process'), '<i class="fas fa-th-list"></i>',  
+        CustomBuilder.initPaletteElement(get_cbuilder_msg("pbuilder.label.processElements"), "process", get_cbuilder_msg('pbuilder.label.process'), '<i class="fas fa-th-list"></i>',  
             [{
                 title: get_cbuilder_msg("pbuilder.label.processProperties"),
                 helplink: get_cbuilder_msg("pbuilder.label.processProperties.helplink"),
@@ -1869,6 +4265,9 @@ ProcessBuilder = {
                     type: 'textfield',
                     required: 'True',
                     value: get_cbuilder_msg("pbuilder.label.process")
+                },{
+                    name: 'autoLayout',
+                    type: 'Hidden'
                 },{
                     name: 'dataFields',
                     label: get_cbuilder_msg("pbuilder.label.workflowVariables"),
@@ -1942,7 +4341,7 @@ ProcessBuilder = {
         }});
     
         //Participant
-        CustomBuilder.initPaletteElement("", "participant", get_cbuilder_msg('pbuilder.label.participant'), '<i class="las la-swimmer"></i>',  
+        CustomBuilder.initPaletteElement(get_cbuilder_msg("pbuilder.label.processElements"), "participant", get_cbuilder_msg('pbuilder.label.participant'), '<i class="las la-swimmer"></i>',  
             [{
                 title: get_cbuilder_msg("pbuilder.label.participantProperties"),
                 helplink: get_cbuilder_msg("pbuilder.label.participantProperties.helplink"),
@@ -1963,7 +4362,7 @@ ProcessBuilder = {
                     id_suggestion: 'label'
                 }]
             }]
-        , "", true, "", {builderTemplate: {
+        , "", false, "", {builderTemplate: {
             'dragHtml' : '<div class="participant"><div class="participant_handle"><div class="participant_label">'+get_cbuilder_msg('pbuilder.label.participant')+'</div></div><div class="activities-container"></div></div>',    
             'draggable' : true,
             'movable' : true,
@@ -1982,7 +4381,7 @@ ProcessBuilder = {
         }});
         
         //Activity
-        CustomBuilder.initPaletteElement("", "activity", get_cbuilder_msg('pbuilder.label.activity'), '<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="47" height="36" viewBox="0 0 47 36" ><rect height="35" width="46" x="0" y="0" stroke-width="0.5" stroke="#333333" fill="#fefefe" transform="translate(0.25 0.25)"/></svg>', 
+        CustomBuilder.initPaletteElement(get_cbuilder_msg("pbuilder.label.processElements"), "activity", get_cbuilder_msg('pbuilder.label.activity'), '<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100%"><rect fill="#ffffff" stroke="#282828" stroke-width="1" radius="2" rx="2" x="1" y="1" ry="2" width="14px" height="12px"></rect></svg>', 
             [], {'join' : '', 'split' : ''}, true, "", {builderTemplate: {
             'dragHtml' : '<div class="node activity"><div class="node_label">'+get_cbuilder_msg('pbuilder.label.activity')+'</div></div>',
             'draggable' : true,
@@ -2083,7 +4482,7 @@ ProcessBuilder = {
                         regex_validation: '^[0-9_]+$'
                     }]
                 }];
-
+    
                 if (elementObj.properties.join !== "") {
                     options[0].properties.push({
                         name: 'join',
@@ -2117,7 +4516,7 @@ ProcessBuilder = {
         }});
     
         //Tool
-        CustomBuilder.initPaletteElement("", "tool", get_cbuilder_msg('pbuilder.label.tool'), '<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="47" height="36" viewBox="0 0 47 36" ><rect height="35" width="46" x="0" y="0" stroke-width="0.5" stroke="#333333" fill="#E1FFE0" transform="translate(0.25 0.25)"/></svg>', 
+        CustomBuilder.initPaletteElement(get_cbuilder_msg("pbuilder.label.processElements"), "tool", get_cbuilder_msg('pbuilder.label.tool'), '<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100%"><rect fill="#ebfdf2" stroke="#386f5c" stroke-width="1" radius="2" rx="2" x="1" y="1" ry="2" width="14px" height="12px"></rect></svg>', 
             [] , {'join' : '', 'split' : ''}, true, "", {builderTemplate: {
             'dragHtml' : '<div class="node tool"><div class="node_label">'+get_cbuilder_msg('pbuilder.label.tool')+'</div></div>',
             'draggable' : true,
@@ -2189,7 +4588,7 @@ ProcessBuilder = {
         }});
     
         //Route
-        CustomBuilder.initPaletteElement("", "route", get_cbuilder_msg('pbuilder.label.route'), '<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="43" height="43" viewBox="0 0 43 43" ><path d="M 21 0 L 0 21 L 21 42 L 42 21 Z" stroke-width="0.5" fill="#fdfde1" stroke="#333333" transform="translate(0.25 0.25)"/></svg>', 
+        CustomBuilder.initPaletteElement(get_cbuilder_msg("pbuilder.label.processElements"), "route", get_cbuilder_msg('pbuilder.label.route'), '<svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 50 50"><polygon fill="#fffbe6" stroke="#faad14" stroke-width="2" points="25,0 50,25 25,50 0,25" opacity="1"></polygon><path d="m 16,15 7.42857142857143,9.714285714285715 -7.42857142857143,9.714285714285715 3.428571428571429,0 5.714285714285715,-7.464228571428572 5.714285714285715,7.464228571428572 3.428571428571429,0 -7.42857142857143,-9.714285714285715 7.42857142857143,-9.714285714285715 -3.428571428571429,0 -5.714285714285715,7.464228571428572 -5.714285714285715,-7.464228571428572 -3.428571428571429,0 z" fill="#fffbe6" stroke="#faad14" stroke-width="2" opacity="1"></path></svg>', 
             [] , {'join' : '', 'split' : ''}, true, "", {builderTemplate: {
             'dragHtml' : '<div class="node route"></div>',
             'draggable' : true,
@@ -2258,7 +4657,7 @@ ProcessBuilder = {
         }});
     
         //Subflow
-        CustomBuilder.initPaletteElement("", "subflow", get_cbuilder_msg('pbuilder.label.subflow'), '<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="50" height="50" viewBox="0 0 50 50"><rect fill="none" height="100" stroke="none" stroke-width="0" width="100" x="0" y="0" transform="translate(-0.5 -0.5)"/><rect height="35" width="46" x="0" y="0" stroke-width="0.5" stroke="#333333" fill="#fefefe" rx="2" transform="translate(1.5 6.5)"/><rect height="27" width="38" x="0" y="0" stroke-width="0.5" stroke="#333333" fill="#fefefe" rx="1" transform="translate(5.5 10.5)"/></svg>', 
+        CustomBuilder.initPaletteElement(get_cbuilder_msg("pbuilder.label.processElements"), "subflow", get_cbuilder_msg('pbuilder.label.subflow'), '<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100%"><rect x="1" y="1" width="14" height="12" fill="#fff" fill-opacity="1" stroke="#282828" stroke-width="1" stroke-opacity="1" opacity="1" rx="2" ry="2"></rect><rect x="3" y="3" width="10" height="8" fill="#fff" stroke="#282828" stroke-width="1" opacity="1" rx="1" ry="1"></rect></svg>', 
             [] , {'join' : '', 'split' : ''}, true, "", {builderTemplate: {
             'dragHtml' : '<div class="node subflow"><div class="node_label">'+get_cbuilder_msg('pbuilder.label.subflow')+'</div></div>',
             'draggable' : true,
@@ -2295,7 +4694,8 @@ ProcessBuilder = {
                         regex_validation: '^[a-zA-Z0-9_]+$',
                         validation_message: get_cbuilder_msg("pbuilder.label.invalidId"),
                         id_suggestion: 'label'
-                    },{
+                    },
+                    {
                         name: 'subflowId',
                         label: get_cbuilder_msg("pbuilder.label.subProcessId"),
                         type: 'textfield',
@@ -2402,7 +4802,7 @@ ProcessBuilder = {
         }});
     
         //Start
-        CustomBuilder.initPaletteElement("", "start", get_cbuilder_msg('pbuilder.label.start'), '<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="50" height="50" viewBox="0 0 50 50"><rect fill="none" height="100" stroke="none" stroke-width="0" width="100" x="0" y="0" transform="translate(-0.5 -0.5)"/><rect fill="#90ee90" height="42" rx="25" width="42" x="0" y="0" stroke-width="0.5" stroke="#333333" transform="translate(3.5 3.5)"/></svg>', [] , "", true, "", {builderTemplate: {
+        CustomBuilder.initPaletteElement(get_cbuilder_msg("pbuilder.label.processElements"), "start", get_cbuilder_msg('pbuilder.label.start'), '<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100%"><rect fill="#f6ffed" stroke="#52c41a" stroke-width="1" x="1" y="1" rx="20" ry="20" width="13px" height="13px"></rect></svg>', [] , "", true, "", {builderTemplate: {
             'dragHtml' : '<div class="node start"></div>',
             'draggable' : true,
             'movable' : false,
@@ -2423,7 +4823,7 @@ ProcessBuilder = {
         }});
     
         //End
-        CustomBuilder.initPaletteElement("", "end", get_cbuilder_msg('pbuilder.label.end'), '<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="50" height="50" viewBox="0 0 50 50"><rect fill="none" height="100" stroke="none" stroke-width="0" width="100" x="0" y="0" transform="translate(-0.5 -0.5)"/><rect fill="#fefefe" height="42" rx="25" width="42" x="0" y="0" stroke-width="0.5" stroke="#ff4500" transform="translate(3.5 3.5)"/><rect height="34" rx="25" width="34" x="0" y="0" stroke-width="0.5" stroke="#ff4500" fill="#ff4500" transform="translate(7.5 7.5)"/></svg>', [] , "", true, "", {builderTemplate: {
+        CustomBuilder.initPaletteElement(get_cbuilder_msg("pbuilder.label.processElements"), "end", get_cbuilder_msg('pbuilder.label.end'), '<svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 50 50"><circle cx="20" cy="20" r="18" fill="#fff" fill-opacity="1" stroke="#ff4d4f" stroke-width="2" stroke-opacity="1" opacity="1"></circle><circle cx="20" cy="20" r="13" fill="#ff4d4f" stroke="#ff4d4f" stroke-width="2" opacity="1"></circle></svg>', [] , "", true, "", {builderTemplate: {
             'dragHtml' : '<div class="node end"></div>',
             'draggable' : true,
             'movable' : false,
@@ -2431,7 +4831,7 @@ ProcessBuilder = {
             'copyable' : true,
             'navigable' : false,
             'supportProperties' : false,
-            'absolutePosition' : true,
+            'absolutePosition' : true,         
             'supportProperties' : false,            
             'supportStyle' : false,
             'parentContainerAttr' : 'activities',
@@ -2445,7 +4845,7 @@ ProcessBuilder = {
         }});
     
         //Transition
-        CustomBuilder.initPaletteElement("", "transition", get_cbuilder_msg('pbuilder.label.transition'), '<i class="las la-arrow-right"></i>', 
+        CustomBuilder.initPaletteElement(get_cbuilder_msg("pbuilder.label.processElements"), "transition", get_cbuilder_msg('pbuilder.label.transition'), '<i class="las la-arrow-right"></i>', 
             [{
                 title: get_cbuilder_msg("pbuilder.label.transitionProperties"),
                 helplink : get_cbuilder_msg("pbuilder.label.transitionProperties.helplink"),
@@ -2612,6 +5012,18 @@ ProcessBuilder = {
                 return 9;
             }
         }});
+
+        setTimeout(() => { // Delay to ensure DOM has been updated
+            const paletteElements = document.querySelectorAll('.builder-palette-element');
+            paletteElements.forEach(paletteElement => {
+                paletteElement.addEventListener('mousedown', (event) => {
+                    var type = ProcessBuilder.getLFNodeType(paletteElement.getAttribute("element-class"));
+                    ProcessBuilder.lf.dnd.startDrag({
+                        type: type
+                    });
+                });
+            });
+        }, 0);
     },
     
     /*
@@ -2642,24 +5054,10 @@ ProcessBuilder = {
             $('#process-selector select').trigger("chosen:updated");
             callback(element);
         } else {
-            ProcessBuilder.jsPlumb.unbind("connection");
-            ProcessBuilder.jsPlumb.unbind("connectionDetached");
-            ProcessBuilder.jsPlumb.unbind();
-            ProcessBuilder.jsPlumb.detachEveryConnection();
-            ProcessBuilder.jsPlumb.deleteEveryEndpoint();
-            ProcessBuilder.jsPlumb.unmakeEverySource();
-            ProcessBuilder.jsPlumb.unmakeEveryTarget();
-            ProcessBuilder.jsPlumb.reset();
-            ProcessBuilder.initJsPlumb();
-            
             element.addClass("process");
             element.attr("id", "process_" + elementObj.properties.id);
             element.html("");
             element.attr("data-cbuilder-uneditable", "").attr("data-cbuilder-participants", "");
-
-            if (ProcessBuilder.jsPlumb.setContainer) { // for jsPlumb 1.6.2 onwards
-                ProcessBuilder.jsPlumb.setContainer(element);
-            }
              
             var deferreds = [];
             var dummy = $.Deferred();
@@ -2676,8 +5074,6 @@ ProcessBuilder = {
             dummy.resolve();
 
             $.when.apply($, deferreds).then(function() {
-                ProcessBuilder.jsPlumb.setSuspendDrawing(true); //stop the rendering as it having slow performance when rendering large data
-                //
                 //render transitions
                 for (var i in elementObj.transitions) {
                     var childComponent = self.parseDataToComponent(elementObj.transitions[i]);
@@ -2685,28 +5081,14 @@ ProcessBuilder = {
                     $(element).append(temp);
                     self.renderElement(elementObj.transitions[i], temp, childComponent, false, [""]); //add a dummy deferreds as no need it, and to stop it trigger change event
                 }
-                
-                //resume and refresh the transition rendering here, else it block everything for very long time.
-                ProcessBuilder.jsPlumb.setSuspendDrawing(false, true); 
-                
-                // bind event handling to new or moved connections
-                ProcessBuilder.jsPlumb.bind("connection", function(info) {
-                    var connection = info.connection;
-                    ProcessBuilder.addConnection(connection);
-                });
-
-                // bind event handling to detached connections
-                ProcessBuilder.jsPlumb.bind("connectionDetached", function(info) {
-                    var connection = info.connection;
-                    if ($(connection.target).attr("id").indexOf("jsPlumb") >= 0) {
-                        ProcessBuilder.showConnectionDialog(connection);
-                    } else {
-                        ProcessBuilder.removeConnection(connection);
-                    }
-                });
-                
                 callback(element);
             });
+            if (ProcessBuilder.currentProcessData.properties.autoLayout) {
+                ProcessBuilder.renderLFWithAutoLayout(ProcessBuilder.currentLFProcessData, true);
+            } else {
+                ProcessBuilder.renderLFWithData(ProcessBuilder.currentLFProcessData);
+            }
+            ProcessBuilder.recenter();
         }
     },
     
@@ -2719,251 +5101,100 @@ ProcessBuilder = {
         callback(element);
     },
     
-    //Render activity, tool, subflow, route, start & end
+    //Render activity, tool, subflow, route,s tart & end
     renderActivity : function(element, elementObj, component, callback) {
-        if (elementObj.className !== "end") {
-            element.html('<div class="endleft endpoint"></div><div class="endtop endpoint"></div><div class="endright endpoint"></div><div class="endbottom endpoint"></div>');
-        } else {
-            element.html('<span></span>');
-        }
-        var label = "";
-        
-        if (elementObj.properties.label !== undefined) {
-            label += elementObj.properties.label;
-        }
-        
-        if (elementObj.className === "route") {
-            if (elementObj.properties.join === 'AND' || elementObj.properties.split === 'AND') {
-                label += "<div class='node_route_icon'>+</div>";
-            }
-        }
-        
-        if (label !== "") {
-            element.append('<div class="node_label">'+label+'</div>');
-        }
-        
-        if (elementObj.properties.limit !== undefined && elementObj.properties.limit !== null && elementObj.properties.limit !== "") {
-            element.append("<div class='node_limit'>" + elementObj.properties.limit + ProcessBuilder.currentProcessData.properties.durationUnit.toLowerCase() + "</div>");
-        }
-        
-        if ((elementObj.className === "activity" || elementObj.className === "start") 
-                && elementObj.properties !== undefined && elementObj.properties.mapping_act_formId !== undefined
-                && elementObj.properties.mapping_act_formId !== "") {
-            element.append('<div class="node_mapping"><i class="fas fa-file-alt" style="color:#3f84f4;"></i></div>');
-            element.find('.node_mapping').attr('title', ProcessBuilder.availableForms[elementObj.properties.mapping_act_formId]);
-        } else if (elementObj.className === "route" && elementObj.properties !== undefined
-                && elementObj.properties.mapping_act_plugin !== undefined && elementObj.properties.mapping_act_plugin.className !== undefined
-                 && elementObj.properties.mapping_act_plugin.className !== "") {
-            var plugin = ProcessBuilder.availableDecisionPlugin[elementObj.properties.mapping_act_plugin.className];
-            if (plugin === undefined) {
-                element.append('<div class="node_mapping"><i class="las la-exclamation-triangle" style="color:red;"></i></div>');
-                element.find('.node_mapping').attr('title', elementObj.properties.mapping_act_plugin.className + " (" + get_advtool_msg('dependency.tree.Missing.Plugin') + ")");
-            } else {
-                var icon = plugin.icon;
-                if (icon === undefined || icon === "") {
-                    icon = '<i class="las la-cog"></i>';
-                }
-                element.append('<div class="node_mapping" style="color:#394249;">'+icon+'</div>');
-                element.find('.node_mapping').attr('title', plugin.label);
-            }
-        } else if (elementObj.className === "tool" && elementObj.properties !== undefined
-                && elementObj.properties.tools !== undefined && elementObj.properties.tools.length > 0) {
-            var icon = "";
-            var label = "";
-            for (var i in elementObj.properties.tools) {
-                if (label !== "") {
-                    label += "\n";
-                }
-                if (elementObj.properties.tools.length > 1) {
-                    label += (parseInt(i) + 1) + ". ";
-                }
-                var p = elementObj.properties.tools[i];
-                var plugin = ProcessBuilder.availableTools[p.className];
-                if (plugin === undefined) {
-                    icon = '<i class="las la-exclamation-triangle" style="color:red;"></i>';
-                    label += p.className + " (" + get_advtool_msg('dependency.tree.Missing.Plugin') + ")";
-                } else {
-                    if (icon === "" && plugin.icon !== undefined && plugin.icon !== "") {
-                        icon = plugin.icon;
-                    }
-                    label += plugin.label;
-                }
-            }
-            if (icon === undefined || icon === "") {
-                icon = '<i class="las la-cog"></i>';
-            }
-            if (elementObj.properties.tools.length > 1) {
-                icon += " " + elementObj.properties.tools.length;
-            }
-            element.append('<div class="node_mapping" style="color:#394249;">'+icon+'</div>');
-            element.find('.node_mapping').attr('title', label);
-        }
-        
-        element.addClass("node " + elementObj.className);
-        element.attr("id", elementObj.properties.id);
-        element.attr("data-cbuilder-visible", "");
-        
-        if (elementObj.className !== "end") {
-            ProcessBuilder.jsPlumb.makeSource($(element), {
-                filter: ".endpoint",
-                anchor: "Continuous",
-                connectorOverlays: [
-                    ["Label", {
-                        label: "",
-                        cssClass: "transition_label"
-                    }]
-                ],
-                endpoint: ["Dot", {radius: 4, hoverClass: 'endpoint_hover'}],
-                paintStyle: {fillStyle: "#EBEBEB"},
-                isSource: true,
-                isTarget: true,
-                maxConnections: 20,
-                onMaxConnections: function(info, e) {
-                    alert(get_cbuilder_msg("pbuilder.label.maximumConnectionsReached") + ": " + info.maxConnections);
-                },
-                dragOptions: {
-                    start: function() {
-                    }
-                }
-            });
-        }
-        if (elementObj.className !== "start") {
-            ProcessBuilder.jsPlumb.makeTarget($(element), {
-                dropOptions: {
-                    hoverClass: "activity_hover"
-                },
-                anchor: "Continuous",
-                endpoint: ["Dot", {radius: 4, hoverClass: 'endpoint_hover'}],
-                isSource: true,
-                isTarget: true,
-                paintStyle: {fillStyle: "#EBEBEB"}
-            });
-        }
-        
         callback(element);
+    },
+            
+    /*
+     * Update Node Properties
+     */ 
+    updateActivityProperties: function (activityId, newProperties) {
+        if(newProperties.className === 'participant'){
+            activityId = activityId.replace('laneID_', '');
+        }
+        let ProcessData = ProcessBuilder.currentProcessData.participants;
+        // Loop through each participant
+        ProcessData.forEach(participant => {
+            if (participant.activities && newProperties.className !== 'participant') {
+                if (Array.isArray(participant.activities)) {
+                    participant.activities.forEach(activity => {
+                        if (activity.properties.id === activityId) {
+                            // Update the properties with the new values
+                            Object.assign(activity.properties, newProperties);
+                        }
+                    });
+                }
+            } else {
+                if (participant.properties.id === activityId) {
+                    // Update the properties with the new values
+                    Object.assign(participant.properties, newProperties);
+                }
+            }
+        });
+    },
+    
+    /*
+     * Update Transition Properties
+     */
+    updateTransitionProperties: function (transitionId, newProperties) {
+        let ProcessData = ProcessBuilder.currentProcessData.transitions;
+        // Loop through each participant
+        ProcessData.forEach(transition => {
+            if (transition.properties.id === transitionId) {
+                // Update the properties with the new values
+                Object.assign(transition.properties, newProperties);
+            }
+        });
+    },
+
+    /*
+     * Update logic flow node data
+     */
+    updateLFData: function (element, elementObj) {
+        let nodeId = element[0].data.id;
+        if (elementObj.className === 'transition') {
+            let label = "";
+            if (elementObj.properties.condition) {
+                if (elementObj.properties.label) {
+                    label = elementObj.properties.label + '\n' + elementObj.properties.condition + '\n';
+                } else {
+                    label = elementObj.properties.condition;
+                }
+            } else if (elementObj.properties.type === 'OTHERWISE' || elementObj.properties.type === 'EXCEPTION') {
+                let typeLabel = '[' + elementObj.properties.type + ']';
+                if (elementObj.properties.type === 'EXCEPTION') {
+                    typeLabel = elementObj.properties.exceptionName;
+                }
+                if (elementObj.properties.label) {
+                    label = elementObj.properties.label + '\n' + typeLabel + '\n';
+                } else {
+                    label = typeLabel;
+                }
+            }
+            ProcessBuilder.lf.setProperties(nodeId, elementObj.properties);
+            ProcessBuilder.lf.updateText(nodeId, label);
+            element.attr("data-cbuilder-visible", "");
+            ProcessBuilder.updateTransitionProperties(nodeId, elementObj.properties);
+        } else {
+            if (elementObj.className === 'participant') {
+                elementObj.properties.id = elementObj.properties.id.replace('laneID_', '');
+            }
+            ProcessBuilder.lf.setProperties(nodeId, elementObj.properties);
+            ProcessBuilder.lf.updateText(nodeId, elementObj.properties.label);
+            element.attr("data-cbuilder-visible", "");
+            ProcessBuilder.updateActivityProperties(nodeId, elementObj.properties);
+        }
     },
     
     //Render transition
     renderTransition : function(element, elementObj, component, callback) {
-        var self = CustomBuilder.Builder;
-        
-        var label = elementObj.properties.label;
-        var color = "#999";
-        if (elementObj.properties.type === 'CONDITION') {
-            if (label !== "") {
-                label += "<br/>";
-            }
-            label += (elementObj.properties.condition) ? elementObj.properties.condition : "";
-            color = "#80A2DB";
-        } else if (elementObj.properties.type === 'OTHERWISE') {
-            if (label !== "") {
-                label += "<br/>";
-            }
-            label += "[otherwise]";
-            color = "#D19D00";
-        } else if (elementObj.properties.type === 'EXCEPTION') {
-            if (label !== "") {
-                label += "<br/>";
-            }
-            label += "[exception] " + (elementObj.properties.exceptionName) ? elementObj.properties.exceptionName : "";
-            color = "#E37F96";
-        } else if (elementObj.properties.type === 'DEFAULTEXCEPTION') {
-            if (label !== "") {
-                label += "<br/>";
-            }
-            label += "[defaultexception]";
-            color = "#E37F96";
-        } else if (elementObj.properties.type === 'startend') {
-            color = "#000";
-        }
-        
-        var transitionId = elementObj.properties.id;
-        if (label === undefined) {
-            label = "";
-        }
-        
-        var connector = (elementObj.properties.style === 'orthogonal') ?
-                ["Flowchart", {cornerRadius: 5, gap: 0}] :
-                ["StateMachine", {curviness:0.1}];
-        
-        if (!$(element).is('div')) {
-            var connection = elementObj.connection;
-            
-            connection.setPaintStyle({strokeStyle: color, lineWidth: 1, outlineWidth: 15, outlineColor: 'transparent'});
-            connection.setHoverPaintStyle({lineWidth: 4}),
-            connection.setConnector(connector);
-            connection.removeOverlay(transitionId+"-label");
-            connection.addOverlay([ 
-                "Arrow", {
-                    location: 0.99,
-                    id: "arrow",
-                    length: 10,
-                    width: 10,
-                    foldback: 0.8
-                }
-            ]); 
-            connection.addOverlay([ 
-                "Label", {
-                    label: label, cssClass: "transition_label", id : transitionId+"-label"
-                }
-            ]); 
-            $(connection._jsPlumb.overlays[1].canvas).attr("data-cbuilder-ignore-dragging", "");
-            
-            element = $(connection.canvas);
-            
-            $(connection.canvas).addClass("transition").attr("id", transitionId).attr("data-cbuilder-ignore-dragging", "");
-            
-            //add group select
-            for (var e in connection.endpoints) {
-                $(connection.endpoints[e].canvas).attr("data-cbuilder-group", transitionId).attr("data-cbuilder-ignore-dragging", "");
-            }
-
-            //to make the transition label not draggable
-            for (var e in connection._jsPlumb.overlays) {
-                $(connection._jsPlumb.overlays[e].canvas).attr("data-cbuilder-ignore-dragging", "");
-            }
-        } else {
-            var connection = ProcessBuilder.jsPlumb.connect({
-                source: self.frameBody.find("#" + elementObj.properties.from),
-                target: self.frameBody.find("#" + elementObj.properties.to),
-                connector: connector,
-                paintStyle: {strokeStyle: color, lineWidth: 1, outlineWidth: 15, outlineColor: 'transparent'},
-                endpointStyle:{ fillStyle: "#EBEBEB" },
-                overlays: [
-                    ["Label", {label: label, cssClass: "transition_label", id : transitionId+"-label"}]
-                ]
-            });
-
-            element.remove();
-            element = $(connection.canvas);
-            $(connection.canvas).addClass("transition").attr("id", transitionId).attr("data-cbuilder-ignore-dragging", "");
-
-            if (elementObj.properties.type === 'startend') {
-                $(connection.canvas).attr("data-cbuilder-uneditable", "");
-            }
-
-            //add group select
-            for (var e in connection.endpoints) {
-                $(connection.endpoints[e].canvas).attr("data-cbuilder-group", transitionId).attr("data-cbuilder-ignore-dragging", "");
-            }
-            
-            //to make the transition label not draggable
-            for (var e in connection._jsPlumb.overlays) {
-                $(connection._jsPlumb.overlays[e].canvas).attr("data-cbuilder-ignore-dragging", "");
-            }
-            
-            elementObj.connection = connection;
-        }
-        
         callback(element);
     },
     
     //To redraw the connections when dragging participant
     dragParticipant : function(dragElement, component) {
         var self = CustomBuilder.Builder;
-        ProcessBuilder.jsPlumb.setSuspendDrawing(true);
-        ProcessBuilder.jsPlumb.recalculateOffsets(self.frameBody.find(".process"));
-        ProcessBuilder.jsPlumb.setSuspendDrawing(false, true);
         return dragElement;
     },
     
@@ -2975,7 +5206,6 @@ ProcessBuilder = {
     
     //To redraw the connection when dragging node (activity, tool, subflow, route, start & end)
     dragActivity : function(dragElement, component) {
-        ProcessBuilder.jsPlumb.repaint(dragElement);
         return dragElement;
     },
     
@@ -2993,54 +5223,57 @@ ProcessBuilder = {
     
     //to remove transition                
     unloadTransition : function(element, elementObj, component) {
-        ProcessBuilder.jsPlumb.detach(elementObj.connection);
+    },
+    
+    // Find the index of an object in the array by matching the "-Id" property.
+    findObjectIndexById: function (arr, objToFind) {
+        return arr.findIndex(function(item) {
+            return item["-Id"] === objToFind["-Id"];
+        });
     },
     
     //Handling for node deleted
-    removeNode : function (node) {
-        var data = $(node).data("data");
+    removeNode : function (data) {
+        data = data.properties;
         if (data.xpdlObj !== undefined) {
             //get process xpdl obj
             var xpdlProcess = ProcessBuilder.currentProcessData.xpdlObj;
             if (data.className !== "start" && data.className !== "end") {
                 var xpdlActivities = ProcessBuilder.getArray(xpdlProcess['Activities'], 'Activity');
-            
-                var index = $.inArray(data.xpdlObj, xpdlActivities);
+                var index = ProcessBuilder.findObjectIndexById(xpdlActivities, data.xpdlObj);
                 if (index !== -1) {
                     xpdlActivities.splice(index, 1);
                 }
                 ProcessBuilder.setArray(xpdlProcess, 'Activities', 'Activity', xpdlActivities);
             } else {
                 var xpdlProcessesAttrs = ProcessBuilder.getArray(xpdlProcess['ExtendedAttributes'], 'ExtendedAttribute');
-                
-                var index = $.inArray(data.xpdlObj, xpdlProcessesAttrs);
+                var index = xpdlProcessesAttrs.findIndex(item => item["-Name"] === data.xpdlObj['-Name'] && item["-Value"] === data.xpdlObj['-Value']);
                 if (index !== -1) {
                     xpdlProcessesAttrs.splice(index, 1);
                 }
                 ProcessBuilder.setArray(xpdlProcess, 'ExtendedAttributes', 'ExtendedAttribute', xpdlProcessesAttrs);
             }
             if (data.mapping !== undefined) {
-                delete CustomBuilder.data['activityPlugins'][ProcessBuilder.currentProcessData.properties.id + "::" + data.properties.id];
+                delete CustomBuilder.data['activityPlugins'][ProcessBuilder.currentProcessData.properties.id + "::" + data.id];
             }
             if (data.formMapping !== undefined) {
-                delete CustomBuilder.data['activityForms'][ProcessBuilder.currentProcessData.properties.id + "::" + data.properties.id];
+                delete CustomBuilder.data['activityForms'][ProcessBuilder.currentProcessData.properties.id + "::" + data.id];
             }
         }
         
-        var connSet = ProcessBuilder.jsPlumb.getConnections({source: $(node)});
+        var connSet =  ProcessBuilder.lf.getNodeOutgoingEdge(data.id);
         for (var c in connSet) {
-            ProcessBuilder.removeConnection(connSet[c]);
+            ProcessBuilder.removeConnection(ProcessBuilder.lf.getEdgeDataById(connSet[c].id));
         }
         
-        connSet = ProcessBuilder.jsPlumb.getConnections({target: $(node)});
+        connSet = ProcessBuilder.lf.getNodeIncomingEdge(data.id);
         for (var c in connSet) {
-            ProcessBuilder.removeConnection(connSet[c]);
+            ProcessBuilder.removeConnection(ProcessBuilder.lf.getEdgeDataById(connSet[c].id));
         }
-        
-        // remove connections
-        ProcessBuilder.jsPlumb.detachAllConnections($(node));
-        // remove element
-        ProcessBuilder.jsPlumb.remove($(node));
+
+        ProcessBuilder.removeActivity(data.id);
+        ProcessBuilder.lf.deleteElement(data.id); 
+        $("body").addClass("no-right-panel");
     },
     
     //Handling for a connection event triggered 
@@ -3048,12 +5281,12 @@ ProcessBuilder = {
         var self = CustomBuilder.Builder;
         
         if (self.frameBody.find(".process").data("data") !== undefined) {
-            var source = connection.source;
-            var target = connection.target;
+            var source = connection.sourceNodeId;
+            var target = connection.targetNodeId;
 
             // update split & join
-            var sourceConnSet = ProcessBuilder.jsPlumb.getConnections({source: $(source)});
-            var sourceData = $(source).data("data");
+            var sourceConnSet = ProcessBuilder.lf.getNodeOutgoingEdge(source);
+            var sourceData = ProcessBuilder.lf.getNodeDataById(source);
             if (sourceConnSet.length > 1) {
                 if (sourceData.properties.split === "") {
                     sourceData.properties.split = "XOR";
@@ -3061,8 +5294,8 @@ ProcessBuilder = {
             } else {
                 sourceData.properties.split = "";
             }
-            var targetConnSet = ProcessBuilder.jsPlumb.getConnections({target: $(target)});
-            var targetData = $(target).data("data");
+            var targetConnSet = ProcessBuilder.lf.getNodeOutgoingEdge(target);
+            var targetData = ProcessBuilder.lf.getNodeDataById(target);
             if (targetConnSet.length > 1) {
                 if (targetData.properties.join === "") {
                     targetData.properties.join = "XOR";
@@ -3078,7 +5311,6 @@ ProcessBuilder = {
                 data = {
                     className :'transition',
                     properties : {
-                        name : "",
                         type : "",
                         style : "straight"
                     }
@@ -3093,10 +5325,6 @@ ProcessBuilder = {
                 for (var e in connection.endpoints) {
                     $(connection.endpoints[e].canvas).attr("data-cbuilder-group", data.properties.id).attr("data-cbuilder-ignore-dragging", "");
                 }
-                
-                if (connection._jsPlumb.overlays[1] !==undefined) {
-                    $(connection._jsPlumb.overlays[1].canvas).attr("data-cbuilder-ignore-dragging", "");
-                }
 
                 $(connection.canvas).attr("data-cbuilder-classname", 'transition');
                 $(connection.canvas).attr("data-cbuilder-id", data.properties.id);
@@ -3107,45 +5335,18 @@ ProcessBuilder = {
 
             data.properties.from = sourceData.properties.id;
             data.properties.to = targetData.properties.id;
-
-            if (sourceData.className === "start" || targetData.className === "end") {
+            if (sourceData.properties.className === "start" || targetData.properties.className === "end") {
                 data.properties.type = "startend";
-                $(connection.canvas).attr("data-cbuilder-uneditable", "");
-
-                connection.setPaintStyle({
-                    strokeStyle: "#000", lineWidth: 1, outlineWidth: 15, outlineColor: 'transparent'
-                });   
+                $(connection.canvas).attr("data-cbuilder-uneditable", "");  
             } else {
                 if (data.properties.type === "startend") {
                     data.properties.type = "";
                     $(connection.canvas).removeAttr("data-cbuilder-uneditable", "");
-
-                    connection.setPaintStyle({
-                        strokeStyle: "#999", lineWidth: 1, outlineWidth: 15, outlineColor: 'transparent'
-                    }); 
                 }
             }
-            
-            // remove unused endpoints
-            var endpoints = ProcessBuilder.jsPlumb.getEndpoints($(source));
-            if (endpoints.length > 0) {
-                for (var i=0; i<endpoints.length; i++) {
-                    if (endpoints[i].connections.length === 0) {
-                        ProcessBuilder.jsPlumb.deleteEndpoint(endpoints[i]);
-                    }
-                }
-            }
-            endpoints = ProcessBuilder.jsPlumb.getEndpoints($(target));
-            if (endpoints.length > 0) {
-                for (var i=0; i<endpoints.length; i++) {
-                    if (endpoints[i].connections.length === 0) {
-                        ProcessBuilder.jsPlumb.deleteEndpoint(endpoints[i]);
-                    }
-                }
-            }
-
             CustomBuilder.update();
             self._updateBoxes();
+            return data.properties.id;
         }
     },
     
@@ -3154,14 +5355,12 @@ ProcessBuilder = {
         var self = CustomBuilder.Builder;
         var parentDataArray = self.frameBody.find(".process").data("data")['transitions'];
         
-        var data = $(connection.canvas).data("data");
-        
+        var data = connection.properties;
         if (data.xpdlObj !== undefined) {
             //get process xpdl obj
             var xpdlProcess = ProcessBuilder.currentProcessData.xpdlObj;
             var xpdlTransitions = ProcessBuilder.getArray(xpdlProcess['Transitions'], 'Transition');
-
-            var index = $.inArray(data.xpdlObj, xpdlTransitions);
+            var index = ProcessBuilder.findObjectIndexById(xpdlTransitions, data.xpdlObj);
             if (index !== -1) {
                 xpdlTransitions.splice(index, 1);
             }
@@ -3173,12 +5372,11 @@ ProcessBuilder = {
             parentDataArray.splice(index, 1);
         }
         
-        var source = connection.source;
-        var target = connection.target;
-        
+        var source = connection.sourceNodeId;
+        var target = connection.targetNodeId;
         // update split & join
-        var sourceConnSet = ProcessBuilder.jsPlumb.getConnections({source: $(source)});
-        var sourceData = $(source).data("data");
+        var sourceConnSet = ProcessBuilder.lf.getNodeOutgoingEdge(source);
+        var sourceData = ProcessBuilder.lf.getNodeDataById(source);
         if (sourceConnSet.length > 1) {
             if (sourceData.properties.split === "") {
                 sourceData.properties.split = "XOR";
@@ -3186,8 +5384,8 @@ ProcessBuilder = {
         } else {
             sourceData.properties.split = "";
         }
-        var targetConnSet = ProcessBuilder.jsPlumb.getConnections({target: $(target)});
-        var targetData = $(target).data("data");
+        var targetConnSet = ProcessBuilder.lf.getNodeIncomingEdge(target);
+        var targetData = ProcessBuilder.lf.getNodeDataById(target);
         if (targetConnSet.length > 1) {
             if (targetData.properties.join === "") {
                 targetData.properties.join = "XOR";
@@ -3196,114 +5394,9 @@ ProcessBuilder = {
             targetData.properties.join = "";
         }
         
-        // remove unused endpoints
-        var endpoints = ProcessBuilder.jsPlumb.getEndpoints($(source));
-        if (endpoints !== undefined && endpoints.length > 0) {
-            for (var i=0; i<endpoints.length; i++) {
-                if (endpoints[i].connections.length === 0) {
-                    ProcessBuilder.jsPlumb.deleteEndpoint(endpoints[i]);
-                }
-            }
-        }
-        endpoints = ProcessBuilder.jsPlumb.getEndpoints($(target));
-        if (endpoints !== undefined && endpoints.length > 0) {
-            for (var i=0; i<endpoints.length; i++) {
-                if (endpoints[i].connections.length === 0) {
-                    ProcessBuilder.jsPlumb.deleteEndpoint(endpoints[i]);
-                }
-            }
-        }
-        
+        ProcessBuilder.lf.deleteElement(data.id); 
         CustomBuilder.update();
         self._updateBoxes();
-    },
-      
-    /*
-     * Show a dialog to choose to add connection node
-     */                
-    showConnectionDialog : function(connection){
-        var self = CustomBuilder.Builder;
-        var source = $(connection.source);
-        var target = $(connection.target);
-        var viewportTop = self.frameDoc.scrollTop();
-        var viewportLeft = self.frameDoc.scrollLeft();
-        
-        self.frameBody.find("#node_dialog").remove();
-        
-        var box = target.offset();
-        
-        var offsetLeft = box.left + viewportLeft;
-        var offsetTop = box.top + viewportTop;
-        
-        var swimlane;
-        // determine swimlane
-        self.frameBody.find(".participant").each(function(index, participant) {
-            var participantTop = $(participant).offset().top + viewportTop; 
-            var participantHeight = $(participant).outerHeight() * self.zoom;
-            if (offsetTop >= participantTop && offsetTop <= (participantTop + participantHeight)) {
-                target = participant;
-                swimlane = target;
-                return false;
-            }
-        });
-        if (!swimlane) {
-            return false;
-        }
-        
-        // display dialog to choose node type
-        var $nodeDialog = $('<div id="node_dialog"><ul><li type="activity">' + get_cbuilder_msg("pbuilder.label.activity") + '</li><li type="tool">' + get_cbuilder_msg("pbuilder.label.tool") + '</li><li type="route">' + get_cbuilder_msg("pbuilder.label.route") + '</li><li type="subflow">' + get_cbuilder_msg("pbuilder.label.subflow") + '</li><li type="end">' + get_cbuilder_msg("pbuilder.label.end") + '</li><ul></div>');
-        $nodeDialog.dialog({
-            autoOpen: true,
-            modal: true,
-            width: 100,
-            open: function(event, ui) {
-                var iframeOffset = $("#iframe-wrapper").offset();
-                var dialogTop = box.top - self.frameDoc.scrollTop() + iframeOffset.top - 85;
-                var dialogLeft = box.left - self.frameDoc.scrollLeft() + iframeOffset.left - 50;
-                $nodeDialog.parent().css("left", dialogLeft + "px");
-                $nodeDialog.parent().css("top", dialogTop + "px");
-                $("#node_dialog").parent().find(".ui-dialog-titlebar").remove();
-                $("#node_dialog").parent().css("width", "100px");
-                $("#node_dialog").parent().addClass("node_dialog_container");
-                $('.ui-widget-overlay').off('click');
-                $('.ui-widget-overlay').on('click',function(){
-                    $nodeDialog.dialog("close");
-                });
-            }
-        });
-        if ($(source).hasClass("start") || $(source).hasClass("route")) {
-            $nodeDialog.find("[type=end]").remove();
-        }
-        $("#node_dialog li").on("click", function() {
-            $nodeDialog.dialog("close");
-            var nodeType = $(this).attr("type");
-            
-            self.component = self.getComponent(nodeType);
-            self.dragElement = $('<div></div>');
-            $(swimlane).find('.activities-container').append(self.dragElement);
-            
-            var containerOffset = $(swimlane).offset();
-            var x_offset = (offsetLeft - (containerOffset.left + viewportLeft)) / self.zoom;
-            var y_offset = (offsetTop - (containerOffset.top + viewportTop)) / self.zoom;
-
-            self.dragElement.css({
-                "top" : y_offset + "px",
-                "left" : x_offset + "px",
-                "position" : "absolute"
-            });
-            
-            self.addElement(function(){
-                var connection = ProcessBuilder.jsPlumb.connect({
-                    source: self.frameBody.find("#" + $(source).data("data").properties.id),
-                    target: self.frameBody.find("#" + $(self.selectedEl).data("data").properties.id),
-                    connector: ["StateMachine", {curviness:0.1}],
-                    paintStyle: {strokeStyle: "#999", lineWidth: 1, outlineWidth: 15, outlineColor: 'transparent'},
-                    endpointStyle:{ fillStyle: "#EBEBEB" }
-                });
-
-                ProcessBuilder.addConnection(connection);
-            });
-        });
     },
     
     /*
@@ -3359,29 +5452,39 @@ ProcessBuilder = {
         var className = elementObj.className;
             
         if (elementObj.properties.id === undefined || elementObj.properties.id === "" || className === "participant") {
-            var nodeCount = self.frameBody.find("."+className).length - 1;
+            var nodeCount = $('#lf-container .' + className).length - 1;
             if (nodeCount < 0) {
                 nodeCount = 0; //should always start with 0
             }
             var id;
             do {
-                id = className + ++nodeCount;
-            } while (self.frameBody.find("#"+id).length > 0);
-
-            if (className === "participant") {
-                id = ProcessBuilder.currentProcessData.properties.id + "_" + id; 
-            }
-
+                if (className === "participant") {
+                    id = `${ProcessBuilder.currentProcessData.properties.id}_${className}${++nodeCount}`;
+                } else {
+                    id = `${className}${++nodeCount}`;
+                }
+            } while ($(`#lf-container #${className === "participant" ? "laneID_" : ""}${id}`).length > 0);
             elementObj.properties.id = id;
-        } else if (self.frameBody.find("#"+elementObj.properties.id).length > 0) {
-            var nodeCount = self.frameBody.find("#"+elementObj.properties.id).length;
-            
+        } else if ($('#lf-container #' + elementObj.properties.id).length > 0) {
+            var nodeCount = $('#lf-container #' + elementObj.properties.id).length;
+
             var id = elementObj.properties.id;
-            
-            while (self.frameBody.find("#"+id).length > 0) {
+
+            while ($('#lf-container #' + id).length > 0) {
                 id = elementObj.properties.id + "_" + ++nodeCount;
             }
             elementObj.properties.id = id;
+            elementObj.id = id;
+        } else if ((elementObj.properties.className === 'participant') && $('#lf-container #laneID_' + elementObj.properties.id).length > 0) {
+            var nodeCount = $('#lf-container #laneID_' + elementObj.properties.id).length;
+
+            var id = elementObj.properties.id;
+
+            while ($('#lf-container #laneID_' + id).length > 0) {
+                id = elementObj.properties.id + "_" + ++nodeCount;
+            }
+            elementObj.properties.id = id;
+            elementObj.id = id;
         }
         
         if ((className === "activity" || className === "tool" || className === "subflow" || className === "participant") 
@@ -3416,14 +5519,6 @@ ProcessBuilder = {
             if (ProcessBuilder.refreshTimeout) {
                 clearTimeout(ProcessBuilder.refreshTimeout);
             }
-            
-            ProcessBuilder.refreshTimeout = setTimeout(function(){
-                ProcessBuilder.jsPlumb.setSuspendDrawing(true);
-                ProcessBuilder.jsPlumb.recalculateOffsets(self.frameBody.find(".process"));
-                ProcessBuilder.jsPlumb.setSuspendDrawing(false, true);
-                ProcessBuilder.jsPlumb.repaintEverything(); // Ensure everything is repainted
-                ProcessBuilder.refreshTimeout = null;
-            }, 30);
         }
     },
     
@@ -3433,8 +5528,8 @@ ProcessBuilder = {
     zoomMinus : function() {
         var self = CustomBuilder.Builder;
         self.setZoom("-");
-        ProcessBuilder.jsPlumb.setZoom(self.zoom);
         ProcessBuilder.updateZoomLabel();
+        ProcessBuilder.lf.zoom(false);
     },
     
     /*
@@ -3443,8 +5538,8 @@ ProcessBuilder = {
     zoomPlus : function() {
         var self = CustomBuilder.Builder;
         self.setZoom("+");
-        ProcessBuilder.jsPlumb.setZoom(self.zoom);
         ProcessBuilder.updateZoomLabel();
+        ProcessBuilder.lf.zoom(true);
     },
     
     /*
@@ -3467,6 +5562,502 @@ ProcessBuilder = {
         $("#zoom-minus").attr("title", get_cbuilder_msg('pbuilder.label.zoomOut') + " (" + strIn + ")");
         $("#zoom-plus").attr("title", get_cbuilder_msg('pbuilder.label.zoomIn') + " (" + strOut + ")");
     },       
+
+    /*
+     * Reset Zoom
+     */
+    fitScreen: function(){
+        ProcessBuilder.lf.resetZoom();
+        ProcessBuilder.recenter();
+    },
+            
+    /**
+     * Repositions the graph view to center on the pool node.
+     * Ensures that the view is focused on the main pool element of the process.
+     */
+    recenter: function () {
+        const { transformModel, width, height } = ProcessBuilder.lf.graphModel;
+        const node = ProcessBuilder.lf.getNodeModelById("poolID_" + ProcessBuilder.currentProcessData.properties.id); // Get the node model
+        if (!node) return;
+
+        let { x, y } = node; // Node coordinates
+        transformModel.focusOn(x, y, width, height);
+    },
+
+    /*
+     * Reset Zoom
+     */
+    autoLayout: function () {
+        var self = CustomBuilder.Builder;
+        var nextData = ProcessBuilder.lf.layout('bpmn:startEvent');
+        var newData = ProcessBuilder.lf.getGraphData();
+        var newGrapData = ProcessBuilder.updateEdges(newData);
+        newGrapData = ProcessBuilder.updatePoolHeight(newGrapData);
+        ProcessBuilder.renderLFWithAutoLayout(newGrapData, false);
+        ProcessBuilder.updateNodePosition(newGrapData);
+        
+        if (self.selectedEl) {
+            var selectedData = self.selectedEl[0].data;
+            if (selectedData) {
+                var selectID = selectedData.properties.id;
+            }
+        } else {
+            selectID = $('#lf-container').find('.node.participant').last().attr('id');
+        }
+        ProcessBuilder.selectElementById(selectID);
+    },
+    
+    /**
+     * Updates the x and y coordinates of activity nodes in the process data.
+     * Ensures that node positions in the graphical representation are reflected in the process data.
+     *
+     * @param {Object} graphData - The current process graph data containing nodes.
+     */
+    updateNodePosition: function (graphData) {
+        let processData = ProcessBuilder.currentProcessData;
+        graphData.nodes.forEach(node => {
+            if (node.type !== 'pool' && node.type !== 'lane') {
+                let laneID = ProcessBuilder.getNodeLaneID(node.id);
+                let participant = processData.participants.find(participant => participant.properties.id === ProcessBuilder.removeLanePrefix(laneID));
+                if (participant && participant.activities) {
+                    for (const activity of participant.activities) {
+                        if (activity.properties && activity.properties.id === node.id) {
+                            activity.x_offset = node.x;
+                            activity.y_offset = node.y;
+                        }
+                    }
+                }
+            }
+        });
+        ProcessBuilder.currentProcessData = processData;
+        CustomBuilder.update();
+    },
+    
+    /*
+     * Select logic flow node/edge with id
+     */
+    selectElementById: function (id) {
+        ProcessBuilder.lf.selectElementById(id, false, false);
+    },
+            
+    /*
+     * Adjust pool height after auto layout
+     */
+    updatePoolHeight: function (graphData) {
+        const totalHeight = graphData.nodes
+            .filter(lane => lane.type === "lane") // Filter objects with type "lane"
+            .reduce((sum, lane) => sum + lane.properties.height, 0);
+
+        const poolObject = graphData.nodes.find(node => node.type === "pool");
+
+        if (poolObject) {
+            // Update the height in both "properties" and "properties.nodeSize"
+            poolObject.properties.height = totalHeight;
+            poolObject.properties.nodeSize.height = totalHeight;
+        }
+        return graphData;
+    },
+
+    //Before the final render, adjust all the edges this is due to node changed during auto layout
+    updateEdges: function (nodeData) {
+        nodeData.edges.forEach(existEdge => {
+            nodeData.edges = nodeData.edges.filter(edge => edge.id !== existEdge.id);
+            
+            let text = existEdge.text;
+            if(text){
+                text = existEdge.text.value;
+            }
+            nodeData.edges.push({
+                id: existEdge.id,
+                type: existEdge.type,
+                sourceNodeId: existEdge.sourceNodeId,
+                targetNodeId: existEdge.targetNodeId,
+                properties: existEdge.properties,
+                text: text,
+                ...ProcessBuilder.getEdgeDataPoints(existEdge.sourceNodeId, existEdge.targetNodeId, nodeData.nodes)
+            });
+        });
+        nodeData.edges = ProcessBuilder.adjustEdgePositions(nodeData.edges);
+        return nodeData;
+    },
+    
+    /**
+     * Adjusts the positions of overlapping edges to avoid visual clutter.
+     * Ensures that edges with the same X or Y coordinates are slightly shifted to improve readability.
+     */
+    adjustEdgePositions: function (edges) {
+        // loop to change y
+        let gap = 7;
+        edges.forEach((currentEdge) => {
+            let yPosition = currentEdge.startPoint.y;
+            const filteredEdges = edges.filter(edge =>
+                (edge.startPoint.y === yPosition || edge.endPoint.y === yPosition) && currentEdge.id !== edge.id
+            );
+            filteredEdges.forEach((targetEdge) => {
+                if (ProcessBuilder.isOverlappingX(currentEdge, targetEdge)) {
+                    if (targetEdge.startPoint.y === targetEdge.endPoint.y && (targetEdge.startPoint.y === yPosition || targetEdge.endPoint.y === yPosition)) {
+                        targetEdge.startPoint.y = targetEdge.startPoint.y + gap;
+                        targetEdge.endPoint.y = targetEdge.endPoint.y + gap;
+                    } else {
+                        if (targetEdge.startPoint.y === yPosition) {
+                            targetEdge.startPoint.y = targetEdge.startPoint.y + gap;
+                        } else if (targetEdge.endPoint.y === yPosition) {
+                            targetEdge.endPoint.y = targetEdge.endPoint.y + gap;
+                        }
+                    }
+                }
+            });
+        });
+
+        edges.forEach((currentEdge) => {
+            let xPosition = currentEdge.startPoint.x;
+            const filteredEdges = edges.filter(edge =>
+                (edge.startPoint.x === xPosition || edge.endPoint.x === xPosition) && currentEdge.id !== edge.id
+            );
+            filteredEdges.forEach((targetEdge) => {
+                if (ProcessBuilder.isOverlappingY(currentEdge, targetEdge)) {
+                    if (targetEdge.startPoint.x === targetEdge.endPoint.x && (targetEdge.startPoint.x === xPosition || targetEdge.endPoint.x == xPosition)) {
+                        targetEdge.startPoint.x = targetEdge.startPoint.x + gap;
+                        targetEdge.endPoint.x = targetEdge.endPoint.x + gap;
+                    } else {
+                        if (targetEdge.startPoint.x === xPosition) {
+                            targetEdge.startPoint.x = targetEdge.startPoint.x + gap;
+                        } else if (targetEdge.endPoint.x === xPosition) {
+                            targetEdge.endPoint.x = targetEdge.endPoint.x + gap;
+                        }
+                    }
+                }
+            });
+        });
+        return edges;
+    },
+    
+    /**
+     * Checks if two edges overlap on the X-axis.
+     * This function determines whether the horizontal projection of `currentEdge`
+     * and `targetEdge` intersects, meaning their X-coordinates overlap.
+     */
+    isOverlappingX: function(currentEdge, targetEdge) {
+        let currStartPointX = currentEdge.startPoint.x;
+        let currEndPointX = currentEdge.endPoint.x;
+        let targetStartPointX = targetEdge.startPoint.x;
+        let targetEndPointX = targetEdge.endPoint.x;
+        
+        let currentMin = Math.min(currStartPointX, currEndPointX);
+        let currentMax = Math.max(currStartPointX, currEndPointX);
+        let targetMin = Math.min(targetStartPointX, targetEndPointX);
+        let targetMax = Math.max(targetStartPointX, targetEndPointX);
+    
+        return currentMin <= targetMax && targetMin <= currentMax;
+    },
+    
+    /**
+     * Checks if two edges overlap on the Y-axis.
+     * This function determines whether the vertical projection of `currentEdge`
+     * and `targetEdge` intersects, meaning their Y-coordinates overlap.
+     */
+    isOverlappingY: function(currentEdge, targetEdge) {
+        let currStartPointY = currentEdge.startPoint.y;
+        let currEndPointY = currentEdge.endPoint.y;
+        let targetStartPointY = targetEdge.startPoint.y;
+        let targetEndPointY = targetEdge.endPoint.y;
+        
+        let currentMin = Math.min(currStartPointY, currEndPointY);
+        let currentMax = Math.max(currStartPointY, currEndPointY);
+        let targetMin = Math.min(targetStartPointY, targetEndPointY);
+        let targetMax = Math.max(targetStartPointY, targetEndPointY);
+    
+        return currentMin <= targetMax && targetMin <= currentMax;
+    },
+    
+    /*
+     * Check the node position between source and target node
+     */
+    getRelativePosition: function (source, target) {
+        // Define position types relative to the target
+        const POSITION_TYPE = {
+            LEFT_TOP: -1, // Source is to the top-left of the target
+            LEFT: 0, // Source is directly to the left of the target
+            LEFT_BOTTOM: 1, // Source is to the bottom-left of the target
+            TOP: 2, // Source is directly above the target
+            BOTTOM: 3, // Source is directly below the target
+            RIGHT: 4, // Source is directly to the right of the target
+            RIGHT_TOP: 5, // Source is to the top-right of the target
+            RIGHT_BOTTOM: 6 // Source is to the bottom-right of the target
+        };
+
+        // Destructure x, y coordinates from source and target objects
+        const {x, y} = source,
+        {x: x1, y: y1} = target;
+
+        // Determine the relative position of source with respect to target
+        if (x < x1)
+            return y < y1 ? POSITION_TYPE.LEFT_TOP :
+                    y > y1 ? POSITION_TYPE.LEFT_BOTTOM :
+                    POSITION_TYPE.LEFT;
+
+        if (x > x1)
+            return y < y1 ? POSITION_TYPE.RIGHT_TOP :
+                    y > y1 ? POSITION_TYPE.RIGHT_BOTTOM :
+                    POSITION_TYPE.RIGHT;
+
+        // If x coordinates are equal, determine if source is above or below the target
+        return y < y1 ? POSITION_TYPE.TOP :
+                y > y1 ? POSITION_TYPE.BOTTOM :
+                POSITION_TYPE.LEFT; // Default case if source and target overlap
+    },
+    
+    /*
+     * Generate start point and end point position based on node position
+     */
+    getEdgeDataPoints: function (sourceNodeId, targetNodeId, nodeData) {
+        const POSITION_TYPE = {
+            LEFT_TOP: -1,
+            LEFT: 0,
+            LEFT_BOTTOM: 1,
+            TOP: 2,
+            BOTTOM: 3,
+            RIGHT: 4,
+            RIGHT_TOP: 5,
+            RIGHT_BOTTOM: 6
+        };
+        let transitionPosData = {};
+        var source;
+        var target;
+        if (nodeData) {
+            source = nodeData.find(node => node.id === sourceNodeId);
+            target = nodeData.find(node => node.id === targetNodeId);
+        }
+        const width = source.properties.width;
+        const height = source.properties.height;
+        const targetWidth = target.properties.width;
+        const targetHeight = target.properties.height;
+        const positionType = ProcessBuilder.getRelativePosition(source, target);
+        const startPoint = {
+            x: source.x,
+            y: source.y
+        };
+        const endPoint = {
+            x: target.x,
+            y: target.y
+        };
+
+        // Variables to record entry/exit positions (top, bottom, left, right)
+        let startTransitionPosition = '';
+        let endTransitionPosition = '';
+        let gap = 10;
+        var initSource;
+        var initTarget;
+        var biggestCount;
+        var biggestValue;
+        var sourcePositionCount;
+        var targetPositionCount;
+
+        switch (positionType) {
+            // LEFT - Source node is to the left of the target node
+            case POSITION_TYPE.LEFT:
+                startTransitionPosition = 'right';
+                endTransitionPosition = 'left';
+
+                sourcePositionCount = ProcessBuilder.countPosition(sourceNodeId, startTransitionPosition, transitionPosData);
+                targetPositionCount = ProcessBuilder.countPosition(targetNodeId, endTransitionPosition, transitionPosData);
+                biggestCount = Math.max(sourcePositionCount, targetPositionCount);
+                biggestValue = ProcessBuilder.checkOdd(biggestCount) * gap;
+
+                startPoint.x = source.x + width / 2;
+                startPoint.y = startPoint.y + biggestValue;
+                endPoint.x = target.x - targetWidth / 2;
+                endPoint.y = endPoint.y + biggestValue;
+
+                break
+            // LEFT_TOP - Source node is to the left and above the target node
+            case POSITION_TYPE.LEFT_TOP:
+                startTransitionPosition = 'bottom';
+                endTransitionPosition = 'left';
+
+                sourcePositionCount = ProcessBuilder.countPosition(sourceNodeId, startTransitionPosition, transitionPosData);
+                targetPositionCount = ProcessBuilder.countPosition(targetNodeId, endTransitionPosition, transitionPosData);
+                initSource = ProcessBuilder.checkOdd(sourcePositionCount) * gap;
+                initTarget = ProcessBuilder.checkOdd(targetPositionCount) * gap;
+
+                startPoint.x = source.x + initSource;
+                startPoint.y = source.y + height / 2;
+                endPoint.x = target.x - targetWidth / 2;
+                endPoint.y = target.y + initTarget;
+                break
+            // LEFT_BOTTOM - Source node is to the left and below the target node
+            case POSITION_TYPE.LEFT_BOTTOM:
+                startTransitionPosition = 'right';
+                endTransitionPosition = 'bottom';
+
+                sourcePositionCount = ProcessBuilder.countPosition(sourceNodeId, startTransitionPosition, transitionPosData);
+                targetPositionCount = ProcessBuilder.countPosition(targetNodeId, endTransitionPosition, transitionPosData);
+                initSource = ProcessBuilder.checkOdd(sourcePositionCount) * gap;
+                initTarget = ProcessBuilder.checkOdd(targetPositionCount) * gap;
+
+                startPoint.x = source.x + width / 2;
+                startPoint.y = startPoint.y + initSource;
+                endPoint.x = target.x + initTarget;
+                endPoint.y = target.y + targetHeight / 2;
+                break
+            // TOP - Source node is above the target node (same x-coordinate)
+            case POSITION_TYPE.TOP:
+                startTransitionPosition = 'bottom';
+                endTransitionPosition = 'top';
+
+                sourcePositionCount = ProcessBuilder.countPosition(sourceNodeId, startTransitionPosition, transitionPosData);
+                targetPositionCount = ProcessBuilder.countPosition(targetNodeId, endTransitionPosition, transitionPosData);
+                biggestCount = Math.max(sourcePositionCount, targetPositionCount);
+                biggestValue = ProcessBuilder.checkOdd(biggestCount) * gap;
+
+                startPoint.x = source.x + biggestValue;
+                startPoint.y = source.y + height / 2;
+                endPoint.x = target.x + biggestValue;
+                endPoint.y = target.y - targetHeight / 2;
+                break;
+
+            // BOTTOM - Source node is below the target node (same x-coordinate)
+            case POSITION_TYPE.BOTTOM:
+                startTransitionPosition = 'top';
+                endTransitionPosition = 'bottom';
+
+                sourcePositionCount = ProcessBuilder.countPosition(sourceNodeId, startTransitionPosition, transitionPosData);
+                targetPositionCount = ProcessBuilder.countPosition(targetNodeId, endTransitionPosition, transitionPosData);
+                biggestCount = Math.max(sourcePositionCount, targetPositionCount);
+                biggestValue = ProcessBuilder.checkOdd(biggestCount) * gap;
+
+                startPoint.x = source.x + biggestValue;
+                startPoint.y = source.y - height / 2;
+                endPoint.x = target.x + biggestValue;
+                endPoint.y = target.y + targetHeight / 2;
+                break;
+
+            // RIGHT - Source node is to the right of the target node
+            case POSITION_TYPE.RIGHT:
+                startTransitionPosition = 'left';
+                endTransitionPosition = 'right';
+
+                sourcePositionCount = ProcessBuilder.countPosition(sourceNodeId, startTransitionPosition, transitionPosData);
+                targetPositionCount = ProcessBuilder.countPosition(targetNodeId, endTransitionPosition, transitionPosData);
+                biggestCount = Math.max(sourcePositionCount, targetPositionCount);
+                biggestValue = ProcessBuilder.checkOdd(biggestCount) * gap;
+
+                startPoint.x = source.x - width / 2;
+                startPoint.y = source.y + biggestValue;
+                endPoint.x = target.x + targetWidth / 2;
+                endPoint.y = target.y + biggestValue;
+                break;
+
+            // RIGHT_TOP - Source node is to the right and above the target node
+            case POSITION_TYPE.RIGHT_TOP:
+                startTransitionPosition = 'left';
+                endTransitionPosition = 'top';
+
+                sourcePositionCount = ProcessBuilder.countPosition(sourceNodeId, startTransitionPosition, transitionPosData);
+                targetPositionCount = ProcessBuilder.countPosition(targetNodeId, endTransitionPosition, transitionPosData);
+                initSource = ProcessBuilder.checkOdd(sourcePositionCount) * gap;
+                initTarget = ProcessBuilder.checkOdd(targetPositionCount) * gap;
+
+                startPoint.x = source.x - width / 2;
+                startPoint.y = source.y + initSource;
+                endPoint.x = target.x + initTarget;
+                endPoint.y = target.y - targetHeight / 2;
+                break;
+
+            // RIGHT_BOTTOM - Source node is to the right and below the target node
+            case POSITION_TYPE.RIGHT_BOTTOM:
+                startTransitionPosition = 'left';
+                endTransitionPosition = 'bottom';
+
+                sourcePositionCount = ProcessBuilder.countPosition(sourceNodeId, startTransitionPosition, transitionPosData);
+                targetPositionCount = ProcessBuilder.countPosition(targetNodeId, endTransitionPosition, transitionPosData);
+                initSource = ProcessBuilder.checkOdd(sourcePositionCount) * gap;
+                initTarget = ProcessBuilder.checkOdd(targetPositionCount) * gap;
+
+                startPoint.x = source.x - width / 2;
+                startPoint.y = source.y + initSource;
+                endPoint.x = target.x + initTarget;
+                endPoint.y = target.y + targetHeight / 2;
+                break;
+
+            default:
+                break;
+        }
+
+        // Update transition positions for source and target nodes
+        if (!transitionPosData[sourceNodeId]) {
+            transitionPosData[sourceNodeId] = { positions: [] };
+        }
+        if (!transitionPosData[targetNodeId]) {
+            transitionPosData[targetNodeId] = { positions: [] };
+        }
+
+        transitionPosData[sourceNodeId].positions.push(startTransitionPosition);
+        transitionPosData[targetNodeId].positions.push(endTransitionPosition);
+
+        return {
+            startPoint,
+            endPoint
+        };
+    },
+    
+    /*
+     * Count the occurrences of a specific position for a given node ID in transitionPosData
+     */
+    countPosition: function (nodeId, position, transitionPosData) {
+        if (transitionPosData[nodeId] && transitionPosData[nodeId].positions) {
+            return transitionPosData[nodeId].positions.filter(pos => pos === position).length;
+        }
+        return 0; // Return 0 if node ID or positions are not found
+    },
+    
+    // Check if a value is odd and adjust accordingly.
+    // Returns the value itself if it's 0 or 1.
+    // If the value is odd, subtracts 1.
+    // If the value is even, returns the negative of (value - 1).
+    checkOdd: function (value) {
+        if (value === 0 || value === 1) {
+            return value;
+        } else if (value % 2 !== 0) {
+            return value - 1;
+        } else {
+            return -(value - 1);
+        }
+    },
+
+    /*
+     * Turn Higtlight on/off
+     */
+    highlight: function () {
+        const highlightButton = $('button#hightlight');
+        const isEnabled = ProcessBuilder.lf.extension.highlight.enable;
+        if(!isEnabled){
+            highlightButton.addClass('active');
+        } else {
+            highlightButton.removeClass('active');
+        }
+        ProcessBuilder.lf.extension.highlight.setEnable(!isEnabled);
+    },
+
+    /*
+     * Show Minimap
+     */
+    navigator: function () {
+        const navigatorButton = $('button#navigator');
+        if(ProcessBuilder.lf.extension.miniMap.isShow === false){
+            navigatorButton.addClass('active');
+            ProcessBuilder.lf.extension.miniMap.show();
+        } else {
+            navigatorButton.removeClass('active');
+            ProcessBuilder.lf.extension.miniMap.hide();
+        }
+    },
+            
+    previewForm: function(){
+        var formId = $(this).attr('formid');
+        var url = CustomBuilder.contextPath + '/web/fbuilder/app' + CustomBuilder.appPath + '/form/' + formId + '/previewForm';
+        JPopup.show("previewForm", url, {}, "");
+    },
      
     /*
      * validate before post to save
@@ -3483,11 +6074,19 @@ ProcessBuilder = {
      * Validate the whole xpdl
      */
     validate : function() {
-        var self = CustomBuilder.Builder;
         $('#process-selector select option').removeClass("invalidProcess");
-        
-        self.frameBody.find(".invalidNode").removeClass("invalidNode");
-        self.frameBody.find(".invalidNodeMessage").remove();
+        $('body').find(".invalidNode").each(function () {
+            var y = $(this).attr("y");
+            var height = $(this).attr("height");
+
+            let msgNode = $(this).find('.invalidNodeMsg');
+            msgNode.attr('y', y);
+            msgNode.attr('height', height);
+
+            $(this).removeClass("invalidNode");
+            ProcessBuilder.lf.deleteProperty($(this).attr("id"), "status");
+        });
+        $('body').find(".invalidNodeMessage").remove();
         
         var valid = true;
         
@@ -3513,7 +6112,6 @@ ProcessBuilder = {
                     }
                 }
             }
-            
             for (var t in xpdlTransitions) {
                 var transition = xpdlTransitions[t];
                 var from = transition['-From'];
@@ -3529,7 +6127,6 @@ ProcessBuilder = {
                     toTransition[to].push(transition);
                 }
             }
-            
             if (xpdlActivities !== null && xpdlActivities !== undefined && xpdlActivities.length > 0) {
                 for (var a in xpdlActivities) {
                     var activityInvalid = false;
@@ -3567,27 +6164,43 @@ ProcessBuilder = {
                             }
                         }
                     }
-
                     if (activityInvalid || deadlineInvalid || startInvalid) {
                         // only show in current process in canvas
                         if (ProcessBuilder.currentProcessData.properties.id === xpdlProcess['-Id']) {
-                            var $node = self.frameBody.find("#"+ aid);
-                            $node.addClass("invalidNode");
-                            var messageTransition = get_cbuilder_msg("pbuilder.label.missingTransition");
-                            var messageDeadline = get_cbuilder_msg("pbuilder.label.unhandleDeadline");
-                            var messageStart = get_cbuilder_msg("pbuilder.label.invalidStart");
-                            var message = "";
-                            if (activityInvalid) {
-                                message += '<p>' + messageTransition +'</p>';
+                            var $node = $('body').find("#" + aid);
+                            if ($node.find(".invalidNodeMessage").length === 0) {
+                                $node.addClass("invalidNode");
+                                var messageTransition = get_cbuilder_msg("pbuilder.label.missingTransition");
+                                var messageDeadline = get_cbuilder_msg("pbuilder.label.unhandleDeadline");
+                                var messageStart = get_cbuilder_msg("pbuilder.label.invalidStart");
+                                var message = "";
+                                if (activityInvalid) {
+                                    message += '<p>' + messageTransition + '</p>';
+                                }
+                                if (deadlineInvalid) {
+                                    message += '<p>' + messageDeadline + '</p>';
+                                }
+                                if (startInvalid) {
+                                    message += '<p>' + messageStart + '</p>';
+                                }
+
+                                var $nodeMessage = $('<div class="invalidNodeMessage">' + message + '</div>');
+
+
+                                $node = $node.find('.invalidNodeMsg');
+                                if ($node.length > 0) {
+                                    let nodeY = parseFloat($node.attr('y')) + (parseFloat($node.attr('height')) + 2);
+                                    $node.attr('y', nodeY);
+                                    $node.append($nodeMessage);
+
+                                    let msgDiv = $node.find('.invalidNodeMessage');
+                                    var width = msgDiv.outerWidth();
+                                    var height = msgDiv.outerHeight();
+                                    $node.attr('height', height);
+                                    $node.attr('width', width);
+                                    ProcessBuilder.lf.setProperties(aid, { status: 'invalid' });
+                                }
                             }
-                            if (deadlineInvalid) {
-                                message += '<p>' + messageDeadline +'</p>';
-                            }
-                            if (startInvalid) {
-                                message += '<p>' + messageStart +'</p>';
-                            }
-                            var $nodeMessage = $('<div class="invalidNodeMessage">' + message +'</div>');
-                            $node.append($nodeMessage);
                         }
                         validProcess = false;
                     }
@@ -3635,14 +6248,14 @@ ProcessBuilder = {
      */
     validateParticipantDuplicateId : function (name, value) {
         var self = CustomBuilder.Builder;
-        var data = $(self.selectedEl).data("data");
+        var data = ProcessBuilder.getSelectedNode().properties;
         
         //find in the participant list which is not a match
         var xpdl = CustomBuilder.data.xpdl['Package'];
         var xpdlParticipants = ProcessBuilder.getArray(xpdl['Participants'], 'Participant');
         for (var p in xpdlParticipants) {
-            var particpant = xpdlParticipants[p];
-            if (particpant['-Id'] === value && (data.xpdlObj !== particpant)) {
+            var participant = xpdlParticipants[p];
+            if (participant['-Id'] === value && !(ProcessBuilder.compareXPDL(data.xpdlObj, participant))) {
                 return get_cbuilder_msg("pbuilder.label.duplicateId");
             }
         }
@@ -3652,13 +6265,34 @@ ProcessBuilder = {
     /*
      * Validation for duplicate id of activity node
      */
-    validateDuplicateId : function (name, value) {
-        var self = CustomBuilder.Builder;
-        var found = self.frameBody.find("#"+value);
-        if (found.length > 0 && !(found.length === 1 && found.is(self.selectedEl))) {
+     validateDuplicateId : function (name, value) {
+         var found = $('#lf-container').find('#' + value);
+         if (found.length > 0 && !(found.length === 1 && value === self.selectedEl.data.id)) {
             return get_cbuilder_msg("pbuilder.label.duplicateId");
-        }
-        return null;
+         }
+         return null;
+     },
+    
+    // Validate if the original XPDL and the new XPDL are identical by comparing their JSON string representations
+    compareXPDL: function (oriXPDL, newXPDL) {
+        const result = JSON.stringify(oriXPDL) === JSON.stringify(newXPDL);
+        return result;
+    },
+    
+    /*
+     * Check node is selected with node ID
+     */
+    isSelectedNode: function (nodeId) {
+        const selectedElements = ProcessBuilder.lf.getSelectElements(); // Get selected nodes and edges
+        return selectedElements.nodes.some(node => node.id === nodeId); // Check if any node matches the ID
+    },
+
+    /*
+     * Get selected node
+     */
+    getSelectedNode: function () {
+        const selectedElements = ProcessBuilder.lf.getSelectElements(); // Get selected nodes and edges
+        return selectedElements.nodes[0]; // Check if any node matches the ID
     },
     
     /*
@@ -3934,7 +6568,7 @@ ProcessBuilder = {
                     type : 'selectbox',
                     options : [
                         {value : "SINGLE", label : get_cbuilder_msg("pbuilder.label.form")},
-                        {value : "EXTERNAL", label : get_cbuilder_msg("pbuilder.label.externalForm")},
+                        {value : "EXTERNAL", label : get_cbuilder_msg("pbuilder.label.externalForm")}
                     ]
                 },{
                     name : 'mapping_act_formId',
@@ -4157,32 +6791,6 @@ ProcessBuilder = {
         
         return options;
     },
-          
-    /*
-     * return a list of of outgoing transitions options of the current selected activity 
-     */                
-    getCurrentActivityOutgoingTransition : function() {
-        var options = [];
-        
-        var act = CustomBuilder.Builder.selectedEl;
-        var sourceConnSet = ProcessBuilder.jsPlumb.getConnections({source: $(act)});
-        for (var i = sourceConnSet.length - 1; i >= 0; i--) {
-            if (!$(sourceConnSet[i].target).hasClass("end")) { 
-                var id = $(sourceConnSet[i].canvas).data("data").properties.id;
-                var label = $(sourceConnSet[i].canvas).data("data").properties.label;
-                if (label === undefined || label === "") {
-                    label = id + " (" + $(sourceConnSet[i].target).data("data").properties.label +")";
-                }
-                
-                options.push({
-                    value : id,
-                    label : label
-                });
-            }
-        }
-        
-        return options;
-    },
     
     /*
      * Retrive the multi tools properties options for tool mapping
@@ -4277,6 +6885,7 @@ ProcessBuilder = {
                         ProcessBuilder.availableTools[returnedData[e].value] = returnedData[e];
                     }
                 }
+                ProcessBuilder.initTools();
                 wait.resolve();
             }
         );
@@ -4544,7 +7153,7 @@ ProcessBuilder = {
         
         var id = obj.properties.id;
         if (self.selectedEl) {
-            var selectedData = $(self.selectedEl).data("data");
+            var selectedData = self.selectedEl[0].data;
             if (selectedData.properties.id === id) {
                 $(detailsDiv).find(".cbuilder-node-details-list").addClass("active");
                 var listId = $(list).attr("id");
@@ -4946,13 +7555,6 @@ ProcessBuilder = {
      * remove dynamically added items    
      */            
     unloadBuilder : function() {
-        ProcessBuilder.jsPlumb.unbind();
-        ProcessBuilder.jsPlumb.detachEveryConnection();
-        ProcessBuilder.jsPlumb.deleteEveryEndpoint();
-        ProcessBuilder.jsPlumb.unmakeEverySource();
-        ProcessBuilder.jsPlumb.unmakeEveryTarget();
-        ProcessBuilder.jsPlumb.reset();
-            
         $("#process-selector, .toolzoom-buttons, #listviewer-btn, #xpdl-btn").remove();
         $("#launch-btn").parent().remove();
         $(window).off('hashchange');        
@@ -5039,34 +7641,31 @@ ProcessBuilder = {
      * A callback method called from CustomBuilder.applyElementProperties when properties saved
      */
     saveEditProperties : function(container, elementProperty, elementObj, element) {
-        if (elementProperty.id !== $(element).attr("id") && elementObj.className !== "process") {
+        if(elementProperty.className === "participant"){
+            elementProperty.id = 'laneID_' + elementProperty.id;
+        }
+        if (elementProperty.id !== $(element)[0].data.id && elementObj.className !== "process") {
             var self = CustomBuilder.Builder;
 
-            ProcessBuilder.jsPlumb.unbind("connection");
-            ProcessBuilder.jsPlumb.unbind("connectionDetached");
-            ProcessBuilder.jsPlumb.unbind();
-
             // update transition
-            var sourceConnSet = ProcessBuilder.jsPlumb.getConnections({source: $(element)});
-            var targetConnSet = ProcessBuilder.jsPlumb.getConnections({target: $(element)});
+            var sourceConnSet = ProcessBuilder.lf.getNodeOutgoingEdge($(element)[0].data.id);
+            var targetConnSet = ProcessBuilder.lf.getNodeOutgoingEdge($(element)[0].data.id);
             var transition = [];
 
             for (var i in sourceConnSet) {
-                var data = $(sourceConnSet[i].canvas).data("data");
+                var data = ProcessBuilder.lf.getEdgeDataById(sourceConnSet[i].id);
                 data.properties.from = elementProperty.id;
                 if (data['xpdlObj'] !== undefined) { //end node is target, xpdl object is undefined
                     data['xpdlObj']['-From'] = elementProperty.id;
                 }
-                ProcessBuilder.jsPlumb.detach(sourceConnSet[i]);
                 transition.push(data);
             }
             for (var i in targetConnSet) {
-                var data = $(targetConnSet[i].canvas).data("data");
+                var data = ProcessBuilder.lf.getEdgeDataById(sourceConnSet[i].id);
                 data.properties.to = elementProperty.id;
                 if (data['xpdlObj'] !== undefined) { //start node is source, xpdl object is undefined
                     data['xpdlObj']['-To'] = elementProperty.id;
                 }
-                ProcessBuilder.jsPlumb.detach(targetConnSet[i]);
                 transition.push(data);
             }
 
@@ -5079,22 +7678,6 @@ ProcessBuilder = {
                 $(element).closest(".process").append(temp);
                 self.renderElement(data, temp, childComponent, false, [""]); //add a dummy deferreds as no need it, and to stop it trigger change event
             }
-
-            // bind event handling to new or moved connections
-            ProcessBuilder.jsPlumb.bind("connection", function(info) {
-                var connection = info.connection;
-                ProcessBuilder.addConnection(connection);
-            });
-
-            // bind event handling to detached connections
-            ProcessBuilder.jsPlumb.bind("connectionDetached", function(info) {
-                var connection = info.connection;
-                if ($(connection.target).attr("id").indexOf("jsPlumb") >= 0) {
-                    ProcessBuilder.showConnectionDialog(connection);
-                } else {
-                    ProcessBuilder.removeConnection(connection);
-                }
-            });
         }
         
         if (elementObj.className === "transition") {
@@ -5115,8 +7698,10 @@ ProcessBuilder = {
             }
 
         }
+        $(element).attr("id", elementProperty.id);
+        ProcessBuilder.updateLFData(element, elementObj);
     },
-            
+
     builderSaved : function(data) {
         ProcessBuilder.updateAdvancedView();
         
@@ -5167,7 +7752,7 @@ ProcessBuilder = {
             }, 3500);
         }
     },        
-     
+
     /*
      * Prepare the selector based on overview path parameter
      */
@@ -5216,7 +7801,7 @@ ProcessBuilder = {
             setTimeout(function(){
                 $("#element-properties-tab-link a").trigger("click");
             }, 1);
-            
+
         } else { //it is mapping
             var temp = path.split("::");
             var id = temp[1].substring(0, temp[1].indexOf("."));
@@ -5255,5 +7840,591 @@ ProcessBuilder = {
     marketplaceReloadPalette : function() {
         var deferreds = [];
         ProcessBuilder.cachePlugins(deferreds);
+    },
+    
+    /*
+     * Get the lane ID that contains the specified node
+     * Searches for a lane node that has the given nodeId in its children
+     */
+    getNodeLaneID: function (nodeId) {
+        const data = ProcessBuilder.lf.getGraphData();
+        return data.nodes.find(node => node.type === 'lane' && node.children?.includes(nodeId))?.id || null;
+    },
+
+    getLFLane: function (laneID) {
+        const data = ProcessBuilder.lf.getGraphData();
+        return data.nodes.find(node => node.type === 'lane' && node.id === laneID);
+    },
+    
+    /*
+     * Get the activity data from current process data with activityId
+     */
+    getActivity: function (activityId) {
+        const data = ProcessBuilder.currentProcessData.participants;
+        for (const participant of data) {
+            if (participant.activities) {
+                for (const activity of participant.activities) {
+                    if (activity.properties && activity.properties.id === activityId) {
+                        return activity;
+                    }
+                }
+            }
+        }
+        return null;
+    },
+    
+    /*
+     * Get the activity data from current process data with activityId
+     */
+    getActivityLane: function (activityId) {
+        const data = ProcessBuilder.currentProcessData.participants;
+        for (const participant of data) {
+            if (participant.activities) {
+                for (const activity of participant.activities) {
+                    if (activity.properties && activity.properties.id === activityId) {
+                        return participant;
+                    }
+                }
+            }
+        }
+        return null;
+    },
+
+    /*
+     * Remove the activity data from current process data with activityId
+     */
+    removeActivity: function (activityId) {
+        const data = ProcessBuilder.currentProcessData.participants;
+        for (const participant of data) {
+            if (participant.activities) {
+                for (const activity of participant.activities) {
+                    if (activity.properties && activity.properties.id === activityId) {
+                        participant.activities.splice(participant.activities.indexOf(activity), 1);
+                    }
+                }
+            }
+        }
+    },
+    
+    /*
+     * Get the lane data with lane ID
+     */
+    getLane: function (laneID) {
+        const data = ProcessBuilder.currentProcessData.participants;
+        if (laneID) {
+            if (laneID.includes("laneID_")) {
+                laneID = laneID.replace("laneID_", "");
+            }
+            for (const participant of data) {
+                if (participant.properties.id === laneID) {
+                    return participant;
+                }
+            }
+        }
+        return null;
+    },
+
+    /*
+     *  Get the index of a lane in the participants list based on the lane ID.
+     */
+    getLaneIndex: function (laneID) {
+        const data = ProcessBuilder.currentProcessData.participants;
+        if (laneID.includes("laneID_")) {
+            laneID = laneID.replace("laneID_", "");
+        }
+        return data.findIndex(participant => participant.properties.id === laneID);
+    },
+    
+    /*
+     *  Get connection object by its ID from the process data
+     */
+    getConnection: function (connectionId) {
+        const data = ProcessBuilder.currentProcessData.transitions;
+        return data.find(transition => transition.connection && transition.properties.id === connectionId);
+    },
+            
+    /*
+     *  Get node type
+     */
+    getNodeType: function (type) {
+        if (type === 'bpmn:userTask') {
+            return 'activity';
+        } else if (type === 'bpmn:serviceTask') {
+            return 'tool';
+        } else if (type === 'bpmn:startEvent') {
+            return 'start';
+        } else if (type === 'bpmn:exclusiveGateway') {
+            return 'route';
+        } else if (type === 'bpmn:subflow') {
+            return 'subflow';
+        } else if (type === 'bpmn:endEvent') {
+            return 'end';
+        } else if (type === 'lane') {
+            return 'participant';
+        }
+    },
+            
+    /*
+     *  Get logic flow node type
+     */
+    getLFNodeType: function (type) {
+        if (type === 'activity') {
+            return 'bpmn:userTask';
+        } else if (type === 'tool') {
+            return 'bpmn:serviceTask';
+        } else if (type === 'start') {
+            return 'bpmn:startEvent';
+        } else if (type === 'route') {
+            return 'bpmn:exclusiveGateway';
+        } else if (type === 'subflow') {
+            return 'bpmn:subflow';
+        } else if (type === 'end') {
+            return 'bpmn:endEvent';
+        } else if (type === 'participant') {
+            return 'lane';
+        }
+    },
+    
+    /*
+     *  Override the addElement method from CustomBuilder to customize element addition behavior
+     */
+    addElement: function (data, updateNode, cloneIndex, callback) {
+        let oriId = data.id;
+        var self = CustomBuilder.Builder;
+        var nodeType = ProcessBuilder.getNodeType(data.type);
+        self.component = CustomBuilder.paletteElements[nodeType];
+
+        var classname = self.component.className;
+        var elementObj;
+        if (updateNode) {
+            var properties = {};
+            if (self.component.properties !== undefined) {
+                properties = $.extend(true, properties, self.component.properties);
+            }
+            if (self.component.builderTemplate.properties !== undefined) {
+                properties = $.extend(true, properties, self.component.builderTemplate.properties);
+            }
+            elementObj = {
+                className: classname,
+                properties: properties,
+                x_offset: data.x,
+                y_offset: data.y
+            };
+            // Add properties dynamically
+            elementObj.properties.className = classname;
+            self.updateElementId(elementObj);
+        } else {
+            if (data.type === 'lane') {
+                elementObj = {
+                    className: data.properties.className,
+                    properties: data.properties,
+                    activities: data.properties.activities
+                };
+            } else {
+                elementObj = {
+                    className: data.properties.className,
+                    properties: data.properties,
+                    x_offset: data.x,
+                    y_offset: data.y
+                };
+            }
+            ProcessBuilder.updatePasteElement = true;
+        }
+        ProcessBuilder.draggingElementId = elementObj.properties.id;
+        var childsDataHolder = self.component.builderTemplate.getChildsDataHolder(elementObj, self.component);
+        var elements = [];
+        if (self.component.builderTemplate[childsDataHolder] !== undefined) {
+            elements = $.extend(true, elements, self.component.builderTemplate[childsDataHolder]);
+            elementObj[childsDataHolder] = elements;
+        }
+
+        if (self.dragElement === null || self.dragElement === undefined) {
+            self.dragElement = $('<div class="node ' + elementObj.className + '"></div>');
+            self.selectedEl = self.dragElement;
+        }
+
+        var parent = $(self.dragElement).closest("[data-cbuilder-classname]");
+        if ($(parent).length === 0) {
+            parent = $(self.dragElement).closest("body");
+        }
+
+        if (elementObj.className !== 'participant' && elementObj.properties.className !== 'participant') {
+            const parentLane = ProcessBuilder.getNodeLaneID(data.id).replace("laneID_", "");
+            for (const item of ProcessBuilder.currentProcessData.participants) {
+                if (item?.properties?.id === parentLane) {
+                    data = item; // Return the object if the id matches
+                }
+            }
+        } else {
+            data = ProcessBuilder.currentProcessData;
+        }
+
+        var index = 0;
+        var container = $(self.dragElement).parent().closest("[data-cbuilder-" + self.component.builderTemplate.getParentContainerAttr(elementObj, self.component) + "]");
+        index = $(container).find("> *").index(self.dragElement);
+        var parentDataArray = data[self.component.builderTemplate.getParentDataHolder(elementObj, self.component)];
+        if (parentDataArray === undefined) {
+            parentDataArray = [];
+            data[self.component.builderTemplate.getParentDataHolder(elementObj, self.component)] = parentDataArray;
+        }
+        if ($(container).is('[data-cbuilder-single]')) {
+            parentDataArray.splice(0, parentDataArray.length, elementObj);
+            $(container).find("> [data-cbuilder-classname]").remove();
+        } else {
+            if (cloneIndex !== null && cloneIndex !== undefined) {
+                index = cloneIndex;
+            }
+            if (elementObj.className === 'participant') {
+                index = ProcessBuilder.getNewLaneIndex(oriId);
+            }
+            parentDataArray.splice(index, 0, elementObj);
+        }
+
+        if (self.component.builderTemplate.afterAddElement !== undefined) {
+            self.component.builderTemplate.afterAddElement(elementObj, self.component);
+        }
+        self.renderElement(elementObj, self.dragElement, self.component, true, null, callback);
+    },
+            
+    /**
+     * Retrieves the index of a specific lane based on its vertical position.
+     */
+    getNewLaneIndex: function (targetLaneID) {
+        let graphData = ProcessBuilder.lf.getGraphData();
+        let lanes = graphData.nodes.filter(lane => lane.type === "lane");
+        lanes = lanes.sort((a, b) => a.y - b.y);
+        return lanes.findIndex(lane => lane.id === targetLaneID);
+    },
+    
+    /*
+     *  Handle for lane deletion
+     */
+    deleteLane: function (node) {
+        var processData = ProcessBuilder.currentProcessData;
+        const removeLane = ProcessBuilder.getLane(node.properties.id);
+        if (removeLane.activities) {
+            removeLane.activities.forEach(activity => {
+                ProcessBuilder.removeNode(activity);
+            });
+        }
+
+        // Reassign the filtered array back to participants
+        processData.participants = processData.participants.filter(
+            participant => participant.properties.id !== node.properties.id
+        );
+
+        CustomBuilder.update();
+    },
+    
+    /*
+     * A callback method called from the CustomBuilder.Builder.renderNodeAdditional
+     * It is used to handle the li click event to select the target node
+     */
+    renderTreeMenuAdditionalNode: function (container, target) {
+        if (ProcessBuilder.getSelectedNode()) {
+            let selectedElementId = ProcessBuilder.removeLanePrefix(ProcessBuilder.getSelectedNode().id);
+            ProcessBuilder.selectActiveTreeItem(selectedElementId);
+        }
+
+        $(container).off("click", "li.tree-viewer-item  label");
+        $(container).on("click", "li.tree-viewer-item  label", function (e) {
+            let node = $(this).parent().data("node");
+            node = $(node).data("data");
+            if (node.className === 'participant') {
+                ProcessBuilder.selectElementById("laneID_" + node.properties.id);
+            } else {
+                ProcessBuilder.selectElementById(node.properties.id);
+            }
+        });
+        return container;
+    },
+
+    /*
+     * Remove 'laneID_' prefix from lane ID if present
+     * This function checks if a given lane ID starts with 'laneID_' and removes it
+     * Used to standardize lane IDs when working with both prefixed and unprefixed versions
+     */
+    removeLanePrefix: function(laneId){  
+        if (typeof laneId === 'string' && laneId.startsWith('laneID_')) {
+            return laneId.substring(7); // Remove 'laneID_' prefix
+        }   
+        return laneId;
+    }, 
+
+    /*
+     * Select the active tree item based on the given element ID
+     * This function removes the 'active' class from all tree items and then adds it to the item with the matching ID
+     */
+    selectActiveTreeItem: function(selectedElementId){
+        $(".tree-viewer-item").removeClass("active");
+        $(".tree-viewer-item[data-cbuilder-node-id='" + selectedElementId + "']").addClass("active");
+    },
+    
+    /**
+     * Handles pasting an element into the process graph.
+     */
+    pasteElement: function (element, elementObj, component, copiedObj, copiedComponent) {
+        let xPosition = element.x;
+        let yPosition = element.y;
+        let gap = 150;
+        ProcessBuilder.updatePasteElement = false;
+        if (copiedObj.type !== 'lane') {
+            if (element.properties.className === 'participant') {
+                xPosition = parseInt(copiedObj.x);
+                copiedObj.x = xPosition + gap;
+                copiedObj.y = yPosition;
+                copiedObj.text.x = xPosition + gap;
+                copiedObj.text.y = yPosition;
+            } else {
+                copiedObj.x = xPosition + gap;
+                copiedObj.y = yPosition;
+                copiedObj.text.x = xPosition + gap;
+                copiedObj.text.y = yPosition;
+            }
+            ProcessBuilder.lf.addNode(copiedObj);
+        } else {
+            let index;
+            if (element.properties.className === 'participant') {
+                index = ProcessBuilder.getLaneIndex(element.properties.id) + 1;
+            } else {
+                const lane = ProcessBuilder.getActivityLane(element.properties.id);
+                index = ProcessBuilder.getLaneIndex(lane.properties.id) + 1;
+            }
+            ProcessBuilder.addElement(copiedObj, ProcessBuilder.updatePasteElement, index);
+        }
+    },
+    
+    /**
+     * Captures a snapshot, converts it to base64, displays it, and adds a download button.
+     * @returns {Promise<{data: string}>} A promise that resolves with the base64-encoded snapshot.
+     */
+    getSnapshotBase64AndDisplayImage: async function () {
+        try {
+            // Get the process ID and generate a file name
+            const id = ProcessBuilder.currentProcessData.properties.id;
+            const fileName = `${CustomBuilder.appId}-${CustomBuilder.builderType}-${id}`;
+            // Capture the snapshot as a Blob
+            const snapshot = await ProcessBuilder.lf.getSnapshotBlob();
+            // Ensure snapshot data is a valid Blob
+            if (!(snapshot.data instanceof Blob))
+                throw new Error('Snapshot data is not a Blob.');
+            // Convert the Blob to a base64 string
+            const base64 = await ProcessBuilder.blobToBase64(snapshot.data);
+            // Display the image in the UI
+            $("#screenshotViewImage").html(`<img style="max-width:98%; border:1px solid #ddd;" src="data:image/png;base64,${base64}"/>`);
+            // Create and append the download button
+            const link = $('<a>', {
+                class: "btn button btn-secondary",
+                html: get_cbuilder_msg('cbuilder.download'),
+                click: () => ProcessBuilder.lf.getSnapshot(fileName, {backgroundColor: "#ffffff"})
+            });
+            $("#screenshotView .sticky-buttons").append(link);
+            // Reset screenshot timeout
+            CustomBuilder.screenshotTimeout = null;
+            return {data: base64};
+        } catch (error) {
+            console.error('Error while getting snapshot:', error);
+            throw error;
+        }
+    },
+
+    /**
+     * Converts a Blob object to a base64-encoded string.
+     * @param {Blob} blob - The Blob to convert.
+     * @returns {Promise<string>} A promise that resolves with the base64 string.
+     */
+    blobToBase64: function (blob) {
+        return new Promise((resolve, reject) => {
+            const reader = new FileReader();
+            reader.onloadend = () => resolve(reader.result.split(',')[1]); // Extract only the base64 part
+            reader.onerror = reject;
+            reader.readAsDataURL(blob);
+        });
+    },
+
+    /**
+     * Triggers the snapshot capture and handles any errors.
+     */
+    getScreenShoot: async function () {
+        try {
+            await ProcessBuilder.getSnapshotBase64AndDisplayImage();
+        } catch (error) {
+            console.error('Error:', error);
+        }
+    },
+
+    /*
+    * A callback method called from the CustomBuilder.Builder.copyNode
+    * It is used to handle the copy behavior of the Logic Flow node
+    */
+    copyNode: function (node) {
+        var self = CustomBuilder.Builder;
+        if (!node) {
+            node = self.selectedEl;
+        }
+        var data = node[0].data;
+        var component = self.parseDataToComponent(data.properties);
+        var type = component.builderTemplate.getParentContainerAttr(data, component);
+
+        // Custom copy logic or extend existing behavior
+        CustomBuilder.copy(data, type);
+        if (CustomBuilder.Builder.options.callbacks["copyElement"]) {
+            CustomBuilder.callback(CustomBuilder.Builder.options.callbacks["copyElement"], [data, type]);
+        }
+
+        self.selectNode(self.selectedEl);
+        if (component.builderTemplate.isPastable(data, component)) {
+            $("#paste-element-btn").removeClass("disabled");
+        }
+    },
+
+    /*
+    * A callback method called from the CustomBuilder.Builder.pasteNode
+    * It is used to handle the copy behavior of the Logic Flow node
+    */
+    pasteNode: function (node) {
+        var self = CustomBuilder.Builder;
+        if (!node) {
+            node = ProcessBuilder.getSelectedNode();
+        }
+
+        self.component = self.parseDataToComponent($(node).data("data"));
+        var data = CustomBuilder.getCopiedElement();
+        var copiedObj = $.extend(true, {}, data.object);
+        var copiedComponent = self.parseDataToComponent(copiedObj.properties);
+
+        ProcessBuilder.updateElementId(copiedObj);
+        if (copiedObj.properties.className === 'participant') {
+            const activities = copiedObj.properties.activities;
+            // Loop through and print each activity object
+            activities.forEach(activity => {
+                ProcessBuilder.updateElementId(activity);
+            });
+        }
+
+        if (copiedComponent.builderTemplate.customPasteData) {
+            copiedComponent.builderTemplate.customPasteData(copiedObj, copiedComponent);
+        }
+
+        if (CustomBuilder.Builder.options.callbacks["pasteElement"] !== undefined && CustomBuilder.Builder.options.callbacks["pasteElement"] !== "") {
+            CustomBuilder.callback(CustomBuilder.Builder.options.callbacks["pasteElement"], [node, $(node).data("data"), self.component, copiedObj, copiedComponent]);
+        } else {
+            self._pasteNode(node, copiedObj, copiedComponent);
+        }
+
+        CustomBuilder.update();
+        if (copiedObj.properties.className === 'participant') {
+            CustomBuilder.loadJson(ProcessBuilder.currentProcessData, false);
+        }
+        ProcessBuilder.selectElementById(copiedObj.id);
+    },
+
+    /*
+    * A callback method called from the CustomBuilder.Builder.removeNodeAdditional
+    * It is used to remove the node details render during x-ray mode
+     */
+    removeAdditionalNode: function () {
+        $('link[href="' + CustomBuilder.contextPath + '/builder/editor-helpers.css"]').remove();
+        let target = $('#lf-container');
+        $("#node-details-toggle").hide();
+        target.removeClass("show-node-details show-node-details-single");
+        target.find(".cbuilder-node-details").remove();
+        target.find(".cbuilder-node-details-reset-margin-top").removeClass("cbuilder-node-details-reset-margin-top");
+    },
+
+    /*
+    * A callback method called from the CustomBuilder.Builder.renderScreenshot
+    * It is used to handle the render screensho
+    */
+    getScreenshot: function () {
+        CustomBuilder.screenshotTimeout = setTimeout(function () {
+            ProcessBuilder.getScreenShoot();
+        }, 300);
+    },
+
+    /*
+    * A callback method called from the CustomBuilder.Builder.beforeRenderNodeAdditional
+    * It is used to handle the render X-ray node
+    */
+    beforeRenderNodeAdditional: function (type) {
+        if (type === 'Xray') {
+            $('head').append('<link rel="stylesheet" type="text/css" href="' + CustomBuilder.contextPath + '/builder/editor-helpers.css">');
+        }
+        let target = $('#lf-container');
+        $("#node-details-toggle").find("input").off("click");
+        $("#node-details-toggle").find("input").on("click", function () {
+            if ($("#details-toggle-single").is(":checked")) {
+                $('body').addClass("show-node-details-single");
+            } else {
+                $('body').removeClass("show-node-details-single");
+            }
+            self._updateBoxes();
+            self.triggerEvent("nodeAdditionalModeChanged");
+        });
+        $('body').addClass("show-node-details");
+        return target;
+    },
+
+    /*
+    * A callback method called from the CustomBuilder.Builder.afterRenderNodeAdditional
+    * It is used to handle the after render node additional
+    */
+    afterRenderNodeAdditional: function (detailsDiv, target, data) {
+        setTimeout(function () {
+            const newWidth = $(detailsDiv).find('dl').outerWidth();
+            const newHeight = $(detailsDiv).find('dl').outerHeight();
+            var x = $(target).attr("x");
+            var y = $(target).attr("y");
+            var height = $(target).attr("height");
+            if (data.className === 'participant') {
+                $(target).find('.xray-view').attr("x", x - newWidth - 30);
+                $(target).find('.xray-view').attr("y", y - (height / 2));
+            } else {
+                $(target).find('.xray-view').attr("y", y - newHeight);
+            }
+            $(target).find('.xray-view').attr("width", newWidth);
+            $(target).find('.xray-view').attr("height", newHeight);
+        }, 100);
+    },
+
+    /*
+    * A callback method called from the CustomBuilder.Builder.renderNodeAddtionalData
+    * It is used to handle the render node additional data
+    */
+    renderNodeAddtionalData: function (element) {
+        var elementId = $(element[0]).attr('data-cbuilder-id');
+        var data;
+        if (elementId.includes("laneID_")) {
+            elementId = elementId.replace("laneID_", "");
+            data = ProcessBuilder.getLane(elementId);
+        } else {
+            data = ProcessBuilder.getActivity(elementId);
+        }
+        return data;
+    },
+
+    /*
+    * A callback method called from the CustomBuilder.Builder.changeNodeAddtionalTarget
+    * It is used to handle the change the node additional target
+    */
+    changeNodeAddtionalTarget: function (target, detailsDiv) {
+        $(target).find('.xray-view').prepend(detailsDiv);
+    },
+
+     /*
+    * A callback method called from the CustomBuilder.Builder.modifyShowPropertiesData
+    * It is used to handle modify properties data
+    */
+    modifyShowPropertiesData: function (data, target) {
+        var data = target.data("data");
+        if (!data) {
+            data = target[0].data.properties;
+            data = {
+                className: data.className,
+                properties: data,
+                xpdlObj: data.xpdlObj
+            };
+        }
+        return data;
     }
 };
