@@ -3233,18 +3233,20 @@ _CustomBuilder = {
     /*
      * Method used for toolbar to copy an element
      */
-    copyElement : function(event) {
-        if (event && ((/textarea|input|select/i.test(event.target.nodeName) && event.target.selectionStart !== event.target.selectionEnd) || 
-                (window.getSelection && window.getSelection() !== undefined && window.getSelection() !== null && 
-                window.getSelection().anchorNode !== undefined && window.getSelection().anchorNode !== null &&
-                window.getSelection().anchorNode.nodeName === "#text" && window.getSelection().toString().length > 0))) {
-            //clear element clipboard
-            CustomBuilder.clearCopiedElement();
-            return true; //to continue to the default handler to copy text
-        }
-        if (CustomBuilder.Builder.selectedEl !== null) {
-            CustomBuilder.Builder.copyNode();
-        }
+    copyElement: function (event) {
+        
+            if (event && ((/textarea|input|select/i.test(event.target.nodeName) && event.target.selectionStart !== event.target.selectionEnd) ||
+                (window.getSelection && window.getSelection() !== undefined && window.getSelection() !== null &&
+                    window.getSelection().anchorNode !== undefined && window.getSelection().anchorNode !== null &&
+                    window.getSelection().anchorNode.nodeName === "#text" && window.getSelection().toString().length > 0))) {
+                //clear element clipboard
+                CustomBuilder.clearCopiedElement();
+                return true; //to continue to the default handler to copy text
+            }
+            if (CustomBuilder.Builder.selectedEl !== null) {
+                CustomBuilder.Builder.copyNode();
+            }
+        
     },
     
     /*
@@ -3997,7 +3999,16 @@ _CustomBuilder.Builder = {
             "selectElement" : "",
             "updateElementId" : "",
             "unloadElement" : "",
-            "copyElement" : ""
+            "copyElement" : "",
+            "copyNode" : "",
+            "pasteNode" : "",
+            "removeAdditionalNode" : "",
+            "getScreenshot" : "",
+            "renderNodeAddtionalData" : "",
+            "afterRenderNodeAdditional" : "",
+            "beforeRenderNodeAdditional" : "",
+            "changeNodeAddtionalTarget" : "",
+            "modifyShowPropertiesData" : ""
         }
     },
     options : {},
@@ -4703,27 +4714,31 @@ _CustomBuilder.Builder = {
     /*
      * Copy the selected element and save in cache
      */
-    copyNode: function(node) {
-        var self = CustomBuilder.Builder;
-        
-        if (!node) {
-            node = self.selectedEl;
-        }
-        
-        var data = $(node).data("data");
-        var component = self.parseDataToComponent(data);
-        var type = component.builderTemplate.getParentContainerAttr(data, component);
-        
-        CustomBuilder.copy(data, type);
-        
-        if (CustomBuilder.Builder.options.callbacks["copyElement"] !== undefined && CustomBuilder.Builder.options.callbacks["copyElement"] !== "") {
-            CustomBuilder.callback(CustomBuilder.Builder.options.callbacks["copyElement"], [data, type]);
-        }
-        
-        self.selectNode(self.selectedEl);
-        
-        if (component.builderTemplate.isPastable(data, component)) {
-            $("#paste-element-btn").removeClass("disabled");
+    copyNode: function (node) {
+        if (CustomBuilder.Builder.options.callbacks["copyNode"] !== undefined && CustomBuilder.Builder.options.callbacks["copyNode"] !== "") {
+            CustomBuilder.callback(CustomBuilder.Builder.options.callbacks["copyNode"], [node]);
+        } else {
+            var self = CustomBuilder.Builder;
+
+            if (!node) {
+                node = self.selectedEl;
+            }
+
+            var data = $(node).data("data");
+            var component = self.parseDataToComponent(data);
+            var type = component.builderTemplate.getParentContainerAttr(data, component);
+
+            CustomBuilder.copy(data, type);
+
+            if (CustomBuilder.Builder.options.callbacks["copyElement"] !== undefined && CustomBuilder.Builder.options.callbacks["copyElement"] !== "") {
+                CustomBuilder.callback(CustomBuilder.Builder.options.callbacks["copyElement"], [data, type]);
+            }
+
+            self.selectNode(self.selectedEl);
+
+            if (component.builderTemplate.isPastable(data, component)) {
+                $("#paste-element-btn").removeClass("disabled");
+            }
         }
     },
     
@@ -4732,40 +4747,44 @@ _CustomBuilder.Builder = {
      * First check the copied element can place as children of the selected element,
      * else check can the copied element can place as sibling of the selected element
      */
-    pasteNode: function(node) {
-        var self = CustomBuilder.Builder;
-        
-        if (!node) {
-            node = self.selectedEl;
-            if (!node) {
-                node = self.frameBody.find('[data-cbuilder-classname]:eq(0)');
-            }
-        }
-        
-        self.component = self.parseDataToComponent($(node).data("data"));
-        
-        var data = CustomBuilder.getCopiedElement();
-        var copiedObj = $.extend(true, {}, data.object);
-        var copiedComponent = self.parseDataToComponent(copiedObj);
-        
-        self.updateElementId(copiedObj);
-        
-        if (copiedComponent.builderTemplate.isAbsolutePosition(copiedObj, copiedComponent)) {
-            copiedObj.x_offset = parseInt(copiedObj.x_offset) + 5;
-            copiedObj.y_offset = parseInt(copiedObj.y_offset) + 5;
-        }
-        
-        if (copiedComponent.builderTemplate.customPasteData) {
-            copiedComponent.builderTemplate.customPasteData(copiedObj, copiedComponent);
-        }
-
-        if (CustomBuilder.Builder.options.callbacks["pasteElement"] !== undefined && CustomBuilder.Builder.options.callbacks["pasteElement"] !== "") {
-            CustomBuilder.callback(CustomBuilder.Builder.options.callbacks["pasteElement"], [node, $(node).data("data"), self.component, copiedObj, copiedComponent]);
+    pasteNode: function (node) {
+        if (CustomBuilder.Builder.options.callbacks["pasteNode"] !== undefined && CustomBuilder.Builder.options.callbacks["pasteNode"] !== "") {
+            CustomBuilder.callback(CustomBuilder.Builder.options.callbacks["pasteNode"], [node]);
         } else {
-            self._pasteNode(node, copiedObj, copiedComponent);
+            var self = CustomBuilder.Builder;
+
+            if (!node) {
+                node = self.selectedEl;
+                if (!node) {
+                    node = self.frameBody.find('[data-cbuilder-classname]:eq(0)');
+                }
+            }
+
+            self.component = self.parseDataToComponent($(node).data("data"));
+
+            var data = CustomBuilder.getCopiedElement();
+            var copiedObj = $.extend(true, {}, data.object);
+            var copiedComponent = self.parseDataToComponent(copiedObj);
+
+            self.updateElementId(copiedObj);
+
+            if (copiedComponent.builderTemplate.isAbsolutePosition(copiedObj, copiedComponent)) {
+                copiedObj.x_offset = parseInt(copiedObj.x_offset) + 5;
+                copiedObj.y_offset = parseInt(copiedObj.y_offset) + 5;
+            }
+
+            if (copiedComponent.builderTemplate.customPasteData) {
+                copiedComponent.builderTemplate.customPasteData(copiedObj, copiedComponent);
+            }
+
+            if (CustomBuilder.Builder.options.callbacks["pasteElement"] !== undefined && CustomBuilder.Builder.options.callbacks["pasteElement"] !== "") {
+                CustomBuilder.callback(CustomBuilder.Builder.options.callbacks["pasteElement"], [node, $(node).data("data"), self.component, copiedObj, copiedComponent]);
+            } else {
+                self._pasteNode(node, copiedObj, copiedComponent);
+            }
+
+            CustomBuilder.update();
         }
-        
-        CustomBuilder.update();
     },
     
     /*
@@ -4980,6 +4999,10 @@ _CustomBuilder.Builder = {
             
             self.selectedEl = target;
             var data = target.data("data");
+            if (CustomBuilder.Builder.options.callbacks["modifyShowPropertiesData"] !== undefined && CustomBuilder.Builder.options.callbacks["modifyShowPropertiesData"] !== "") {
+                data = CustomBuilder.callback(CustomBuilder.Builder.options.callbacks["modifyShowPropertiesData"], [data, target]);
+            }
+
             self.selectedElData = data;
             var component = self.parseDataToComponent(data);
             self.component = component;
@@ -7049,7 +7072,7 @@ _CustomBuilder.Builder = {
      */
     checkVisible : function(node) {
         $(node).removeAttr("data-cbuilder-invisible");
-        if (!$(node).is('[data-cbuilder-uneditable]') && !$(node).is('[data-cbuilder-visible]')) { //use "data-cbuilder-visible" to skip visiblity check
+        if (!$(node).is('[data-cbuilder-uneditable]') && (!$(node).is('[data-cbuilder-visible]') && node.attr('data-cbuilder-visible') === undefined)) { //use "data-cbuilder-visible" to skip visiblity check
             var temp = $('<div>'+$(node).html()+'</div>');
             $(temp).find('style, script').remove();
             if ($(node).is('div, p') && $(temp).text().trim() === "" 
@@ -7182,7 +7205,23 @@ _CustomBuilder.Builder = {
         
         var target = $(node);
         if (node === undefined) {
-            target = self.frameBody;
+            if (CustomBuilder.Builder.options.callbacks["beforeRenderNodeAdditional"] !== undefined && CustomBuilder.Builder.options.callbacks["beforeRenderNodeAdditional"] !== "") {
+                target = CustomBuilder.callback(CustomBuilder.Builder.options.callbacks["beforeRenderNodeAdditional"], [type]);
+            } else {
+                target = self.frameBody;
+                $("#node-details-toggle").find("input").off("click");
+                $("#node-details-toggle").find("input").on("click", function () {
+                    if ($("#details-toggle-single").is(":checked")) {
+                        self.frameBody.addClass("show-node-details-single");
+                    } else {
+                        self.frameBody.removeClass("show-node-details-single");
+                    }
+                    self._updateBoxes();
+                    self.triggerEvent("nodeAdditionalModeChanged");
+                });
+
+                self.frameBody.addClass("show-node-details");
+            }
             
             $("#node-details-toggle").find("label").removeClass("active");
             $("#node-details-toggle").find("#details-toggle-all").attr("checked", "");
@@ -7190,6 +7229,7 @@ _CustomBuilder.Builder = {
             $("#node-details-toggle").find("#details-toggle-single").removeAttr("checked");
             $("#node-details-toggle").show();
             
+
             $("#node-details-toggle").find("input").off("click");
             $("#node-details-toggle").find("input").on("click", function(){
                 $("#node-details-toggle").find("label").removeClass("active");
@@ -7232,8 +7272,12 @@ _CustomBuilder.Builder = {
             if ($(element).is("[data-cbuilder-uneditable]")) {
                 return;
             }
-            
-            var data = $(element).data("data");
+            var data;
+            if (CustomBuilder.Builder.options.callbacks["renderNodeAddtionalData"] !== undefined && CustomBuilder.Builder.options.callbacks["renderNodeAddtionalData"] !== "") {
+                data = CustomBuilder.callback(CustomBuilder.Builder.options.callbacks["renderNodeAddtionalData"], [element]);
+            } else {
+                data = $(element).data("data");
+            }
             var component = self.parseDataToComponent(data);
             
             if(!component.builderTemplate.isRenderNodeAdditional(data, component, type)) {
@@ -7244,7 +7288,11 @@ _CustomBuilder.Builder = {
             if (component.builderTemplate.addNodeDetailContainer) {
                 component.builderTemplate.addNodeDetailContainer(target, detailsDiv, data, component, type);
             } else {
-                $(target).prepend(detailsDiv);
+                if (CustomBuilder.Builder.options.callbacks["changeNodeAddtionalTarget"] !== undefined && CustomBuilder.Builder.options.callbacks["changeNodeAddtionalTarget"] !== "") {
+                    CustomBuilder.callback(CustomBuilder.Builder.options.callbacks["changeNodeAddtionalTarget"], [target, detailsDiv]);
+                } else {
+                    $(target).prepend(detailsDiv);
+                }
             }
             $(target).attr("data-cbuilder-node-level", level);
             
@@ -7300,6 +7348,10 @@ _CustomBuilder.Builder = {
                 CustomBuilder.Builder["render" + type](detailsDiv, element, data, component, callback);
             } else {
                 callback();
+            }
+
+            if (CustomBuilder.Builder.options.callbacks["afterRenderNodeAdditional"] !== undefined && CustomBuilder.Builder.options.callbacks["afterRenderNodeAdditional"] !== "") {
+                CustomBuilder.callback(CustomBuilder.Builder.options.callbacks["afterRenderNodeAdditional"], [detailsDiv, target, data]);
             }
         }
     },
@@ -7370,11 +7422,15 @@ _CustomBuilder.Builder = {
         
         var target = $(node);
         if (node === undefined) {
-            target = self.frameBody;
-            $("#node-details-toggle").hide();
-            self.frameBody.removeClass("show-node-details show-node-details-single");
-            self.frameBody.find(".cbuilder-node-details").remove();
-            self.frameBody.find(".cbuilder-node-details-reset-margin-top").removeClass("cbuilder-node-details-reset-margin-top");
+            if (CustomBuilder.Builder.options.callbacks["removeAdditionalNode"] !== undefined && CustomBuilder.Builder.options.callbacks["removeAdditionalNode"] !== "") {
+                CustomBuilder.callback(CustomBuilder.Builder.options.callbacks["removeAdditionalNode"]);
+            } else {
+                target = self.frameBody;
+                $("#node-details-toggle").hide();
+                self.frameBody.removeClass("show-node-details show-node-details-single");
+                self.frameBody.find(".cbuilder-node-details").remove();
+                self.frameBody.find(".cbuilder-node-details-reset-margin-top").removeClass("cbuilder-node-details-reset-margin-top");
+            }
         }
         
         $(target).find(".cbuilder-node-details-wrap").each(function() {
@@ -7387,67 +7443,78 @@ _CustomBuilder.Builder = {
     /*
      * Calculate the box position and size of a node
      */
-    getBox: function(node, level) {
-        var self = CustomBuilder.Builder;
-        
-        var offset = $(node).offset();
-        var top = offset.top;
-        var left = offset.left;
-        var right = left + ($(node).outerWidth() * self.zoom);
-        var bottom = top + ($(node).outerHeight() * self.zoom);
-        
-        if (level === undefined) {
-            level = 0;
-            
-            var id = $(node).data("cbuilder-id");
-            if (id !== undefined) {
-                self.frameBody.find('[data-cbuilder-group="'+id+'"]').each(function(){
-                    var cbox = self.getBox($(this), 2);
-                    
+    getBox: function (node, level) {
+        var box;
+        if ($(node).is(':visible')) {
+            var self = CustomBuilder.Builder;
+
+            var offset = $(node).offset();
+            var top = offset.top;
+            var left = offset.left;
+            var right = left + ($(node).outerWidth() * self.zoom);
+            var bottom = top + ($(node).outerHeight() * self.zoom);
+
+            if (level === undefined) {
+                level = 0;
+
+                var id = $(node).data("cbuilder-id");
+                if (id !== undefined) {
+                    self.frameBody.find('[data-cbuilder-group="' + id + '"]').each(function () {
+                        var cbox = self.getBox($(this), 2);
+
+                        if (cbox.top > 0 && cbox.top < top) {
+                            top = cbox.top;
+                        }
+                        if (cbox.left > 0 && cbox.left < left) {
+                            left = cbox.left;
+                        }
+                        if (cbox.right > 0 && cbox.right > right) {
+                            right = cbox.right;
+                        }
+                        if (cbox.bottom > 0 && cbox.bottom > bottom) {
+                            bottom = cbox.bottom;
+                        }
+                    });
+                }
+            }
+
+            if (level < 3) {
+                $(node).find("> *:visible:not(.cbuilder-node-details)").each(function(){
+                    var cbox = self.getBox($(this), ++level);
+
                     if (cbox.top > 0 && cbox.top < top) {
                         top = cbox.top;
                     }
                     if (cbox.left > 0 && cbox.left < left) {
                         left = cbox.left;
                     }
-                    if (cbox.right > 0 && cbox.right > right) {
+                    if (cbox.right > 0 && cbox.width > right) {
                         right = cbox.right;
                     }
-                    if (cbox.bottom > 0 && cbox.bottom > bottom) {
+                    if (cbox.bottom > 0 && cbox.height > bottom) {
                         bottom = cbox.bottom;
                     }
                 });
             }
-        }
-        
-        if (level < 3) {
-            $(node).find("> *:visible:not(.cbuilder-node-details)").each(function(){
-                var cbox = self.getBox($(this), ++level);
 
-                if (cbox.top > 0 && cbox.top < top) {
-                    top = cbox.top;
-                }
-                if (cbox.left > 0 && cbox.left < left) {
-                    left = cbox.left;
-                }
-                if (cbox.right > 0 && cbox.width > right) {
-                    right = cbox.right;
-                }
-                if (cbox.bottom > 0 && cbox.height > bottom) {
-                    bottom = cbox.bottom;
-                }
-            });
+            var box = {
+                top: top,
+                left: left,
+                right: right,
+                bottom: bottom,
+                width: right - left,
+                height: bottom - top
+            };
+        } else {
+            box = {
+                top: 0,
+                left: 0,
+                right: 0,
+                bottom: 0,
+                width: 0,
+                height: 0
+            };
         }
-        
-        var box = {
-            top : top,
-            left : left,
-            right : right,
-            bottom : bottom,
-            width : right - left,
-            height : bottom - top
-        };
-        
         return box;
     },
     
@@ -7762,25 +7829,28 @@ _CustomBuilder.Builder = {
         if (CustomBuilder.screenshotTimeout !== undefined && CustomBuilder.screenshotTimeout !== null) {
             clearTimeout(CustomBuilder.screenshotTimeout);
         }
-        
-        CustomBuilder.screenshotTimeout = setTimeout(function() {
-            CustomBuilder.getScreenshot(target, function(image){
-                $("#screenshotViewImage").html('<img style="max-width:100%; border:1px solid #ddd;" src="'+image+'"/>');
-                
-                var link = document.createElement('a');
-                link.download = CustomBuilder.appId + '-' + CustomBuilder.builderType + '-' + id+'.png';
-                link.href = image;
-                $(link).addClass("btn button btn-secondary");  
-                $(link).html(get_cbuilder_msg('cbuilder.download'));
-                $("#screenshotView .sticky-buttons").append(link);
-                
-                self.frameBody.removeClass("screenshot-in-progress");
-                CustomBuilder.screenshotTimeout = null;
-            }, function(error) {
-                self.frameBody.removeClass("screenshot-in-progress");
-                CustomBuilder.screenshotTimeout = null;
-            });
-        }, 300);
+        if (CustomBuilder.Builder.options.callbacks["getScreenshot"] !== undefined && CustomBuilder.Builder.options.callbacks["getScreenshot"] !== "") {
+            CustomBuilder.callback(CustomBuilder.Builder.options.callbacks["getScreenshot"]);
+        } else {
+            CustomBuilder.screenshotTimeout = setTimeout(function () {
+                CustomBuilder.getScreenshot(target, function (image) {
+                    $("#screenshotViewImage").html('<img style="max-width:100%; border:1px solid #ddd;" src="' + image + '"/>');
+
+                    var link = document.createElement('a');
+                    link.download = CustomBuilder.appId + '-' + CustomBuilder.builderType + '-' + id + '.png';
+                    link.href = image;
+                    $(link).addClass("btn button btn-secondary");
+                    $(link).html(get_cbuilder_msg('cbuilder.download'));
+                    $("#screenshotView .sticky-buttons").append(link);
+
+                    self.frameBody.removeClass("screenshot-in-progress");
+                    CustomBuilder.screenshotTimeout = null;
+                }, function (error) {
+                    self.frameBody.removeClass("screenshot-in-progress");
+                    CustomBuilder.screenshotTimeout = null;
+                });
+            }, 300);
+        }
     },
     
     /*

@@ -4,7 +4,18 @@
 <c:set var="builderLabel" scope="request"><fmt:message key="pbuilder.title"/></c:set>
 <c:set var="builderI18N" scope="request" value=""/>
 <c:set var="builderJS" scope="request">
+    <script src="${pageContext.request.contextPath}/pbuilder/js/logicFlow-core.min.js?build=<fmt:message key="build.number"/>"></script>
+    <script src="${pageContext.request.contextPath}/pbuilder/js/logicFlow-extension.min.js?build=<fmt:message key="build.number"/>"></script>
     <script src="${pageContext.request.contextPath}/pbuilder/js/pbuilder.js?build=<fmt:message key="build.number"/>"></script>
+    <link rel="stylesheet" href="${pageContext.request.contextPath}/pbuilder/css/logicFlow-core.css">
+    <link rel="stylesheet" href="${pageContext.request.contextPath}/pbuilder/css/logicFlow-extension.css">
+    <link rel="stylesheet" href="${pageContext.request.contextPath}/pbuilder/css/pbuilder.css">
+    <script>
+        window.FontAwesomeConfig = {
+            autoReplaceSvg: false
+        };
+    </script>
+    <script src="${pageContext.request.contextPath}/js/fontawesome5/js/all.min.js?build=<fmt:message key="build.number"/>"></script>
 </c:set>
 <c:set var="builderCSS" scope="request">
     <style>
@@ -73,14 +84,21 @@
                 "beforeUpdate" : "ProcessBuilder.updateXpdl",
                 "zoomMinus" : "ProcessBuilder.zoomMinus",
                 "zoomPlus" : "ProcessBuilder.zoomPlus",
+                "fitScreen" : "ProcessBuilder.fitScreen",
+                "autoLayout" : "ProcessBuilder.autoLayout",
+                "highlight" : "ProcessBuilder.highlight",
+                "previewForm" : "ProcessBuilder.previewForm",
+                "navigator" : "ProcessBuilder.navigator",
                 "xpdlViewInit" : "ProcessBuilder.xpdlViewInit",
                 "builderBeforeSave" : "ProcessBuilder.beforeSaveValidation",
                 "listViewerViewInit" : "ProcessBuilder.listViewerViewInit",
                 "listViewerViewBeforeClosed" : "ProcessBuilder.listViewerViewBeforeClosed",
+                "screenshotViewBeforeClosed" : "ProcessBuilder.screenshotViewBeforeClosed",
                 "saveEditProperties" : "ProcessBuilder.saveEditProperties",
                 "builderSaved" : "ProcessBuilder.builderSaved",
                 "builderSaveFailed" : "ProcessBuilder.builderSaveFailed",
                 "getOverviewPathElementSelector" : "ProcessBuilder.getOverviewPathElementSelector",
+                "marketplaceReloadPalette" : "ProcessBuilder.marketplaceReloadPalette",
                 "marketplaceReloadPalette" : "ProcessBuilder.marketplaceReloadPalette"
             },
             "properties" : {
