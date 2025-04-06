@@ -287,6 +287,10 @@ public class AppWorkflowHelper implements WorkflowHelper {
                         resultList = getParticipantsByLoggedInUser();
                     } else if (PackageParticipant.TYPE_ROLE.equals(participant.getType()) && PackageParticipant.VALUE_ROLE_ADMIN.equals(participant.getValue())) {
                         resultList = getParticipantsByAdminUser();
+                    } else if (PackageParticipant.TYPE_ROLE.equals(participant.getType()) && PackageParticipant.VALUE_ROLE_APP_ADMIN.equals(participant.getValue())) {
+                        resultList = getParticipantsByAppAdminUser();
+                    } else if (PackageParticipant.TYPE_ROLE.equals(participant.getType()) && PackageParticipant.VALUE_ROLE_SYSTEM_ADMIN.equals(participant.getValue())) {
+                        resultList = getParticipantsBySystemAdminUser();
                     }
                 }
             }
@@ -651,6 +655,32 @@ public class AppWorkflowHelper implements WorkflowHelper {
         List<String> resultList = new ArrayList<String>();
         WorkflowUserManager workflowUserManager = (WorkflowUserManager) AppUtil.getApplicationContext().getBean("workflowUserManager");
         if (workflowUserManager.isCurrentUserInRole(WorkflowUserManager.ROLE_ADMIN)) {
+            resultList.add(workflowUserManager.getCurrentUsername());
+        }
+        return resultList;
+    }
+    
+    /**
+     * Retrieve the participants based on app admin user
+     * @return 
+     */
+    protected List<String> getParticipantsByAppAdminUser() {
+        List<String> resultList = new ArrayList<String>();
+        WorkflowUserManager workflowUserManager = (WorkflowUserManager) AppUtil.getApplicationContext().getBean("workflowUserManager");
+        if (workflowUserManager.isCurrentUserInRole(WorkflowUserManager.ROLE_APPADMIN)) {
+            resultList.add(workflowUserManager.getCurrentUsername());
+        }
+        return resultList;
+    }
+    
+    /**
+     * Retrieve the participants based on system admin user
+     * @return 
+     */
+    protected List<String> getParticipantsBySystemAdminUser() {
+        List<String> resultList = new ArrayList<String>();
+        WorkflowUserManager workflowUserManager = (WorkflowUserManager) AppUtil.getApplicationContext().getBean("workflowUserManager");
+        if (workflowUserManager.isCurrentUserInRole(WorkflowUserManager.ROLE_SYSTEMADMIN)) {
             resultList.add(workflowUserManager.getCurrentUsername());
         }
         return resultList;

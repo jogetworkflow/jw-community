@@ -2116,6 +2116,8 @@ PRIMARY KEY CLUSTERED
 ;
 INSERT [dir_role] ([id], [name], [description]) VALUES (N'ROLE_ADMIN', N'Admin', N'Administrator')
 INSERT [dir_role] ([id], [name], [description]) VALUES (N'ROLE_USER', N'User', N'Normal User')
+INSERT [dir_role] ([id], [name], [description]) VALUES (N'ROLE_SYTEMADMIN', N'System Admin', N'System Administrator')
+INSERT [dir_role] ([id], [name], [description]) VALUES (N'ROLE_APPADMIN', N'App Admin', N'App Administrator')
 INSERT [dir_user] ([id], [username], [password], [firstName], [lastName], [email], [timeZone], [locale], [active]) VALUES (N'admin', N'admin', N'admin', N'Admin', N'admin', N'admin@email.domain', N'0', NULL, 1)
 INSERT [dir_user_role] ([roleId], [userId]) VALUES (N'ROLE_ADMIN', N'admin')
 INSERT [ObjectId] ([nextoid]) VALUES (CAST(1000200 AS Decimal(19, 0)))

@@ -39,12 +39,12 @@ public class AuthenticationTokenWrapper implements Authentication {
             tempAuthorities.add(new SimpleGrantedAuthority(EnhancedWorkflowUserManager.ROLE_SYSADMIN));
         }
         
-        // add app admin role configured for specific users
-        if (!tempAuthorities.contains(ga) && EnhancedWorkflowUserManager.checkCustomAppAdmin()) {
+        // add app designer role configured for specific users
+        if (!tempAuthorities.contains(ga) && EnhancedWorkflowUserManager.checkCustomAppDesigner()) {
             tempAuthorities.add(ga);
         }
-        if (EnhancedWorkflowUserManager.isAppAdminRole()) {
-            tempAuthorities.add(new SimpleGrantedAuthority(EnhancedWorkflowUserManager.ROLE_APPADMIN));
+        if (EnhancedWorkflowUserManager.isAppDesignerRole()) {
+            tempAuthorities.add(new SimpleGrantedAuthority(EnhancedWorkflowUserManager.ROLE_APPDESIGNER));
         }
         if (tempAuthorities.isEmpty()) {
             tempAuthorities.add(new SimpleGrantedAuthority(WorkflowUserManager.ROLE_USER));

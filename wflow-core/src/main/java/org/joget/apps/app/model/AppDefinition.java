@@ -43,11 +43,11 @@ public class AppDefinition extends AbstractVersionedObject {
     @Path("messageList")
     @ElementList(required = false,inline=true)
     private Collection<Message> messageList;
-    
+
     @Path("resourceList")
     @ElementList(required = false,inline=true)
     private Collection<AppResource> resourceList;
-    
+
     private Boolean published;
     @Element(required = false)
     private String license;
@@ -55,6 +55,8 @@ public class AppDefinition extends AbstractVersionedObject {
     private String description;
     @Element(required = false)
     private String meta;
+    @Element(required = false)
+    private String createdBy;
 
     /**
      * For an App, the package ID is equivalent to the ID.
@@ -123,7 +125,7 @@ public class AppDefinition extends AbstractVersionedObject {
     public void setMessageList(Collection<Message> messageList) {
         this.messageList = messageList;
     }
-    
+
     public Collection<AppResource> getResourceList() {
         return resourceList;
     }
@@ -147,7 +149,7 @@ public class AppDefinition extends AbstractVersionedObject {
     public void setUserviewDefinitionList(Collection<UserviewDefinition> userviewDefinitionList) {
         this.userviewDefinitionList = userviewDefinitionList;
     }
-    
+
     public Collection<BuilderDefinition> getBuilderDefinitionList() {
         return builderDefinitionList;
     }
@@ -191,8 +193,17 @@ public class AppDefinition extends AbstractVersionedObject {
         this.meta = meta;
     }
 
+    public String getCreatedBy() {
+        return createdBy;
+    }
+
+    public void setCreatedBy(String createdBy) {
+        this.createdBy = createdBy;
+    }
+
+
     @Override
     public String toString() {
-        return "{" + "id=" + getId() + ", version=" + getVersion() + ", published=" + published + '}';
+        return "{" + "id=" + getId() + ", version=" + getVersion() + ", published=" + published +", createdBy=" + getCreatedBy() + '}';
     }
 }

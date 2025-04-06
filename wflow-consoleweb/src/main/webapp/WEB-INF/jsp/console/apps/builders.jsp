@@ -2,7 +2,7 @@
 <%@ page import="org.joget.apps.workflow.security.EnhancedWorkflowUserManager"%>
 <%@ page import="org.joget.apps.app.service.AppDevUtil"%>
 <c:set var="isGitDisabled" value="<%= AppDevUtil.isGitDisabled() %>"/>
-<c:set var="isCustomAppAdmin" value="<%= EnhancedWorkflowUserManager.isAppAdminRole() %>"/>
+<c:set var="isCustomAppAdmin" value="<%= EnhancedWorkflowUserManager.isAppDesignerRole() %>"/>
 
 <c:set var="appDef" scope="request" value="${appDefinition}"/>
 <c:set var="builderLabel" scope="request"><fmt:message key="abuilder.title"/></c:set>
