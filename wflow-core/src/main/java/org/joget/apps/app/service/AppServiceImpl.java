@@ -61,10 +61,9 @@ import org.joget.apps.app.dao.PluginDefaultPropertiesDao;
 import org.joget.apps.app.dao.UserviewDefinitionDao;
 import org.joget.apps.app.model.AbstractAppVersionedObject;
 import org.joget.apps.app.model.AppDefinition;
+import org.joget.apps.app.model.AppImportExportAwarePlugin;
 import org.joget.apps.app.model.AppResource;
 import org.joget.apps.app.model.BuilderDefinition;
-import org.joget.apps.app.model.CustomBuilder;
-import org.joget.apps.app.model.CustomBuilderCallback;
 import org.joget.apps.app.model.DatalistDefinition;
 import org.joget.apps.app.model.EnvironmentVariable;
 import org.joget.apps.app.model.FormDefinition;
@@ -840,10 +839,13 @@ public class AppServiceImpl implements AppService {
      * @return
      */
     public PackageActivityForm retrieveMappedForm(String appId, String version, String processDefId, String activityDefId) {
+        PackageActivityForm paf = null;
         String processDefIdWithoutVersion = WorkflowUtil.getProcessDefIdWithoutVersion(processDefId);
         AppDefinition appDef = getAppDefinition(appId, version);
         PackageDefinition packageDef = appDef.getPackageDefinition();
-        PackageActivityForm paf = packageDef.getPackageActivityForm(processDefIdWithoutVersion, activityDefId);
+        if (packageDef != null) {
+             paf = packageDef.getPackageActivityForm(processDefIdWithoutVersion, activityDefId);
+        }
         if (paf != null) {
             try {
                 paf = (PackageActivityForm)paf.clone();
@@ -1537,11 +1539,8 @@ public class AppServiceImpl implements AppService {
                 importFormData(zip);
                 importUserGroups(zip);
 
-                for (CustomBuilder builder : CustomBuilderUtil.getBuilderList().values()) {
-                    if (builder instanceof CustomBuilderCallback) {
-                        ((CustomBuilderCallback) builder).importAppPostProcessing(newAppDef, zip);
-                    }
-                }
+                //handle AppImportExportAwarePlugin
+                handleAppImportExportAwarePluginsDuringImport(newAppDef, zip);
             } catch (Exception e) {
                 LogUtil.error(getClass().getName(), e, "");
                 errors.add("console.app.error.label.create");
@@ -2504,11 +2503,8 @@ public class AppServiceImpl implements AppService {
                     exportUserGroups(appId, version, zip, request.getParameterValues("usergroups"));
                 }
                 
-                for (CustomBuilder builder : CustomBuilderUtil.getBuilderList().values()) {
-                    if (builder instanceof CustomBuilderCallback) {
-                        ((CustomBuilderCallback) builder).exportAppPostProcessing(appDef, zip);
-                    }
-                }
+                //handle AppImportExportAwarePlugin
+                handleAppImportExportAwarePluginsDuringExport(appDef, zip);
                 
                 // finish the zip
                 zip.finish();
@@ -2664,11 +2660,8 @@ public class AppServiceImpl implements AppService {
                 importUserGroups(zip);
             }
             
-            for (CustomBuilder builder : CustomBuilderUtil.getBuilderList().values()) {
-                if (builder instanceof CustomBuilderCallback) {
-                    ((CustomBuilderCallback) builder).importAppPostProcessing(newAppDef, zip);
-                }
-            }
+            //handle AppImportExportAwarePlugin
+            handleAppImportExportAwarePluginsDuringImport(newAppDef, zip);
             
             if (request != null && request.getParameterValues("autoInstallUpdatePlugins") != null) {
                 MarketplaceUtil.autoInstallUpdatePlugins(newAppDef);
@@ -4038,5 +4031,37 @@ public Collection<AppDefinition> getPublishedApps(String appId, boolean mobileVi
         String key = SecurityUtil.normalizedFileName(appDef.getAppId() + "_" + appDef.getVersion().toString() + ".lock");
         Path path = Paths.get(SetupManager.getBaseDirectory() + PROCESS_MIGRATION_PATH + key);
         return Files.exists(path);
+    }
+    
+    /**
+     * Handle AppImportExportAwarePlugins during app import 
+     * 
+     * @param newAppDef
+     * @param zip 
+     */
+    @Override
+    public void handleAppImportExportAwarePluginsDuringImport(AppDefinition newAppDef, byte[] zip) {
+        Collection<Plugin> plugins = pluginManager.list(AppImportExportAwarePlugin.class);
+        for (Plugin plugin : plugins) {
+            if (plugin instanceof AppImportExportAwarePlugin) {
+                ((AppImportExportAwarePlugin) plugin).importAppPostProcessing(newAppDef, zip);
+            }
+        }
+    }
+    
+    /**
+     * Handle AppImportExportAwarePlugins during app export 
+     * 
+     * @param newAppDef
+     * @param zip 
+     */
+    @Override
+    public void handleAppImportExportAwarePluginsDuringExport(AppDefinition exportAppDef, ZipOutputStream zip) {
+        Collection<Plugin> plugins = pluginManager.list(AppImportExportAwarePlugin.class);
+        for (Plugin plugin : plugins) {
+            if (plugin instanceof AppImportExportAwarePlugin) {
+                ((AppImportExportAwarePlugin) plugin).exportAppPostProcessing(exportAppDef, zip);
+            }
+        }
     }
 }

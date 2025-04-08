@@ -111,6 +111,7 @@
         <div id="builder-message"></div>
         <div id="builder-screenshot"></div>
         
+        <%= AppUtil.getInjectionHtml() %>
         <jsp:include page="/WEB-INF/jsp/includes/csrf.jsp" flush="true" />
     </body>
 </html>

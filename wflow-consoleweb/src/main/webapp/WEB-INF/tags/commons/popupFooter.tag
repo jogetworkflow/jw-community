@@ -1,4 +1,6 @@
-        <script type="text/javascript">
+<%@ tag import="org.joget.apps.app.service.AppUtil"%>
+
+    <script type="text/javascript">
             $(function(){
                 $("body").on("click", ".ui-tabs-nav li.ui-tabs-active", function(){
                     var tabs = $(this).closest(".ui-tabs-nav");
@@ -52,5 +54,7 @@
             HelpGuide.show();
         </script>
         <jsp:include page="/WEB-INF/jsp/includes/csrf.jsp" flush="true" />
+        
+        <%= AppUtil.getInjectionHtml() %>
     </body>
 </html>

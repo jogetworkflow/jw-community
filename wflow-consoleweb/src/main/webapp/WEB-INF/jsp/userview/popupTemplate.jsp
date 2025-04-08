@@ -47,5 +47,7 @@
 
     <body class="popupBody">
         ${content}
+        
+        <%= AppUtil.getInjectionHtml() %>
     </body>
 </html>

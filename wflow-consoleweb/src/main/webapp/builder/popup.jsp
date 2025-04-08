@@ -52,6 +52,7 @@
             HelpGuide.attachTo = "#main-body-header";
             HelpGuide.show();
         </script>
+        <%= AppUtil.getInjectionHtml() %>
         <jsp:include page="/WEB-INF/jsp/includes/csrf.jsp" flush="true" />
     </body>
 </html>    

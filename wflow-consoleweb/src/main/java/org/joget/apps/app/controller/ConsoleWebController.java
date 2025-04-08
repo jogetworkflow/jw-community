@@ -84,6 +84,7 @@ import org.eclipse.jgit.api.errors.GitAPIException;
 import static org.joget.apps.app.controller.UserviewWebController.isBackendLicense;
 import static org.joget.apps.app.service.AppDevUtil.*;
 import org.joget.apps.app.web.GitRequestFilter;
+import org.joget.plugin.base.SystemConfigurablePlugin;
 import org.springframework.context.annotation.Lazy;
 
 @Controller
@@ -1845,6 +1846,21 @@ public class ConsoleWebController {
         Collection<Group> userGroups = appService.getAppUserGroups(appDef);
         map.addAttribute("userGroups", userGroups);
         
+        StringBuilder sb = new StringBuilder();
+        
+        //handle AppImportExportAwarePlugin
+        Collection<Plugin> plugins = pluginManager.list(AppImportExportAwarePlugin.class);
+        for (Plugin plugin : plugins) {
+            if (plugin instanceof AppImportExportAwarePlugin) {
+                String html = ((AppImportExportAwarePlugin) plugin).exportAppConfigHtml();
+                if (html != null && !html.isEmpty()) {
+                    sb.append(html).append("\n");
+                }
+            }
+        }
+        
+        map.put("pluginExportConfig", sb.toString());
+        
         return "console/apps/exportConfig";
     }
 
@@ -1882,7 +1898,23 @@ public class ConsoleWebController {
     }
 
     @RequestMapping("/console/app/import")
-    public String consoleAppImport() {
+    public String consoleAppImport(ModelMap map) {
+        
+        StringBuilder sb = new StringBuilder();
+        
+        //handle AppImportExportAwarePlugin
+        Collection<Plugin> plugins = pluginManager.list(AppImportExportAwarePlugin.class);
+        for (Plugin plugin : plugins) {
+            if (plugin instanceof AppImportExportAwarePlugin) {
+                String html = ((AppImportExportAwarePlugin) plugin).importAppConfigHtml();
+                if (html != null && !html.isEmpty()) {
+                    sb.append(html).append("\n");
+                }
+            }
+        }
+        
+        map.put("pluginImportConfig", sb.toString());
+        
         return "console/apps/import";
     }
 
@@ -5201,6 +5233,7 @@ public class ConsoleWebController {
     @RequestMapping("/console/setting/plugin")
     public String consoleSettingPlugin(ModelMap map) {
         map.addAttribute("pluginType", getPluginType());
+        map.addAttribute("hasConfigurablePlugin", pluginManager.hasConfigurablePlugins());
         return "console/setting/plugin";
     }
 
@@ -5272,6 +5305,48 @@ public class ConsoleWebController {
             LogUtil.info(PluginManager.class.getName(), workflowUserManager.getCurrentUsername() + " uninstalled plugin (" + plugins + ").");
         }
         return "redirect:/web/console/setting/plugin";
+    }
+    
+    @RequestMapping("/console/setting/plugin/config")
+    public String consoleSettingPluginConfig(ModelMap map, HttpServletRequest request, HttpServletResponse response, @RequestParam("id") String id, @RequestParam(required = false) String pluginProperties) throws UnsupportedEncodingException, IOException {
+        Plugin plugin = pluginManager.getPlugin(id);
+        
+        if (plugin == null || !(plugin instanceof SystemConfigurablePlugin)) {
+            response.sendError(HttpServletResponse.SC_NOT_FOUND);
+            return null;
+        }
+        
+        Setting setting = setupManager.getSettingByProperty("plugin_config_" + id);
+        if (setting != null && setting.getValue() != null) {
+            map.addAttribute("properties", PropertyUtil.propertiesJsonLoadProcessing(setting.getValue()));
+        }
+
+        if (plugin instanceof PropertyEditable) {
+            PropertyEditable pe = (PropertyEditable) plugin;
+            map.addAttribute("propertyEditable", pe);
+            map.addAttribute("propertiesDefinition", PropertyUtil.injectHelpLink(plugin.getHelpLink(), pe.getPropertyOptions()));
+        }
+        
+        if ("POST".equalsIgnoreCase(request.getMethod()) && pluginProperties != null) {
+            if (setting == null) {
+                setting = new Setting();
+                setting.setProperty("plugin_config_" + id);
+            }
+            
+            pluginProperties = PropertyUtil.propertiesJsonStoreProcessing(setting.getValue(), pluginProperties);
+            
+            setting.setValue(pluginProperties);
+            setupManager.saveSetting(setting);
+            
+            return "console/apps/dialogClose";
+        } else {
+            String url = request.getContextPath() + "/web/console/setting/plugin/config?id=" + ClassUtils.getUserClass(plugin).getName();
+
+            map.addAttribute("plugin", plugin);
+            map.addAttribute("actionUrl", url);
+
+            return "console/plugin/pluginConfig";
+        }
     }
 
     @RequestMapping("/console/setting/message")
@@ -6565,7 +6640,7 @@ public class ConsoleWebController {
 
         jsonArr.write(writer);
     }
-    
+   
     protected JSONArray sortJSONArray(JSONArray jsonArr, final String fieldName, final boolean desc) {
         try {
             JSONArray sortedJsonArray = new JSONArray();

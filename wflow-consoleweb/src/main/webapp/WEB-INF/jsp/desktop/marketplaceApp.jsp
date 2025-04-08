@@ -88,13 +88,15 @@
             });
         };
         window.addEventListener('message', function(event) {
-            var marketplaceUrl = '<ui:msgEscJS key="appCenter.link.marketplace.url"/>';
-            var marketplaceTrustedUrls = '<ui:msgEscJS key="appCenter.link.marketplace.trusted"/>';
-            if (marketplaceUrl.indexOf(event.origin) === 0 || marketplaceTrustedUrls.indexOf(event.origin) >= 0) {
-                var downloadUrl = event.data;
-                verifyApp(downloadUrl);
-            } else {
-                verifyApp("");
+            if (event.data !== undefined && typeof event.data === "string") {
+                var marketplaceUrl = '<ui:msgEscJS key="appCenter.link.marketplace.url"/>';
+                var marketplaceTrustedUrls = '<ui:msgEscJS key="appCenter.link.marketplace.trusted"/>';
+                if (marketplaceUrl.indexOf(event.origin) === 0 || marketplaceTrustedUrls.indexOf(event.origin) >= 0) {
+                    var downloadUrl = event.data;
+                    verifyApp(downloadUrl);
+                } else {
+                    verifyApp("");
+                }
             }
         });
         $(document).ready(function(){

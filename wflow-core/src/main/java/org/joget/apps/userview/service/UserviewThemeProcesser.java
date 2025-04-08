@@ -471,6 +471,9 @@ public class UserviewThemeProcesser {
         }
 
         html += AppUtil.getSystemAlert() + "\n";
+        
+        //handle the html injected using UiHtmlInjectorPlugin
+        html += "<div data-injected-htmls>" + AppUtil.getInjectionHtml() + "</div>\n";
 
         Map<String, Object> modelMap = new HashMap<String, Object>();
         AppDefinition appDef = AppUtil.getCurrentAppDefinition();

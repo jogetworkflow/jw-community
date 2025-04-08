@@ -24,6 +24,7 @@ import org.joget.commons.util.LogUtil;
 import org.joget.plugin.base.ApplicationPlugin;
 import org.joget.plugin.base.AuditTrailPlugin;
 import org.joget.plugin.base.PluginWebSupport;
+import org.joget.plugin.base.SystemConfigurablePlugin;
 import org.joget.workflow.model.DeadlinePlugin;
 import org.joget.workflow.model.ParticipantPlugin;
 import org.json.JSONArray;
@@ -51,12 +52,7 @@ public class PluginJsonController {
 
         try {
             if (className != null && !className.trim().isEmpty()) {
-                Class clazz;
-                if (pluginManager.getCustomPluginInterface(className) != null) {
-                    clazz = pluginManager.getCustomPluginInterface(className).getClassObj();
-                } else {
-                    clazz = Class.forName(className);
-                }
+                Class clazz = getClass(className);
                 pluginList = new ArrayList<Plugin>(pluginManager.list(clazz));
             } else {
                 pluginList = new ArrayList<Plugin>();
@@ -82,12 +78,7 @@ public class PluginJsonController {
 
         try {
             if (className != null && !className.trim().isEmpty()) {
-                Class clazz;
-                if (pluginManager.getCustomPluginInterface(className) != null) {
-                    clazz = pluginManager.getCustomPluginInterface(className).getClassObj();
-                } else {
-                    clazz = Class.forName(className);
-                }
+                Class clazz = getClass(className);
                 pluginList = (List) pluginManager.list(clazz);
             } else {
                 pluginList = (List) pluginManager.list();
@@ -105,12 +96,7 @@ public class PluginJsonController {
 
         try {
             if (className != null && !className.trim().isEmpty()) {
-                Class clazz;
-                if (pluginManager.getCustomPluginInterface(className) != null) {
-                    clazz = pluginManager.getCustomPluginInterface(className).getClassObj();
-                } else {
-                    clazz = Class.forName(className);
-                }
+                Class clazz = getClass(className);
                 pluginList = new ArrayList(pluginManager.listOsgiPlugin(clazz));
             } else {
                 pluginList = new ArrayList(pluginManager.listOsgiPlugin(null));
@@ -136,6 +122,32 @@ public class PluginJsonController {
         JSONObject jsonObject = MarketplaceUtil.getInstalledBundledList(null, filter, className, isUpdate, sort, desc, start, rows);
         AppUtil.writeJson(writer, jsonObject, null);
     }    
+    
+    @RequestMapping("/json/plugin/listConfigurable")
+    public void pluginListConfigurable(Writer writer, @RequestParam(value = "className", required = false) String className, @RequestParam(value = "name", required = false) String filter, @RequestParam(value = "start", required = false) Integer start, @RequestParam(value = "rows", required = false) Integer rows) throws JSONException {
+        List<Plugin> pluginList = new ArrayList<>();
+
+        try {
+            Collection<Plugin> fullPluginList = pluginManager.list(SystemConfigurablePlugin.class);
+
+            if (className != null && !className.isEmpty()) {
+                Class clazz = getClass(className);
+                if (clazz != null) {
+                    for (Plugin plugin : fullPluginList) {
+                        if (clazz.isAssignableFrom(plugin.getClass())) {
+                            pluginList.add(plugin);
+                        }
+                    }
+                }
+            } else {
+                pluginList.addAll(fullPluginList);
+            }
+            
+            writePluginsResponse(pluginList, filter, start, rows, false, writer);
+        } catch (Exception e) {
+            LogUtil.error(this.getClass().getName(), e, "");
+        }
+    }
 
     @RequestMapping("/json/app/(*:appId)/(~:appVersion)/plugin/(*:pluginName)/service")
     public void service(HttpServletRequest request, HttpServletResponse response, @RequestParam(value = "appId") String appId, @RequestParam(value = "appVersion", required = false) String appVersion, @RequestParam String pluginName) throws IOException, ServletException {
@@ -211,6 +223,16 @@ public class PluginJsonController {
             }
         }
         return sorted;
+    }
+    
+    protected Class getClass(String className) throws ClassNotFoundException {
+        Class clazz = null;
+        if (pluginManager.getCustomPluginInterface(className) != null) {
+            clazz = pluginManager.getCustomPluginInterface(className).getClassObj();
+        } else {
+            clazz = Class.forName(className);
+        }
+        return clazz;
     }
     
     /**
