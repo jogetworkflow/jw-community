@@ -11,12 +11,12 @@
         <title></title>
         
         <link href="${pageContext.request.contextPath}/wro/common.css" rel="stylesheet" />
-        <link href="${pageContext.request.contextPath}/js/bootstrap4/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="${pageContext.request.contextPath}/wro/jds.min.css" rel="stylesheet" />
         <link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/js/line-awesome-1.3.0/css/line-awesome.min.css" />
         <link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/universal/lib/material-design-iconic-font/css/material-design-iconic-font.min.css" />
         <script src="${pageContext.request.contextPath}/wro/common.preload.js"></script>
         <script src="${pageContext.request.contextPath}/wro/common.js"></script>
-        <script src="${pageContext.request.contextPath}/js/bootstrap4/js/bootstrap.min.js"></script>
+        <script src="${pageContext.request.contextPath}/wro/jds.min.js"></script>
         <script type="text/javascript" src="${pageContext.request.contextPath}/js/tiny_mce/js/tinymce/tinymce.min.js"></script>
         <style>
             html, body

@@ -196,7 +196,7 @@ public class DataListDecorator extends CheckboxTableDecorator {
                 label = ResourceBundleUtil.getMessage("dbuilder.rowActionsDropdownLabel.default");
             }
             output = output.replaceAll(StringUtil.escapeRegex("btn btn-sm btn-"), StringUtil.escapeRegex("xbtn xbtn-sm xbtn-")); //remove btn style
-            output = "<div class=\"dropdown rowActionsDropdown\"><a data-toggle=\"dropdown\" class=\""+btnStyle+"\" href=\"javascript:;\">"+label+" <i class=\"fas fa-chevron-down\"></i></a><div class=\"dropdown-menu dropdown-menu-left rowActions\">"+output+"</div></div>";
+            output = "<div class=\"dropdown rowActionsDropdown\"><a data-bs-toggle=\"dropdown\" role=\"button\" class=\""+btnStyle+"\" href=\"javascript:;\">"+label+" <i class=\"fas fa-chevron-down\"></i></a><div class=\"dropdown-menu dropdown-menu-start rowActions\">"+output+"</div></div>";
         }
         
         return output;

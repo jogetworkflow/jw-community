@@ -77,7 +77,7 @@ body#login #main > div {
 }
 .breadcrumb,
 .breadcrumb a {
-    color: fade(@defaultFontColor, 65%);
+    color: fade(@defaultFontColor, 65%) !important;
 }
 .breadcrumb a:last-child {
     color: @defaultFontColor;
@@ -141,7 +141,11 @@ body:not(#login) #content > main > table{
 .preloader .plc-path, .plc-path {
     stroke: @defaultFontColor;
 }
-.btn:not(.btn-link), .btn.focus:not(.btn-link), .btn:not(.btn-link):focus, .btn:not(.btn-link):hover, .btn:not(.btn-link):active {
+.btn:not(.btn-link):not(.accordion-button):not([class^="ql-"]),
+.btn.focus:not(.btn-link):not(.accordion-button):not([class^="ql-"]),
+.btn:not(.btn-link):not(.accordion-button):not([class^="ql-"]):focus,
+.btn:not(.btn-link):not(.accordion-button):not([class^="ql-"]):hover,
+.btn:not(.btn-link):not(.accordion-button):not([class^="ql-"]):active{
     color: @buttonText;
     background-color: @button;
 }

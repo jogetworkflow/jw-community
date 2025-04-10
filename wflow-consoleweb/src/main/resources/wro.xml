@@ -30,6 +30,10 @@
         <js>/js/chosen/chosen.jquery.js</js>
         <js>/js/contactjs/contact.min.js</js>
     </group>
+    <group name="jds.min">
+        <css>/js/joget-design-system9/css/jds.css</css>
+        <js>/js/joget-design-system9/js/jds.bundle.js</js>
+    </group>
     <group name="advancedTool">
         <css>/js/at/usages.css</css>
         <css>/js/at/i18n.css</css>
@@ -83,8 +87,7 @@
     <group name="universal.preload.min">
         <css>/css/form.css</css>
         <css>/css/datalistBuilderView.css</css>
-        <css>/js/bootstrap/css/bootstrap.custom.css</css>
-        <css>/js/bootstrap3/css/bootstrap.min.css</css>
+        <css>/js/joget-design-system9/css/jds.css</css>
         <css>/css/userview_v5.css</css>
         <css>/universal/lib/material-design-iconic-font/css/material-design-iconic-font.min.css</css>
         <css>/universal/css/form.css</css>
@@ -95,7 +98,7 @@
         <css>/universal/lib/waves/waves.min.css</css>
         <css>/css/jquery.toast.min.css</css>
         <js>/universal/js/preload.js</js>
-        <js>/js/bootstrap3/js/bootstrap.min.js</js>
+        <js>/js/joget-design-system9/js/jds.bundle.js</js>
         <js>/universal/lib/malihu-custom-scrollbar/jquery.mCustomScrollbar.concat.min.js</js>
         <js>/universal/lib/touchSwipe/jquery.touchSwipe.min.js</js>
         <js>/universal/lib/waves/waves.min.js</js>
@@ -110,8 +113,7 @@
     <group name="progressive.preload.min">
         <css>/css/form.css</css>
         <css>/css/datalistBuilderView.css</css>
-        <css>/js/bootstrap/css/bootstrap.custom.css</css>
-        <css>/js/bootstrap3/css/bootstrap.min.css</css>
+        <css>/js/joget-design-system9/css/jds.css</css>
         <css>/css/userview_v5.css</css>
         <css>/progressive/css/form.css</css>
         <css>/progressive/css/style.css</css>
@@ -122,7 +124,7 @@
         <css>/universal/lib/waves/waves.min.css</css>
         <css>/css/jquery.toast.min.css</css>
         <js>/progressive/js/preload.js</js>
-        <js>/js/bootstrap3/js/bootstrap.min.js</js>
+        <js>/js/joget-design-system9/js/jds.bundle.js</js>
         <js>/universal/lib/malihu-custom-scrollbar/jquery.mCustomScrollbar.concat.min.js</js>
         <js>/universal/lib/touchSwipe/jquery.touchSwipe.min.js</js>
         <js>/universal/lib/waves/waves.min.js</js>
@@ -154,7 +156,7 @@
         <js>/xadmin/js/xadminExt.js</js>
     </group>
     <group name="ajaxuniversal.preload.min">
-        <css>/js/bootstrap4/css/bootstrap.min.css</css>
+        <css>/js/joget-design-system9/css/jds.css</css>
         <css>/universal/lib/material-design-iconic-font/css/material-design-iconic-font.min.css</css>
         <css>/ajaxuniversal/css/ajaxtheme.css</css>
         <css>/css/form8.css</css>
@@ -174,8 +176,7 @@
         <css>/universal/lib/malihu-custom-scrollbar/jquery.mCustomScrollbar.min.css</css>
         <js>/universal/lib/malihu-custom-scrollbar/jquery.mCustomScrollbar.concat.min.js</js>
         <js>/universal/js/preload.js</js>
-        <js>/js/bootstrap4/js/popper.min.js</js>
-        <js>/js/bootstrap4/js/bootstrap.min.js</js>
+        <js>/js/joget-design-system9/js/jds.bundle.js</js>
         <js>/universal/lib/touchSwipe/jquery.touchSwipe.min.js</js>
         <js>/universal/lib/waves/waves.min.js</js>
         <js>/ajaxuniversal/js/main.js</js>

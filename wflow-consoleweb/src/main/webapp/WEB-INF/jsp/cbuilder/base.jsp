@@ -80,7 +80,7 @@
 
                 <link id="favicon" rel="alternate icon" href="${pageContext.request.contextPath}/images/favicon.ico" /> 
                 <link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/builder/difflib/diffview.css"/>
-                <link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/js/bootstrap4/css/bootstrap.min.css" />
+                <link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/wro/jds.min.css" />
                 <link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/wro/advancedTool.css?build=<fmt:message key="build.number"/>">
                 <link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/builder/builder.css?build=<fmt:message key="build.number"/>" />
                 <link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/js/line-awesome-1.3.0/css/line-awesome.min.css" />
@@ -105,61 +105,61 @@
                         <div id="builderElementName" style="color:<c:out value="${builderColor}"/>;">
                             <div class="title"><span><c:out value="${appDefinition.name}" /> v<c:out value="${appDefinition.version}"/><c:if test="${!empty builderDef}">: <span class="item_name"><c:out value="${builderDef.name}"/></span></c:if> <c:if test="${appDefinition.published}"></span><small class="published">(<fmt:message key="console.app.common.label.published"/>)</small></c:if></div>
                             <span id="help-guide-container"></span>
-                            <div class="btn-group mr-3 float-right" style="margin-top:-16px;" role="group">
+                            <div class="btn-group me-3 float-end" style="margin-top:-16px;" role="group">
                                 <button class="btn btn-primary btn-icon" title="<fmt:message key="ubuilder.save"/> (Ctrl + S)" id="save-btn" data-cbuilder-action="mergeAndSave" data-cbuilder-shortcut="ctrl+s">
                                     <i class="las la-cloud-upload-alt"></i> <span><fmt:message key="ubuilder.save"/></span>
                                 </button>
                             </div>  
                         </div>
                         <div id="builderToolbar">
-                            <div id="main-button-group" class="btn-group toolbar-group mr-3" role="group">
-                                <button class="btn btn-light active-view" title="<fmt:message key="ubuilder.design"/>" id="design-btn" type="button" data-toggle="button" aria-pressed="false" data-cbuilder-view="design" data-cbuilder-action="switchView">
+                            <div id="main-button-group" class="btn-group toolbar-group me-3" role="group">
+                                <button class="btn btn-light active-view" title="<fmt:message key="ubuilder.design"/>" id="design-btn" type="button" data-bs-toggle="button" aria-pressed="false" data-cbuilder-view="design" data-cbuilder-action="switchView">
                                     <i class="las la-pencil-ruler"></i> <span><fmt:message key="ubuilder.design"/></span>
                                 </button>
-                                <button style="display:none" class="btn btn-light" title="<fmt:message key="ubuilder.setting"/>" id="properties-btn" type="button" data-toggle="button" aria-pressed="false" data-cbuilder-view="properties" data-cbuilder-action="switchView" data-hide-tool data-view-control>
+                                <button style="display:none" class="btn btn-light" title="<fmt:message key="ubuilder.setting"/>" id="properties-btn" type="button" data-bs-toggle="button" aria-pressed="false" data-cbuilder-view="properties" data-cbuilder-action="switchView" data-hide-tool data-view-control>
                                     <i class="la la-cog"></i> <span><fmt:message key="ubuilder.setting"/></span>
                                 </button>
-                                <button style="display:none" class="btn btn-light"  title="<fmt:message key="ubuilder.preview"/>" id="preview-btn" type="button" data-toggle="button" aria-pressed="false" data-cbuilder-view="preview" data-cbuilder-action="switchView" data-hide-tool>
+                                <button style="display:none" class="btn btn-light"  title="<fmt:message key="ubuilder.preview"/>" id="preview-btn" type="button" data-bs-toggle="button" aria-pressed="false" data-cbuilder-view="preview" data-cbuilder-action="switchView" data-hide-tool>
                                     <i class="fa-stack" style="font-size: 50%;"><i class="las la-file-alt fa-stack-2x"></i><i class="las la-search fa-stack-2x" style="transform: rotate(270deg); position: absolute; top: 2px; left: 4px;"></i></i> <span style="top:0px;"><fmt:message key="ubuilder.preview"/></span>
                                 </button>
                             </div> 
 
-                            <div class="btn-group toolbar-group mr-3 advanced-tools-toogle" role="group">
-                                <button class="btn btn-light"  title="<fmt:message key="adv.tool.Advanced.Tools"/>" id="advanced-tools-btn" type="button" data-toggle="button" aria-pressed="false" data-cbuilder-action="enableEnhancedTools">
+                            <div class="btn-group toolbar-group me-3 advanced-tools-toogle" role="group">
+                                <button class="btn btn-light"  title="<fmt:message key="adv.tool.Advanced.Tools"/>" id="advanced-tools-btn" type="button" data-bs-toggle="button" aria-pressed="false" data-cbuilder-action="enableEnhancedTools">
                                      <i class="zmdi zmdi-more-horiz"></i> <span><fmt:message key="adv.tool.Advanced.Tools"/></span>
                                 </button>
                             </div>
 
-                            <div class="btn-group toolbar-group mr-3 advanced-tools" style="display:none;" role="group">
-                                <button class="btn btn-light" title="<fmt:message key="adv.tool.Tree.Viewer"/>" id="treeviewer-btn" type="button" data-toggle="button" aria-pressed="false" data-cbuilder-view="treeViewer" data-cbuilder-action="switchView">
+                            <div class="btn-group toolbar-group me-3 advanced-tools" style="display:none;" role="group">
+                                <button class="btn btn-light" title="<fmt:message key="adv.tool.Tree.Viewer"/>" id="treeviewer-btn" type="button" data-bs-toggle="button" aria-pressed="false" data-cbuilder-view="treeViewer" data-cbuilder-action="switchView">
                                     <i class="la la-sitemap"></i>
                                 </button>
 
-                                <button class="btn btn-light" title="<fmt:message key="cbuilder.xray"/>" id="xray-btn" type="button" data-toggle="button" aria-pressed="false" data-cbuilder-view="xray" data-cbuilder-action="switchView">
+                                <button class="btn btn-light" title="<fmt:message key="cbuilder.xray"/>" id="xray-btn" type="button" data-bs-toggle="button" aria-pressed="false" data-cbuilder-view="xray" data-cbuilder-action="switchView">
                                     <i class="las la-x-ray"></i>
                                 </button>
 
-                                <button class="btn btn-light" title="<fmt:message key="adv.tool.permission"/>" id="permission-btn" type="button" data-toggle="button" aria-pressed="false" data-cbuilder-view="permission" data-cbuilder-action="switchView" data-view-control>
+                                <button class="btn btn-light" title="<fmt:message key="adv.tool.permission"/>" id="permission-btn" type="button" data-bs-toggle="button" aria-pressed="false" data-cbuilder-view="permission" data-cbuilder-action="switchView" data-view-control>
                                     <i class="la la-lock"></i>
                                 </button>
 
-                                <button class="btn btn-light" title="<fmt:message key="adv.tool.Usages"/>" id="usages-btn" type="button" data-toggle="button" aria-pressed="false" data-cbuilder-view="findUsages" data-cbuilder-action="switchView" data-hide-tool data-view-control>
+                                <button class="btn btn-light" title="<fmt:message key="adv.tool.Usages"/>" id="usages-btn" type="button" data-bs-toggle="button" aria-pressed="false" data-cbuilder-view="findUsages" data-cbuilder-action="switchView" data-hide-tool data-view-control>
                                     <i class="la la-binoculars"></i>
                                 </button>
 
-                                <button class="btn btn-light" title="<fmt:message key="adv.tool.i18n"/>" id="i18n-btn" type="button" data-toggle="button" aria-pressed="false" data-cbuilder-view="i18n" data-cbuilder-action="switchView" data-hide-tool data-view-control>
+                                <button class="btn btn-light" title="<fmt:message key="adv.tool.i18n"/>" id="i18n-btn" type="button" data-bs-toggle="button" aria-pressed="false" data-cbuilder-view="i18n" data-cbuilder-action="switchView" data-hide-tool data-view-control>
                                     <i class="la la-language"></i>
                                 </button>
 
-                                <button class="btn btn-light" title="<fmt:message key="adv.tool.Diff.Checker"/>" id="diff-checker-btn" type="button" data-toggle="button" aria-pressed="false" data-cbuilder-view="diffChecker" data-cbuilder-action="switchView" data-hide-tool data-view-control>
+                                <button class="btn btn-light" title="<fmt:message key="adv.tool.Diff.Checker"/>" id="diff-checker-btn" type="button" data-bs-toggle="button" aria-pressed="false" data-cbuilder-view="diffChecker" data-cbuilder-action="switchView" data-hide-tool data-view-control>
                                     <i class="la la-code-branch"></i>
                                 </button>
 
-                                <button class="btn btn-light" title="<fmt:message key="adv.tool.JSON.Definition"/>" id="json-def-btn" type="button" data-toggle="button" aria-pressed="false" data-cbuilder-view="jsonDef" data-cbuilder-action="switchView" data-hide-tool data-view-control>
+                                <button class="btn btn-light" title="<fmt:message key="adv.tool.JSON.Definition"/>" id="json-def-btn" type="button" data-bs-toggle="button" aria-pressed="false" data-cbuilder-view="jsonDef" data-cbuilder-action="switchView" data-hide-tool data-view-control>
                                     <i class="text-icon">{ }</i>
                                 </button>
 
-                                <button class="btn btn-light" title="<fmt:message key="cbuilder.screenshot"/>" id="screenshot-btn" type="button" data-toggle="button" aria-pressed="false" data-cbuilder-view="screenshot" data-cbuilder-action="switchView" data-hide-tool data-view-control>
+                                <button class="btn btn-light" title="<fmt:message key="cbuilder.screenshot"/>" id="screenshot-btn" type="button" data-bs-toggle="button" aria-pressed="false" data-cbuilder-view="screenshot" data-cbuilder-action="switchView" data-hide-tool data-view-control>
                                     <i class="la la-camera"></i>
                                 </button>
 
@@ -176,7 +176,7 @@
                                 </button>
                             </div>
                                     
-                            <div class="btn-group toolbar-group tool copypaste mr-3" style="display:none;"  role="group">
+                            <div class="btn-group toolbar-group tool copypaste me-3" style="display:none;"  role="group">
                                 <button class="btn btn-light disabled" title="<fmt:message key="ubuilder.copy"/> (Ctrl + C)" id="copy-element-btn" data-cbuilder-action="copyElement" data-cbuilder-shortcut="ctrl+c">
                                     <i class="las la-copy"></i>
                                 </button>
@@ -186,12 +186,12 @@
                                 </button>
                             </div>
 
-                            <div id="node-details-toggle" class="btn-group toolbar-group btn-group-toggle" data-toggle="buttons" style="display:none">
+                            <div id="node-details-toggle" class="btn-group toolbar-group btn-group-toggle" data-bs-toggle="buttons" style="display:none">
                                 <label class="btn btn-secondary active" title="<fmt:message key="cbuilder.displayAll"/>"><input type="radio" name="details-toggle" value="all" id="details-toggle-all" autocomplete="off" checked> <i class="las la-layer-group"></i> </label>
                                 <label class="btn btn-secondary" title="<fmt:message key="cbuilder.displaySelected"/>"><input type="radio" name="details-toggle" value="single"  id="details-toggle-single" autocomplete="off"> <i class="las la-crosshairs"></i> </label>
                             </div>
 
-                            <div class="btn-group toolbar-group mr-3 light-tools responsive-buttons float-right" style="display:none;" role="group">
+                            <div class="btn-group toolbar-group me-3 light-tools responsive-buttons float-end" style="display:none;" role="group">
                                 <button id="mobile-view" data-view="mobile" class="btn btn-light"  title="<fmt:message key="cbuilder.mobileView"/>" data-cbuilder-action="viewport">
                                     <i class="la la-mobile-phone"></i>
                                 </button>
@@ -216,7 +216,7 @@
                         <div class="header">
                             <ul class="nav nav-tabs  nav-fill" id="elements-tabs" role="tablist" style="display:none;">
                                 <li class="nav-item component-tab">
-                                    <a class="nav-link active" id="components-tab" data-toggle="tab" href="#components" role="tab" aria-controls="components" aria-selected="true" title="<fmt:message key="cbuilder.elements"/>"><div><small><fmt:message key="cbuilder.elements"/></small></div></a>
+                                    <a class="nav-link active" id="components-tab" data-bs-toggle="tab" href="#components" role="tab" aria-controls="components" aria-selected="true" title="<fmt:message key="cbuilder.elements"/>"><div><small><fmt:message key="cbuilder.elements"/></small></div></a>
                                 </li>
                             </ul>
                             <div class="tab-content">
@@ -252,7 +252,7 @@
                             <i class="las la-arrows-alt"></i>
                         </button>
                         <div class="element-properties-header-actions">
-                            <div class="float-left">
+                            <div class="float-start">
                                 <button id="cancel-properties-btn" title="<fmt:message key="cbuilder.close"/>" class="btn btn-link-secondary btn-sm" data-cbuilder-action="closePropertiesWindow">
                                     <i class="las la-times"></i>
                                 </button>
@@ -264,7 +264,7 @@
                                 </button>    
                                 <i class="las la-check-square auto-apply-changes" id="toggleAutoApplyChange" title="<fmt:message key="cbuilder.enableAutoApplyChanges"/>" data-cbuilder-action="toogleAutoApplyChanges"></i>
                             </div>
-                            <div class="float-right">
+                            <div class="float-end">
                                 <button id="expand-all-props-btn" title="<fmt:message key="cbuilder.expandAll"/>" class="btn btn-link-secondary btn-sm" data-cbuilder-action="expandAllProperties">
                                     <i class="las la-expand"></i>
                                 </button>
@@ -284,12 +284,12 @@
                         </div>
                         <ul class="nav nav-tabs nav-fill" id="properties-tabs" role="tablist">
                             <li id="element-properties-tab-link" class="nav-item content-tab">
-                                <a class="nav-link show active" data-toggle="tab" href="#element-properties-tab" role="tab" aria-controls="element-properties-tab" aria-selected="true">
+                                <a class="nav-link show active" data-bs-toggle="tab" href="#element-properties-tab" role="tab" aria-controls="element-properties-tab" aria-selected="true">
                                     <i class="las la-file-invoice"></i> <span><fmt:message key="ubuilder.properties"/></span>
                                 </a>
                             </li>
                             <li id="style-properties-tab-link" class="nav-item content-tab" style="display:none;">
-                                <a class="nav-link" data-toggle="tab" href="#style-properties-tab" role="tab" aria-controls="style-properties-tab" aria-selected="true">
+                                <a class="nav-link" data-bs-toggle="tab" href="#style-properties-tab" role="tab" aria-controls="style-properties-tab" aria-selected="true">
                                     <i class="las la-palette"></i> <span><fmt:message key="cbuilder.styles"/></span>
                                 </a>
                             </li>
@@ -345,7 +345,7 @@
                     $.widget.bridge('uibutton', $.ui.button);
                     $.widget.bridge('uitooltip', $.ui.tooltip);
                 </script>
-                <script type="text/javascript" src="${pageContext.request.contextPath}/js/bootstrap4/js/bootstrap.min.js"></script>
+                <script type="text/javascript" src="${pageContext.request.contextPath}/wro/jds.min.js"></script>
                 <script type="text/javascript" src="${pageContext.request.contextPath}/builder/jquery.hotkeys.js"></script>
                 <script src="${pageContext.request.contextPath}/web/console/i18n/advtool?build=<fmt:message key="build.number"/>"></script>
                 <script type="text/javascript" src="${pageContext.request.contextPath}/wro/advancedTool.js?build=<fmt:message key="build.number"/>"></script>

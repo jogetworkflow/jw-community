@@ -1528,6 +1528,9 @@ div.InformationTileComponent .card-body {
     border-radius: 0;
     margin-bottom: -1px
 }
+.sidebar-nav.collapse.in {
+    display: block !important;
+}
 .align-baseline {
     vertical-align: baseline!important
 }
@@ -5579,7 +5582,7 @@ div.InformationTileComponent {
     cursor: pointer;
 }
 .accordion .card-body {
-    padding: 10px;
+    padding: 0 10px;
 }
 .card {
     background-size: cover;
@@ -5587,7 +5590,7 @@ div.InformationTileComponent {
 #adminBar {
     display:none;
 }
-#content .form-button, #content .btn, #content .button{
+#content .form-button, #content .btn:not(.accordion-button), #content .button{
     margin-bottom: 5px;
 }
 
@@ -6196,4 +6199,8 @@ body.rtl .ContainerComponent {
 
 .fc-toolbar-chunk, .btn-group {
     display: flex;
+}
+.accordion-button{
+    text-align: left !important;
+    box-shadow: none !important;
 }

@@ -17,7 +17,7 @@
     renderField : function() {
         
         var html = '<div class="template_editor_container" style="overflow:hidden;">';
-        html += '<div class="actions"><a class="choosetemplate btn button small" style="margin-left:0px;margin-top:5px">@@userview.infotile.chooseTemplate@@</a> <a class="edittemplate btn button small" style="margin-top:5px">@@userview.infotile.editTemplate@@</a> <a style="display:none;margin-top:5px;" class="hideedit btn button small">@@userview.infotile.hideTemplateEditor@@</a><a class="reloadtemplate btn button small" style="margin-top:5px">@@userview.infotile.reloadTemplate@@</a> <div class="reloadMessage toast hide" style="position:fixed;z-index:300;top: 0px;right:50px;margin-top:150px;background-color:green;" role="alert" aria-live="assertive" aria-atomic="true" data-delay="2000"> <div class="toast-header"> <strong class="mr-auto">@@userview.infotile.reloadMessage@@</strong> <button type="button" class="ml-2 mb-1 close" data-dismiss="toast" aria-label="Close"> <span aria-hidden="true">&times;</span> </button> </div> </div></div>';
+        html += '<div class="actions"><a class="choosetemplate btn button small" style="margin-left:0px;margin-top:5px">@@userview.infotile.chooseTemplate@@</a> <a class="edittemplate btn button small" style="margin-top:5px">@@userview.infotile.editTemplate@@</a> <a style="display:none;margin-top:5px;" class="hideedit btn button small">@@userview.infotile.hideTemplateEditor@@</a><a class="reloadtemplate btn button small" style="margin-top:5px">@@userview.infotile.reloadTemplate@@</a> <div class="reloadMessage toast hide" style="position:fixed;z-index:300;top: 0px;right:50px;margin-top:150px;background-color:green;" role="alert" aria-live="assertive" aria-atomic="true" data-delay="2000"> <div class="toast-header"> <strong class="me-auto">@@userview.infotile.reloadMessage@@</strong> <button type="button" class="ms-2 mb-1 close" data-bs-dismiss="toast" aria-label="Close"> <span aria-hidden="true">&times;</span> </button> </div> </div></div>';
         html += '<div class="editor" style="margin-top:10px; display:none;"><pre id="' + this.id + '" name="' + this.id + '" class="ace_editor"></pre></div>';
         html += '<div class="sample_container" style="margin-top:10px; padding:10px; border:1px solid #ced4da; background:#fff; border-radius:5px; overflow: scroll;"><label>@@userview.infotile.sample@@</label><div class="sample_preview" style="position:relative;"></div></div>';
         html += '</div>';
@@ -388,7 +388,7 @@
             } catch(err){}
         }
         
-        var tile = $('<div class="tile" style="position:relative;margin:5px;display:inline-block;'+width+'"></div>');
+        var tile = $('<div class="tile" style="padding-left:0;padding-right:0;position:relative;margin:5px;display:inline-block;'+width+'"></div>');
         var id = CustomBuilder.uuid();
         newTemplate = newTemplate.replace(/\{\{id\}\}/g, id);
         newTemplate = newTemplate.replace(/\{\{contextPath\}\}/g, CustomBuilder.contextPath);

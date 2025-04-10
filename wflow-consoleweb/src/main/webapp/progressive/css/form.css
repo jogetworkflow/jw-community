@@ -481,6 +481,13 @@ body .editor-cell select:not([class^="ui-"]):focus{
 body .close-icon:after {
     right: 28px;
     bottom: 20px;
+    line-height: 10px;
+}
+.close-icon {
+    position: absolute;
+    padding: 1.4rem;
+    left: 0;
+    right: 0;
 }
 .close-icon {
     position: absolute;
@@ -656,7 +663,7 @@ body #form-canvas .form-section-title span, body #form-canvas .subform-section-t
     margin-bottom: 10px;
     -moz-border-radius: 0px;
     -webkit-border-radius: 0px;
-    font-weight: bold;
+    font-weight: 600;
     font-size: 16px;
     display: block;
 }
@@ -1061,4 +1068,7 @@ body .form-container .label-top .selector_items{
 body.rtl .form-container .label-top .selector_element,
 body.rtl .form-container .label-top .selector_items{
     margin-right: 0%;
+}
+.form-cell .label, .subform-cell .label {
+    font-weight: 500;
 }

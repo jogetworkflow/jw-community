@@ -309,7 +309,7 @@ function themePageInit() {
                     var footer = $(".inbox-notification > ul .dropdown-menu-sub-footer").parent();
                     var link = $(".inbox-notification > ul .dropdown-menu-sub-footer").attr("href");
                     $.each(data.data, function(i, d) {
-                        var html = "<li class=\"task\"><a href=\"" + link + "?_mode=assignment&activityId=" + d.activityId + "\">";
+                        var html = "<li class=\"task dropdown-item\"><a href=\"" + link + "?_mode=assignment&activityId=" + d.activityId + "\">";
                         html += "<span class=\"header\">" + d.activityName + "</span>";
                         html += "<span class=\"message\">" + d.processName + "</span><span class=\"time\">" + d.dateCreated + "</span>";
                         html += "</a></li>";

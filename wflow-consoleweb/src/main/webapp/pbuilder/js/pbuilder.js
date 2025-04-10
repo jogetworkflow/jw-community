@@ -10,7 +10,7 @@ ProcessBuilder = {
      * Intialize the builder, called from CustomBuilder.initBuilder
      */
     initBuilder: function (callback) {
-        $("#save-btn").parent().after('<div class="btn-group mr-1 float-right" style="margin-top:-16px;" role="group"><button class="btn btn-secondary btn-icon" id="launch-btn" title="'+get_cbuilder_msg("pbuilder.label.runProcess")+'"><i class="las la-play"></i> <span>'+get_cbuilder_msg("pbuilder.label.runProcess")+'</span></button></div>');
+        $("#save-btn").parent().after('<div class="btn-group me-1 float-end" style="margin-top:-16px;" role="group"><button class="btn btn-secondary btn-icon" id="launch-btn" title="'+get_cbuilder_msg("pbuilder.label.runProcess")+'"><i class="las la-play"></i> <span>'+get_cbuilder_msg("pbuilder.label.runProcess")+'</span></button></div>');
         $("#launch-btn").on("click", function(){
             if(!CustomBuilder.isSaved()){
                 alert(get_cbuilder_msg("cbuilder.pleaseSaveChangeToContinue"));
@@ -65,16 +65,16 @@ ProcessBuilder = {
             $("#style-properties-tab-link").find("i").replaceWith('<i class="las la-handshake"></i>');
             $("#style-properties-tab-link").find("span").text(get_cbuilder_msg('pbuilder.label.mapping'));
             
-            $("#design-btn").after('<button class="btn btn-light" title="'+get_cbuilder_msg('pbuilder.label.listView')+'" id="listviewer-btn" type="button" data-toggle="button" aria-pressed="false" data-cbuilder-view="listViewer" data-cbuilder-action="switchView"><i class="la la-list"></i> <span>'+get_cbuilder_msg('pbuilder.label.listView')+'</span></button>');
+            $("#design-btn").after('<button class="btn btn-light" title="'+get_cbuilder_msg('pbuilder.label.listView')+'" id="listviewer-btn" type="button" data-bs-toggle="button" aria-pressed="false" data-cbuilder-view="listViewer" data-cbuilder-action="switchView"><i class="la la-list"></i> <span>'+get_cbuilder_msg('pbuilder.label.listView')+'</span></button>');
             
-            $("#json-def-btn").after('<button class="btn btn-light" title="'+get_cbuilder_msg('pbuilder.label.xpdl')+'" id="xpdl-btn" type="button" data-toggle="button" aria-pressed="false" data-cbuilder-view="xpdl" data-cbuilder-action="switchView" data-hide-tool data-view-control><i class="la la-code"></i></button>');
+            $("#json-def-btn").after('<button class="btn btn-light" title="'+get_cbuilder_msg('pbuilder.label.xpdl')+'" id="xpdl-btn" type="button" data-bs-toggle="button" aria-pressed="false" data-cbuilder-view="xpdl" data-cbuilder-action="switchView" data-hide-tool data-view-control><i class="la la-code"></i></button>');
             
             $(".advanced-tools").after('<div class="btn-group toolbar-group" role="group">\
                 <button id="auto-layout" class="btn btn-light"  title="'+get_cbuilder_msg('pbuilder.label.autoLayout')+'" data-cbuilder-action="autoLayout"><i class="las la-magic"></i></button>\
                 <button id="hightlight" class="btn btn-light"  title="'+get_cbuilder_msg('pbuilder.label.highlight')+'" data-cbuilder-action="highlight"><i class="las la-highlighter"></i></button>\
                 <button id="navigator" class="btn btn-light"  title="'+get_cbuilder_msg('pbuilder.label.navigator')+'" data-cbuilder-action="navigator"><i class="las la-map"></i></button></div>');
 
-            $(".responsive-buttons").after('<div class="btn-group mr-3 light-tools toolbar-group toolzoom-buttons float-right" role="group">\
+            $(".responsive-buttons").after('<div class="btn-group me-3 light-tools toolbar-group toolzoom-buttons float-end" role="group">\
                 <button id="fit-screen" class="btn btn-light"  title="'+get_cbuilder_msg('pbuilder.label.fitScreen')+'" data-cbuilder-action="fitScreen"><i class="zmdi zmdi-aspect-ratio-alt"></i></button>\
                 <button id="zoom-minus" class="btn btn-light"  title="'+get_cbuilder_msg('pbuilder.label.zoomOut')+' (90%)" data-cbuilder-action="zoomMinus"><i class="las la-search-minus"></i></button>\
                 <button id="zoom-plus" class="btn btn-light"  title="'+get_cbuilder_msg('pbuilder.label.zoomIn')+' (110%)" data-cbuilder-action="zoomPlus"><i class="las la-search-plus"></i></button></div>');
@@ -6984,31 +6984,31 @@ ProcessBuilder = {
             $(view).find(".builder-view-body").html('<div class="search-container"><input class="form-control form-control-sm component-search" placeholder="'+get_cbuilder_msg('cbuilder.search')+'" type="text"><button class="clear-backspace"><i class="la la-close"></i></button></div><ul class="nav nav-tabs nav-fill" id="process-list-tabs" role="tablist"></ul><div class="tab-content"></div>');
         
             //render participants
-            $(view).find('ul.nav').append('<li id="participants-tab-link" class="nav-item content-tab"><a class="nav-link show active" data-toggle="tab" href="#participants-list-tab" role="tab" aria-controls="participants-list-tab" aria-selected="true"><span>'+get_cbuilder_msg('pbuilder.label.participant')+'</span></a></li>');
+            $(view).find('ul.nav').append('<li id="participants-tab-link" class="nav-item content-tab"><a class="nav-link show active" data-bs-toggle="tab" href="#participants-list-tab" role="tab" aria-controls="participants-list-tab" aria-selected="true"><span>'+get_cbuilder_msg('pbuilder.label.participant')+'</span></a></li>');
             $(view).find('.tab-content').append('<div id="participants-list-tab" class="tab-pane fade active show"></div>');
             
             //render activities
-            $(view).find('ul.nav').append('<li id="activities-tab-link" class="nav-item content-tab"><a class="nav-link show" data-toggle="tab" href="#activities-list-tab" role="tab" aria-controls="activities-list-tab"><span>'+get_cbuilder_msg('pbuilder.label.activity')+'</span></a></li>');
+            $(view).find('ul.nav').append('<li id="activities-tab-link" class="nav-item content-tab"><a class="nav-link show" data-bs-toggle="tab" href="#activities-list-tab" role="tab" aria-controls="activities-list-tab"><span>'+get_cbuilder_msg('pbuilder.label.activity')+'</span></a></li>');
             $(view).find('.tab-content').append('<div id="activities-list-tab" class="tab-pane fade show"></div>');
             
             //render tools
-            $(view).find('ul.nav').append('<li id="tools-tab-link" class="nav-item content-tab"><a class="nav-link show" data-toggle="tab" href="#tools-list-tab" role="tab" aria-controls="tools-list-tab"><span>'+get_cbuilder_msg('pbuilder.label.tool')+'</span></a></li>');
+            $(view).find('ul.nav').append('<li id="tools-tab-link" class="nav-item content-tab"><a class="nav-link show" data-bs-toggle="tab" href="#tools-list-tab" role="tab" aria-controls="tools-list-tab"><span>'+get_cbuilder_msg('pbuilder.label.tool')+'</span></a></li>');
             $(view).find('.tab-content').append('<div id="tools-list-tab" class="tab-pane fade show"></div>');
             
             //render subflow
-            $(view).find('ul.nav').append('<li id="subflows-tab-link" class="nav-item content-tab"><a class="nav-link show" data-toggle="tab" href="#subflows-list-tab" role="tab" aria-controls="subflows-list-tab"><span>'+get_cbuilder_msg('pbuilder.label.subflow')+'</span></a></li>');
+            $(view).find('ul.nav').append('<li id="subflows-tab-link" class="nav-item content-tab"><a class="nav-link show" data-bs-toggle="tab" href="#subflows-list-tab" role="tab" aria-controls="subflows-list-tab"><span>'+get_cbuilder_msg('pbuilder.label.subflow')+'</span></a></li>');
             $(view).find('.tab-content').append('<div id="subflows-list-tab" class="tab-pane fade show"></div>');
             
             //render routes
-            $(view).find('ul.nav').append('<li id="routes-tab-link" class="nav-item content-tab"><a class="nav-link show" data-toggle="tab" href="#routes-list-tab" role="tab" aria-controls="routes-list-tab"><span>'+get_cbuilder_msg('pbuilder.label.route')+'</span></a></li>');
+            $(view).find('ul.nav').append('<li id="routes-tab-link" class="nav-item content-tab"><a class="nav-link show" data-bs-toggle="tab" href="#routes-list-tab" role="tab" aria-controls="routes-list-tab"><span>'+get_cbuilder_msg('pbuilder.label.route')+'</span></a></li>');
             $(view).find('.tab-content').append('<div id="routes-list-tab" class="tab-pane fade show"></div>');
             
             //render transitions
-            $(view).find('ul.nav').append('<li id="transitions-tab-link" class="nav-item content-tab"><a class="nav-link show" data-toggle="tab" href="#transitions-list-tab" role="tab" aria-controls="transitions-list-tab"><span>'+get_cbuilder_msg('pbuilder.label.transition')+'</span></a></li>');
+            $(view).find('ul.nav').append('<li id="transitions-tab-link" class="nav-item content-tab"><a class="nav-link show" data-bs-toggle="tab" href="#transitions-list-tab" role="tab" aria-controls="transitions-list-tab"><span>'+get_cbuilder_msg('pbuilder.label.transition')+'</span></a></li>');
             $(view).find('.tab-content').append('<div id="transitions-list-tab" class="tab-pane fade show"></div>');
             
             //render variables
-            $(view).find('ul.nav').append('<li id="variables-tab-link" class="nav-item content-tab"><a class="nav-link show" data-toggle="tab" href="#variables-list-tab" role="tab" aria-controls="variables-list-tab"><span>'+get_cbuilder_msg('pbuilder.label.workflowVariables')+'</span></a></li>');
+            $(view).find('ul.nav').append('<li id="variables-tab-link" class="nav-item content-tab"><a class="nav-link show" data-bs-toggle="tab" href="#variables-list-tab" role="tab" aria-controls="variables-list-tab"><span>'+get_cbuilder_msg('pbuilder.label.workflowVariables')+'</span></a></li>');
             $(view).find('.tab-content').append('<div id="variables-list-tab" class="tab-pane fade show"></div>');
             
             $(view).off("click", ".cbuilder-node-details-list");

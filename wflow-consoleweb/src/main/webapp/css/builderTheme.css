@@ -602,7 +602,7 @@ body[builder-theme].right-panel-mode-window #properties-tabs {
 body[builder-theme].right-panel-mode-window .element-properties .tab-content {
     padding-top: 30px;
 }
-body[builder-theme].right-panel-mode-window .element-properties-header-actions .float-right {
+body[builder-theme].right-panel-mode-window .element-properties-header-actions .float-end {
     position: relative;
     top: -2px;
     right: 2px;
@@ -3449,43 +3449,43 @@ body[builder-theme] .file {
 }
 
 @media (min-width: 1441px) { 
-     body[builder-theme] [class*="col-"] {
+    body[builder-theme] #resourcesGrid [class*="col-"] {
          flex: 0 1 31%;
          max-width: 14%;
     }
 }
 
 @media (max-width: 1440px) { 
-    body[builder-theme] [class*="col-"] {
+    body[builder-theme] #resourcesGrid [class*="col-"] {
          flex: 0 1 25%;
          max-width: 17%;
     }
 }
-@media (max-width: 1138px) { 
- body[builder-theme] [class*="col-"] {
-         flex: 0 1 27%;
-         max-width: 21%;
+@media (max-width: 1138px) {
+    body[builder-theme] #resourcesGrid [class*="col-"] {
+        flex: 0 1 27%;
+        max-width: 21%;
     }
 }
 
 @media (max-width:980px) and (min-width: 832px){
- body[builder-theme] [class*="col-"] {
-         flex: 0 1 29%;
-         max-width: 29%;
+    body[builder-theme] #resourcesGrid [class*="col-"] {
+        flex: 0 1 29%;
+        max-width: 29%;
     }
 }
 
 @media only screen and (max-width: 850px) {
-    body[builder-theme] [class*="col-"] {
-         flex: 0 30 45%;
-         max-width: 44%;
+    body[builder-theme] #resourcesGrid [class*="col-"] {
+        flex: 0 30 45%;
+        max-width: 44%;
     }
 }
 
 @media only screen and (max-width: 643px) {
-    body[builder-theme] [class*="col-"] {
-         flex: 0 30 100%;
-         max-width: 92%;  
+    body[builder-theme] #resourcesGrid [class*="col-"] {
+        flex: 0 30 100%;
+        max-width: 92%;
     }
     body[builder-theme] .file-manager .file .file-name {
         width: -webkit-fill-available;
@@ -3516,7 +3516,7 @@ body[builder-theme] .img-container.square {
     width: auto; 
     height: 100px; 
 }
-body[builder-theme] [class*="col-"] {
+body[builder-theme] #resourcesGrid [class*="col-"] {
     padding-right: 30px;
 }
 body[builder-theme] .file a {

@@ -589,7 +589,7 @@ public class AjaxUniversalTheme extends UniversalTheme implements SupportBuilder
     
     protected String getThemeSwitch(Map<String, Object> data) {
         return "<li class=\"theme-selection dropdown\">\n"
-                + "    <a data-toggle=\"dropdown\" href=\"javascript:;\" class=\"btn dropdown-toggle\">\n"
+                + "    <a data-bs-toggle=\"dropdown\" href=\"javascript:;\" class=\"btn dropdown-toggle\">\n"
                 + "	 <i class=\"zmdi zmdi-brightness-6\"></i>\n"
                 + "    </a>\n"
                 + "    <ul id=\"theme-selector\" class=\"dropdown-menu themes\">\n"
@@ -603,7 +603,7 @@ public class AjaxUniversalTheme extends UniversalTheme implements SupportBuilder
     
     protected String getCompactThemeSwitch(Map<String, Object> data) {
         return "<li class=\"density-selection dropdown\">\n"
-                + "    <a data-toggle=\"dropdown\" href=\"javascript:;\" class=\"btn dropdown-toggle\">\n"
+                + "    <a data-bs-toggle=\"dropdown\" href=\"javascript:;\" class=\"btn dropdown-toggle\">\n"
                 + "	 <i class=\"fas fa-compress\"></i>\n"
                 + "    </a>\n"
                 + "    <ul id=\"density-selector\" class=\"dropdown-menu themes\">\n"

@@ -20,8 +20,8 @@ FormBuilder = {
             return false;
         });
         
-        $("#i18n-btn").after('<button class="btn btn-light" title="'+get_advtool_msg('adv.tool.tooltip')+'" id="tooltip-btn" type="button" data-toggle="button" aria-pressed="false" data-cbuilder-view="tooltip" data-cbuilder-action="switchView" data-view-control><i class="lar la-question-circle"></i> </button>');
-        $("#usages-btn").after('<button class="btn btn-light" title="'+get_advtool_msg('adv.tool.Table')+'" id="table-usage-btn" type="button" data-toggle="button" aria-pressed="false" data-cbuilder-view="tableUsage" data-cbuilder-action="switchView" data-view-control><i class="las la-table"></i> </button>');
+        $("#i18n-btn").after('<button class="btn btn-light" title="'+get_advtool_msg('adv.tool.tooltip')+'" id="tooltip-btn" type="button" data-bs-toggle="button" aria-pressed="false" data-cbuilder-view="tooltip" data-cbuilder-action="switchView" data-view-control><i class="lar la-question-circle"></i> </button>');
+        $("#usages-btn").after('<button class="btn btn-light" title="'+get_advtool_msg('adv.tool.Table')+'" id="table-usage-btn" type="button" data-bs-toggle="button" aria-pressed="false" data-cbuilder-view="tableUsage" data-cbuilder-action="switchView" data-view-control><i class="las la-table"></i> </button>');
         
         CustomBuilder.Builder.init({
             callbacks : {
@@ -876,10 +876,10 @@ FormBuilder = {
     tableUsageViewInit: function(view) {
         $(view).html('<div class="tabs"><ul class="nav nav-tabs nav-fill" id="form-erd-tabs" role="tablist"></ul><div class="tab-content"></div></div>');
         
-        $(view).find('.tabs > ul').append('<li id="diagram-tab-link" class="nav-item content-tab"><a class="nav-link show active" data-toggle="tab" href="#diagram-tab" role="tab" aria-controls="diagram-tab" aria-selected="true"><i class="las la-project-diagram"></i> <span>'+get_cbuilder_msg('fbuilder.erd')+'</span></a></li>');
-        $(view).find('.tabs > ul').append('<li id="desc-tab-link" class="nav-item content-tab"><a class="nav-link" data-toggle="tab" href="#desc-tab" role="tab" aria-controls="desc-tab"><i class="las la-list"></i> <span>'+get_cbuilder_msg('fbuilder.relationship.desc')+'</span></a></li>');
-        $(view).find('.tabs > ul').append('<li id="columns-tab-link" class="nav-item content-tab"><a class="nav-link" data-toggle="tab" href="#columns-tab" role="tab" aria-controls="columns-tab"><i class="las la-th"></i> <span>'+get_advtool_msg('adv.tool.Table.Columns')+'</span></a></li>');
-        $(view).find('.tabs > ul').append('<li id="usage-tab-link" class="nav-item content-tab"><a class="nav-link" data-toggle="tab" href="#usage-tab" role="tab" aria-controls="usage-tab"><i class="la la-binoculars"></i> <span>'+get_advtool_msg('adv.tool.Table.Usage')+'</span></a></li>');
+        $(view).find('.tabs > ul').append('<li id="diagram-tab-link" class="nav-item content-tab"><a class="nav-link show active" data-bs-toggle="tab" href="#diagram-tab" role="tab" aria-controls="diagram-tab" aria-selected="true"><i class="las la-project-diagram"></i> <span>'+get_cbuilder_msg('fbuilder.erd')+'</span></a></li>');
+        $(view).find('.tabs > ul').append('<li id="desc-tab-link" class="nav-item content-tab"><a class="nav-link" data-bs-toggle="tab" href="#desc-tab" role="tab" aria-controls="desc-tab"><i class="las la-list"></i> <span>'+get_cbuilder_msg('fbuilder.relationship.desc')+'</span></a></li>');
+        $(view).find('.tabs > ul').append('<li id="columns-tab-link" class="nav-item content-tab"><a class="nav-link" data-bs-toggle="tab" href="#columns-tab" role="tab" aria-controls="columns-tab"><i class="las la-th"></i> <span>'+get_advtool_msg('adv.tool.Table.Columns')+'</span></a></li>');
+        $(view).find('.tabs > ul').append('<li id="usage-tab-link" class="nav-item content-tab"><a class="nav-link" data-bs-toggle="tab" href="#usage-tab" role="tab" aria-controls="usage-tab"><i class="la la-binoculars"></i> <span>'+get_advtool_msg('adv.tool.Table.Usage')+'</span></a></li>');
         
         $(view).find('.tabs > .tab-content').append('<div id="diagram-tab" class="tab-pane fade active show"><div class="usage_content"><i class="las la-spinner la-3x la-spin" style="opacity:0.3"></i></div></div>');
         $(view).find('.tabs > .tab-content').append('<div id="desc-tab" class="tab-pane fade"><div class="usage_content"><i class="las la-spinner la-3x la-spin" style="opacity:0.3"></i></div></div>');

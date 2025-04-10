@@ -97,7 +97,7 @@ header.navbar a {
 }
 
 #header-name {
-    padding: 15px 0 0;
+    padding: 0px;
 }
 div#header-name img {
     max-height: 35px;
@@ -236,7 +236,7 @@ div#header-name img {
 
 header.navbar .header-nav{
     display: inline-block;
-    padding: 13px 0 4px;
+    padding: 0px 0 4px;
     float: right;
 }
 .rtl header.navbar .header-nav {
@@ -351,6 +351,7 @@ body.embeded .home_banner {
 }
 .dropdown-menu.notifications {
     min-width: 280px;
+    font-size: 14px;
 }
 
 li.dropdown-menu-title {
@@ -360,12 +361,6 @@ li.dropdown-menu-title {
     margin-bottom: 10px;
     font-weight: bold;
     text-transform: uppercase;
-}
-
-header.navbar .dropdown-menu .dropdown-menu-title a.refresh {
-    position: absolute;
-    right: 0;
-    top: 7px;
 }
 
 #main {
@@ -509,6 +504,18 @@ ul#category-container {
     header.navbar {
         height:auto;
     }
+    body.horizontal_menu header.navbar .header-nav {
+        padding: 10px 0 4px;
+    }
+    body.horizontal_menu #header-name{
+        padding: 10px 0;
+    }
+    body:not(.horizontal_menu) #header-name{
+        padding: 15px 0;
+    }
+    body:not(.horizontal_menu) .header-nav {
+        padding: 15px 0 4px;
+    }
 }
 
 @media (max-width:767.999px) {
@@ -527,6 +534,7 @@ ul#category-container {
         width:100%;
         max-height: 55px;
         overflow: hidden;
+        padding: 10px 0px;
     }
     #header-name a{
         text-overflow: ellipsis;
@@ -567,6 +575,23 @@ ul#category-container {
         box-shadow: 0 6px 10px #0E1215;
         left: 0;
     }
+}
+
+@media (max-width:767px) {
+    body.horizontal_menu #category-container > li,
+    li.mm-profile.user-link{
+        width: 100%;
+    }
+    header.navbar .header-nav {
+        padding: 15px 0 4px;
+    }
+    #header-name{
+        padding: 15px 0;
+    }
+}
+
+.navbar-inner .container-fluid {
+    display: block;
 }
 
 #main .systemAlert{
@@ -724,6 +749,7 @@ body#login #page > footer {
     display: block;
     position: relative;
     margin-right: 0px;
+    font-weight: 600;
     font-weight: bold;
 }
 .rtl .main-menu.nav-tabs>li>a {
@@ -1054,6 +1080,13 @@ body.rtl #sidebar li ul>li>a > span:first-child{
     }
     body.horizontal_menu header.navbar .header-nav .nav>li.user-link img {
         border-radius: 50%;
+    }
+    .navbar-inner{
+        width: 100%;
+    }
+    body:not(.horizontal_menu) #category-container > li,
+    li.mm-profile.user-link{
+        width: 100%;
     }
     body.horizontal_menu #main {
         position: relative;

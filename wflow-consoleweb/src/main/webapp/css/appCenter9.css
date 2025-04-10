@@ -159,9 +159,13 @@ body#login #loginForm{
 #home .dataList .exportlinks{
     display:none;    
 }
-#home #dataList_applist .card:hover .card-actions a,
-#home #dataList_applist .card-icon:hover .card-actions a{
-    display:block !important;
+#home #dataList_applist .card:hover .card-actions a.rowAction_0,
+#home #dataList_applist .card-icon:hover .card-actions a.rowAction_0{
+    display: flex !important;
+}
+#home .dataList#dataList_applist .rowAction_0 {
+    align-items: center !important;
+    justify-content: center !important;
 }
 #home form.customLogin {
     max-width: 300px;
@@ -280,6 +284,7 @@ body#home #home_column .row .p-2{
 }
 #design_app .text-dark {
     color: var(--jgt-tpgh-colorTextDescription) !important;
+    font-size: 1rem !important;
 }
 #design_app .card .column_name {
     font-size: 17px;
@@ -737,11 +742,11 @@ body.dark-mode  .dataList#dataList_applist .column_2 {
     margin-inline: 5px;
 }
 .addNew {
-    position:absolute;
     bottom: 0px;
     right: 15px;
     width: unset;
     margin-bottom: 0;
+    float: right !important;
 }
 .addNew.dropdown .dropdown-menu a i{
     width: 25px;
@@ -939,6 +944,7 @@ body.dark-sidebar header.navbar.active{
     background-color: transparent;
     position: relative;
     padding: 5px 10px;
+    color: var(--jgt-tpgh-colorText);
 }
 .taskReminder .badge{
     width: 6px;
@@ -1056,6 +1062,7 @@ body.rtl #dataList_list_appList .table-wrapper .ph_columns.column_img{
 body.rtl .addNew{
     left: 10px;
     right: unset;
+    float: left !important;
 }
 body.rtl .taskReminder{
     margin-right: 5px;
@@ -1074,10 +1081,7 @@ body.sidebar-minimized.rtl:not(.horizontal_menu) #sidebar .user-menu>li>a>img {
     right: 8px;
 }
 body.rtl#admin .InformationTileComponent .float-right {
-    float: none !important;
-}
-body.rtl#admin .InformationTileComponent .pt-3.pb-2 .mb-1 span{
-    float: right !important;
+    float: left !important;
 }
 body.rtl #navigation li.mm-profile.user-link small{
     float: none !important;

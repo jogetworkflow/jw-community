@@ -1,5 +1,5 @@
 {
-    "dragHtml" : "<div data-cbuilder-accordion-childs class=\"accordion\"><div class=\"card\"><a class=\"card-header\" id=\"headingOne\" data-toggle=\"collapse\" aria-expanded=\"true\" >@@userview.page.accordionItem@@</a><div class=\"card-body collapse show\" ></div></div></div>",
+    "dragHtml" : "<div data-cbuilder-accordion-childs class=\"accordion\"><div class=\"card\"><a class=\"card-header\" id=\"headingOne\" data-bs-toggle=\"collapse\" aria-expanded=\"true\" >@@userview.page.accordionItem@@</a><div class=\"card-body collapse show\" ></div></div></div>",
     "childsContainerAttr" : "accordionChilds", 
     "elements" : [],
     "properties" : {

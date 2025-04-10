@@ -459,7 +459,7 @@
                   var carousel = $("#carousel_{{id}}");
                   //create navigation link
                   $(carousel).find(".carousel-item").each(function(i){
-                      $(carousel).find('.carousel-indicators').append('<button class="mx-1" data-target="#carousel_{{id}}" data-slide-to="'+i+'"></button>');
+                      $(carousel).find('.carousel-indicators').append('<button class="mx-1" data-bs-target="#carousel_{{id}}" data-bs-slide-to="'+i+'"></button>');
                   });
                   //active first slide
                   $(carousel).find(".carousel-item:first-child, .carousel-indicators button:first-child").addClass("active");

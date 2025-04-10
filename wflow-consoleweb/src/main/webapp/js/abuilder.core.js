@@ -7,9 +7,9 @@ AppBuilder = {
         var self = AppBuilder;
         
         $("#design-btn").attr("title", get_cbuilder_msg('abuilder.builders')).find("span").text(get_cbuilder_msg('abuilder.builders'));
-        $("#design-btn").after('<a class="btn btn-light" title="'+self.msg('versions')+'" id="versions-btn" type="button" data-toggle="button" aria-pressed="false" data-cbuilder-view="versions" href="'+CustomBuilder.contextPath+'/web/console/app/'+CustomBuilder.appId+'/versioning" data-cbuilder-action="switchView" data-hide-tool=""><i class="la la-list-ol"></i> <span>'+self.msg('versions')+'</span></a>');
+        $("#design-btn").after('<a class="btn btn-light" title="'+self.msg('versions')+'" id="versions-btn" type="button" data-bs-toggle="button" aria-pressed="false" data-cbuilder-view="versions" href="'+CustomBuilder.contextPath+'/web/console/app/'+CustomBuilder.appId+'/versioning" data-cbuilder-action="switchView" data-hide-tool=""><i class="la la-list-ol"></i> <span>'+self.msg('versions')+'</span></a>');
         
-        $("#save-btn").parent().after('<div class="btn-group mr-1 float-right" style="margin-top:-16px;" role="group"><button class="btn btn-secondary btn-icon" title="'+self.msg('export')+'" id="export-btn" data-cbuilder-action="exportApp"><i class="las la-file-export"></i> <span>'+self.msg('export')+'</span></button></div>');
+        $("#save-btn").parent().after('<div class="btn-group me-1 float-end" style="margin-top:-16px;" role="group"><button class="btn btn-secondary btn-icon" title="'+self.msg('export')+'" id="export-btn" data-cbuilder-action="exportApp"><i class="las la-file-export"></i> <span>'+self.msg('export')+'</span></button></div>');
         
         $('#save-btn').hide();
         $('#save-btn').after(' <button class="btn btn-secondary btn-icon" style="display:none;" title="'+self.msg('unpublish')+'" id="unpublish-btn" data-cbuilder-action="unpublishApp"><i class="las la-cloud-download-alt"></i> <span>'+self.msg('unpublish')+'</span></button>\
@@ -98,9 +98,9 @@ AppBuilder = {
             success: function(response) {
                 if (response !== undefined && response.length > 0) {
                     for (var i in response) {
-                        $("#builderToolbar #hide-advanced-tools-btn").before('<button class="btn btn-light" title="'+response[i].label+'" id="'+response[i].className.replace(/\./g, '_')+'" type="button" data-cbuilder-view="overview" data-toggle="button" aria-pressed="false" data-overview="'+response[i].className+'">'+response[i].icon+'</button>');
+                        $("#builderToolbar #hide-advanced-tools-btn").before('<button class="btn btn-light" title="'+response[i].label+'" id="'+response[i].className.replace(/\./g, '_')+'" type="button" data-cbuilder-view="overview" data-bs-toggle="button" aria-pressed="false" data-overview="'+response[i].className+'">'+response[i].icon+'</button>');
                     }
-                    $("#builderToolbar #hide-advanced-tools-btn").before('<button class="btn btn-light" title="'+get_cbuilder_msg('abuilder.overviewMap')+'" id="overviewmap-btn" type="button" data-toggle="button" aria-pressed="false" data-cbuilder-view="overviewMap" data-cbuilder-action="switchView" data-view-control><i class="las la-sitemap"></i> </button>');
+                    $("#builderToolbar #hide-advanced-tools-btn").before('<button class="btn btn-light" title="'+get_cbuilder_msg('abuilder.overviewMap')+'" id="overviewmap-btn" type="button" data-bs-toggle="button" aria-pressed="false" data-cbuilder-view="overviewMap" data-cbuilder-action="switchView" data-view-control><i class="las la-sitemap"></i> </button>');
         
                     $("#builderToolbar [data-overview]").off("click").on("click", function(){
                         CustomBuilder.switchView();
