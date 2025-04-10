@@ -100,8 +100,8 @@ public class XadminTheme extends UniversalTheme {
 
         // load bootstrap js and css only if not in index page
         if (!isIndex()) {
-            jsCssLink += "<link rel=\"stylesheet\" href=\""+path+"/js/bootstrap4/css/bootstrap.min.css\">\n";
-            jsCssLink += "<script>$(document).ready(function(){loadScript(\""+path+"/js/bootstrap4/js/popper.min.js\");loadScript(\""+path+"/js/bootstrap4/js/bootstrap.min.js\");});</script>";
+            jsCssLink += "<link rel=\"stylesheet\" href=\""+path+"/wro/jds.min.css\">\n";
+            jsCssLink += "<script>$(document).ready(function(){loadScript(\""+path+"/wro/jds.min.js\");loadScript(\""+path+"/wro/jds.min.js\");});</script>";
         }
 
         if (data.containsKey("is_login_page") && ((Boolean) data.get("is_login_page"))) {

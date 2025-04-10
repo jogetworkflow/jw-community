@@ -28,6 +28,11 @@ AjaxComponent = {
      * Override the behaviour of an AJAX supported component
      */
     initContent : function(element) {
+        //call to support old version bootstrap attribute for dropdown, slider etc
+        if (typeof jdsLegacyAttributeMigration === "function") {
+            jdsLegacyAttributeMigration(); 
+        }
+        
         AjaxComponent.overrideLinkEvent(element);
         setTimeout(function(){
             AjaxComponent.overrideCollapseElement(element);
@@ -153,7 +158,7 @@ AjaxComponent = {
      * handle dynamic size elements locate in show/hide element
      */
     overrideCollapseElement : function(element) {
-        $(element).find('[data-toggle="collapse"]').off("click.btn-collapse").on("click.btn-collapse", function(){
+        $(element).find('[data-bs-toggle="collapse"]').off("click.btn-collapse").on("click.btn-collapse", function(){
             //use timeout to wait for it fully expand
             setTimeout(function(){
                 $(window).trigger("resize");

@@ -771,14 +771,14 @@ public class UniversalTheme extends UserviewV5Theme implements UserviewPwaTheme,
                 }
                 
                 html += "<li class=\"user-link dropdown\">\n"
-                      + "    <a data-toggle=\"dropdown\" href=\"javascript:;\" class=\"btn dropdown-toggle type-"+getPropertyString("userImage")+"\">\n"
+                      + "    <a data-bs-toggle=\"dropdown\" href=\"javascript:;\" class=\"btn dropdown-toggle type-"+getPropertyString("userImage")+"\">\n"
                       + "	     " + profileImageTag + StringUtil.stripHtmlTag(DirectoryUtil.getUserFullName(user), new String[]{}) + "\n"
                       + "	     <span class=\"caret\"></span>\n"
                       + "    </a>\n";
 
                 html += "<ul class=\"dropdown-menu\">\n";
                 if (!"true".equals(getPropertyString("profile")) && !user.getReadonly()) {
-                    html += "    <li><a href=\"" + data.get("base_link") + PROFILE +"\"><i class=\"fa fa-user\"></i> " + ResourceBundleUtil.getMessage("theme.universal.profile") + "</a></li>\n";
+                    html += "    <li class=\"dropdown-item\"><a href=\"" + data.get("base_link") + PROFILE +"\"><i class=\"fa fa-user\"></i> " + ResourceBundleUtil.getMessage("theme.universal.profile") + "</a></li>\n";
                 }
                 
                 Object[] shortcut = (Object[]) getProperty("userMenu");
@@ -802,7 +802,7 @@ public class UniversalTheme extends UserviewV5Theme implements UserviewPwaTheme,
                     }
                 }
                 
-                html += "    <li><a href=\"" + data.get("logout_link") + "\"><i class=\"fas fa-sign-out-alt\"></i> " + ResourceBundleUtil.getMessage("theme.universal.logout") + "</a></li>\n"
+                html += "    <li class=\"dropdown-item\"><a href=\"" + data.get("logout_link") + "\"><i class=\"fas fa-sign-out-alt\"></i> " + ResourceBundleUtil.getMessage("theme.universal.logout") + "</a></li>\n"
                       + "</ul>";
 
             } else {
@@ -937,7 +937,7 @@ public class UniversalTheme extends UserviewV5Theme implements UserviewPwaTheme,
         if (!getPropertyString("homeUrl").isEmpty()) {
             home_page_link = getPropertyString("homeUrl");
         }
-        return "<li class=\"\"><a class=\"btn\" href=\"" + home_page_link + "\" title=\"" + ResourceBundleUtil.getMessage("theme.universal.home") + "\"><i class=\"fa fa-home\"></i></a></li>\n";
+        return "<li class=\"\"><a class=\"btn me-1\" href=\"" + home_page_link + "\" title=\"" + ResourceBundleUtil.getMessage("theme.universal.home") + "\"><i class=\"fa fa-home\"></i></a></li>\n";
     }
     
     protected String getNavbar(Map<String, Object> data) {
@@ -963,15 +963,26 @@ public class UniversalTheme extends UserviewV5Theme implements UserviewPwaTheme,
                 } catch (UnsupportedEncodingException e){}
             }
             html += "<li class=\"inbox-notification dropdown\" data-url=\"" + url + "\">\n"
-                  + "    <a data-toggle=\"dropdown\" href=\"javascript:;\" class=\"btn dropdown-toggle\">\n"
-                  + "	 <i class=\"fa fa-tasks white\"></i><span class=\"badge red\">0</span>\n"
-                  + "    </a>\n"
-                  + "    <ul class=\"dropdown-menu notifications\">\n"
-                  + "        <li class=\"dropdown-menu-title\"><span>" + ResourceBundleUtil.getMessage("theme.universal.inboxTaskMessage") + "</span><a href=\"#\" class=\"refresh\" title=\"" + ResourceBundleUtil.getMessage("general.method.label.refresh") + "\"><i class=\"fa fa-refresh\"></i></a></li>"
-                  + "        <li class=\"loading\"><a><span><i class=\"fa fa-spinner fa-spin fa-3x\"></i></span></a></li>\n"
-                  + "        <li><a href=\"" + data.get("base_link") + INBOX + "\" class=\"dropdown-menu-sub-footer\">" + ResourceBundleUtil.getMessage("theme.universal.viewAllTask") + "</a></li>\n"  
-                  + "    </ul>\n"
-                  + "<li>";
+                    + "    <a data-bs-toggle=\"dropdown\" href=\"javascript:;\" class=\"btn dropdown-toggle me-1\">\n"
+                    + "        <i class=\"fa fa-tasks white\"></i><span class=\"badge bg-danger\">0</span>\n"
+                    + "    </a>\n"
+                    + "    <ul class=\"dropdown-menu notifications dropdown-menu-end\">\n"
+                    + "        <li class=\"dropdown-header dropdown-menu-title d-flex justify-content-between align-items-center\">\n"
+                    + "            <span>" + ResourceBundleUtil.getMessage("theme.universal.inboxTaskMessage") + "</span>\n"
+                    + "            <a href=\"#\" class=\"refresh text-decoration-none\" title=\"" + ResourceBundleUtil.getMessage("general.method.label.refresh") + "\">\n"
+                    + "                <i class=\"fa fa-refresh\"></i>\n"
+                    + "            </a>\n"
+                    + "        </li>\n"
+                    + "        <li class=\"loading text-center\" style=\"display: none;\">\n"
+                    + "            <i class=\"fa fa-spinner fa-spin fa-3x\"></i>\n"
+                    + "        </li>\n"
+                    + "        <li>\n"
+                    + "            <a href=\"" + data.get("base_link") + INBOX + "\" class=\"dropdown-item text-center dropdown-menu-sub-footer\">\n"
+                    + "                " + ResourceBundleUtil.getMessage("theme.universal.viewAllTask") + "\n"
+                    + "            </a>\n"
+                    + "        </li>\n"
+                    + "    </ul>\n"
+                    + "</li>";
         }
         
         return html;
@@ -1007,7 +1018,7 @@ public class UniversalTheme extends UserviewV5Theme implements UserviewPwaTheme,
         String html = "";
         if (!shortcutHtml.isEmpty()) {
             html = "<li class=\"shortcut-link dropdown\">\n"
-                  + "    <a data-toggle=\"dropdown\" href=\"javascript:;\" class=\"btn dropdown-toggle\">\n"
+                  + "    <a data-bs-toggle=\"dropdown\" href=\"javascript:;\" class=\"btn dropdown-toggle\">\n"
                   + "	     <i class=\"fa fa-th-list white\"></i> " + getPropertyString("shortcutLinkLabel") + "\n"
                   + "	     <span class=\"caret\"></span>\n"
                   + "    </a>\n";
@@ -1021,21 +1032,21 @@ public class UniversalTheme extends UserviewV5Theme implements UserviewPwaTheme,
     }
     
     protected String getBreadcrumb(Map<String, Object> data) {
-        String breadcrumb = "<ul class=\"breadcrumb\"><li><i class=\"fa fa-home\"></i> <a href=\"" + data.get("home_page_link") + "\">" + ResourceBundleUtil.getMessage("theme.universal.home") + "</a> <i class=\"fa fa-angle-right\"></i></li>";
+        String breadcrumb = "<ul class=\"breadcrumb\"><li class=\"breadcrumb-item\"><i class=\"fa fa-home\"></i> <a href=\"" + data.get("home_page_link") + "\">" + ResourceBundleUtil.getMessage("theme.universal.home") + "</a></li>";
         if ((Boolean) data.get("is_login_page") || (Boolean) data.get("embed")) {
             return "";
         } else if (userview.getCurrent() != null) {
             UserviewCategory category = userview.getCurrentCategory();
             if (!(category.getMenus().size() <= 1 && ((Boolean) data.get("combine_single_menu_category"))) && !"yes".equals(category.getPropertyString("hide"))) {
-                breadcrumb += "<li><a href=\"" + getCategoryLink(category, data) + "\">" + StringUtil.stripAllHtmlTag(category.getPropertyString("label")) + "</a> <i class=\"fa fa-angle-right\"></i></li>";
+                breadcrumb += "<li class=\"breadcrumb-item\"><a href=\"" + getCategoryLink(category, data) + "\">" + StringUtil.stripAllHtmlTag(category.getPropertyString("label")) + "</a></li>";
             }
-            breadcrumb += "<li><a>" + StringUtil.stripAllHtmlTag(userview.getCurrent().getPropertyString("label")) + "</a></li>";
+            breadcrumb += "<li class=\"breadcrumb-item\"><a>" + StringUtil.stripAllHtmlTag(userview.getCurrent().getPropertyString("label")) + "</a></li>";
         } else if (PROFILE.equals(userview.getParamString("menuId"))) {
-            breadcrumb += "<li><a>" + ResourceBundleUtil.getMessage("theme.universal.profile") + "</a></li>";
+            breadcrumb += "<li class=\"breadcrumb-item\"><a>" + ResourceBundleUtil.getMessage("theme.universal.profile") + "</a></li>";
         } else if (INBOX.equals(userview.getParamString("menuId"))) {
-            breadcrumb += "<li><a>" + ResourceBundleUtil.getMessage("theme.universal.inbox") + "</a></li>";
+            breadcrumb += "<li class=\"breadcrumb-item\"><a>" + ResourceBundleUtil.getMessage("theme.universal.inbox") + "</a></li>";
         } else if (UserviewPwaTheme.PWA_OFFLINE_MENU_ID.equals(userview.getParamString("menuId")) || UserviewPwaTheme.PAGE_UNAVAILABLE_MENU_ID.equals(userview.getParamString("menuId"))) {
-            breadcrumb += "<li><a>" + ResourceBundleUtil.getMessage("pwa.offline.breadcrumbTitle") + "</a></li>";
+            breadcrumb += "<li class=\"breadcrumb-item\"><a>" + ResourceBundleUtil.getMessage("pwa.offline.breadcrumbTitle") + "</a></li>";
         } else {
             breadcrumb += "<li><a>" + ResourceBundleUtil.getMessage("ubuilder.pageNotFound") + "</a></li>";
         }

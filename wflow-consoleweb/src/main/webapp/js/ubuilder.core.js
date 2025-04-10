@@ -23,7 +23,7 @@ UserviewBuilder = {
         });
         
         if (CustomBuilder.appPublished === "true") {
-            $("#save-btn").parent().after('<div class="btn-group mr-1 float-right" style="margin-top:-16px;" role="group"><button class="btn btn-secondary btn-icon" id="launch-btn" title="'+get_cbuilder_msg("ubuilder.launch")+'"><i class="las la-play"></i> <span>'+get_cbuilder_msg("ubuilder.launch")+'</span></button></div>');
+            $("#save-btn").parent().after('<div class="btn-group me-1 float-end" style="margin-top:-16px;" role="group"><button class="btn btn-secondary btn-icon" id="launch-btn" title="'+get_cbuilder_msg("ubuilder.launch")+'"><i class="las la-play"></i> <span>'+get_cbuilder_msg("ubuilder.launch")+'</span></button></div>');
             $("#launch-btn").on("click", function(){
                 if(!CustomBuilder.isSaved()){
                     alert(get_cbuilder_msg("cbuilder.pleaseSaveChangeToContinue"));
@@ -1462,6 +1462,7 @@ UserviewBuilder = {
 
         if (isThemeBuilder) {
             // Append new stylesheet
+            iframeDoc.find('head').append('<link data-theme-style href="' + CustomBuilder.contextPath + '/wro/jds.min.css" rel="stylesheet" />');
             iframeDoc.find('head').append('<link data-theme-style href="' + CustomBuilder.contextPath + '/plugin/org.joget.plugin.enterprise.BuilderTheme/theme/base/builderBaseTheme.css" rel="stylesheet" />');
         } else {
             // Append new stylesheet

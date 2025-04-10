@@ -64,7 +64,7 @@ DatalistBuilder = {
      */
     initBuilder: function (callback) {
         
-        $("#design-btn").before('<button class="btn btn-light" id="binder-btn" type="button" data-toggle="button" aria-pressed="true" data-cbuilder-view="dataBinder" data-cbuilder-action="switchView" title="'+get_cbuilder_msg('dbuilder.data')+'"><i class="las la-database"></i> <span>'+get_cbuilder_msg('dbuilder.data')+'</span> </button>');
+        $("#design-btn").before('<button class="btn btn-light" id="binder-btn" type="button" data-bs-toggle="button" aria-pressed="true" data-cbuilder-view="dataBinder" data-cbuilder-action="switchView" title="'+get_cbuilder_msg('dbuilder.data')+'"><i class="las la-database"></i> <span>'+get_cbuilder_msg('dbuilder.data')+'</span> </button>');
         
         CustomBuilder.Builder.init({
             callbacks : {

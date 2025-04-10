@@ -678,7 +678,7 @@ body.rtl .dataList span.pagelinks:not(.rtl) .pc.last-disabled{
     box-shadow: none !important;
     width: auto;
 }
-.dataList .dropdown-menu.dropdown-menu-right {
+.dataList .dropdown-menu.dropdown-menu-end {
     right: 14px;
     left: auto;
     top: 34px;
@@ -1058,7 +1058,7 @@ html.ismobile .dataList .show_hide_control.show_dropdown ul,
 html:not(.ismobile) .dataList .show_hide_control:hover ul {
     display: block;
 }
-.dataList .rowActionsDropdown .dropdown-menu.dropdown-menu-left{
+.dataList .rowActionsDropdown .dropdown-menu.dropdown-menu-start{
     left:0;
     right: auto;
 }

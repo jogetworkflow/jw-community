@@ -1303,6 +1303,9 @@ body:not(.quick-nav-position-left) #builderToolbar {
     z-index: 10;
     overflow: none;
 }
+body:not(.quick-nav-position-left) .builder-view:not(.treeRightPanel) {
+    right: 40px;
+}
 .builder-view-header h3 {
     font-size: 24px;
     color: #007bff;
@@ -2513,13 +2516,13 @@ body.right-panel-mode-window .element-properties-header-actions{
     right: 0px;
     padding: 6px;
 }
-body.right-panel-mode-window .element-properties-header-actions .float-left {
+body.right-panel-mode-window .element-properties-header-actions .float-start {
     float: right !important;
 }
-body.right-panel-mode-window .element-properties-header-actions .float-left > * {
+body.right-panel-mode-window .element-properties-header-actions .float-start > * {
     float: right !important;
 }
-body.right-panel-mode-window .element-properties-header-actions .float-right {
+body.right-panel-mode-window .element-properties-header-actions .float-end {
     position: absolute;
     top: 47px;
     right: 18px;

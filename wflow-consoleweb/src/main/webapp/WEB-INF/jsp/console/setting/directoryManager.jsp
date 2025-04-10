@@ -4,7 +4,7 @@
 <c:set var="isVirtualHostEnabled" value="<%= HostManager.isVirtualHostEnabled() %>"/>
 
 <commons:header />
-<link rel="stylesheet" href="${pageContext.request.contextPath}/js/bootstrap4/css/bootstrap.min.css">
+<link rel="stylesheet" href="${pageContext.request.contextPath}/wro/jds.min.css">
 <link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/css/console.v9.css"/>
 <div id="nav">
     <div id="nav-title">

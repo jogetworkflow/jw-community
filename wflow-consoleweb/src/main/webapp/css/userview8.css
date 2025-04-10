@@ -667,6 +667,9 @@ body.rtl .hi-trigger{
     right: 25px;
     left: unset !important;
 }
+body.rtl div.nav-no-collapse.header-nav > ul.pull-right{
+    float: left;
+}
 .hi-trigger:before {
     -webkit-transform: scale(0);
     -ms-transform: scale(0);
@@ -1091,7 +1094,7 @@ body.horizontal_menu #header-info{
 
 
 /* button and ripple effect */
-#content main button[class*=button],
+#content main button[class*=button]:not(.accordion-button),
 #content main input[class*=button]
 {
     display: inline-block;
@@ -1113,7 +1116,7 @@ body.horizontal_menu #header-info{
     box-shadow: none;
     outline: 0;
 }
-#content main button[class*=button]:not([class*="btn-"]),
+#content main button[class*=button]:not([class*="btn-"]):not(.accordion-button),
 #content main input[class*=button]:not([class*="btn-"]),
 #content main button.btn-primary,
 #content main input.btn-primary
@@ -1122,7 +1125,7 @@ body.horizontal_menu #header-info{
     background-color: var(--theme-button-bg, #0d6efd);
     border-color: var(--theme-button-bg, #0d6efd);
 }
-#content main button[class*=button],
+#content main button[class*=button]:not(.accordion-button),
 #content main input[class*=button],
 #sidebar a,
 .btn{
@@ -1874,8 +1877,11 @@ body #ui-datepicker-div {
 .accordion .card-header {
     cursor: pointer;
 }
+.accordion-heading{
+    text-align: left;
+}
 .accordion .card-body {
-    padding: 10px;
+    padding: 0 10px;
 }
 .accordion>.card>.card-header {
     text-align: left;
@@ -2194,4 +2200,17 @@ body.rtl [class*=-selection].dropdown .dropdown-menu i.zmdi-check{
 }
 [class*=-selection].dropdown .dropdown-menu {
     width: 220px;
+}
+.collapsing {
+    padding: 0 10px !important;
+}
+a.fc-col-header-cell-cushion:not(:hover), 
+a.fc-daygrid-day-number:not(:hover) {
+    text-decoration: none;
+}
+.fc-scrollgrid.table-bordered {
+    border: 1px solid #dee2e6;
+}
+.breadcrumb li a:not(:hover) {
+    text-decoration: none;
 }

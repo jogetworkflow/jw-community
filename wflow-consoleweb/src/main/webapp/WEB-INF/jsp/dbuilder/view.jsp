@@ -15,12 +15,11 @@
         <jsp:include page="/WEB-INF/jsp/includes/scripts.jsp" />
 
         <link href="${pageContext.request.contextPath}/wro/common.css" rel="stylesheet" />
-        <link href="${pageContext.request.contextPath}/js/bootstrap4/css/bootstrap.min.css" rel="stylesheet" />
+        <link href="${pageContext.request.contextPath}/wro/jds.min.css" rel="stylesheet" />
         <link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/css/form.css" rel="stylesheet" />
         <script src="${pageContext.request.contextPath}/wro/common.preload.js"></script>
         <script src="${pageContext.request.contextPath}/wro/common.js"></script>
-        <script src="${pageContext.request.contextPath}/js/bootstrap4/js/popper.min.js"></script>
-        <script src="${pageContext.request.contextPath}/js/bootstrap4/js/bootstrap.min.js"></script>
+        <script src="${pageContext.request.contextPath}/wro/jds.min.js"></script>
         <script type="text/javascript" src="${pageContext.request.contextPath}/js/json/formUtil.js" ></script>
 
         <link rel="stylesheet" href="${pageContext.request.contextPath}/css/datalist8.css?build=<fmt:message key="build.number"/>" />

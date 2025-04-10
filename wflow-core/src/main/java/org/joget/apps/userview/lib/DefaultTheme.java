@@ -3,9 +3,10 @@ package org.joget.apps.userview.lib;
 import org.joget.apps.app.service.AppUtil;
 import org.joget.apps.userview.model.PwaOfflineNotSupported;
 import org.joget.apps.userview.model.UserviewTheme;
+import org.joget.plugin.base.HiddenPlugin;
 
 @Deprecated
-public class DefaultTheme extends UserviewTheme implements PwaOfflineNotSupported {
+public class DefaultTheme extends UserviewTheme implements PwaOfflineNotSupported, HiddenPlugin {
 
     @Override
     public String getCss() {

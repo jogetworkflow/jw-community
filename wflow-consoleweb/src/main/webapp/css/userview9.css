@@ -676,6 +676,10 @@ body.rtl .hi-trigger {
     left: unset !important;
 }
 
+body.rtl div.nav-no-collapse.header-nav > ul.pull-right{
+    float: left;
+}
+
 .hi-trigger:before {
     -webkit-transform: scale(0);
     -ms-transform: scale(0);
@@ -1289,7 +1293,7 @@ body.horizontal_menu #header-info {
     }
 }
 
-#content main button[class*="button"]:not([class*="btn-"]),
+#content main button[class*="button"]:not([class*="btn-"]):not(.accordion-button),
 #content main input[class*="button"]:not([class*="btn-"]),
 #content main button.btn-primary,
 #content main input.btn-primary {
@@ -1298,7 +1302,7 @@ body.horizontal_menu #header-info {
     border-color: var(--jgt-btn-colorPrimary);
 }
 
-#content main button[class*="button"],
+#content main button[class*="button"]:not(.accordion-button),
 #content main input[class*="button"],
 #sidebar a,
 .btn {
@@ -1314,7 +1318,7 @@ body.horizontal_menu #header-info {
 
 #content main button[class*="button"]:focus:not(:disabled):not(.disabled),
 #content main button[class*="button"]:active:not(:disabled):not(.disabled),
-#content main button[class*="button"]:hover:not(:disabled):not(.disabled),
+#content main button[class*="button"]:hover:not(:disabled):not(.disabled):not(.accordion-button),
 #content main input[class*="button"]:focus:not(:disabled):not(.disabled),
 #content main input[class*="button"]:active:not(:disabled):not(.disabled),
 #content main input[class*="button"]:hover:not(:disabled):not(.disabled),
@@ -2180,11 +2184,12 @@ body #ui-datepicker-div {
 .accordion .card-header {
     cursor: pointer;
 }
-
+.accordion-heading{
+    text-align: left;
+}
 .accordion .card-body {
     padding: var(--jgt-acc-contentPadding);
     background-color: var(--jgt-acc-contentBg);
-    border: var(--jgt-acc-lineWidth) var(--jgt-acc-lineType) var(--jgt-acc-colorBorder);
     margin-bottom: -2px;
     color: var(--jgt-acc-colorText);
 }

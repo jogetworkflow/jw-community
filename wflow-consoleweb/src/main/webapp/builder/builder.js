@@ -369,7 +369,7 @@ _CustomBuilder = {
                 $("#builderElementName").css("color", data.builderColor);
                 $("#builder_canvas").html(data.builderCanvas);
                 $("#left-panel .drag-elements-sidepane .components-list").html("");
-                $("#elements-tabs").hide().html('<li class="nav-item component-tab"><a class="nav-link active" id="components-tab" data-toggle="tab" href="#components" role="tab" aria-controls="components" aria-selected="true" title="' + get_cbuilder_msg('cbuilder.elements') + '"/>"><div><small>' + get_cbuilder_msg('cbuilder.elements') + '</small></div></a></li>');
+                $("#elements-tabs").hide().html('<li class="nav-item component-tab"><a class="nav-link active" id="components-tab" data-bs-toggle="tab" href="#components" role="tab" aria-controls="components" aria-selected="true" title="' + get_cbuilder_msg('cbuilder.elements') + '"/>"><div><small>' + get_cbuilder_msg('cbuilder.elements') + '</small></div></a></li>');
                 $("#elements-tabs").next().find(" > :not(#components)").remove();
                 $("#top-panel .responsive-buttons").hide();
                 $("#builderToolbar .copypaste").hide();
@@ -404,6 +404,11 @@ _CustomBuilder = {
             var acBtn = $("#adminBarButtons .adminBarButton").eq(0);
             $(acBtn).attr("href", CustomBuilder.contextPath + '/web/console/app'+ CustomBuilder.appPath +'/builders');
             $(acBtn).attr("onclick", "return AdminBar.openAppComposer('" + CustomBuilder.contextPath + '/web/console/app'+ CustomBuilder.appPath + "/builders');");
+            
+            //call to support old version bootstrap attribute for dropdown, slider etc
+            if (typeof jdsLegacyAttributeMigration === "function") {
+                jdsLegacyAttributeMigration(); 
+            }
         })
         .catch(function (error) {
             console.log(error);
@@ -835,7 +840,7 @@ _CustomBuilder = {
         
         if (tabs !== undefined && tabs.length > 0) {
             for (var i in tabs) {
-                var li = $('<li class="nav-item component-tab"><a class="nav-link" id="'+tabs[i].name+'-tab" data-toggle="tab" href="#'+tabs[i].name+'" role="tab" aria-controls="'+tabs[i].name+'" aria-selected="false" title="'+tabs[i].label+'"><div><small>'+tabs[i].label+'</small></div></a></li>');
+                var li = $('<li class="nav-item component-tab"><a class="nav-link" id="'+tabs[i].name+'-tab" data-bs-toggle="tab" href="#'+tabs[i].name+'" role="tab" aria-controls="'+tabs[i].name+'" aria-selected="false" title="'+tabs[i].label+'"><div><small>'+tabs[i].label+'</small></div></a></li>');
                 if (tabs[i].image !== undefined && tabs[i].image !== "") {
                     $(li).find("a").prepend('<img src="'+tabs[i].image+'" />');
                 }
@@ -1409,9 +1414,7 @@ _CustomBuilder = {
             }
             var toast = $('<div id="'+id+'" role="alert" aria-live="assertive" aria-atomic="true" class="toast alert-dismissible toast-'+type+'" data-autohide="true">\
                 '+message+'\
-                <button type="button" class="close" data-dismiss="toast" aria-label="'+get_cbuilder_msg("cbuilder.close")+'">\
-                    <span aria-hidden="true">&times;</span>\
-                </button>\
+                <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="'+get_cbuilder_msg("cbuilder.close")+'"></button>\
               </div>');
             
             $("#builder-message").removeClass('center');
@@ -7189,6 +7192,8 @@ _CustomBuilder.Builder = {
             
             $("#node-details-toggle").find("input").off("click");
             $("#node-details-toggle").find("input").on("click", function(){
+                $("#node-details-toggle").find("label").removeClass("active");
+                $(this).parent().addClass('active');
                 if ($("#details-toggle-single").is(":checked")) {
                     self.frameBody.addClass("show-node-details-single");
                 } else {
@@ -7197,8 +7202,8 @@ _CustomBuilder.Builder = {
                 self._updateBoxes();
                 self.triggerEvent("nodeAdditionalModeChanged");
             });
-            
-            self.frameBody.addClass("show-node-details");
+
+
             level = 0;
             self.colorCount = 0;
         }
