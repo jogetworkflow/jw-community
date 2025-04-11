@@ -56,7 +56,9 @@
             overflowToDisk="false"
             timeToIdleSeconds="20"
             timeToLiveSeconds="20"
-            diskPersistent="false"/>
+            diskPersistent="false">
+        <cacheEventListenerFactory class="org.joget.commons.util.DataSourceCacheListenerFactory" />
+    </cache>
                 
     <cache name="org.joget.cache.RBM_CACHE"
         maxElementsInMemory="50000"

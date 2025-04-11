@@ -49,6 +49,17 @@
         control_field: 'jdbcDatasource',
         control_value: 'custom',
         control_use_regex: 'false'
+    },
+    {
+        name : 'jdbcProps',
+        label : '@@datalist.jdbcDataListBinder.jdbcProps@@',
+        description : '@@datalist.jdbcDataListBinder.jdbcProps.desc@@',
+        type : 'codeeditor',
+        mode : 'properties',
+        control_field: 'jdbcDatasource',
+        control_value: 'custom',
+        control_use_regex: 'false',
+        value : ''
     }]
 },
 {
