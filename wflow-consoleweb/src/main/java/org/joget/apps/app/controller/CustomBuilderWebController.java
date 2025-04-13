@@ -306,7 +306,7 @@ public class CustomBuilderWebController {
     public void checkPermission(Writer writer, HttpServletResponse response, @RequestParam(value = "appId") String appId, @RequestParam(value = "version", required = false) String version) throws IOException {
         try {
             JSONObject obj = new JSONObject();
-            if (WorkflowUtil.isCurrentUserInRole(WorkflowUtil.ROLE_ADMIN) || EnhancedWorkflowUserManager.isAppAdminRole()) {
+            if (WorkflowUtil.isCurrentUserInRole(WorkflowUtil.ROLE_ADMIN) || EnhancedWorkflowUserManager.isAppDesignerRole()) {
                 obj.put("status", true);
             } else {
                 obj.put("status", false);

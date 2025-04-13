@@ -14,7 +14,7 @@ public class EnhancedDirectoryManagerProxyImpl extends DirectoryManagerProxyImpl
         if (username != null && !username.isEmpty()  && !DirectoryUtil.ROLE_ANONYMOUS.equals(username)) {
 
             Collection<Role> roles = getDirectoryManagerImpl().getUserRoles(username);
-            
+
             // check for sys admin role, add if not in db
             Role ra = new Role();
             ra.setId(WorkflowUserManager.ROLE_ADMIN);
@@ -25,19 +25,22 @@ public class EnhancedDirectoryManagerProxyImpl extends DirectoryManagerProxyImpl
                 roles.add(sa);
             }
 
-            // add app admin role configured for specific users
-            if (!roles.contains(ra) && EnhancedWorkflowUserManager.checkCustomAppAdmin()) {
+            // add app designer role configured for specific users
+            Role appCreator = new Role();
+            appCreator.setId(WorkflowUserManager.ROLE_APP_CREATOR);
+            boolean isAppCreator = roles.contains(appCreator);
+            if (!roles.contains(ra) && EnhancedWorkflowUserManager.checkCustomAppDesigner(isAppCreator)) {
                 roles.add(ra);
             }
-            if (EnhancedWorkflowUserManager.isAppAdminRole()) {
+            if (EnhancedWorkflowUserManager.isAppDesignerRole()) {
                 Role aa = new Role();
-                aa.setId(EnhancedWorkflowUserManager.ROLE_APPADMIN);
-                aa.setName(EnhancedWorkflowUserManager.ROLE_APPADMIN);
+                aa.setId(EnhancedWorkflowUserManager.ROLE_APP_DESIGNER);
+                aa.setName(EnhancedWorkflowUserManager.ROLE_APP_DESIGNER);
                 roles.add(aa);
             }
             return roles;
         }
         return new ArrayList<>();
-    }    
+    }
     
 }

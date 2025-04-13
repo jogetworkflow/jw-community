@@ -287,6 +287,10 @@ public class AppWorkflowHelper implements WorkflowHelper {
                         resultList = getParticipantsByLoggedInUser();
                     } else if (PackageParticipant.TYPE_ROLE.equals(participant.getType()) && PackageParticipant.VALUE_ROLE_ADMIN.equals(participant.getValue())) {
                         resultList = getParticipantsByAdminUser();
+                    } else if (PackageParticipant.TYPE_ROLE.equals(participant.getType()) && PackageParticipant.VALUE_ROLE_APP_CREATOR.equals(participant.getValue())) {
+                        resultList = getParticipantsByAppCreatorUser();
+                    } else if (PackageParticipant.TYPE_ROLE.equals(participant.getType()) && PackageParticipant.VALUE_ROLE_SYSTEM_MANAGER.equals(participant.getValue())) {
+                        resultList = getParticipantsBySystemManagerUser();
                     }
                 }
             }
@@ -651,6 +655,32 @@ public class AppWorkflowHelper implements WorkflowHelper {
         List<String> resultList = new ArrayList<String>();
         WorkflowUserManager workflowUserManager = (WorkflowUserManager) AppUtil.getApplicationContext().getBean("workflowUserManager");
         if (workflowUserManager.isCurrentUserInRole(WorkflowUserManager.ROLE_ADMIN)) {
+            resultList.add(workflowUserManager.getCurrentUsername());
+        }
+        return resultList;
+    }
+    
+    /**
+     * Retrieve the participants based on app creator user
+     * @return 
+     */
+    protected List<String> getParticipantsByAppCreatorUser() {
+        List<String> resultList = new ArrayList<String>();
+        WorkflowUserManager workflowUserManager = (WorkflowUserManager) AppUtil.getApplicationContext().getBean("workflowUserManager");
+        if (workflowUserManager.isCurrentUserInRole(WorkflowUserManager.ROLE_APP_CREATOR)) {
+            resultList.add(workflowUserManager.getCurrentUsername());
+        }
+        return resultList;
+    }
+    
+    /**
+     * Retrieve the participants based on system manager user
+     * @return 
+     */
+    protected List<String> getParticipantsBySystemManagerUser() {
+        List<String> resultList = new ArrayList<String>();
+        WorkflowUserManager workflowUserManager = (WorkflowUserManager) AppUtil.getApplicationContext().getBean("workflowUserManager");
+        if (workflowUserManager.isCurrentUserInRole(WorkflowUserManager.ROLE_SYSTEM_MANAGER)) {
             resultList.add(workflowUserManager.getCurrentUsername());
         }
         return resultList;

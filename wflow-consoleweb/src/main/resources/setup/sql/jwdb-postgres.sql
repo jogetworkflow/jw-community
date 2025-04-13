@@ -2107,6 +2107,8 @@ CREATE TABLE wf_setup (
 
 INSERT INTO dir_role VALUES ('ROLE_ADMIN', 'Admin', 'Administrator');
 INSERT INTO dir_role VALUES ('ROLE_USER', 'User', 'Normal User');
+INSERT INTO dir_role VALUES ('ROLE_SYSTEM_MANAGER', 'System Manager', 'System Manager');
+INSERT INTO dir_role VALUES ('ROLE_APP_CREATOR', 'App Creator', 'App Creator');
 
 
 --

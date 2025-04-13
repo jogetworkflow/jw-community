@@ -11,10 +11,12 @@
 %>
 <c:set var="isQuickEditEnabled" value="<%= AppUtil.isQuickEditEnabled() %>"/>
 <c:set var="envName" value='<%= WorkflowUtil.getSystemSetupValue("environmentName") %>'/>
-<c:if test="${isQuickEditEnabled == 'true' || param.webConsole =='true'}">
+<c:if test="${isQuickEditEnabled == 'true' || isQuickEditEnabled == 'false' || param.webConsole =='true'}">
     <c:set var="isAdmin" value="<%= WorkflowUtil.isCurrentUserInRole(WorkflowUtil.ROLE_ADMIN) %>"/>
-    <c:set var="isCustomAppAdmin" value="<%= EnhancedWorkflowUserManager.isAppAdminRole() %>"/>
-    <c:if test="${isAdmin && (param.builderMode || !(isCustomAppAdmin && !empty param.webConsole))}">
+    <c:set var="isSystemManager" value="<%= WorkflowUtil.isCurrentUserInRole(WorkflowUtil.ROLE_SYSTEM_MANAGER) %>"/>
+    <c:set var="isAppCreator" value="<%= WorkflowUtil.isCurrentUserInRole(WorkflowUtil.ROLE_APP_CREATOR) %>"/>
+    <c:set var="isCustomAppDesigner" value="<%= EnhancedWorkflowUserManager.isAppDesignerRole() %>"/>
+    <c:if test="${(isSystemManager || isAdmin || isAppCreator) && (param.builderMode || !(isCustomAppDesigner && !empty param.webConsole))}">
         <script>
             loadCSS("${pageContext.request.contextPath}/css/admin_bar_custom.css");
         </script>
@@ -22,41 +24,47 @@
             <a id="appCenter" <c:if test="${empty param.webConsole}"> target="_blank"</c:if> title="<ui:msgEscHTML key='adminBar.label.appCenter'/>" href="${pageContext.request.contextPath}/home"><i class="fab fa-joget"></i></a>  
             <div id="adminBarButtons">
             <c:set var="key" value="0" />
-            <c:if test="${!empty param.appId}">    
+            <c:if test="${!empty param.appId && (isCustomAppDesigner || isAdmin)}">    
                 <c:set var="key" value="1" />
                 <div class="separator"></div>
                     <div>
                         <a class="adminBarButton" title="CTRL-1: <ui:msgEscHTML key='abuilder.title'/>" href="${pageContext.request.contextPath}/web/console/app/<c:out value="${param.appId}"/>/<c:out value="${param.appVersion}"/>/builders" onclick="return AdminBar.openAppComposer('${pageContext.request.contextPath}/web/console/app/<c:out value="${param.appId}"/>/<c:out value="${param.appVersion}"/>/builders');" target="_blank"><i class="far fa-edit"></i><span><fmt:message key='abuilder.title'/></span></a>
-                    </div>
+                    </div>  
                 
-            </c:if>    
-            <c:if test="${!empty param.appId && !isCustomAppAdmin}">
+            </c:if>
+            <c:if test="${!empty param.appId && !isCustomAppDesigner}">
                 <div class="separator"></div>
             </c:if>    
-            <c:if test="${!isCustomAppAdmin}">    
-                <div>
-                    <a class="adminBarButton" title="CTRL-<c:out value="${key + 1}"/>: <ui:msgEscHTML key='adminBar.label.manageApps'/>" href="${pageContext.request.contextPath}/web/desktop/apps" onclick="return AdminBar.showQuickOverlay('${pageContext.request.contextPath}/web/desktop/apps')"><i class="fas fa-th"></i><span><fmt:message key='adminBar.label.allApps'/></span></a>
-                </div>
-                <div>
-                    <a class="adminBarButton" title="CTRL-<c:out value="${key + 2}"/>: <ui:msgEscHTML key='adminBar.label.setupUsers'/>" href="${pageContext.request.contextPath}/web/console/directory/users" onclick="return AdminBar.showQuickOverlay('${pageContext.request.contextPath}/web/console/directory/users')"><i class="fas fa-users"></i><span><fmt:message key='adminBar.label.users'/></span></a>
-                </div>
-                <div>
-                    <a class="adminBarButton" title="CTRL-<c:out value="${key + 3}"/>: <ui:msgEscHTML key='adminBar.label.monitorApps'/>" href="${pageContext.request.contextPath}/web/console/monitor/running" onclick="return AdminBar.showQuickOverlay('${pageContext.request.contextPath}/web/console/monitor/running')"><i class="fas fa-tachometer-alt"></i><span><fmt:message key='adminBar.label.monitor'/></span></a>
-                </div>
-                <div>
-                    <a class="adminBarButton" title="CTRL-<c:out value="${key + 4}"/>: <ui:msgEscHTML key='adminBar.label.systemSettings'/>" href="${pageContext.request.contextPath}/web/console/setting/general" onclick="return AdminBar.showQuickOverlay('${pageContext.request.contextPath}/web/console/setting/general')"><i class="fas fa-cogs"></i><span><fmt:message key='adminBar.label.settings'/></span></a>
-                </div>
+            <c:if test="${!isCustomAppDesigner}">    
+                <c:if test="${!isSystemManager}">
+                    <div>
+                        <a class="adminBarButton" title="CTRL-<c:out value="${key + 1}"/>: <ui:msgEscHTML key='adminBar.label.manageApps'/>" href="${pageContext.request.contextPath}/web/desktop/apps" onclick="return AdminBar.showQuickOverlay('${pageContext.request.contextPath}/web/desktop/apps')"><i class="fas fa-th"></i><span><fmt:message key='adminBar.label.allApps'/></span></a>
+                    </div>
+                </c:if>
+                <c:if test="${!isAppCreator}">   
+                    <div>
+                        <a class="adminBarButton" title="CTRL-<c:out value="${key + 2}"/>: <ui:msgEscHTML key='adminBar.label.setupUsers'/>" href="${pageContext.request.contextPath}/web/console/directory/users" onclick="return AdminBar.showQuickOverlay('${pageContext.request.contextPath}/web/console/directory/users')"><i class="fas fa-users"></i><span><fmt:message key='adminBar.label.users'/></span></a>
+                    </div>
+                    <div>
+                        <a class="adminBarButton" title="CTRL-<c:out value="${key + 3}"/>: <ui:msgEscHTML key='adminBar.label.monitorApps'/>" href="${pageContext.request.contextPath}/web/console/monitor/running" onclick="return AdminBar.showQuickOverlay('${pageContext.request.contextPath}/web/console/monitor/running')"><i class="fas fa-tachometer-alt"></i><span><fmt:message key='adminBar.label.monitor'/></span></a>
+                    </div>
+                    <div>
+                        <a class="adminBarButton" title="CTRL-<c:out value="${key + 4}"/>: <ui:msgEscHTML key='adminBar.label.systemSettings'/>" href="${pageContext.request.contextPath}/web/console/setting/general" onclick="return AdminBar.showQuickOverlay('${pageContext.request.contextPath}/web/console/setting/general')"><i class="fas fa-cogs"></i><span><fmt:message key='adminBar.label.settings'/></span></a>
+                    </div>
+                </c:if>  
             </c:if>    
             </div>
-            <div id="quickEditModeOption">
-                <div>
-                    <a id="quickEditMode" title="CTRL-0: <ui:msgEscHTML key='adminBar.label.quickedit'/>"><i class="fas fa-paint-brush"></i><span><fmt:message key='adminBar.label.quickedit'/></span>
-                    <input type="checkbox" name="admin-bar-toggle" id="admin-bar-toggle" class="admin-bar-toggle"/>
-                    <label class="adminbar-control-label button" for="admin-bar-toggle">
-                        <div class="dot"></div>
-                    </label>
+            <c:if test="${!isSystemManager}"> 
+                <div id="quickEditModeOption">
+                    <div>
+                        <a id="quickEditMode" title="CTRL-0: <ui:msgEscHTML key='adminBar.label.quickedit'/>"><i class="fas fa-paint-brush"></i><span><fmt:message key='adminBar.label.quickedit'/></span>
+                        <input type="checkbox" name="admin-bar-toggle" id="admin-bar-toggle" class="admin-bar-toggle"/>
+                        <label class="adminbar-control-label button" for="admin-bar-toggle">
+                            <div class="dot"></div>
+                        </label>
+                    </div>
                 </div>
-            </div>
+            </c:if>
             <c:if test="${!empty envName}">
                 <span id="environmentName"><span><c:out value="${envName}"/></span></span>
             </c:if>
@@ -76,7 +84,7 @@
             AdminBar.builderMode = true;
             </c:if>
         </script>
-        
+       
     <script>
         <ui:popupdialog var="appCreateDialog" src="${pageContext.request.contextPath}/web/console/app/create"/>
             function appCreate(templateId) {
@@ -125,7 +133,14 @@
             })   
         }
     </script>
-        
+    <script>
+        $(document).ready(function(){
+            <c:if test="${isSystemManager}">
+                AdminBar.disableQuickEditMode();
+            </c:if>
+        });
+    </script>
+
     <jsp:include page="adminBarExt.jsp" flush="true"/>    
         <c:set var="requestUri" value="${requestScope['jakarta.servlet.forward.request_uri']}"/>
         <c:set var="matchingUri" value="${pageContext.request.contextPath}/web/console/app"/>
