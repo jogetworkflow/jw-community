@@ -26,6 +26,8 @@ public class WorkflowUserManager {
     public static final String ROLE_SYSTEM = "roleSystem";
     public static final String ROLE_ADMIN = "ROLE_ADMIN";
     public static final String ROLE_USER = "ROLE_USER";
+    public static final String ROLE_SYSTEM_MANAGER = "ROLE_SYSTEM_MANAGER";
+    public static final String ROLE_APP_CREATOR = "ROLE_APP_CREATOR";
 
     private ThreadLocal currentThreadUser = new ThreadLocal();
     private ThreadLocal currentThreadUserRoles = new ThreadLocal();

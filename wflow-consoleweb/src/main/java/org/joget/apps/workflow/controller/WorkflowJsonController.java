@@ -1071,6 +1071,7 @@ public class WorkflowJsonController {
             app.accumulate("id", appDef.getAppId());
             app.accumulate("name", StringUtil.stripAllHtmlTag(appDef.getName()));
             app.accumulate("version", appDef.getVersion());
+            app.accumulate("editable", AppUtil.isAppEditableByCurrentUser(appDef));
             JSONArray userviews = new JSONArray();
             for (UserviewDefinition userviewDef: appDef.getUserviewDefinitionList()) {
                 if (isAppCenter != null && isAppCenter &&

@@ -120,6 +120,10 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.util.HtmlUtils;
 import javax.cache.Cache;
 import javax.cache.CacheManager;
+import org.joget.apps.workflow.security.EnhancedWorkflowUserManager;
+import org.joget.directory.dao.UserDao;
+import org.joget.workflow.model.service.WorkflowUserManager;
+import org.springframework.util.StringUtils;
 
 /**
  * Utility methods is used by App in runtime
@@ -1027,12 +1031,16 @@ public class AppUtil implements ApplicationContextAware {
     public static boolean isQuickEditEnabled() {
         String settingValue = null;
         boolean isAdmin = false;
-        
+        boolean isSystemManager = false;
+        boolean isAppCreator = false;
+
         // lookup cache in request
         HttpServletRequest request = WorkflowUtil.getHttpServletRequest();
         if (request != null) {
             settingValue = (String)request.getAttribute("disableAdminBar");
             isAdmin = "true".equals(request.getAttribute("isAdmin"));
+            isSystemManager = "true".equals(request.getAttribute("isSystemManager"));
+            isAppCreator = "true".equals(request.getAttribute("isAppCreator"));
         }
         if (settingValue == null) {
             // get from SetupManager
@@ -1042,13 +1050,18 @@ public class AppUtil implements ApplicationContextAware {
                 settingValue = "false";
             }
             isAdmin = WorkflowUtil.isCurrentUserInRole(WorkflowUtil.ROLE_ADMIN);
+            isSystemManager = WorkflowUtil.isCurrentUserInRole(WorkflowUtil.ROLE_SYSTEM_MANAGER);
+            isAppCreator = WorkflowUtil.isCurrentUserInRole(WorkflowUtil.ROLE_APP_CREATOR);
+           
             if (request != null) {
                 // cache value in request
                 request.setAttribute("disableAdminBar", settingValue);
                 request.setAttribute("isAdmin", Boolean.toString(isAdmin));
+                request.setAttribute("isSystemManager", Boolean.toString(isSystemManager));
+                request.setAttribute("isAppCreator", Boolean.toString(isAppCreator));
             }
         }
-        boolean enabled = !"true".equals(settingValue) && isAdmin;
+        boolean enabled = !"true".equals(settingValue) && !isSystemManager && (isAdmin || isAppCreator);
         return enabled;
     }
     
@@ -2356,5 +2369,83 @@ public class AppUtil implements ApplicationContextAware {
         }
         
         return sb.toString();
+    }
+    
+    /**    
+     * Check the user can edit the app by user role. Either admin, app creator or app designer
+     * 
+     * @param appDef
+     * @return 
+     */
+    public static boolean isAppEditableByCurrentUser(AppDefinition appDef) {
+        return isAppEditableByCurrentUser(appDef, WorkflowUtil.isCurrentUserInRole(WorkflowUtil.ROLE_ADMIN), WorkflowUtil.isCurrentUserInRole(WorkflowUtil.ROLE_APP_CREATOR));
+    }
+    
+    /**
+     * Check the user can edit the app by user role. Either admin, app creator or app designer
+     * 
+     * @param appDef
+     * @return 
+     */
+    public static boolean isAppEditableByCurrentUser(AppDefinition appDef, Boolean isAdmin, Boolean isAppCreator) {
+        // get http session
+        HttpSession session = null;
+        HttpServletRequest request = WorkflowUtil.getHttpServletRequest();
+        if (request != null) {
+            session = request.getSession();
+        }
+        if (session != null) {
+            String username = WorkflowUtil.getCurrentUsername();
+            
+            // get nonce map from session
+            Map<String, Boolean> editableAppMap = (Map)session.getAttribute("USER_EDITABLE_APPS");
+            String cachedUser = (String) session.getAttribute("USER_EDITABLE_APPS_USERNAME");
+            if (editableAppMap == null || !username.equals(cachedUser)) {
+                editableAppMap = Collections.synchronizedMap(new LinkedHashMap<String, Boolean>());
+                session.setAttribute("USER_EDITABLE_APPS", editableAppMap);
+                session.setAttribute("USER_EDITABLE_APPS_USERNAME", username);
+            }
+            
+            if (editableAppMap.containsKey(appDef.getAppId())) {
+                return editableAppMap.get(appDef.getAppId());
+            } else {
+                Boolean result = false;
+                if (isAdmin) { 
+                    result = true; //user is admin
+                } else if (isAppCreator 
+                        && username.equals(appDef.getCreatedBy())) {
+                    result = true; //App created by current user
+                } else {
+                    // check for custom app designer role assignments
+                    Collection<String> adminUserSet = new HashSet<>();
+                    Properties props = AppDevUtil.getAppDevProperties(appDef);
+                    String roleAdmin = props.getProperty(WorkflowUserManager.ROLE_ADMIN);
+                    String roleAdminGroup = props.getProperty(EnhancedWorkflowUserManager.ROLE_ADMIN_GROUP);
+                    if ((roleAdmin != null && !roleAdmin.isEmpty()) || (roleAdminGroup != null && !roleAdminGroup.isEmpty())) {
+                        String[] adminUsers = StringUtils.tokenizeToStringArray(roleAdmin, ";,", true, true);
+                        if (adminUsers != null && adminUsers.length > 0) {
+                            adminUserSet.addAll(Arrays.asList(adminUsers));
+                        }
+                        String[] adminGroups = StringUtils.tokenizeToStringArray(roleAdminGroup, ";,", true, true);
+                        if (adminGroups != null && adminGroups.length > 0) {
+                            UserDao userDao = (UserDao)AppUtil.getApplicationContext().getBean("userDao");
+                            for (String groupId: adminGroups) {
+                                Collection<User> groupUsers = userDao.getUsers(null, null, null, null, groupId, null, "1", null, null, null, null);
+                                for (User user: groupUsers) {
+                                    adminUserSet.add(user.getUsername());
+                                }
+                            }
+                        }
+                        result = adminUserSet.contains(username);
+                    }
+                }
+                
+                editableAppMap.put(appDef.getAppId(), result);
+                session.setAttribute("USER_EDITABLE_APPS", editableAppMap);
+                
+                return result;
+            }
+        }
+        return false;
     }
 }

@@ -35,16 +35,18 @@ public class AuthenticationTokenWrapper implements Authentication {
         
         // check for sys admin role, add if not in db
         GrantedAuthority ga = new SimpleGrantedAuthority(ROLE_ADMIN);
-        if (tempAuthorities.contains(ga) && !EnhancedWorkflowUserManager.isSysAdminRoleAvailable()) {
+        if (tempAuthorities.contains(ga)) {
             tempAuthorities.add(new SimpleGrantedAuthority(EnhancedWorkflowUserManager.ROLE_SYSADMIN));
         }
         
-        // add app admin role configured for specific users
-        if (!tempAuthorities.contains(ga) && EnhancedWorkflowUserManager.checkCustomAppAdmin()) {
+        // add app designer role configured for specific users
+        GrantedAuthority appCreator = new SimpleGrantedAuthority(EnhancedWorkflowUserManager.ROLE_APP_CREATOR);
+        boolean isAppCreator = tempAuthorities.contains(appCreator);
+        if (!tempAuthorities.contains(ga) && EnhancedWorkflowUserManager.checkCustomAppDesigner(isAppCreator)) {
             tempAuthorities.add(ga);
         }
-        if (EnhancedWorkflowUserManager.isAppAdminRole()) {
-            tempAuthorities.add(new SimpleGrantedAuthority(EnhancedWorkflowUserManager.ROLE_APPADMIN));
+        if (EnhancedWorkflowUserManager.isAppDesignerRole()) {
+            tempAuthorities.add(new SimpleGrantedAuthority(EnhancedWorkflowUserManager.ROLE_APP_DESIGNER));
         }
         if (tempAuthorities.isEmpty()) {
             tempAuthorities.add(new SimpleGrantedAuthority(WorkflowUserManager.ROLE_USER));

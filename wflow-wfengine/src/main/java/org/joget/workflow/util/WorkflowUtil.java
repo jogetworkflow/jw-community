@@ -56,6 +56,8 @@ public class WorkflowUtil implements ApplicationContextAware {
     public static final String CURRENT_USERNAME = "currentUsername";
     public static final String PERFORMER = "performer";
     public static final String ROLE_ADMIN = WorkflowUserManager.ROLE_ADMIN;
+    public static final String ROLE_SYSTEM_MANAGER = WorkflowUserManager.ROLE_SYSTEM_MANAGER;
+    public static final String ROLE_APP_CREATOR = WorkflowUserManager.ROLE_APP_CREATOR;
     public static final String ACTIVITY_DEF_ID_RUN_PROCESS = "runProcess";
     public static final String PROCESS_START_WHITE_LIST = "processStartWhiteList";
     static ApplicationContext appContext;

@@ -748,14 +748,32 @@ public class ConsoleWebController {
     public String consoleUserCreate(ModelMap model) {
         Collection<Organization> organizations = organizationDao.getOrganizationsByFilter(null, "name", false, null, null);
         model.addAttribute("organizations", organizations);
-        model.addAttribute("roles", roleDao.getRoles(null, "name", false, null, null));
+
+        // Fetch roles
+        Collection<Role> roles = roleDao.getRoles(null, "name", false, null, null);
+        model.addAttribute("roles", roles);
+
+        // Check if the current user is a system manager
+        boolean isSystemManager = WorkflowUtil.isCurrentUserInRole(WorkflowUserManager.ROLE_SYSTEM_MANAGER);
+
+        if (isSystemManager && roles != null) {
+            Iterator<Role> iterator = roles.iterator();
+            while (iterator.hasNext()) {
+                Role role = iterator.next();
+                if (role != null && role.getId() != null && "ROLE_ADMIN".equalsIgnoreCase(role.getId().trim())) {
+                    iterator.remove();
+                }
+            }
+        }
+
+        // Add timezones
         model.addAttribute("timezones", TimeZoneUtil.getList());
 
         Map<String, String> status = new HashMap<String, String>();
         status.put("1", "Active");
         status.put("0", "Inactive");
         model.addAttribute("status", status);
-        
+
         UserSecurity us = DirectoryUtil.getUserSecurity();
         if (us != null) {
             model.addAttribute("userFormFooter", us.getUserCreationFormFooter());
@@ -765,10 +783,9 @@ public class ConsoleWebController {
 
         User user = new User();
         user.setActive(1);
-        Set roles = new HashSet();
-        roles.add(roleDao.getRole("ROLE_USER"));
-        user.setRoles(roles);
-        //user.setTimeZone(TimeZoneUtil.getServerTimeZone());
+        Set<Role> userRoles = new HashSet<>();
+        userRoles.add(roleDao.getRole("ROLE_USER"));
+        user.setRoles(userRoles);
         model.addAttribute("user", user);
         model.addAttribute("employments", new HashSet<Employment>());
         return "console/directory/userCreate";
@@ -814,7 +831,25 @@ public class ConsoleWebController {
     public String consoleUserEdit(ModelMap model, @RequestParam("id") String id) {
         Collection<Organization> organizations = organizationDao.getOrganizationsByFilter(null, "name", false, null, null);
         model.addAttribute("organizations", organizations);
-        model.addAttribute("roles", roleDao.getRoles(null, "name", false, null, null));
+
+        // Fetch roles
+        Collection<Role> roles = roleDao.getRoles(null, "name", false, null, null);
+        model.addAttribute("roles", roles);
+
+        // Check if the current user is a system admin
+        boolean isSystemManager = WorkflowUtil.isCurrentUserInRole(WorkflowUserManager.ROLE_SYSTEM_MANAGER);
+
+        if (isSystemManager && roles != null) {
+            Iterator<Role> iterator = roles.iterator();
+            while (iterator.hasNext()) {
+                Role role = iterator.next();
+                if (role != null && role.getId() != null && "ROLE_ADMIN".equalsIgnoreCase(role.getId().trim())) {
+                    iterator.remove();
+                }
+            }
+        }
+
+        // Add timezones
         model.addAttribute("timezones", TimeZoneUtil.getList());
 
         Map<String, String> status = new HashMap<String, String>();
@@ -940,14 +975,68 @@ public class ConsoleWebController {
                             u.setPassword(StringUtil.md5Base16(user.getPassword()));
                         }
                     }
-                    //set roles
-                    if (user.getRoles() != null && user.getRoles().size() > 0) {
-                        Set roles = new HashSet();
-                        for (String roleId : (Set<String>) user.getRoles()) {
-                            roles.add(roleDao.getRole(roleId));
+                              
+                    
+                    boolean isSystemManager = WorkflowUtil.isCurrentUserInRole(WorkflowUserManager.ROLE_SYSTEM_MANAGER);
+
+                    if (isSystemManager) {
+                         // Set roles and handle
+                        if (user.getRoles() == null || user.getRoles().isEmpty()) {
+                            // Check if the user previously had ROLE_ADMIN
+                            if (u.getRoles() != null) {
+                                boolean hadAdminRole = false;
+                                for (Role existingRole : (Set<Role>) u.getRoles()) {
+                                    if ("ROLE_ADMIN".equalsIgnoreCase(existingRole.getId())) {
+                                        hadAdminRole = true;
+                                        break;
+                                    }
+                                }
+
+                                if (hadAdminRole) {
+                                    // Preserve only ROLE_ADMIN if it was previously assigned
+                                    Set<Role> updatedRoles = new HashSet<>();
+                                    Role adminRole = roleDao.getRole("ROLE_ADMIN");
+                                    if (adminRole != null) {
+                                        updatedRoles.add(adminRole);
+                                    }
+                                    u.setRoles(updatedRoles);
+                                } else {
+                                    // Keep all previous roles intact
+                                    u.setRoles(new HashSet<>(u.getRoles()));
+                                }
+                            }
+                        } else {
+
+                            // Process the roles as usual
+                            Set<Role> updatedRoles = new HashSet<>();
+
+                            for (String roleId : (Set<String>) user.getRoles()) {
+                                updatedRoles.add(roleDao.getRole(roleId));
+                            }
+
+                            // Retain ROLE_ADMIN if the user already has it
+                            if (u.getRoles() != null) {
+                                for (Role existingRole : (Set<Role>) u.getRoles()) {
+                                    if ("ROLE_ADMIN".equalsIgnoreCase(existingRole.getId())) {
+                                        updatedRoles.add(existingRole);
+                                        break; // Ensure only one instance of ROLE_ADMIN is added
+                                    }
+                                }
+                            }
+
+                            u.setRoles(updatedRoles);
                         }
-                        u.setRoles(roles);
+                    } else {
+                        //set roles
+                        if (user.getRoles() != null && user.getRoles().size() > 0) {
+                            Set roles = new HashSet();
+                            for (String roleId : (Set<String>) user.getRoles()) {
+                                roles.add(roleDao.getRole(roleId));
+                            }
+                            u.setRoles(roles);
+                        }
                     }
+
                     u.setTimeZone(user.getTimeZone());
                     u.setActive(user.getActive());
 
@@ -1414,7 +1503,12 @@ public class ConsoleWebController {
             @RequestParam(value = "tablePrefix", required = false) String tablePrefix, 
             @RequestParam(value = "type", required = false) String type, 
             @RequestParam(value = "pluginProperties", required = false) String properties) {
-        // validate ID
+
+        // Set the creator's details
+        String currentUser = WorkflowUtil.getCurrentUsername();
+        appDefinition.setCreatedBy(currentUser);
+
+        // Validate ID
         validator.validate(appDefinition, result);
         
         Map<String, Plugin> pluginOptions = AppUtil.getCreateAppOptions();
@@ -1837,6 +1931,7 @@ public class ConsoleWebController {
         }
         
         AppDefinition appDef = null;
+        String currentUser = WorkflowUtil.getCurrentUsername();  // Get the current user's username
         try {
             if (appZip != null) {
                 byte[] bytes = appZip.getBytes();
@@ -1844,6 +1939,12 @@ public class ConsoleWebController {
                     appDef = appService.importAppDefFromGitSrc(bytes);
                 } else {
                     appDef = appService.importApp(bytes);
+                }
+
+                // Only set createdBy if appDef is successfully created
+                if (appDef != null) {
+                    appDef.setCreatedBy(currentUser);
+                    appDefinitionDao.saveOrUpdate(appDef); // Explicitly save the updated object
                 }
             }
         } catch (ImportAppException e) {
@@ -3822,6 +3923,7 @@ public class ConsoleWebController {
         map.addAttribute("appId", appDef.getId());
         map.addAttribute("appVersion", appDef.getVersion());
         map.addAttribute("appDefinition", appDef);
+        map.addAttribute("isAppCreator", WorkflowUtil.isCurrentUserInRole(WorkflowUserManager.ROLE_APP_CREATOR) && WorkflowUtil.getCurrentUsername().equals(appDef.getCreatedBy()));
         
         Properties props = AppDevUtil.getAppDevProperties(appDef);
         String properties = "{}";
@@ -6219,30 +6321,39 @@ public class ConsoleWebController {
 
     @RequestMapping("/desktop/apps")
     public String desktopApps(ModelMap model) {
-        // get published apps
+        // Get published apps
         Collection<AppDefinition> publishedList = appDefinitionDao.findPublishedApps("name", Boolean.FALSE, null, null);
-        
-        // get app def ids of published apps
-        Collection<String> publishedIdSet = new HashSet<String>();
-        for (AppDefinition appDef: publishedList) {
+        Collection<AppDefinition> filteredPublishedList = new ArrayList<>();
+
+        for (AppDefinition appDef : publishedList) {
+            if (AppUtil.isAppEditableByCurrentUser(appDef)) {
+               filteredPublishedList.add(appDef);
+            }
+        }
+
+        // Get app IDs of published apps
+        Collection<String> publishedIdSet = new HashSet<>();
+        for (AppDefinition appDef : filteredPublishedList) {
             publishedIdSet.add(appDef.getAppId());
         }
-        
+
         // get list of unpublished apps
         Collection<AppDefinition> unpublishedList = new ArrayList<AppDefinition>();
         Collection<AppDefinition> appDefinitionList = appDefinitionDao.findLatestVersions(null, null, null, "name", Boolean.FALSE, null, null);
         for (Iterator<AppDefinition> i=appDefinitionList.iterator(); i.hasNext();) {
             AppDefinition appDef = i.next();
             if (!publishedIdSet.contains(appDef.getAppId())) {
-                unpublishedList.add(appDef);
+                if (AppUtil.isAppEditableByCurrentUser(appDef)) {
+                    unpublishedList.add(appDef);
+                }
             }
         }
         model.addAttribute("appDefinitionList", appDefinitionList);
-        model.addAttribute("appPublishedList", publishedList);
+        model.addAttribute("appPublishedList", filteredPublishedList);
         model.addAttribute("appUnpublishedList", unpublishedList);
         return "desktop/apps";
     }
-    
+
     @RequestMapping("/desktop/app/import")
     public String desktopAppImport() {
         return "console/apps/import";
