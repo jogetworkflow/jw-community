@@ -6429,9 +6429,7 @@ ProcessBuilder = {
             options : [
                 {value : "" , label : get_cbuilder_msg("pbuilder.label.type.role.everyone")},
                 {value : "loggedInUser" , label : get_cbuilder_msg("pbuilder.label.loggedInUser")},
-                {value : "adminUser" , label : get_cbuilder_msg("pbuilder.label.adminUser")},
-                {value : "appAdminUser" , label : get_cbuilder_msg("pbuilder.label.appAdminUser")},
-                {value : "systemAdminUser" , label : get_cbuilder_msg("pbuilder.label.systemAdminUser")}
+                {value : "adminUser" , label : get_cbuilder_msg("pbuilder.label.adminUser")}
             ],
             control_field: 'mapping_par_type',
             control_value: '',

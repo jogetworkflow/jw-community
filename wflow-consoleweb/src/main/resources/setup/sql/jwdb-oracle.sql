@@ -1712,8 +1712,6 @@ Insert into DIR_USER_ROLE (ROLEID,USERID) values ('ROLE_ADMIN','admin');
 ---------------------------------------------------
 Insert into DIR_ROLE (ID,NAME,DESCRIPTION) values ('ROLE_ADMIN','Admin','Administrator');
 Insert into DIR_ROLE (ID,NAME,DESCRIPTION) values ('ROLE_USER','User','Normal User');
-Insert into DIR_ROLE (ID,NAME,DESCRIPTION) values ('ROLE_APPADMIN','App Admin','App Administrator');
-Insert into DIR_ROLE (ID,NAME,DESCRIPTION) values ('ROLE_SYSTEMADMIN','System Admin','System Administrator');
 
 ---------------------------------------------------
 --   END DATA FOR TABLE DIR_ROLE

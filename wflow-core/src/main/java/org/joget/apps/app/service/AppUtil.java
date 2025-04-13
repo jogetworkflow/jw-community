@@ -1027,16 +1027,12 @@ public class AppUtil implements ApplicationContextAware {
     public static boolean isQuickEditEnabled() {
         String settingValue = null;
         boolean isAdmin = false;
-        boolean isSystemAdmin = false;
-        boolean isAppAdmin = false;
-
+        
         // lookup cache in request
         HttpServletRequest request = WorkflowUtil.getHttpServletRequest();
         if (request != null) {
             settingValue = (String)request.getAttribute("disableAdminBar");
             isAdmin = "true".equals(request.getAttribute("isAdmin"));
-            isSystemAdmin = "true".equals(request.getAttribute("isSystemAdmin"));
-            isAppAdmin = "true".equals(request.getAttribute("isAppAdmin"));
         }
         if (settingValue == null) {
             // get from SetupManager
@@ -1046,18 +1042,13 @@ public class AppUtil implements ApplicationContextAware {
                 settingValue = "false";
             }
             isAdmin = WorkflowUtil.isCurrentUserInRole(WorkflowUtil.ROLE_ADMIN);
-            isSystemAdmin = WorkflowUtil.isCurrentUserInRole(WorkflowUtil.ROLE_SYSTEMADMIN);
-            isAppAdmin = WorkflowUtil.isCurrentUserInRole(WorkflowUtil.ROLE_APPADMIN);
-           
             if (request != null) {
                 // cache value in request
                 request.setAttribute("disableAdminBar", settingValue);
                 request.setAttribute("isAdmin", Boolean.toString(isAdmin));
-                request.setAttribute("isSystemAdmin", Boolean.toString(isSystemAdmin));
-                request.setAttribute("isAppAdmin", Boolean.toString(isAppAdmin));
             }
         }
-        boolean enabled = !"true".equals(settingValue) && !isSystemAdmin && (isAdmin || isAppAdmin);
+        boolean enabled = !"true".equals(settingValue) && isAdmin;
         return enabled;
     }
     

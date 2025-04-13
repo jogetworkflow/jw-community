@@ -24,9 +24,7 @@ public class PackageParticipant implements Serializable {
     public static final String TYPE_ROLE = "role";
     public static final String VALUE_ROLE_ADMIN = "adminUser";
     public static final String VALUE_ROLE_LOGGED_IN_USER = "loggedInUser";
-    public static final String VALUE_ROLE_APP_ADMIN = "appAdminUser";
-    public static final String VALUE_ROLE_SYSTEM_ADMIN = "systemAdminUser";
- 
+    
     private PackageDefinition packageDefinition;
     private String packageId;
     private Long packageVersion;

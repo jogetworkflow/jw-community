@@ -19,7 +19,6 @@ import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.impl.client.LaxRedirectStrategy;
-import org.joget.apps.app.dao.AppDefinitionDao;
 import org.joget.apps.app.model.AppDefinition;
 import org.joget.apps.app.service.AppService;
 import org.joget.apps.app.service.AppUtil;
@@ -30,7 +29,6 @@ import org.joget.commons.util.ResourceBundleUtil;
 import org.joget.commons.util.SecurityUtil;
 import org.joget.commons.util.SetupManager;
 import org.joget.plugin.base.PluginManager;
-import org.joget.workflow.util.WorkflowUtil;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -56,9 +54,6 @@ public class MarketplaceController {
     
     @Autowired
     private PluginManager pluginManager;
-    
-    @Autowired
-    private AppDefinitionDao appDefinitionDao;
     
     @RequestMapping({"/desktop/marketplace/app"})
     public String marketplaceApp(ModelMap model, @RequestParam(value = "url") String url) {
@@ -119,27 +114,27 @@ public class MarketplaceController {
     @RequestMapping(value = "/json/apps/install", method = RequestMethod.POST)
     public void installMarketplaceApp(Writer writer, HttpServletRequest request, HttpServletResponse response, @RequestParam(value = "callback", required = false) String callback, @RequestParam("url") final String url) throws IOException, JSONException {
         JSONObject jsonObject = new JSONObject();
-
+        
         // validate trusted URL
         boolean trusted = validateTrustedUrl(url);
         if (!trusted) {
             response.sendError(HttpServletResponse.SC_FORBIDDEN, "Untrusted URL");
             return;
         }
-
+        
         // get URL InputStream
         HttpClientBuilder builder = HttpClients.custom().setRedirectStrategy(new LaxRedirectStrategy());
         CloseableHttpClient client = builder.build();
         InputStream in = null;
         try {
             HttpGet get = new HttpGet(url);
-
+            
             //authentication
             String marketplaceAuth = setupManager.getSettingValue("marketplaceAuth");
             if (marketplaceAuth != null && !marketplaceAuth.isEmpty()) {
                 get.setHeader("Authorization", "Basic " + SecurityUtil.decrypt(marketplaceAuth));
             }
-
+            
             HttpResponse httpResponse = client.execute(get);
             in = httpResponse.getEntity().getContent();
 
@@ -160,21 +155,14 @@ public class MarketplaceController {
                 } else {
                     // read InputStream
                     byte[] fileContent = readInputStream(in);
-
+                
                     // import app
                     final AppDefinition appDef = appService.importApp(fileContent);
                     if (appDef != null) {
-                         // Get the current user's details
-                        String currentUser = WorkflowUtil.getCurrentUsername();
-                        if (currentUser != null || !currentUser.isEmpty()) {
-                            appDef.setCreatedBy(currentUser); // Set the creator's details
-                        }
-                        
                         TransactionTemplate transactionTemplate = (TransactionTemplate)AppUtil.getApplicationContext().getBean("transactionTemplate");
                         transactionTemplate.execute(new TransactionCallback<Object>() {
                             public Object doInTransaction(TransactionStatus ts) {
                                 appService.publishApp(appDef.getId(), null);
-                                appDefinitionDao.saveOrUpdate(appDef); // Save the app definition with createdBy
                                 return false;
                             }
                         });
@@ -196,7 +184,7 @@ public class MarketplaceController {
             } catch(IOException e) {
             }
         }
-
+        
         AppUtil.writeJson(writer, jsonObject, callback);
     }
     

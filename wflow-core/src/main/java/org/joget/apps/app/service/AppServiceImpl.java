@@ -43,7 +43,6 @@ import java.util.zip.ZipInputStream;
 import java.util.zip.ZipOutputStream;
 import javax.annotation.Resource;
 import jakarta.servlet.http.HttpServletRequest;
-import java.util.Arrays;
 import org.apache.commons.collections.map.ListOrderedMap;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.StringUtils;
@@ -100,7 +99,6 @@ import org.joget.apps.form.service.FormUtil;
 import org.joget.apps.userview.model.UserviewSetting;
 import org.joget.apps.userview.service.UserviewService;
 import org.joget.apps.workflow.lib.AssignmentCompleteButton;
-import org.joget.apps.workflow.security.EnhancedWorkflowUserManager;
 import org.joget.commons.util.DynamicDataSourceManager;
 import org.joget.commons.util.FileManager;
 import org.joget.commons.util.HostManager;
@@ -113,7 +111,6 @@ import org.joget.commons.util.UuidGenerator;
 import org.joget.directory.model.Group;
 import org.joget.directory.model.User;
 import org.joget.directory.dao.GroupDao;
-import org.joget.directory.dao.UserDao;
 import org.joget.directory.model.service.DirectoryUtil;
 import org.joget.plugin.base.Plugin;
 import org.joget.plugin.base.PluginManager;
@@ -1399,15 +1396,15 @@ public class AppServiceImpl implements AppService {
     @Override
     @Transactional
     public Collection<String> createAppDefinitionFromTemplate(AppDefinition appDefinition, String templateId, String tablePrefix) {
-            Collection<String> errors = new ArrayList<String>();
-
-            // check for duplicate
+        Collection<String> errors = new ArrayList<String>();
+        
+        // check for duplicate
         String appId = appDefinition.getId();
         AppDefinition appDef = appDefinitionDao.loadById(appId);
         if (appDef != null) {
             errors.add("console.app.error.label.idExists");
         } else {
-                //download template from marketplace
+            //download template from marketplace
             byte[] zip = MarketplaceUtil.downloadTemplate(templateId);
 
             if (zip != null) {
@@ -1418,7 +1415,7 @@ public class AppServiceImpl implements AppService {
         }
         return errors;
     }
-
+    
     /**
      * Create a new app definition from template
      * @param appDefinition
@@ -1457,7 +1454,7 @@ public class AppServiceImpl implements AppService {
                 
                 //find template
                 byte[] templateConfig = getTemplateConfigFromZip(zip);
-
+        
                 //for backward compatible
                 Map<String, String> replacement = new LinkedHashMap<String, String>();
                 replacement.put("<!--disableSaveAsDraft>", "<disableSaveAsDraft>");
@@ -1470,7 +1467,7 @@ public class AppServiceImpl implements AppService {
                 replacement.put("</resourceList-->", "</resourceList>");
                 replacement.put("<!--builderDefinitionList>", "<builderDefinitionList>");
                 replacement.put("</builderDefinitionList-->", "</builderDefinitionList>");
-
+                
                 appData = StringUtil.searchAndReplaceByteContent(appData, replacement);
 
                 RegistryMatcher m = new RegistryMatcher();
@@ -1489,20 +1486,20 @@ public class AppServiceImpl implements AppService {
                 } else {
                     appData = StringUtil.searchAndReplaceFirstByteContent(appData, replacement);
                 }
-
+                
                 replacement = new LinkedHashMap<String, String>();
                 replacement.put("<appId>"+zipApp.getAppId()+"</appId>", "<appId>"+appDefinition.getAppId()+"</appId>");
                 replacement.put("/app/"+zipApp.getAppId()+"/", "/app/"+appDefinition.getAppId()+"/");
                 replacement.put("/userview/"+zipApp.getAppId()+"/", "/userview/"+appDefinition.getAppId()+"/");
                 replacement.put("app_fd_" + zipApp.getAppId() + "_pd", "app_fd_" + appDefinition.getAppId() + "_pd"); //for process enhancement process data table
-
+                
                 String prefix = findCommonTablePrefix(zipApp);
                 
                 Map<String, String> templateReplace = new LinkedHashMap<String, String>();
                 if (templateConfig != null) {
                     retrieveTemplateReplaceMap(replacement, templateReplace, prefix, tablePrefix, new JSONObject(new String(templateConfig, "UTF-8")));
                 }
-
+                
                 //replace table prefix
                 if (tablePrefix != null && !tablePrefix.isEmpty()) {
                     replacement.put("app_fd_" + prefix, "app_fd_" + tablePrefix);
@@ -1516,24 +1513,21 @@ public class AppServiceImpl implements AppService {
                 } else {
                     appData = StringUtil.searchAndReplaceByteContent(appData, replacement, 5, null); // start after name tag of appDefinition
                 }
-
+                
                 Map<String, String> replace = new HashMap<String, String>();
                 replace.put("Id=\""+zipApp.getAppId()+"\"", "Id=\""+appDefinition.getAppId()+"\"");
                 replace.put("id=\""+zipApp.getAppId()+"\"", "id=\""+appDefinition.getAppId()+"\"");
                 replace.put("Name=\""+StringUtil.escapeString(zipApp.getName(), StringUtil.TYPE_XML+";"+StringUtil.TYPE_XML)+"\"", "Name=\""+StringUtil.escapeString(appDefinition.getName(), StringUtil.TYPE_XML+";"+StringUtil.TYPE_XML)+"\"");
                 replace.put("name=\""+StringUtil.escapeString(zipApp.getName(), StringUtil.TYPE_XML+";"+StringUtil.TYPE_XML)+"\"", "name=\""+StringUtil.escapeString(appDefinition.getName(), StringUtil.TYPE_XML+";"+StringUtil.TYPE_XML)+"\"");
                 xpdl = StringUtil.searchAndReplaceFirstByteContent(xpdl, replace);
-
+                
                 if (!templateReplace.isEmpty()) {
                     xpdl = StringUtil.searchAndReplaceByteContent(xpdl, templateReplace, 3, null); //should not replace package id & name
                 }
-
+                
                 AppDefinition tempAppDef = serializer.read(AppDefinition.class, new ByteArrayInputStream(appData), false);
-                // Set the creator's details
-                String currentUser = WorkflowUtil.getCurrentUsername();
-                tempAppDef.setCreatedBy(currentUser);
                 AppDefinition newAppDef = importAppDefinition(tempAppDef, 1L, xpdl);
-
+            
                 AppResourceUtil.importFromZip(newAppDef.getAppId(), newAppDef.getVersion().toString(), zip);
                 importPlugins(zip);
                 importFormData(zip);
@@ -3012,7 +3006,6 @@ public class AppServiceImpl implements AppService {
             newAppDef.setLicense(appDef.getLicense());
             newAppDef.setDescription(appDef.getDescription());
             newAppDef.setMeta(appDef.getMeta());
-            newAppDef.setCreatedBy(appDef.getCreatedBy());
             appDefinitionDao.saveOrUpdate(newAppDef);
 
             if (appDef.getFormDefinitionList() != null) {
@@ -3583,7 +3576,7 @@ public class AppServiceImpl implements AppService {
      * @param mobileCache
      * @return
      */
-public Collection<AppDefinition> getPublishedApps(String appId, boolean mobileView, boolean mobileCache) {
+    public Collection<AppDefinition> getPublishedApps(String appId, boolean mobileView, boolean mobileCache) {
         AppDefinition orgAppDef = AppUtil.getCurrentAppDefinition();
         Collection<AppDefinition> resultAppDefinitionList = new ArrayList<AppDefinition>();
         try {
@@ -3603,40 +3596,6 @@ public Collection<AppDefinition> getPublishedApps(String appId, boolean mobileVi
             // filter based on availability and permission of userviews to run.
             for (Iterator<AppDefinition> i = appDefinitionList.iterator(); i.hasNext();) {
                 AppDefinition appDef = i.next();
-                
-		Properties appProperties = AppDevUtil.getAppDevProperties(appDef);
-                String roleAdmin = appProperties.getProperty(EnhancedWorkflowUserManager.ROLE_ADMIN);
-                String roleAdminGroup = appProperties.getProperty(EnhancedWorkflowUserManager.ROLE_ADMIN_GROUP);
-                String createdBy = appDef.getCreatedBy();
-                boolean isAppAdmin = WorkflowUtil.isCurrentUserInRole(WorkflowUserManager.ROLE_APPADMIN);
-                String currentUsername = WorkflowUtil.getCurrentUsername();
-                boolean userHasAccess = false;
-
-                if (org.springframework.util.StringUtils.hasText(roleAdmin)) {
-                    // If roleAdmin is defined, split it into individual usernames and check if the current user is in the list
-                    String[] roleAdmins = org.springframework.util.StringUtils.tokenizeToStringArray(roleAdmin, ";,", true, true);
-                    userHasAccess = Arrays.stream(roleAdmins).anyMatch(currentUsername::equalsIgnoreCase);
-                }
-
-                if (!userHasAccess && org.springframework.util.StringUtils.hasText(roleAdminGroup)) {
-                    // If user is not in roleAdmin and roleAdminGroup is defined, check group memberships
-                    String[] roleAdminGroups = org.springframework.util.StringUtils.tokenizeToStringArray(roleAdminGroup, ";,", true, true);
-                    UserDao userDao = (UserDao) AppUtil.getApplicationContext().getBean("userDao");
-                    for (String groupId : roleAdminGroups) {
-                        // Fetch users in the group and check if the current user belongs to any of these groups
-                        Collection<User> groupUsers = userDao.getUsers(null, null, null, null, groupId, null, null, null, null, null, null);
-                        userHasAccess = groupUsers.stream().anyMatch(user -> currentUsername.equalsIgnoreCase(user.getUsername()));
-                        if (userHasAccess) break; // Exit loop as soon as access is confirmed
-                    }
-                }
-
-                if (isAppAdmin && (createdBy == null || !createdBy.contains(currentUsername)) && !userHasAccess) {
-                    // Skip processing for app admins who do not match creation details and do not have explicit or group access
-                    continue;
-                }
-
-				
-                
                 AppUtil.setCurrentAppDefinition(appDef);
                 try {
                     Collection<UserviewDefinition> uvDefList = appDef.getUserviewDefinitionList();
@@ -3675,7 +3634,7 @@ public Collection<AppDefinition> getPublishedApps(String appId, boolean mobileVi
             AppUtil.setCurrentAppDefinition(orgAppDef);
         }
         return resultAppDefinitionList;
-    }
+    }    
     
     /**
      * Retrieve list of published processes available to the current user

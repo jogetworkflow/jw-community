@@ -2746,7 +2746,7 @@ CREATE TABLE `dir_role` (
 --
 
 /*!40000 ALTER TABLE `dir_role` DISABLE KEYS */;
-INSERT INTO `dir_role` VALUES ('ROLE_ADMIN','Admin','Administrator'),('ROLE_USER','User','Normal User'), ('ROLE_SYSTEMADMIN','System Admin','System Administrator'), ('ROLE_APPADMIN','App Admin','App Administrator');
+INSERT INTO `dir_role` VALUES ('ROLE_ADMIN','Admin','Administrator'),('ROLE_USER','User','Normal User');
 /*!40000 ALTER TABLE `dir_role` ENABLE KEYS */;
 
 --

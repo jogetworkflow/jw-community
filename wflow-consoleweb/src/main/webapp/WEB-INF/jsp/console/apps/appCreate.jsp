@@ -1,5 +1,4 @@
 <%@ include file="/WEB-INF/jsp/includes/taglibs.jsp" %>
-<%@ page import="org.joget.workflow.util.WorkflowUtil"%>
 
 <commons:popupHeader />
     <c:if test="${pluginOptions.size() > 0}">
@@ -108,8 +107,6 @@
             }
         </style>    
         <c:url var="url" value="" />
-        <c:set var="currentUserName" value="<%= WorkflowUtil.getCurrentUsername() %>"/>
-        <c:set var="isAppAdmin" value="<%= WorkflowUtil.isCurrentUserInRole(WorkflowUtil.ROLE_APPADMIN) %>"/>
         <form:form id="createApp" action="${pageContext.request.contextPath}/web/console/app/submit" method="POST" modelAttribute="appDefinition" cssClass="form cblockui">
             <form:errors path="*" cssClass="form-errors"/>
             <c:choose>
@@ -151,20 +148,11 @@
                     <span class="form-input">
                         <select id="copyAppId" name="copyAppId" disabled>
                             <c:forEach items="${appList}" var="app">
-                                <c:choose>
-                                    <c:when test="${isAppAdmin}">
-                                        <c:if test="${app.createdBy == currentUserName}">
-                                            <option value="${app.id}" <c:if test="${copyAppId eq app.id}">selected</c:if>><c:out value="${app.name}"/></option>
-                                        </c:if>
-                                    </c:when>
-                                    <c:otherwise>
-                                        <option value="${app.id}" <c:if test="${copyAppId eq app.id}">selected</c:if>><c:out value="${app.name}"/></option>
-                                    </c:otherwise>
-                                </c:choose>
+                                <option value="${app.id}" <c:if test="${copyAppId eq app.id}">selected</c:if>><c:out value="${app.name}"/></option>
                             </c:forEach>
                         </select>
-                    </span>
-                </div>
+                    </span>    
+                </div> 
                 <div class="form-row" id="templateView" style="display:none">
                     <label for="templateAppId"><fmt:message key="console.app.create.template"/> <span class="mandatory">*</span></label>
                     <span class="form-input">

@@ -22,12 +22,12 @@ import org.springframework.util.StringUtils;
 public class EnhancedWorkflowUserManager extends WorkflowUserManager {
 
     public static final String ROLE_SYSADMIN = "ROLE_SYSADMIN";
-    public static final String ROLE_APPDESIGNER = "ROLE_APPDESIGNER";
+    public static final String ROLE_APPADMIN = "ROLE_APPADMIN";
     public static final String ROLE_ADMIN_GROUP = "ROLE_ADMIN_GROUP";
     public static final String ROLE_ADMIN_ORG = "ROLE_ADMIN_ORG";
     
-    public static boolean checkCustomAppDesigner() {
-        boolean isAppDesigner = false;
+    public static boolean checkCustomAppAdmin() {
+        boolean isAppAdmin = false;
         AppDefinition appDef = null;
         HttpServletRequest request = WorkflowUtil.getHttpServletRequest();
         if (request != null) {
@@ -50,7 +50,7 @@ public class EnhancedWorkflowUserManager extends WorkflowUserManager {
                 }
             }
             if (appDef != null) {
-                // check for custom app designer role assignments
+                // check for custom app admin role assignments
                 Collection<String> adminUserSet = new HashSet<>();
                 Properties props = AppDevUtil.getAppDevProperties(appDef);
                 String roleAdmin = props.getProperty(ROLE_ADMIN);
@@ -70,46 +70,31 @@ public class EnhancedWorkflowUserManager extends WorkflowUserManager {
                             }
                         }
                     }
-                String currentUsername = WorkflowUtil.getCurrentUsername();
-                    isAppDesigner = adminUserSet.contains(currentUsername);
+                    String currentUsername = WorkflowUtil.getCurrentUsername();
+                    isAppAdmin = adminUserSet.contains(currentUsername);
                 }
             }
-            if (isAppDesigner) {
-                // add app designer role to session
-                String key = EnhancedWorkflowUserManager.ROLE_APPDESIGNER;
+            if (isAppAdmin) {
+                // add app admin role to session
+                String key = EnhancedWorkflowUserManager.ROLE_APPADMIN;
                 request.getSession().setAttribute(key, "true");
             }
         }
 
-        return isAppDesigner;
-    }
-
-    public static boolean isAppDesignerRole() {
-        boolean isAppDesigner = false;
-        // check session for app designer role
-        String key = EnhancedWorkflowUserManager.ROLE_APPDESIGNER;
+        return isAppAdmin;
+    }    
+    
+    public static boolean isAppAdminRole() {
+        boolean isAppAdmin = false;
+        // check session for app admin role
+        String key = EnhancedWorkflowUserManager.ROLE_APPADMIN;
         HttpServletRequest request = WorkflowUtil.getHttpServletRequest();
-        AppDefinition appDef = AppUtil.getCurrentAppDefinition(); // Assuming this fetches the current app definition.
-        String currentUsername = WorkflowUtil.getCurrentUsername();
-
-        // Set createdBy correctly
-        String createdBy = null;
-        if (appDef != null) {
-            createdBy = appDef.getCreatedBy();
-        }
-
         if (request != null && request.getSession() != null && request.getSession().getAttribute(key) != null) {
-            isAppDesigner = Boolean.valueOf((String)request.getSession().getAttribute(key));
+            isAppAdmin = Boolean.valueOf((String)request.getSession().getAttribute(key));
         }
-        
-        // remove the session attribute if the current user is the creator of the current app.
-        if (createdBy != null && createdBy.equals(currentUsername)) {
-            request.getSession().removeAttribute(key);
-        }
-
-        return isAppDesigner;
+        return isAppAdmin;        
     }
-
+    
     public static boolean isSysAdminRoleAvailable() {
         boolean isSysAdminRoleAvailable = false;
         
@@ -133,80 +118,39 @@ public class EnhancedWorkflowUserManager extends WorkflowUserManager {
     public Collection<String> getCurrentRoles() {
         String username = WorkflowUtil.getCurrentUsername();
         String key = "userRole_" + username;
-        HttpServletRequest request = WorkflowUtil.getHttpServletRequest();
-
-        // Ensure proper role reset for app switching
-        if (request != null && request.getSession() != null) {
-            String appId = getCurrentAppIdFromRequest(request);
-            String cachedAppId = (String) request.getSession().getAttribute("currentAppId");
-
-            if (appId != null && !appId.equals(cachedAppId)) {
-                // Clear app-specific roles
-                request.getSession().removeAttribute(ROLE_APPDESIGNER);
-                request.getSession().setAttribute("currentAppId", appId);
-                WorkflowUtil.writeRequestCache(key, null); // Force role recalculation
-            }
-        }
-
-        Collection<String> result = (Collection<String>) WorkflowUtil.readRequestCache(key);
+        Collection<String> result = (Collection<String>)WorkflowUtil.readRequestCache(key);
         if (result != null) {
             return result;
         }
-
+        
         Collection<String> roles = super.getCurrentRoles();
 
         // check for sys admin role, add if not in db
         if (roles.contains(ROLE_ADMIN) && !EnhancedWorkflowUserManager.isSysAdminRoleAvailable()) {
             roles.add(ROLE_SYSADMIN);
         }
-
-        // add app designer role configured for specific users, should not check for admin & anonymous user
-        if (!roles.contains(ROLE_ADMIN) && !isCurrentUserAnonymous() && EnhancedWorkflowUserManager.checkCustomAppDesigner()) {
+        
+        // add app admin role configured for specific users, should not check for admin & anonymous user
+        if (!roles.contains(ROLE_ADMIN) && !isCurrentUserAnonymous() && EnhancedWorkflowUserManager.checkCustomAppAdmin()) {
             roles.add(ROLE_ADMIN);
         }
-
-        // grant admin role to users with app admin or system admin roles.
-        if (roles.contains(ROLE_APPADMIN) || roles.contains(ROLE_SYSTEMADMIN)) {
-            roles.add(ROLE_ADMIN);
-        }
-
-        if (EnhancedWorkflowUserManager.isAppDesignerRole()) {
-            roles.add(EnhancedWorkflowUserManager.ROLE_APPDESIGNER);
+        if (EnhancedWorkflowUserManager.isAppAdminRole()) {
+            roles.add(EnhancedWorkflowUserManager.ROLE_APPADMIN);
 
             // set admin role for backward compatibility on plugin webService calls checking for ROLE_ADMIN
+            HttpServletRequest request = WorkflowUtil.getHttpServletRequest();            
             String url = (String)request.getAttribute("jakarta.servlet.forward.request_uri");
             if (url == null || url.isEmpty()) {
                 url = request.getRequestURI();
             }
             if (url.startsWith(request.getContextPath() + "/web/json/plugin/")) {
-                roles.add(ROLE_ADMIN);
+                roles.add(ROLE_ADMIN);                
             }
         }
-
+        
         WorkflowUtil.writeRequestCache(key, roles);
 
         return roles;
-    }
-
-    private String getCurrentAppIdFromRequest(HttpServletRequest request) {
-        if (request == null) {
-            return null;
-        }
-
-        String url = (String) request.getAttribute("jakarta.servlet.forward.request_uri");
-        if (url == null || url.isEmpty()) {
-            url = request.getRequestURI();
-        }
-
-        String pattern = request.getContextPath() + "\\/web\\/(userview|embed\\/userview|console\\/app|json\\/console\\/app|json\\/app)\\/(.*)\\/(.*)";
-        Matcher m = Pattern.compile(pattern).matcher(url);
-        if (m.find()) {
-            String appPath = m.group(2);
-            String[] appPathElements = appPath.split("/");
-            return appPathElements[0]; // First element is the app ID
-        }
-
-        return null;
     }
 
 }
