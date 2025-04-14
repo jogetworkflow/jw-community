@@ -62,6 +62,8 @@ jmexpander {
     border-width: 1px;
     border-style: solid;
     cursor: pointer;
+    font-family: sans-serif;
+    box-sizing: content-box;
 }
 
 .jmnode-overflow-wrap jmnodes {
