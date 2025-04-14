@@ -1744,6 +1744,10 @@ form.form .btn {
     border-radius: 0.25rem !important;
 }
 
+#main-body-message.form-errors{
+    margin-bottom: 0px !important;
+}
+
 .form-error-message {
     color: #dc3847;
     display: block;
