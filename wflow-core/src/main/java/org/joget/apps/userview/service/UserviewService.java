@@ -497,7 +497,7 @@ public class UserviewService {
             requestParameters.put("appId", appDef.getAppId());
             requestParameters.put("appVersion", appDef.getVersion().toString());
                     
-            if ("BUILDER_PREVIEW".equals(userviewId)) { //used by builder preview
+            if ("BUILDER_PREVIEW".equals(userviewId) || "BUILDER_PREVIEW_DARK".equals(userviewId) ) { //used by builder preview
                 Userview userview = new Userview();
                 
                 theme = new AjaxUniversalTheme();

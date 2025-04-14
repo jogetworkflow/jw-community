@@ -42,7 +42,11 @@ JPopup = {
     show : function (id, url, params, title, width, height, action) {
         try {
             if (parent && parent.UI !== undefined && window.frameElement !== null) {
-                $("html").css("background", "#fff");
+                htmlbcolor = "#fff";
+                if ($("body").hasClass("dark-mode")) {
+                    htmlbcolor = "#151521";
+                }
+                $("html").css("background", htmlbcolor);
                 parent.UI.maxIframe(window.frameElement.id);
             }
         } catch (err) {}
