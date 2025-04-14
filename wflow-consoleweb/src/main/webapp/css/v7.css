@@ -829,7 +829,7 @@ body .flexigrid .pReload span:before {
     content: "\f2f1";
 }
 body .flexigrid div.nBtn{
-    height: 34px;
+    height: 39px;
     background: #ecf0f1;
     box-sizing: border-box;
     padding-top: 5px;

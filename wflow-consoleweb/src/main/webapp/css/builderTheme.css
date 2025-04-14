@@ -1518,6 +1518,7 @@ body .flexigrid div.bDiv td div{
 body[builder-theme] .flexigrid div.hDiv {
     border: 1px solid var(--theme-border-color-1);
     border-bottom: 0px;
+    height: 42px;
 }
 body[builder-theme] .flexigrid div.pDiv {
     border: 1px solid var(--theme-border-color-1);
@@ -1724,6 +1725,7 @@ body[builder-theme] button[onclick*="deleteVersion"]:before{
 body[builder-theme] .flexigrid div.nBtn {
     height: 42px;
     border-bottom: 1px solid var(--theme-border-color-1);
+    border-top: 1px solid var(--theme-border-color-1);
 }
 body[builder-theme].popupBody{
     font-family: -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,"Noto Sans",sans-serif,"Apple Color Emoji","Segoe UI Emoji","Segoe UI Symbol","Noto Color Emoji";
