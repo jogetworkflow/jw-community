@@ -1182,6 +1182,10 @@ public class AppUtil implements ApplicationContextAware {
                                 String js = v5Theme.getJs(data);
 
                                 String html = jsCssLib;
+                                
+                                if ("BUILDER_PREVIEW_DARK".equals(uId)){
+                                    html += "<link rel=\"stylesheet\" href=\"" + request.getContextPath() + "/wro/darkTheme.css\"></link>\n";
+                                }
 
                                 if (js != null && !js.isEmpty()) {
                                     html += "<script type=\"text/javascript\">\n" + js + "\n</script>";

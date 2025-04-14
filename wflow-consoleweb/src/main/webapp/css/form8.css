@@ -1677,3 +1677,7 @@ body.rtl .subform-cell > label.label{
 .numeric_field_controls.disabled{
     display: none;
 }
+body.popupBody.builder-popup .form-section-title,
+body.popupBody.builder-popup .subform-section-title{
+    margin-bottom: 15px;
+}

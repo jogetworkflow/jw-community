@@ -10,7 +10,7 @@
 <c:set var="systemTheme" value='<%= AppUtil.getSystemTheme() %>'/>
 <c:if test="${empty title}"><c:set var="title"><fmt:message key="console.header.browser.title"/></c:set></c:if>
 
-<c:if test="${param.__u_ eq '_builder_dark_mode'}">
+<c:if test="${param.__u_ eq '_builder_dark_mode' or param.__u_ eq 'BUILDER_PREVIEW_DARK'}">
     <c:set var="bodyCssClass" value="${bodyCssClass} dark-mode"/>
 </c:if>
 

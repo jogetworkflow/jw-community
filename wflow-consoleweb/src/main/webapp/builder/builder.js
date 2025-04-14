@@ -201,7 +201,7 @@ _CustomBuilder = {
         history.pushState({url: url}, "", url);
     },
     
-    ajaxRenderBuilder: function(url) {
+    ajaxRenderBuilder: function(url, skipPushState = false) {
         HelpGuide.hide();
         
         $("#builder-quick-nav #builder-menu ul #appNotExist").hide();
@@ -282,7 +282,9 @@ _CustomBuilder = {
                 redirect = true;
                 return false;
             } else {
-                history.pushState({url: response.url+hash}, "", response.url+hash); //handled redirected URL
+                if(!skipPushState) {
+                    history.pushState({url: response.url+hash}, "", response.url+hash); //handled redirected URL
+                }
                 return response.text();
             }
         })
@@ -415,10 +417,8 @@ _CustomBuilder = {
     initBuilder: function (callback) {
         if (!CustomBuilder.isAjaxReady) {
             window.onpopstate = function(event) {
-                if (event.state) {
-                    var url = event.state.url;
-                    CustomBuilder.ajaxRenderBuilder(url);
-                }
+                var url = (event.state && event.state.url) ? event.state.url : window.location.href;
+                CustomBuilder.ajaxRenderBuilder(url, true); // when skipPushState is true, history.pushState won't be done
             };
             window.onbeforeunload = function() {
                 if(!CustomBuilder.isSaved()){

@@ -104,7 +104,8 @@
 		border-left: 1px solid #ccc;
 		top: 0px;
 		left: 0px;
-		margin-top: 1px;
+                border-top: 1px solid #ccc;
+                border-bottom: 1px solid #ccc;
 		cursor: pointer;
 		display: none;
 		}
@@ -273,6 +274,8 @@
 	border: 1px solid #ccc;
 	border-bottom: 0px;
 	overflow: hidden;
+        height: 39px;
+        box-sizing: border-box;
 	}
 
 .flexigrid div.hDiv table

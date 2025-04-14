@@ -2215,3 +2215,17 @@ a.fc-daygrid-day-number:not(:hover) {
 .breadcrumb li a:not(:hover) {
     text-decoration: none;
 }
+body.popupBody.builder-popup #main-body-header{
+    background: #394249;
+    color: #fff;
+    padding: 15px;
+    position: fixed;
+    text-transform: uppercase;
+    font-size: 16px;
+    font-weight: bold;
+    top: 0;
+    left: 0;
+    width: 100%;
+    box-sizing: border-box;
+    z-index: 1000;
+}

@@ -44,7 +44,7 @@
         <script type="text/javascript">
             UI.base = "${pageContext.request.contextPath}";
             UI.userview_app_id = '<c:out value="${appId}"/>';
-            UI.userview_id = 'BUILDER_PREVIEW';
+            UI.userview_id = 'BUILDER_PREVIEW<c:if test="${theme == 'dark'}">_DARK</c:if>';
             
             var reloadForm = function() {
                 $('#form-preview').submit();

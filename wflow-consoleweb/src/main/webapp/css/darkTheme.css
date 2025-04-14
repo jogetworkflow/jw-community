@@ -839,7 +839,6 @@ body.dark-mode .is-selected .pika-button{
 body.dark-mode .numeric_field_control{
     filter: brightness(0) saturate(100%) invert(60%) sepia(11%) saturate(339%) hue-rotate(196deg) brightness(101%) contrast(95%);
 }
-
 body.dark-mode .signature-pad--actions{
     background-color: var(--theme-heading-bg);
 }
@@ -874,4 +873,19 @@ body.dark-mode .signature-pad--exportOptions option {
 body.dark-mode .signature-pad--body.fullscreen-active .signature-pad--actions,
 body.dark-mode .signature-pad--body.fullscreen-active {
     background-color: var(--theme-background);
+}
+body.dark-mode .grid table tr:hover td.grid-action-cell a.grid-action-delete{
+    color: #dc3545 !important;
+}
+body.dark-mode .htContextMenu table tbody tr td.current,
+body.dark-mode .htContextMenu table tbody tr td.zeroclipboard-is-hover,
+body.dark-mode .htContextMenu table tbody tr td.htDisabled:hover{
+    background-color: #212e48;
+}
+body.rtl.dark-mode input[type=checkbox]:checked::after,
+body.rtl.dark-mode input[type=radio]:checked::after{
+    left:-5px;
+}
+body.dark-mode .chosen-choices li.search-field input[type="text"]:focus{
+    outline: none !important;
 }
