@@ -129,7 +129,9 @@ body.rtl .flexigrid div.nDiv{
     width: 100px !important;
 }
 body.rtl .flexigrid div.nBtn{
-    height: 36px !important;
+    height: 39px !important;
+    border-left: 0px;
+    border-right: 1px solid #ccc;
 }
 body.rtl .flexigrid div.nDiv td.ndcol1{
     border-left: 1px solid #ccc;
@@ -142,6 +144,10 @@ body.rtl .flexigrid div.nDiv td.ndcol2{
 body.rtl .flexigrid div.hDiv th, body.rtl .flexigrid div.bDiv td{
     border-right: 1px solid #fff !important;
     border-left: 1px solid #ddd !important;
+}
+body.rtl .flexigrid div.hDiv table{
+    border-right: 0px;
+    border-left: 1px solid #fff;
 }
 /* plugin */
 .property-editor-container input + input,
