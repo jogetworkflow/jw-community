@@ -55,8 +55,8 @@ public class AuditTrailManagerImpl implements AuditTrailManager {
      * Used by system to clear audit trail plugin cache
      */
     public void clean() {
-        pluginList.set(null);
-        pluginPropertiesList.set(new HashMap<String, List<Map>>());
+        pluginList.remove();     
+        pluginPropertiesList.remove();    
     }
 
     /**
@@ -191,7 +191,7 @@ public class AuditTrailManagerImpl implements AuditTrailManager {
                     }
                 }
             } finally {
-                executePluginInProgress.set(null);
+                executePluginInProgress.remove(); 
             }
         }
     }

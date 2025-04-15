@@ -1734,7 +1734,7 @@ public class FormUtil implements ApplicationContextAware {
      */
     public static void clearProcessedFormJson() {
         if (processedFormJson != null && processedFormJson.get() != null) {
-            processedFormJson.set(null);
+            processedFormJson.remove();
         }
     }
     

@@ -555,6 +555,15 @@ public class PluginManager implements ApplicationContextAware {
     public void clearCache() {
         getCache().clearCache();
     }
+    
+    /**
+     * Retrieve the cache last cleared date
+     * 
+     * @return 
+     */
+    public Date lastClearedCache() {
+        return getCache().getLastCleared();
+    }
 
     protected boolean startBundle(Bundle bundle) {
         try {

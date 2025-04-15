@@ -55,6 +55,26 @@
                                 } catch (err) {}
                                 inst.dpDiv.css({"z-index":(orizindex + 200)});
                             }, 100);
+
+                            // Reposition datepicker to bottom of input field
+                            // Get offset and height value of input box
+                            // Get width of the datepicker and device frame
+                            const input_offset = $(input).offset();
+                            const input_height = $(input).outerHeight();
+                            const dp_width = inst.dpDiv.outerWidth();
+                            const window_width = $(window).width();
+                            // Determine the left position
+                            let left_position = input_offset.left;
+                            if ((left_position+dp_width) > (window_width-5)) {
+                                left_position = window_width - dp_width - 10;
+                            }
+                            // Delay 10ms to make sure it is fully repositioned
+                            setTimeout(function() {
+                                inst.dpDiv.css({
+                                    top: input_offset.top + input_height + "px",
+                                    left: left_position + "px"
+                                });
+                            }, 10);
                         };
                         o.onClose = function(selectedDate) {
                             $(element).removeClass("popup-picker");
