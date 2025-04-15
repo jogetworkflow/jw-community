@@ -96,7 +96,9 @@ public class OrphanedFormDataCheck extends GovHealthCheckAbstract {
             //handle custom added form data table
             if (appDef.getBuilderDefinitionList() != null) {
                 for (BuilderDefinition c : appDef.getBuilderDefinitionList()) {
-                    if (c.getType().equals(CustomFormDataTableUtil.TYPE) && tables.contains(c.getName())) {
+                    if (c.getType() != null
+                            && c.getType().equals(CustomFormDataTableUtil.TYPE) 
+                            && tables.contains(c.getName())) {
                         tables.remove(c.getName());
                     }
                 }
@@ -115,7 +117,9 @@ public class OrphanedFormDataCheck extends GovHealthCheckAbstract {
             //handle custom added form data table
             if (appDef.getBuilderDefinitionList() != null) {
                 for (BuilderDefinition c : appDef.getBuilderDefinitionList()) {
-                    if (c.getType().equals(CustomFormDataTableUtil.TYPE) && tables.contains(c.getName())) {
+                    if (c.getType() != null 
+                            && c.getType().equals(CustomFormDataTableUtil.TYPE) 
+                            && tables.contains(c.getName())) {
                         tables.remove(c.getName());
                     }
                 }
