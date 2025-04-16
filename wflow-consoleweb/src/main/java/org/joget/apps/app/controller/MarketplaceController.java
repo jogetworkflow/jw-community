@@ -164,17 +164,10 @@ public class MarketplaceController {
                     // import app
                     final AppDefinition appDef = appService.importApp(fileContent);
                     if (appDef != null) {
-                         // Get the current user's details
-                        String currentUser = WorkflowUtil.getCurrentUsername();
-                        if (currentUser != null || !currentUser.isEmpty()) {
-                            appDef.setCreatedBy(currentUser); // Set the creator's details
-                        }
-                        
                         TransactionTemplate transactionTemplate = (TransactionTemplate)AppUtil.getApplicationContext().getBean("transactionTemplate");
                         transactionTemplate.execute(new TransactionCallback<Object>() {
                             public Object doInTransaction(TransactionStatus ts) {
                                 appService.publishApp(appDef.getId(), null);
-                                appDefinitionDao.saveOrUpdate(appDef); // Save the app definition with createdBy
                                 return false;
                             }
                         });

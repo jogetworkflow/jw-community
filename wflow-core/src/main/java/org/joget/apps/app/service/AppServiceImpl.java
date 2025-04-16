@@ -3012,7 +3012,13 @@ public class AppServiceImpl implements AppService {
             newAppDef.setLicense(appDef.getLicense());
             newAppDef.setDescription(appDef.getDescription());
             newAppDef.setMeta(appDef.getMeta());
-            newAppDef.setCreatedBy(appDef.getCreatedBy());
+            
+            // set the creator to the one who imported the app
+            String currentUser = WorkflowUtil.getCurrentUsername();
+            if (currentUser != null || !currentUser.isEmpty()) {
+                newAppDef.setCreatedBy(currentUser); // Set the creator's details
+            }
+            
             appDefinitionDao.saveOrUpdate(newAppDef);
 
             if (appDef.getFormDefinitionList() != null) {
