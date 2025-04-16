@@ -287,7 +287,7 @@ AppBuilder = {
         }
         
         //add marketplace seemless install link
-        container.append('<div class="builder-type builder-marketplace"><a href="#" class="marketplaceLink" onclick="CustomBuilder.Builder.loadSeamlessMarketplace()">' + get_cbuilder_msg("cbuilder.seamless.marketplace.more.plugin") + '</a></div>');
+        container.append('<div class="builder-type builder-marketplace"><a class="marketplaceLink btn btn-link" onclick="CustomBuilder.Builder.loadSeamlessMarketplace()">' + get_cbuilder_msg("cbuilder.seamless.marketplace.more.plugin") + '</a></div>');
         $("#builders-seperator").append("<span></span>");
         $("#builder_canvas").css("opacity", "1");
         
