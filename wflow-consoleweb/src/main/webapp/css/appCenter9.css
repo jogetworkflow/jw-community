@@ -449,6 +449,9 @@ a.fs-4.text-dark.fw-bold.text-hover-primary.text-dark.lh-base.commuLabel {
     .header-nav a.btn{
         padding: 0 10px;
     }
+    #homeContent .addNew{
+        margin-top: -38px;
+    }
 }
 @media (min-width: 420px) and (max-width: 767px) {
     #design_app .cards.row .p-2 {
@@ -749,6 +752,9 @@ body.dark-mode  .dataList#dataList_applist .column_2 {
 .addNew.dropdown .dropdown-menu a:hover{
     background-color: rgba(0, 0, 0, 0.04) !important;
 }
+body.quickEditModeActive .addNew:after{
+    display: none; /*should not have quick edit on this button, caused by wrong css class*/
+}
 #customSearchInput,
 #customSearchButton {
     transition: all 0.3s ease;
@@ -996,6 +1002,7 @@ header.navbar .container-fluid{
     }
     body#home #bannerImage{
         border-radius: 0px !important;
+        z-index: -1;
     }
     body#home #homeContent{
         padding-inline: 40px;
@@ -1121,16 +1128,3 @@ body.rtl form[name='filters_list_appList'].filter_form {
     display: flex;
 }
 /* END custom search styles */
-/* Fix for Analyzer Label & Add New Border Issue in the Home screen */
-@media screen and (max-width: 1024px) {
-    body#home div#content div.analyzer-label:first-of-type {
-        left:5px;
-    }
-}
-body#home.quickEditModeActive main div.addNew {
-    position: absolute;
-}
-body#home.quickEditModeActive main div.addNew::after {
-    border: none;
-}
-/* END of Fix */
