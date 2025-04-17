@@ -356,7 +356,7 @@ public class StringUtil {
                 String [] temps = inStr.split(newSeparator);
                 inStr = StringUtils.join(temps, ";");
             } else if (f != null && f.startsWith(TYPE_DECIMAL)) {
-                inStr = inStr;
+                // TODO: Implement logic for TYPE_DECIMAL if required
             } 
         }
         

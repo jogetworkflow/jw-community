@@ -509,6 +509,11 @@ body .filter-cell .form-button {
     color: #F00;
 }
 
+.slatooltip {
+    position: absolute;
+    z-index: 99999; /* Ensure tooltip is always on top */
+}
+
 .pagelinks .pc{
     display:inline-block;
     width:20px;

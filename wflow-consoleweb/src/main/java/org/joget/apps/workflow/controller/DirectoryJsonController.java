@@ -135,7 +135,6 @@ public class DirectoryJsonController {
                 data.put("id", department.getId());
                 data.put("name", department.getName());
                 data.put("description", department.getDescription());
-                data.put("description", department.getDescription());
                 data.put("organization.name", (department.getOrganization() != null) ? department.getOrganization().getName() : "");
                 data.put("parent.name", (department.getParent() != null) ? department.getParent().getName() : "");
                 jsonObject.accumulate("data", data);
