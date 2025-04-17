@@ -8,6 +8,7 @@
 }
 .lf-element-text {
   cursor: text;
+  font-family: "Inter", sans-serif !important;
 }
 .lf-text-disabled {
   pointer-events: none;
@@ -121,8 +122,13 @@
   width: 100%;
   line-height: 1.2;
   text-align: center;
-  word-break: break-all;
   background: transparent;
+  display: -webkit-box;
+  -webkit-line-clamp: 2; /* Limits to 2 lines */
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  line-height: 1.4 !important;
 }
 .lf-node-text-ellipsis-content {
   width: 100%;
@@ -136,6 +142,7 @@
 .lf-node-text-ellipsis-content > div {
   overflow: hidden;
   text-overflow: ellipsis;
+  font-family: "Inter", sans-serif !important;
 }
 /* tool-overlay */
 .lf-tool-overlay {
@@ -208,3 +215,4 @@
 .lf-resize-control-w {
   cursor: w-resize;
 }
+

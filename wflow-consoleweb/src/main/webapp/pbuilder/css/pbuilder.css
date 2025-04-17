@@ -47,3 +47,28 @@ body#cbuilder.default-builder #process-selector + #builder_canvas #iframe-wrappe
     margin-bottom: 0;
     color: white;
 }
+svg.previewForm:hover{
+    fill: rgb(24, 125, 255) !important;
+    cursor: pointer;
+    transform: scale(1.1);
+    transition: all 0.2s ease-in-out;
+}
+.lf-node-text-auto-wrap {
+    font-family: "Inter", sans-serif !important;
+}
+
+body[builder-theme='dark'] .lf-background-area {
+    background-color: var(--theme-primary-color-1) !important;
+}
+
+body[builder-theme='dark'] .lf-mini-map {
+    background: var(--theme-primary-color-1);
+}
+
+body[builder-theme='dark'] .lf-mini-map .lf-graph {
+    background: var(--theme-primary-color-2);
+}
+
+body[builder-theme='dark'] .lf-minimap-viewport {
+    background-color: rgb(203 198 198 / 24%);
+}

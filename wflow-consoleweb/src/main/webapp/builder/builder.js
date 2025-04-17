@@ -4002,7 +4002,8 @@ _CustomBuilder.Builder = {
             "renderNodeAddtionalData" : "",
             "afterRenderNodeAdditional" : "",
             "beforeRenderNodeAdditional" : "",
-            "changeNodeAddtionalTarget" : ""
+            "changeNodeAddtionalTarget" : "",
+            "modifyShowPropertiesData" : ""
         }
     },
     options : {},
@@ -4993,13 +4994,8 @@ _CustomBuilder.Builder = {
             
             self.selectedEl = target;
             var data = target.data("data");
-            if (!data) {
-                data = target[0].data.properties;
-                data = {
-                    className: data.className,
-                    properties: data,
-                    xpdlObj: data.xpdlObj
-                };
+            if (CustomBuilder.Builder.options.callbacks["modifyShowPropertiesData"] !== undefined && CustomBuilder.Builder.options.callbacks["modifyShowPropertiesData"] !== "") {
+                data = CustomBuilder.callback(CustomBuilder.Builder.options.callbacks["modifyShowPropertiesData"], [data, target]);
             }
 
             self.selectedElData = data;

@@ -356,7 +356,7 @@ ProcessBuilder = {
                             }
                         }, [
                             h('i', {
-                                className: 'previewForm las la-file-alt',
+                                className: 'las la-file-alt previewForm',
                                 formId: mapping_act_formId,
                                 'data-cbuilder-action': 'previewForm'
                             })
@@ -371,7 +371,7 @@ ProcessBuilder = {
             // Custom node appearance
             getShape() {
                 const { model } = this.props;
-                const { x, y, width, height, radius, properties, isHovered, isSelected} = model;
+                const { id, x, y, width, height, radius, properties, isHovered, isSelected} = model;
                 const { tools } = properties;
         
                 const newWidth = 120;
@@ -441,7 +441,8 @@ ProcessBuilder = {
                     height: height,
                     opacity: 1
                 });
-        
+                
+                $('#' + id + ' i').removeClass().addClass(iconClass + ' svg2Icon');
                 // Return the shape with the custom icon and label
                 return h('g', {id: model.id, class: 'node ' + properties.className, 
                     'data-cbuilder-visible': true,
@@ -491,7 +492,7 @@ ProcessBuilder = {
                                 },
                                 [
                                     h('i', {
-                                        className: iconClass,
+                                        className: iconClass + ' svg2Icon',
                                         opacity
                                     }),
         
@@ -960,9 +961,9 @@ ProcessBuilder = {
 
                 style.opacity = opacity;
                 style.fontSize = 12;
-                style.overflowMode = 'ellipsis';
+                style.overflowMode = 'autowrap';
                 style.lineHeight = 1.2;
-                style.width = '100px';
+                style.width = '70px';
                 const { isClicked } = this.properties;
                 style.color = isClicked ? 'red' : '#000000';
                 return style;
@@ -1007,18 +1008,22 @@ ProcessBuilder = {
 
             // Customize the style attributes of the node outline box
             getOutlineStyle() {
+                const { danger } = this.properties;
                 const style = super.getOutlineStyle();
-                style.stroke = '#4285f4';
-                style.fill = 'rgba(66, 133, 244, 0.1)';
                 style.strokeWidth = 2;
                 style.strokeDasharray = '0';
                 style.rx = '10';
-                if (!style.hover) {
-                    style.hover = {};
-                    style.fill = {};
+                if (danger) {
+                    style.stroke = '#FF4D4F ';
+                    style.fill = 'rgba(255, 77, 79, 0.1)';
+                    style.hover.stroke = '#FF4D4F';
+                    style.hover.fill = 'rgba(255, 77, 79, 0.1)';
+                } else {
+                    style.stroke = '#4285f4';
+                    style.fill = 'rgba(66, 133, 244, 0.1)';
+                    style.hover.stroke = '#54c5fc';
+                    style.hover.fill = 'rgba(255, 255, 255, 0.1)';
                 }
-                style.hover.stroke = '#54c5fc';
-                style.hover.fill = 'rgba(255, 255, 255, 0.1)';
             
                 return style;
             }
@@ -1047,8 +1052,8 @@ ProcessBuilder = {
                 
                 style.opacity = opacity;
                 style.fontSize = 12;
-                style.overflowMode = 'ellipsis';
-                style.width = '100px';
+                style.overflowMode = 'autowrap';
+                style.width = '70px';
                 style.lineHeight = 1.2;
                 style.fontWeight = 500;
                 style.color = '#386f5c';
@@ -1064,7 +1069,12 @@ ProcessBuilder = {
                 } else {
                     style.stroke = '#386f5c';
                 }
-                style.fill = '#ebfdf2';
+                if ($('body').attr('builder-theme') === 'dark') {
+                    style.fill = '#c0eed2';
+                } else {
+                    style.fill = '#ebfdf2';
+                }
+                
                 style.strokeWidth = '1';
                 style.rx = '18';
                 return style;
@@ -1094,22 +1104,24 @@ ProcessBuilder = {
 
             // Customize the style attributes of the node outline box
             getOutlineStyle() {
+                const { danger } = this.properties;
                 const style = super.getOutlineStyle();
-            
                 style.stroke = '#4285f4';
                 style.fill = 'rgba(66, 133, 244, 0.1)';
                 style.strokeWidth = 2;
                 style.strokeDasharray = '0';
                 style.rx = '10';
-            
-                // Ensure hover effect is defined correctly
-                if (!style.hover) {
-                    style.hover = {};
-                    style.fill = {};
+                if (danger) {
+                    style.stroke = '#FF4D4F ';
+                    style.fill = 'rgba(255, 77, 79, 0.1)';
+                    style.hover.stroke = '#FF4D4F';
+                    style.hover.fill = 'rgba(255, 77, 79, 0.1)';
+                } else {
+                    style.stroke = '#4285f4';
+                    style.fill = 'rgba(66, 133, 244, 0.1)';
+                    style.hover.stroke = '#54c5fc';
+                    style.hover.fill = 'rgba(255, 255, 255, 0.1)';
                 }
-                style.hover.stroke = '#54c5fc';
-                style.hover.fill = 'rgba(255, 255, 255, 0.1)';
-            
                 return style;
             }
         }
@@ -1137,9 +1149,9 @@ ProcessBuilder = {
                 
                 style.opacity = opacity;
                 style.fontSize = 12;
-                style.overflowMode = 'ellipsis';
+                style.overflowMode = 'autowrap';
                 style.lineHeight = 1.2;
-                style.width = '100px';
+                style.width = '70px';
                 const { isClicked } = this.properties;
                 style.color = isClicked ? 'red' : '#000000';
                 return style;
@@ -1184,6 +1196,7 @@ ProcessBuilder = {
 
             // Customize the style attributes of the node outline box
             getOutlineStyle() {
+                const { danger } = this.properties;
                 const style = super.getOutlineStyle();
             
                 style.stroke = '#4285f4';
@@ -1192,13 +1205,17 @@ ProcessBuilder = {
                 style.strokeDasharray = '0';
                 style.rx = '10';
             
-                // Ensure hover effect is defined correctly
-                if (!style.hover) {
-                    style.hover = {};
-                    style.fill = {};
+                if (danger) {
+                    style.stroke = '#FF4D4F ';
+                    style.fill = 'rgba(255, 77, 79, 0.1)';
+                    style.hover.stroke = '#FF4D4F';
+                    style.hover.fill = 'rgba(255, 77, 79, 0.1)';
+                } else {
+                    style.stroke = '#4285f4';
+                    style.fill = 'rgba(66, 133, 244, 0.1)';
+                    style.hover.stroke = '#54c5fc';
+                    style.hover.fill = 'rgba(255, 255, 255, 0.1)';
                 }
-                style.hover.stroke = '#54c5fc';
-                style.hover.fill = 'rgba(255, 255, 255, 0.1)';
             
                 return style;
             }
@@ -1227,7 +1244,7 @@ ProcessBuilder = {
                 
                 style.opacity = opacity;
                 style.fontSize = 12;
-                style.overflowMode = 'ellipsis';
+                style.overflowMode = 'autowrap';
                 style.lineHeight = 1.2;
                 const { isClicked } = this.properties;
                 style.color = isClicked ? 'red' : '#000000';
@@ -1272,22 +1289,22 @@ ProcessBuilder = {
 
             // Customize the style attributes of the node outline box
             getOutlineStyle() {
+                const { danger } = this.properties;
                 const style = super.getOutlineStyle();
-            
-                style.stroke = '#4285f4';
-                style.fill = 'rgba(66, 133, 244, 0.1)';
                 style.strokeWidth = 2;
                 style.strokeDasharray = '0';
                 style.rx = '25';
-            
-                // Ensure hover effect is defined correctly
-                if (!style.hover) {
-                    style.hover = {};
-                    style.fill = {};
+                if (danger) {
+                    style.stroke = '#FF4D4F ';
+                    style.fill = 'rgba(255, 77, 79, 0.1)';
+                    style.hover.stroke = '#FF4D4F';
+                    style.hover.fill = 'rgba(255, 77, 79, 0.1)';
+                } else {
+                    style.stroke = '#4285f4';
+                    style.fill = 'rgba(66, 133, 244, 0.1)';
+                    style.hover.stroke = '#54c5fc';
+                    style.hover.fill = 'rgba(255, 255, 255, 0.1)';
                 }
-                style.hover.stroke = '#54c5fc';
-                style.hover.fill = 'rgba(255, 255, 255, 0.1)';
-            
                 return style;
             }
         }
@@ -1315,7 +1332,7 @@ ProcessBuilder = {
                 
                 style.opacity = opacity;
                 style.fontSize = 12;
-                style.overflowMode = 'ellipsis';
+                style.overflowMode = 'autowrap';
                 style.lineHeight = 1.2;
                 const { isClicked } = this.properties;
                 style.color = isClicked ? 'red' : '#000000';
@@ -1359,22 +1376,22 @@ ProcessBuilder = {
 
             // Customize the style attributes of the node outline box
             getOutlineStyle() {
+                const { danger } = this.properties;
                 const style = super.getOutlineStyle();
-            
-                style.stroke = '#4285f4';
-                style.fill = 'rgba(66, 133, 244, 0.1)';
                 style.strokeWidth = 2;
                 style.strokeDasharray = '0';
                 style.rx = '10';
-            
-                // Ensure hover effect is defined correctly
-                if (!style.hover) {
-                    style.hover = {};
-                    style.fill = {};
+                if (danger) {
+                    style.stroke = '#FF4D4F ';
+                    style.fill = 'rgba(255, 77, 79, 0.1)';
+                    style.hover.stroke = '#FF4D4F';
+                    style.hover.fill = 'rgba(255, 77, 79, 0.1)';
+                } else {
+                    style.stroke = '#4285f4';
+                    style.fill = 'rgba(66, 133, 244, 0.1)';
+                    style.hover.stroke = '#54c5fc';
+                    style.hover.fill = 'rgba(255, 255, 255, 0.1)';
                 }
-                style.hover.stroke = '#54c5fc';
-                style.hover.fill = 'rgba(255, 255, 255, 0.1)';
-            
                 return style;
             }
         }
@@ -1398,7 +1415,7 @@ ProcessBuilder = {
                 
                 style.opacity = opacity;
                 style.fontSize = 12;
-                style.overflowMode = 'ellipsis';
+                style.overflowMode = 'autowrap';
                 style.lineHeight = 1.2;
                 const { isClicked } = this.properties;
                 style.color = isClicked ? 'red' : '#000000';
@@ -1435,22 +1452,22 @@ ProcessBuilder = {
 
             // Customize the style attributes of the node outline box
             getOutlineStyle() {
+                const { danger } = this.properties;
                 const style = super.getOutlineStyle();
-            
-                style.stroke = '#4285f4';
-                style.fill = 'rgba(66, 133, 244, 0.1)';
                 style.strokeWidth = 2;
                 style.strokeDasharray = '0';
                 style.rx = '25';
-            
-                // Ensure hover effect is defined correctly
-                if (!style.hover) {
-                    style.hover = {};
-                    style.fill = {};
+                if (danger) {
+                    style.stroke = '#FF4D4F ';
+                    style.fill = 'rgba(255, 77, 79, 0.1)';
+                    style.hover.stroke = '#FF4D4F';
+                    style.hover.fill = 'rgba(255, 77, 79, 0.1)';
+                } else {
+                    style.stroke = '#4285f4';
+                    style.fill = 'rgba(66, 133, 244, 0.1)';
+                    style.hover.stroke = '#54c5fc';
+                    style.hover.fill = 'rgba(255, 255, 255, 0.1)';
                 }
-                style.hover.stroke = '#54c5fc';
-                style.hover.fill = 'rgba(255, 255, 255, 0.1)';
-            
                 return style;
             }
         }
@@ -1473,7 +1490,7 @@ ProcessBuilder = {
                 
                 style.opacity = opacity;
                 style.fontSize = 20;
-                style.overflowMode = 'ellipsis';
+                style.overflowMode = 'autowrap';
                 style.lineHeight = 1.2;
                 const { isClicked } = this.properties;
                 style.color = isClicked ? 'red' : '#000000';
@@ -1516,20 +1533,21 @@ ProcessBuilder = {
 
             // Customize the style attributes of the node outline box
             getOutlineStyle() {
+                const { danger } = this.properties;
                 const style = super.getOutlineStyle();
-            
-                style.stroke = '#4285f4';
-                style.fill = 'rgba(66, 133, 244, 0.1)';
                 style.strokeWidth = 2;
                 style.strokeDasharray = '0';
-            
-                // Ensure hover effect is defined correctly
-                if (!style.hover) {
-                    style.hover = {};
-                    style.fill = {};
+                if (danger) {
+                    style.stroke = '#FF4D4F ';
+                    style.fill = 'rgba(255, 77, 79, 0.1)';
+                    style.hover.stroke = '#FF4D4F';
+                    style.hover.fill = 'rgba(255, 77, 79, 0.1)';
+                } else {
+                    style.stroke = '#4285f4';
+                    style.fill = 'rgba(66, 133, 244, 0.1)';
+                    style.hover.stroke = '#54c5fc';
+                    style.hover.fill = 'rgba(255, 255, 255, 0.1)';
                 }
-                style.hover.stroke = '#54c5fc';
-                style.hover.fill = 'rgba(255, 255, 255, 0.1)';
             
                 return style;
             }
@@ -1561,10 +1579,20 @@ ProcessBuilder = {
                     style.stroke = '#ff4d4f';
                     style.strokeWidth = 2;
                 } else if (properties.type === "startend") {
-                    style.stroke = 'rgb(177, 177, 177)';
-                    style.strokeWidth = 2;
+                    if ($('body').attr('builder-theme') === 'dark') {
+                        style.stroke = '#9A9CAE';
+                        style.strokeWidth = 2;
+                    } else {
+                        style.stroke = 'rgb(177, 177, 177)';
+                        style.strokeWidth = 2;
+                    }
                 } else {
-                    style.stroke = '#000000';
+                    if ($('body').attr('builder-theme') === 'dark') {
+                        style.stroke = '#ffffff';
+                    } else {
+                        style.stroke = '#000000';
+                    }
+                    
                 }
                 style.zIndex = 2;
                 return style;
@@ -1580,10 +1608,20 @@ ProcessBuilder = {
                 } else if (properties.type === "EXCEPTION") {
                     style.stroke = '#ff4d4f';
                 } else if (properties.type === "startend") {
-                    style.stroke = 'rgb(177, 177, 177)';
-                    style.strokeWidth = 2;
+                    if ($('body').attr('builder-theme') === 'dark') {
+                        style.stroke = '#9A9CAE';
+                        style.strokeWidth = 2;
+                    } else {
+                        style.stroke = 'rgb(177, 177, 177)';
+                        style.strokeWidth = 2;
+                    }
                 } else {
-                    style.stroke = '#000000';
+                    if ($('body').attr('builder-theme') === 'dark') {
+                        style.stroke = '#ffffff';
+                        style.strokeWidth = 2;
+                    } else {
+                        style.stroke = '#000000';
+                    }
                 }
 
                 return style;
@@ -1596,7 +1634,12 @@ ProcessBuilder = {
                 const { opacity = 1 } = edgeStyle;
                 
                 style.opacity = opacity;
-                style.color = '#000000';
+                if ($('body').attr('builder-theme') === 'dark') {
+                    style.color = '#ffffff';
+                } else {
+                    style.color = '#000000';
+                }
+                
                 style.fontSize = 12;
                 style.background = Object.assign({}, style.background, {
                     fill: 'transparent'
@@ -1612,21 +1655,23 @@ ProcessBuilder = {
 
             // Set hover outline style
             getOutlineStyle() {
+                const { danger } = this.properties;
                 const style = super.getOutlineStyle();
-            
                 style.stroke = '#4285f4';
                 style.fill = 'rgba(66, 133, 244, 0.1)';
                 style.strokeWidth = 2;
                 style.strokeDasharray = '0';
-            
-                // Ensure hover effect is defined correctly
-                if (!style.hover) {
-                    style.hover = {};
-                    style.fill = {};
+                if (danger) {
+                    style.stroke = '#FF4D4F ';
+                    style.fill = 'rgba(255, 77, 79, 0.1)';
+                    style.hover.stroke = '#FF4D4F';
+                    style.hover.fill = 'rgba(255, 77, 79, 0.1)';
+                } else {
+                    style.stroke = '#4285f4';
+                    style.fill = 'rgba(66, 133, 244, 0.1)';
+                    style.hover.stroke = '#54c5fc';
+                    style.hover.fill = 'rgba(255, 255, 255, 0.1)';
                 }
-                style.hover.stroke = '#54c5fc';
-                style.hover.fill = 'rgba(255, 255, 255, 0.1)';
-            
                 return style;
             }
         }
@@ -1677,15 +1722,21 @@ ProcessBuilder = {
 
         // Define the common menu configuration
         const commonMenuConfig = {
-            icon: '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="17" height="17" fill="currentColor" style="margin-left: 3px;margin-top: 3px;"><path pointer-events="none" d="M15.3,1.4 L12.6,1.4 L12.6,0 L5.4,0 L5.4,1.4 L0,1.4 L0,2.8 L2,2.8 L2,17.3 C2,17.6865993 2.31340068,18 2.7,18 L15.3,18 C15.6865993,18 16,17.6865993 16,17.3 L16,2.8 L18,2.8 L18,1.4 L15.3,1.4 Z M14.6,16.6 L3.4,16.6 L3.4,2.8 L14.6,2.8 L14.6,16.6 Z"></path><path pointer-events="none" d="M6,5.4 L7.4,5.4 L7.4,14.4 L6,14.4 L6,5.4 Z M10.6,5.4 L12,5.4 L12,14.4 L10.6,14.4 L10.6,5.4 Z"></path></svg>',
+            icon: '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="17" height="17" fill="currentColor" style="color: var(--theme-danger-color);margin-left: 3px;margin-top: 3px;"><path pointer-events="none" d="M15.3,1.4 L12.6,1.4 L12.6,0 L5.4,0 L5.4,1.4 L0,1.4 L0,2.8 L2,2.8 L2,17.3 C2,17.6865993 2.31340068,18 2.7,18 L15.3,18 C15.6865993,18 16,17.6865993 16,17.3 L16,2.8 L18,2.8 L18,1.4 L15.3,1.4 Z M14.6,16.6 L3.4,16.6 L3.4,2.8 L14.6,2.8 L14.6,16.6 Z"></path><path pointer-events="none" d="M6,5.4 L7.4,5.4 L7.4,14.4 L6,14.4 L6,5.4 Z M10.6,5.4 L12,5.4 L12,14.4 L10.6,14.4 L10.6,5.4 Z"></path></svg>',
             // Callback function to delete the element and hide the context menu
-            callback: function (data) {
-                if (data.properties.className !== 'transition') {
-                    ProcessBuilder.removeNode(data);
-                } else {
-                    ProcessBuilder.removeConnection(data);
+            callback: function (data, type) {
+                if (type == 'click') {
+                    if (data.properties.className !== 'transition') {
+                        ProcessBuilder.removeNode(data);
+                    } else {
+                        ProcessBuilder.removeConnection(data);
+                    }
+                    ProcessBuilder.lf.hideContextMenu();        // Hides the context menu
+                } else if (type == 'hover') {
+                    ProcessBuilder.lf.setProperties(data.id, { danger: true });
+                } else if (type == 'unhover') {
+                    ProcessBuilder.lf.setProperties(data.id, { danger: false });
                 }
-                ProcessBuilder.lf.hideContextMenu();        // Hides the context menu
             }
         };
 
@@ -1733,6 +1784,14 @@ ProcessBuilder = {
                 CustomBuilder.update();
             }
             ProcessBuilder.adjustLane(true, null);
+        });
+
+        ProcessBuilder.lf.on('set-danger', ({ id }) => {
+            ProcessBuilder.lf.setProperties(id, { danger: true });
+        });
+
+        ProcessBuilder.lf.on('remove-danger', ({ id }) => {
+            ProcessBuilder.lf.setProperties(id, { danger: false });
         });
 
         ProcessBuilder.lf.on('node:drop', ({ data }) => {
@@ -1856,6 +1915,7 @@ ProcessBuilder = {
                 if ($('.element-properties .nav-tabs .nav-link.has-properties-errors').length > 0 && self.selectedEl) {
                     if (self.selectedEl) {
                         ProcessBuilder.selectElementById(self.selectedEl.data.id);
+                        ProcessBuilder.lf.hideContextMenu();
                     }
                 } else {
                     self.selectedEl = data;
@@ -2132,7 +2192,7 @@ ProcessBuilder = {
                         yChanges = true;
                         if (nodeYStart < laneYStart) {
                             laneYStart = nodeYStart;
-                        } else {
+                        } else if (nodeYEnd > laneYEnd || (laneYEnd - nodeYEnd < 30)) {
                             laneYEnd = nodeYEnd;
                         }
                     }
@@ -2316,14 +2376,6 @@ ProcessBuilder = {
                     ProcessBuilder.lf.updateAttributes(data.id, { id: "laneID_" + result.properties.id });
                 } else {
                     ProcessBuilder.lf.updateAttributes(data.id, { id: result.properties.id });
-                }
-
-                let currentLane = ProcessBuilder.getActivityLane(result.properties.id);
-                if (currentLane) {
-                    let lfLane = ProcessBuilder.getLFLane("laneID_" + currentLane.properties.id);
-                    lfLane.children.push(result.properties.id);
-                    lfLane.children = lfLane.children.filter(id => id !== data.id);
-                    ProcessBuilder.lf.updateAttributes("laneID_" + currentLane.properties.id, { children: lfLane.children });
                 }
                 nodeID = result.properties.id;
             }
@@ -6053,10 +6105,11 @@ ProcessBuilder = {
         }
     },
             
-    previewForm: function(){
-        var formId = $(this).attr('formid');
-        var url = CustomBuilder.contextPath + '/web/fbuilder/app' + CustomBuilder.appPath + '/form/' + formId + '/previewForm';
-        JPopup.show("previewForm", url, {}, "");
+    previewForm: function (formId) {
+        if (formId) {
+            var url = CustomBuilder.contextPath + '/web/fbuilder/app' + CustomBuilder.appPath + '/form/' + formId + '/previewForm';
+            JPopup.show("previewForm", url, {}, "");
+        }
     },
      
     /*
@@ -6973,6 +7026,14 @@ ProcessBuilder = {
      */
     listViewerViewBeforeClosed: function(view) {
         $("body").removeClass("no-left-panel");
+    },
+
+     /*
+     * Reset the builder back to design view
+     */
+    screenshotViewBeforeClosed: function(view) {
+        $("body").removeClass("no-left-panel");
+        ProcessBuilder.fontSVG2Icon();
     },
     
     /*
@@ -8339,6 +8400,13 @@ ProcessBuilder = {
     * It is used to handle the render screensho
     */
     getScreenshot: function () {
+        // Convert font icon to SVG
+        FontAwesome.dom.i2svg();
+        ProcessBuilder.lineIcon2SVG();
+        
+        //Disable unnecesary screenshot on change
+        $(CustomBuilder.Builder.iframe).off("change.builder", CustomBuilder.Builder.renderScreenshot);
+
         CustomBuilder.screenshotTimeout = setTimeout(function () {
             ProcessBuilder.getScreenShoot();
         }, 300);
@@ -8428,5 +8496,71 @@ ProcessBuilder = {
             };
         }
         return data;
+    },
+    
+    lineIcon2SVG: function () {
+        $('#lf-container i[class^="la"]').each(function () {
+            const $icon = $(this);
+            const classes = $icon.attr('class').split(' ');
+            const laClass = classes.find(cls => cls.startsWith('la-') && cls !== 'las' && cls !== 'lab');
+            if (laClass) {
+                const iconName = laClass.replace('la-', '');
+                const svgUrl = `/jw/js/line-awesome-1.3.0/svg/${iconName}-solid.svg`;
+    
+                $.get(svgUrl, function (data) {
+                    if (data) {
+                        const $svg = $(data.documentElement || data)
+                            .attr('class', $icon.attr('class'))
+                            .css({
+                                width: $icon.css('width') || '1.2em',
+                                height: $icon.css('height') || '1.2em',
+                                fill: 'currentColor',
+                                cursor: 'pointer' // Optional: to indicate it's clickable
+                            });
+    
+                        // Handle previewForm setup
+                        if (iconName === 'file-alt') {
+                            let formID = $icon.attr('formid');
+                            if (formID) {
+                                // Attach the click event
+                                $svg.on('click', function () {
+                                    ProcessBuilder.previewForm(formID);
+                                });
+                            }
+                        }
+                        // Comment out the original <i> element
+                        const originalHTML = $icon[0].outerHTML;
+                        const commentNode = document.createComment(originalHTML);
+
+                        // Insert the SVG before the icon and comment the icon out
+                        $icon.before($svg[0]);
+                        $icon.replaceWith(commentNode);
+                    }
+                }).fail(function () {
+                    console.warn(`Failed to load SVG: ${svgUrl}`);
+                });
+            }
+        });
+    },
+
+    fontSVG2Icon: function () {
+        $('svg.svg-inline--fa, svg.svg2Icon').each(function () {
+            const $svg = $(this);
+            const $parent = $svg.parent();
+        
+            const nodes = $parent.contents().toArray();
+            const svgIndex = nodes.indexOf(this);
+            const nextNode = nodes[svgIndex + 1];
+        
+            if (nextNode && nextNode.nodeType === Node.COMMENT_NODE) {
+                const temp = $('<div>').html(nextNode.nodeValue);
+                const $icon = temp.find('i');
+        
+                if ($icon.length) {
+                    $svg.replaceWith($icon);
+                    $(nextNode).remove();
+                }
+            }
+        });
     }
 };
