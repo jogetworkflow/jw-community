@@ -417,8 +417,10 @@ _CustomBuilder = {
     initBuilder: function (callback) {
         if (!CustomBuilder.isAjaxReady) {
             window.onpopstate = function(event) {
-                var url = (event.state && event.state.url) ? event.state.url : window.location.href;
-                CustomBuilder.ajaxRenderBuilder(url, true); // when skipPushState is true, history.pushState won't be done
+                if (event.state && event.state.url) { //need to check for event.state to prevent link with # click reach here.
+                    var url = event.state.url;
+                    CustomBuilder.ajaxRenderBuilder(url, true); // when skipPushState is true, history.pushState won't be done
+                }
             };
             window.onbeforeunload = function() {
                 if(!CustomBuilder.isSaved()){
