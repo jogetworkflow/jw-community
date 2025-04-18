@@ -3034,8 +3034,8 @@ CREATE TABLE `dir_user_replacement` (
   `id` varchar(255) NOT NULL,
   `username` varchar(255) DEFAULT NULL,
   `replacementUser` varchar(255) DEFAULT NULL,
-  `appId` varchar(4000) DEFAULT NULL,
-  `processIds` varchar(4000) DEFAULT NULL,
+  `appId` varchar(255) DEFAULT NULL,
+  `processIds` varchar(255) DEFAULT NULL,
   `startDate` datetime DEFAULT NULL,
   `endDate` datetime DEFAULT NULL,
   PRIMARY KEY (`id`),
@@ -3153,7 +3153,7 @@ CREATE TABLE `wf_history_activity` (
   `state` varchar(255) DEFAULT NULL,
   `type` varchar(255) DEFAULT NULL,
   `due` datetime DEFAULT NULL,
-  `variables` varchar(255) DEFAULT NULL,
+  `variables` longtext DEFAULT NULL,
   `processId` varchar(255) DEFAULT NULL,
   PRIMARY KEY (`activityId`),
   KEY `FK_7mmrnb28ugrdxpf0dpw35y73u` (`processId`),
@@ -3189,7 +3189,7 @@ CREATE TABLE `wf_history_process` (
   `limitDuration` varchar(255) DEFAULT NULL,
   `due` datetime DEFAULT NULL,
   `state` varchar(255) DEFAULT NULL,
-  `variables` varchar(255) DEFAULT NULL,
+  `variables` longtext DEFAULT NULL,
   PRIMARY KEY (`processId`),
   CONSTRAINT `FK_prxyxtqy6byfrq3l5qght53l6` FOREIGN KEY (`processId`) REFERENCES `wf_process_link_history` (`processId`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
@@ -3426,4 +3426,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*M!100616 SET NOTE_VERBOSITY=@OLD_NOTE_VERBOSITY */;
 
--- Dump completed on 2025-04-12 23:16:31
+-- Dump completed on 2025-04-18 20:34:04
