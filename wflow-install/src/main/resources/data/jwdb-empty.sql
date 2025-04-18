@@ -1,8 +1,9 @@
--- MariaDB dump 10.19  Distrib 10.11.2-MariaDB, for osx10.18 (arm64)
+/*M!999999\- enable the sandbox mode */ 
+-- MariaDB dump 10.19-11.6.2-MariaDB, for osx10.20 (arm64)
 --
 -- Host: localhost    Database: jwdb
 -- ------------------------------------------------------
--- Server version	10.11.2-MariaDB
+-- Server version	11.6.2-MariaDB
 
 /*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
 /*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
@@ -13,7 +14,7 @@
 /*!40014 SET @OLD_UNIQUE_CHECKS=@@UNIQUE_CHECKS, UNIQUE_CHECKS=0 */;
 /*!40014 SET @OLD_FOREIGN_KEY_CHECKS=@@FOREIGN_KEY_CHECKS, FOREIGN_KEY_CHECKS=0 */;
 /*!40101 SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='NO_AUTO_VALUE_ON_ZERO' */;
-/*!40111 SET @OLD_SQL_NOTES=@@SQL_NOTES, SQL_NOTES=0 */;
+/*M!100616 SET @OLD_NOTE_VERBOSITY=@@NOTE_VERBOSITY, NOTE_VERBOSITY=0 */;
 
 --
 -- Table structure for table `SHKActivities`
@@ -2090,6 +2091,7 @@ CREATE TABLE `app_app` (
   `license` text DEFAULT NULL,
   `description` longtext DEFAULT NULL,
   `meta` longtext DEFAULT NULL,
+  `createdBy` varchar(255) DEFAULT NULL,
   PRIMARY KEY (`appId`,`appVersion`),
   KEY `idx_name` (`name`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
@@ -2882,6 +2884,8 @@ LOCK TABLES `dir_role` WRITE;
 /*!40000 ALTER TABLE `dir_role` DISABLE KEYS */;
 INSERT INTO `dir_role` VALUES
 ('ROLE_ADMIN','Admin','Administrator'),
+('ROLE_APP_CREATOR','App Creator','App Creator'),
+('ROLE_SYSTEM_MANAGER','System Manager','System Manager'),
 ('ROLE_USER','User','Normal User');
 /*!40000 ALTER TABLE `dir_role` ENABLE KEYS */;
 UNLOCK TABLES;
@@ -3030,8 +3034,8 @@ CREATE TABLE `dir_user_replacement` (
   `id` varchar(255) NOT NULL,
   `username` varchar(255) DEFAULT NULL,
   `replacementUser` varchar(255) DEFAULT NULL,
-  `appId` varchar(4000) DEFAULT NULL,
-  `processIds` varchar(4000) DEFAULT NULL,
+  `appId` varchar(255) DEFAULT NULL,
+  `processIds` varchar(255) DEFAULT NULL,
   `startDate` datetime DEFAULT NULL,
   `endDate` datetime DEFAULT NULL,
   PRIMARY KEY (`id`),
@@ -3420,6 +3424,6 @@ UNLOCK TABLES;
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
 /*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
-/*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
+/*M!100616 SET NOTE_VERBOSITY=@OLD_NOTE_VERBOSITY */;
 
--- Dump completed on 2023-11-01 13:45:02
+-- Dump completed on 2025-04-18 20:34:04
