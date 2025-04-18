@@ -94,15 +94,20 @@ public class AjaxUniversalTheme extends UniversalTheme implements SupportBuilder
             }
             data.put("body_inner_before", "<div class=\"page-loader\"><div class=\"spinner\"></div></div>");
             if ("true".equals(getPropertyString("darkMode"))) {
-                data.put("body_inner_before", data.get("body_inner_before").toString() +
-                                "<script>" + 
-                                "const theme = localStorage.getItem(\"theme\");\n" +
-                                "if (theme === \"auto\"){\n"+
-                                        "$(\"body\").addClass((window.matchMedia(\"(prefers-color-scheme: dark)\").matches ? \"dark\" : \"light\") + \"-mode\");\n" +                                        
-                                        "}else{\n"+
-                                "$(\"body\").addClass(theme + \"-mode\");\n" +
-                                        "};\n"+
-                                "</script>\n");
+                data.put("body_inner_before", data.get("body_inner_before").toString()
+                        + "<script>"
+                        + "const theme = localStorage.getItem(\"theme\");\n"
+                        + "const html = document.documentElement;\n" + // get the <html> element
+                        "if (theme === \"auto\") {\n"
+                        + "  const autoTheme = window.matchMedia(\"(prefers-color-scheme: dark)\").matches ? \"dark\" : \"light\";\n"
+                        + "  $(\"body\").addClass(autoTheme + \"-mode\");\n"
+                        + "  html.setAttribute(\"data-bs-theme\", autoTheme);\n"
+                        + "} else {\n"
+                        + "  $(\"body\").addClass(theme + \"-mode\");\n"
+                        + "  html.setAttribute(\"data-bs-theme\", theme);\n"
+                        + "}\n"
+                        + "</script>\n"
+                );
             }
             if("true".equals(getPropertyString("compactTheme"))) {
                 data.put("body_inner_before", data.get("body_inner_before").toString() +
