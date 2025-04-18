@@ -8,20 +8,25 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
+import java.util.concurrent.*;
+import java.util.function.Supplier;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 import org.displaytag.tags.TableTagParameters;
 import org.displaytag.util.ParamEncoder;
+import org.joget.apps.app.model.AppDefinition;
 import org.joget.apps.app.service.AppUtil;
+import org.joget.apps.datalist.lib.StaleCacheDataListBinder;
 import org.joget.apps.datalist.service.DataListDecorator;
-import org.joget.commons.util.LogUtil;
-import org.joget.commons.util.ResourceBundleUtil;
-import org.joget.commons.util.StringUtil;
+import org.joget.apps.datalist.service.DataListUtil;
+import org.joget.commons.util.*;
 import org.joget.plugin.base.PluginManager;
 import org.joget.plugin.property.service.PropertyUtil;
 import org.joget.workflow.util.WorkflowUtil;
+
+import javax.cache.Cache;
 
 public class DataList {
 
@@ -48,6 +53,7 @@ public class DataList {
     public static final String DATALIST_ROW_ACTION = "rowAction";
     public static final String DATALIST_ACTION = "action";
     public static final String DEFAULT_PAGE_SIZE_LIST = "10,20,30,40,50,100";
+    private static final Map<String, CountDownLatch> GET_COUNT_EXECUTOR_RUNNING = new ConcurrentHashMap<>();
     private String id;
     private String name;
     private String description;
@@ -642,8 +648,6 @@ public class DataList {
     public DataListCollection getRows(Integer customSize, Integer customStart) {
         try {
             if (getBinder() != null) {
-                //force get total before get rows to bypass additional filter
-                getTotal();
                 DataListQueryParam param = getQueryParam(customSize, customStart);
                 
                 if (isUsingInboxBinder()) {
@@ -671,11 +675,7 @@ public class DataList {
                     if (!isConsiderFilterWhenGetTotal()) {
                         getTotal();
                     }
-                    if (isUsingInboxBinder()) {
-                        size = ((DataListInboxBinder) getBinder()).getInboxDataTotalRowCount(this, getBinder().getProperties(), getFilterQueryObjects());
-                    } else {
-                        size = getBinder().getDataTotalRowCount(this, getBinder().getProperties(), getFilterQueryObjects());
-                    }
+                    size = getRowCount();
                 } else {
                     size = 0;
                 }
@@ -700,11 +700,7 @@ public class DataList {
             try {
                 if (getBinder() != null) {
                     filterQueryBuild = true;
-                    if (isUsingInboxBinder()) {
-                        total = ((DataListInboxBinder) getBinder()).getInboxDataTotalRowCount(this, getBinder().getProperties(), getFilterQueryObjects());
-                    } else {
-                        total = getBinder().getDataTotalRowCount(this, getBinder().getProperties(), getFilterQueryObjects());
-                    }
+                    total = getRowCount();
                     filterQueryBuild = false;
                 } else {
                     total = 0;
@@ -715,6 +711,73 @@ public class DataList {
             }
         }
         return total;
+    }
+
+    protected int getRowCount() {
+        final AppDefinition appDef = AppUtil.getCurrentAppDefinition();
+        final DataListFilterQueryObject[] filterQueryObjects = getFilterQueryObjects();
+        final Supplier<Integer> getCountLambda = () -> {
+            AppUtil.setCurrentAppDefinition(appDef);
+            int count;
+            if (isUsingInboxBinder()) {
+                count = ((DataListInboxBinder) getBinder()).getInboxDataTotalRowCount(this, getBinder().getProperties(), filterQueryObjects);
+            } else {
+                count = getBinder().getDataTotalRowCount(this, getBinder().getProperties(), filterQueryObjects);
+            }
+            return count;
+        };
+
+        final DataListBinder binder = getBinder();
+        int rowCount;
+        if (binder instanceof StaleCacheDataListBinder && ((StaleCacheDataListBinder) binder).shouldCacheRowCount()) {
+            Object[] binderHashParams = ((StaleCacheDataListBinder) binder).getAdditionalStaleCacheKeyParams();
+            String binderHash = DataListUtil.getStaleCacheKey(appDef, binder, new Object[]{binderHashParams, filterQueryObjects});
+            final String cacheKey = "Profile::" + DynamicDataSourceManager.getCurrentProfile() + "(" + binderHash + ")";
+
+            final Cache cache = AppUtil.getCache("org.joget.cache.ROW_COUNT_CACHE");
+            final Long elemTtl = (long) ((StaleCacheDataListBinder) binder).getCacheTtl();
+            DynamicCacheElement cachedElem = (DynamicCacheElement) cache.get(cacheKey);
+
+            // 1. Run rowCountLambda in a PluginThread.
+            // 2. Add the CountDownLatch into a ConcurrentHashMap to keep track of cacheKey -> latch
+            // 3. computeIfAbsent will only create a new latch if no associated cacheKey is in the Map.
+            //    Else, it will return an existing latch associated with the cacheKey.
+            // 4. Threads can obtain a latch based on cacheKey and await the result without running the query again.
+            CountDownLatch latch = GET_COUNT_EXECUTOR_RUNNING.computeIfAbsent(cacheKey, key -> {
+                CountDownLatch innerLatch = new CountDownLatch(1);
+                PluginThread t = new PluginThread(() -> {
+                    try {
+                        int count = getCountLambda.get();
+                        DynamicCacheElement elem = new DynamicCacheElement(count, elemTtl);
+                        cache.put(cacheKey, elem);
+                    } catch (Exception e) {
+                        LogUtil.error(DataList.class.getName(), e, "Failed to get count");
+                    } finally {
+                        GET_COUNT_EXECUTOR_RUNNING.remove(cacheKey);
+                        innerLatch.countDown();
+                    }
+                });
+                t.start();
+                return innerLatch;
+            });
+
+            if (cachedElem == null) {
+                // Block until the first result is ready
+                try {
+                    latch.await();
+                    DynamicCacheElement fresh = (DynamicCacheElement) cache.get(cacheKey);
+                    rowCount = (int) fresh.getValue();
+                } catch (Exception e) {
+                    LogUtil.error(DataList.class.getName(), e, "Exception waiting for count");
+                    rowCount = 0; // fallback value
+                }
+            } else {
+                rowCount = (int) cachedElem.getValue();
+            }
+        } else {
+            rowCount = getCountLambda.get();
+        }
+        return rowCount;
     }
 
     public void setTotal(Integer total) {

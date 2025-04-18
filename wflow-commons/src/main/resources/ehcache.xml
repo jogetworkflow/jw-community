@@ -168,4 +168,15 @@
         </resources>
     </cache>
 
+    <!-- Cache for Row Count -->
+    <cache alias="org.joget.cache.ROW_COUNT_CACHE">
+        <expiry>
+            <class>org.joget.commons.util.DynamicExpiryPolicy</class>
+        </expiry>
+        <resources>
+            <heap unit="entries">1000</heap>
+            <!-- No overflow to disk -->
+        </resources>
+    </cache>
+
 </config>
