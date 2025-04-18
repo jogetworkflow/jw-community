@@ -7228,7 +7228,19 @@ _CustomBuilder.Builder = {
             $("#node-details-toggle").find("#details-toggle-single").removeAttr("checked");
             $("#node-details-toggle").show();
             
-            
+            $("#node-details-toggle").find("input").off("click");
+            $("#node-details-toggle").find("input").on("click", function(){
+                $("#node-details-toggle").find("label").removeClass("active");
+                $(this).parent().addClass('active');
+                if ($("#details-toggle-single").is(":checked")) {
+                    self.frameBody.addClass("show-node-details-single");
+                } else {
+                    self.frameBody.removeClass("show-node-details-single");
+                }
+                self._updateBoxes();
+                self.triggerEvent("nodeAdditionalModeChanged");
+            });
+           
             level = 0;
             self.colorCount = 0;
         }

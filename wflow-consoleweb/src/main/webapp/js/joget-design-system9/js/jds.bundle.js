@@ -1,6 +1,32 @@
 /*!
   * Joget Design System v9.0.0
   */
+ 
+// Bootstrap 5 Compatibility Patch:
+// This script maps legacy Bootstrap 4 data attributes (e.g., data-toggle, data-target) 
+// to their Bootstrap 5 equivalents (e.g., data-bs-toggle, data-bs-target), 
+// ensuring older HTML markup continues to work without manual updates.
+document.addEventListener('DOMContentLoaded', () => {
+    const attrMap = [
+        'toggle',
+        'target',
+        'slide-to',
+        'slide',
+        'ride',
+        'dismiss',
+        'interval',
+        'original-title',
+        'spy',
+        'no-jquery'
+    ];
+    attrMap.forEach(attr => {
+        document.querySelectorAll(`[data-${attr}]`).forEach(el => {
+            el.setAttribute(`data-bs-${attr}`, el.getAttribute(`data-${attr}`));
+            el.removeAttribute(`data-${attr}`);
+        });
+    });
+});
+  
 (function (global, factory) {
   typeof exports === 'object' && typeof module !== 'undefined' ? module.exports = factory() :
   typeof define === 'function' && define.amd ? define(factory) :

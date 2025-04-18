@@ -2,9 +2,10 @@ package org.joget.plugin.enterprise;
 
 import org.joget.apps.app.service.AppUtil;
 import org.joget.apps.userview.model.UserviewTheme;
+import org.joget.plugin.base.HiddenPlugin;
 
 @Deprecated
-public class CorporatiTheme extends UserviewTheme {
+public class CorporatiTheme extends UserviewTheme implements HiddenPlugin{
 
     @Override
     public String getCss() {

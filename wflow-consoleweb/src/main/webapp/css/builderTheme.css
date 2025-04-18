@@ -1980,6 +1980,9 @@ body[builder-theme] #node-details-toggle {
     background: var(--theme-primary-color-2);
     padding: 2px;
 }
+body[builder-theme] #node-details-toggle input{
+    display: none;
+}
 body[builder-theme] #node-details-toggle .btn {
     background: transparent;
     border: none;
@@ -3429,10 +3432,6 @@ body[builder-theme='dark'] .file-manager .card {
 
 body[builder-theme] a:hover {
     text-decoration:none;
-}
-body[builder-theme] .row {
-    display: flex;
-    flex-wrap: wrap;
 }
 body[builder-theme] .file-manager .file-img {
     width: 100%;
