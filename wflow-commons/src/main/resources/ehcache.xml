@@ -109,5 +109,14 @@
             timeToIdleSeconds="600"
             timeToLiveSeconds="600"
             diskPersistent="false"/>
+
+    <!-- Cache for Row Count -->
+    <cache name="org.joget.cache.ROW_COUNT_CACHE"
+            maxElementsInMemory="1000"
+            eternal="false"
+            overflowToDisk="false"
+            timeToIdleSeconds="3600"
+            timeToLiveSeconds="3600"
+            diskPersistent="false"/>
     
 </ehcache>

@@ -62,6 +62,11 @@
     <bean id="nonceCache" class="org.springframework.cache.ehcache.EhCacheFactoryBean">
         <property name="cacheManager" ref="cacheManager"/>
     </bean>
+
+    <bean id="rowCountCache" class="org.springframework.cache.ehcache.EhCacheFactoryBean">
+        <property name="cacheManager" ref="cacheManager"/>
+        <property name="cacheName" value="org.joget.cache.ROW_COUNT_CACHE"/>
+    </bean>
     
     <bean id="formOptionsCacheExecutor" class="org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler">
         <property name="poolSize" value="10" />

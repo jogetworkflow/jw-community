@@ -1,11 +1,37 @@
-[{
-    title : '@@datalist.formrowdatalistbinder.selectForm@@',
-    properties : [%s,{
-        name : 'extraCondition',
-        label : '@@datalist.formrowdatalistbinder.extraCondition@@',
-        type : 'textarea',
-        rows : '5',
-        cols : '50',
-        developer_mode : 'advanced'
-    }]
-}]
+[
+  {
+    "title" : "@@datalist.formrowdatalistbinder.selectForm@@",
+    "properties" : [
+        %s,
+      {
+        "name" : "extraCondition",
+        "label" : "@@datalist.formrowdatalistbinder.extraCondition@@",
+        "type" : "textarea",
+        "rows" : "5",
+        "cols" : "50",
+        "developer_mode" : "advanced"
+      },
+      {
+        "label": "@@datalist.formrowdatalistbinder.caching@@",
+        "type": "header"
+      },
+      {
+        "name": "cacheRowCount",
+        "label" : "@@datalist.formrowdatalistbinder.cacheRowCount@@",
+        "description": "@@datalist.formrowdatalistbinder.cacheRowCount.desc@@",
+        "type" : "checkbox",
+        "options" : [
+          {"value": "true", "label": ""}
+        ]
+      },
+      {
+        "name": "cacheRowCountTtl",
+        "label" : "@@datalist.formrowdatalistbinder.cacheRowCountTtl@@",
+        "description": "@@datalist.formrowdatalistbinder.cacheRowCountTtl.desc@@",
+        "type" : "number",
+        "control_field": "cacheRowCount",
+        "control_value": "true"
+      }
+    ]
+  }
+]

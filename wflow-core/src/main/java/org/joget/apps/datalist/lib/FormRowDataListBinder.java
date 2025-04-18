@@ -31,7 +31,7 @@ import org.joget.apps.userview.model.Userview;
 import org.joget.commons.util.ResourceBundleUtil;
 import org.joget.commons.util.StringUtil;
 
-public class FormRowDataListBinder extends DataListBinderDefault implements DataListInboxBinder {
+public class FormRowDataListBinder extends DataListBinderDefault implements DataListInboxBinder, StaleCacheDataListBinder {
 
     private Form cachedForm = null;
     private String cachedTableName = null;
@@ -343,6 +343,25 @@ public class FormRowDataListBinder extends DataListBinderDefault implements Data
             return temp.toArray(new DataListFilterQueryObject[0]);
         } else {
             return filterQueryObjects;
+        }
+    }
+
+    @Override
+    public Object[] getAdditionalStaleCacheKeyParams() {
+        return null;
+    }
+
+    @Override
+    public boolean shouldCacheRowCount() {
+        return "true".equals(getPropertyString("cacheRowCount"));
+    }
+
+    @Override
+    public int getCacheTtl() {
+        try {
+            return Integer.parseInt(getPropertyString("cacheRowCountTtl"));
+        } catch (NumberFormatException e) {
+            return 3600;
         }
     }
 }

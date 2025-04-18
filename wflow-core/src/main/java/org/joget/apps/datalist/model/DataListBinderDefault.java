@@ -1,12 +1,12 @@
 package org.joget.apps.datalist.model;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
+import java.util.*;
 import java.util.Map;
 import javax.sql.DataSource;
 import org.apache.commons.beanutils.BeanUtils;
+import org.joget.apps.app.model.AppDefinition;
 import org.joget.apps.app.service.AppUtil;
+import org.joget.apps.datalist.lib.StaleCacheDataListBinder;
 import org.joget.plugin.base.ExtDefaultPlugin;
 import org.joget.workflow.util.WorkflowUtil;
 
@@ -180,7 +180,7 @@ public abstract class DataListBinderDefault extends ExtDefaultPlugin implements 
                 DataSource ds = (DataSource) AppUtil.getApplicationContext().getBean("setupDataSource");
                 driver = BeanUtils.getProperty(ds, "driverClassName");
             } catch (Exception e) {}
-        } 
+        }
         return driver;
     }
 }
