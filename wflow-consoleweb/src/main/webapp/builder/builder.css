@@ -1303,7 +1303,7 @@ body:not(.quick-nav-position-left) #builderToolbar {
     z-index: 10;
     overflow: none;
 }
-body:not(.quick-nav-position-left) .builder-view {
+body:not(.quick-nav-position-left) .builder-view:not(.treeRightPanel) {
     right: 40px;
 }
 .builder-view-header h3 {
