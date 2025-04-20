@@ -9240,20 +9240,22 @@ PropertyEditor.Type.ElementSelect.prototype = {
         }
         
         //use the default api to retrieve plugin properties if url is empty
+        var isDefault = true;
         var defaultUrl = "[CONTEXT_PATH]/web/property/json"+thisObj.options.appPath+"/getPropertyOptions";
         if (thisObj.properties.url === "" || thisObj.properties.url === undefined) {
             thisObj.properties.url = defaultUrl;
-        }
-        var isDefault = true;
-        if (thisObj.properties.url !== defaultUrl) {
+        } else if (!(thisObj.properties.url.startsWith("[CONTEXT_PATH]/web/property/json") 
+                && thisObj.properties.url.endsWith("/getPropertyOptions"))) {
             isDefault = false; // check this property type is used for plugin or not
         }
         
         //check the value is empty or not
         var isNotEmpty = (value !== "" && value !== undefined && value !== null);
-
+        
         //if properties page not found, render it now. If this is used for plugin, don't render when value is empty
-        if ($(this.editor).find('.property-editor-page[elementid=' + this.id + ']').length === 0 && ((isDefault && isNotEmpty) || !isDefault) && (!$(anchor).hasClass("loading") || $(existing).attr('elementvalue') !== value)) {
+        if ($(this.editor).find('.property-editor-page[elementid=' + this.id + ']').length === 0 
+                && (!isDefault || isNotEmpty)  //not using default or it is not empty
+                && !$(anchor).hasClass("loading")) {
             $(anchor).addClass("loading");
             var deferreds = [];
 
@@ -9818,20 +9820,22 @@ PropertyEditor.Type.ElementMultiSelect.prototype = {
         }
         
         //use the default api to retrieve plugin properties if url is empty
+        var isDefault = true;
         var defaultUrl = "[CONTEXT_PATH]/web/property/json"+thisObj.options.appPath+"/getPropertyOptions";
         if (thisObj.properties.url === "" || thisObj.properties.url === undefined) {
             thisObj.properties.url = defaultUrl;
-        }
-        var isDefault = true;
-        if (thisObj.properties.url !== defaultUrl) {
+        } else if (!(thisObj.properties.url.startsWith("[CONTEXT_PATH]/web/property/json") 
+                && thisObj.properties.url.endsWith("/getPropertyOptions"))) {
             isDefault = false; // check this property type is used for plugin or not
         }
         
         //check the value is empty or not
         var isNotEmpty = (value !== "" && value !== undefined && value !== null);
-
+        
         //if properties page not found, render it now. If this is used for plugin, don't render when value is empty
-        if ($(this.editor).find('.property-editor-page[elementid=' + id + ']').length === 0  && ((isDefault && isNotEmpty) || !isDefault) && !$(anchor).hasClass("loading")) {
+        if ($(this.editor).find('.property-editor-page[elementid=' + this.id + ']').length === 0 
+                && (!isDefault || isNotEmpty) //not using default or it is not empty
+                && !$(anchor).hasClass("loading")) {
             $(anchor).addClass("loading");
             var deferreds = [];
 
