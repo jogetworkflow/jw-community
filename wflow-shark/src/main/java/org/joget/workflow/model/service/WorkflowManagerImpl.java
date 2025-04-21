@@ -75,6 +75,7 @@ import org.enhydra.shark.instancepersistence.data.ProcessStateQuery;
 import org.enhydra.shark.xpdl.XMLUtil;
 import org.joget.apps.datalist.model.DataListInboxSetting;
 import org.joget.apps.datalist.model.InboxFilterQueryObject;
+import org.joget.eventstream.EventStreamManager;
 import org.joget.commons.spring.model.Setting;
 import org.joget.commons.util.DynamicDataSourceManager;
 import org.joget.commons.util.HostManager;
@@ -113,6 +114,10 @@ import org.springframework.transaction.support.TransactionTemplate;
 
 public class WorkflowManagerImpl implements SharkWorkflowManager {
 
+    public static String EVENT_STREAM_TOPIC_PROCESS_START = "joget-process-start";
+    public static String EVENT_STREAM_TOPIC_ASSIGNMENT_COMPLETE = "joget-assignment-complete";
+    public static String EVENT_STREAM_GROUP_WORKFLOW = "joget-group-workflow";
+    
     static boolean initialized = false;
     private WorkflowUserManager userManager;
     private SetupManager setupManager;
@@ -123,6 +128,7 @@ public class WorkflowManagerImpl implements SharkWorkflowManager {
     private WorkflowAssignmentDao workflowAssignmentDao;
     private Map processStateMap;
     private String previousProfile;
+    private EventStreamManager eventStreamManager;
     
     private static ThreadLocal migrationAssignmentUserList = new ThreadLocal() {
         @Override
@@ -3217,6 +3223,51 @@ public class WorkflowManagerImpl implements SharkWorkflowManager {
     }
     
     /**
+     * Initialize event stream listeners
+     */
+    protected void initEventStreamManager() {
+        
+        synchronized(this) {
+            if (eventStreamManager == null) {
+                eventStreamManager = EventStreamManager.getEventStreamManager();
+                LogUtil.info(getClass().getName(), "EventStreamManager discovered: " + eventStreamManager);
+                if (eventStreamManager.isEnabled()) {
+                    // register event stream message listener for process
+                    String eventStreamProcessTopic = EVENT_STREAM_TOPIC_PROCESS_START;
+                    String eventStreamGroup = EVENT_STREAM_GROUP_WORKFLOW;
+                    eventStreamManager.createTopic(eventStreamProcessTopic);
+                    eventStreamManager.listen(eventStreamProcessTopic, eventStreamGroup, (String topic, String key, Map data) -> {
+                        transactionTemplate.executeWithoutResult((TransactionStatus status) -> {
+                            // start process
+                            String processDefId = (String)data.get("processDefId");
+                            Map variables = (Map)data.get("variables");
+                            String startProcUsername = (String)data.get("startProcUsername");
+                            String parentProcessId = (String)data.get("parentProcessId");
+                            String startProcessId = (String)data.get("startProcessId");
+                            boolean startManually = (boolean)data.get("startManually");
+                            processStartActual(new WorkflowProcessResult(), processDefId, startProcessId, variables, startProcUsername, parentProcessId, startManually);
+                        });
+                    });
+                    LogUtil.info(getClass().getName(), "Registered event stream listener for " + EVENT_STREAM_TOPIC_PROCESS_START);
+
+                    // register event stream message listener for assignment
+                    String eventStreamAssignmentTopic = EVENT_STREAM_TOPIC_ASSIGNMENT_COMPLETE;
+                    eventStreamManager.createTopic(eventStreamAssignmentTopic);
+                    eventStreamManager.listen(eventStreamAssignmentTopic, eventStreamGroup, (String topic, String key, Map data) -> {
+                        transactionTemplate.executeWithoutResult((TransactionStatus status) -> {
+                            // complete assignment
+                            String activityId = (String)data.get("activityId");
+                            assignmentComplete(activityId, null);
+                        });
+                    });
+                    LogUtil.info(getClass().getName(), "Registered event stream listener for " + EVENT_STREAM_TOPIC_ASSIGNMENT_COMPLETE);
+
+                }
+            }
+        }
+    }
+    
+    /**
      * Generic method to start a process with various options
      * @param processDefId The process definition ID of the process to start
      * @param processId The process instance ID of a current running process to start
@@ -3229,6 +3280,47 @@ public class WorkflowManagerImpl implements SharkWorkflowManager {
     @Override
     public WorkflowProcessResult processStart(String processDefId, String processId, Map<String, String> variables, String startProcUsername, String parentProcessId, boolean startManually) {
         WorkflowProcessResult result = new WorkflowProcessResult();
+        
+        // create process instance in separate transaction first so that it will be accessible in a different thread
+        final WorkflowProcessResult taskResult = result;
+        transactionTemplate.execute((TransactionStatus transactionStatus) -> processCreate(processDefId, processId, variables, startProcUsername, parentProcessId, taskResult));
+
+        if (!startManually) {
+            final String startProcessId = result.getProcess().getInstanceId();
+            if (eventStreamManager != null && eventStreamManager.isEnabled()) {
+                // send process data to event stream
+                String eventStreamTopic = EVENT_STREAM_TOPIC_PROCESS_START;
+                Map data = new HashMap();
+                data.putAll(Map.of("processDefId", processDefId, "startManually", startManually, "startProcessId", startProcessId));
+                if (variables != null) {
+                    data.put("variables", variables);
+                }
+                if (startProcUsername != null) {
+                    data.put("startProcUsername", startProcUsername);
+                }
+                if (parentProcessId != null) {
+                    data.put("parentProcessId", parentProcessId);
+                }
+                eventStreamManager.send(eventStreamTopic, startProcessId, data);
+
+                // slight delay to allow listener to complete quick transactions
+                try {
+                    Thread.sleep(100);
+                } catch(InterruptedException e) {
+                    // ignore
+                }
+            } else {
+                // start process directly
+                result = processStartActual(result, processDefId, startProcessId, variables, startProcUsername, parentProcessId, startManually);
+            }
+        }
+        return result;
+    }
+
+    public WorkflowProcessResult processStartActual(WorkflowProcessResult result, String processDefId, String processId, Map<String, String> variables, String startProcUsername, String parentProcessId, boolean startManually) {
+        if (result == null) {
+            result = new WorkflowProcessResult();
+        }
         final WorkflowProcessResult taskResult = result;
         try {
             // Due to asynchronous nature of creating and starting processes, attempting to set workflow variables in
@@ -3247,12 +3339,12 @@ public class WorkflowManagerImpl implements SharkWorkflowManager {
             if (!startManually) {
                 final String startUser = startProcUsername;
                 final String startProcessDefId = processDefId;
-                final String startProcessId = result.getProcess().getInstanceId();
+                final String startProcessId = processId;
 
                 // start process asynchronously with a timeout
                 try {
                     long timeout = getProcessAsyncTimeout(processDefId, processId, null);
-                    result = WorkflowUtil.executeAsync(() -> processStartImmediately(startUser, startProcessDefId, startProcessId, taskResult, variables), timeout);
+                    result = WorkflowUtil.executeAsync(() -> processStartImmediately(startUser, startProcessDefId, startProcessId, taskResult, processVariables), timeout);
                 } catch(TimeoutException te) {
                     result.setStatus("Pending");
                     LogUtil.info(getClass().getName(), "Timeout processStartImmediately for " + startProcessId);
@@ -4341,8 +4433,28 @@ public class WorkflowManagerImpl implements SharkWorkflowManager {
      */
     @Override
     public String assignmentComplete(String activityId) {
-        // complete assignment
-        return assignmentComplete(activityId, null);
+        String result = "pending";
+        if (eventStreamManager != null && eventStreamManager.isEnabled()) {
+            // get process ID
+            WorkflowActivity activity = getActivityById(activityId);
+            String processId = activity.getProcessId();
+            
+            // send activity data to event stream
+            String eventStreamTopic = EVENT_STREAM_TOPIC_ASSIGNMENT_COMPLETE;
+            Map data = Map.of("activityId", activityId);
+            eventStreamManager.send(eventStreamTopic, processId, data);
+            
+            // slight delay to allow listener to complete quick transactions
+            try {
+                Thread.sleep(100);
+            } catch(InterruptedException e) {
+                // ignore
+            }
+        } else {
+            // complete assignment directly
+            assignmentComplete(activityId, null);
+        }
+        return result;
     }
     
     /**
@@ -5114,6 +5226,10 @@ public class WorkflowManagerImpl implements SharkWorkflowManager {
      * @throws Exception
      */
     protected SharkConnection connect(String username) throws Exception {
+        // initialize event stream manager
+        initEventStreamManager();
+
+        // connect to shark
         SharkConnection sConn = Shark.getInstance().getSharkConnection();
         if (username == null) {
             username = getWorkflowUserManager().getCurrentUsername();
