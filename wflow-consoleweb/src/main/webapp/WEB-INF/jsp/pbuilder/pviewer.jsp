@@ -2,7 +2,7 @@
 <%@ page import="org.joget.apps.app.service.AppUtil"%>
 
 <c:set var="lang" value="<%= AppUtil.getAppLocale() %>"/>
-
+<c:set var="systemTheme" value='<%= AppUtil.getSystemTheme() %>'/>
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
 <html lang="${lang}">
     <head>
@@ -17,13 +17,19 @@
         <link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/builder/builder.css?build=<fmt:message key="build.number"/>" />
         <link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/css/builder_custom.css?build=<fmt:message key="build.number"/>">
         <link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/pbuilder/css/pbuilder.css?build=<fmt:message key="build.number"/>">
+        <link rel="stylesheet" href="${pageContext.request.contextPath}/pbuilder/css/logicFlow-core.css">
+        <link rel="stylesheet" href="${pageContext.request.contextPath}/pbuilder/css/logicFlow-extension.css">
+        <script src="${pageContext.request.contextPath}/pbuilder/js/logicFlow-core.min.js?build=<fmt:message key="build.number"/>"></script>
+        <script src="${pageContext.request.contextPath}/pbuilder/js/logicFlow-extension.min.js?build=<fmt:message key="build.number"/>"></script>
+        <script src="${pageContext.request.contextPath}/pbuilder/js/pbuilder.js?build=<fmt:message key="build.number"/>"></script>
         <jsp:include page="/WEB-INF/jsp/includes/css.jsp" />
         <style>
             #builder_canvas.process_graph {top: 0 !important; margin: 0 !important; left: 0px !important; width: 100vw !important; max-width: none !important; height: 100vh !important;}
         </style>    
     </head>
-    <body id="cbuilder" class="no-right-panel">
+    <body id="cbuilder" class="no-right-panel" builder-theme="${systemTheme}">
         <div id="builder_canvas" class="process_graph">
+            <div id="lf-container"></div>
         </div>
         <textarea id="json" name="json" rows="12" cols="30" style="display:none;"><c:out value="${json}" escapeXml="true"/></textarea>
         <script type="text/javascript" src="${pageContext.request.contextPath}/js/builderutil.js"></script>
@@ -35,8 +41,7 @@
         <script src="${pageContext.request.contextPath}/web/console/i18n/advtool?build=<fmt:message key="build.number"/>"></script>
         <script data-cbuilder-script type="text/javascript" src="${pageContext.request.contextPath}/web/console/i18n/cbuilder?type=process&build=<fmt:message key="build.number"/>"></script>
         <script type="text/javascript" src="${pageContext.request.contextPath}/builder/builder.js"></script>
-        <script src="${pageContext.request.contextPath}/pbuilder/js/jquery.jsPlumb-1.6.4-min.js"></script>
-        <script src="${pageContext.request.contextPath}/pbuilder/js/pbuilder.js?build=<fmt:message key="build.number"/>"></script>
+        
         <script data-cbuilder-script>
             $(function () {
                 CustomBuilder.contextPath = '${pageContext.request.contextPath}';

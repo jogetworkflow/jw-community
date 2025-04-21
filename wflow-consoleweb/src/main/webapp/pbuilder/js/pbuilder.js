@@ -230,6 +230,7 @@ ProcessBuilder = {
             background: {
                 backgroundColor: "#ffffff"
             },
+            isSilentMode: ProcessBuilder.readonly,
             plugins: [
                 AutoLayout,
                 Group,
@@ -1758,18 +1759,43 @@ ProcessBuilder = {
         ProcessBuilder.previousSelectedNodeId = null;
 
         // Handle node drop
-        ProcessBuilder.lf.on('node:drop', ({ data }) => {   
-            if (ProcessBuilder.getNodeLaneID(data.id) === null) {
-                ProcessBuilder.removeNode(data);
-                return;
-            } 
+        ProcessBuilder.lf.on('node:drop', ({ data }) => {
             const { id: nodeId } = data;
-            
-            const processData = ProcessBuilder.currentProcessData;
-        
-            const currentLaneId = ProcessBuilder.getNodeLaneID(nodeId);
+            const node = ProcessBuilder.lf.getNodeDataById(nodeId);
             const nodeLane = ProcessBuilder.getActivityLane(nodeId);
-        
+            const previousLane = ProcessBuilder.getLFLane('laneID_' + nodeLane.properties.id);
+            const gapLimit = 30;
+
+            const nodeYStart = node.y - node.properties.height / 2;
+            const nodeYEnd = node.y + node.properties.height / 2;
+            const laneYStart = previousLane.y - previousLane.properties.height / 2;
+            const laneYEnd = previousLane.y + previousLane.properties.height / 2;
+            const gapHeight = nodeYEnd - laneYEnd;
+
+            const missingLane = ProcessBuilder.getNodeLaneID(nodeId) === null;
+            
+            if (missingLane) {
+                // Allow if the node is close enough to the lane bottom (within gapLimit)
+                if (gapHeight > 0 && gapHeight < gapLimit) {
+                    previousLane.children.push(nodeId);
+                    ProcessBuilder.lf.updateAttributes(previousLane.id, {
+                        children: previousLane.children
+                    });
+                } else {
+                    // Remove if too far from the lane
+                    ProcessBuilder.removeNode(data);
+                    return;
+                }
+            } else {
+                // Remove if the node is positioned above the lane
+                // or if the vertical gap exceeds the limit
+                if (nodeYStart < laneYStart || gapHeight > gapLimit) {
+                    ProcessBuilder.removeNode(data);
+                    return;
+                }
+            }
+
+            const currentLaneId = ProcessBuilder.getNodeLaneID(nodeId);
             if (currentLaneId !== `laneID_${nodeLane.properties.id}`) {
                 const targetLane = ProcessBuilder.getLane(currentLaneId);
                 const sourceLane = ProcessBuilder.getLane(nodeLane.properties.id);
@@ -2232,7 +2258,7 @@ ProcessBuilder = {
                 lane.properties.height = lane.properties.height + 100;
                 lane.properties.nodeSize.height = lane.properties.nodeSize.height + 100;
             }
-            if (xChanges) {
+            if (xChanges && finalLaneWidth < lane.properties.width + 100) {
                 finalLaneWidth = lane.properties.width + 100;
             }
 
@@ -5682,7 +5708,9 @@ ProcessBuilder = {
             }
         });
         ProcessBuilder.currentProcessData = processData;
-        CustomBuilder.update();
+        if (!ProcessBuilder.readonly) {
+            CustomBuilder.update();
+        }
     },
     
     /*
@@ -7639,62 +7667,25 @@ ProcessBuilder = {
             }
         }, function() {
             ProcessBuilder.initComponents();
-            CustomBuilder.Builder.setHead('<link data-pbuilder-style href="' + CustomBuilder.contextPath + '/pbuilder/css/pbuilder.css" rel="stylesheet" />');
-            CustomBuilder.Builder.setHead('<script data-jsPlumb-script src="' + CustomBuilder.contextPath + '/pbuilder/js/jquery.jsPlumb-1.6.4-min.js"></script>');
-
-            //wait for jsplumb available
-            while (!ProcessBuilder.jsPlumb) {
-                ProcessBuilder.jsPlumb = CustomBuilder.Builder.iframe.contentWindow.jsPlumb;
-            }
-            
-            // init jsPlumb
-            ProcessBuilder.jsPlumb.importDefaults({
-                Container: "canvas",
-                Anchor: "Continuous",
-                Endpoint: ["Dot", {radius: 4}],
-                Connector: ["StateMachine", {curviness:0.1}],
-                PaintStyle: {strokeStyle: "#999", lineWidth: 1, outlineWidth: 15, outlineColor: 'transparent'},
-                ConnectionOverlays: [
-                    ["Arrow", {
-                        location: 0.99,
-                        id: "arrow",
-                        length: 10,
-                        width: 10,
-                        foldback: 0.8
-                    }]
-                ],
-                ConnectionsDetachable: true
-            });
-            
+            ProcessBuilder.initialLogicFlow();
             var deferreds = [];
             
             var wait = $.Deferred();
             deferreds.push(wait);
-            
-            var jsPlumbReady = $.Deferred();
-            deferreds.push(jsPlumbReady);
-            ProcessBuilder.jsPlumb.ready(function() {
-                //make some delay for css to load
-                setTimeout(function(){
-                    jsPlumbReady.resolve();
-                }, 20);
-                
-            });
-            
             wait.resolve();
             
             $.when.apply($, deferreds).then(function() {
                 ProcessBuilder.generateProcessData(processId);
         
                 CustomBuilder.Builder.load(ProcessBuilder.currentProcessData, function(){
-                    CustomBuilder.Builder.frameBody.addClass("readonly");
-                    CustomBuilder.Builder.frameBody.find('[data-cbuilder-classname]').attr('data-cbuilder-uneditable', "");
-                    
+                    $('body').addClass('readonly');
                     for (var i in runningActivities) {
-                        CustomBuilder.Builder.frameBody.find('#'+runningActivities[i]).addClass("running_activity");
+                        $('body').find('#'+runningActivities[i]).addClass("running_activity");
                     }
                 });
-                
+                ProcessBuilder.navigator(true);
+                ProcessBuilder.lf.extension.miniMap.show();
+                ProcessBuilder.lf.extension.highlight.setEnable(true);
                 ProcessBuilder.refresh();
             });
         });

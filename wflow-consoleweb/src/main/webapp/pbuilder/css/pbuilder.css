@@ -56,7 +56,14 @@ svg.previewForm:hover{
 .lf-node-text-auto-wrap {
     font-family: "Inter", sans-serif !important;
 }
-
+.running_activity rect {
+    fill: #ffda6a !important;
+    stroke: rgb(255, 193, 7) !important;
+    stroke-width: 2px !important;
+}
+body.readonly g[cursor='pointer']{
+    display: none;
+}
 body[builder-theme='dark'] .lf-background-area {
     background-color: var(--theme-primary-color-1) !important;
 }
