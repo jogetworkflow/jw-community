@@ -16,12 +16,14 @@ public class SetupManager {
 
     public static final String SYSTEM_PROPERTY_WFLOW_HOME = "wflow.home";
     public static final String SYSTEM_PROPERTY_WFLOW_SECURE = "wflow.secure";
+    public static final String SYSTEM_PROPERTY_SETUP_STALE_CACHE = "wflow.setupStaleCache";
     public static final String DIRECTORY_PROFILES = "app_profiles";
     public static final String MASTER_LOGIN_PASSWORD = "masterLoginPassword";
     public static final String SMTP_PASSWORD = "smtpPassword";
     public static final String SECURE_VALUE = "****SECURE VALUE*****";
 
     private static final String BASE_DIRECTORY;
+    private static boolean STATUS_REFRESHING = false;
 
     static {
         String baseDirectory = System.getProperty(SYSTEM_PROPERTY_WFLOW_HOME, System.getProperty("user.home") + File.separator + "wflow" + File.separator);
@@ -66,6 +68,7 @@ public class SetupManager {
     private SetupDao setupDao;
     private SetupManagerHelper setupManagerHelper;
     private Cache cache;
+    private Cache staleCache;    
 
     /**
      * Method used by system to set cache object
@@ -76,20 +79,62 @@ public class SetupManager {
         if (cache != null) {
             LogUtil.info(getClass().getName(), "Initializing setup cache");
         }
+        boolean setupStaleCache = Boolean.parseBoolean(System.getProperty(SYSTEM_PROPERTY_SETUP_STALE_CACHE, "true"));
+        if (setupStaleCache) {
+            this.staleCache = cacheManager.getCache("default");
+            if (staleCache != null) {
+                LogUtil.info(getClass().getName(), "Initializing setup stale cache");
+            }
+        }
+    }
+    
+    protected String getCacheKey() {
+        return "setup_" + DynamicDataSourceManager.getCurrentProfile();
     }
     
     /**
      * Method used by system to clear cache
      */
     public void clearCache() {
+        String cacheKey = getCacheKey();
         if (cache != null) {
-            synchronized(cache) {
-                String profile = DynamicDataSourceManager.getCurrentProfile();
-                cache.remove(profile);
-            }
+            cache.remove(cacheKey);
+        }
+        if (staleCache != null) {
+            staleCache.remove(cacheKey);
         }
     }
 
+    /**
+     * Method used by system to update cache by property
+     * @param setting
+     */
+    protected void updateCache(Setting setting) {
+        String cacheKey = getCacheKey();
+        if (cache != null) {
+            Map<String, Setting> settingMap = (Map<String, Setting>)cache.get(cacheKey);
+            if (settingMap != null) {
+                String property = setting.getProperty();
+                if (setting.getValue() == null) {
+                    settingMap.remove(property);
+                } else {
+                    settingMap.put(property, setting);
+                }
+            }
+        }
+        if (staleCache != null) {
+            Map<String, Setting> settingMap = (Map<String, Setting>)staleCache.get(cacheKey);
+            if (settingMap != null) {
+                String property = setting.getProperty();
+                if (setting.getValue() == null) {
+                    settingMap.remove(property);
+                } else {
+                    settingMap.put(property, setting);
+                }
+            }
+        }
+    }
+    
     public SetupManagerHelper getSetupManagerHelper() {
         return setupManagerHelper;
     }
@@ -103,20 +148,40 @@ public class SetupManager {
      */
     public void refreshCache() {
         if (cache != null) {
-            synchronized(cache) {
-                String profile = DynamicDataSourceManager.getCurrentProfile();
-                LogUtil.debug(getClass().getName(), "Refreshing setup cache for " + profile);
-                cache.remove(profile);
-                Collection<Setting> settings = getSetupDao().find("", null, null, null, null, null);
-                Map<String, Setting> settingMap = new HashMap<String, Setting>();
-                for (Setting setting: settings) {
-                    settingMap.put(setting.getProperty(), setting);
-                }
-                
-                getSetupManagerHelper().checkSettingChanges(settingMap);
-                
-                cache.put(profile, settingMap);
+            String cacheKey = getCacheKey();
+            boolean inCache = (staleCache != null) ? staleCache.containsKey(cacheKey) : cache.containsKey(cacheKey);
+            if (!inCache) {
+                refreshCacheFromDataSource();                                     
+            } else if (!STATUS_REFRESHING) {
+                STATUS_REFRESHING = true;
+                new PluginThread(() -> {
+                    refreshCacheFromDataSource();                     
+                }).start();
             }
+        }
+    }
+    
+    /**
+     * Refresh cache from the datasource
+     */
+    protected void refreshCacheFromDataSource() {
+        try {
+            String cacheKey = getCacheKey();
+            LogUtil.debug(getClass().getName(), "Refreshing setup cache for " + cacheKey);
+            Collection<Setting> settings = getSetupDao().find("", null, null, null, null, null);
+            Map<String, Setting> settingMap = new HashMap<String, Setting>();
+            for (Setting setting: settings) {
+                settingMap.put(setting.getProperty(), setting);
+            }
+
+            getSetupManagerHelper().checkSettingChanges(settingMap);
+
+            cache.put(cacheKey, settingMap);
+            if (staleCache != null) {
+                staleCache.put(cacheKey, settingMap);
+            }
+        } finally {
+            STATUS_REFRESHING = false;
         }
     }
     
@@ -140,7 +205,7 @@ public class SetupManager {
      */
     public void saveSetting(Setting setting) {
         getSetupDao().saveOrUpdate(setting);
-        clearCache();
+        updateCache(setting);
         
         getSetupManagerHelper().auditSettingChange(setting);
     }
@@ -175,16 +240,16 @@ public class SetupManager {
     public Setting getSettingByProperty(String property) {
         if (cache != null) {
             Setting setting = null;
-            synchronized(cache) {
-                String profile = DynamicDataSourceManager.getCurrentProfile();
-                Map<String, Setting> settingMap = (Map<String, Setting>)cache.get(profile);
-                if (settingMap == null) {
-                    refreshCache();
-                    settingMap = (Map<String, Setting>)cache.get(profile);
+            String cacheKey = getCacheKey();
+            Map<String, Setting> settingMap = (Map<String, Setting>)cache.get(cacheKey);
+            if (settingMap == null) {
+                refreshCache();
+                if (staleCache != null) {
+                    settingMap = (Map<String, Setting>)staleCache.get(cacheKey);
                 }
-                if (settingMap != null) {
-                    setting = settingMap.get(property);
-                }
+            }
+            if (settingMap != null) {
+                setting = settingMap.get(property);
             }
             return setting;
         } else {
@@ -213,8 +278,9 @@ public class SetupManager {
     public void deleteSetting(String property) {
         Setting setting = getSettingByProperty(property);
         if (setting != null) {
-            getSetupDao().delete(setting);
+            getSetupDao().delete(property);
             setting.setValue(null);
+            updateCache(setting);
         }
         getSetupManagerHelper().auditSettingChange(setting);
     }
