@@ -142,35 +142,44 @@ public class LogViewerAppender extends AbstractAppender {
     protected Writer getWriter(String appId) {
         try {
             String filename = getFileName(appId, null);
-
-            //check rolling
-            File currentFile = new File(filename);
-            long size = currentFile.length();
-            if (size >= MAX_FILESIZE) {
-                //delete previous rolling file if exist
-                File file = new File(filename + LOG_ROLLING_EXT);
-                if (file.exists()) {
-                    file.delete();
-                }
-
-                //remove from cache to close it
-                getCache().invalidate(filename);
-
-                //rename the current to rolling
-                FileUtils.rename(new File(filename), new File(filename + LOG_ROLLING_EXT));
-            }
-
             Writer writer = getCache().get(filename);
-
             return writer;
-        } catch (NoSuchFileException e) {
-            // ignore file already deleted
-            return null;
         } catch (Exception e) {
             e.printStackTrace();
             return null;
         }
     }
+    
+    protected void rollOver(String appId) {
+        try {
+            String filename = getFileName(appId, null);
+            File currentFile = new File(filename);
+            
+            //check rolling
+            synchronized(appId.intern()) {
+                long size = currentFile.length();
+                if (size >= MAX_FILESIZE) {
+                    //delete previous rolling file if exist
+                    File file = new File(filename + LOG_ROLLING_EXT);
+                    if (file.exists()) {
+                        file.delete();
+                    }
+
+                    //remove from cache to close it
+                    getCache().invalidate(filename);
+
+                    //rename the current to rolling
+                    if (currentFile.exists()) {
+                        FileUtils.rename(currentFile, new File(filename + LOG_ROLLING_EXT));
+                    }
+                }
+            }
+        } catch (NoSuchFileException e) {
+            // ignore file already deleted
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }    
 
     protected static String getCurrentAppId() {
         AppDefinition appDef = AppUtil.getCurrentAppDefinition();
@@ -241,8 +250,15 @@ public class LogViewerAppender extends AbstractAppender {
                 if (appWriter != null) {
                     appWriter.flush();
                 }
+                
+                rollOver(CONSOLE_LOG);
+                if (appId != null) {
+                    rollOver(appId);
+                }
             } catch (IOException e) {
-                e.printStackTrace();
+                if (!"Stream closed".equals(e.getMessage())) {
+                    e.printStackTrace();
+                }
             }
         }
     }
@@ -357,21 +373,21 @@ public class LogViewerAppender extends AbstractAppender {
                         }
                     }
                 }
-            }
+
+                //if the server list having other cluster node, broadcast to other server
+                if (node == null && appId !=null && !appId.isEmpty()) {
+                    String[] servers = ServerUtil.getServerList();
+                    if (servers.length > 1) {
+                        for (String server : servers) {
+                            if (!ServerUtil.getServerName().equalsIgnoreCase(server) && !unreachableNodes.contains(server)) {
+                                broadcastClusterNode(message, server, appId);
+                            }
+                        }
+                    }
+                }            
+            }            
         });
         newThread.start();
-        
-        //if the server list having other cluster node, broadcast to other server
-        if (node == null && appId !=null && !appId.isEmpty()) {
-            String[] servers = ServerUtil.getServerList();
-            if (servers.length > 1) {
-                for (String server : servers) {
-                    if (!ServerUtil.getServerName().equalsIgnoreCase(server) && !unreachableNodes.contains(server)) {
-                        broadcastClusterNode(message, server, appId);
-                    }
-                }
-            }
-        }
     }
     
     /**
