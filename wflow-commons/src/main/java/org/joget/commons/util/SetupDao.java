@@ -21,6 +21,14 @@ public class SetupDao extends AbstractSpringDao {
         super.delete(ENTITY_NAME, obj);
     }
 
+    public void delete(String property) {
+        Collection<Setting> result = find("WHERE property = ?", new String[]{ property }, null, null, null, null);
+        Setting setting = (result.isEmpty()) ? null : result.iterator().next();
+        if (setting != null) {
+            super.delete(ENTITY_NAME, setting);
+        }
+    }
+
     public Object find(String id) {
         return super.find(ENTITY_NAME, id);
     }
@@ -29,11 +37,6 @@ public class SetupDao extends AbstractSpringDao {
         Session session = super.findSession();
         
         Collection<Setting> settings =(Collection<Setting>) super.find(ENTITY_NAME, condition, params, sort, desc, start, rows);
-        
-        for (Setting s : settings) {
-            session.evict(s);
-        }
-        
         return settings;
     }
 
