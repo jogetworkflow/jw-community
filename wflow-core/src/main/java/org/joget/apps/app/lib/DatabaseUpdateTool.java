@@ -5,12 +5,9 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Properties;
 import javax.sql.DataSource;
-import org.apache.commons.dbcp2.BasicDataSource;
-import org.apache.commons.dbcp2.BasicDataSourceFactory;
 import org.joget.apps.app.service.AppUtil;
-import org.joget.commons.util.DynamicDataSourceManager;
+import org.joget.apps.app.service.JdbcUtil;
 import org.joget.commons.util.LogUtil;
 import org.joget.plugin.base.DefaultApplicationPlugin;
 import org.joget.workflow.model.WorkflowAssignment;
@@ -38,27 +35,7 @@ public class DatabaseUpdateTool extends DefaultApplicationPlugin {
             String query = (String) properties.get("query");
             String driver = "";
             
-            String datasource = (String)properties.get("jdbcDatasource");
-            if (datasource != null && "default".equals(datasource)) {
-                // use current datasource
-                 ds = (DataSource)AppUtil.getApplicationContext().getBean("setupDataSource");
-                 driver = DynamicDataSourceManager.getProperty("workflowDriver");
-            } else {
-                Properties props = new Properties();
-                String driverClassName = (String) properties.get("driverClassName");
-                String url = (String) properties.get("url");
-                String username = (String) properties.get("username");
-                String password = (String) properties.get("password");
-            
-                driver = driverClassName;
-                
-                // use custom datasource
-                props.put("driverClassName", driverClassName);
-                props.put("url", url);
-                props.put("username", username);
-                props.put("password", password);
-                ds = createDataSource(props);
-            }
+            ds = JdbcUtil.createDataSource(getProperties());
             
             WorkflowAssignment wfAssignment = (WorkflowAssignment) properties.get("workflowAssignment");
 
@@ -78,20 +55,7 @@ public class DatabaseUpdateTool extends DefaultApplicationPlugin {
         } catch (Exception e) {
             LogUtil.error(getClass().getName(), e, "Error executing plugin");
             return null;
-        } finally {
-            try {
-                if (ds != null && ds instanceof BasicDataSource) {
-                    ((BasicDataSource) ds).close();
-                }
-            } catch (Exception e) {
-                LogUtil.error(getClassName(), e, "");
-            }
         } 
-    }
-
-    protected DataSource createDataSource(Properties props) throws Exception {
-        DataSource ds = BasicDataSourceFactory.createDataSource(props);
-        return ds;
     }
 
     protected boolean executeQuery(DataSource ds, String sql) throws SQLException {

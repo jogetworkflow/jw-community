@@ -30,6 +30,16 @@
         <expiry>
             <ttl unit="seconds">20</ttl>
         </expiry>
+        <listeners>
+            <listener>
+                <class>org.joget.commons.util.SessionFactoryCacheListener</class>
+                <event-firing-mode>ASYNCHRONOUS</event-firing-mode>
+                <event-ordering-mode>UNORDERED</event-ordering-mode>
+                <events-to-fire-on>EXPIRED</events-to-fire-on>
+                <events-to-fire-on>EVICTED</events-to-fire-on>
+                <events-to-fire-on>REMOVED</events-to-fire-on>
+            </listener>
+        </listeners>
         <resources>
             <heap unit="entries">1000</heap>
             <!-- No overflow to disk -->
@@ -102,7 +112,7 @@
         </resources>
         <!--<searchable/>-->
     </cache>
-    
+                
     <cache alias="org.joget.cache.APP_CACHE">
         <expiry>
             <ttl unit="seconds">20</ttl>
