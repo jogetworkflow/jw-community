@@ -192,8 +192,7 @@
         <css>/trimeda/css/darkModeTrimeda.css</css>
         <js>/universal/lib/malihu-custom-scrollbar/jquery.mCustomScrollbar.concat.min.js</js>
         <js>/universal/js/preload.js</js>
-        <js>/js/bootstrap4/js/popper.min.js</js>
-        <js>/js/bootstrap4/js/bootstrap.min.js</js>
+        <js>/js/joget-design-system9/js/jds.bundle.js</js>
         <js>/universal/lib/touchSwipe/jquery.touchSwipe.min.js</js>
         <js>/universal/lib/waves/waves.min.js</js>
         <js>/ajaxuniversal/js/main.js</js>
