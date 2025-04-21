@@ -12,6 +12,7 @@ import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -59,21 +60,34 @@ public class ServerUtil {
         return serverName;
     }
     
+    final static Collection<String> serverList = Collections.synchronizedCollection(new HashSet<>());
+    static long serverListLastModified;
+    
     public static String[] getServerList() {
-        Set<String> servers = new HashSet<String>();
-        Gson gson = new Gson();
-        
+        Collection<String> servers = null;        
         String serverFilePath = SetupManager.getBaseSharedDirectory() + "/servers.json";
         
         try {
-            String serverJson = FileUtils.readFileToString(new File(serverFilePath), "UTF-8");
-            servers = gson.fromJson(serverJson, new TypeToken<Set<String>>(){}.getType());
+            synchronized(serverList) {
+                File serverFile = new File(serverFilePath);
+                long lastModified = FileUtils.lastModified(serverFile);
+                if (serverList.isEmpty() || lastModified > serverListLastModified) {
+                    String serverJson = FileUtils.readFileToString(new File(serverFilePath), "UTF-8");
+                    Gson gson = new Gson();
+                    servers = gson.fromJson(serverJson, new TypeToken<Set<String>>(){}.getType());
+                    serverList.clear();
+                    serverList.addAll(servers);
+                    serverListLastModified = lastModified;
+                } else {
+                    servers = serverList;
+                }
+            }
         } catch (Exception e) {
             LogUtil.debug(ServerUtil.class.getName(), "Error read servers file: " + e.getMessage());
         }
         
         if (servers == null) {
-            servers = new HashSet<String>();
+            servers = new HashSet<>();
         }
         
         return servers.toArray(new String[0]);
