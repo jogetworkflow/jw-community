@@ -203,15 +203,6 @@ public final class PluginThread extends Thread {
         try {
             super.run();
         } finally {
-            if (tomcatConnector != null) {
-                // for tomcat, set the disableFacades flag back to true
-                try {
-                    MethodUtils.invokeMethod(tomcatConnector, true, "setDiscardFacades", true);
-                } catch (Exception ex) {
-                    LogUtil.warn(getClass().getName(), ex.toString());
-                }
-            }
-            
             if (request != null) {
                 RequestContextHolder.resetRequestAttributes();
                 request = null;
