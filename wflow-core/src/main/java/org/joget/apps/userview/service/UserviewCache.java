@@ -32,11 +32,13 @@ public class UserviewCache {
             String prefix = CACHE_KEY_PREFIX + ":" + userviewId + ":" + menuId + ":" + scope + ":";
             for (Iterator i=cache.iterator(); i.hasNext();) {
                 Cache.Entry entry = (Cache.Entry)i.next();
-                String key = entry.getKey().toString();
-                if (key.startsWith(prefix)) {
-                    i.remove();
-                    if (LogUtil.isDebugEnabled(UserviewCache.class.getName())) {    
-                        LogUtil.debug(UserviewCache.class.getName(), "clearCachedContent: " + key);
+                if (entry != null) {
+                    String key = entry.getKey().toString();
+                    if (key.startsWith(prefix)) {
+                        i.remove();
+                        if (LogUtil.isDebugEnabled(UserviewCache.class.getName())) {    
+                            LogUtil.debug(UserviewCache.class.getName(), "clearCachedContent: " + key);
+                        }
                     }
                 }
             }
