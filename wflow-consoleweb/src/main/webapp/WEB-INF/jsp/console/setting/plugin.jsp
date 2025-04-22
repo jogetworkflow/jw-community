@@ -26,7 +26,11 @@
     <div id="main-body">
         <div id="pluginstab">
             <ul>
-                <li class="selected"><a href="#installed"><span><fmt:message key="console.setting.plugin.common.label.installed"/></span></a></li><li><a href="#update"><span>Update <span class="jgt-badge update_count">(0)</span></a></span></li>
+                <li class="selected"><a href="#installed"><span><fmt:message key="console.setting.plugin.common.label.installed"/></span></a></li>
+                <li><a href="#update"><span>Update <span class="jgt-badge update_count">(0)</span></a></span></li>
+                <c:if test="${hasConfigurablePlugin}">
+                    <li><a href="#configurableplugins"><span><fmt:message key="console.setting.plugin.common.label.configurableplugins"/></span></a></li>
+                </c:if>    
             </ul>
             <div>
                 <div id="installed">
@@ -44,7 +48,7 @@
                     </div>
                     <ui:jsontable url="${pageContext.request.contextPath}/web/json/plugin/listInstalledBundle?${pageContext.request.queryString}"
                         var="JsonDataTable1"
-                        divToUpdate="pluginList"
+                        divToUpdate="pluginList1"
                         jsonData="data"
                         rowsPerPage="15"
                         width="100%"
@@ -81,7 +85,7 @@
                         </form>
                     </div>
                     <ui:jsontable url="${pageContext.request.contextPath}/web/json/plugin/listInstalledBundle?isUpdate=true"
-                        var="JsonDataTable"
+                        var="JsonDataTable2"
                         divToUpdate="pluginList2"
                         jsonData="data"
                         rowsPerPage="15"
@@ -104,7 +108,45 @@
                         column3="{key: 'latestVersion', label: 'console.plugin.label.latestVersion', sortable: false, width: 140}"
                         column4="{key: 'version', label: 'console.plugin.label.version', sortable: false, width: 140}"
                         />
-                </div>    
+                </div>
+                <c:if test="${hasConfigurablePlugin}">
+                <div id="configurableplugins">
+                    <div id="main-body-content-filter">
+                        <form>
+                            <fmt:message key="console.plugin.label.typeFilter"/>
+                            <select id="JsonDataTable3_filterbytype" onchange="filter(JsonDataTable3, '&className=', this.options[this.selectedIndex].value)">
+                                <option></option>
+                            <c:forEach items="${pluginType}" var="t">
+                                <c:set var="selected"><c:if test="${t.key == param.className}"> selected</c:if></c:set>
+                                <option value="${t.key}" ${selected}>${t.value}</option>
+                            </c:forEach>
+                            </select>
+                        </form>
+                    </div>
+                    <ui:jsontable url="${pageContext.request.contextPath}/web/json/plugin/listConfigurable?${pageContext.request.queryString}"
+                        var="JsonDataTable3"
+                        divToUpdate="pluginList3"
+                        jsonData="data"
+                        rowsPerPage="15"
+                        width="100%"
+                        sort="name"
+                        desc="false"
+                        hrefParam="id"
+                        hrefQuery="true"
+                        href="${pageContext.request.contextPath}/web/console/setting/plugin/config?"
+                        hrefDialog="true"
+                        hrefDialogWidth="600px"
+                        hrefDialogHeight="400px"
+                        hrefDialogTitle="Process Dialog"
+                        searchItems="name|Name"
+                        fields="['id','name','description','version','plugintype', 'uninstallable']"
+                        column1="{key: 'name', label: 'console.plugin.label.name', sortable: false, width: 180}"
+                        column2="{key: 'description', label: 'console.plugin.label.description', sortable: false, width: 300}"
+                        column3="{key: 'version', label: 'console.plugin.label.version', sortable: false, width: 140}"
+                        column4="{key: 'plugintype', label: 'console.plugin.label.plugintype', sortable: false, width: 300}"
+                        />
+                </div>
+                </c:if>
             </div>
         </div>
     </div>
@@ -115,8 +157,7 @@
         var tabView = new TabView('pluginstab', 'top');
         tabView.init();
         
-        $('#JsonDataTable_searchTerm').hide();
-        $('#JsonDataTable1_searchTerm').hide();
+        $('#JsonDataTable1_searchTerm, #JsonDataTable2_searchTerm, #JsonDataTable3_searchTerm').hide();
 
         <c:if test="${isVirtualHostEnabled}">
             $('#JsonDataTable_pluginList-buttons button').hide();
@@ -229,12 +270,15 @@
     
     var org_filter = window.filter;
     var filter = function(jsonTable, url, value){
-        if(jsonTable == JsonDataTable){
-            url = "&className=" + encodeURIComponent($('#JsonDataTable_filterbytype').val());
-            url += "&name=" + encodeURIComponent($('#JsonDataTable_searchCondition').val());
-        }else if(jsonTable == JsonDataTable1){
+        if(jsonTable == JsonDataTable1){
             url = "&className=" + encodeURIComponent($('#JsonDataTable1_filterbytype').val());
             url += "&name=" + encodeURIComponent($('#JsonDataTable1_searchCondition').val());
+        }else if(jsonTable == JsonDataTable2){
+            url = "&className=" + encodeURIComponent($('#JsonDataTable2_filterbytype').val());
+            url += "&name=" + encodeURIComponent($('#JsonDataTable2_searchCondition').val());
+        }else if(jsonTable == JsonDataTable3){
+            url = "&className=" + encodeURIComponent($('#JsonDataTable3_filterbytype').val());
+            url += "&name=" + encodeURIComponent($('#JsonDataTable3_searchCondition').val());
         }
         org_filter(jsonTable, url, '');
     };

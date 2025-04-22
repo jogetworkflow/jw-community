@@ -60,7 +60,8 @@
                             </c:forEach>
                         </div>
                     </div>
-                </c:if>    
+                </c:if>
+                ${pluginExportConfig}        
             </fieldset>
             <div class="form-buttons">
                 <input class="form-button" type="submit" value="<ui:msgEscHTML key="console.app.export.label"/>" />

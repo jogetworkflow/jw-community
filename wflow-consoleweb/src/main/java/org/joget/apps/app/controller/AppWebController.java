@@ -300,6 +300,11 @@ public class AppWebController {
                     appId = appDef.getId();
                 }
             }
+            
+            // Check if appDef is null BEFORE using it
+            if (appDef == null) {
+                return "client/app/assignmentUnavailable";
+            }
 
             FormData formData = new FormData();
             formData = formService.retrieveFormDataFromRequest(formData, request);

@@ -236,6 +236,7 @@
                 <input type="hidden" name="json" value="<c:out value="${json}"/>"/>
             </form>
         </div>
-        <jsp:include page="/WEB-INF/jsp/includes/csrf.jsp" flush="true" />    
+        <%= AppUtil.getInjectionHtml() %>
+        <jsp:include page="/WEB-INF/jsp/includes/csrf.jsp" flush="true" />   
     </body>
 </html>

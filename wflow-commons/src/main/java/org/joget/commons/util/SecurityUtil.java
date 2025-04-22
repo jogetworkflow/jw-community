@@ -224,7 +224,12 @@ public class SecurityUtil implements ApplicationContextAware {
      * @param requestHash 
      */
     public static void clearNonces(int requestHash) {
-        getNonceGenerator().clearNonces(requestHash);
+        NonceGenerator generator = getNonceGenerator();  // Store in local variable
+        if (generator != null) {  // Null check before use
+            generator.clearNonces(requestHash);
+        } else {
+            LogUtil.warn(SecurityUtil.class.getName(), "NonceGenerator is null. Skipping clearNonces.");
+        }
     }
 
     /**

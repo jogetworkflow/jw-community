@@ -28,6 +28,12 @@ public class SharkObjectIdDao extends AbstractSpringDao {
         SharkObjectId temp = new SharkObjectId();
         do {
             SessionFactory sf = super.getSessionFactory();
+
+            // Check if session factory is null
+            if (sf == null) {
+                return null; 
+            }
+
             Session session = null;
             Transaction transaction = null;
             try {

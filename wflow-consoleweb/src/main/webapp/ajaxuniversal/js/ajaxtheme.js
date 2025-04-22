@@ -62,8 +62,9 @@ AjaxUniversalTheme = {
             var menus = $(html).find("#ajaxtheme_loading_menus");
             var content = $(html).find("#ajaxtheme_loading_content");
             var homeBanner = $(html).find("#ajaxtheme_homebanner_content");
+            var injectedHtml = $(html).find("div[data-injected-htmls]");
 
-            AjaxUniversalTheme.renderAjaxContent(menus, content, title, homeBanner);
+            AjaxUniversalTheme.renderAjaxContent(menus, content, title, homeBanner, injectedHtml);
             
             if (window['Analyzer'] !== undefined && $(html).find("#ajaxAnalyzerJson").length > 0) {
                 Analyzer.clearAnalyzer();
@@ -77,8 +78,9 @@ AjaxUniversalTheme = {
             var title = $(html).find("title");
             var menus = $(html).find("#category-container").wrap("<div>");
             var content = $(html).find("#content main");
+            var injectedHtml = $(html).find("div[data-injected-htmls]");
             
-            AjaxUniversalTheme.renderAjaxContent(menus, content, title);
+            AjaxUniversalTheme.renderAjaxContent(menus, content, title, null, injectedHtml);
             
             if (window['Analyzer'] !== undefined && $(html).find("#analyzerJson").length > 0) {
                 Analyzer.clearAnalyzer();
@@ -95,7 +97,7 @@ AjaxUniversalTheme = {
         alert(error.message);
     },
     
-    renderAjaxContent : function(menus, content, title, homeBanner) {
+    renderAjaxContent : function(menus, content, title, homeBanner, injectedHtml) {
         //update body id according to url
         var currentPath = window.location.pathname;
         var menuId = currentPath.substring(currentPath.lastIndexOf("/") + 1);
@@ -109,7 +111,7 @@ AjaxUniversalTheme = {
         
         $(".home_banner").remove();
         $("body").removeClass("has_home_banner");
-        if ($(homeBanner).find(".home_banner").length > 0) {
+        if (homeBanner && $(homeBanner).find(".home_banner").length > 0) {
             $("#page #main").before($(homeBanner).find(".home_banner"));
             $("body").addClass("has_home_banner");
         }
@@ -120,6 +122,16 @@ AjaxUniversalTheme = {
         
         if ($("#content main").find(".c-overflow").length > 0) {
             AjaxUniversalTheme.scrollBar(".c-overflow", "y");
+        }
+        
+        //replace injected html based on its id
+        if ($(injectedHtml).length > 0) {
+            var container = $("body div[data-injected-htmls]");
+            $(injectedHtml).find('[data-injected-html]').each(function(){
+                var id = $(this).data("injected-html");
+                $(container).find('div[data-injected-html="'+id+'"]').remove();
+                $(container).append($(this));
+            });
         }
         
         $("html, body").animate({

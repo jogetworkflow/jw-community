@@ -78,7 +78,8 @@
                 <button onclick="reloadForm()">Reload</button>
             </div-->
         </fieldset>
-                
-        <jsp:include page="/WEB-INF/jsp/includes/csrf.jsp" flush="true" />    
+                    
+        <%= AppUtil.getInjectionHtml() %>
+        <jsp:include page="/WEB-INF/jsp/includes/csrf.jsp" flush="true" />
     </body>
 </html>

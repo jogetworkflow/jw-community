@@ -36,6 +36,11 @@
                     });
                 });
             </script>
+        </c:set>
+        <c:set var="uiInjectionHtml" scope="request">
+            <div data-cbuilder-uiinjection>
+                <%= AppUtil.getInjectionHtml() %>
+            </div>
         </c:set>    
         {
             id : "<c:if test="${!empty builderDef}"><c:out value="${builderDef.id}"/></c:if>",
@@ -56,7 +61,8 @@
             builderJS : "<ui:escape value="${script}" format="json" />",
             builderCanvas : "<ui:escape value="${builderCanvas}" format="json" />",
             builderDefJson : "<ui:escape value="${builderDefJson}" format="json" />",
-            builderConfig : "<ui:escape value="${builderConfig}" format="json" />"
+            builderConfig : "<ui:escape value="${builderConfig}" format="json" />",
+            uiInjectionHtml : "<ui:escape value="${uiInjectionHtml}" format="json" />"
         }
     </c:when>
     <c:otherwise>
@@ -379,6 +385,9 @@
                             }); 
                         });  
                 </script>
+                <div data-cbuilder-uiinjection>
+                    <%= AppUtil.getInjectionHtml() %>
+                </div>
                 <jsp:include page="/WEB-INF/jsp/console/apps/adminBar.jsp" flush="true">
                     <jsp:param name="appId" value="${appDefinition.id}"/>
                     <jsp:param name="appVersion" value="${appDefinition.version}"/>

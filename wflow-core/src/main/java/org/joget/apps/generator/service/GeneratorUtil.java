@@ -239,25 +239,41 @@ public class GeneratorUtil {
             domFactory.setExpandEntityReferences(false);
             DocumentBuilder builder = domFactory.newDocumentBuilder();
             Document xpdlDoc = builder.parse(new InputSource(new ByteArrayInputStream(xpdl.getBytes("UTF-8"))));
-            
+
             DocumentBuilderFactory domFactory2 = DocumentBuilderFactory.newInstance();
             domFactory2.setExpandEntityReferences(false);
             DocumentBuilder builder2 = domFactory2.newDocumentBuilder();
             Document processDoc = builder2.parse(new InputSource(new ByteArrayInputStream(processXml.getBytes("UTF-8"))));
-        
+
             NodeList xpdlNodeList = xpdlDoc.getChildNodes();
             NodeList processNodeList = processDoc.getChildNodes();
-            
+
+            // Get/Create essential nodes
             Node xpdlPackageNode = getNode("Package", xpdlNodeList);
+            if (xpdlPackageNode == null) {
+                throw new RuntimeException("Invalid XPDL: Missing Package node");
+            }
+
+            // Handle Participants node (create if missing)
             Node participatsNode = getNode("Participants", xpdlPackageNode.getChildNodes());
+            if (participatsNode == null) {
+                participatsNode = xpdlDoc.createElement("Participants");
+                xpdlPackageNode.appendChild(participatsNode);
+            }
+
+            // Handle WorkflowProcesses node (create if missing)
             Node processesNode = getNode("WorkflowProcesses", xpdlPackageNode.getChildNodes());
-            
+            if (processesNode == null) {
+                processesNode = xpdlDoc.createElement("WorkflowProcesses");
+                xpdlPackageNode.appendChild(processesNode);
+            }
+
             if (participantsXml != null && !participantsXml.isEmpty()) {
                 DocumentBuilderFactory domFactory3 = DocumentBuilderFactory.newInstance();
                 domFactory3.setExpandEntityReferences(false);
                 DocumentBuilder builder3 = domFactory3.newDocumentBuilder();
                 Document participantsDoc = builder3.parse(new InputSource(new ByteArrayInputStream(participantsXml.getBytes("UTF-8"))));
-            
+
                 NodeList participantsList = participantsDoc.getChildNodes();
                 Node tempParticipatsNode = getNode("Participants", participantsList);
                 if (tempParticipatsNode != null && tempParticipatsNode.hasChildNodes()) {
@@ -269,10 +285,14 @@ public class GeneratorUtil {
                     }
                 }
             }
-            
+
             Node processNode = getNode("WorkflowProcess", processNodeList);
-            Node importedNode = xpdlDoc.importNode(processNode, true);
-            processesNode.appendChild(importedNode);
+            if (processNode != null) {
+                Node importedNode = xpdlDoc.importNode(processNode, true);
+                processesNode.appendChild(importedNode); // Safe: processesNode is checked
+            } else {
+                throw new RuntimeException("Invalid Process XML: WorkflowProcess node missing.");
+            }
 
             OutputFormat format = new OutputFormat(xpdlDoc);
             format.setIndenting(true);
@@ -358,15 +378,21 @@ public class GeneratorUtil {
         if (xpdl == null || xpdl.isEmpty()) {
             xpdl = GeneratorUtil.createProcessPackageXpdl(appDef);
         }
+
+        // Ensure xpdl is not null before passing it
+        if (xpdl == null) {
+            throw new NullPointerException("xpdl is null before calling addParticipantsAndProcessXmlToXpdl()");
+        }
+
         xpdl = GeneratorUtil.addParticipantsAndProcessXmlToXpdl(participantsXml, processXml, xpdl);
         AppService appService = (AppService) AppUtil.getApplicationContext().getBean("appService");
         packageDef = appService.deployWorkflowPackage(appDef.getId(), appDef.getVersion().toString(), xpdl.getBytes("UTF-8"), false);
-        
+
         //set new generated process start whitelist to admin
         if (packageDef != null) {
             WorkflowManager workflowManager = (WorkflowManager) AppUtil.getApplicationContext().getBean("workflowManager");
             PackageDefinitionDao packageDefinitionDao = (PackageDefinitionDao) AppUtil.getApplicationContext().getBean("packageDefinitionDao");
-            
+
             Collection<WorkflowProcess> processList = workflowManager.getProcessList(appDef.getAppId(), packageDef.getVersion().toString());
             for (WorkflowProcess wp : processList) {
                 String processIdWithoutVersion = WorkflowUtil.getProcessDefIdWithoutVersion(wp.getId());
@@ -383,7 +409,7 @@ public class GeneratorUtil {
 
         return packageDef;
     }
-    
+
     /**
      * processing the generator resource file with plugin properties and variables
      * 

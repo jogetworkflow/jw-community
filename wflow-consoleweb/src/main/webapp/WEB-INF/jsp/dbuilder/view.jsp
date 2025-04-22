@@ -73,5 +73,6 @@
                 });
             });
         </script>
+        <%= AppUtil.getInjectionHtml() %>
     </body>
 </html>

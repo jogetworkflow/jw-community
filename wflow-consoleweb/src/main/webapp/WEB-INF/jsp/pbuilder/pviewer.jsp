@@ -49,5 +49,6 @@
                 ProcessBuilder.loadGraph(json, '<c:out value="${wfProcess.idWithoutVersion}"/>', selectedNodes);
             });
         </script>
+        <%= AppUtil.getInjectionHtml() %>
     </body>
 </html>

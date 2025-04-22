@@ -417,7 +417,8 @@
             </c:if>
         </c:if>    
 
-        <%= AppUtil.getSystemAlert() %>   
+        <%= AppUtil.getSystemAlert() %>  
+        <%= AppUtil.getInjectionHtml() %>
         
         <%
             sw.stop();

@@ -25,6 +25,7 @@ import org.joget.commons.util.LogUtil;
 import org.joget.commons.util.ResourceBundleUtil;
 import org.joget.commons.util.SecurityUtil;
 import org.joget.commons.util.SetupManager;
+import org.joget.commons.util.StringUtil;
 import org.joget.directory.model.User;
 import org.joget.plugin.base.Plugin;
 import org.joget.plugin.base.PluginManager;
@@ -178,10 +179,18 @@ public class UserviewUtil implements ApplicationContextAware, ServletContextAwar
             swallowingResponse.setContentType("text/html; charset=utf-8");
 
             RequestDispatcher dispatcher = servletContext.getRequestDispatcher("/WEB-INF/jsp/" + viewName);
-
+            
             dispatcher.include(request, wrapper);
 
             result = sbuffer.toString();
+            
+            //fix fmt:message labels become ???
+            if (result != null && result.contains("???")) {
+                PluginManager pluginManager = (PluginManager) AppUtil.getApplicationContext().getBean("pluginManager");
+                result = result.replaceAll(StringUtil.escapeRegex("???"), StringUtil.escapeRegex("@@"));
+                result = pluginManager.processPluginTranslation(result, "org.joget.apps.userview.lib.AjaxUniversalTheme", null); //using an exisitng theme plugin
+                result = result.replaceAll(StringUtil.escapeRegex("@@"), StringUtil.escapeRegex("???"));
+            }
         } catch (Exception e) {
             // get root cause
             Throwable cause = e.getCause();

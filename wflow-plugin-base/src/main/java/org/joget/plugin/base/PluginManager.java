@@ -39,6 +39,8 @@ import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 import java.util.jar.Manifest;
 import org.apache.tomcat.jakartaee.JogetPluginMigration;
+import org.joget.commons.spring.model.Setting;
+import org.joget.plugin.property.service.PropertyUtil;
 
 /**
  * Service methods used to manage plugins
@@ -370,7 +372,7 @@ public class PluginManager implements ApplicationContextAware {
             } else {
                 newBundle.update();
             }  
-
+            
             // clear cache
             clearCache();
             return newBundle;
@@ -541,6 +543,22 @@ public class PluginManager implements ApplicationContextAware {
             BundleContext context = getOsgiContainer().getBundleContext();
             Bundle bundle = context.getBundle(location);
             if (bundle != null && uninstallable(bundle.getSymbolicName())) {
+                
+                //find ActivationAwarePlugin plugin to call beforeUnregister method
+                ServiceReference[] refs = bundle.getRegisteredServices();
+                if (refs != null) {
+                    for (ServiceReference sr : refs) {
+                        Object obj = context.getService(sr);
+                        if (obj instanceof ActivationAwarePlugin) {
+                            Plugin plugin = weavePluginAspect((Plugin) obj); //plugin could be null if having error in multitenant
+                            if (plugin != null) {
+                                ((ActivationAwarePlugin) obj).beforeUnregister();
+                            }
+                        }
+                        context.ungetService(sr);
+                    }
+                }
+                
                 bundle.stop();
                 bundle.uninstall();
                 
@@ -571,6 +589,22 @@ public class PluginManager implements ApplicationContextAware {
             bundle.start();
             LogUtil.info(PluginManager.class.getName(), "Bundle " + bundle.getSymbolicName() + " started");
             
+            //find ActivationAwarePlugin plugin to call afterRegister method
+            BundleContext context = getOsgiContainer().getBundleContext();
+            ServiceReference[] refs = bundle.getRegisteredServices();
+            if (refs != null) {
+                for (ServiceReference sr : refs) {
+                    Object obj = context.getService(sr);
+                    if (obj instanceof ActivationAwarePlugin) {
+                        Plugin plugin = weavePluginAspect((Plugin) obj); //plugin could be null if having error in multitenant
+                        if (plugin != null) {
+                            ((ActivationAwarePlugin) obj).afterRegister();
+                        }
+                    }
+                    context.ungetService(sr);
+                }
+            }
+
             // clear cache
             clearCache();
         } catch (Exception be) {
@@ -1205,21 +1239,16 @@ public class PluginManager implements ApplicationContextAware {
         if (sr != null) {
             try {
                 Bundle bundle = sr.getBundle();
-                if (uninstallable(bundle.getSymbolicName())) {
-                    bundle.stop();
-                    bundle.uninstall();
+                if (bundle != null && uninstallable(bundle.getSymbolicName())) {
                     String location = bundle.getLocation();
-                    context.ungetService(sr);
+                    uninstallBundle(location);
 
                     // delete location
                     if (deleteFile) {
                         File file = new File(new URI(location));
-                        boolean deleted = file.delete();
+                        file.delete();
                     }
                     result = true;
-
-                    // clear cache
-                    clearCache();
                 }
             } catch (Exception ex) {
                 LogUtil.error(PluginManager.class.getName(), ex, "");
@@ -1248,10 +1277,46 @@ public class PluginManager implements ApplicationContextAware {
             if (plugin == null) {
                 plugin = loadClassPathPlugin(name);
             }
+            
+            //if it is system configurable plugin, retrieve the global setting 
+            if (plugin instanceof SystemConfigurablePlugin) {
+                SetupManager setupManager = (SetupManager) applicationContext.getBean("setupManager");
+                Setting setting = setupManager.getSettingByProperty("plugin_config_" + name);
+                if (setting != null) {
+                    ((SystemConfigurablePlugin) plugin).setProperties(PropertyUtil.getPropertiesValueFromJson(setting.getValue()));
+                }
+            }
+            
             return plugin;
         } else {
             return null;
         }
+    }
+    
+    /**
+     * Returns a plugin by type and name, from either the OSGI container and the classpath.
+     * 
+     * @param pluginType
+     * @param name name of the required plugin
+     * @return
+     */
+    public Plugin getPluginByTypeAndName(Class pluginType, String name) {
+        if (pluginType != null && name != null && !name.isEmpty()) {
+            Map<String, Plugin> pluginMap = getCache().getPluginCache().get(pluginType);
+            if (pluginMap == null) {
+                // load plugins
+                pluginMap = internalLoadPluginMap(pluginType);
+
+                // store in cache
+                getCache().getPluginCache().put(pluginType, pluginMap);
+            }
+            
+            Plugin plugin = pluginMap.get(name);
+            if (plugin != null) {
+                return getPlugin(ClassUtils.getUserClass(plugin).getName());
+            }
+        }
+        return null;
     }
 
     /**
@@ -1673,7 +1738,7 @@ public class PluginManager implements ApplicationContextAware {
 
         return url;
     }
-
+    
     /**
      * Execute a plugin
      * @param name The fully qualified class name of the plugin
@@ -1921,6 +1986,9 @@ public class PluginManager implements ApplicationContextAware {
         pluginTypeMap.put("org.joget.governance.model.GovHealthCheckAbstract", ResourceBundleUtil.getMessage("setting.plugin.govHealthCheck"));
         pluginTypeMap.put("org.joget.plugin.base.PluginWebSocket", ResourceBundleUtil.getMessage("setting.plugin.webSocket"));
         pluginTypeMap.put("org.joget.apps.app.model.CreateAppOption", ResourceBundleUtil.getMessage("setting.plugin.createAppOption"));
+        pluginTypeMap.put("org.joget.plugin.base.UiHtmlInjectorPlugin", ResourceBundleUtil.getMessage("setting.plugin.uiHtmlInjectorPlugin"));
+        pluginTypeMap.put("org.joget.plugin.base.ConsolePagePlugin", ResourceBundleUtil.getMessage("setting.plugin.consolePagePlugin"));
+        pluginTypeMap.put("org.joget.plugin.base.PluginWebFilter", ResourceBundleUtil.getMessage("setting.plugin.pluginWebFilter"));
        
         if (!getCache().getCustomPluginInterfaces().isEmpty()) {
             for (String className : getCache().getCustomPluginInterfaces().keySet()) {
@@ -1960,6 +2028,10 @@ public class PluginManager implements ApplicationContextAware {
             }
         }
         return path;
+    }
+    
+    public boolean hasConfigurablePlugins() {
+        return !list(SystemConfigurablePlugin.class).isEmpty();
     }
     
     public static void registerCustomPluginInterface(CustomPluginInterface interfaceClass) {
