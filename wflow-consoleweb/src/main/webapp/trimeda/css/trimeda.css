@@ -47,7 +47,10 @@ div#section-actions.form-section .form-cell button,
 #content main input[class*=button]:not([class*="btn-"]), 
 #content main button.btn-primary, 
 #content main input.btn-primary,
-footer {
+footer,
+button.btn-danger,
+#content main button[class*=button].btn-danger, 
+#content main input[class*=button].btn-danger {
     font-family: "HindVadodara", sans-serif;
     font-weight: 500 !important;
     font-size: 16px !important;
@@ -117,7 +120,9 @@ button.form-button.CRUD_New,
 .dataList .row_action a:not(.btn),
 div#dataList_simplelist div.list-group .list-group-item  div.rowActions > a,
 div#dataList_columnslist div.dropdown > a,
-div#dataList_columnslist tbody span.row_action_inner > a {
+div#dataList_columnslist tbody span.row_action_inner > a,
+#content .page-button-panel .page-button-prev.btn.button,
+#content .page-button-panel .page-button-next.btn.button {
     height: 40px;
     flex-grow: 0;
     display: inline-flex !important;
@@ -130,6 +135,11 @@ div#dataList_columnslist tbody span.row_action_inner > a {
     border-radius: 16px !important;
     margin: 0 !important;
     font-size: 16px;
+}
+
+#content .page-button-panel .page-button-prev.btn.button,
+#content .page-button-panel .page-button-next.btn.button {
+    padding: 6px 12px !important;
 }
 
 .selector_element .selector_button, 
@@ -154,7 +164,7 @@ div#dataList_columnslist tbody span.row_action_inner > a {
 div.grid button.delete_btn,
 button.btn-danger {
     background-color: var(--danger-button-background-color) !important;
-    padding: 8px 8px !important;
+    padding: 8px 16px !important;
     border-radius: 16px !important;
     min-height: 32px;
     color: #FFF !important;
@@ -368,6 +378,10 @@ body.dark-mode header.navbar div#sidebar-trigger > img#light-thumbnail {
     margin-bottom: 4px;
 }
 
+body.rtl #sidebar .nav > li > ul > li:not(:last-child){
+    float: right;
+}
+
 #sidebar .nav > li > ul > li > a {
     padding: 8px 16px !important;
 }
@@ -392,6 +406,16 @@ body.dark-mode header.navbar div#sidebar-trigger > img#light-thumbnail {
     body.sidebar-toggled #sidebar,
     body.sidebar-toggled nav#navigation {
         width: 280px;
+    }
+
+    header.navbar li.dropdown.user-link > a {
+        background: transparent !important;
+        width: fit-content !important;
+    }
+
+    header.navbar li.dropdown.user-link > a > span.caret,
+    header.navbar li.dropdown.user-link > a::after {
+        display: none !important;
     }
 }
 
@@ -438,6 +462,10 @@ body.dark-mode header.navbar div#sidebar-trigger > img#light-thumbnail {
         display: flex; 
         gap: 8px;
         scrollbar-width:none;
+    }
+
+    body.horizontal_menu #sidebar li:hover > ul.menu-container:not(.mouseover) {
+        display: none !important;
     }
 
     body.horizontal_menu.navigationEnabled ul.menu-container.mouseover {
@@ -983,10 +1011,28 @@ header.navbar .dropdown-menu.notifications > li.task.showMoreInfo > div.more-inf
     border-radius: 16px;
     background: var(--theme-content-background);
     padding: 0px 0px;
-    margin-top: 88px !important;
     margin-right: 16px;
     min-height: calc(919 / 1024 * 100vh);
     max-height: calc(919 / 1024 * 100vh);
+}
+
+body:not(.embeded, .horizontal_menu) #content.page_content {
+    margin-top: 88px !important;
+}
+
+body.embeded #content.page_content {
+    margin-top: 0;
+}
+
+body.embeded #content main {
+    padding: 16px 0px;
+}
+
+body.embeded #content main > *:not(.category-label-header, .breadcrumb, .quickEdit) {
+    margin-top: 0 !important;
+    margin-left: 0 !important;
+    margin-right: 0 !important;
+    min-width: 100%;
 }
 
 body.horizontal_menu:not(.inline_menu) #content.page_content {
@@ -999,7 +1045,11 @@ body.horizontal_menu:not(.inline_menu) #content.page_content {
 }
 
 #page {
-    padding-left: calc(276 / 1440 * 100vw)
+    padding-left: calc(276 / 1440 * 100vw);
+}
+
+body.rtl:not(.horizontal_menu) #page {
+    padding-right: calc(276 / 1440 * 100vw) !important;
 }
 
 /* Breadcrumb */
@@ -1034,16 +1084,19 @@ body.multiple_body_content div.main-body-content.Form_Menu {
     padding-bottom: 0px !important;
 }
 
-body.multiple_body_content div.main-body-content {
+body.multiple_body_content div.main-body-content:not(:has(.form-section .dropdown-main-body-content-container)),
+body.multiple_body_content div.main-body-content .form-section:has(.dropdown-main-body-content-container) {
     padding: 0px !important;
     border: 1px solid var(--field-border-color) !important;
     border-radius: 16px !important;
     transition: opacity 0.3s ease-in-out;
     position: relative;
-    max-height: 480px;
+    max-height: 480px !important;
+    height: fit-content !important;
 }
 
-body.multiple_body_content div.main-body-content:not(.closed) {
+body.multiple_body_content div.main-body-content:not(.closed):not(:has(.form-section .dropdown-main-body-content-container)),
+body.multiple_body_content div.main-body-content .form-section:has(.dropdown-main-body-content-container) {
     border-color: var(--general-accent-color) !important;
 }
 
@@ -1061,6 +1114,11 @@ body.multiple_body_content div.main-body-content .dropdown-main-body-content-con
     padding-top: 0px !important;
     transition: transform 0.3s ease-in-out, background-color 0.3s ease-in-out;
     cursor: pointer;
+}
+
+body.rtl.multiple_body_content div.main-body-content .dropdown-main-body-content-container {
+    left: 22px;
+    right: unset;
 }
 
 body.multiple_body_content div.main-body-content .dropdown-main-body-content-container::after {
@@ -1083,12 +1141,15 @@ body.multiple_body_content div.main-body-content .dropdown-main-body-content-con
     color: var(--theme-font-color);
 }
 
-body.multiple_body_content div.main-body-content.closed .dropdown-main-body-content-container::after {
+body.multiple_body_content div.main-body-content.closed .dropdown-main-body-content-container::after,
+body.multiple_body_content div.main-body-content .form-section.closed .dropdown-main-body-content-container::after {
     content: "\f107";
     color: var(--general-accent-color);
+    pointer-events: visible;
 }
 
-body.multiple_body_content div.main-body-content:not(.closed) .dropdown-main-body-content-container {
+body.multiple_body_content div.main-body-content:not(.closed):not(:has(.form-section .dropdown-main-body-content-container)) .dropdown-main-body-content-container,
+body.multiple_body_content div.main-body-content .form-section:not(.closed) .dropdown-main-body-content-container {
     background-color: var(--field-border-color);
     border-radius: 24px;
     transform: rotate(180deg);
@@ -1096,22 +1157,33 @@ body.multiple_body_content div.main-body-content:not(.closed) .dropdown-main-bod
 }
 
 body.multiple_body_content div.main-body-content .dropdown-main-body-content-container:hover {
-    opacity: 1;
+    opacity: 1 !important;
 }
 
-body.multiple_body_content div.main-body-content.closed {
-    max-height: 64px;
-    overflow: hidden;
+body.multiple_body_content div.main-body-content.closed:not(:has(.form-section .dropdown-main-body-content-container)),
+body.multiple_body_content div.main-body-content .form-section.closed:has(.dropdown-main-body-content-container) {
+    max-height: 64px !important;
+    overflow: hidden !important;
     position: relative;
 }
 
-body.multiple_body_content div.main-body-content:not(.closed) .mCSB_container > *:not(div.dropdown-main-body-content-container) {
+body.multiple_body_content div.main-body-content .form-section:has(.dropdown-main-body-content-container) .mCSB_container {
+    border-radius: 16px;
+}
+
+body.multiple_body_content div.main-body-content:has(.form-section .dropdown-main-body-content-container) div#section-actions {
+    margin-top: 25px;
+}
+
+body.multiple_body_content div.main-body-content:not(.closed):not(:has(.form-section .dropdown-main-body-content-container)) .mCSB_container > *:not(div.dropdown-main-body-content-container),
+body.multiple_body_content div.main-body-content .form-section:not(.closed):has(.dropdown-main-body-content-container) .mCSB_container > *:not(div.dropdown-main-body-content-container) {
     padding: 20px 24px 0px 24px;
     max-height: fit-content; 
     transition: padding 0.3s ease-in-out, opacity 0.3s ease-in-out;
 }
 
-body.multiple_body_content div.main-body-content.closed > *:not(div.dropdown-main-body-content-container) {
+body.multiple_body_content div.main-body-content.closed > *:not(div.dropdown-main-body-content-container),
+body.multiple_body_content div.main-body-content .form-section.closed:has(.dropdown-main-body-content-container) {
     max-height: 64px; 
     overflow: hidden;
     padding-top: 10px !important;
@@ -1199,6 +1271,10 @@ div.ui-timepicker-div dl dd > * > select {
     background-position: right 24.55px center;
     background-size: 10.5px 6.47px !important;
 }
+
+body.rtl div.ui-timepicker-div dl dd > * > select {
+    background-size: 80.5px 6.47px !important;
+}select
 
 .ContainerComponent {
     padding: 0;
@@ -1437,6 +1513,11 @@ input[type=hidden] + .form-cell, .form-cell + .form-cell, .subform-cell + .subfo
     right: 24.55px;
 }
 
+body.rtl .numeric_field_controls {
+    left: 24.55px;
+    right: unset;
+}
+
 .label-top .numeric_field_controls {
     top: 44px;
 }
@@ -1549,9 +1630,21 @@ div#ui-datepicker-div:has(div.ui-timepicker-div) table {
     padding-left: 24px;
 }
 
+body.rtl #ui-datepicker-div > table.ui-datepicker-calendar > thead > tr > th:first-child, 
+body.rtl #ui-datepicker-div > table.ui-datepicker-calendar > tbody > tr > td:first-child {
+    padding-left: unset;
+    padding-right: 24px;
+}
+
 #ui-datepicker-div > table.ui-datepicker-calendar > thead > tr > th:last-child,
 #ui-datepicker-div > table.ui-datepicker-calendar > tbody > tr > td:last-child {
     padding-right: 24px;
+}
+
+body.rtl #ui-datepicker-div > table.ui-datepicker-calendar > thead > tr > th:last-child,
+body.rtl #ui-datepicker-div > table.ui-datepicker-calendar > tbody > tr > td:last-child {
+    padding-right: unset;
+    padding-left: 24px
 }
 
 .hasDatepicker.focus + a {
@@ -1568,6 +1661,16 @@ div#ui-datepicker-div:has(div.ui-timepicker-div) table {
     justify-content: center;
     top: 50%;
     transform: translate(-50%, -50%);
+}
+
+body.rtl .hasDatepicker + a, body.rtl .hasDatepicker + a + a {
+    left: 35px;
+    right: unset !important;
+}
+
+body.rtl .hasDatepicker + a + a {
+    left: 60px;
+    right: unset !important;
 }
 
 .hasDatepicker + a + a {
@@ -1605,17 +1708,31 @@ div#ui-datepicker-div:has(div.ui-timepicker-div) table {
     margin-left: 8px;
 }
 
+body.rtl .ui-datepicker .ui-datepicker-title select + select{
+    margin-left: unset;
+    margin-right: 8px;
+}
+
 .ui-datepicker .ui-datepicker-prev {
     position: relative;
     order: 2;
     margin-left: auto;
     color: var(--theme-link);
 } 
+body.rtl .ui-datepicker .ui-datepicker-prev{
+    order: 3;
+    margin-left: unset;
+}
 
 .ui-datepicker .ui-datepicker-next {
     position: relative;
     order: 3;
     color: var(--theme-link);
+}
+
+body.rtl .ui-datepicker .ui-datepicker-next {
+    order: 2;
+    margin-right: auto;
 }
 
 .ui-datepicker td {
@@ -1675,6 +1792,10 @@ div.ui-timepicker-div dl dt {
     position: relative;
 }
 
+body.rtl div.ui-timepicker-div dl dt {
+    text-align: right;
+}
+
 div.ui-timepicker-div dl dt:not(:nth-of-type(3))::after {
     content: "";
     position: absolute;
@@ -1685,6 +1806,11 @@ div.ui-timepicker-div dl dt:not(:nth-of-type(3))::after {
     top: 100%;
     transform: translateY(-50%);
 } 
+
+body.rtl div.ui-timepicker-div dl dt:not(:nth-of-type(3))::after{
+    right: unset;
+    left: 0;
+}
 
 div.ui-timepicker-div dl dd {
     order: 1;
@@ -1719,6 +1845,10 @@ div.ui-timepicker-div dl dd > * > select {
 
 #ui-datepicker-div .ui-timepicker-div dl dd {
     margin: 0;
+}
+
+body.rtl #ui-datepicker-div .ui-timepicker-div.ui-timepicker-rtl dl dd {
+    margin: 0 0px 10px 41%;
 }
 
 div#ui-datepicker-div:has(div.ui-timepicker-div) table.ui-datepicker-calendar:has(td > a.ui-state-active) tbody tr:not(:has(td > a.ui-state-active)) {
@@ -1786,6 +1916,11 @@ button.form-button.CRUD_New {
     font: 14px / 1 FontAwesome;
 }
 
+body.rtl .accordion .card-header::after {
+    left: 15px;
+    right: unset;
+}
+
 .accordion .card-header:not(.collapsed)::after {
     content: "\f068";
 }
@@ -1808,7 +1943,7 @@ button.form-button.CRUD_New {
 }
 
 .dataList td,
-.grid table td {
+.grid:not(.adgrid) table td {
     padding-top: 12px !important;
     padding-bottom: 12px !important;
 }
@@ -1873,6 +2008,10 @@ form:has(.grid table tbody tr.grid-row) div#section-actions .form-cell input {
 
 .dataList tr.even {
     background-color: inherit;
+}
+
+.dataList .table-wrapper {
+    padding-bottom: 70px;
 }
 
 .dataList .pagebanner {
@@ -2112,7 +2251,15 @@ footer {
     body:not(.horizontal_menu) .hi-trigger {
         margin-left: 0;
     }
-} 
+
+    body.rtl:not(.horizontal_menu) #page {
+        padding-right: 0px !important;
+    }
+
+    body.rtl:not(.horizontal_menu) #content.page_content {
+        margin-right: 16px;
+    }
+}
 
 @media screen and (min-width: 1280px) {
     body.sidebar-minimized #sidebar:hover {
@@ -2132,12 +2279,12 @@ footer {
         width: 100%;
     }
 
-    body.sidebar-minimized #sidebar:not(:hover) .nav > li > a {
+    body.sidebar-minimized #sidebar:not(:hover) .nav>li>a {
         padding: 0px 8px 0px 8px;
     }
 
     body:not(.horizontal_menu).sidebar-minimized #navigation {
-        width: 100%;    
+        width: 100%;
         margin: 0px;
         padding: 0px 16px;
     }
@@ -2145,7 +2292,11 @@ footer {
     body.sidebar-minimized header.navbar {
         width: calc(100% - 95px);
     }
-} 
+
+    body.rtl:not(.horizontal_menu).sidebar-minimized #page {
+        padding-right: 95px !important;
+    }
+}
 /* End of Sidebar Styling */
 
 /* RTL Related Stylings */

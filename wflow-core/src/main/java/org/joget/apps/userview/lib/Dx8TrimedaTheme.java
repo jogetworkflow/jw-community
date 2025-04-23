@@ -20,10 +20,10 @@ import de.bripkens.gravatar.DefaultImage;
 import de.bripkens.gravatar.Gravatar;
 import de.bripkens.gravatar.Rating;
 
-public class Trimeda extends AjaxUniversalTheme {
+public class Dx8TrimedaTheme extends AjaxUniversalTheme {
     @Override
     public String getLabel() {
-        return "Trimeda";
+        return "DX 8 Trimeda";
     }
 
     @Override
@@ -33,7 +33,7 @@ public class Trimeda extends AjaxUniversalTheme {
 
     @Override
     public String getName() {
-        return "Trimeda";
+        return "DX 8 Trimeda";
     }
 
     @Override
