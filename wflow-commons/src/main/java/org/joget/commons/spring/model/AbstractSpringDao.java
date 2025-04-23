@@ -7,6 +7,7 @@ import java.util.List;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.query.Query;
+import org.joget.commons.cache.InMemoryCacheManager;
 import org.joget.commons.util.StringUtil;
 
 public abstract class AbstractSpringDao {
@@ -83,7 +84,7 @@ public abstract class AbstractSpringDao {
             }
         }
         Query q = session.createQuery(query);
-        q.setCacheable(true);
+        setCacheable(q, null);
 
         int s = (start == null) ? 0 : start;
         q.setFirstResult(s);
@@ -107,7 +108,7 @@ public abstract class AbstractSpringDao {
         String newCondition = StringUtil.replaceOrdinalParameters(condition, params);
         Session session = findSession();
         Query q = session.createQuery("SELECT COUNT(*) FROM " + entityName + " e " + newCondition);
-        q.setCacheable(true);
+        setCacheable(q, null);
 
         if (params != null) {
             int i = 1;
@@ -123,6 +124,12 @@ public abstract class AbstractSpringDao {
         } else {
             return Long.valueOf(result.size());
         }
+    }
+    
+    protected void setCacheable(Query q, String regionName) {
+        String cacheRegionName = (regionName != null && !regionName.isEmpty()) ? regionName : getClass().getPackageName();
+        InMemoryCacheManager cacheManager = InMemoryCacheManager.getInMemoryCacheManager();
+        cacheManager.setCacheable(q, cacheRegionName);
     }
     
     /**

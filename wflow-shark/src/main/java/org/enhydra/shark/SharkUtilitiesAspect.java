@@ -23,6 +23,7 @@ import org.enhydra.shark.xpdl.XMLInterfaceForJDK13;
 import org.enhydra.shark.xpdl.elements.Package;
 import org.hibernate.Cache;
 import org.hibernate.SessionFactory;
+import org.joget.commons.cache.InMemoryCacheManager;
 import org.joget.commons.util.DynamicDataSourceManager;
 import org.joget.commons.util.LogUtil;
 import org.joget.workflow.model.dao.WorkflowHelper;
@@ -33,6 +34,7 @@ import org.joget.workflow.shark.model.SharkObjectId;
 import org.joget.workflow.shark.model.dao.SharkCounterDao;
 import org.joget.workflow.shark.model.dao.SharkObjectIdDao;
 import org.joget.workflow.shark.model.dao.SharkWorkflowAssignmentDao;
+import org.joget.workflow.shark.model.dao.SharkWorkflowAssignmentDaoImpl;
 import org.joget.workflow.util.WorkflowUtil;
 
 
@@ -474,7 +476,7 @@ public class SharkUtilitiesAspect {
         }
     }
         
-    @Pointcut("execution(* org.joget.workflow.model.service.WorkflowManager.*(..)) && !(execution(* org.joget..*.get*(..)) || execution(* org.joget..*.set*(..)) || execution(* org.joget..*.is*(..)) || execution(* org.joget..*.internal*(..)) || execution(* org.joget..*.*connect*(..)) || execution(* org.joget..*.*Variable*(..)) || execution(* org.joget..*.*Inbox*(..)))")
+    @Pointcut("execution(* org.joget.workflow.model.service.WorkflowManager.*(..)) && !(execution(* org.joget..*.get*(..)) || execution(* org.joget..*.set*(..)) || execution(* org.joget..*.is*(..)) || execution(* org.joget..*.internal*(..)) || execution(* org.joget..*.*connect*(..)) || execution(* org.joget..*.*Variable*(..)) || execution(* org.joget..*.*Inbox*(..)) || execution(* org.joget..*.processStartWithInstanceId(..)))")
     private void clearWorkflowSessionFactoryCacheMethods() {
     }
 
@@ -492,7 +494,7 @@ public class SharkUtilitiesAspect {
         SessionFactory sessionFactory = (SessionFactory)WorkflowUtil.getApplicationContext().getBean("workflowSessionFactory");
         Cache cache = sessionFactory.getCache();
         if (cache != null) {
-            cache.evictQueryRegions();
+            cache.evictQueryRegion(InMemoryCacheManager.PREFIX_QUERY_CACHE + SharkWorkflowAssignmentDaoImpl.class.getPackageName());
         }
         return result;
     }

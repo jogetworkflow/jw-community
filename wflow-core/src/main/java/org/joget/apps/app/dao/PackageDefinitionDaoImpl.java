@@ -393,7 +393,7 @@ public class PackageDefinitionDaoImpl extends AbstractVersionedObjectDao<Package
         String query = "SELECT e.version FROM " + ENTITY_NAME + " e WHERE e.id = ?1";
 
         Query q = session.createQuery(query);
-        q.setCacheable(true);
+        setCacheable(q, null);
         q.setParameter(1, packageId);
 
         return (Collection<Long>) q.list();
@@ -404,7 +404,7 @@ public class PackageDefinitionDaoImpl extends AbstractVersionedObjectDao<Package
         String query = "SELECT e.appDefinition FROM " + getEntityName() + " e  WHERE e.id=?1 AND e.version=?2";
 
         Query q = session.createQuery(query);
-        q.setCacheable(true);
+        setCacheable(q, null);
         q.setParameter(1, packageId);
         q.setParameter(2, packageVersion);
 

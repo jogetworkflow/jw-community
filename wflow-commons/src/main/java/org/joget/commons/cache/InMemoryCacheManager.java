@@ -13,6 +13,7 @@ import org.springframework.beans.BeansException;
 public interface InMemoryCacheManager {
 
     public static final String SYSTEM_PROPERTY_CACHE_MANAGER = "wflow.cacheManager";
+    public static final String PREFIX_QUERY_CACHE = "query.cache.";
     
     /**
      * Convenience method to retrieve the currently configured cache manager.

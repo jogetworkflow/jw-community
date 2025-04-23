@@ -3915,7 +3915,7 @@ public class ConsoleWebController {
             }        
         }
 
-        AppDefinition appDef = appDefinitionDao.loadVersion(appId, AppUtil.convertVersionToLong(version));
+        AppDefinition appDef = appDefinitionDao.loadAndRefreshVersion(appId, AppUtil.convertVersionToLong(version));
         if (appDef == null) {
             return result;
         }
