@@ -200,7 +200,7 @@ public class FormDefinitionDaoImpl extends AbstractAppVersionedObjectDao<FormDef
         String query = "SELECT DISTINCT e.tableName FROM " + getEntityName() + " e where e.appId = ?1 and e.appVersion = ?2";
 
         Query q = findSession().createQuery(query);
-        q.setCacheable(true);
+        setCacheable(q, null);
         q.setParameter(1, appDef.getAppId());
         q.setParameter(2, appDef.getVersion());
 

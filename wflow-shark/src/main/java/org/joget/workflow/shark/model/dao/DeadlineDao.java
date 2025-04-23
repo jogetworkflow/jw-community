@@ -59,7 +59,7 @@ public class DeadlineDao extends AbstractSpringDao {
         }
 
         Query q = session.createQuery(query);
-        q.setCacheable(true);
+        setCacheable(q, null);
         
         q.setParameter(1, "open.%");
         

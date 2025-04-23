@@ -113,6 +113,9 @@
         <property name="roleDao" ref="roleDao" />
     </bean>
 
+    <bean id="directoryUtil" class="org.joget.directory.model.service.DirectoryUtil">
+    </bean>
+
     <bean id="workflowUserManager" class="org.joget.workflow.model.service.WorkflowUserManager" lazy-init="true">
     </bean>
 

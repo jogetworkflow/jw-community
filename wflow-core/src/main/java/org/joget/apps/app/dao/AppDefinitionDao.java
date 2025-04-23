@@ -13,6 +13,8 @@ public interface AppDefinitionDao extends VersionedObjectDao<AppDefinition> {
     public AppDefinition getPublishedAppDefinition(String appId);
 
     public Collection<AppDefinition> findPublishedApps(final String sort, final Boolean desc, final Integer start, final Integer rows);
+
+    public AppDefinition loadAndRefreshVersion(String id, Long version);
     
     public AppDefinition syncAppDefinition(String appId, Long version);
 

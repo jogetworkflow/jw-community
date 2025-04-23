@@ -93,9 +93,6 @@ public class MessageDaoImpl extends AbstractAppVersionedObjectDao<Message> imple
         }
 
         Collection<Message> messages = this.find(conditions, params.toArray(), appDefinition, sort, desc, start, rows);
-        for (Message m : messages) {
-            s.evict(m);
-        }
         return messages;
     }
 
@@ -127,7 +124,7 @@ public class MessageDaoImpl extends AbstractAppVersionedObjectDao<Message> imple
         String query = "SELECT distinct e.locale FROM " + getEntityName() + " e " + newCondition + " ORDER BY e.locale";
 
         Query q = findSession().createQuery(query);
-        q.setCacheable(true);
+        setCacheable(q, null);
         q.setFirstResult(0);
 
         if (params != null) {
@@ -151,7 +148,7 @@ public class MessageDaoImpl extends AbstractAppVersionedObjectDao<Message> imple
         String query = "SELECT distinct e.messageKey FROM " + getEntityName() + " e " + newCondition + " ORDER BY e.messageKey";
 
         Query q = findSession().createQuery(query);
-        q.setCacheable(true);
+        setCacheable(q, null);
         q.setFirstResult(0);
 
         if (params != null) {

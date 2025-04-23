@@ -124,7 +124,7 @@ public class AppDefinitionDaoImpl extends AbstractVersionedObjectDao<AppDefiniti
         // execute query and return result
         String query = "SELECT version FROM " + getEntityName() + " e  where 1=1 AND e.published = true and appId=?1";
         Query q = findSession().createQuery(query);
-        q.setCacheable(true);
+        setCacheable(q, null);
 
         q.setParameter(1, appId);
 
@@ -154,7 +154,7 @@ public class AppDefinitionDaoImpl extends AbstractVersionedObjectDao<AppDefiniti
             }
         }
         Query q = findSession().createQuery(query);
-        q.setCacheable(true);
+        setCacheable(q, null);
 
         int s = (start == null) ? 0 : start;
         q.setFirstResult(s);
@@ -164,6 +164,21 @@ public class AppDefinitionDaoImpl extends AbstractVersionedObjectDao<AppDefiniti
         }
 
         return q.list();
+    }
+    
+    /**
+     * Find a specific version of an object by ID, and refresh from database
+     * @param id
+     * @param version if null, the latest version is returned.
+     * @return
+     */
+    @Override
+    public AppDefinition loadAndRefreshVersion(String id, Long version) {
+        AppDefinition appDef = super.loadVersion(id, version);
+        if (appDef != null) {
+            findSession().refresh(appDef);
+        }
+        return appDef;
     }
     
     @Override
