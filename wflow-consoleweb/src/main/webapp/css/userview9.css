@@ -2308,6 +2308,24 @@ body #ui-datepicker-div {
     line-height: 25px !important;
 }
 
+.largeFontSize #form-canvas .hasDatepicker + a,
+.largeFontSize #form-canvas .hasDatepicker + a + a {
+    line-height: 1rem !important;
+}
+
+.largeFontSize #form-canvas .hasDatepicker + a + a {
+    padding: 0 1.5rem;
+}
+
+.mediumFontSize #form-canvas .hasDatepicker + a,
+.mediumFontSize #form-canvas .hasDatepicker + a + a {
+    line-height: 1rem !important;
+}
+
+.mediumFontSize #form-canvas .hasDatepicker + a + a {
+    padding: 0 1.2rem;
+}
+
 .mediumFontSize #form-canvas *,
 .mediumFontSize .fc-view-container *,
 .mediumFontSize .userProfile-body-content *,
