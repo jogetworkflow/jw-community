@@ -1009,6 +1009,10 @@ body.horizontal_menu #header-info{
         margin-left: 5px;
         padding: 5px 0;
     }
+    body.rtl.horizontal_menu #sidebar .nav > li > a > span.badge {
+        margin-right: 5px;
+        margin-left: unset;
+    }
     body.horizontal_menu #sidebar li a.dropdown {
         padding-right: 25px;
     }

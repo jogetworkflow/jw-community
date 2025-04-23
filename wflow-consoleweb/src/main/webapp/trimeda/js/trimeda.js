@@ -125,7 +125,11 @@ $(document).ready(function(){
             setTimeout(function(){
                 $("body").find("ul#category-container > li.category").each(function(){
                     if (!$(this).hasClass("first") && prevMenu !== null) {
-                        gap = $(this).offset().left - ($(prevMenu).offset().left + $(prevMenu).outerWidth());
+                        if ($("body").hasClass("rtl")){
+                            gap = ($(prevMenu).offset().left + $(prevMenu).outerWidth()) - $(this).offset().left;
+                        }else {
+                            gap = $(this).offset().left - ($(prevMenu).offset().left + $(prevMenu).outerWidth());
+                        }
                     }
                     totalMenuWidth += $(this).outerWidth();
                     prevMenu = $(this);
@@ -140,9 +144,14 @@ $(document).ready(function(){
                     breakpoint -= 20;
                 }
 
-                if (totalMenuWidth >= breakpoint || ($("body").hasClass("horizontal_menu") && !$("body").hasClass("inline_menu"))){
-                    $("body").addClass("rightNavEnabled");
+                if (totalMenuWidth >= breakpoint || ($("body").hasClass("horizontal_menu") && !$("body").hasClass("inline_menu") && $(window).width() > 768)){
                     $("body").addClass("navigationEnabled");
+
+                    if ($("body").hasClass("rtl")) {
+                        $("body").addClass("leftNavEnabled");
+                    } else {
+                        $("body").addClass("rightNavEnabled");
+                    }
 
                     $("body").find("nav button#leftNav").remove();
                     $("body").find("nav button#rightNav").remove();      
@@ -203,16 +212,16 @@ $(document).ready(function(){
                     function updateButtons() {
                         let $container = $("#category-container");
                         let maxScroll = $container[0].scrollWidth - $container.outerWidth();
-                        
-                        if ($container.scrollLeft() <= 0) {
-                            $("body").addClass("rightNavEnabled");
-                            $("body").removeClass("leftNavEnabled");
-                        } else if ($container.scrollLeft() >= maxScroll) {
-                            $("body").removeClass("rightNavEnabled");
-                            $("body").addClass("leftNavEnabled");
+                        let scrollLeft = $("body").hasClass("rtl") ? Math.abs($container.scrollLeft()) : $container.scrollLeft;
+                
+                        if (scrollLeft <= 0) {
+                            $("body:not(.rtl)").addClass("rightNavEnabled").removeClass("leftNavEnabled");
+                            $("body.rtl").removeClass("rightNavEnabled").addClass("leftNavEnabled");
+                        } else if (scrollLeft >= maxScroll) {
+                            $("body:not(.rtl)").removeClass("rightNavEnabled").addClass("leftNavEnabled");
+                            $("body.rtl").addClass("rightNavEnabled").removeClass("leftNavEnabled");
                         } else {
-                            $("body").addClass("rightNavEnabled");
-                            $("body").addClass("leftNavEnabled");
+                            $("body").addClass("rightNavEnabled").addClass("leftNavEnabled");
                         }
                     }
 
@@ -264,6 +273,51 @@ $(document).ready(function(){
     })   
 
     $(window).on("page_loaded", function(){
+        setTimeout(function(){
+            var $hoveredCategory = $("ul#category-container > li.category:hover");
+            if ($hoveredCategory.length > 0) {
+                if ($("body").hasClass("navigationEnabled")) {
+                    let $menuContainer = $hoveredCategory.find("ul.menu-container");
+                    if (!$menuContainer.hasClass("appended")) {
+                        $menuContainer.css({
+                            "opacity": 0,
+                            "pointer-events": "none"
+                        })
+                        $menuContainer.appendTo("body").addClass("appended");
+                    }
+                    $menuContainer.css({
+                        top: ($hoveredCategory.offset().top + $hoveredCategory.height()) + 'px',
+                        ...(($hoveredCategory.nextAll("li.category").length === 0 && !$("body").hasClass("inline_menu") && ($hoveredCategory.offset().left + 200 > $(window).width())) ? {
+                            right: '0px'
+                        } : {
+                            left: $hoveredCategory.offset().left + 'px'
+                        })
+                    });
+                    setTimeout( () => {
+                        $menuContainer.css({
+                            "opacity": 1,
+                            "pointer-events": "auto",
+                            "transition": "opacity 0.15s ease-in-out"
+                        });
+                    }
+                    , 10);
+                    $menuContainer.addClass("mouseover").data("parent-id", $hoveredCategory.attr("id"));
+                    $menuContainer.off("mouseleave").on("mouseleave", function(e) {
+                        if ($(e.relatedTarget).closest("li.category").length > 0)
+                            return;
+                        const id = $hoveredCategory.data("parent-id");
+                        $hoveredCategory.css({
+                            top: "",
+                            left: "",
+                            visibility: "",
+                            right: ""
+                        }).removeClass("mouseover appended");
+                        $("body").find("ul#category-container > li.category#" + id).append($hoveredCategory);
+                    });
+                }
+            }
+        }, 150);
+
         if ($("a.print-button").length > 0) {
             $("a.print-button").each(function(){
                 $(this).appendTo($(this).closest("div.Form_Menu").find("div.viewForm-body-content div#section-actions"));
@@ -346,18 +400,59 @@ $(document).ready(function(){
                 })
             })
         } else {
-            $("body").removeClass("multiple_body_content");
-            activateScrollbar($(".form-container > .form-section:not(#section-actions)"), false);
-        }
+            $(".form-container > .form-section:not(#section-actions)").length <= 1 ? $("body").removeClass("multiple_body_content") : $("body").addClass("multiple_body_content");
+            $(".form-container > .form-section:not(#section-actions)").each(function(index){
+                $(this).append('<div class="dropdown-main-body-content-container"></div>');
 
+                $(this).find("div.dropdown-main-body-content-container").off("click").on("click", function() {
+                    const $container = $(this).closest(".form-section")
+                    if ($container.hasClass("closed")) {
+                        $container.removeClass("closed");
+                        activateScrollbar($container, false);
+                    } else {
+                        $container.addClass("closed");
+                        activateScrollbar($container, true);
+                    }
+                })
+
+                if (index !== 0) {
+                    $(this).addClass("closed");
+                } else {
+                    activateScrollbar($(this), false);
+                }
+            })
+        }
         activateScrollbar($("#content.page_content"), false);
     })
 
     $(window).resize(function() {
-        $("#sidebar nav").mCustomScrollbar({
-            autoHideScrollbar : true,
-            scrollInertia: 300,
-            scrollbarPosition: "inside",
-            theme: "minimal-dark"});
+        if ( ($("body").hasClass("horizontal_menu") && $(window).width() < 768) || !$("body").hasClass("horizontal_menu")) {
+            $("#sidebar nav").mCustomScrollbar({
+                autoHideScrollbar : true,
+                scrollInertia: 300,
+                scrollbarPosition: "inside",
+                theme: "minimal-dark"});
+        } else {
+            $("#sidebar nav").mCustomScrollbar("destroy");
+        }
     });
 })
+
+// Override AjaxTheme's initSidebar
+AjaxUniversalTheme.initSidebar = function() {
+    if ($("#sidebar").length > 0) {
+        var sidebar = function(){
+            if ($("#sidebar").css("display") === "inline-block") {
+                if ($("#sidebar #navigation").hasClass("mCustomScrollbar")) {
+                    $("#sidebar #navigation").mCustomScrollbar("destroy");
+                }
+            } else {
+                AjaxUniversalTheme.scrollBar("#sidebar #navigation", "y");
+            }
+        };
+        sidebar();
+        $(window).resize(function() {
+            sidebar();
+        });
+    }
+};

@@ -72,6 +72,9 @@ body.rtl .dataList th.sortable a {
     text-align: right;
     margin-bottom: 25px;
 }
+body.rtl .dataList .filters {
+    text-align: left;
+}
 .dataList .filters > span {
     text-align: left;
     display: inline-block;
