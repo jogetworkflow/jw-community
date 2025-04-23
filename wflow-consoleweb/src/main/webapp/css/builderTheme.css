@@ -1542,6 +1542,7 @@ body[builder-theme] .flexigrid div.hDiv,
 body[system-theme] .flexigrid div.hDiv {
     border: 1px solid var(--theme-border-color-1);
     border-bottom: 0px;
+    height: 42px;
 }
 body[builder-theme] .flexigrid div.pDiv,
 body[system-theme] .flexigrid div.pDiv {
@@ -1792,6 +1793,7 @@ body[builder-theme] .flexigrid div.nBtn,
 body[system-theme] .flexigrid div.nBtn {
     height: 42px;
     border-bottom: 1px solid var(--theme-border-color-1);
+    border-top: 1px solid var(--theme-border-color-1);
 }
 body[builder-theme].popupBody{
     font-family: "Inter", sans-serif !important;
@@ -3652,4 +3654,22 @@ body[builder-theme='dark'] jmexpander:hover{
 }
 body[builder-theme] input[type=number].withUnitSlector:focus{
     position: relative;
+}
+body[builder-theme].rtl .flexigrid div.nBtn{
+    height: 42px !important;
+    border-right: 1px solid var(--theme-border-color-1);
+}
+body[builder-theme].rtl .flexigrid div.hDiv table{
+    border-right: 0px;
+    border-left: 1px solid transparent;
+}
+body[builder-theme].rtl .flexigrid div.hDiv th,
+body[builder-theme].rtl .flexigrid div.bDiv td{
+    border-right: 0px !important;
+    border-left: 1px solid var(--theme-border-color-1) !important;
+}
+body[builder-theme='dark'].rtl .flexigrid div.nBtn.srtd,
+body[builder-theme='dark'].rtl .flexigrid div.nBtn{
+    border-left: 0px;
+    border-right: 1px solid var(--theme-primary-color-2);
 }

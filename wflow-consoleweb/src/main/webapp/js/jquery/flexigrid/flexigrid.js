@@ -65,7 +65,7 @@
 			rePosDrag: function () {
 
 			var cdleft = 0 - this.hDiv.scrollLeft;
-			if (this.hDiv.scrollLeft>0) cdleft -= Math.floor(p.cgwidth/2);
+			if (this.hDiv.scrollLeft>0) cdleft -= Math.ceil(p.cgwidth/2);
 			$(g.cDrag).css({top:g.hDiv.offsetTop+1});
 			var cdpad = this.cdpad;
 
@@ -77,13 +77,24 @@
 					{
 					var n = $('thead tr:first th:visible',g.hDiv).index(this);
 
-					var cdpos = parseInt($('div',this).width());
+					var cdpos = Math.ceil($('div',this).width());
 					var ppos = cdpos;
 					if (cdleft==0)
-							cdleft -= Math.floor(p.cgwidth/2);
-
-					cdpos = cdpos + cdleft + cdpad + 2;
-
+							cdleft -= Math.ceil(p.cgwidth/2);
+                                        
+                                        if ($("body").attr('builder-theme') == "dark" || $("body").attr('builder-theme') == "light"){
+                                            if(n == 0){
+                                                cdpos = cdpos + cdleft + cdpad;
+                                            }else{
+                                                cdpos = cdpos + cdleft + cdpad + 6;
+                                            }
+                                        } else{
+                                            if(n == 0){
+                                                cdpos = cdpos + cdleft + cdpad + 0.5;
+                                            }else{
+                                                cdpos = cdpos + cdleft + cdpad;
+                                            }
+                                        }
 					$('div:eq('+n+')',g.cDrag).css({'left':cdpos+'px'}).show();
 
 					cdleft = cdpos;
@@ -981,7 +992,7 @@
 							}
 
 
-						 $(thdiv).css({textAlign:this.align, width: this.width + 'px'});
+						 $(thdiv).css({textAlign:this.align, width: Math.ceil(this.width) + 'px'});
 						 thdiv.innerHTML = this.innerHTML;
 
 						$(this).empty().append(thdiv).removeAttr('width')
@@ -1106,12 +1117,12 @@
 		g.cDrag.className = 'cDrag';
 		g.cdpad = 0;
 
-		g.cdpad += (isNaN(parseInt($('div',cdcol).css('borderLeftWidth'))) ? 0 : parseInt($('div',cdcol).css('borderLeftWidth')));
-		g.cdpad += (isNaN(parseInt($('div',cdcol).css('borderRightWidth'))) ? 0 : parseInt($('div',cdcol).css('borderRightWidth')));
+		g.cdpad += (isNaN(parseFloat($('div',cdcol).css('borderLeftWidth'))) ? 0 : parseFloat($('div',cdcol).css('borderLeftWidth')));
+		g.cdpad += (isNaN(parseFloat($('div',cdcol).css('borderRightWidth'))) ? 0 : parseFloat($('div',cdcol).css('borderRightWidth')));
 		g.cdpad += (isNaN(parseInt($('div',cdcol).css('paddingLeft'))) ? 0 : parseInt($('div',cdcol).css('paddingLeft')));
 		g.cdpad += (isNaN(parseInt($('div',cdcol).css('paddingRight'))) ? 0 : parseInt($('div',cdcol).css('paddingRight')));
-		g.cdpad += (isNaN(parseInt($(cdcol).css('borderLeftWidth'))) ? 0 : parseInt($(cdcol).css('borderLeftWidth')));
-		g.cdpad += (isNaN(parseInt($(cdcol).css('borderRightWidth'))) ? 0 : parseInt($(cdcol).css('borderRightWidth')));
+		g.cdpad += (isNaN(parseFloat($(cdcol).css('borderLeftWidth'))) ? 0 : parseFloat($(cdcol).css('borderLeftWidth')));
+		g.cdpad += (isNaN(parseFloat($(cdcol).css('borderRightWidth'))) ? 0 : parseFloat($(cdcol).css('borderRightWidth')));
 		g.cdpad += (isNaN(parseInt($(cdcol).css('paddingLeft'))) ? 0 : parseInt($(cdcol).css('paddingLeft')));
 		g.cdpad += (isNaN(parseInt($(cdcol).css('paddingRight'))) ? 0 : parseInt($(cdcol).css('paddingRight')));
 
@@ -1421,6 +1432,20 @@
 			g.populate();
 			}
 
+                $(window).on("resize", function(){
+                    g.cdpad = 0;
+                    g.cdpad += (isNaN(parseFloat($('div',cdcol).css('borderLeftWidth'))) ? 0 : parseFloat($('div',cdcol).css('borderLeftWidth')));
+                    g.cdpad += (isNaN(parseFloat($('div',cdcol).css('borderRightWidth'))) ? 0 : parseFloat($('div',cdcol).css('borderRightWidth')));
+                    g.cdpad += (isNaN(parseInt($('div',cdcol).css('paddingLeft'))) ? 0 : parseInt($('div',cdcol).css('paddingLeft')));
+                    g.cdpad += (isNaN(parseInt($('div',cdcol).css('paddingRight'))) ? 0 : parseInt($('div',cdcol).css('paddingRight')));
+                    g.cdpad += (isNaN(parseFloat($(cdcol).css('borderLeftWidth'))) ? 0 : parseFloat($(cdcol).css('borderLeftWidth')));
+                    g.cdpad += (isNaN(parseFloat($(cdcol).css('borderRightWidth'))) ? 0 : parseFloat($(cdcol).css('borderRightWidth')));
+                    g.cdpad += (isNaN(parseInt($(cdcol).css('paddingLeft'))) ? 0 : parseInt($(cdcol).css('paddingLeft')));
+                    g.cdpad += (isNaN(parseInt($(cdcol).css('paddingRight'))) ? 0 : parseInt($(cdcol).css('paddingRight')));
+
+                    g.rePosDrag();
+                });
+                
 		return t;
 
 	};
