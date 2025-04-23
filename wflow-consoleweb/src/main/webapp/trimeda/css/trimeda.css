@@ -380,6 +380,7 @@ body.dark-mode header.navbar div#sidebar-trigger > img#light-thumbnail {
 
 body.rtl #sidebar .nav > li > ul > li:not(:last-child){
     float: right;
+    z-index: 2;
 }
 
 #sidebar .nav > li > ul > li > a {
@@ -1079,123 +1080,6 @@ body.rtl ul.breadcrumb > li > span.separator {
     margin-right: 0px;
 }
 
-body.multiple_body_content div.main-body-content.Form_Menu {
-    padding-left: 0px !important;
-    padding-bottom: 0px !important;
-}
-
-body.multiple_body_content div.main-body-content:not(:has(.form-section .dropdown-main-body-content-container)),
-body.multiple_body_content div.main-body-content .form-section:has(.dropdown-main-body-content-container) {
-    padding: 0px !important;
-    border: 1px solid var(--field-border-color) !important;
-    border-radius: 16px !important;
-    transition: opacity 0.3s ease-in-out;
-    position: relative;
-    max-height: 480px !important;
-    height: fit-content !important;
-}
-
-body.multiple_body_content div.main-body-content:not(.closed):not(:has(.form-section .dropdown-main-body-content-container)),
-body.multiple_body_content div.main-body-content .form-section:has(.dropdown-main-body-content-container) {
-    border-color: var(--general-accent-color) !important;
-}
-
-body.multiple_body_content div.main-body-content .dropdown-main-body-content-container {
-    position: absolute;
-    right: 22px;
-    top: 18px;
-    padding:0px !important;
-    width: 24px;
-    height: 24px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    border-radius: 24px;
-    padding-top: 0px !important;
-    transition: transform 0.3s ease-in-out, background-color 0.3s ease-in-out;
-    cursor: pointer;
-}
-
-body.rtl.multiple_body_content div.main-body-content .dropdown-main-body-content-container {
-    left: 22px;
-    right: unset;
-}
-
-body.multiple_body_content div.main-body-content .dropdown-main-body-content-container::after {
-    position: absolute;
-    top: 50%;
-    transform: translateY(-50%);
-    font-size: 17px;
-    -webkit-transition: all;
-    -o-transition: all;
-    transition: all;
-    -webkit-transition-duration: 250ms;
-    transition-duration: 250ms;
-    -webkit-backface-visibility: hidden;
-    -moz-backface-visibility: hidden;
-    backface-visibility: hidden;
-    opacity: 1;
-    filter: alpha(opacity=50);
-    content: "\f107";
-    font: normal normal normal 14px / 1 FontAwesome;
-    color: var(--theme-font-color);
-}
-
-body.multiple_body_content div.main-body-content.closed .dropdown-main-body-content-container::after,
-body.multiple_body_content div.main-body-content .form-section.closed .dropdown-main-body-content-container::after {
-    content: "\f107";
-    color: var(--general-accent-color);
-    pointer-events: visible;
-}
-
-body.multiple_body_content div.main-body-content:not(.closed):not(:has(.form-section .dropdown-main-body-content-container)) .dropdown-main-body-content-container,
-body.multiple_body_content div.main-body-content .form-section:not(.closed) .dropdown-main-body-content-container {
-    background-color: var(--field-border-color);
-    border-radius: 24px;
-    transform: rotate(180deg);
-    opacity: 0.5;
-}
-
-body.multiple_body_content div.main-body-content .dropdown-main-body-content-container:hover {
-    opacity: 1 !important;
-}
-
-body.multiple_body_content div.main-body-content.closed:not(:has(.form-section .dropdown-main-body-content-container)),
-body.multiple_body_content div.main-body-content .form-section.closed:has(.dropdown-main-body-content-container) {
-    max-height: 64px !important;
-    overflow: hidden !important;
-    position: relative;
-}
-
-body.multiple_body_content div.main-body-content .form-section:has(.dropdown-main-body-content-container) .mCSB_container {
-    border-radius: 16px;
-}
-
-body.multiple_body_content div.main-body-content:has(.form-section .dropdown-main-body-content-container) div#section-actions {
-    margin-top: 25px;
-}
-
-body.multiple_body_content div.main-body-content:not(.closed):not(:has(.form-section .dropdown-main-body-content-container)) .mCSB_container > *:not(div.dropdown-main-body-content-container),
-body.multiple_body_content div.main-body-content .form-section:not(.closed):has(.dropdown-main-body-content-container) .mCSB_container > *:not(div.dropdown-main-body-content-container) {
-    padding: 20px 24px 0px 24px;
-    max-height: fit-content; 
-    transition: padding 0.3s ease-in-out, opacity 0.3s ease-in-out;
-}
-
-body.multiple_body_content div.main-body-content.closed > *:not(div.dropdown-main-body-content-container),
-body.multiple_body_content div.main-body-content .form-section.closed:has(.dropdown-main-body-content-container) {
-    max-height: 64px; 
-    overflow: hidden;
-    padding-top: 10px !important;
-    opacity: 0.5;
-    pointer-events: none;
-    padding-right: 50px !important;
-}
-
-body.multiple_body_content div.main-body-content.Form_Menu > *:last-child {
-    padding: 0px;
-}
-
 #content main > .main-body-content,
 #content main > *:not(.category-label-header, .breadcrumb, .quickEdit) {
     margin: 36px 47px 0px 47px;
@@ -1539,6 +1423,10 @@ body.rtl .numeric_field_controls {
     scroll-behavior: smooth;
     scrollbar-width: none;
     -ms-overflow-style: none;
+}
+
+.form-element.multiPagedForm > .page-nav-panel.top > ul.hideNavArrows + div.navigation-arrows-container {
+    display: none;
 }
 
 .form-element.multiPagedForm > .page-nav-panel.top > div.navigation-arrows-container {
@@ -1938,6 +1826,10 @@ body.rtl .accordion .card-header::after {
     padding-bottom: 16px !important;
 }
 
+.grid table + .pg-navigator + .grid-action-add {
+    bottom: -1px;
+}
+
 .dataList .filters input, .dataList .filters select, .dataList .filters textarea {
     min-height: 40px;
 }
@@ -2079,6 +1971,15 @@ form:has(.grid table tbody tr.grid-row) div#section-actions .form-cell input {
 }
 
 @media screen and (max-width: 768px) { 
+    .form-element.multiPagedForm > .page-nav-panel.top > ul {
+        flex-direction: column;
+        width: 100%;
+    }
+    
+    .form-element.multiPagedForm > .page-nav-panel.top > div.navigation-arrows-container {
+        display: none;
+    }
+
     .hasDatepicker + a, .hasDatepicker + a + a {
         transform: translate(-50%);
     }
