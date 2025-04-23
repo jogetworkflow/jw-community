@@ -6860,6 +6860,33 @@ ProcessBuilder = {
         
         return options;
     },
+
+    /*
+    * return a list of of outgoing transitions options of the current selected activity 
+     */                
+    getCurrentActivityOutgoingTransition : function() {
+        var options = [];
+        
+        var act = CustomBuilder.Builder.selectedEl;
+        var sourceConnSet = ProcessBuilder.lf.getNodeOutgoingEdge($(act)[0].data.id);
+        for (var i = sourceConnSet.length - 1; i >= 0; i--) {
+            let node = ProcessBuilder.getActivity(sourceConnSet[i].targetNodeId);
+            if (node.className !== 'end') {
+                var id = sourceConnSet[i].id;
+                var data = ProcessBuilder.lf.getEdgeDataById(id);
+                var label = data.properties.label;
+                if (label === undefined || label === "") {
+                    label = id + " (" + node.properties.label + ")";
+                }
+
+                options.push({
+                    value: id,
+                    label: label
+                });
+            }
+        }
+        return options;
+    },
             
     /*
      * return a array of available workflow variables
