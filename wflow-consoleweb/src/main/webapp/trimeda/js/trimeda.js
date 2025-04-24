@@ -1,29 +1,4 @@
 $(document).ready(function() {
-    function activateScrollbar(container, destroy) {
-        if (destroy) {
-            $(container).mCustomScrollbar('destroy');
-            return;
-        }
-        $(container).mCustomScrollbar({
-            autoHideScrollbar: true,
-            scrollInertia: 300,
-            scrollbarPosition: "inside",
-            theme: "minimal-dark",
-            callbacks: {
-                onCreate: function() {
-                    const contentHeight = $(container).find(".mCSB_container").outerHeight();
-                    const scrollHeight = $(container).find(".mCSB_scrollTools").height();
-                    const threshold = 1;
-                    if (Math.abs(contentHeight - scrollHeight) <= threshold) {
-                        setTimeout(function() {
-                            $(container).find(".mCSB_scrollTools").hide();
-                        }, 100);
-                    }
-                }
-            }
-        });
-        $(container).mCustomScrollbar("update");
-    }
     const targetSpan = $("body").find(".header-nav a.btn .badge")[0];
     const observer = new MutationObserver( (mutations) => {
         mutations.forEach( (mutation) => {
@@ -119,19 +94,21 @@ $(document).ready(function() {
                     prevMenu = $(this);
                     totalMenuWidth += gap;
                 })
-                var breakpoint = $(window).width();
+                var breakpoint = $(window).outerWidth();
                 if ($("body").hasClass("inline_menu")) {
                     breakpoint -= ($("header.navbar .container-fluid").outerWidth(true) - $("header.navbar .container-fluid").innerWidth());
                     breakpoint -= $("a#header-link").outerWidth(true);
                     breakpoint -= $("header.navbar .header-nav").outerWidth(true);
                     breakpoint -= 20;
+                } else {
+                    breakpoint -= 32; //Cater for margin
                 }
 
-                
                 $("body").find("nav button#leftNav").remove();
                 $("body").find("nav button#rightNav").remove();
+                $("body").removeClass("leftNavEnabled rightNavEnabled");
 
-                if (($("body").hasClass("horizontal_menu") && $(window).width() > 768)) {
+                if (($("body").hasClass("horizontal_menu") && $(window).outerWidth() >= 768)) {
                     $("body").addClass("navigationEnabled");
                     $("body").find("ul#category-container > li.category").each(function() {
                         $(this).off("mouseover").on("mouseover", function() {
@@ -155,7 +132,7 @@ $(document).ready(function() {
                             }
                             $menuContainer.css({
                                 top: ($(this).offset().top + $(this).height()) + 'px',
-                                ...(($(this).nextAll("li.category").length === 0 && !$("body").hasClass("inline_menu") && ($(this).offset().left + 200 > $(window).width())) ? {
+                                ...(($(this).nextAll("li.category").length === 0 && !$("body").hasClass("inline_menu") && ($(this).offset().left + 200 > $(window).outerWidth())) ? {
                                     right: '0px'
                                 } : {
                                     left: $(this).offset().left + 'px'
@@ -209,7 +186,7 @@ $(document).ready(function() {
                         $(this).find("ul.menu-container").off('mouseover');
                     })
                 }
-                if (totalMenuWidth >= breakpoint && ($("body").hasClass("horizontal_menu") && $(window).width() > 768)) {
+                if (totalMenuWidth >= breakpoint && ($("body").hasClass("horizontal_menu") && $(window).outerWidth() >= 768)) {
                     if ($("body").hasClass("rtl")) {
                         $("body").addClass("leftNavEnabled");
                     } else {
@@ -266,6 +243,10 @@ $(document).ready(function() {
                     });
                     $("body").find("ul#category-container").before($leftButton);
                     $("body").find("ul#category-container").after($rightButton);
+                    updateButtons();
+                }else {
+                    //Resets translate
+                    $("#category-container")[0].style.setProperty('--translate-move-x', "");
                 }
             }, 150);
         }
@@ -328,11 +309,9 @@ $(document).ready(function() {
         $(".dataList .filters select").on("change", function() {
             $(this).closest("div.filters").find("input.form-button[type='submit'][value='Show']").click();
         })
-        
-        activateScrollbar($("#content.page_content"), false);
     })
     $(window).resize(function() {
-        if (($("body").hasClass("horizontal_menu") && $(window).width() < 768) || !$("body").hasClass("horizontal_menu")) {
+        if (($("body").hasClass("horizontal_menu") && $(window).outerWidth() < 768) || !$("body").hasClass("horizontal_menu")) {
             $("#sidebar nav").mCustomScrollbar({
                 autoHideScrollbar: true,
                 scrollInertia: 300,
