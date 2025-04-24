@@ -20,6 +20,16 @@ body {
     --danger-button-background-color:#EA5858;
 }
 
+/* Login CSS */
+body#login #content.page_content,
+body#login #loginForm {
+    margin: 0px !important;
+}
+
+body#login #sidebar {
+    display: none !important;
+}
+
 /* Scrollbar */
 html {
     scrollbar-color: #49505747 transparent;
@@ -68,6 +78,7 @@ h1, h2 {
 
 h3,
 h4,
+#content .grid-stack-item .grid-stack-item-header h4,
 h5,
 h6,
 .dataList span.pagelinks a, 
@@ -78,6 +89,11 @@ h6,
     font-size: 18px;
     line-height: 24px;
     letter-spacing: 0;
+}
+
+/* Dashboard header */
+#content .grid-stack-item .grid-stack-item-header h4 {
+    color: var(--primary-text-color);
 }
 
 /* Buttons */
@@ -106,18 +122,13 @@ input.form-button,
     border-radius: 16px;
 }
 
-.dataList:has(.select_checkbox:not(:checked)) .actions .btn:not([class*="btn-"]) {
-    background-color: var(--theme-button-inactive-background-color);
-    color: var(--theme-button-inactive-color);
-}
-
 /* Secondary Buttons */
 .btn.btn-secondary,
 button.form-button,
 .selector_element .selector_button, 
 .selector_element .selector_button:hover,
 button.form-button.CRUD_New,
-.dataList .row_action a:not(.btn),
+.dataList .row_action a,
 div#dataList_simplelist div.list-group .list-group-item  div.rowActions > a,
 div#dataList_columnslist div.dropdown > a,
 div#dataList_columnslist tbody span.row_action_inner > a,
@@ -205,6 +216,7 @@ header.navbar .dropdown-menu.notifications > li.task > div.more-info > span.time
     color: var(--theme-link);
     display: flex;
     justify-content: space-between;
+    align-items: center;
 }
 
 .dropdown-menu > div.profile-item > div.profile-name > a > i {
@@ -326,7 +338,7 @@ body.dark-mode header.navbar div#sidebar-trigger > img#light-thumbnail {
 #sidebar #category-container {
     background-image: var(--theme-sidebar-link-bg-img);
     width: 100%;
-    padding: 17px 8px 30px 8px;
+    padding: 17px 8px 30px 8px ;
     object-fit: contain;
     background-repeat: no-repeat;
     background-size: 100% 100%;
@@ -405,7 +417,8 @@ body.rtl #sidebar .nav > li > ul > li:not(:last-child){
 
 @media screen and (max-width: 768px) { 
     body.sidebar-toggled #sidebar,
-    body.sidebar-toggled nav#navigation {
+    body.sidebar-toggled nav#navigation,
+    body.sidebar-toggled.horizontal_menu.inline_menu #sidebar {
         width: 280px;
     }
 
@@ -447,6 +460,7 @@ body.rtl #sidebar .nav > li > ul > li:not(:last-child){
         margin-left: 0;
     }
 }
+
 @media screen and (min-width: 768px) {
     body.quickEditModeActive.navigationEnabled #category-container:after {
         transform: translateX(var(--translate-move-x, 0));
@@ -475,7 +489,6 @@ body.rtl #sidebar .nav > li > ul > li:not(:last-child){
         position: absolute;
         border: 1px solid rgba(0, 0, 0, .0625);
         padding: 0px !important;
-        max-height: calc(100vh - 210px);
         overflow: hidden;
         min-width: 200px;
         background: var(--theme-sidebar, var(--theme-color4, #fff));
@@ -652,7 +665,7 @@ body.rtl #sidebar .nav > li > ul > li:not(:last-child){
     body.horizontal_menu #sidebar #category-container {
         margin: 0px 16px 0px 16px;
         width: initial;
-        padding: 0px 0px 0px 0px;
+        padding: 0px 0px !important;
         min-height: 100%;
     }
     
@@ -686,6 +699,7 @@ body.rtl #sidebar .nav > li > ul > li:not(:last-child){
     body.horizontal_menu:not(.inline_menu) #sidebar #category-container {
         margin: 0;
         height: 64px;
+        padding: 12px 8px !important;
     }
 
     body.horizontal_menu:not(.inline_menu) header.navbar .header-nav {
@@ -698,16 +712,11 @@ body.rtl #sidebar .nav > li > ul > li:not(:last-child){
 /* Horizontal Menu Inline */
 @media screen and (min-width: 768px) {
     body.horizontal_menu.inline_menu #header-info {
-        display: inline-flex;
+        display:inline-flex;
     }
 
     body.horizontal_menu.inline_menu div.header-info {
         width: 100%;
-    }
-
-    body.horizontal_menu.inline_menu #sidebar {
-        width: calc(100vw - 622px);
-        height: 100%;
     }
 
     body.horizontal_menu.inline_menu header.navbar .header-nav {
@@ -719,12 +728,44 @@ body.rtl #sidebar .nav > li > ul > li:not(:last-child){
     }
 
     body.horizontal_menu.inline_menu #sidebar #navigation {
-        height: initial;
         margin: 0;
     }
 
     body.horizontal_menu.inline_menu header.navbar .container-fluid {
         padding: 20px 40px;
+    }
+
+    body.horizontal_menu.inline_menu #header-link {
+        height: 100%;
+        padding: 12px 8px !important;
+    }
+
+    body.horizontal_menu.inline_menu #sidebar {
+        height: 64px;
+        padding: 12px 8px !important;
+    }
+}
+
+@media screen and (max-width: 992px) {
+    body.horizontal_menu.inline_menu header.navbar li.dropdown.user-link > a {
+        background: transparent !important;
+        width: fit-content !important;
+    }
+
+    body.horizontal_menu.inline_menu header.navbar li.dropdown.user-link > a > span.caret, header.navbar li.dropdown.user-link > a::after {
+        display: none !important;
+    } 
+    
+    body.horizontal_menu.inline_menu #sidebar {
+        width: calc(100vw - 430px);
+        height: 100%;
+    }
+}
+
+@media screen and (min-width: 992px) {
+    body.horizontal_menu.inline_menu #sidebar {
+        width: calc(95vw - 520px);
+        height: 100%;
     }
 }
 
@@ -1013,8 +1054,6 @@ header.navbar .dropdown-menu.notifications > li.task.showMoreInfo > div.more-inf
     background: var(--theme-content-background);
     padding: 0px 0px;
     margin-right: 16px;
-    min-height: calc(919 / 1024 * 100vh);
-    max-height: calc(919 / 1024 * 100vh);
 }
 
 body:not(.embeded, .horizontal_menu) #content.page_content {
@@ -1034,11 +1073,6 @@ body.embeded #content main > *:not(.category-label-header, .breadcrumb, .quickEd
     margin-left: 0 !important;
     margin-right: 0 !important;
     min-width: 100%;
-}
-
-body.horizontal_menu:not(.inline_menu) #content.page_content {
-    min-height: calc(843 / 1024 * 100vh);
-    max-height: calc(843 / 1024 * 100vh);
 }
 
 #sidebar .badge {
@@ -1118,6 +1152,21 @@ body #form-canvas .subform-section-title span {
     font-size: 18px;
 }
 
+body.popupBody #form-canvas .form-container{
+    padding-bottom: 80px;
+}
+
+body.popupBody #form-canvas .form-container #section-actions{
+    border-top: 0px;
+}
+
+body.quickEditModeActive #sidebar #category-container {
+    margin-bottom: 40px;
+}
+
+body.quickEditModeActive:not(.horizontal_menu) #sidebar #category-container {
+    padding: 17px 8px 30px 8px !important;
+}
 
 .print-button {
     font-size: 16px;
@@ -1166,10 +1215,6 @@ body.rtl div.ui-timepicker-div dl dd > * > select {
 
 .form-container {
     padding: 0px 0px;
-}
-
-.form-container > .form-section:not(#section-actions) {
-    max-height: 480px;
 }
 
 .form-cell > label.label, .subform-cell > label.label {
@@ -1541,6 +1586,11 @@ body.rtl #ui-datepicker-div > table.ui-datepicker-calendar > tbody > tr > td:las
     border-radius: 24px;
 }
 
+.grid.adgrid .editor-cell .hasDatepicker + a + a {
+    right: 35px;
+    top: 35px;
+}
+
 .hasDatepicker + a, .hasDatepicker + a + a {
     width: 24px;
     height: 24px;
@@ -1867,16 +1917,6 @@ body.rtl .accordion .card-header::after {
     background-color: var(--theme-button-bg) !important;
     color: var(--theme-button) !important;
 }
-
-form:has(.grid) div#section-actions .form-cell input {
-    background-color: var(--theme-button-inactive-background-color);
-    color: var(--theme-button-inactive-color);
-}
-
-form:has(.grid table tbody tr.grid-row) div#section-actions .form-cell input {
-    background-color: var(--theme-button-bg);
-    color: var(--theme-button);
-} 
 
 .dataList thead th,
 .grid table th {
