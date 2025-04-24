@@ -739,3 +739,6 @@ div.colCopy {
                         background: url(../images/add.png) no-repeat center left;
                     }
 
+.flexigrid div.hDiv th{
+    height: 39px;
+}
