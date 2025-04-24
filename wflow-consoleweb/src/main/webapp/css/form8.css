@@ -584,7 +584,7 @@ body input.no-manual-input{
     transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
 }
 .selector_element .selector_button, .selector_element .selector_button:hover{
-    height: 30px;
+    height: 100%;
     padding: 2px 12px !important;
     line-height: 1.5;
     color: #495057;
@@ -596,8 +596,8 @@ body input.no-manual-input{
     box-shadow: none;
     font-size: inherit;
     position: absolute;
-    top: -1px;
     right: -1px;
+    max-height: 34px;
 }
 .selector_element .selector_button:hover{
     background-color: #ced4da;
@@ -655,7 +655,7 @@ body input.no-manual-input{
     background-clip: padding-box;
 }
 .form-fileupload a.remove {
-    color: #f8d7da;
+    color: #ff828d;
 }
 .form-fileupload a.remove:hover {
     color: #dc3545;
@@ -1410,4 +1410,8 @@ body.rtl ul.form-fileupload-value li .name{
 body.rtl .handsontable .filename_container .filename {
     direction: ltr;
     unicode-bidi: isolate;
+}
+body.rtl input.hasDatepicker {
+     direction: ltr;
+     text-align: right;
 }

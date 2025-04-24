@@ -939,4 +939,7 @@ body.rtl ul.form-fileupload-value li .name{
 body.rtl .handsontable .filename_container .filename {
     direction: ltr;
     unicode-bidi: isolate;
+body.rtl input.hasDatepicker {
+     direction: ltr;
+     text-align: right;
 }
