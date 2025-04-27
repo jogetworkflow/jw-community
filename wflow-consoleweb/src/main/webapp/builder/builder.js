@@ -404,6 +404,11 @@ _CustomBuilder = {
             var acBtn = $("#adminBarButtons .adminBarButton").eq(0);
             $(acBtn).attr("href", CustomBuilder.contextPath + '/web/console/app'+ CustomBuilder.appPath +'/builders');
             $(acBtn).attr("onclick", "return AdminBar.openAppComposer('" + CustomBuilder.contextPath + '/web/console/app'+ CustomBuilder.appPath + "/builders');");
+            
+            //call to support old version bootstrap attribute for dropdown, slider etc
+            if (typeof jdsLegacyAttributeMigration === "function") {
+                jdsLegacyAttributeMigration(); 
+            }
         })
         .catch(function (error) {
             console.log(error);

@@ -28,6 +28,11 @@ AjaxComponent = {
      * Override the behaviour of an AJAX supported component
      */
     initContent : function(element) {
+        //call to support old version bootstrap attribute for dropdown, slider etc
+        if (typeof jdsLegacyAttributeMigration === "function") {
+            jdsLegacyAttributeMigration(); 
+        }
+        
         AjaxComponent.overrideLinkEvent(element);
         setTimeout(function(){
             AjaxComponent.overrideCollapseElement(element);

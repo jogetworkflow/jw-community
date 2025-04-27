@@ -6,7 +6,7 @@
 // This script maps legacy Bootstrap 4 data attributes (e.g., data-toggle, data-target) 
 // to their Bootstrap 5 equivalents (e.g., data-bs-toggle, data-bs-target), 
 // ensuring older HTML markup continues to work without manual updates.
-document.addEventListener('DOMContentLoaded', () => {
+const jdsLegacyAttributeMigration = () => {
     const attrMap = [
         'toggle',
         'target',
@@ -25,8 +25,11 @@ document.addEventListener('DOMContentLoaded', () => {
             el.removeAttribute(`data-${attr}`);
         });
     });
-});
-  
+};
+
+document.addEventListener('DOMContentLoaded', jdsLegacyAttributeMigration);
+
+
 (function (global, factory) {
   typeof exports === 'object' && typeof module !== 'undefined' ? module.exports = factory() :
   typeof define === 'function' && define.amd ? define(factory) :
