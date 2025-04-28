@@ -142,7 +142,7 @@
 
                     if(updateSelectedList) {
                         updateSelectedList.forEach(function(item, index){
-                                parent.window.CustomBuilder.showMessage(item + '<ui:msgEscJS key="console.app.message.delete.toast.message"/>', "success",true); 
+                                parent.window.CustomBuilder.showMessage(item + '<ui:msgEscJS key="console.app.message.update.toast.message"/>', "success",true); 
                         })
                     }
                 });
