@@ -71,6 +71,7 @@
     }
     .loginMarketplace + #selectContainer{
         margin-right: 10px;
+        border: 1px solid var(--console-border-color);
     }
     .rtl .loginMarketplace + #selectContainer{
         margin-left: 10px;
@@ -309,6 +310,12 @@
         margin-left: 2px;
         padding-inline: 6px;
         padding-block: 2px;
+    }
+    p.no_result {
+        color: var(--theme-label-color-1, #99A1B7);
+    } 
+    .loginMarketplace + #selectContainer > select {
+        color: var(--theme-label-color-1, #99A1B7);
     }
 </style>
 
