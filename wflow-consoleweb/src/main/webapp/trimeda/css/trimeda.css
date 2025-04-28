@@ -64,7 +64,7 @@ button.btn-danger,
     font-family: "HindVadodara", sans-serif;
     font-weight: 500 !important;
     font-size: 16px !important;
-    line-height: 24px !important;
+    line-height: 1.5 !important;
     letter-spacing: 0 !important;
 }
 
@@ -72,7 +72,7 @@ h1, h2 {
     font-family: "Commisioner", sans-serif;
     font-weight: 500;
     font-size: 21px;
-    line-height: 24px;
+    line-height: 1.33;
     letter-spacing: 0;
 }
 
@@ -87,7 +87,7 @@ h6,
     font-family: "Commisioner", sans-serif;
     font-weight: 500;
     font-size: 18px;
-    line-height: 24px;
+    line-height: 1.4;
     letter-spacing: 0;
 }
 
@@ -417,7 +417,6 @@ body.rtl #sidebar .nav > li > ul > li:not(:last-child){
 
 @media screen and (max-width: 768px) { 
     body.sidebar-toggled #sidebar,
-    body.sidebar-toggled nav#navigation,
     body.sidebar-toggled.horizontal_menu.inline_menu #sidebar {
         width: 280px;
     }
@@ -435,6 +434,18 @@ body.rtl #sidebar .nav > li > ul > li:not(:last-child){
 
 /* Horizontal Menu Below */
 @media screen and (max-width: 768px) { 
+    body.horizontal_menu #content.page_content {
+        margin-top: 88px;
+    }
+
+    body.rtl.horizontal_menu .hi-trigger {
+        margin-right: 0;
+    }
+
+    body.horizontal_menu.rtl #content.page_content {
+        margin-right: 16px;
+    }
+
     body.horizontal_menu.sidebar-toggled nav#navigation {
         width: calc(100% - 32px);
     }
@@ -694,6 +705,10 @@ body.rtl #sidebar .nav > li > ul > li:not(:last-child){
     body.horizontal_menu:not(.inline_menu) #sidebar #navigation {
         margin: 0;
         padding: 0px 27px 0px 16px;
+    }
+
+    body.rtl.horizontal_menu:not(.inline_menu) #sidebar #navigation {
+        padding: 0px 16px 0px 27px;
     }
 
     body.horizontal_menu:not(.inline_menu) #sidebar #category-container {
@@ -1205,6 +1220,10 @@ div.ui-timepicker-div dl dd > * > select {
     background-size: 10.5px 6.47px !important;
 }
 
+body.rtl select:not([class^="ui-"]){
+    background-position: left 24.55px center !important;
+}
+
 body.rtl div.ui-timepicker-div dl dd > * > select {
     background-size: 80.5px 6.47px !important;
 }select
@@ -1344,7 +1363,6 @@ div.chosen-container ul.chosen-choices  > li.search-choice > a {
 
 #ui-datepicker-div {
     padding: 24px 0px 15px 0px;
-    z-index: 1000 !important;
 }
 
 .chosen-container .chosen-results li {
@@ -1438,7 +1456,7 @@ input[type=hidden] + .form-cell, .form-cell + .form-cell, .subform-cell + .subfo
 }
 
 .numeric_field_controls {
-    top: 5px;
+    top: 8px;
     right: 24.55px;
 }
 
@@ -1448,7 +1466,7 @@ body.rtl .numeric_field_controls {
 }
 
 .label-top .numeric_field_controls {
-    top: 44px;
+    top: 49px;
 }
 
 .form-element.multiPagedForm > .page-nav-panel.top {
@@ -1597,8 +1615,17 @@ body.rtl #ui-datepicker-div > table.ui-datepicker-calendar > tbody > tr > td:las
     display: flex;
     align-items: center;
     justify-content: center;
-    top: 50%;
-    transform: translate(-50%, -50%);
+    top: 16px;
+}
+
+.label-top .hasDatepicker + a, 
+.label-top .hasDatepicker + a + a {
+    bottom: 15px;
+}
+
+.dataList .filters > .filter-cell .hasDatepicker + a, 
+.dataList .filters > .filter-cell.hasDatepicker + a + a {
+    top: 9px;
 }
 
 body.rtl .hasDatepicker + a, body.rtl .hasDatepicker + a + a {
@@ -1830,6 +1857,11 @@ button.form-button.CRUD_New {
     display: none;
 }
 
+body.rtl .chosen-rtl .chosen-choices li.search-choice .search-choice-close {
+    left: auto;
+    right: 4px;
+}
+
 /* Pop up box */
 .boxy-wrapper {
     box-shadow: 0px 1px 10px 0px #1018280D;
@@ -2011,6 +2043,20 @@ body.rtl .accordion .card-header::after {
 }
 
 @media screen and (max-width: 768px) { 
+    #content main > *:not(.category-label-header, .breadcrumb, .quickEdit) {
+        margin-top: 16px !important;
+        margin-left: 0px !important;
+        margin-bottom: 0px !important;
+        margin-right: 0px !important;
+        max-width: 100%;
+        padding: 10px;
+    }
+
+    ul.breadcrumb {
+        padding-left: 15px;
+        padding-right: 15px;
+    }
+
     .form-element.multiPagedForm > .page-nav-panel.top > ul {
         flex-direction: column;
         width: 100%;
@@ -2018,10 +2064,6 @@ body.rtl .accordion .card-header::after {
     
     .form-element.multiPagedForm > .page-nav-panel.top > div.navigation-arrows-container {
         display: none;
-    }
-
-    .hasDatepicker + a, .hasDatepicker + a + a {
-        transform: translate(-50%);
     }
 
     #section-actions {
@@ -2032,6 +2074,60 @@ body.rtl .accordion .card-header::after {
     #section-actions > .subform-column {
         display: flex;
         justify-content: flex-end;
+    }
+}
+
+@media screen and (min-width: 768px) {
+    .dataList .filters > .filter-cell:has(span) {
+        display: inline-flex;
+        align-items: center;
+        gap: 4px;
+    }
+}
+
+@media screen and (max-width: 767px) {
+    #header-info > #header-name > .logo, #header-message, .header-nav .user-link {
+        display: block !important;
+    }
+    
+    #header-info > #header-name > #header-link {
+        display: none;
+    }
+
+    .form-cell > label.label {
+        margin-bottom: 8px;
+    }
+
+    .numeric_field_controls {
+        top: auto;
+        bottom: 48px;
+    }
+
+    .dropdown-menu {
+        min-width: 10rem !important;
+    }
+    
+    .hasDatepicker + a, .hasDatepicker + a + a {
+        top: 58%;
+    }
+
+    .dataList .filters > .filter-cell span.dateRangeSeparator {
+        display: inline-block;
+        vertical-align: middle;
+        height: 100%;
+        line-height: 1;
+        position: relative;
+        top: 50%;
+        transform: translateY(-50%);
+    }
+
+    .dataList .filters > .filter-cell .hasDatepicker + a, .dataList .filters > .filter-cell.hasDatepicker + a + a {
+        top: initial;
+        transform: initial;
+    }
+
+    .fc .fc-toolbar {
+        gap: 5px;
     }
 }
 
@@ -2191,6 +2287,10 @@ footer {
 
     body:not(.horizontal_menu) .hi-trigger {
         margin-left: 0;
+    }
+
+    body.rtl .hi-trigger {
+        margin-right: 0;
     }
 
     body.rtl:not(.horizontal_menu) #page {
