@@ -2468,3 +2468,10 @@ body.popupBody > #main-body-header + #main-body-content > pre{
 body.popupBody:has( > #main-body-header > .btn.edit_link) {
     padding-top: 53px;
 }
+form#createtheme label#uiBuilderLabel,
+form#createtheme label#uiBuilderLabel > div.chosen-container {
+    width: 100% !important;
+}
+form#createtheme .form-row .form-input.withPrefix .prefix {
+    width: 65px;
+}
