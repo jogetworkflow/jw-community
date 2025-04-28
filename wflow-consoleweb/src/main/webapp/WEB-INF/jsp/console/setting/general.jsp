@@ -799,6 +799,7 @@
             event.preventDefault(); // Prevent default form submission
             validateSMTPEmail();
             localStorage.setItem('showFormSavedMessage', 'true');
+            localStorage.setItem('lastOpenedTab', $(".main-body-content-subheader.selected").attr('id'));
         });
 
         let elementsAfterFirstHeader = $('.main-body-content-subheader').eq(0).nextUntil('#header-container');
@@ -829,7 +830,14 @@
             $("div.main-body-row[data-header='"+ headerId +"']").last().css({'border': 'none'});
         })
         //Initialize the first subsection
-        $('.main-body-content-subheader').eq(0).click();
+        //Initialize the first subsection
+        const lastOpenedTab = localStorage.getItem('lastOpenedTab');
+        if (lastOpenedTab) {
+            $("div.main-body-content-subheader" + "#" + lastOpenedTab).click();   
+            localStorage.removeItem('lastOpenedTab');
+        } else {
+            $('.main-body-content-subheader').eq(0).click();
+        }
 
         $("body").off('input', '#search-bar input').on('input', '#search-bar input', function(){
                 var thisObj = this;
