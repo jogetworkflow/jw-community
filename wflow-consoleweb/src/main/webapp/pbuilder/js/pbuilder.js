@@ -4800,27 +4800,31 @@ ProcessBuilder = {
         
     /*
      * Convert object to xml
-     */                
+     */
     obj2Xml : function(obj, name, level) {
         var xml = '';
         var selfClosing = false;
-        
+
         var attrs = '';
         var body = '';
-        
+
         var space = '';
         if (level > 0) {
             for (var i = 0; i < (level * 4); i++) {
                 space += ' ';
             }
         }
-        
+
+        let textContent = false;
         if (typeof obj === "object" && !(obj instanceof String)) {
             for (var prop in obj) {
                 if (prop === "-self-closing") {
                     selfClosing = obj['-self-closing'];
                 } else if (prop.indexOf("-") === 0) {
                     attrs += " " + prop.substring(1) + "=\"" + ProcessBuilder.escapeXml(obj[prop]) + "\"";
+                } else if (prop.indexOf("#text") === 0) {
+                    body += obj[prop];
+                    textContent = true;
                 } else if (prop.indexOf("#") === 0) {
                     //ignore
                 } else if (obj[prop] instanceof Array) {
@@ -4836,21 +4840,21 @@ ProcessBuilder = {
         } else {
             body = obj;
         }
-        
+
         if (name !== "") {
             if (selfClosing) {
                 xml = space + "<" + name + attrs + "/>\n";
             } else if (typeof obj !== "object" || obj instanceof String) {
                 xml = space + "<" + name + ">" + body + "</" + name + ">\n";
             } else {
-                xml = space + "<" + name + attrs + ">\n" + body + space + "</" + name + ">\n";
+                xml = space + "<" + name + attrs + ">" + (textContent ? "" : "\n") + body + (textContent ? "" : space) +"</" + name + ">\n";
             }
         } else {
             xml = body;
         }
         return xml
-    },        
-    
+    },
+
     /*
      * Generate xpdl from the json def
      */
