@@ -2,6 +2,89 @@ Joget DX COMMUNITY
 ====================
 For more information, please refer to https://community.joget.org
 
+9.0-BETA
+========
+416331676 Modified: wflow-core - AI - Separate Tensorflow as individual plugin and removed Tensorflow dependencies, components, and references. @9.0-SNAPSHOT
+a5b3b88e4 Added: wflow-consoleweb - Signature Pad - Added Dark Mode to Signature Pad toolbar. @9.0-SNAPSHOT
+783844879 Added: wflow-consoleweb - Process Builder - UI enhancement. @9.0-SNAPSHOT
+be256a248 Modified: wflow-consoleweb - Security - Remove Bootstrap and replace with internal system. @9.0-SNAPSHOT
+13817185c Added: jw-community - User roles - Adding app creator & system manager role. @9.0-SNAPSHOT
+de6ba18ad Modified: jw-community - Performance - Startup time reduction using lazy-initialized beans @9.0-SNAPSHOT
+806879bbe Modified: wflow-commons - Performance - Startup time reduction using async bootstrap executor @9.0-SNAPSHOT
+f4fc9edab Updated: wflow-consoleweb - DX9 App Center - Updated banner images. @9.0-SNAPSHOT
+955365090 Modified: wflow-install - Update SQL & DB files. @9.0-SNAPSHOT
+b00a0287a Modified: wflow-core, wflow-consoleweb - Service Worker - Cache missed resources before SW was activated. @9.0-SNAPSHOT
+a48f896a4 Modified: wflow-commons, wflow-core - List - Support cache row count with stale while revalidate caching method. @9.0-SNAPSHOT
+0f557e344 Modified: wflow-consoleweb - App Composer - Added link to seamlessly download addon builder. @9.0-SNAPSHOT
+6bae55737 Fixed: wflow-plugin-archetype - src folder not generating due to misconfigured archetype-metadata.xml. @9.0-SNAPSHOT
+8a6ea3895 Fixed: wflow-consoleweb - Flexigrid - Adjusted height of arrow button and readjusted button position calculation. @8.2-SNAPSHOT
+0b468e59d Fixed: wflow-consoleweb - Property Editor - Correction of 9039e4ee. Property fields go missing on editing the record. T5419 @8.2-SNAPSHOT
+811504384 Fixed: jw-community - Security - Update Spring Framework to 6.2.3. @9.0-SNAPSHOT
+68fbe27de Fixed: wflow-consoleweb - Overview Icons - Fixed Overview Icon position and dark theme issue. @8.1-SNAPSHOT
+ae3e474c3 Fixed: wflow-consoleweb - Builders - Back/forward browser navigation not working properly. @8.2-SNAPSHOT
+f76d0b9fd Fixed: wflow-core/wflow-wfengine/wflow-commons/wflow-consoleweb - NPE - Fixed potential dereferencing of null pointers. @8.1-SNAPSHOT
+94bbe92bd Added: wflow-core - Plugin - Added new plugin type AppImportExportAwarePlugin. @8.2-SNAPSHOT
+544e19388 Modified: wflow-plugin-base - Plugin - Update Java Doc & comments. @8.2-SNAPSHOT
+73e3f3576 Added: wflow-plugin-base - Plugin - Added new plugin type Web Filter to support request interception. @8.2-SNAPSHOT
+b6ba8e664 Fixed: wflow-consoleweb - UI - reloadTable in dialogClose.jsp does not work. @8.2-SNAPSHOT
+d128dbd80 Fixed: wflow-core - UserviewUtil - renderJspAsString return string with i18n labels become `???`. @8.2-SNAPSHOT
+fb2ff2355 Modified: wflow-consoleweb - Console UI - Make jsontable to support flexible attributes and UserviewUtil.renderJspAsString. @8.2-SNAPSHOT
+b0ae8bfb7 Modified: wflow-plugin-base - ExtDefaultPlugin - Adding default implementation for getClassName(). @8.2-SNAPSHOT
+62448de69 Added: wflow-plugin-base - Plugin - Added new plugin type Console Page to support extending admin console feature. @8.2-SNAPSHOT
+f8bc81160 Added: wflow-plugin-base - Plugin - Added new plugin type UI HTML Injector to allow inject HTML based on URL patterns. @8.2-SNAPSHOT
+13e61d048 Added: wflow-plugin-base - Plugin - Added new interface SystemConfigurablePlugin to support plugin types that does not support configuration having a place to configure in Manage Plugins. @8.2-SNAPSHOT
+c513eacc9 Modified: wflow-consoleweb - PluginJsonController - Refactored code to reduce redundant code. @8.2-SNAPSHOT
+aa62f9f9e Added: wflow-plugin-base - Plugin - Added new plugin interface ActivationAwarePlugin to support processing after plugin installed and before plugin uninstalling. @8.2-SNAPSHOT
+943fdcb7f Fixed: jw-community - Plugin - Few javax.servlet-api versions are included causing noSuchMethodException when new added method in latest version is used. @8.2-SNAPSHOT
+b3a859f3c Fixed: jw-community - JDBC - Adding cache implementation for custom data source. T5401 @8.2-SNAPSHOT
+fea3a3621 Modified: wflow-install - Security - Update Apache Ant to 1.10.15. T5364 @9.0-SNAPSHOT
+6c9023691 Modified: jw-community - Security - Update Spring Security to 6.4.4 for CVE-2024-38827. T5364 @9.0-SNAPSHOT
+df47652de Fixed: wflow-consoleweb - Login Page - Fixed missing error message on the login page for DX9. @9.0-SNAPSHOT
+d7e7cb624 Fixed: wflow-consoleweb - List - Fixed list inbox assignment details displaying behind activity. T5887. @8.1-SNAPSHOT
+447551a52 Fixed: wflow-core/wflow-plugin-base/wflow-commons/wflow-consoleweb - Code Quality - Fixed redundant operations. @8.1-SNAPSHOT
+8de3b1f88 Fixed: jw-community - Security - Update Apache Tomcat to 11.0.5 for CVE-2025-24813. T5913 @9.0-SNAPSHOT
+e97ca980b Fixed: wflow-core - Plugin - Regression on plugin using AppDefCache not working. @9.0-SNAPSHOT
+c270220e1 Fixed: wflow-install - Update README.txt & NOTICE.txt. @9.0-SNAPSHOT
+cc1da566a Fixed: wflow-consoleweb - Progressive, Universal Themes - IdP buttons are affected by login button css. @9.0-SNAPSHOT
+a78c99cee Fixed: wflow-consoleweb - Ajax Universal Themes - IdP login buttons misaligned in default apps. @9.0-SNAPSHOT
+3b37ab705 Fixed: wflow-core - Login Template - Login form footer rendered twice. @9.0-SNAPSHOT
+dce021d56 Fixed: wflow-wfengine - Archived Process - Fixed the archived process only stored the last value of workflow variables for every activity. T5903. @8.1-SNAPSHOT
+550a7113e Fixed: wflow-core - Governance Health Check - Fixed OrphanedFormDataCheck type null issue. T5960 @8.2-SNAPSHOT
+df6b2f996 Modified: wflow-core - Form ERD - Adding column label info for integration. @8.2-SNAPSHOT
+c01140db0 Fixed: wflow-core - Date Picker - Inconsistent positioning of the calendar UI at different zoom levels. @8.2-SNAPSHOT
+86bda4b40 Fixed: wflow-core - UI Builder - The default properties value for the palette element is cached and does not update when installed new plugin version. @8.2-SNAPSHOT
+e4ca25901 Fixed: wflow-consoleweb - Marketplace - Install button disappear caused by browser extension. @8.2-SNAPSHOT
+a3369ac56 Fixed: wflow-core - AppServiceImpl - Fixed NPE error when dragging run process element if process is empty. @8.2-SNAPSHOT
+cad242a4b Fixed: wflow-core - Memory - Fixed unreleased resources after not being used anymore @8.1-SNAPSHOT
+5b0c902ba Fixed: wflow-consoleweb - Property Editor - File & Image input style not handle correctly for light/dark theme and RTL. @8.1-SNAPSHOT
+b977c4544 Fixed: wflow-consoleweb - CSRF Protection - HEAD request should not need CSRF token. @8.2-SNAPSHOT
+aeb0f5a48 Fixed: wflow-consoleweb - UI Builder - Can't add menu to category at the bottom of long scrolled sidebar. @8.1-SNAPSHOT
+5cb5f6096 Fixed: wflow-plugin-base - Manage Plugins - Plugins built for addon builder disappeared after update addon builder. @7.0-SNAPSHOT
+854c0532a Fixed: wflow-install - Increased column size for variables in wf_history_process and wf_history_activity. @8.1-SNAPSHOT
+bebc0e151 Fixed: wflow-consoleweb - MySQL - Increased column size for variables in wf_history_process and wf_history_activity to prevent truncation errors. @8.1-SNAPSHOT
+f52d754bb Fixed: wflow-consoleweb - App Composer Advance Tools - Fixed preview header overlapping issue. @8.1-SNAPSHOT
+c85ba4bc0 Fixed: wflow-core - File Upload - Regression of 76df9a23. PWA causing file upload progress bar not working. T5583 @8.1-SNAPSHOT
+9039e4ee9 Fixed: wflow-consoleweb - Property Editor - Fixed property fields go missing on editing the record. T5419 @8.1-SNAPSHOT
+fe1d88da6 Fixed: wflow-core - Email Tool - Fixed hash variables could not input for the Iterator Process Tool in the Email Tool, specifically in the To (Specific Email Address) and From fields. T5419 @8.1-SNAPSHOT
+2ca19d841 Fixed: wflow-consoleweb - Ajax Themes - Fixed when initial page load, missing URL in the window.history.state. @8.0-SNAPSHOT
+1ee5cc1cc Fixed: wflow-consoleweb - Ajax Theme - Fixed during "Back" button click loses the navigation history. @8.1-SNAPSHOT
+96afc1ea8 Fixed: wflow-core - User Profile - Fixed the User Profile UI menu, submitting the form on the page fails when the email field is set to read-only or hidden. T5785 @8.1-SNAPSHOT
+0bcbf81f1 Fixed: wflow-consoleweb - Size Property fields - Fixed border issue in light/dark themes. @8.1-SNAPSHOT
+0460238ad Fixed: wflow-consoleweb - Process Builder - The element does not follow cursor and page jump to top when drag a new element into participant at the bottom of scrolled canvas. @8.1-SNAPSHOT
+afa8da568 Fixed: wflow-consoleweb - App Composer - Delete builder item throw JS error in console. @8.1-SNAPSHOT
+d2af40df8 Fixed: wflow-core - Form Element - Cloud security AOP causing NPE when setting form element OSGI plugin unique key. @8.1-SNAPSHOT
+02a383b58 Fixed: wflow-consoleweb - Multiselect Box - Fixed placeholder is not showing on dx8 themes #T5830 @8.1-SNAPSHOT
+e2b6adbfc Fixed: wflow-cosoleweb - Manage Plugins - Refactoring duplicate code. @7.0-SNAPSHOT
+863c109cb Fixed: wflow-consoleweb - Manage Plugins - Slow loading in cloud. @7.0-SNAPSHOT
+efc8e0df0 Fixed: wflow-core - Text Field - Fixed text field not applying number formatting on Enter key submit. T5709 @7.0-SNAPSHOT
+9ebbd21a9 Fixed: wflow-core - File Upload - Still able to select multiple files after set it to single file. @7.0-SNAPSHOT
+8dd2fff11 Fixed: wflow-consoleweb - File Upload - Progress bar not working when upload field in form grid. T5583 @7.0-SNAPSHOT
+e2548124e Fixed: wflow-consoleweb - UI Themes - The hide menu button in the user view does not work in some browser window widths. T5822 @7.0-SNAPSHOT
+e43abfe2e Fixed: wflow-core - Login - Strip HTML tags from parameters in userview. @7.0-SNAPSHOT
+0f7f14626 Fixed: wflow-consoleweb - Mandatory Fields Icon Placement - Fixed inconsistent icon placement to denote Mandatory Fields in Custom Builder. @8.1-SNAPSHOT
+68db71f95 Fixed: wflow-core - Form Builder - Can't save in non sticky session cluster env. T5312 @8.1-SNAPSHOT
+605563f7a Fixed: wflow-consoleweb - Builder - Page scroll to top when drop new element. @8.1-SNAPSHOT
+
 9.0-PREVIEW
 ===========
 7d2a43115 Fixed: wflow-consoleweb - Universal/Progressive Theme - Fixed dropdown icon is not centered and navbar positioning is not aligned with header @8.1-SNAPSHOT
