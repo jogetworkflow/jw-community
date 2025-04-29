@@ -100,12 +100,19 @@
     <script type="text/javascript">
 
         function validateField(){
-            var valid = true;
-            var alertString = "";
-            if($("#firstName").val() == ""){
+            let valid = true;
+            let alertString = "";             
+            const firstName = $("#firstName").val();
+            const lastName = $("#lastName").val();
+    
+            if(firstName == ""){
                 alertString += '<ui:msgEscJS key="User.firstName[not.blank]"/>';
                 valid = false;
-            }
+            } else if (containsXss(firstName) || containsXss(lastName)) {
+                alertString += '<ui:msgEscJS key="console.directory.user.error.label.nameInvalid"/>';
+                valid = false;
+            }  
+            
             if($("#password").val() != $("#confirmPassword").val()){
                 if(alertString != ""){
                     alertString += '\n';
@@ -126,6 +133,11 @@
                 parent.PopupDialog.closeDialog();
             }
             return false;
+        }
+        
+        function containsXss(input) {
+            const pattern = /<[^>]*>|(javascript:)|(&#x?[0-9a-fA-F]+;)|(%[0-9a-fA-F]{2})/gi;
+            return pattern.test(input);        
         }
     </script>
 <commons:popupFooter />
