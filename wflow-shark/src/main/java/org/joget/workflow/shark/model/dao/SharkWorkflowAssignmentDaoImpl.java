@@ -7,8 +7,13 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.TreeSet;
+import java.util.stream.Collectors;
+import javax.cache.Cache;
+import org.enhydra.shark.SharkUtil;
 import org.hibernate.Session;
 import org.hibernate.query.Query;
 import org.joget.commons.spring.model.AbstractSpringDao;
@@ -447,9 +452,61 @@ public class SharkWorkflowAssignmentDaoImpl extends AbstractSpringDao implements
 
         return q.list();
     }    
-        
+
     @Override
     public Collection<WorkflowAssignment> getAssignmentsByProcessIds(Collection<String> processIds, String username, String state, String sort, Boolean desc, Integer start, Integer rows) {
+        // get from in-memory cache
+        Cache cache = SharkUtil.getWorkflowAssignmentCache();
+        if (cache != null) {
+            // find uncached processIds
+            Collection<String> uncachedProcessIds = new TreeSet<>(processIds);
+            String cacheKeyForUser = SharkUtil.getCacheKeyForUser(username);
+            Collection<String> cachedProcessIds = (Collection<String>)cache.get(cacheKeyForUser);
+            if (cachedProcessIds != null) {
+                uncachedProcessIds.removeAll(cachedProcessIds);
+            }
+            
+            if (!uncachedProcessIds.isEmpty()) {
+                // cache process ids for user
+                Collection<String> newCachedProcessIds = (cachedProcessIds != null) ? cachedProcessIds : new HashSet<>();
+                newCachedProcessIds.addAll(processIds);
+                cache.put(cacheKeyForUser, newCachedProcessIds);                
+                
+                // load uncached user assignments from database
+                LogUtil.debug(getClass().getName(), "Loading uncached process IDs " + uncachedProcessIds);
+                Collection<WorkflowAssignment> userAssignments = loadAssignmentsByProcessIds(uncachedProcessIds, username, state, sort, desc, start, rows);
+
+                // store assignments in cache
+                Map<String, List<WorkflowAssignment>> processAssignmentMap = userAssignments.stream()
+                    .collect(Collectors.groupingBy(WorkflowAssignment::getProcessId));
+                processAssignmentMap.forEach((processId, assignments) -> {
+                    String key = SharkUtil.getCacheKeyForAssignments(processId, username);
+                    cache.put(key, assignments);
+                });
+            }
+            
+            // get cache keys based on profile, username and processId
+            Set<String> keys = processIds.stream()
+                .map(processId -> SharkUtil.getCacheKeyForAssignments(processId, username))
+                .collect(Collectors.toSet());
+            
+            // lookup keys from cache
+            Map<String, List<WorkflowAssignment>> assignmentMap = (Map)cache.getAll(keys);
+            List<WorkflowAssignment> matchingAssignments = new ArrayList<>();
+            assignmentMap.forEach((key, assignments) -> {
+                if (keys.contains(key)) {
+                    matchingAssignments.addAll(assignments);
+                }
+            });
+            return matchingAssignments;
+        } else {
+            // no cache available, load from database
+            return loadAssignmentsByProcessIds(processIds, username, state, sort, desc, start, rows);
+        }     
+    }
+
+    @Override
+    public Collection<WorkflowAssignment> loadAssignmentsByProcessIds(Collection<String> processIds, String username, String state, String sort, Boolean desc, Integer start, Integer rows) {
         //sorting
         if (sort != null && !sort.isEmpty()) {
             if ("processDefId".equals(sort)) {
@@ -569,7 +626,7 @@ public class SharkWorkflowAssignmentDaoImpl extends AbstractSpringDao implements
         
         return transformToWorkflowAssignment(shAss);
     }
-    
+        
     @Override
     public Collection<WorkflowActivity> getClosedActivities(String packageId, String processDefId, String processId, String activityDefId, String username, String state, String sort, Boolean desc, Integer start, Integer rows) {
 
