@@ -483,15 +483,28 @@ public class CustomWfActivityImpl extends WfActivityImpl {
                     .createAssignment(shandle, this, wr);
             }
             
+            String activityId = (ass != null) ? ass.activityId(shandle) : null;
             if (LogUtil.isDebugEnabled(CustomWfActivityImpl.class.getName())) {
                 if (ass != null) {
-                    LogUtil.debug(CustomWfActivityImpl.class.getName(), "Assingment of " + ass.activityId(shandle) + " created for " + username);
+                    LogUtil.debug(CustomWfActivityImpl.class.getName(), "Assignment of " + activityId + " created for " + username);
                 } else {
-                    LogUtil.debug(CustomWfActivityImpl.class.getName(), "Assingment of " + this.key + " failed to create for " + username);
+                    LogUtil.debug(CustomWfActivityImpl.class.getName(), "Assignment of " + this.key + " failed to create for " + username);
                 }
             }
             wr.addAssignment(shandle, ass);
             getAssignmentResourceIds(shandle).add(username);
+            
+            // add to cache
+            SharkUtil.addCacheWorkflowAssignment(processId, activityId, username);
         }
     }
+
+    @Override
+    protected void removeAssignment(WMSessionHandle shandle, String resUsername, boolean delete, boolean assStat) throws Exception {
+        super.removeAssignment(shandle, resUsername, delete, assStat);
+
+        // remove from cache
+        SharkUtil.removeCacheWorkflowAssignment(processId, key, resUsername);
+    }
+
 }

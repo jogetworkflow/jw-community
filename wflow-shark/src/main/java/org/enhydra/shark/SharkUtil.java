@@ -8,9 +8,11 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import javax.cache.Cache;
 import org.enhydra.dods.DODS;
 import org.enhydra.shark.api.client.wfmc.wapi.WMConnectInfo;
 import org.enhydra.shark.api.client.wfmc.wapi.WMSessionHandle;
@@ -26,9 +28,12 @@ import org.enhydra.shark.xpdl.XPDLConstants;
 import org.enhydra.shark.xpdl.elements.Activity;
 import org.enhydra.shark.xpdl.elements.Transition;
 import org.enhydra.shark.xpdl.elements.WorkflowProcess;
+import org.joget.commons.cache.InMemoryCacheManager;
+import org.joget.commons.util.HostManager;
 import org.joget.commons.util.LogUtil;
 import org.joget.workflow.model.WorkflowActivity;
 import org.joget.workflow.model.WorkflowAssignment;
+import org.joget.workflow.model.service.WorkflowManager;
 import org.joget.workflow.model.service.WorkflowUserManager;
 import org.joget.workflow.util.WorkflowUtil;
 
@@ -304,4 +309,95 @@ public class SharkUtil {
             //ignore
         }
     }
+    
+    static Cache sharkWorkflowAssignmentCache;
+    
+    /**
+     * Get in-memory grid cache for workflow assignments.
+     * @return 
+     */
+    public static Cache getWorkflowAssignmentCache() {  
+        if (sharkWorkflowAssignmentCache == null) {
+            String regionName = "shark-workflow-assignment";
+            long expiry = 60*60*1000L; // 1 hour
+            InMemoryCacheManager cacheManager = InMemoryCacheManager.getInMemoryCacheManager();
+            sharkWorkflowAssignmentCache = cacheManager.getCache(regionName, expiry);
+        }
+        return sharkWorkflowAssignmentCache;
+    }    
+    
+    /**
+     * Return the cache key for a specific process ID and user.
+     * @param processId
+     * @param username
+     * @return 
+     */
+    public static String getCacheKeyForAssignments(String processId, String username) {
+        String profile = HostManager.getCurrentProfile();
+        String key = "assignments_" + profile + "_" + username + "_" + processId;
+        return key;
+    }
+
+    /**
+     * Return the cache key for a specific user.
+     * @param username
+     * @return 
+     */
+    public static String getCacheKeyForUser(String username) {
+        String profile = HostManager.getCurrentProfile();
+        String key = "processes_" + profile + "_" + username;
+        return key;
+    }
+    
+    /**
+     * Add an assignment to the in-memory grid cache.
+     * @param processId
+     * @param activityId
+     * @param username 
+     */
+    public static void addCacheWorkflowAssignment(String processId, String activityId, String username) {
+        Cache cache = getWorkflowAssignmentCache();
+        if (cache != null) {
+            // get assignments
+            WorkflowManager workflowManager = (WorkflowManager)WorkflowUtil.getApplicationContext().getBean("workflowManager");
+            WorkflowAssignment assignment = workflowManager.getAssignment(activityId);
+            
+            // add to assignment cache
+            String key = getCacheKeyForAssignments(processId, username);
+            List<WorkflowAssignment> cachedAssignments = (List<WorkflowAssignment>)cache.get(key);
+            if (cachedAssignments == null) {
+                cachedAssignments = new ArrayList<>();
+            }
+            cachedAssignments.add(assignment);
+            cache.put(key, cachedAssignments);
+            
+            // add to user process cache
+            String cacheKeyForUser = getCacheKeyForUser(username);
+            Collection<String> cachedProcessIds = (Collection<String>)cache.get(cacheKeyForUser);
+            if (cachedProcessIds == null) {
+                cachedProcessIds = new HashSet<>();
+            }
+            cachedProcessIds.add(processId);
+            cache.put(cacheKeyForUser, cachedProcessIds);
+        }
+    }
+
+    /**
+     * Remove an assignment from the in-memory grid cache.
+     * @param processId
+     * @param activityId
+     * @param username 
+     */
+    public static void removeCacheWorkflowAssignment(String processId, String activityId, String username) {
+        Cache cache = getWorkflowAssignmentCache();
+        if (cache != null) {
+            // remove from assignment cache
+            String key = getCacheKeyForAssignments(processId, username);
+            List<WorkflowAssignment> cachedAssignments = (List<WorkflowAssignment>)cache.get(key);
+            if (cachedAssignments != null) {
+                cachedAssignments.removeIf(x -> x.getActivityId().equals(activityId));
+                cache.put(key, cachedAssignments);
+            }
+        }
+    }    
 }
