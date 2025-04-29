@@ -70,6 +70,7 @@
 			var cdpad = Math.ceil(this.cdpad);
 
 			$('div',g.cDrag).hide();
+                        let a = $('thead tr:first th:visible', this.hDiv).first();
 
 			$('thead tr:first th:visible',this.hDiv).each
 				(
@@ -82,7 +83,7 @@
 					if (cdleft==0)
 							cdleft -= Math.ceil(p.cgwidth/2);
                                         
-                                        if ($("body").attr('builder-theme') == "dark" || $("body").attr('builder-theme') == "light"){
+                                        if ($(a).find('input[type="checkbox"]').length > 0 || $(a).find('input[type="radio"]').length > 0){
                                             if(n == 0){
                                                 cdpos = cdpos + cdleft + cdpad;
                                             }else{
