@@ -7,7 +7,9 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
+import javax.cache.Cache;
 import org.apache.commons.collections.map.LRUMap;
+import org.joget.commons.cache.InMemoryCacheManager;
 import org.joget.commons.spring.model.AbstractSpringDao;
 import org.joget.commons.util.DynamicDataSourceManager;
 import org.joget.commons.util.LogUtil;
@@ -35,7 +37,38 @@ public class WorkflowProcessLinkDao extends AbstractSpringDao {
         addWorkflowProcessLink(wfProcessLink);
     }
 
+    
+    static Cache workflowProcessLinkCache;
+    
+    /**
+     * Get the workflow process link cache.
+     * @return 
+     */
+    public static Cache getWorkflowProcessLinkCache() {  
+        if (workflowProcessLinkCache == null) {
+            String regionName = "workflow-process-link";
+            long expiry = 60*60*1000L; // 1 hour
+            InMemoryCacheManager cacheManager = InMemoryCacheManager.getInMemoryCacheManager();
+            workflowProcessLinkCache = cacheManager.getCache(regionName, expiry);
+        }
+        return workflowProcessLinkCache;
+    }
+    
     public void addWorkflowProcessLink(WorkflowProcessLink wfProcessLink){
+        // save in cache
+        Cache cache = getWorkflowProcessLinkCache();
+        if (cache != null) {
+            String originId = wfProcessLink.getOriginProcessId();
+            String processId = wfProcessLink.getProcessId();
+            Collection<String> processIds = (Collection<String>)cache.get(originId);
+            if (processIds == null) {
+                processIds = new HashSet<>();
+            }
+            processIds.add(processId);
+            cache.put(originId, processIds);
+        }
+        
+        // persist
         saveOrUpdate(ENTITY_NAME, wfProcessLink);
     }
     
@@ -73,6 +106,19 @@ public class WorkflowProcessLinkDao extends AbstractSpringDao {
     }
 
     public void delete(WorkflowProcessLink wfProcessLink) {
+        // remove from cache
+        Cache cache = getWorkflowProcessLinkCache();
+        if (cache != null) {
+            String originId = wfProcessLink.getOriginProcessId();
+            String processId = wfProcessLink.getProcessId();
+            Collection<String> processIds = (Collection<String>)cache.get(originId);
+            if (processIds != null) {
+                processIds.remove(processId);
+                cache.put(originId, processIds);
+            }
+        }
+        
+        // delete
         super.delete(ENTITY_NAME, wfProcessLink);
     }
     
@@ -95,6 +141,16 @@ public class WorkflowProcessLinkDao extends AbstractSpringDao {
             
             int i = 0;
             for (String id : ids) {
+                // lookup from cache
+                Cache cache = getWorkflowProcessLinkCache();
+                if (cache != null) {
+                    Collection<String> pIds = (Collection<String>)cache.get(id);
+                    if (pIds != null) {
+                        processIds.put(id, pIds);
+                        continue;
+                    }
+                }
+
                 if (i % 1000 == 0) {
                     values = new ArrayList<String>();
                     conditions = "where e.originProcessId in (";
@@ -113,12 +169,17 @@ public class WorkflowProcessLinkDao extends AbstractSpringDao {
 
                         Collection<String> pIds = processIds.get(orgId);
                         if (pIds == null) {
-                            pIds = new ArrayList<String>();
+                            pIds = new HashSet<>();
                         }
                         pIds.add(pid);
                         existIds.add(pid);
 
                         processIds.put(orgId, pIds);
+
+                        // add to cache
+                        if (cache != null) {
+                            cache.put(orgId, pIds);
+                        }
                     }
                 }
                 i++;
