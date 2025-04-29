@@ -2382,8 +2382,18 @@ body.popupBody {
 }
 *::-webkit-scrollbar-thumb {
     background-color: rgba(78, 100, 117, 0.5);
-    outline: 1px solid rgba(78, 100, 117, 0.5); 
+    outline: 1px solid rgba(78, 100, 117, 0.5);
     border-radius: 15px;
+}
+body[builder-theme='dark'] * {
+    scrollbar-color: rgba(255, 255, 255, 0.3) rgba(255, 255, 255, 0.05);
+}
+body[builder-theme='dark'] *::-webkit-scrollbar {
+    background-color: rgba(255, 255, 255, 0.05);
+}
+body[builder-theme='dark'] *::-webkit-scrollbar-thumb {
+    background-color: rgba(255, 255, 255, 0.3);
+    outline: 1px solid rgba(255, 255, 255, 0.3);
 }
 
 /* property editor builder style */

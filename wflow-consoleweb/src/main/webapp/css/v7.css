@@ -1365,6 +1365,10 @@ body .flexigrid div.bDiv table tbody {
 body .flexigrid .pReload.loading > span:before {
     display:none;
 }
+body[system-theme='dark'] .flexigrid div.nBtn{
+    border-bottom: 1.5px solid var(--console-border-color);
+    border-top: 1.5px solid var(--console-border-color);    
+}
 
 /* resourceGrid */
 #resourcesGrid #file-list {
@@ -2838,3 +2842,8 @@ form#createtheme label#uiBuilderLabel > div.chosen-container {
 form#createtheme .form-row .form-input.withPrefix .prefix {
     width: 65px;
 }
+body[system-theme='dark'] .flexigrid div.bDiv{
+    border-left: 1.5px solid var(--theme-border-color-1);
+    border-right: 1.5px solid var(--theme-border-color-1);
+    scrollbar-color: rgb(255 255 255 / 40%) var(--theme-primary-color-2);
+} 

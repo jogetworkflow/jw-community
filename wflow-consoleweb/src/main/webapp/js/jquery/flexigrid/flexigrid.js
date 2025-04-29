@@ -70,6 +70,7 @@
 			var cdpad = this.cdpad;
 
 			$('div',g.cDrag).hide();
+                        let a = $('thead tr:first th:visible', this.hDiv).first();
 
 			$('thead tr:first th:visible',this.hDiv).each
 				(
@@ -79,18 +80,25 @@
 
 					var cdpos = Math.ceil($('div',this).width());
 					var ppos = cdpos;
+                                        
+                                        let borderExtra = 0;
+                    
+                                        if ($("body").attr('system-theme') == "dark"){
+                                            borderExtra = parseFloat($('div.hDiv').css('border-left-width'));
+                                        }
+                                        
 					if (cdleft==0)
 							cdleft -= Math.ceil(p.cgwidth/2);
                                         
-                                        if ($("body").attr('builder-theme') == "dark" || $("body").attr('builder-theme') == "light"){
+                                        if ($(a).find('input[type="checkbox"]').length > 0 || $(a).find('input[type="radio"]').length > 0){
                                             if(n == 0){
-                                                cdpos = cdpos + cdleft + cdpad;
+                                                cdpos = cdpos + cdleft + cdpad + borderExtra;
                                             }else{
                                                 cdpos = cdpos + cdleft + cdpad + 6;
                                             }
                                         } else{
                                             if(n == 0){
-                                                cdpos = cdpos + cdleft + cdpad + 0.5;
+                                                cdpos = cdpos + cdleft + cdpad + 0.5 + borderExtra;
                                             }else{
                                                 cdpos = cdpos + cdleft + cdpad;
                                             }
@@ -1055,16 +1063,18 @@
                                                                         //position relative to scroll container
                                                                          if ($("body").hasClass("rtl")) {
                                                                            //to align the left edge of nBtn at the left edge of the column
+                                                                           //(verified against measured th/nBtn rects at 100% and 110% zoom: was off by 1px at both)
                                                                            btnLeft =
-                                                                             thRect.left - containerOffset.left + halfDivider - scrollLeft - 1;
+                                                                             thRect.left - containerOffset.left + halfDivider - scrollLeft - 2;
                                                                          } else {
                                                                            //to align the right edge of nBtn at the right edge of the column
+                                                                           //(verified against measured th/nBtn rects at 100% and 110% zoom: was off by 1px at both)
                                                                            btnLeft =
                                                                              thRect.right -
                                                                              containerOffset.left -
                                                                              halfDivider -
                                                                              btnWidth +
-                                                                             scrollLeft + 1;
+                                                                             scrollLeft + 2;
                                                                          }
                                                                          
                                                                         //position relative to scroll container
