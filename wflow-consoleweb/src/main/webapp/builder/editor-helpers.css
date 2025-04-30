@@ -390,7 +390,8 @@ body.show-node-details [data-cbuilder-absolute-position] .cbuilder-node-details 
 [data-cbuilder-classname] button:not([data-cbuilder-classname]),
 [data-cbuilder-classname] input:not([data-cbuilder-classname]),
 [data-cbuilder-classname] textarea:not([data-cbuilder-classname]),
-[data-cbuilder-classname] select:not([data-cbuilder-classname]){
+[data-cbuilder-classname] select:not([data-cbuilder-classname]),
+[data-cbuilder-classname] li:not([data-cbuilder-classname]){
     pointer-events: none;
 }
 
