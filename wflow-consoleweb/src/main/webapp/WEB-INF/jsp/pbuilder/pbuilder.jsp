@@ -75,7 +75,8 @@
                 "getDefinitionUrl" : "${pageContext.request.contextPath}/web/console/app/${appId}/${version}/process/builder/json",
                 "rightPropertyPanel" : true,
                 "defaultBuilder" : true,
-                "submitDiff" : true
+                "submitDiff" : true,
+                "marketplacePaletteClass" : "org.joget.plugin.base.ApplicationPlugin"
             },
             "callbacks" : {
                 "initBuilder" : "ProcessBuilder.initBuilder",
@@ -98,7 +99,6 @@
                 "builderSaved" : "ProcessBuilder.builderSaved",
                 "builderSaveFailed" : "ProcessBuilder.builderSaveFailed",
                 "getOverviewPathElementSelector" : "ProcessBuilder.getOverviewPathElementSelector",
-                "marketplaceReloadPalette" : "ProcessBuilder.marketplaceReloadPalette",
                 "marketplaceReloadPalette" : "ProcessBuilder.marketplaceReloadPalette"
             },
             "properties" : {

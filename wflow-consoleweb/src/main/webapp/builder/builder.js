@@ -7876,7 +7876,7 @@ _CustomBuilder.Builder = {
     initMarketplacePalette: function () {
         var className = CustomBuilder.config.builder.options['marketplacePaletteClass'];
         if (className !== undefined && className !== null && className !== "") {
-            var link = $('<a class="marketplaceLink"><div id="marketplace-link" class="marketplace-link" onclick="CustomBuilder.Builder.loadSeamlessMarketplace()">' + get_cbuilder_msg("cbuilder.seamless.marketplace.more.plugin") + '</div></a>');
+            var link = $('<a class="marketplaceLink"><div id="marketplace-link" class="marketplace-link btn btn-link" onclick="CustomBuilder.Builder.loadSeamlessMarketplace()">' + get_cbuilder_msg("cbuilder.seamless.marketplace.more.plugin") + '</div></a>');
             $("#left-panel ul.components-list").append(link);
         }
     },

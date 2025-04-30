@@ -383,7 +383,7 @@ body.right-panel-resizing #right-panel-resize-block{
     overflow-x: hidden;
     list-style: none;
     overflow-y: hidden; 
-    padding-bottom: 45px;
+    padding-bottom: 70px;
 }
 #cbuilder .components-list:hover, #cbuilder .blocks-list:hover, #cbuilder .component-properties:hover {
     overflow-y: auto; 
