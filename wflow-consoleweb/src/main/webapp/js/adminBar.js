@@ -78,22 +78,12 @@ var AdminBar = {
         });
 
         //Attach the required system theme once it's ready
-        const intervalId = setInterval(function() {
-            if (UI.theme) { 
-                
-                $(parent.document).find('#quickOverlayFrameDiv').attr('system-theme', UI.theme);
-                $(parent.document).find('#quickOverlayButton').attr('system-theme', UI.theme);
-                
-                clearInterval(intervalId);
-                $("div#adminBar").removeClass("loading");
-                $("div#adminBar").addClass("loaded");
-                $quickOverlayFrame.closest("#quickOverlayContainer").show();
-            }
-        }, 100); 
+        $(parent.document).find('#quickOverlayFrameDiv').attr('system-theme', $("div#adminBar").attr('builder-theme'));
+        $(parent.document).find('#quickOverlayButton').attr('system-theme', $("div#adminBar").attr('builder-theme'));
 
-        setTimeout(function() {
-            clearInterval(intervalId);
-        }, 20000);
+        $("div#adminBar").removeClass("loading");
+        $("div#adminBar").addClass("loaded");
+        $quickOverlayFrame.closest("#quickOverlayContainer").show();
 
         AdminBar.initPinMode();
         
