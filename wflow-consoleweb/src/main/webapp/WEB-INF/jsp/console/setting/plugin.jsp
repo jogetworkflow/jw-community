@@ -173,7 +173,7 @@
             
         //update the count when table done loading
         $("#pluginList2").on("success", function(){
-            $(".update_count").text("(" + JsonDataTable.flexiGrid[0].p.total + ")");
+            $(".update_count").text("(" + JsonDataTable2.flexiGrid[0].p.total + ")");
         });
 
         //Reposition the filter
@@ -264,9 +264,10 @@
             //reload the table after all plugin updated
             $.when.apply($, deferreds).then(function(){
                 UI.unblockUI(); 
-                JsonDataTable.refresh();
                 JsonDataTable1.refresh();
-
+                JsonDataTable2.refresh();
+                JsonDataTable3.refresh();
+                
                 if(updateSelectedList) {
                     updateSelectedList.forEach(function(item, index){
                         UI.showConsoleToast(index, item + '<ui:msgEscJS key="console.app.message.update.toast.message"/>', "fas fa-exclamation-circle", 2000, $("div#main")); 
