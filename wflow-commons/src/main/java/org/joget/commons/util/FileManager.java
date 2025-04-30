@@ -23,6 +23,8 @@ import com.drew.imaging.ImageMetadataReader;
 import com.drew.metadata.Metadata;
 import com.drew.metadata.exif.ExifIFD0Directory;
 import com.drew.metadata.jpeg.JpegDirectory;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.nio.file.Files;
 import org.springframework.util.FileCopyUtils;
 
@@ -94,7 +96,10 @@ public class FileManager {
                     new File(getBaseDirectory(), path).mkdirs();
 
                     // write file
-                    FileCopyUtils.copy(file.getInputStream(), Files.newOutputStream(uploadFile.toPath()));
+                    try (InputStream in = file.getInputStream();
+                        OutputStream out = Files.newOutputStream(uploadFile.toPath())) {
+                        FileCopyUtils.copy(in, out);
+                    }
                 }
             } catch (Exception ex) {
                 LogUtil.error(FileManager.class.getName(), ex, "");
