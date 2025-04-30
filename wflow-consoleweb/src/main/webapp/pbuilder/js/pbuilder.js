@@ -6969,7 +6969,7 @@ ProcessBuilder = {
             function(returnedData){
                 ProcessBuilder.availableTools = {};
                 for (e in returnedData) {
-                    if (returnedData[e].value !== "") {
+                    if (returnedData[e].value !== "" && returnedData[e].marketplace == undefined) {
                         ProcessBuilder.availableTools[returnedData[e].value] = returnedData[e];
                     }
                 }
