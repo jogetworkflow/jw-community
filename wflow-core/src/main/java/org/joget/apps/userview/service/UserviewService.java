@@ -22,6 +22,7 @@ import org.joget.apps.app.service.AppService;
 import org.joget.apps.app.service.AppUtil;
 import org.joget.apps.app.service.MobileUtil;
 import org.joget.apps.userview.lib.AjaxUniversalTheme;
+import org.joget.apps.userview.lib.Dx8TrimedaTheme;
 import org.joget.apps.userview.model.CachedUserviewMenu;
 import org.joget.apps.userview.model.Userview;
 import org.joget.apps.userview.model.UserviewCategory;
@@ -40,7 +41,6 @@ import org.joget.directory.model.service.ExtDirectoryManager;
 import org.joget.plugin.base.PluginManager;
 import org.joget.plugin.property.service.PropertyUtil;
 import org.joget.workflow.model.service.WorkflowUserManager;
-import static org.joget.workflow.model.service.WorkflowUserManager.ROLE_ANONYMOUS;
 import org.joget.workflow.util.WorkflowUtil;
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -107,22 +107,7 @@ public class UserviewService {
             //set theme & permission
             try {
                 JSONObject themeObj = settingObj.getJSONObject("properties").getJSONObject("theme");
-                UserviewTheme theme;
-                String themeClassName = themeObj.getString("className");
-                String themeProperties = themeObj.getJSONObject("properties").toString();
-                if (isThemeBuilder(themeClassName)) {
-                    // If the Theme Builder is used, get the properties from the Theme Builder.
-                    String[] result = getBuilderTheme(themeClassName);
-                    themeClassName = result[0];
-                    JSONObject propertiesJson = getThemeProperties(result[1]);
-                    propertiesJson.put("themeID", result[1]);
-                    themeProperties = propertiesJson.toString();
-                }
-                theme = (UserviewTheme) pluginManager.getPlugin(themeClassName);
-                theme.setProperties(PropertyUtil.getPropertiesValueFromJson(themeProperties));
-                theme.setProperty(json, theme);
-                theme.setRequestParameters(requestParameters);
-                theme.setUserview(userview);
+                UserviewTheme theme = getTheme(themeObj, requestParameters, userview);
                 setting.setTheme(theme);
             } catch (Exception e) {
                 LogUtil.debug(getClass().getName(), "set theme error.");
@@ -239,29 +224,7 @@ public class UserviewService {
             try {
                 JSONObject themeObj = settingObj.getJSONObject("properties").getJSONObject("theme");
                 JSONObject themeProperties = themeObj.getJSONObject("properties");
-                String themeClassName = themeObj.getString("className");
-                if (isThemeBuilder(themeClassName)) {
-                    // If the Theme Builder is used, get the properties from the Theme Builder.
-                    String[] result = getBuilderTheme(themeClassName);
-                    themeClassName = result[0];
-                    if(!preview){
-                        themeProperties = getThemeProperties(result[1]);
-                    } else {
-                        themeProperties = themeObj.getJSONObject("properties");
-                    }
-                    themeProperties.put("themeID", result[1]);
-                }
-                UserviewTheme theme = (UserviewTheme) pluginManager.getPlugin(themeClassName);
-                if (theme == null) {
-                    String defaultTheme = ResourceBundleUtil.getMessage("generator.userview.theme");
-                    theme = (UserviewTheme) pluginManager.getPlugin(defaultTheme);
-                    String defaultThemePropertiesKey = "generator.userview.theme." + defaultTheme + ".properties";
-                    String defaultThemeProperties = "{" + ResourceBundleUtil.getMessage(defaultThemePropertiesKey) + "}";
-                    themeProperties = new JSONObject(defaultThemeProperties);
-                }
-                theme.setProperties(PropertyUtil.getProperties(themeProperties));
-                theme.setRequestParameters(requestParameters);
-                theme.setUserview(userview);
+                UserviewTheme theme = getTheme(themeObj, requestParameters, userview);
                 setting.setTheme(theme);
             } catch (Exception e) {
                 LogUtil.debug(getClass().getName(), "set theme error.");
@@ -546,23 +509,8 @@ public class UserviewService {
 
                         JSONObject settingObj = userviewObj.getJSONObject("setting");
                         JSONObject themeObj = settingObj.getJSONObject("properties").getJSONObject("theme");
-                        String themeClassName = themeObj.getString("className");
-                        if (isThemeBuilder(themeClassName)) {
-                            // If the Theme Builder is used, get the properties from the Theme Builder.
-                            String[] result = getBuilderTheme(themeClassName);
-                            themeClassName = result[0];
-                            themeObj = getThemeProperties(result[1]);
-                            themeObj.put("themeID", result[1]);
-                        } else {
-                            themeObj = settingObj.getJSONObject("properties").getJSONObject("theme").getJSONObject("properties");
-                        }
-                        theme = (UserviewTheme) pluginManager.getPlugin(themeClassName);
-                        if (theme != null) {
-                            theme.setProperties(PropertyUtil.getProperties(themeObj));
-                            theme.setRequestParameters(requestParameters);
-                            theme.setUserview(userview);
-                        }
 
+                        theme = getTheme(themeObj, requestParameters, userview);
                     } catch (Exception e) {
                         LogUtil.debug(getClass().getName(), "get userview theme error.");
                     }
@@ -865,6 +813,66 @@ public class UserviewService {
         }
         
         return json;
+    }
+    
+    /**
+     * Prepare the theme based on setting or fallback to default theme
+     * 
+     * @param themeObj
+     * @param requestParameters
+     * @param userview
+     * @return 
+     */
+    public UserviewTheme getTheme(JSONObject themeObj, Map<String, Object> requestParameters, Userview userview) {
+        UserviewTheme theme = null;
+        JSONObject themeProperties = null;
+        
+        if (themeObj != null) {
+            String themeClassName = themeObj.getString("className");
+            
+            if (isThemeBuilder(themeClassName)) {
+                // If the Theme Builder is used, get the properties from the Theme Builder.
+                String[] result = getBuilderTheme(themeClassName);
+                themeClassName = result[0];
+                themeProperties = getThemeProperties(result[1]);
+                themeProperties.put("themeID", result[1]);
+            } else {
+                themeProperties = themeObj.getJSONObject("properties");
+            }
+            
+            theme = (UserviewTheme) pluginManager.getPlugin(themeClassName);
+        }
+        
+        if (theme == null) {
+            String defaultTheme = ResourceBundleUtil.getMessage("generator.userview.theme");
+            theme = (UserviewTheme) pluginManager.getPlugin(defaultTheme);
+            
+            //just incase the message is override to an invalid theme class name.
+            if (theme == null) {
+                theme = new Dx8TrimedaTheme(); //use Trimeda as default
+                defaultTheme = theme.getClassName();
+            }
+            
+            //retrieve the properties for the default theme
+            String defaultThemePropertiesKey = "generator.userview.theme." + defaultTheme + ".properties";
+            String defaultThemeProperties = ResourceBundleUtil.getMessage(defaultThemePropertiesKey);
+            if (defaultThemeProperties == null || defaultThemeProperties.isEmpty()) {
+                defaultThemeProperties = ResourceBundleUtil.getMessage("generator.userview.theme.default.properties");
+            }
+            
+            if (defaultThemeProperties == null) {
+                defaultThemeProperties = "";
+            }
+            
+            defaultThemeProperties = "{" + defaultThemeProperties + "}";
+            themeProperties = new JSONObject(defaultThemeProperties);
+        }
+        
+        theme.setProperties(PropertyUtil.getProperties(themeProperties));
+        theme.setRequestParameters(requestParameters);
+        theme.setUserview(userview);
+                
+        return theme;        
     }
     
     protected void savePageDefinition(JSONObject menuObj, String userviewId, AppDefinition appDef) throws JSONException {
