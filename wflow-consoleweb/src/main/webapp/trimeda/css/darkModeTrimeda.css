@@ -1,0 +1,598 @@
+/* Dark Mode */
+body.dark-mode {
+    --theme-content-background:url(../img/dark_mode_content_bg_image.png);
+    --theme-sidebar-link-bg-img:url(../img/side-menu-dark-bg.png);
+    --theme-background: linear-gradient(182.3deg, #000000 53.97%, #4D0606 65.66%, #1A0404 70.73%, #240000 77.45%);
+    --theme-header: #000000;
+    --theme-header-font: #857474;
+    --theme-sidebar: #FFFFFF00;
+    --theme-sidebar-dropdown-bg-color: #93524E1A;
+    --theme-sidebar-link: #7E7171;
+    --theme-sidebar-icon: linear-gradient(206.57deg, #FFFFFF 30%, rgba(202, 202, 202, 0.32) 83.33%);
+    --theme-sidebar-badge: #8D1B04;
+    --theme-sidebar-badge-text: #FFFFFF;
+    --theme-sidebar-active-link-bg: #F3C9951A;
+    --theme-sidebar-active-link: #FFFFFF;
+    --theme-sidebar-active-icon: linear-gradient(206.57deg, #FFFFFF 30%, rgba(202, 202, 202, 0.32) 83.33%);
+    --theme-nav-scrollbar-thumb: initial;
+    --theme-button-bg: #683D1E;
+    --theme-button: #FFFFFF;
+    --theme-primary: #7E7171;
+    --theme-heading-bg: linear-gradient(9deg, rgba(149, 2, 2, 0) 21.18%, rgba(0, 0, 0, 0.8) 78.95%);
+    --theme-heading-color: #7E7171;
+    --theme-font-color: #857474;
+    --theme-content-color: #857474;
+    --theme-footer-bg: #000000;
+    --theme-footer: #000000;
+    --theme-link: #493C3C;
+    --theme-link-active: #623E34;
+    --theme-border-color: url(../img/dark-divider.png);
+    --theme-secondary-button-bg: #323248;
+    --theme-field-font-color: #92929F;
+    --theme-primary-color: #7E7171;
+    --theme-sidebar-dropdown-active-bg-color:#664037;
+    --dark-mode-calendar-bg-img: url(../img/dark-mode-calendar-bg-img.png);
+    --dark-mode-header-link: radial-gradient(177.78% 79.17% at 38.6% 50%, #FFFFFF 0%, rgba(255, 255, 255, 0) 100%);
+    --dark-secondary-button-bg-color: #2F160B;
+    --field-border-color: conic-gradient(from 21.31deg at 35% 115.63%, #2C1500 0deg, #2A1403 182.86deg, #2F1A01 270.82deg, #513002 333.38deg, #2C1500 360deg);
+    --form-field-background: var(--dark-secondary-button-bg-color);
+    --general-accent-color:#493C3C;
+    --dropdown-bg-color:#1A93524E;
+    --primary-text-color:#7E7171;
+    --secondary-text-color:#493C3C;
+    --button-background:#683D1E;
+    --box-shadow-color: #C3753140;
+    --button-primary-inactive: #261006;
+    --button-primary-inactive-color: #40312C;
+
+    --down-arrow-svg: url(../img/down_arrow_dark.svg);
+    --sidebar-dropdown-arrow: #7E7171;
+    --dark-dropdown-color: #CFCBCB;
+    --dark-badge-bg-color: #8D1B04;
+    --table-border-color: conic-gradient(from 21.31deg at 35% 115.63%, #2C1500 0deg, #2A1403 182.86deg, #2F1A01 270.82deg, #513002 333.38deg, #2C1500 360deg);
+    --dark-dropdown-background-color: conic-gradient(from 213.27deg at 50% 50%, #720202 0deg, #830000 174.71deg, #4D0000 250.5deg, #A10C0C 351deg, #720202 360deg);
+    --dark-selected-items-bg-color: #85747440;
+    --dark-form-background-img: url(../img/dark_mode_form_background_image.png);
+}
+
+body.dark-mode [class*=-selection].dropdown .dropdown-menu #dropdown-title {
+    border-bottom: none;
+}
+
+body.dark-mode header.navbar div#sidebar-trigger > img#dark-thumbnail {
+    display: initial;
+}
+
+body.dark-mode header.navbar div#sidebar-trigger > img#light-thumbnail {
+    display: none;
+}
+
+body.dark-mode #sidebar .nav > li > ul > li > a {
+    color: var(--dark-dropdown-color);
+}
+
+body.dark-mode #sidebar .active > a {
+    color: var(--theme-sidebar-active-link) !important;
+}
+
+body.dark-mode #sidebar .nav > li > ul > li > a {
+    background-color: transparent;
+}
+ 
+body.dark-mode #sidebar .nav > li > ul > li > a:hover {
+    background-color: var(--theme-sidebar-dropdown-bg-color);
+    color: var(--dark-dropdown-color) !important;
+}
+
+body.dark-mode .sidebar_brand #header-link {
+    color: var(--dark-mode-header-link);
+}
+
+body.dark-mode {
+    background: var(--theme-background);
+}
+
+body.dark-mode ul.breadcrumb {
+    border: 1px solid transparent !important;
+    border-top: none !important;
+    border-left: none !important;
+    border-right: none !important;
+    border-image: var(--theme-border-color) 30 stretch !important;
+}
+
+body.dark-mode #sidebar .nav > li > ul {
+    background: var(--theme-sidebar-dropdown-bg-color)
+}
+
+body.dark-mode header.navbar {
+    border-bottom: none;
+}
+
+body:not(.horizontal_menu).dark-mode #sidebar {
+    border-right: none;
+}
+
+body.dark-mode #sidebar #category-container {
+    background-color: transparent;
+}
+
+body.dark-mode .navbar i {
+    color: inherit;
+}
+
+body.dark-mode footer {
+    border-top: none;
+}
+
+/* Dropdown */
+body.dark-mode .dropdown-menu {
+    background-image: var(--theme-sidebar-link-bg-img);
+    background-color: transparent;
+    box-shadow: 0px 0px 30px rgba(0, 0, 0, 0.3);
+    color: var(--dark-dropdown-color) !important;
+}
+
+body.dark-mode .dropdown-menu li.task > * {
+    color: var(--dark-dropdown-color);
+}
+
+body.dark-mode .dropdown-menu li.task a > i {
+    color: var(--theme-primary);
+}
+
+body.dark-mode .dropdown-menu li:not(.task) > * {
+    color: var(--theme-button);
+}
+
+body.dark-mode .dropdown-menu a.refresh {
+    color: var(--theme-primary);
+}
+
+body.dark-mode header.navbar .dropdown-menu.notifications > li.task.showMoreInfo > div.more-info {
+    background-color: var(--theme-sidebar-dropdown-bg-color);
+}
+
+body.dark-mode header.navbar .dropdown-menu.notifications > li.task:not(.showMoreInfo) > div.more-info {
+    background-color: var(--theme-primary-color);
+    height: 0.2px;
+}
+
+body.dark-mode header.navbar .dropdown-menu.notifications > li.task.showMoreInfo > div.more-info > span.message {
+    color: var(--dark-dropdown-color);
+}
+
+body.dark-mode .header-nav a.btn .badge {
+    background-color: var(--dark-badge-bg-color);
+}
+
+body.dark-mode header.navbar li.dropdown.show.inbox-notification > a, 
+body.dark-mode header.navbar li.dropdown.show.user-link > a,
+body.dark-mode header.navbar li.dropdown.show.theme-selection > a {
+    background: var(--dark-dropdown-background-color);
+    color: var(--theme-button);
+}
+
+body.dark-mode header.navbar li.dropdown.show.inbox-notification > a:hover, 
+body.dark-mode header.navbar li.dropdown.show.user-link > a:hover,
+body.dark-mode header.navbar li.dropdown.show.theme-selection > a:hover
+
+/* Dark Mode Buttons */
+/* General Button Stlings */
+body.dark-mode div.grid button.delete_btn,
+body.dark-mode button.btn-danger,
+body.dark-mode .btn-primary,
+body.dark-mode #content main button[class*=button], 
+body.dark-mode #content main input[class*=button], 
+body.dark-mode #content main button.btn-primary, 
+body.dark-mode #content main input.btn-primary {
+    border: none !important;
+}
+
+body.dark-mode .btn-primary,
+body.dark-mode #content main button[class*=button]:not([class*="btn-"]), 
+body.dark-mode #content main input[class*=button]:not([class*="btn-"]), 
+body.dark-mode #content main button.btn-primary, 
+body.dark-mode #content main input.btn-primary {
+    color: var(--theme-button);
+    background-color: var(--theme-button-bg);
+    border: none !important;
+}
+
+/* Secondary Buttons */
+body.dark-mode .btn.btn-secondary,
+body.dark-mode button.form-button,
+body.dark-mode .selector_element .selector_button, 
+body.dark-mode .selector_element .selector_button:hover,
+body.dark-mode button.form-button.CRUD_New,
+body.dark-mode div#dataList_columnslist div.dropdown > a {
+    height: 40px;
+    flex-grow: 0;
+    display: inline-flex !important;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 32px !important;
+    object-fit: contain;
+    border-radius: 16px !important;
+    margin: 0 !important;
+}
+
+body.dark-mode .selector_element .selector_button, 
+body.dark-mode .selector_element .selector_button:hover,
+body.dark-mode button.form-button.CRUD_New
+{
+    color: var(--theme-button) !important;
+    background-color: var(--theme-button-bg) !important;
+}
+
+body.dark-mode div.actions button.form-button:not(.CRUD_New, .CRUD_DELETE), 
+body.dark-mode .dataList .row_action a:not(.btn), 
+body.dark-mode div#dataList_columnslist tbody span.row_action_inner > a
+ {
+    background-color: var(--dark-secondary-button-bg-color) !important;
+    color: var(--theme-button) !important;
+}
+
+/* Dark Mode Form */
+body.dark-mode .form-cell > label.label, 
+body.dark-mode .subform-cell > label.label {
+    color: var(--theme-primary);
+}
+
+body.dark-mode div.main-body-content:not(.closed) > .dropdown-main-body-content-container {
+    background-color: var(--general-accent-color); 
+}
+
+body.dark-mode div.main-body-content.closed > *:not(div.dropdown-main-body-content-container){
+    background-color: var(--field-border-color);
+}
+
+body.dark-mode div.main-body-content.closed {
+    background-color: var(--dark-secondary-button-bg-color) !important;
+}
+
+body.dark-mode div.main-body-content:not(.closed) {
+    background: linear-gradient(180.35deg, rgba(10, 2, 2, 0.9) 44.13%, rgba(22, 1, 1, 0.9) 77.69%),
+    linear-gradient(180deg, #2D0202 0%, rgba(16, 0, 0, 0) 81.65%);
+    border-color: transparent !important;
+}
+
+body.dark-mode input:not([type]), body.dark-mode input[type=text], body.dark-mode input[type=password], body.dark-mode input[type=email], body.dark-mode input[type=url], body.dark-mode input[type=time], body.dark-mode input[type=date], body.dark-mode input[type=datetime], body.dark-mode input[type=datetime-local], body.dark-mode input[type=tel], body.dark-mode input[type=number], body.dark-mode input[type=search], body.dark-mode select, body.dark-mode textarea, body.dark-mode .pad, body.dark-mode .chosen-container-multi .chosen-choices, body.dark-mode .chosen-container-single .chosen-single, body.dark-mode .selector_element, body.dark-mode .ui-datepicker .ui-datepicker-title select {
+    background-color: var(--form-field-background);
+    color: var(--theme-field-font-color);
+    border: none;
+}
+
+body.dark-mode .form-section-title, .subform-section-title {
+    color: var(--theme-font-color);
+}
+
+/* Dark Mode Checkbox */
+body.dark-mode input[type="checkbox"]:checked, body.dark-mode input[type="radio"]:checked {
+    background-color: var(--button-background); 
+}
+
+body.dark-mode input[type="checkbox"], 
+body.dark-mode input[type="radio"],
+body.dark-mode input[type=checkbox]:before, 
+body.dark-mode input[type=radio]:before {
+    appearance: none;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    border-radius: 4px;
+    display: inline-block;
+    position: relative;
+    cursor: pointer;
+    transition: background 0.3s ease;
+    background-color: var(--theme-font-color);
+    border: none;
+}
+
+body.dark-mode input[type="checkbox"]::after, 
+body.dark-mode input[type="radio"]::after,
+body.dark-mode input[type=checkbox]:checked::after, 
+body.dark-mode input[type=radio]:checked::after {
+    content: "";
+    background: url(../img/check.svg) no-repeat center;
+    width:9.38px;
+    height: 6.98px;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    opacity: 0; 
+    transition: opacity 0.2s ease-in-out;
+    border: none;
+}
+
+body.dark-mode input[type=checkbox]:checked::before, 
+body.dark-mode input[type=radio]:checked::before {
+    background-color: inherit;
+}
+
+body.dark-mode input[type=radio], 
+body.dark-mode input[type=radio]:before {
+    border-radius: 16px;
+}
+
+/* When showing the checkmark */
+body.dark-mode input[type="checkbox"]:checked::after, body.dark-mode input[type="radio"]:checked::after {
+    opacity: 1;
+}
+
+/* Dark Mode Selector */
+body.dark-mode .pad, body.dark-mode .ql-toolbar.ql-snow, 
+body.dark-mode .ql-container.ql-snow, 
+body.dark-mode .chosen-container-multi body.dark-mode .chosen-choices, 
+body.dark-mode .selector_element, body.dark-mode .tox-tinymce {
+    border: none !important;
+}
+
+/* Select  */
+body.dark-mode .chosen-container .chosen-drop {
+    background: var(--form-field-background);
+}
+
+body.dark-mode .chosen-container-multi .chosen-choices li.search-choice {
+    color: var(--theme-button);
+    background: var(--dark-selected-items-bg-color);
+}
+
+body.dark-mode .chosen-container-multi .chosen-choices li.search-choice > a.search-choice-close:after {
+    color: var(--dark-selected-items-bg-color);
+}
+
+body.dark-mode .chosen-container-multi .chosen-choices li.search-choice > a.search-choice-close:hover:after {
+    color: var(--danger-button-background-color);
+}
+
+body.dark-mode .chosen-container-multi .chosen-drop .result-selected {
+    color: var(--theme-content-color);
+}
+
+body.dark-mode .chosen-container-multi .chosen-drop .active-result {
+    color: var(--dark-dropdown-color);
+}
+
+body.dark-mode .chosen-container-multi .chosen-drop .active-result.highlighted {
+    background-color: var(--theme-link-active) !important;
+    color: var(--dark-dropdown-color) !important;
+}
+
+/* Popup */
+body.dark-mode .dataList span.pagelinks {
+    background: var(--dark-form-background-img);
+}
+
+body.dark-mode .dataList .pagelinks .pc.first-disabled, 
+body.dark-mode .dataList .pagelinks .pc.prev-disabled, 
+body.dark-mode .dataList .pagelinks .pc.next-disabled, 
+body.dark-mode .dataList .pagelinks .pc.last-disabled,
+body.dark-mode .dataList .exportlinks, 
+body.dark-mode .dataList .exportlinks > a {
+    color: var(--theme-content-color);
+}
+
+body.dark-mode .dataList span.pagelinks a {
+    border: none !important;
+    color: var(--theme-content-color);
+}
+
+body.dark-mode .dataList span.pagelinks strong {
+    background-color: var(--button-background);
+    color: var(--theme-button);
+}
+
+body.popupBody.dark-mode #section-actions .form-cell, body.popupBody.dark-mode .dataList .actions {
+    border-top: none;
+}
+
+body.dark-mode .boxy-wrapper .title-bar {
+    background-color: var(--theme-footer-bg) !important;
+    border-bottom: none !important;
+}
+
+body.dark-mode .dataList table {
+    border-bottom: none !important;
+}
+
+body.dark-mode .dataList tr.odd, body.dark-mode .dataList tr.odd+tr.footable-row-detail {
+    background-color: transparent;
+}
+
+body.dark-mode .dataList td {
+    border-top: none;
+}
+
+/* Upload Form Fields */
+body.dark-mode .form-fileupload.dropzone {
+    background: var(--dark-form-background-img);
+    border: none;
+}
+
+/* Inputs */
+body.dark-mode input:not([type]):focus, 
+body.dark-mode input[type=text]:focus,
+body.dark-mode input[type=password]:focus,
+body.dark-mode input[type=email]:focus, 
+body.dark-mode input[type=url]:focus, 
+body.dark-mode input[type=time]:focus, 
+body.dark-mode input[type=date]:focus, 
+body.dark-mode input[type=datetime]:focus, 
+body.dark-mode input[type=datetime-local]:focus, 
+body.dark-mode input[type=tel]:focus, 
+body.dark-mode input[type=number]:focus, 
+body.dark-mode input[type=search]:focus, 
+body.dark-mode select:focus,
+body.dark-mode textarea:focus, 
+body.dark-mode .chosen-container-multi .chosen-choices:focus, 
+body.dark-mode .selector_element:focus, 
+body.dark-mode .ui-timepicker-div select:focus, 
+body.dark-mode .ui-timepicker-div input:focus {
+    outline: 1.5px solid var(--button-background) !important;
+    box-shadow: 2px 4px 40px 0px var(--box-shadow-color);    
+}
+
+/* Datepicker */
+body.dark-mode #ui-datepicker-div,
+body.dark-mode .pika-single {
+    background-image: var(--dark-mode-calendar-bg-img);
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-position: center;
+}
+
+body.dark-mode  div.ui-datepicker-title > select,
+body.dark-mode .ui-datepicker th {
+    color: var(--theme-font-color);
+}
+
+body.dark-mode .ui-datepicker td.ui-datepicker-today a {
+    color: var(--theme-button);
+    background: var(--button-background);
+}
+
+body.dark-mode div.ui-timepicker-div dl,
+body.dark-mode .pika-label {
+    border: none;
+    background: var(--dark-secondary-button-bg-color);
+}
+
+body.dark-mode .ui-timepicker-div select, 
+body.dark-mode .ui-timepicker-div input {
+    color: var(--theme-button) !important;
+    background-color: var(--dark-secondary-button-bg-color) !important;
+}
+
+body.dark-mode .ui-datepicker .ui-datepicker-buttonpane button.ui-datepicker-current {
+    color: var(--theme-content-color) !important;
+}
+
+body.dark-mode .ui-datepicker .ui-datepicker-prev, 
+body.dark-mode .ui-datepicker .ui-datepicker-next {
+    color: var(--theme-content-color);
+}
+
+body.dark-mode .ui-datepicker .ui-datepicker-prev:hover, 
+body.dark-mode .ui-datepicker .ui-datepicker-next:hover {
+    color: var(--theme-button) !important;
+}
+
+/* Datalist & Grid */
+body.dark-mode .dataList thead t,
+body.dark-mode .grid table th {
+    border: 1px solid transparent !important;
+    border-top: none !important;
+    border-left: none !important;
+    border-right: none !important;
+    border-image: var(--theme-border-color) 30 stretch !important;
+}
+
+body.dark-mode input:focus, 
+body.dark-mode select:focus, 
+body.dark-mode textarea:focus {
+    outline: none !important;
+}
+
+body.dark-mode .dataList .actions .btn:not([class*="btn-"]) {
+    background-color: var(--button-primary-inactive) !important;
+    color: var(--button-primary-inactive-color) !important;
+}
+
+body.dark-mode form:has(.grid) div#section-actions .form-cell input {
+    background-color: var(--button-primary-inactive) !important;
+    color: var(--button-primary-inactive-color) !important;
+}
+
+body.dark-mode form:has(.grid table tbody tr.grid-row) div#section-actions .form-cell input {
+    background-color: var(--theme-button-bg);
+} 
+/* List Templates */
+/* Simple Card */
+body.dark-mode .dataList#dataList_simplecard .card {
+    background-color: var(--form-field-background) !important;
+    border: none !important;
+}
+
+body.dark-mode .datalist-body-content .card-body {
+    border: none !important;
+}
+
+/* Simple List */
+body.dark-mode div#dataList_simplelist div.list-group .list-group-item div.rowActions > a,
+body.dark-mode div#dataList_columnslist tbody span.row_action_inner > a, 
+body.dark-mode div#dataList_columnslist div.dropdown > a,
+body.dark-mode .dataList#dataList_simplecard .rowAction_0 {
+    background-color: var(--theme-button-bg) !important;
+    color: var(--theme-button) !important;
+}
+
+body.dark-mode div#dataList_simplelist div.list-group .list-group-item, 
+body.dark-mode div#dataList_columnslist div.list-group .list-group-item {
+    background-color: var(--dark-secondary-button-bg-color) !important;
+}
+
+body.dark-mode .dataList td {
+    color: var(--theme-font-color) !important;
+}
+
+body.dark-mode .list-group-item {
+    border: 1px solid transparent !important;
+    border-top: none !important;
+    border-left: none !important;
+    border-right: none !important;
+    border-image: var(--theme-border-color) 30 stretch !important;
+}
+
+/* Spreadsheet Dark Theme */
+body.dark-mode .handsontable th {
+    background: var(--form-field-background);
+}
+
+body.dark-mode .handsontable td {
+    background: var(--form-field-background);
+}
+
+body.dark-mode .handsontable tbody th.ht__highlight, 
+body.dark-mode .handsontable thead th.ht__highlight {
+    background-color: var(--box-shadow-color);
+}
+
+body.dark-mode .pika-label {
+    border-radius: 16px;
+}
+
+body.dark-mode .pika-label {
+    padding: 8px 16px;
+}
+
+body.dark-mode .pika-label:first-child {
+    margin-right: 8px;
+}
+
+body.dark-mode .pika-table th,
+body.dark-mode .pika-button {
+    color: var(--theme-content-color);
+}
+
+body.dark-mode .is-selected .pika-button {
+    background-color: #ff8000;
+    box-shadow: none;
+}
+
+/* Advanced Grid */
+body.dark-mode .ui-state-default, body.dark-mode .ui-widget-content .ui-state-default, body.dark-mode .ui-widget-header .ui-state-default, body.dark-mode .ui-button, body.dark-mode .ui-button.ui-state-disabled:hover, body.dark-mode .ui-button.ui-state-disabled:active {
+    background: var(--dark-secondary-button-bg-color);
+    color: var(--theme-button);
+}
+
+body.dark-mode div.pq-grid-bottom,
+body.dark-mode .pq-grid div.pq-header-outer,
+body.dark-mode .grid.adgrid .ui-state-default, 
+body.dark-mode .grid.adgrid .ui-widget-content .ui-state-default, 
+body.dark-mode .grid.adgrid .ui-widget-header .ui-state-default,
+body.dark-mode td.pq-grid-cell,
+body.dark-mode .grid table tr:hover td {
+    background: var(--form-field-background);
+}
