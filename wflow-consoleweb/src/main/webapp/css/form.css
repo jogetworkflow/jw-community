@@ -414,7 +414,7 @@ body input.no-manual-input{
 .form-fileupload {width:70%;}
 ul.form-fileupload-value {padding0; margin: 0;}
 ul.form-fileupload-value li{display:block; margin-bottom: 5px;}
-ul.form-fileupload-value li .remove {color:red; display:inline-block; margin: 0 30px;}
+ul.form-fileupload-value li .remove {color:#EA5858; display:inline-block; margin: 0 30px; text-decoration: none; cursor: pointer; opacity: 1}
 ul.form-fileupload-value li a {display: inline-block;}
 
 /* grid */
@@ -856,7 +856,7 @@ body.rtl .label-top .selector_item{
 .spreadsheet_container.resize .wtHolder::-webkit-scrollbar { 
     display: none;  /* Safari and Chrome */
 }
-.handsontable .file_delete {color:red; display:inline-block; margin:0 10px; cursor:pointer;}
+.handsontable .file_delete {color:#EA5858; display:inline-block; margin:0 10px; cursor:pointer;}
 .handsontableInputHolder .handsontableEditor {height: auto !important; overflow: visible !important; position: relative !important; top: 0 !important;}
 .handsontableInputHolder .handsontableEditor .ht_master .wtHolder {height: auto !important; max-height: 230px;}
 .form-cell .handsontable table td, .form-cell .handsontable table th, .subform-cell .handsontable table td, .subform-cell .handsontable table th {padding: 0 4px;}

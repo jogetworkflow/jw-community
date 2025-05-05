@@ -3183,10 +3183,11 @@ body[builder-theme='dark'].popupBody.builder-popup.dark-mode .chosen-container .
     color: #ccc;
 }
 body[builder-theme].popupBody .form-fileupload a.remove{
-    color: #ff828d;
+    color: #EA5858;
 }
 body[builder-theme].popupBody .form-fileupload a.remove:hover{
-    color: #dc3545;
+    color: #EA5858;
+    text-decoration: none;
 }
 body[builder-theme].popupBody .btn-outline-danger {
     color: #dc3545;

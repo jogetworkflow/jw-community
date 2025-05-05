@@ -655,10 +655,12 @@ body input.no-manual-input{
     background-clip: padding-box;
 }
 .form-fileupload a.remove {
-    color: #ff828d;
+    color: #EA5858;
+    cursor: pointer;
 }
 .form-fileupload a.remove:hover {
-    color: #dc3545;
+    color: #EA5858;
+    text-decoration: none;
 }
 .form-fileupload-value {
     list-style: none;
@@ -851,14 +853,10 @@ body input.no-manual-input{
     display: none;  /* Safari and Chrome */
 }
 .handsontable .file_delete {
-    color: #dc3545;
+    color: #EA5858;
     display:inline-block; 
     margin:0 10px; 
     cursor:pointer;
-    opacity: 0.5;
-}
-.handsontable .file_delete:hover{
-    opacity: 1;
 }
 .handsontableInputHolder .handsontableEditor {
     height: auto !important; 
