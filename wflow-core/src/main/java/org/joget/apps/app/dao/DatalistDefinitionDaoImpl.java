@@ -92,16 +92,7 @@ public class DatalistDefinitionDaoImpl extends AbstractAppVersionedObjectDao<Dat
         boolean result = super.add(object);
         appDefinitionDao.updateDateModified(object.getAppDefinition(), date);
         
-        if (!AppDevUtil.isGitDisabled()) {
-            // save json
-            String filename = "lists/" + object.getId() + ".json";
-            String json = AppDevUtil.formatJson(object.getJson());
-            String commitMessage = "Add list " + object.getId();
-            AppDevUtil.fileSave(object.getAppDefinition(), filename, json, commitMessage);
-
-            // sync app plugins
-            AppDevUtil.dirSyncAppPlugins(object.getAppDefinition());
-        }
+        addToGit(object);
         
         return result;
     }
@@ -161,5 +152,18 @@ public class DatalistDefinitionDaoImpl extends AbstractAppVersionedObjectDao<Dat
             LogUtil.error(getClass().getName(), e, "");
         }
         return result;
+    }
+
+    public static void addToGit(DatalistDefinition datalistDef) {
+        if (!AppDevUtil.isGitDisabled()) {
+            // save json
+            String filename = "lists/" + datalistDef.getId() + ".json";
+            String json = AppDevUtil.formatJson(datalistDef.getJson());
+            String commitMessage = "Add list " + datalistDef.getId();
+            AppDevUtil.fileSave(datalistDef.getAppDefinition(), filename, json, commitMessage);
+
+            // sync app plugins
+            AppDevUtil.dirSyncAppPlugins(datalistDef.getAppDefinition());
+        }
     }
 }

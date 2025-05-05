@@ -93,16 +93,8 @@ public class UserviewDefinitionDaoImpl extends AbstractAppVersionedObjectDao<Use
         boolean result = super.add(object);
         appDefinitionDao.updateDateModified(object.getAppDefinition(), date);
 
-        if (!AppDevUtil.isGitDisabled()) {
-            // save json
-            String filename = "userviews/" + object.getId() + ".json";
-            String json = AppDevUtil.formatJson(object.getJson());
-            String commitMessage = "Add userview " + object.getId();
-            AppDevUtil.fileSave(object.getAppDefinition(), filename, json, commitMessage);
+        addToGit(object);
 
-            // sync app plugins
-            AppDevUtil.dirSyncAppPlugins(object.getAppDefinition());
-        }
         return result;
     }
 
@@ -159,5 +151,18 @@ public class UserviewDefinitionDaoImpl extends AbstractAppVersionedObjectDao<Use
             LogUtil.error(getClass().getName(), e, "");
         }
         return result;
+    }
+
+    public static void addToGit(UserviewDefinition userviewDef) {
+        if (!AppDevUtil.isGitDisabled()) {
+            // save json
+            String filename = "userviews/" + userviewDef.getId() + ".json";
+            String json = AppDevUtil.formatJson(userviewDef.getJson());
+            String commitMessage = "Add userview " + userviewDef.getId();
+            AppDevUtil.fileSave(userviewDef.getAppDefinition(), filename, json, commitMessage);
+
+            // sync app plugins
+            AppDevUtil.dirSyncAppPlugins(userviewDef.getAppDefinition());
+        }
     }
 }

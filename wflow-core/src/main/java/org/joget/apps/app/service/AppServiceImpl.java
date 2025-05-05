@@ -43,22 +43,12 @@ import java.util.zip.ZipInputStream;
 import java.util.zip.ZipOutputStream;
 import javax.annotation.Resource;
 import jakarta.servlet.http.HttpServletRequest;
-import java.util.Arrays;
 import org.apache.commons.collections.map.ListOrderedMap;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.StringUtils;
 import org.eclipse.jgit.api.errors.GitAPIException;
 import org.hibernate.proxy.HibernateProxy;
-import org.joget.apps.app.dao.AppDefinitionDao;
-import org.joget.apps.app.dao.AppResourceDao;
-import org.joget.apps.app.dao.BuilderDefinitionDao;
-import org.joget.apps.app.dao.DatalistDefinitionDao;
-import org.joget.apps.app.dao.EnvironmentVariableDao;
-import org.joget.apps.app.dao.FormDefinitionDao;
-import org.joget.apps.app.dao.MessageDao;
-import org.joget.apps.app.dao.PackageDefinitionDao;
-import org.joget.apps.app.dao.PluginDefaultPropertiesDao;
-import org.joget.apps.app.dao.UserviewDefinitionDao;
+import org.joget.apps.app.dao.*;
 import org.joget.apps.app.model.AbstractAppVersionedObject;
 import org.joget.apps.app.model.AppDefinition;
 import org.joget.apps.app.model.AppImportExportAwarePlugin;
@@ -84,15 +74,7 @@ import org.joget.apps.form.lib.SaveAsDraftButton;
 import org.joget.apps.form.lib.SubmitButton;
 import org.joget.apps.form.lib.TextField;
 import org.joget.apps.form.lib.WorkflowFormBinder;
-import org.joget.apps.form.model.Column;
-import org.joget.apps.form.model.Element;
-import org.joget.apps.form.model.Form;
-import org.joget.apps.form.model.FormAction;
-import org.joget.apps.form.model.FormData;
-import org.joget.apps.form.model.FormRow;
-import org.joget.apps.form.model.FormRowSet;
-import org.joget.apps.form.model.FormStoreBinder;
-import org.joget.apps.form.model.Section;
+import org.joget.apps.form.model.*;
 import org.joget.apps.form.service.CustomFormDataTableUtil;
 import org.joget.apps.form.service.FileUtil;
 import org.joget.apps.form.service.FormService;
@@ -100,7 +82,6 @@ import org.joget.apps.form.service.FormUtil;
 import org.joget.apps.userview.model.UserviewSetting;
 import org.joget.apps.userview.service.UserviewService;
 import org.joget.apps.workflow.lib.AssignmentCompleteButton;
-import org.joget.apps.workflow.security.EnhancedWorkflowUserManager;
 import org.joget.commons.util.DynamicDataSourceManager;
 import org.joget.commons.util.FileManager;
 import org.joget.commons.util.HostManager;
@@ -113,7 +94,6 @@ import org.joget.commons.util.UuidGenerator;
 import org.joget.directory.model.Group;
 import org.joget.directory.model.User;
 import org.joget.directory.dao.GroupDao;
-import org.joget.directory.dao.UserDao;
 import org.joget.directory.model.service.DirectoryUtil;
 import org.joget.plugin.base.Plugin;
 import org.joget.plugin.base.PluginManager;
@@ -177,6 +157,8 @@ public class AppServiceImpl implements AppService {
     PluginManager pluginManager;
     @Autowired
     FormDataDao formDataDao;
+    @Autowired
+    FormColumnCache formColumnCache;
     @Autowired
     UserviewService userviewService;
     @Autowired
@@ -3021,32 +3003,38 @@ public class AppServiceImpl implements AppService {
             
             appDefinitionDao.saveOrUpdate(newAppDef);
 
+            // ----- Form Definitions -----
             if (appDef.getFormDefinitionList() != null) {
-                Set<String> tables = new HashSet<String>();
-                Collection<String> importedForms = new ArrayList<String>();
-                for (FormDefinition o : appDef.getFormDefinitionList()) {
+                Collection<FormDefinition> importedForms = new ArrayList<>();
+                Collection<FormDefinition> formDefinitions = appDef.getFormDefinitionList();
+                for (FormDefinition o : formDefinitions) {
+                    String tableName = o.getTableName();
                     o.setAppDefinition(newAppDef);
-                    formDefinitionDao.add(o);
-                    tables.add(o.getTableName());
-                    importedForms.add(o.getId());
-                    formDataDao.clearFormTableCache(o.getTableName());
+                    importedForms.add(o);
+                    // try saving file in git
+                    FormDefinitionDaoImpl.addToGit(o);
+                    // clear cache
+                    formColumnCache.remove(tableName);
+                    formDataDao.clearFormTableCache(tableName);
                 }
+                // instead of calling individual DAOs to modify the DB now, we add to the new AppDefinition first
+                newAppDef.setFormDefinitionList(formDefinitions);
 
                 String currentTable = "";
                 try {
-                    for (String table : tables) {
-                        currentTable = table;
+                    for (FormDefinition form : importedForms) {
+                        currentTable = form.getTableName();
                         // initialize db table by making a dummy load
                         String dummyKey = "xyz123";
-                        formDataDao.loadWithoutTransaction(table, table, dummyKey);
-                        LogUtil.debug(getClass().getName(), "Initialized form table " + table);
+                        formDataDao.loadWithoutTransaction(currentTable, currentTable, dummyKey);
+                        LogUtil.debug(getClass().getName(), "Initialized form table " + currentTable);
                     }
                 } catch (EntityNotFoundException e) {
                     // ignore
                 } catch (Exception e) {
                     //error creating form data table, rollback
-                    for (String formId : importedForms) {
-                        formDefinitionDao.delete(formId, newAppDef);
+                    for (FormDefinition form : importedForms) {
+                        formDefinitionDao.delete(form.getId(), newAppDef);
                     }
                     appDefinitionDao.delete(newAppDef);
                     String errorMessage = "";
@@ -3058,17 +3046,23 @@ public class AppServiceImpl implements AppService {
                 LogUtil.info(getClass().getName(), "Imported form definitions : " + appDef.getFormDefinitionList().size());        
             }
 
+            // ----- Datalist Definitions -----
             if (appDef.getDatalistDefinitionList() != null) {
-                for (DatalistDefinition o : appDef.getDatalistDefinitionList()) {
+                Collection<DatalistDefinition> datalistDefinitions = appDef.getDatalistDefinitionList();
+                for (DatalistDefinition o : datalistDefinitions) {
                     o.setAppDefinition(newAppDef);
-                    datalistDefinitionDao.add(o);
                     LogUtil.debug(getClass().getName(), "Added list " + o.getId());
+                    // try saving file in git
+                    DatalistDefinitionDaoImpl.addToGit(o);
                 }
+                newAppDef.setDatalistDefinitionList(datalistDefinitions);
                 LogUtil.info(getClass().getName(), "Imported datalist definitions : " + appDef.getDatalistDefinitionList().size());
             }
 
+            // ----- Userview Definitions -----
             if (appDef.getUserviewDefinitionList() != null) {
-                for (UserviewDefinition o : appDef.getUserviewDefinitionList()) {
+                Collection<UserviewDefinition> userviewDefinitions = appDef.getUserviewDefinitionList();
+                for (UserviewDefinition o : userviewDefinitions) {
                     String name = "";
                     if (o.getName() != null) {
                         name = StringUtil.stripAllHtmlTag(o.getName());
@@ -3084,17 +3078,19 @@ public class AppServiceImpl implements AppService {
                     if (o.getJson().contains("\"tempDisablePermissionChecking\"")) {
                         o.setJson(o.getJson().replace("\"tempDisablePermissionChecking\"", "\"__\""));
                     }
-
-                    userviewDefinitionDao.add(o);
+                    // try saving file in git
+                    UserviewDefinitionDaoImpl.addToGit(o);
                     LogUtil.debug(getClass().getName(), "Added userview " + o.getId());
                 }
+                newAppDef.setUserviewDefinitionList(userviewDefinitions);
                 LogUtil.info(getClass().getName(), "Imported userview definitions : " + appDef.getUserviewDefinitionList().size());
             }
 
+            // ----- Addon Builder Definitions -----
             if (appDef.getBuilderDefinitionList() != null) {
-                for (BuilderDefinition o : appDef.getBuilderDefinitionList()) {
+                Collection<BuilderDefinition> builderDefinitions = appDef.getBuilderDefinitionList();
+                for (BuilderDefinition o : builderDefinitions) {
                     o.setAppDefinition(newAppDef);
-                    builderDefinitionDao.add(o);
 
                     if (CustomFormDataTableUtil.TYPE.equals(o.getType())) {
                         try {
@@ -3106,53 +3102,51 @@ public class AppServiceImpl implements AppService {
                         }
                     }
 
+                    // try saving file in git
+                    BuilderDefinitionDaoImpl.addToGit(o);
                     LogUtil.debug(getClass().getName(), "Added " + o.getType() + " " + o.getId());
                 }
+                newAppDef.setBuilderDefinitionList(builderDefinitions);
                 LogUtil.info(getClass().getName(), "Imported addon builder definitions : " + appDef.getBuilderDefinitionList().size());
             }
-            
-            if (!overrideEnvVariable && orgAppDef != null && orgAppDef.getEnvironmentVariableList() != null) {
-                Set<String> existId = new HashSet<String>();
+
+            // ----- Environment variables -----
+            Map<String, EnvironmentVariable> envVariables = new HashMap<>();
+            if (orgAppDef != null && orgAppDef.getEnvironmentVariableList() != null) {
                 for (EnvironmentVariable o : orgAppDef.getEnvironmentVariableList()) {
                     EnvironmentVariable temp = new EnvironmentVariable();
                     temp.setAppDefinition(newAppDef);
                     temp.setId(o.getId());
                     temp.setValue(o.getValue());
                     temp.setRemarks(o.getRemarks());
-                    environmentVariableDao.add(temp);
-                    existId.add(o.getId());
-                }
-
-                if (appDef.getEnvironmentVariableList() != null) {
-                    for (EnvironmentVariable o : appDef.getEnvironmentVariableList()) {
-                        if (!existId.contains(o.getId())) {
-                            if (o.getValue() == null) {
-                                o.setValue("");
-                            }
-                            o.setAppDefinition(newAppDef);
-                            environmentVariableDao.add(o);
-                        }
-                    }
-                }
-            } else {
-                if (appDef.getEnvironmentVariableList() != null) {
-                    for (EnvironmentVariable o : appDef.getEnvironmentVariableList()) {
-                        if (o.getValue() == null) {
-                            o.setValue("");
-                        }
-                        o.setAppDefinition(newAppDef);
-
-                        environmentVariableDao.add(o);
-                    }
-                    LogUtil.info(getClass().getName(), "Imported environments variables : " + appDef.getEnvironmentVariableList().size());
+                    envVariables.put(temp.getId(), temp);
                 }
             }
 
-            if (appDef.getMessageList() != null) {
-                Set<String> keys = new HashSet<String>();
-                for (Message o : appDef.getMessageList()) {
+            if (appDef.getEnvironmentVariableList() != null) {
+                for (EnvironmentVariable o : appDef.getEnvironmentVariableList()) {
+                    if (o.getValue() == null) {
+                        o.setValue("");
+                    }
+                    o.setAppDefinition(newAppDef);
+                    // add new env variable if override enabled or if it does not already exist in the map
+                    if (overrideEnvVariable || !envVariables.containsKey(o.getId())) {
+                        envVariables.put(o.getId(), o);
+                    }
+                }
+            }
+            newAppDef.setEnvironmentVariableList(envVariables.values());
+            if (overrideEnvVariable) {
+                LogUtil.info(getClass().getName(), "Imported environments variables : " + appDef.getEnvironmentVariableList().size());
+            }
+
+            // ----- Messages -----
+            Collection<Message> messages = appDef.getMessageList();
+            if (messages != null) {
+                Map<String, Message> newMessages = new HashMap();
+                for (Message o : messages) {
                     String k = o.getMessageKey() + AbstractAppVersionedObject.ID_SEPARATOR + o.getLocale();
-                    if (!keys.contains(k)) {
+                    if (!newMessages.containsKey(k)) {
                         Message n = new Message();
                         n.setId(o.getId());
                         n.setName(o.getName());
@@ -3162,15 +3156,18 @@ public class AppServiceImpl implements AppService {
                         n.setMessage(o.getMessage());
                         n.setMessageKey(o.getMessageKey());
                         n.setAppDefinition(newAppDef);
-                        messageDao.add(n);
-                        keys.add(k);
+                        newMessages.put(k, n);
                     }
                 }
+                newAppDef.setMessageList(newMessages.values());
                 LogUtil.info(getClass().getName(), "Imported messages : " + appDef.getMessageList().size());
             }
 
-            if (appDef.getPluginDefaultPropertiesList() != null) {
-                for (PluginDefaultProperties o : appDef.getPluginDefaultPropertiesList()) {
+            // ----- Plugin Default Properties -----
+            Collection<PluginDefaultProperties> pluginDefaultProperties = appDef.getPluginDefaultPropertiesList();
+            if (pluginDefaultProperties != null) {
+                Collection<PluginDefaultProperties> newProps = new ArrayList<>(pluginDefaultProperties.size());
+                for (PluginDefaultProperties o : pluginDefaultProperties) {
                     PluginDefaultProperties n = new PluginDefaultProperties();
                     n.setId(o.getId());
                     n.setJson(o.getJson());
@@ -3187,13 +3184,17 @@ public class AppServiceImpl implements AppService {
                     }
 
                     n.setAppDefinition(newAppDef);
-                    pluginDefaultPropertiesDao.add(n);
+                    newProps.add(n);
                 }
+                newAppDef.setPluginDefaultPropertiesList(newProps);
                 LogUtil.info(getClass().getName(), "Imported default plugin properties : " + appDef.getPluginDefaultPropertiesList().size());
             }
 
-            if (appDef.getResourceList() != null) {
-                for (AppResource o : appDef.getResourceList()) {
+            // ----- App Resources -----
+            Collection<AppResource> resources = appDef.getResourceList();
+            if (resources != null) {
+                Collection<AppResource> newResources = new ArrayList<>(resources.size());
+                for (AppResource o : resources) {
                     AppResource n = new AppResource();
                     n.setId(o.getId());
                     n.setName(o.getName());
@@ -3203,11 +3204,13 @@ public class AppServiceImpl implements AppService {
                     n.setPermissionClass(o.getPermissionClass());
                     n.setPermissionProperties(o.getPermissionProperties());
                     n.setAppDefinition(newAppDef);
-                    appResourceDao.add(n);
+                    newResources.add(n);
                 }
+                newAppDef.setResourceList(newResources);
                 LogUtil.info(getClass().getName(), "Imported app resources : " + appDef.getResourceList().size());
             }
 
+            // ----- Package Definition related -----
             try {
                 if (xpdl != null) {
                     PackageDefinition orgPackageDef = null;
@@ -3222,15 +3225,19 @@ public class AppServiceImpl implements AppService {
 
                     if (packageDef != null) {
                         if (oldPackageDef != null) {
+
+                            // ----- Form Mapping -----
                             if (oldPackageDef.getPackageActivityFormMap() != null) {
                                 for (Entry e : oldPackageDef.getPackageActivityFormMap().entrySet()) {
                                     PackageActivityForm form = (PackageActivityForm) e.getValue();
                                     form.setPackageDefinition(packageDef);
-                                    packageDefinitionDao.addAppActivityForm(newAppDef.getAppId(), appVersion, form);
+                                    // using new method to allow passing PackageDefinition for modification
+                                    packageDefinitionDao.addAppActivityForm(packageDef, newAppDef.getAppId(), appVersion, form);
                                 }
                                 LogUtil.info(getClass().getName(), "Imported process form mappings : " + oldPackageDef.getPackageActivityFormMap().size());
                             }
 
+                            // ----- Plugin Mapping -----
                             if (oldPackageDef.getPackageActivityPluginMap() != null) {
                                 for (Entry e : oldPackageDef.getPackageActivityPluginMap().entrySet()) {
                                     PackageActivityPlugin plugin = (PackageActivityPlugin) e.getValue();
@@ -3242,11 +3249,12 @@ public class AppServiceImpl implements AppService {
                                         }
                                     }
                                     plugin.setPackageDefinition(packageDef);
-                                    packageDefinitionDao.addAppActivityPlugin(newAppDef.getAppId(), appVersion, plugin);
+                                    packageDefinitionDao.addAppActivityPlugin(packageDef, newAppDef.getAppId(), appVersion, plugin);
                                 }
                                 LogUtil.info(getClass().getName(), "Imported process tool mappings : " + oldPackageDef.getPackageActivityPluginMap().size());
                             }
 
+                            // ----- Participant Mapping -----
                             if (oldPackageDef.getPackageParticipantMap() != null) {
                                 for (Entry e : oldPackageDef.getPackageParticipantMap().entrySet()) {
                                     PackageParticipant participant = (PackageParticipant) e.getValue();
@@ -3259,19 +3267,30 @@ public class AppServiceImpl implements AppService {
                                         }
                                     }
                                     participant.setPackageDefinition(packageDef);
-                                    packageDefinitionDao.addAppParticipant(newAppDef.getAppId(), appVersion, participant);
+                                    packageDefinitionDao.addAppParticipant(packageDef, newAppDef.getAppId(), appVersion, participant);
                                 }
                                 LogUtil.info(getClass().getName(), "Imported process participant mappings : " + oldPackageDef.getPackageParticipantMap().size());
                             }
+                            // update date modified and created
+                            Date date = new Date();
+                            if (packageDef.getDateCreated() == null) {
+                                packageDef.setDateCreated(date);
+                            }
+                            packageDef.setDateModified(date);
+                            // instead of calling individual DAOs to modify the DB now, we add to the new AppDefinition first
+                            Collection<PackageDefinition> packageDefinitions = new ArrayList<>(1);
+                            packageDefinitions.add(packageDef);
+                            newAppDef.setPackageDefinitionList(packageDefinitions);
                         }
                     }
                 }
             } catch (Exception e) {
                 LogUtil.error(getClass().getName(), e, "Error deploying package for " + appDef.getAppId());
             }
-            
-            // reload app from DB
-            newAppDef = loadAppDefinition(newAppDef.getAppId(), newAppDef.getVersion().toString());
+
+            // finally, we perform a cascading save of the AppDefinition only after all processing above is done
+            // using new API, we obtain the new persisted object from Hibernate
+            newAppDef = appDefinitionDao.saveOrUpdateAndReturn(newAppDef);
             LogUtil.debug(getClass().getName(), "Finished importing app " + newAppDef.getId() + " version " + newAppDef.getVersion());
 
             if (!AppDevUtil.isGitDisabled()) {
