@@ -39,15 +39,18 @@ public abstract class AbstractSpringDao {
     }
 
     protected void saveOrUpdate(String entityName, Object obj) {
+        saveOrUpdateAndReturn(entityName, obj);
+    }
+
+    protected Object saveOrUpdateAndReturn(String entityName, Object obj) {
         Session session = findSession();
-        session.merge(entityName, obj);
+        Object o = session.merge(entityName, obj);
         session.flush();
+        return o;
     }
 
     protected void merge(String entityName, Object obj) {
-        Session session = findSession();
-        session.merge(entityName, obj);
-        session.flush();
+        saveOrUpdateAndReturn(entityName, obj);
     }
 
     protected void delete(String entityName, Object obj) {

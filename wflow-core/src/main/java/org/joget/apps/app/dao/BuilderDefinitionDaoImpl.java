@@ -113,16 +113,8 @@ public class BuilderDefinitionDaoImpl extends AbstractAppVersionedObjectDao<Buil
             ((CustomBuilderCallback) builder).addDefinition(object);
         }
         
-        if (!AppDevUtil.isGitDisabled()) {
-            // save json
-            String filename = "builder/" + object.getType() + "/" + object.getId() + ".json";
-            String json = AppDevUtil.formatJson(object.getJson());
-            String commitMessage = "Add " + object.getType() + " " + object.getId();
-            AppDevUtil.fileSave(object.getAppDefinition(), filename, json, commitMessage);
+        addToGit(object);
 
-            // sync app plugins
-            AppDevUtil.dirSyncAppPlugins(object.getAppDefinition());
-        }
         return result;
     }
 
@@ -191,5 +183,18 @@ public class BuilderDefinitionDaoImpl extends AbstractAppVersionedObjectDao<Buil
             LogUtil.error(getClass().getName(), e, "");
         }
         return result;
+    }
+
+    public static void addToGit(BuilderDefinition builderDef) {
+        if (!AppDevUtil.isGitDisabled()) {
+            // save json
+            String filename = "builder/" + builderDef.getType() + "/" + builderDef.getId() + ".json";
+            String json = AppDevUtil.formatJson(builderDef.getJson());
+            String commitMessage = "Add " + builderDef.getType() + " " + builderDef.getId();
+            AppDevUtil.fileSave(builderDef.getAppDefinition(), filename, json, commitMessage);
+
+            // sync app plugins
+            AppDevUtil.dirSyncAppPlugins(builderDef.getAppDefinition());
+        }
     }
 }

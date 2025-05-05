@@ -291,11 +291,15 @@ public abstract class AbstractVersionedObjectDao<T extends AbstractVersionedObje
      * @param object
      */
     public void saveOrUpdate(T object) {
+        saveOrUpdateAndReturn(object);
+    }
+
+    public T saveOrUpdateAndReturn(T object) {
         if (object.getDateCreated() == null) {
             object.setDateCreated(new Date());
         }
         object.setDateModified(new Date());
-        saveOrUpdate(getEntityName(), object);
+        return (T) saveOrUpdateAndReturn(getEntityName(), object);
     }
 
     /**

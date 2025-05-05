@@ -284,6 +284,12 @@ public class PackageDefinitionDaoImpl extends AbstractVersionedObjectDao<Package
     @Override
     public void addAppActivityForm(String appId, Long appVersion, PackageActivityForm activityForm) {
         PackageDefinition packageDef = loadAppPackageDefinition(appId, appVersion);
+        addAppActivityForm(packageDef, appId, appVersion, activityForm);
+        saveOrUpdate(packageDef);
+    }
+
+    @Override
+    public void addAppActivityForm(PackageDefinition packageDef, String appId, Long appVersion, PackageActivityForm activityForm) {
         if (packageDef == null) {
             AppDefinition appDef = getAppDefinitionDao().loadVersion(appId, appVersion);
             packageDef = createPackageDefinition(appDef, appVersion);
@@ -306,11 +312,10 @@ public class PackageDefinitionDaoImpl extends AbstractVersionedObjectDao<Package
                 isUpdated = true;
             }
         }
-        
+
         if (!isUpdated) {
             packageDef.addPackageActivityForm(activityForm);
         }
-        saveOrUpdate(packageDef);
     }
 
     @Override
@@ -324,6 +329,12 @@ public class PackageDefinitionDaoImpl extends AbstractVersionedObjectDao<Package
     @Override
     public void addAppActivityPlugin(String appId, Long appVersion, PackageActivityPlugin activityPlugin) {
         PackageDefinition packageDef = loadAppPackageDefinition(appId, appVersion);
+        addAppActivityPlugin(packageDef, appId, appVersion, activityPlugin);
+        saveOrUpdate(packageDef);
+    }
+
+    @Override
+    public void addAppActivityPlugin(PackageDefinition packageDef, String appId, Long appVersion, PackageActivityPlugin activityPlugin) {
         if (packageDef == null) {
             AppDefinition appDef = getAppDefinitionDao().loadVersion(appId, appVersion);
             packageDef = createPackageDefinition(appDef, appVersion);
@@ -334,10 +345,8 @@ public class PackageDefinitionDaoImpl extends AbstractVersionedObjectDao<Package
         String activityDefId = activityPlugin.getActivityDefId();
         if (processDefId != null && activityDefId != null) {
             packageDef.removePackageActivityPlugin(processDefId, activityDefId);
-            saveOrUpdate(packageDef);
         }
         packageDef.addPackageActivityPlugin(activityPlugin);
-        saveOrUpdate(packageDef);
     }
 
     @Override
@@ -351,6 +360,12 @@ public class PackageDefinitionDaoImpl extends AbstractVersionedObjectDao<Package
     @Override
     public void addAppParticipant(String appId, Long appVersion, PackageParticipant participant) {
         PackageDefinition packageDef = loadAppPackageDefinition(appId, appVersion);
+        addAppParticipant(packageDef, appId, appVersion, participant);
+        saveOrUpdate(packageDef);
+    }
+
+    @Override
+    public void addAppParticipant(PackageDefinition packageDef, String appId, Long appVersion, PackageParticipant participant) {
         if (packageDef == null) {
             AppDefinition appDef = getAppDefinitionDao().loadVersion(appId, appVersion);
             packageDef = createPackageDefinition(appDef, appVersion);
@@ -361,10 +376,8 @@ public class PackageDefinitionDaoImpl extends AbstractVersionedObjectDao<Package
         String participantId = participant.getParticipantId();
         if (processDefId != null && participantId != null) {
             packageDef.removePackageParticipant(processDefId, participantId);
-            saveOrUpdate(packageDef);
         }
         packageDef.addPackageParticipant(participant);
-        saveOrUpdate(packageDef);
     }
 
     @Override

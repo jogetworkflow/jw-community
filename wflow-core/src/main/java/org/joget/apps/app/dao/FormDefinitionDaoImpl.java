@@ -127,16 +127,7 @@ public class FormDefinitionDaoImpl extends AbstractAppVersionedObjectDao<FormDef
         boolean result = super.add(object);
         appDefinitionDao.updateDateModified(object.getAppDefinition(), date);
 
-        if (!AppDevUtil.isGitDisabled()) {
-            // save json
-            String filename = "forms/" + object.getId() + ".json";
-            String json = AppDevUtil.formatJson(object.getJson());
-            String commitMessage = "Add form " + object.getId();
-            AppDevUtil.fileSave(object.getAppDefinition(), filename, json, commitMessage);
-
-            // sync app plugins
-            AppDevUtil.dirSyncAppPlugins(object.getAppDefinition());
-        }
+        addToGit(object);
         
         // clear cache
         formColumnCache.remove(object.getTableName());
@@ -214,5 +205,18 @@ public class FormDefinitionDaoImpl extends AbstractAppVersionedObjectDao<FormDef
         q.setParameter(2, appDef.getVersion());
 
         return q.list();
+    }
+
+    public static void addToGit(FormDefinition formDef) {
+        if (!AppDevUtil.isGitDisabled()) {
+            // save json
+            String filename = "forms/" + formDef.getId() + ".json";
+            String json = AppDevUtil.formatJson(formDef.getJson());
+            String commitMessage = "Add form " + formDef.getId();
+            AppDevUtil.fileSave(formDef.getAppDefinition(), filename, json, commitMessage);
+
+            // sync app plugins
+            AppDevUtil.dirSyncAppPlugins(formDef.getAppDefinition());
+        }
     }
 }

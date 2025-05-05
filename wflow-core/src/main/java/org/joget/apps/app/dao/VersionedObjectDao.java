@@ -128,4 +128,5 @@ public interface VersionedObjectDao<T extends AbstractVersionedObject> {
      * @param object
      */
     void saveOrUpdate(T object);
+    T saveOrUpdateAndReturn(T object);
 }

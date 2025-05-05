@@ -59,6 +59,7 @@ public interface PackageDefinitionDao extends VersionedObjectDao<PackageDefiniti
      * @param activityForm
      */
     void addAppActivityForm(String appId, Long appVersion, PackageActivityForm activityForm);
+    void addAppActivityForm(PackageDefinition packageDef, String appId, Long appVersion, PackageActivityForm activityForm);
 
     /**
      * Remove a form/URL mapping from an activity
@@ -76,6 +77,7 @@ public interface PackageDefinitionDao extends VersionedObjectDao<PackageDefiniti
      * @param activityPlugin
      */
     void addAppActivityPlugin(String appId, Long appVersion, PackageActivityPlugin activityPlugin);
+    void addAppActivityPlugin(PackageDefinition packageDef, String appId, Long appVersion, PackageActivityPlugin activityPlugin);
 
     /**
      * Remove a plugin mapping from an activity
@@ -93,6 +95,7 @@ public interface PackageDefinitionDao extends VersionedObjectDao<PackageDefiniti
      * @param participant
      */
     void addAppParticipant(String appId, Long appVersion, PackageParticipant participant);
+    void addAppParticipant(PackageDefinition packageDef, String appId, Long appVersion, PackageParticipant participant);
 
     /**
      * Remove a participant mapping
