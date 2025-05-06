@@ -4823,7 +4823,7 @@ ProcessBuilder = {
                 } else if (prop.indexOf("-") === 0) {
                     attrs += " " + prop.substring(1) + "=\"" + ProcessBuilder.escapeXml(obj[prop]) + "\"";
                 } else if (prop.indexOf("#text") === 0) {
-                    body += obj[prop];
+                    body += ProcessBuilder.escapeXml(obj[prop]);
                     textContent = true;
                 } else if (prop.indexOf("#") === 0) {
                     //ignore
