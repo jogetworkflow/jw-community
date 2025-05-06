@@ -476,7 +476,7 @@ public class SharkUtilitiesAspect {
         }
     }
         
-    @Pointcut("execution(* org.joget.workflow.model.service.WorkflowManager.*(..)) && !(execution(* org.joget..*.get*(..)) || execution(* org.joget..*.set*(..)) || execution(* org.joget..*.is*(..)) || execution(* org.joget..*.internal*(..)) || execution(* org.joget..*.*connect*(..)) || execution(* org.joget..*.*Variable*(..)) || execution(* org.joget..*.*Inbox*(..)) || execution(* org.joget..*.processStartWithInstanceId(..)))")
+    @Pointcut("execution(* org.enhydra.shark.CustomWfActivityImpl.createAssignments(..)) || execution(* org.joget.workflow.model.service.WorkflowManager.*(..)) && !(execution(* org.joget..*.get*(..)) || execution(* org.joget..*.set*(..)) || execution(* org.joget..*.is*(..)) || execution(* org.joget..*.internal*(..)) || execution(* org.joget..*.*connect*(..)) || execution(* org.joget..*.*Variable*(..)) || execution(* org.joget..*.*Inbox*(..)) || execution(* org.joget..*.processStartWithInstanceId(..)))")
     private void clearWorkflowSessionFactoryCacheMethods() {
     }
 
