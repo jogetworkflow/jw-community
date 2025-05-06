@@ -195,7 +195,7 @@
         <dependency>
             <groupId>org.apache.poi</groupId>
             <artifactId>poi</artifactId>
-            <version>5.2.3</version>
+            <version>5.4.1</version>
             <exclusions>
                 <exclusion>
                     <groupId>commons-codec</groupId>
@@ -214,7 +214,7 @@
         <dependency>
             <groupId>org.apache.poi</groupId>
             <artifactId>poi-ooxml</artifactId>
-            <version>5.2.3</version>
+            <version>5.4.1</version>
             <exclusions>
                 <exclusion>
                     <artifactId>org.apache.commons</artifactId>
