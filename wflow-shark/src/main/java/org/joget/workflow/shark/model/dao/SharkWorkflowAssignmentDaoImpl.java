@@ -114,7 +114,7 @@ public class SharkWorkflowAssignmentDaoImpl extends AbstractSpringDao implements
                     params.add(state);
                 } else {
                     condition += " and s.name like ?";
-                    params.add(state + ".%");
+                    params.add(state + "%");
                 }
             }
         }
@@ -182,7 +182,7 @@ public class SharkWorkflowAssignmentDaoImpl extends AbstractSpringDao implements
                     params.add(state);
                 } else {
                     where += " and s.name like ?";
-                    params.add(state + ".%");
+                    params.add(state + "%");
                 }
             }
         }
@@ -233,7 +233,7 @@ public class SharkWorkflowAssignmentDaoImpl extends AbstractSpringDao implements
                     params.add(state);
                 } else {
                     condition += " and s.name like ?";
-                    params.add(state + ".%");
+                    params.add(state + "%");
                 }
             }
         }
@@ -401,7 +401,7 @@ public class SharkWorkflowAssignmentDaoImpl extends AbstractSpringDao implements
             
             if (state != null && !state.isEmpty()) {
                 condition += " and s.name like ?";
-                params.add(state + ".%");
+                params.add(state + "%");
             }
         }
         Collection<String> shAss = findAssignmentProcessIds(condition, params.toArray(new String[0]), null, null, null, null);
@@ -552,7 +552,7 @@ public class SharkWorkflowAssignmentDaoImpl extends AbstractSpringDao implements
             
             if (state != null && !state.isEmpty()) {
                 condition += " and s.name like ?";
-                params.add(state + ".%");
+                params.add(state + "%");
             }
         }
         Collection<SharkAssignment> shAss = find(ENTITY_NAME, condition, params.toArray(new String[0]), sort, desc, start, rows);
@@ -619,7 +619,7 @@ public class SharkWorkflowAssignmentDaoImpl extends AbstractSpringDao implements
             
             if (state != null && !state.isEmpty()) {
                 condition += " and s.name like ?";
-                params.add(state + ".%");
+                params.add(state + "%");
             }
         }
         Collection<SharkAssignment> shAss = find(ENTITY_NAME, condition, params.toArray(new String[0]), sort, desc, start, rows);
@@ -783,7 +783,7 @@ public class SharkWorkflowAssignmentDaoImpl extends AbstractSpringDao implements
             
             if (state != null && !state.isEmpty()) {
                 condition += " and s.name like ?";
-                params.add(state + ".%");
+                params.add(state + "%");
             }
         }
         Long total = count(ENTITY_NAME, condition, params.toArray(new String[0]));

@@ -3986,7 +3986,7 @@ public class WorkflowManagerImpl implements WorkflowManager {
         }
         
         String username = getWorkflowUserManager().getCurrentUsername();
-        Set<String> assignmentList = workflowAssignmentDao.getAssignmentProcessIds(packageId, processDefId, processId, activityDefId, username, "open");
+        Set<String> assignmentList = workflowAssignmentDao.getAssignmentProcessIds(packageId, processDefId, processId, activityDefId, username, "open.not_running.not_started");
         
         return assignmentList;
     }
@@ -4002,7 +4002,7 @@ public class WorkflowManagerImpl implements WorkflowManager {
      */
     public Collection<WorkflowAssignment> getAssignmentsByProcessIds(Collection<String> processIds, String sort, Boolean desc, Integer start, Integer rows) {
         String username = getWorkflowUserManager().getCurrentUsername();
-        Collection<WorkflowAssignment> assignmentList = workflowAssignmentDao.getAssignmentsByProcessIds(processIds, username, "open", sort, desc, start, rows);
+        Collection<WorkflowAssignment> assignmentList = workflowAssignmentDao.getAssignmentsByProcessIds(processIds, username, "open.not_running.not_started", sort, desc, start, rows);
         
         return assignmentList;
     }
@@ -4025,7 +4025,7 @@ public class WorkflowManagerImpl implements WorkflowManager {
         }
         
         String username = getWorkflowUserManager().getCurrentUsername();
-        Collection<WorkflowAssignment> assignmentList = workflowAssignmentDao.getAssignments(packageId, processDefId, processId, activityDefId, username, "open", sort, desc, start, rows);
+        Collection<WorkflowAssignment> assignmentList = workflowAssignmentDao.getAssignments(packageId, processDefId, processId, activityDefId, username, "open.not_running.not_started", sort, desc, start, rows);
         
         return assignmentList;
     }
@@ -4345,7 +4345,7 @@ public class WorkflowManagerImpl implements WorkflowManager {
         }
         
         String username = getWorkflowUserManager().getCurrentUsername();
-        String state = "open";
+        String state = "open.not_running.not_started";
         
         return workflowAssignmentDao.getAssignmentSize(packageId, processDefId, processId, activityDefId, username, state);
     }
@@ -4440,20 +4440,23 @@ public class WorkflowManagerImpl implements WorkflowManager {
     public String assignmentComplete(String activityId) {
         String result = "pending";
         if (eventStreamManager != null && eventStreamManager.isEnabled()) {
-            // get process ID
-            WorkflowActivity activity = getActivityById(activityId);
-            String processId = activity.getProcessId();
-            
-            // send activity data to event stream
-            String eventStreamTopic = EVENT_STREAM_TOPIC_ASSIGNMENT_COMPLETE;
-            Map data = Map.of("activityId", activityId);
-            eventStreamManager.send(eventStreamTopic, processId, data);
-            
-            // slight delay to allow listener to complete quick transactions
             try {
+                // create assignment instance first
+                WfAssignment wfa = assignmentCompleteInit(activityId);
+                String processId = wfa.activity().container().key();
+
+                // send activity data to event stream
+                String eventStreamTopic = EVENT_STREAM_TOPIC_ASSIGNMENT_COMPLETE;
+                Map data = Map.of("activityId", activityId);
+                eventStreamManager.send(eventStreamTopic, processId, data);
+
+                // suspend activity
+                wfa.activity().suspend();
+
+                // slight delay to allow listener to complete quick transactions
                 Thread.sleep(100);
-            } catch(InterruptedException e) {
-                // ignore
+            } catch(Exception e) {
+                LogUtil.error(getClass().getName(), e, "Error completing assignment: " + e.getMessage());
             }
         } else {
             // complete assignment directly
@@ -4471,12 +4474,12 @@ public class WorkflowManagerImpl implements WorkflowManager {
     @Override
     public String assignmentComplete(String activityId, final Map<String, String> variableMap) {
         String result = null;
-        
-        // create assignment instance first
-        WfAssignment wfa = assignmentCompleteInit(activityId);
+        SharkConnection sc = null;
 
         // start activity completion asynchronously with a timeout
         try {
+            sc = connect();
+            WfAssignment wfa = getSharkAssignment(sc, activityId);
             WfProcess process = wfa.activity().container();
             long timeout = getProcessAsyncTimeout(process.manager().name(), process.key(), activityId);            
             WorkflowUtil.executeAsync(() -> assignmentCompleteImmediately(wfa, variableMap), timeout);
@@ -4486,6 +4489,12 @@ public class WorkflowManagerImpl implements WorkflowManager {
             LogUtil.info(getClass().getName(), "Timeout assignmentCompleteImmediately for " + activityId);
         } catch(Exception e) {
             LogUtil.error(getClass().getName(), e, "");            
+        } finally {
+            try {
+                disconnect(sc);
+            } catch (Exception e) {
+                LogUtil.error(getClass().getName(), e, "");
+            }
         }
         return result;
     }
@@ -4541,15 +4550,20 @@ public class WorkflowManagerImpl implements WorkflowManager {
         try {
             sc = connect();
             
+            WfActivity activity = wfa.activity();
+            if ("open.not_running.suspended".equals(activity.state())) {
+                activity.resume();
+            }
+
             /**
              * The workflow variable need to set in same thread, else the following activity is not getting its value. 
              * The route also not working correctly too.
              */
             if (variableMap != null && !variableMap.isEmpty()) {
-                wfa.activity().set_result(variableMap);
+                activity.set_result(variableMap);
             }
-            
-            wfa.activity().complete();
+
+            activity.complete();
             result = true;            
         } catch (Exception ex) {
             LogUtil.error(getClass().getName(), ex, "");
@@ -5577,7 +5591,7 @@ public class WorkflowManagerImpl implements WorkflowManager {
      * @return 
      */
     public Collection<String> getRunningProcessIds() {
-        return workflowAssignmentDao.getProcessIdsByRequester(null, null, null, "open.running");
+        return workflowAssignmentDao.getProcessIdsByRequester(null, null, null, "open.not_running.not_started");
     }
     
     /**
@@ -5588,7 +5602,7 @@ public class WorkflowManagerImpl implements WorkflowManager {
      * @return 
      */
     public Collection<String> getRunningProcessIdsByRequester(String packageId, String processDefId, String username) {
-        return workflowAssignmentDao.getProcessIdsByRequester(packageId, processDefId, username, "open");
+        return workflowAssignmentDao.getProcessIdsByRequester(packageId, processDefId, username, "open.not_running.not_started");
     }
     
     /**
