@@ -1681,3 +1681,6 @@ body.popupBody.builder-popup .form-section-title,
 body.popupBody.builder-popup .subform-section-title{
     margin-bottom: 15px;
 }
+body.rtl ul.form-fileupload-value li .remove{
+     display: inline-block;
+}
