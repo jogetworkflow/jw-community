@@ -414,9 +414,49 @@ public class PluginManager implements ApplicationContextAware {
                     // clear cache
                     clearCache();
                 }
+            } else {
+                checkAndReloadDependentPlugins(context, bundle);
             }
         } catch (Exception be) {
             LogUtil.error(PluginManager.class.getName(), be, "Failed to check dependency: " + be.toString());
+        }
+    }
+
+    /**
+     * Checks if a bundle's services share the same classloader with any custom plugin interfaces ...
+     * ... and reloads dependent plugins if needed to ensure consistent classloading.
+     * 
+     * @param bundle
+     * @return 
+     */
+    protected void checkAndReloadDependentPlugins(BundleContext context, Bundle bundle) {
+        // Get all services registered by this bundle
+        ServiceReference[] refs = bundle.getRegisteredServices();
+        if (refs != null) {
+            for (ServiceReference sr : refs) {
+                Object obj = context.getService(sr);
+                context.ungetService(sr);
+                Class pluginClass = obj.getClass();
+
+                // Check against all custom plugin interfaces
+                for (CustomPluginInterface pluginInterface : getCache().getCustomPluginInterfaces().values()) {
+                    Class interfaceClass = pluginInterface.getClassObj();
+
+                    // Check if the plugin class and interface class are loaded by the same classloader
+                    // This prevents the classloader mismatch issue ...
+                    // ... which results in `clazz.isInstance(plugin)` returning `false` in PluginJsonController.writePluginsResponse()
+                    if (pluginClass.getClassLoader().equals(interfaceClass.getClassLoader())) {
+                        // If they share the same classloader, reload dependent plugins ...
+                        // ... to ensure all related bundles are using the same classloader instance
+                        if (reloadDependentPlugins(bundle)) {
+                            // clear cache
+                            clearCache();
+                        }
+                        break; //it only need to reload once for each bundle
+                    }
+                }
+                break; // Only need to check the first service because all services in the bundle share the same classloader
+            }
         }
     }
     
