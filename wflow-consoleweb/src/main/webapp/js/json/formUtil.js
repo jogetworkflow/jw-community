@@ -46,9 +46,6 @@ FormUtil = {
             field = $(element).find("[name$=_"+fieldId+"]:not(form)");
         }
         
-        //filter those in hidden section
-        field = $(field).filter(':parents(.section-visibility-hidden)');
-        
         //to prevent return field with similar name, get the field with shorter name (Field in the subform)
         if ($(field).length > 1) {
             var fieldname;
@@ -62,6 +59,9 @@ FormUtil = {
                 field = $("[name="+fieldname+"]:not(form)");
             });
         }
+        
+        //filter those in hidden section, this should be after the field is found
+        field = $(field).filter(':parents(.section-visibility-hidden)');
         
         return field;
     },
