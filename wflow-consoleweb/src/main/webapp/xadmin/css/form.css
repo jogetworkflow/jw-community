@@ -260,7 +260,8 @@ body .editor-cell input[type=tel],
 body .editor-cell input[type=number],
 body .editor-cell input[type=search],
 body .editor-cell textarea,
-body .editor-cell select:not([class^=ui]){
+body .editor-cell select:not([class^=ui]),
+.multiselect.dropdown-toggle{
     outline: none;
     height: 30px;
     min-height: 30px;
