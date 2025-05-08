@@ -8,6 +8,7 @@ import org.joget.apps.app.model.AppDefinition;
 import org.joget.apps.app.service.AppService;
 import org.joget.apps.app.service.AppUtil;
 import org.joget.apps.form.dao.FormDataDao;
+import org.joget.apps.form.dao.FormDataDaoImpl;
 import org.joget.apps.form.model.Element;
 import org.joget.apps.form.model.FormAjaxOptionsBinder;
 import org.joget.apps.form.model.FormBinder;
@@ -131,17 +132,17 @@ public class FormOptionsBinder extends FormBinder implements FormLoadOptionsBind
                                 sub += " AND ";
                             }
                             if (dependencyValues.length > i && !dependencyValues[i].isEmpty()) {
-                                sub += "e.customProperties." + groups[i] + " = ?";
+                                sub += getName(groups[i]) + " = ?";
                                 values.add(dependencyValues[i]);
                             } else {
-                                sub += "e.customProperties." + groups[i] + " is empty";
+                                sub += "(" + getName(groups[i]) + " IS NULL OR " + getName(groups[i]) + " = \"\")";
                             }
                         }   
                         condition += sub;
                         conditionParams = values.toArray(new String[0]);
                     } else {
                         if (dependencyValues.length > 0) {
-                            condition += "e.customProperties." + getProperty("groupingColumn").toString() + " in (";
+                            condition += getName(getProperty("groupingColumn").toString()) + " in (";
                             for (String s : dependencyValues) {
                                 condition += "?,";
                             }
@@ -149,7 +150,7 @@ public class FormOptionsBinder extends FormBinder implements FormLoadOptionsBind
 
                             conditionParams = dependencyValues;
                         } else {
-                            condition += "e.customProperties." + getProperty("groupingColumn").toString() + " is empty";
+                            condition += "(" + getName(getProperty("groupingColumn").toString()) + " IS NULL OR " + getName(getProperty("groupingColumn").toString()) + " = \"\")";
                         }
                     }
                 }
@@ -208,5 +209,26 @@ public class FormOptionsBinder extends FormBinder implements FormLoadOptionsBind
             LogUtil.error("FormOptionsBinder", e, "");
         }
         return filtered;
+    }
+    
+    /**
+     * Check to append the prefix for the field
+     * @param name
+     * @return 
+     */
+    protected String getName(String name) {
+        if (name != null && !name.isEmpty()
+                && !name.startsWith(FormDataDaoImpl.FORM_PREFIX_COLUMN)
+                && !name.equals(FormUtil.PROPERTY_ID)
+                && !name.equals(FormUtil.PROPERTY_CREATED_BY)
+                && !name.equals(FormUtil.PROPERTY_CREATED_BY_NAME)
+                && !name.equals(FormUtil.PROPERTY_DATE_CREATED)
+                && !name.equals(FormUtil.PROPERTY_MODIFIED_BY)
+                && !name.equals(FormUtil.PROPERTY_MODIFIED_BY_NAME)
+                && !name.equals(FormUtil.PROPERTY_DATE_MODIFIED)) {
+            return "e.customProperties." + name;
+        }
+        
+        return name;
     }
 }
