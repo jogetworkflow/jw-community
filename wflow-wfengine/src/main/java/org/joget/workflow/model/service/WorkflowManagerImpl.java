@@ -5956,11 +5956,14 @@ public class WorkflowManagerImpl implements WorkflowManager {
         
         WorkflowProcessLink link = workflowProcessLinkDao.getWorkflowProcessLinkHistory(history.getProcessId());
         if (link == null) {
-            link = new WorkflowProcessLink();
-            link.setProcessId(history.getProcessId());
-            link.setParentProcessId(history.getProcessId());
-            link.setOriginProcessId(history.getProcessId());
-            
+            //For first time migration, get from process link table
+            link = workflowProcessLinkDao.getWorkflowProcessLink(history.getProcessId());         
+            if (link == null) {
+                link = new WorkflowProcessLink();
+                link.setProcessId(history.getProcessId());
+                link.setParentProcessId(history.getProcessId());
+                link.setOriginProcessId(history.getProcessId());
+            }           
             workflowProcessLinkDao.addWorkflowProcessLinkHistory(link);
         }
         history.setLink(link);
