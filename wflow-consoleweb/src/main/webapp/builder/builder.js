@@ -310,6 +310,11 @@ _CustomBuilder = {
             $("#builder_loader i.fa-stack-1x").attr("class", data.builderIcon + " fa-stack-1x");
             $("#save-btn").removeClass("unsaved");
             
+            //remove all toast messages that not auto hided.
+            $('.toast').each(function(){
+                $(this).toast("hide");
+            });
+            
             if (CustomBuilder.builderType === data.builderType && CustomBuilder.systemTheme === data.systemTheme && CustomBuilder.builderType !== "app") {
                 CustomBuilder.id = data.id;
                 CustomBuilder.appId = data.appId;
@@ -1410,7 +1415,14 @@ _CustomBuilder = {
                 type = "secondary";
                 delay = 1500;
             } else if (type === "danger") {
-                delay = 10000;
+                delay = 0;
+                
+                //show max 5 toasts only, hide the oldest
+                if ($("#builder-message").find(".toast").length > 4) {
+                    $("#builder-message").find(".toast").slice(4).each(function(){
+                        $(this).toast("hide");
+                    });
+                }
             }
             var toast = $('<div id="'+id+'" role="alert" aria-live="assertive" aria-atomic="true" class="toast alert-dismissible toast-'+type+'" data-autohide="true">\
                 '+message+'\
@@ -1418,11 +1430,17 @@ _CustomBuilder = {
               </div>');
             
             $("#builder-message").removeClass('center');
-            $("#builder-message").append(toast);
+            $("#builder-message").prepend(toast); //add to the top
             if (center) {
                 $("#builder-message").addClass('center');
             }
-            $('#'+id).toast({delay : delay});
+            var option = {};
+            if (delay > 0) {
+                option.delay = delay;
+            } else {
+                option.autohide = false
+            }
+            $('#'+id).toast(option);
             $('#'+id).toast("show");
             $('#'+id).on('hidden.bs.toast', function () {
                 $('#'+id).remove();
@@ -3042,6 +3060,33 @@ _CustomBuilder = {
             try {
                 width = parseInt($("#right-panel").css("min-width").replace("px", ""));
             } catch (e){}
+        }
+
+        if (width > 0) {
+            
+            //let it position center when the screen is small or the penel undock or the panel too large
+            if (width > $(window).width()/2) {
+                $("#builder-message").addClass("center");
+            } else {
+                $("#builder-message").removeClass("center");
+                
+                var messgeOffset = width;
+                
+                //get the default panel width
+                const defaultPanelWidth = getComputedStyle($('body')[0])
+                    .getPropertyValue('--builder-right-panel-width')
+                    .trim().replace("vw", "");
+            
+                const defaultWidth = parseInt(defaultPanelWidth)/100 * $(window).width();
+            
+                //prevent the message position overlap with panel when panel at its min size
+                if (defaultWidth > messgeOffset) {
+                    messgeOffset = defaultWidth;
+                }
+                
+                //set the message show beside the panel
+                $("body").css("--builder-message-offset", messgeOffset + 'px');
+            }
         }
         
         if (width > 680) {
