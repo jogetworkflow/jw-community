@@ -931,3 +931,12 @@ body.rtl .numeric_field_control {left:10px; right:auto;}
 body.rtl #form-canvas .form-cell .label {
     text-align: right;
 }
+
+body.rtl ul.form-fileupload-value li .name{
+    direction: ltr;
+    unicode-bidi: isolate;
+}
+body.rtl .handsontable .filename_container .filename {
+    direction: ltr;
+    unicode-bidi: isolate;
+}

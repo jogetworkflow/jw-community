@@ -1360,3 +1360,14 @@ body.popupBody.builder-popup .subform-section-title{
 body.rtl ul.form-fileupload-value li .remove{
      display: inline-block;
 }
+body.rtl ul.form-fileupload-value li .remove{
+    display: inline-block;
+}
+body.rtl ul.form-fileupload-value li .name{
+    direction: ltr;
+    unicode-bidi: isolate;
+}
+body.rtl .handsontable .filename_container .filename {
+    direction: ltr;
+    unicode-bidi: isolate;
+}
