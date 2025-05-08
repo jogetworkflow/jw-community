@@ -1275,7 +1275,8 @@ body.rtl div.ui-timepicker-div dl dd > * > select {
 input:not([type]), input[type=text], input[type=password], input[type=email], 
 input[type=url], input[type=time], input[type=date], input[type=datetime], 
 input[type=datetime-local], input[type=tel], input[type=number], input[type=search], 
-select, textarea, .ql-container.ql-bubble {
+select, textarea, .ql-container.ql-bubble,
+.filter-cell .multiselect.dropdown-toggle{
     padding: 16px;
     color: var(--primary-text-color);
     background-color: #fff;
@@ -2258,6 +2259,33 @@ div#dataList_columnslist tbody span.row_action_inner > a > i {
     display: none;
 }
 /* End of Classic Table */
+
+/* List Filter */
+/* Option - Multiselct */
+.filter-cell .multiselect.dropdown-toggle{
+    min-height: 40px;
+    padding: .375rem 1.75rem .375rem .75rem;
+}
+.filter-cell .multiselect-container.dropdown-menu {
+    background-color:var(--theme-content-background); 
+    border: 1.5px solid var(--field-border-color) !important;
+    padding-bottom: 5px !important;
+    right: -45px;
+}
+.filter-cell .multiselect-container.dropdown-menu input.multiselect-search{
+    width:100%;
+    border-top-right-radius: 5px;
+    border-top-left-radius: 5px;
+}
+.filter-cell .multiselect-container.dropdown-menu input.form-check-input{
+    min-height: unset !important;
+    margin: 5px;
+}
+.filter-cell .multiselect-container .multiselect-all .form-check, 
+.filter-cell .multiselect-container .multiselect-group .form-check, 
+.filter-cell .multiselect-container .multiselect-option .form-check{
+    padding: 0px !important;
+}
 
 @media screen and (max-width: 1278px) {
     body:not(.horizontal_menu) #content.page_content {
