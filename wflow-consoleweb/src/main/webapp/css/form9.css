@@ -344,7 +344,8 @@ select,
 .selector_element,
 textarea,
 .ql-container.ql-bubble,
-.chosen-container-multi .chosen-choices {
+.chosen-container-multi .chosen-choices,
+.multiselect.dropdown-toggle{
     display: block;
     width: 100%;
     color: var(--jgt-input-colorText);
@@ -381,7 +382,8 @@ select:focus:not([disabled]):not([readonly]),
 .selector_element:focus:not([disabled]):not([readonly]),
 textarea:focus:not([disabled]):not([readonly]),
 .ql-container.ql-bubble:focus:not([disabled]):not([readonly]),
-.chosen-container-multi .chosen-choices:focus:not([disabled]):not([readonly]) {
+.chosen-container-multi .chosen-choices:focus:not([disabled]):not([readonly]),
+.multiselect.dropdown-toggle:focus:not([disabled]):not([readonly]){
     background-color: var(--jgt-input-activeBg);
     border-color: var(--jgt-input-activeBorderColor);
     box-shadow: var(--jgt-input-activeShadow);
@@ -403,7 +405,8 @@ select:hover:not([disabled]):not([readonly]),
 .selector_element:hover:not([disabled]):not([readonly]),
 textarea:hover:not([disabled]):not([readonly]),
 .ql-container.ql-bubble:hover:not([disabled]):not([readonly]),
-.chosen-container-multi .chosen-choices:hover:not([disabled]):not([readonly]) {
+.chosen-container-multi .chosen-choices:hover:not([disabled]):not([readonly]),
+.multiselect.dropdown-toggle:hover:not([disabled]):not([readonly]) {
     background-color: var(--jgt-input-hoverBg);
     border-color: var(--jgt-input-hoverBorderColor);
 }

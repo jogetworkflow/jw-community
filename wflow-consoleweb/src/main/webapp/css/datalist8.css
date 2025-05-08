@@ -85,7 +85,7 @@ body.rtl .dataList .filters {
 .dataList .filters > span + span {
     margin-left: 10px;
 }
-.dataList .filters input,
+.dataList .filters input:not([type="checkbox"]),
 .dataList .filters select,
 .dataList .filters textarea{
     display: inline-block;

@@ -316,7 +316,8 @@ input[type=number],
 input[type=search], 
 select, 
 textarea,
-.ql-container.ql-bubble{
+.ql-container.ql-bubble,
+.multiselect.dropdown-toggle{
     display: block;
     width: 100%;
     height: calc(1.5em + 0.75rem + 2px);
