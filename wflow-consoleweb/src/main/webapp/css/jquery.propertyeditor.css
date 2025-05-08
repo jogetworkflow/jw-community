@@ -2694,3 +2694,11 @@ i.fa-sort, i.fa-sort-asc, i.fa-sort-desc{
     padding-right: 50px;
     padding-left: 12px !important;
 }
+.rtl .editor-panel-mode .property-type-checkbox-truefalse .property-input .multiple_option label .hidden_label {
+    padding-left: 0px;
+    padding-right: 20px;
+}
+.rtl .property-input .multiple_option input{
+    margin-right: 0px;
+    margin-left: 5px;
+}
