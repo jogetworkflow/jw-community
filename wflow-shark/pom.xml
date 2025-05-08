@@ -43,7 +43,7 @@
         </dependency>
         <dependency>
             <groupId>org.joget</groupId>
-            <artifactId>wflow-wfengine</artifactId>
+            <artifactId>wflow-core</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>

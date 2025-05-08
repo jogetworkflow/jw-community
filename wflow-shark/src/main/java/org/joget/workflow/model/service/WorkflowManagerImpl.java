@@ -73,6 +73,10 @@ import org.enhydra.shark.api.common.AssignmentFilterBuilder;
 import org.enhydra.shark.instancepersistence.data.ProcessStateDO;
 import org.enhydra.shark.instancepersistence.data.ProcessStateQuery;
 import org.enhydra.shark.xpdl.XMLUtil;
+import org.joget.apps.app.model.AppDefinition;
+import org.joget.apps.app.model.PackageActivityForm;
+import org.joget.apps.app.service.AppService;
+import org.joget.apps.app.service.AppUtil;
 import org.joget.apps.datalist.model.DataListInboxSetting;
 import org.joget.apps.datalist.model.InboxFilterQueryObject;
 import org.joget.eventstream.EventStreamManager;
@@ -3273,6 +3277,25 @@ public class WorkflowManagerImpl implements WorkflowManager {
     }
     
     /**
+     * Checks whether a specific process activity definition is configured to automatically continue to the next activity.
+     * @param processDefId
+     * @param activityDefId
+     * @return 
+     */
+    protected boolean isActivityAutoContinue(String processDefId, String activityDefId) {
+        boolean autoContinue = false;
+        AppService appService = (AppService)WorkflowUtil.getApplicationContext().getBean("appService");
+        AppDefinition appDef = AppUtil.getAppDefinitionByProcess(processDefId);
+        if (appDef != null) {
+            PackageActivityForm activityForm = appService.retrieveMappedForm(appDef.getAppId(), appDef.getVersion().toString(), processDefId, activityDefId);
+            if (activityForm != null){
+                autoContinue = activityForm.isAutoContinue();
+            }
+        }
+        return autoContinue;
+    }
+    
+    /**
      * Generic method to start a process with various options
      * @param processDefId The process definition ID of the process to start
      * @param processId The process instance ID of a current running process to start
@@ -3292,7 +3315,9 @@ public class WorkflowManagerImpl implements WorkflowManager {
 
         if (!startManually) {
             final String startProcessId = result.getProcess().getInstanceId();
-            if (eventStreamManager != null && eventStreamManager.isEnabled()) {
+            // check whether to run async, only when activity does not automatically continue to the next
+            boolean runAsync = eventStreamManager != null && eventStreamManager.isEnabled() && !isActivityAutoContinue(processDefId, WorkflowUtil.ACTIVITY_DEF_ID_RUN_PROCESS);
+            if (runAsync) {
                 // send process data to event stream
                 String eventStreamTopic = EVENT_STREAM_TOPIC_PROCESS_START;
                 Map data = new HashMap();
@@ -4439,7 +4464,17 @@ public class WorkflowManagerImpl implements WorkflowManager {
     @Override
     public String assignmentComplete(String activityId) {
         String result = "pending";
-        if (eventStreamManager != null && eventStreamManager.isEnabled()) {
+        boolean runAsync = eventStreamManager != null && eventStreamManager.isEnabled();
+        if (runAsync) {
+            // check whether activity automatically continues to the next
+            WorkflowActivity activity = getActivityById(activityId);
+            String processDefId = activity.getProcessDefId();        
+            String activityDefId = activity.getActivityDefId();
+
+            // set to run async only if activity does not automatically continue
+            runAsync = !isActivityAutoContinue(processDefId, activityDefId);
+        }
+        if (runAsync) {
             try {
                 // create assignment instance first
                 WfAssignment wfa = assignmentCompleteInit(activityId);
@@ -4452,6 +4487,9 @@ public class WorkflowManagerImpl implements WorkflowManager {
 
                 // suspend activity
                 wfa.activity().suspend();
+                
+                // TODO: clear assignment cache, this is required if in-memory caching is used for process assignments in commit 39e571b3
+                // SharkUtil.removeCacheWorkflowAssignment(processId, activityId, wfa.assignee().resource_key());
 
                 // slight delay to allow listener to complete quick transactions
                 Thread.sleep(100);
@@ -4460,7 +4498,7 @@ public class WorkflowManagerImpl implements WorkflowManager {
             }
         } else {
             // complete assignment directly
-            assignmentComplete(activityId, null);
+            result = assignmentComplete(activityId, null);
         }
         return result;
     }
