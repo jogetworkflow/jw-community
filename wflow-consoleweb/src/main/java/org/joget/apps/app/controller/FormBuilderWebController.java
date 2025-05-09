@@ -8,9 +8,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.HashSet;
 import java.util.Iterator;
-import java.util.Set;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import org.apache.commons.lang.StringEscapeUtils;
@@ -245,20 +243,20 @@ public class FormBuilderWebController {
     }
     
     @RequestMapping("/app/(*:appId)/(~:appVersion)/form/embed")
-    public String appEmbedForm(ModelMap model, HttpServletRequest request, HttpServletResponse response, @RequestParam("appId") String appId, @RequestParam(value = "appVersion", required = false) String appVersion, @RequestParam("_submitButtonLabel") String buttonLabel, @RequestParam("_json") String json, @RequestParam("_callback") String callback, @RequestParam("_setting") String callbackSetting, @RequestParam(required = false) String id, @RequestParam(value = "_a", required = false) String action) throws JSONException, UnsupportedEncodingException {
+    public String appEmbedForm(ModelMap model, HttpServletRequest request, HttpServletResponse response, @RequestParam("appId") String appId, @RequestParam(value = "appVersion", required = false) String appVersion, @RequestParam("_submitButtonLabel") String buttonLabel, @RequestParam("_json") String json, @RequestParam("_callback") String callback, @RequestParam("_setting") String callbackSetting, @RequestParam(required = false) String id, @RequestParam(value = "_a", required = false) String action, @RequestParam(value = "_processId", required = false) String processId) throws JSONException, UnsupportedEncodingException {
         AppDefinition appDef = appService.getAppDefinition(appId, appVersion);
         
         if (appDef == null) {
             response.setStatus(HttpServletResponse.SC_NOT_FOUND);
             return null;
         }
-        
+              
         AppUtil.setCurrentAppDefinition(appDef);
-        return embedForm(model, request, response, buttonLabel, json, callback, callbackSetting, id, action);
+        return embedForm(model, request, response, buttonLabel, json, callback, callbackSetting, id, action, processId);
     }
 
     @RequestMapping("/form/embed")
-    public String embedForm(ModelMap model, HttpServletRequest request, HttpServletResponse response, @RequestParam("_submitButtonLabel") String buttonLabel, @RequestParam("_json") String json, @RequestParam("_callback") String callback, @RequestParam("_setting") String callbackSetting, @RequestParam(required = false) String id, @RequestParam(value = "_a", required = false) String action) throws JSONException, UnsupportedEncodingException {
+    public String embedForm(ModelMap model, HttpServletRequest request, HttpServletResponse response, @RequestParam("_submitButtonLabel") String buttonLabel, @RequestParam("_json") String json, @RequestParam("_callback") String callback, @RequestParam("_setting") String callbackSetting, @RequestParam(required = false) String id, @RequestParam(value = "_a", required = false) String action, @RequestParam(value = "_processId", required = false) String processId) throws JSONException, UnsupportedEncodingException {
 
         AppDefinition appDef = AppUtil.getCurrentAppDefinition();
         String appId  = "";
@@ -266,10 +264,18 @@ public class FormBuilderWebController {
         if (appDef != null) {
             appId = appDef.getAppId();
             appVersion = appDef.getVersion().toString();
-        }        
-
+        }  
+              
+        boolean verified = false;
         String nonce = request.getParameter("_nonce");
-        if (!SecurityUtil.verifyNonce(nonce, new String[]{"EmbedForm", appId, appVersion, json})) {
+
+        if (processId != null) {
+            verified = SecurityUtil.verifyNonce(nonce, new String[]{"EmbedForm", appId, appVersion, json, processId});
+        } else { //fallback when activity id not provided which may happened for old plugins
+            verified = SecurityUtil.verifyNonce(nonce, new String[]{"EmbedForm", appId, appVersion, json});
+        }
+
+        if (!verified) {
             response.setStatus(HttpServletResponse.SC_FORBIDDEN);
             return null;
         }
@@ -278,6 +284,12 @@ public class FormBuilderWebController {
         if(id != null && !id.isEmpty()){
             formData.setPrimaryKeyValue(id);
         }
+        
+        //set the process id for process related hash variable parsing
+        if (processId != null && !processId.isEmpty()) {
+            formData.setProcessId(processId);
+        }
+        
         formData = formService.retrieveFormDataFromRequest(formData, request);
         String decryptedJson = SecurityUtil.decrypt(json);
         Form form = formService.loadFormFromJson(decryptedJson, formData);
@@ -286,14 +298,21 @@ public class FormBuilderWebController {
             response.setStatus(HttpServletResponse.SC_NOT_FOUND);
             return null;
         }
-        
+
         if(callbackSetting == null || callbackSetting.isEmpty()){
             callbackSetting = "{}";
         }
         String encodedCallbackSetting = URLEncoder.encode(StringEscapeUtils.escapeHtml(callbackSetting), "UTF-8");
 
         String csrfToken = SecurityUtil.getCsrfTokenName() + "=" + SecurityUtil.getCsrfTokenValue(request);
-        form.setProperty("url", "?_nonce="+URLEncoder.encode(nonce, "UTF-8")+"&_a=submit&_callback="+callback+"&_setting="+encodedCallbackSetting+"&_submitButtonLabel="+StringEscapeUtils.escapeHtml(buttonLabel) + "&" + csrfToken);
+
+        //add the activity id to the URL for submission nonce checking
+        String processIdParam = "";
+        if (processId != null) {
+            processIdParam = "&_processId=" + URLEncoder.encode(processId, "UTF-8");
+        }
+
+        form.setProperty("url", "?_nonce="+URLEncoder.encode(nonce, "UTF-8")+"&_a=submit"+processIdParam+"&_callback="+callback+"&_setting="+encodedCallbackSetting+"&_submitButtonLabel="+StringEscapeUtils.escapeHtml(buttonLabel) + "&" + csrfToken);
 
         //if id field not exist, automatically add an id hidden field
         Element idElement = FormUtil.findElement(FormUtil.PROPERTY_ID, form, formData);
@@ -350,14 +369,14 @@ public class FormBuilderWebController {
             } else if (!formData.getStay() && (errors == null || errors.isEmpty())) {
                 //convert submitted 
                 JSONObject jsonResult = new JSONObject();
-                
+
                 //get binder of main form
                 FormStoreBinder mainBinder = form.getStoreBinder();
                 FormRowSet rows = formData.getStoreBinderData(mainBinder);
-                
+
                 for (FormRow row : rows) {
                     Map<String, String> decrypted = new HashMap<String, String>();
-                    
+
                     for (Object o : row.keySet()) {
                         Object value = row.get(o);
                         jsonResult.accumulate(o.toString(), value);
@@ -377,7 +396,7 @@ public class FormBuilderWebController {
                         jsonResult.put(FormUtil.PROPERTY_DECRYPTED_DATA, decrypted);
                     }
                 }
-                
+
                 //should use the original request param map instead of the one modified by other form processing in form data. Retrieve it again from request 
                 FormData newFormData = new FormData();
                 newFormData = formService.retrieveFormDataFromRequest(newFormData, request);
@@ -388,14 +407,14 @@ public class FormBuilderWebController {
                     requestParams.remove("_json");
                     jsonResult.put(FormUtil.PROPERTY_TEMP_REQUEST_PARAMS, requestParams);
                 }
-                
+
                 model.addAttribute("jsonResult", StringEscapeUtils.escapeJavaScript(jsonResult.toString()));
             } else if (!errors.isEmpty()) {
                 // render error template
                 formHtml = formService.generateElementErrorHtml(form, formData);
                 errorCount = errors.size();
             }
-            
+
             model.addAttribute("setting", callbackSetting);
             model.addAttribute("callback", callback);
             model.addAttribute("submitted", Boolean.TRUE);
@@ -406,7 +425,7 @@ public class FormBuilderWebController {
         }
 
         model.addAttribute("formHtml", formHtml);
-        
+
         if (request.getParameter("_mapp") != null) {
             String origin = request.getHeader("Origin");
             if (origin != null) {
@@ -415,7 +434,7 @@ public class FormBuilderWebController {
             response.setHeader("Access-Control-Allow-Origin", origin);
             response.setHeader("Access-Control-Allow-Credentials", "true");
             response.setHeader("Content-type", "application/xml");
-        
+
             return "mapp/embedForm";
         } else {    
             return "fbuilder/embedForm";
