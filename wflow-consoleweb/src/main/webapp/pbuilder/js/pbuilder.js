@@ -6111,7 +6111,10 @@ ProcessBuilder = {
         }
     },
             
-    previewForm: function (formId) {
+    previewForm: function (event) {
+
+        var formId = $(event.target).attr('formid');
+
         if (formId) {
             var url = CustomBuilder.contextPath + '/web/fbuilder/app' + CustomBuilder.appPath + '/form/' + formId + '/previewForm';
             JPopup.show("previewForm", url, {}, "");
