@@ -2610,6 +2610,7 @@ body.right-panel-mode-window #right-panel-window-resize  {
     line-height: 25px;
 }
 #advancedView{
+    color: var(--theme-input-color-1);
     padding: 15px 15px 10px;
     background: rgb(255, 255, 255);
     margin: 15px 45px 10px 0px;
