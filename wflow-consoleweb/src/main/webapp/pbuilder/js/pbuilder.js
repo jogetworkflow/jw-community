@@ -5230,7 +5230,7 @@ ProcessBuilder = {
      * Update logic flow node data
      */
     updateLFData: function (element, elementObj) {
-        let nodeId = element[0].data.id;
+        let nodeId = $(element).data('cbuilder-id');
         if (elementObj.className === 'transition') {
             let label = "";
             if (elementObj.properties.condition) {
@@ -7732,12 +7732,12 @@ ProcessBuilder = {
         if(elementProperty.className === "participant"){
             elementProperty.id = 'laneID_' + elementProperty.id;
         }
-        if (elementProperty.id !== $(element)[0].data.id && elementObj.className !== "process") {
+        if (elementProperty.id !== $(element).data('cbuilder-id') && elementObj.className !== "process") {
             var self = CustomBuilder.Builder;
 
             // update transition
-            var sourceConnSet = ProcessBuilder.lf.getNodeOutgoingEdge($(element)[0].data.id);
-            var targetConnSet = ProcessBuilder.lf.getNodeOutgoingEdge($(element)[0].data.id);
+            var sourceConnSet = ProcessBuilder.lf.getNodeOutgoingEdge($(element).data('cbuilder-id'));
+            var targetConnSet = ProcessBuilder.lf.getNodeOutgoingEdge($(element).data('cbuilder-id'));
             var transition = [];
 
             for (var i in sourceConnSet) {
