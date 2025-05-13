@@ -552,7 +552,7 @@ div.pq-grid * {
 
 body.rtl .hasDatepicker+a,
 body.rtl .hasDatepicker+a+a {
-    left: 20px;
+    left: calc(8px + var(--jgt-card-padding));
     right: unset !important;
 }
 
@@ -577,7 +577,7 @@ body.rtl .hasDatepicker+a+a {
 }
 
 body.rtl .hasDatepicker+a+a {
-    left: 42px;
+    left: calc(30px + var(--jgt-card-padding));
     right: unset !important;
 }
 
