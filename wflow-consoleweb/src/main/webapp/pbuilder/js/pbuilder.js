@@ -7659,6 +7659,7 @@ ProcessBuilder = {
      */            
     unloadBuilder : function() {
         $("#process-selector, .toolzoom-buttons, #listviewer-btn, #xpdl-btn").remove();
+        $("#auto-layout, #hightlight, #navigator").parent(".toolbar-group").remove();
         $("#launch-btn").parent().remove();
         $(window).off('hashchange');        
     },
