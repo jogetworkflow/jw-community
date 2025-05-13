@@ -2690,6 +2690,7 @@ i.fa-sort, i.fa-sort-asc, i.fa-sort-desc{
     border: 1px solid #ccc;
     min-width: 250px;
     text-align: right;
+    z-index: 99999;
 }
 .grid_sorting_field select {
     margin-bottom: 5px;
