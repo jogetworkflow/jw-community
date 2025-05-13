@@ -102,7 +102,6 @@ import org.joget.plugin.property.service.PropertyUtil;
 import org.joget.workflow.model.WorkflowAssignment;
 import org.joget.workflow.model.WorkflowProcess;
 import org.joget.workflow.model.service.WorkflowManager;
-import org.joget.workflow.model.service.WorkflowManagerImpl;
 import org.joget.workflow.model.dao.WorkflowAssignmentDao;
 import org.joget.workflow.util.WorkflowUtil;
 import org.json.JSONArray;
@@ -1979,7 +1978,7 @@ public class AppUtil implements ApplicationContextAware {
         WorkflowAssignmentDao workflowAssignmentDao = (WorkflowAssignmentDao)AppUtil.getApplicationContext().getBean("workflowAssignmentDao");
         SetupManager setupManager = (SetupManager)AppUtil.getApplicationContext().getBean("setupManager");
         
-        return (workflowAssignmentDao.hasNonHistoryCompletedProcess() && setupManager.getSettingValue(WorkflowManagerImpl.ARCHIVE_SETTING) == null) || !isArchivedProcessDataModeEnabled();
+        return (workflowAssignmentDao.hasNonHistoryCompletedProcess() && setupManager.getSettingValue(WorkflowManager.ARCHIVE_SETTING) == null) || !isArchivedProcessDataModeEnabled();
     }
     
     /**
@@ -1999,7 +1998,7 @@ public class AppUtil implements ApplicationContextAware {
     public static double getArchivedProcessStatus() {
         //not using setupManager due to the value is cached
         SetupDao setupDao = (SetupDao) WorkflowUtil.getApplicationContext().getBean("setupDao");
-        Collection<Setting> result = setupDao.find("WHERE property = ?", new String[]{WorkflowManagerImpl.ARCHIVE_SETTING}, null, null, null, null);
+        Collection<Setting> result = setupDao.find("WHERE property = ?", new String[]{WorkflowManager.ARCHIVE_SETTING}, null, null, null, null);
         Setting status = (result.isEmpty()) ? null : result.iterator().next();
         
         if (status != null) {
