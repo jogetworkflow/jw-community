@@ -8235,6 +8235,7 @@ ProcessBuilder = {
         let gap = 150;
         ProcessBuilder.updatePasteElement = false;
         if (copiedObj.type !== 'lane') {
+            if (!copiedObj.text) copiedObj.text = {}; // Ensure "text" property exists. If not, initialize
             if (element.properties.className === 'participant') {
                 xPosition = parseInt(copiedObj.x);
                 copiedObj.x = xPosition + gap;
