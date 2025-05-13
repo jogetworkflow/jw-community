@@ -5248,9 +5248,11 @@ _CustomBuilder.Builder = {
                 }
 
                 if (elementPropertiesHidden) {
-                    $("#style-properties-tab-link a").trigger("click");
+                    var tab = new bootstrap.Tab(document.querySelector('#style-properties-tab-link a'));
+                    tab.show();
                 } else if (!supportStyle) {
-                    $("#element-properties-tab-link a").trigger("click");
+                    var tab = new bootstrap.Tab(document.querySelector('#element-properties-tab-link a'));
+                    tab.show();
                 }
             } else {
                 $("body").addClass("no-right-panel");
