@@ -191,6 +191,11 @@ body[builder-theme]#cbuilder.default-builder #process-selector + #builder_canvas
 body[builder-theme] #screenshotView .sticky-buttons {
     top: 145px;
 }
+body[builder-theme] #screenshotView .sticky-buttons a{
+    border-color: var(--theme-label-color-1);
+    background-color: var(--theme-label-color-1);
+    color: var(--theme-primary-color-1);
+}
 body[builder-theme]#cbuilder.no-right-panel:not(.default-builder) {
     background-color: var(--theme-primary-color-1);
 }
