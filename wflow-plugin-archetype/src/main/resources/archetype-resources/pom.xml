@@ -55,6 +55,10 @@
                         <Embed-Directory>dependency</Embed-Directory>
                         <Embed-StripGroup>true</Embed-StripGroup>
                         <DynamicImport-Package>*</DynamicImport-Package>
+
+                        <!-- Plugin Information -->
+                        <Joget-Name>${label}</Joget-Name>
+                        <Joget-Description>${description}</Joget-Description>
                     </instructions>
                 </configuration>
             </plugin>
