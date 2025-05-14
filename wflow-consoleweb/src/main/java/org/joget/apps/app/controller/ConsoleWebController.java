@@ -1444,8 +1444,11 @@ public class ConsoleWebController {
             return "console/profile";
         } else {
             if (currentUser.getUsername().equals(user.getUsername())) {
-                currentUser.setFirstName(user.getFirstName());
-                currentUser.setLastName(user.getLastName());
+                String firstName = StringUtil.stripAllHtmlTag(StringUtil.unescapeString(user.getFirstName(), StringUtil.TYPE_HTML, null));
+                String lastName = StringUtil.stripAllHtmlTag(StringUtil.unescapeString(user.getLastName(), StringUtil.TYPE_HTML, null));
+                            
+                currentUser.setFirstName(firstName);
+                currentUser.setLastName(lastName);               
                 currentUser.setEmail(user.getEmail());
                 currentUser.setTimeZone(user.getTimeZone());
                 currentUser.setLocale(user.getLocale());
