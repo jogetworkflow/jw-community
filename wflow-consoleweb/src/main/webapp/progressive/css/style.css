@@ -1345,7 +1345,7 @@ body .filter-cell {
 }
 body.rtl .filter-cell {
     padding-right: 10px;
-    padding-left: auto;
+    padding-left: 0px !important;
 }
 
 body .filter-cell input:not(.hasDatepicker):not([type=submit]){
@@ -1859,11 +1859,6 @@ body:not(#login) #content > main > .datalist-body-content:not(.quickEdit) {
     line-height: 25px !important;
 }
 
-.largeFontSize .hasDatepicker + a {
-    position: absolute;
-    padding: 0.5rem;
-}
-
 .mediumFontSize #form-canvas *,
 .mediumFontSize .fc-view-container *,
 .mediumFontSize .userProfile-body-content *,
@@ -1871,11 +1866,6 @@ body:not(#login) #content > main > .datalist-body-content:not(.quickEdit) {
 .mediumFontSize .ui-html *:not(h1):not(h2):not(h3):not(h4):not(h5){
     font-size: 17px !important;
     line-height: 20px !important;
-}
-
-.mediumFontSize .hasDatepicker + a {
-    position: absolute;
-    padding: 0.8rem 0.5rem;
 }
 
 /*Priority Menu*/

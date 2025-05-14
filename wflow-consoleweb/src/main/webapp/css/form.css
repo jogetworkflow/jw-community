@@ -354,21 +354,54 @@ span.tablesaw-cell-content {
 }
 
 /* date picker */
-.close-icon:after {
-    content: "x";
-    width: 14px;
-    height: 14px;
+.hasDatepicker + a,
+.hasDatepicker + a + a{
     position: absolute;
-    text-align: center;
-    line-height: 13px;
-    margin-left: 10px;
-    bottom: 20px;
-    background-color: #FA9595;
-    border-radius: 50%;
-    color: white;
-    font-size: 12px;
-    box-shadow: 0 0 2px #E50F0F;
+    right: 5px;
+    top: 9px;
+    height: 18px;
+    width: 18px;
+    font-family: "Font Awesome 5 Free";
+    -moz-osx-font-smoothing: grayscale;
+    -webkit-font-smoothing: antialiased;
+    display: inline-block;
+    font-style: normal;
+    font-variant: normal;
+    text-rendering: auto;
+    line-height: 1;
+    font-size: 16px;
+    color: #ced4da;
     cursor: pointer;
+}
+body.rtl .hasDatepicker + a,
+body.rtl .hasDatepicker + a + a{
+    left: 5px;
+    right: unset !important;
+}
+.hasDatepicker + a:before{
+    content: '\f073';
+}
+.hasDatepicker + a + a {
+    color: #f8d7da;
+    right: 25px;
+    z-index: 1;
+}
+.datapicker-native.ui-screen-hidden.ios + .hasDatepicker + a + a {
+    z-index: 4;
+}
+.hasDatepicker + a + a:hover {
+    color: #e46772;
+    text-decoration: none;
+}
+body.rtl .hasDatepicker + a + a{
+    left: 25px;
+    right: unset !important;
+}
+.hasDatepicker + a + a:before{
+    content: '\f057';
+}
+.hasDatepicker + a > img{
+    display: none;
 }
 img.ui-datepicker-trigger {
     pointer-events: none;
@@ -408,6 +441,70 @@ body input.no-manual-input{
 
 .trigger:hover, .close-icon:hover{
     opacity: 0.8;
+}
+/*Consistent datepicker icon spacing for M Font Size*/
+.mediumFontSize .hasDatepicker + a, .mediumFontSize .hasDatepicker + a + a{
+    top: 6px;
+}
+.mediumFontSize .hasDatepicker + a + a {
+    right: 1.8rem;
+}
+/*Consistent datepicker icon spacing for L Font Size*/
+.largeFontSize .hasDatepicker + a, .largeFontSize .hasDatepicker + a + a{
+    top: 3px;
+}
+.largeFontSize .hasDatepicker + a + a {
+    right: 2rem;
+}
+
+/*Consistent datepicker icon spacing for M Font Size*/
+body.rtl.mediumFontSize .hasDatepicker + a + a {
+    right: auto;
+    left: 1.8rem;
+}
+/*Consistent datepicker icon spacing for L Font Size*/
+body.rtl.largeFontSize .hasDatepicker + a + a {
+    right: auto;
+    left: 2rem;
+}
+
+/* Top-label for S-Size in Normal Mode*/
+.label-top .hasDatepicker + a, .label-top .hasDatepicker + a + a {
+    top: auto;
+    bottom: 1rem;
+}
+/* Top-label for M-Size in Normal Mode*/
+.mediumFontSize .label-top .hasDatepicker + a, .mediumFontSize .label-top .hasDatepicker + a + a {
+    top: auto;
+    bottom: 1.3rem;
+}
+/* Top-label for L-Size in Normal Mode*/
+.largeFontSize .label-top .hasDatepicker + a, .largeFontSize .label-top .hasDatepicker + a + a {
+    top: auto;
+    bottom: 1.5rem;
+}
+
+@media screen and (max-width: 767px) {
+    /*Icon position for small font size*/
+    .hasDatepicker + a, .hasDatepicker + a + a {
+        top: auto;
+        bottom: 1rem;
+    }
+    /*Icon position for medium font size*/
+    .mediumFontSize .hasDatepicker + a, .mediumFontSize .hasDatepicker + a + a {
+        top: auto;
+        bottom: 1.3rem;
+    }
+    /*Icon position for large font size*/
+    .largeFontSize .hasDatepicker + a, .largeFontSize .hasDatepicker + a + a {
+        top: auto;
+        bottom: 1.5rem;
+    }
+}
+
+body.rtl input.hasDatepicker {
+    direction: ltr;
+    text-align: right;
 }
 
 /* File upload */
@@ -477,6 +574,14 @@ ul.form-fileupload-value li a {display: inline-block;}
 .adgrid td.pq-grid-cell.focused_cell {background: #5FAAF9}
 .pq-grid-toolbar .ui-button .ui-icon {display: inline-block; vertical-align: sub;}
 .pq-grid-toolbar .ui-button{background-image: linear-gradient(#fefefe,#e6e6e6); border: 1px solid #e6e6e6; padding: 5px 11px;}
+.grid.adgrid .editor-cell .hasDatepicker + a{
+    right: 8px;
+    top: 14px;
+}
+.grid.adgrid .editor-cell .hasDatepicker + a + a{
+    right: 30px;
+    top: 14px;
+}
 
 /* form grid & list grid */
 .pg-navigator .pg-current {
@@ -1066,7 +1171,6 @@ body.rtl .label-top.subform-cell > label.label > i{
         left: unset;
     }
 }
-/* datepicker */
 body.rtl #form-canvas .form-cell .label {
     text-align: right;
 }
@@ -1077,8 +1181,4 @@ body.rtl ul.form-fileupload-value li .name{
 body.rtl .handsontable .filename_container .filename {
     direction: ltr;
     unicode-bidi: isolate;
-}
-body.rtl input.hasDatepicker {
-    direction: ltr;
-    text-align: right;
 }

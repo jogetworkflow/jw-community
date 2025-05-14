@@ -5423,7 +5423,7 @@ body.rtl .layui-tab-title li .layui-tab-close{
 }
 
 body.rtl .hasDatepicker + a + .close-icon, body.rtl .hasDatepicker + img + .close-icon{
-    right: 25px;
+    right: auto;
 }
 body.rtl select:not([class^="ui-"]), body.rtl .editor-cell select:not([class^="ui-"]){
     float: right;

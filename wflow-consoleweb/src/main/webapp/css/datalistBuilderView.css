@@ -484,6 +484,32 @@ body.rtl .dataList .exportlinks {
 body .filter-cell .form-button {
     margin-bottom: 15px !important;
 }
+.dataList .filter-cell .close-icon:after{ 
+    right: 20px !important;
+    top: 21px !important;
+    bottom: unset !important;
+}
+body .filter-cell input.hasDatepicker {
+    padding-right: 40px;
+}
+body.rtl .filter-cell input.hasDatepicker {
+    padding-left: 40px;
+    padding-right: 0px !important;
+}
+body .filter-cell .hasDatepicker + a{
+    right: 2px;
+}
+body .filter-cell .hasDatepicker + a + a{
+    right: 22px;
+}
+body.rtl .filter-cell .hasDatepicker + a{
+    right: unset;
+    left: 2px;
+}
+body.rtl .filter-cell .hasDatepicker + a + a{
+    right: unset;
+    left: 22px;
+}
 .dataList .actions.right{
     text-align:right;
 }

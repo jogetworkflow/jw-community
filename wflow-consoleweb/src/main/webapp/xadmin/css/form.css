@@ -674,6 +674,9 @@ body .hasDatepicker + a, body .hasDatepicker + img {
     display: inline-block;
     cursor: pointer;
 }
+body .hasDatepicker + a + a {
+    padding: 2px 5px;
+}
 body input.hasDatepicker {
     width: 60%;
 }

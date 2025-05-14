@@ -478,72 +478,8 @@ body .editor-cell select:not([class^="ui-"]):focus{
     -webkit-box-shadow: 0 1px 0 0 #727272;
 }
 
-body .close-icon:after {
-    right: 28px;
-    bottom: 20px;
-    line-height: 10px;
-}
-.close-icon {
-    position: absolute;
-    padding: 1.4rem;
-    left: 0;
-    right: 0;
-}
-.close-icon {
-    position: absolute;
-    padding: 2.25rem;
-    left: 0;
-    right: 0;
-}
-.close-icon {
-    position: absolute;
-    padding: 2.25rem;
-    left: 0;
-    right: 0;
-}
-body .editor-celll .close-icon:after {
-    top:16px;
-    bottom: unset;
-}
-body.rtl .close-icon:after {
-    left: 28px;
-    right: unset;
-}
-
-body .hasDatepicker + a, body .hasDatepicker + img {
-    position: absolute;
-    padding: 8px 5px;
-    right: 0;
-    display: inline-block;
-}
-body.rtl .hasDatepicker + a, body.rtl .hasDatepicker + img {
-    left: 0;
-    right: auto;
-}
-
-body .filter-cell .hasDatepicker + a, body .filter-cell .hasDatepicker + img {
-    right: auto;
-    margin-left: -21px;
-}
-body.rtl .filter-cell .hasDatepicker + a, body.rtl .filter-cell .hasDatepicker + img {
-    left: auto;
-    margin-left: auto;
-    margin-right: -21px;
-}
-body .filter-cell input.hasDatepicker {
-    padding-right: 40px;
-}
-body.rtl .filter-cell input.hasDatepicker {
-    padding-left: 40px;
-    padding-right: auto;
-}
-
 body .filter-cell .form-button{
     margin-bottom: 15px;
-}
-
-body .filter-cell {
-    padding-top: 10px;
 }
 
 body .form-container [class*=form-cell-value] > span,
