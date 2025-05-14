@@ -585,7 +585,7 @@ body input.no-manual-input{
     transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
 }
 .selector_element .selector_button, .selector_element .selector_button:hover{
-    height: 30px;
+    height: 100%;
     padding: 2px 12px !important;
     line-height: 1.5;
     color: #495057;
@@ -597,8 +597,8 @@ body input.no-manual-input{
     box-shadow: none;
     font-size: inherit;
     position: absolute;
-    top: -1px;
     right: -1px;
+    max-height: 34px;
 }
 .selector_element .selector_button:hover{
     background-color: #ced4da;
@@ -656,10 +656,12 @@ body input.no-manual-input{
     background-clip: padding-box;
 }
 .form-fileupload a.remove {
-    color: #f8d7da;
+    color: #EA5858;
+    cursor: pointer;
 }
 .form-fileupload a.remove:hover {
-    color: #dc3545;
+    color: #EA5858;
+    text-decoration: none;
 }
 .form-fileupload-value {
     list-style: none;
@@ -852,14 +854,10 @@ body input.no-manual-input{
     display: none;  /* Safari and Chrome */
 }
 .handsontable .file_delete {
-    color: #dc3545;
+    color: #EA5858;
     display:inline-block; 
     margin:0 10px; 
     cursor:pointer;
-    opacity: 0.5;
-}
-.handsontable .file_delete:hover{
-    opacity: 1;
 }
 .handsontableInputHolder .handsontableEditor {
     height: auto !important; 
@@ -1695,4 +1693,8 @@ body.rtl ul.form-fileupload-value li .name{
 body.rtl .handsontable .filename_container .filename {
     direction: ltr;
     unicode-bidi: isolate;
+}
+body.rtl input.hasDatepicker {
+     direction: ltr;
+     text-align: right;
 }
