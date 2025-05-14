@@ -53,6 +53,9 @@ body .dataList .filters .filter-cell:last-child:after{
     cursor: pointer;
     pointer-events: none;
 }
+.filter-cell .hasDatepicker + a, .filter-cell .hasDatepicker + a + a {
+    top: 5px;
+}
 .x-admin-sm body .dataList table {
     font-size: 12px;
 }

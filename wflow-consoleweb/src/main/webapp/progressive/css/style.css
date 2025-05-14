@@ -1331,7 +1331,7 @@ body .filter-cell {
 }
 body.rtl .filter-cell {
     padding-right: 10px;
-    padding-left: auto;
+    padding-left: 0px !important;
 }
 
 body .filter-cell input:not(.hasDatepicker):not([type=submit]){
@@ -1853,6 +1853,7 @@ body:not(#login) #content > main > .datalist-body-content:not(.quickEdit) {
     font-size: 17px !important;
     line-height: 20px !important;
 }
+
 /*Priority Menu*/
 @media (min-width: 768px){
     ul#moreSubMenu li > ul{

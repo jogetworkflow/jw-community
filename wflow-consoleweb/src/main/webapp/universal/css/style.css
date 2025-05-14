@@ -1347,7 +1347,7 @@ body .filter-cell {
 }
 body.rtl .filter-cell {
     padding-right: 10px;
-    padding-left: auto;
+    padding-left: 0 !important;
 }
 
 body .filter-cell input:not(.hasDatepicker):not([type=submit]){
@@ -1671,6 +1671,7 @@ main .grid-stack-item-header-refresh {
     font-size: 17px !important;
     line-height: 20px !important;
 }
+
 /*Priority Menu*/
 @media (min-width: 768px){
     ul#moreSubMenu li > ul{

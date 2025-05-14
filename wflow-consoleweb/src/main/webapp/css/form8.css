@@ -467,6 +467,10 @@ body input.no-manual-input{
     left:unset;
     width: 25px;
 }
+body.rtl input.hasDatepicker {
+     direction: ltr;
+     text-align: right;
+}
 
 /* subform */
 .form-section.no_label > .form-column:nth-child(2) > .form-cell:first-child:last-child > .subform-container.no-frame:first-child,
