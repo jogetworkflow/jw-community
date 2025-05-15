@@ -348,11 +348,19 @@ sup {
 
 a {
   color: rgba(var(--jgt-link-color-rgb), var(--jgt-link-opacity, 1));
-  text-decoration: underline;
+  text-decoration: none;
 }
 a:hover {
   --jgt-link-color-rgb: var(--jgt-link-hover-color-rgb);
+  text-decoration: underline;
 }
+
+/* href that are valid always underline */
+/* will also effect every <a> tag, should mark !important to override */
+a[href]:not([href="#"]):not([href=""]):not([class]) {
+  text-decoration: underline;
+}
+
 
 a:not([href]):not([class]), a:not([href]):not([class]):hover, a:not([href]){
   color: inherit;

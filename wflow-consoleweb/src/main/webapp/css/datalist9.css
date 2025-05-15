@@ -53,6 +53,10 @@ body.rtl .dataList th.sortable a {
    text-transform: none;
 }
 
+.dataList th.sortable a:not(:hover){
+    text-decoration: none !important;
+}
+
 .dataList th.order1 a {
     background-image: url("../images/v3/arrow_down.png");
 }

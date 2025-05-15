@@ -70,7 +70,7 @@ a {
 }
 
 a:focus, a:hover {
-    text-decoration: none;
+    text-decoration: underline;
     cursor: pointer;
 }
 
@@ -775,6 +775,7 @@ body#login #page > footer {
 
 .main-menu.nav-tabs > li.mm-profile a {
     padding: 30px 20px 20px 65px;
+    text-decoration: none !important;
 }
 .rtl .main-menu.nav-tabs > li.mm-profile a {
     padding: 30px 65px 20px 20px;
