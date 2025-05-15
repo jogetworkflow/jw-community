@@ -1155,6 +1155,13 @@ body .flexigrid .pReload.loading > span:before {
     display:none;
 }
 
+/* resourceGrid */
+#resourcesGrid #file-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 16px;
+}
+
 /* help guide */
 #guide {
     display: none;
