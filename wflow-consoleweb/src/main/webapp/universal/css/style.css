@@ -886,6 +886,11 @@ body.rtl #sidebar li ul>li>a > span:first-child{
     opacity: 0.5;
     filter: alpha(opacity=50)
 }
+
+#sidebar .badge.rowCount{
+    background-color: #777;
+}
+
 .rtl #sidebar li>a.dropdown:after,
 .rtl #sidebar li>a.dropdown:before {
     left: 15px;

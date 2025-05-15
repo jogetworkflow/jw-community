@@ -859,6 +859,10 @@ body.rtl #sidebar li ul>li>a > span:first-child{
     display:none;
 }
 
+#sidebar .badge.rowCount{
+    background-color: #777;
+}
+
 #sidebar li>a.dropdown:after,
 #sidebar li>a.dropdown:before {
     font-family: Material-Design-Iconic-Font;
