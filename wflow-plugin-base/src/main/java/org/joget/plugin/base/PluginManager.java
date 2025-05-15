@@ -813,6 +813,45 @@ public class PluginManager implements ApplicationContextAware {
 
         return pluginMap.values();
     }
+    
+    /**
+     * Returns a list of plugins same bundle with provided class name
+     * @param className
+     * @return
+     */
+    public Collection<Plugin> listBundlePlugins(String className) {
+        Collection<Plugin> pluginList = new ArrayList<>();
+        
+        Plugin plugin = loadOsgiPlugin(className);
+        if (plugin != null) { //check plugin is exist to retrieve it bundle
+            BundleContext context = getOsgiContainer().getBundleContext();
+
+            ServiceReference psr = context.getServiceReference(className);
+            if (psr != null) {
+                //find bundle from the service reference of the plugin class
+                Bundle bundle = psr.getBundle(); 
+                context.ungetService(psr);
+
+                //retrieve all plugins in the bundle
+                ServiceReference[] refs = bundle.getRegisteredServices();
+                if (refs != null) {
+                    for (ServiceReference sr : refs) {
+                        LogUtil.debug(PluginManager.class.getName(), " bundle service: " + sr);
+                        Object obj = context.getService(sr);
+                        if (obj instanceof Plugin) {
+                            Plugin tempPlugin = weavePluginAspect((Plugin) obj); //plugin could be null if having error in multitenant
+                            if (tempPlugin != null) {
+                                pluginList.add(tempPlugin);
+                            }
+                        }
+                        context.ungetService(sr);
+                    }
+                }
+            }
+        }
+        
+        return pluginList;
+    }
 
     /**
      * Returns a map of plugins with class name as key, both from the OSGI container and the classpath.

@@ -117,6 +117,19 @@ public class PluginJsonController {
         AppUtil.writeJson(writer, jsonObject, null);
     }
     
+    @RequestMapping("/json/plugin/listBundlePlugins")
+    public void pluginListBundlePlugins(Writer writer, @RequestParam(value = "className") String className, @RequestParam(value = "name", required = false) String filter, @RequestParam(value = "sort", required = false) String sort, @RequestParam(value = "desc", required = false) Boolean desc, @RequestParam(value = "start", required = false) Integer start, @RequestParam(value = "rows", required = false) Integer rows) throws JSONException, IOException {
+        List<Plugin> pluginList = null;
+
+        try {
+            pluginList = new ArrayList<Plugin>(pluginManager.listBundlePlugins(className));
+            
+            writePluginsResponse(pluginList, filter, start, rows, false, writer);
+        } catch (Exception e) {
+            LogUtil.error(this.getClass().getName(), e, "");
+        }
+    }
+    
     @RequestMapping("/json/plugin/listInstalledBundle")
     public void pluginListInstalledBundle(Writer writer, @RequestParam(value = "className", required = false) String className, @RequestParam(value = "name", required = false) String filter, @RequestParam(value = "isUpdate", required = false) Boolean isUpdate, @RequestParam(value = "sort", required = false) String sort, @RequestParam(value = "desc", required = false) Boolean desc, @RequestParam(value = "start", required = false) Integer start, @RequestParam(value = "rows", required = false) Integer rows) throws JSONException, IOException {
         JSONObject jsonObject = MarketplaceUtil.getInstalledBundledList(null, filter, className, isUpdate, sort, desc, start, rows);

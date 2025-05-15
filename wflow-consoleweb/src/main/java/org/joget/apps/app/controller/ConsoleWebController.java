@@ -5240,6 +5240,35 @@ public class ConsoleWebController {
         map.addAttribute("hasConfigurablePlugin", pluginManager.hasConfigurablePlugins());
         return "console/setting/plugin";
     }
+    
+    @RequestMapping("/console/setting/plugin/details")
+    public String consoleSettingPluginDetails(ModelMap map, HttpServletResponse response, @RequestParam(value = "pluginClass") String className) throws IOException {
+        String title = null;
+        
+        //try retrieve plugin label from marketplace 
+        List<String> links = MarketplaceUtil.pluginClassToMarketplaceLink(List.of(className));
+        if (links != null && !links.isEmpty() && !links.get(0).equals(className)) {
+            title = StringUtil.stripAllHtmlTag(links.get(0));
+        } else {
+            //if not found, get it from plugin bundle
+            
+            Map<String, Object> list = pluginManager.getInstalledBundles(null, List.of(className), false);
+            if (list != null && !list.isEmpty()) {
+                Map data = (Map) list.values().iterator().next();
+                title = (data.containsKey("label"))?data.get("label").toString():null;
+            }
+        }
+        
+        if (title == null) {
+            response.sendError(HttpServletResponse.SC_NOT_FOUND);
+            return null;
+        }
+        
+        map.addAttribute("title", title);
+        map.addAttribute("pluginType", getPluginType());
+        map.addAttribute("className", SecurityUtil.validateStringInput(className));
+        return "console/setting/pluginDetails";
+    }
 
     @RequestMapping(value = "/console/setting/plugin/refresh", method = RequestMethod.POST)
     public void consoleSettingPluginRefresh(Writer writer) {
