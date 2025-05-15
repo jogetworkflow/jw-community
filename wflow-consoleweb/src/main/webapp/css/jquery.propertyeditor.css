@@ -788,8 +788,8 @@ body.rtl .pluginConfig .property-input a.elementHelplink{
     top: 10px;
 }
 body.rtl .property-type-selectbox a.builderAddNew{
-    left: 4px;
-    right:  unset;
+    margin-right: -15px;
+    margin-left: 0px;
 }
 body.rtl .builder-view .property-type-selectbox a.builderAddNew{
     top: 7px;
@@ -1404,11 +1404,6 @@ body.rtl .property-input > span.icon > span > span.dropdown{
 .pluginConfig .builder-link a.openbuilder, .pluginConfig .property-input a.elementHelplink{
     right: 38.5vw;
     top: 10px;
-}
-body:not(.right-panel-mode-window) .property-editor-container.narrow.wider .builder-link a.openbuilder,
-body:not(.right-panel-mode-window) .property-editor-container.narrow.wider .property-input > a.elementHelplink{
-    right: auto;
-    left: calc(54% - 65px);
 }
 .property-type-selectbox a.builderAddNew{
     position: absolute;
@@ -2701,4 +2696,47 @@ i.fa-sort, i.fa-sort-asc, i.fa-sort-desc{
 .rtl .property-input .multiple_option input{
     margin-right: 0px;
     margin-left: 5px;
+}
+.rtl .editor-panel-mode:not(.wider) .property-grid td.truefalse .hidden_label{
+    padding-right: 20px;
+    padding-left: 0px;
+}
+.rtl .editor-panel-mode.narrow:not(.wider) .grid_sorting_container{
+    left: 0;
+    right: unset;
+}
+.rtl .grid_sorting_field{
+    left: 0;
+    right: unset;    
+}
+.rtl .property-label{
+    padding-right: 0;
+    padding-left: 10px;
+}
+.rtl .editor-panel-mode:not(.wider) .property-grid input:not([type]){
+    float: none;
+    margin-left: 5px;
+    margin-right: 0;
+}
+.rtl .editor-panel-mode:not(.wider) .property-grid .property-type-grid-action-column a{
+    float: none;
+}
+.editor-panel-mode:not(.wider) .property-grid .chosen-container-single .chosen-single{
+    margin-right: 0;
+}
+body.rtl:not(.right-panel-mode-window) .property-editor-container.narrow.wider .assist_icon{
+    left: auto;
+    right: 54%;
+}
+.rtl .editor-panel-mode.narrow:not(.wider) .property-input > table.grid .property-type-grid-action-column{
+    text-align: left;
+}
+.rtl i.fa-sort,
+.rtl i.fa-sort-asc,
+.rtl i.fa-sort-desc{
+    float: left;
+}
+.rtl .editor-panel-mode:not(.wider) .property-grid .property-type-grid-action-add span{
+    padding-right: 5px;
+    padding-left: 0px;
 }

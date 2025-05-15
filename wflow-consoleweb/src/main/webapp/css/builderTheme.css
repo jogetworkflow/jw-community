@@ -1366,9 +1366,6 @@ body[builder-theme] .property-type-selectbox:hover .builder-link a.builderAddNew
 body[builder-theme] .editor-panel-mode.narrow:not(.wider) .property-input > table.grid .property-type-grid-action-column{
     visibility: hidden;
 }
-body[builder-theme].rtl .editor-panel-mode.narrow:not(.wider) .property-input > table.grid .property-type-grid-action-column{
-    margin-bottom: 20px;
-}
 body[builder-theme] .editor-panel-mode.narrow:not(.wider) .property-input > table.grid tr:hover .property-type-grid-action-column{
     visibility: visible;
 }
@@ -3269,4 +3266,8 @@ body[builder-theme].rtl .property-input .multiple_option input{
 body[builder-theme].rtl span.hidden_label{
     margin-left: 0px;
     margin-right: 10px;
+}
+body[builder-theme].rtl .editor-panel-mode .property-grid .property-input .grid input[type=checkbox]:checked::after{
+    position:relative;
+    left: -5px;
 }
