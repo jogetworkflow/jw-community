@@ -100,6 +100,13 @@ body[builder-theme]#cbuilder #top-panel .btn-group .btn {
 body[builder-theme]#cbuilder #top-panel .btn-group .btn i {
     margin-right: unset;
 }
+body[builder-theme]#cbuilder .btn.btn-link {
+    color: var(--theme-link-color-1);
+    cursor: pointer;
+}
+body[builder-theme]#cbuilder .btn.btn-link:hover {
+    text-decoration: underline;
+}
 body[builder-theme] .form-control-sm::placeholder,
 body[builder-theme] input.form-control.form-control-sm.component-search::placeholder,
 body[builder-theme] #builder-menu-search input::placeholder{
