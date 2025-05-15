@@ -672,7 +672,7 @@ body.rtl #quickOverlayFrameDiv {
 
 .quickEdit a, #navigation .quickEdit a, #form-canvas .quickEdit a, .quickEdit i#temp-icon {
     color: black !important;
-    text-decoration: none;
+    text-decoration: none !important;
     display: inline-block;
     font-size: 12px;
     padding: 0px;

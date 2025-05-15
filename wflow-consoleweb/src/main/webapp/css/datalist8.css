@@ -60,7 +60,7 @@ body.rtl .dataList th.sortable a {
     background-image:url("../images/v3/arrow_off.png");
 }
 .dataList th.sortable a:not(:hover){
-    text-decoration: none;
+    text-decoration: none !important;
 }
 .dataList th.order1 a {
     background-image:url("../images/v3/arrow_down.png");

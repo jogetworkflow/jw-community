@@ -2217,7 +2217,7 @@ a.fc-daygrid-day-number:not(:hover) {
     border: 1px solid #dee2e6;
 }
 .breadcrumb li a:not(:hover) {
-    text-decoration: none;
+    text-decoration: none !important;
 }
 body.popupBody.builder-popup #main-body-header{
     background: #394249;
