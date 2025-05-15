@@ -3230,9 +3230,19 @@ public class WorkflowManagerImpl implements WorkflowManager {
         WorkflowProcessResult result = new WorkflowProcessResult();
         final WorkflowProcessResult taskResult = result;
         try {
+            // Due to asynchronous nature of creating and starting processes, attempting to set workflow variables in
+            // both threads will cause a transaction rollback error due to race condition of version updates in Shark.
+            final Map<String, String> processVariables;
+            if (!startManually) {
+                // Try block below will be executed, variables will be set in processStartImmediately method
+                processVariables = null;
+            } else {
+                // Try block below will not be executed, variables will be set in processCreate method
+                processVariables = variables;
+            }
+            
             // create process instance in separate transaction first so that it will be accessible in a different thread
-            transactionTemplate.execute((TransactionStatus transactionStatus) -> processCreate(processDefId, processId, variables, startProcUsername, parentProcessId, taskResult));
-        
+            transactionTemplate.execute((TransactionStatus transactionStatus) -> processCreate(processDefId, processId, processVariables, startProcUsername, parentProcessId, taskResult));
             if (!startManually) {
                 final String startUser = startProcUsername;
                 final String startProcessDefId = processDefId;
@@ -3241,7 +3251,7 @@ public class WorkflowManagerImpl implements WorkflowManager {
                 // start process asynchronously with a timeout
                 try {
                     long timeout = getProcessAsyncTimeout(processDefId, processId, null);
-                    result = WorkflowUtil.executeAsync(() -> processStartImmediately(startUser, startProcessDefId, startProcessId, taskResult), timeout);
+                    result = WorkflowUtil.executeAsync(() -> processStartImmediately(startUser, startProcessDefId, startProcessId, taskResult, variables), timeout);
                 } catch(TimeoutException te) {
                     result.setStatus("Pending");
                     LogUtil.info(getClass().getName(), "Timeout processStartImmediately for " + startProcessId);
@@ -3277,7 +3287,7 @@ public class WorkflowManagerImpl implements WorkflowManager {
             } else {
                 sc = connect();
             }
-
+            
             // start process
             WfProcessMgr mgr = sc.getProcessMgr(processDefId);
             WfProcess wfProcess = null;
@@ -3288,25 +3298,15 @@ public class WorkflowManagerImpl implements WorkflowManager {
             } else {
                 wfProcess = mgr.create_process(null);
                 processInstanceId = wfProcess.key();
+                
+                //Dummy operation just to execute a query to db after process creation.
+                //It need to be a select query. Else will causing transaction rollback.
+                //This is to solve always 1 variable missing during start process #907
+                sc.getResource("dummy");
             }
 
-            if (variables != null) {
-                //set workflow variables if the key is found
-                Set<String> keys = variables.keySet();
-                if (keys != null && keys.size() > 0) {
-                    Map contextSignature = wfProcess.manager().context_signature();
-                    Map<String, String> temp = new HashMap<String, String>();
-                    for (Object key : keys) {
-                        String signature = (String) contextSignature.get(key);
-                        if (signature != null && signature.trim().length() > 0) {
-                            temp.put(key.toString(), variables.get(key));
-                        }
-                    }
-                    
-                    wfProcess.set_process_context(temp);
-                }
-            }
-
+            validateAndSetProcessWorkflowVariables(variables, wfProcess);
+            
             // if parentProcessId is not specified, set to UUID
             if (parentProcessId == null || parentProcessId.trim().length() == 0) {
                 if (!"processId".equals(WorkflowUtil.getSystemSetupValue("startProcessId"))) {
@@ -3326,7 +3326,7 @@ public class WorkflowManagerImpl implements WorkflowManager {
             processStarted.setInstanceId(processInstanceId);
             result.setProcess(processStarted);
             result.setParentProcessId(parentProcessId);
-
+     
      
         } catch (Exception ex) {
             LogUtil.error(getClass().getName(), ex, "");
@@ -3346,9 +3346,10 @@ public class WorkflowManagerImpl implements WorkflowManager {
      * @param processDefId
      * @param processId
      * @param result
+     * @param variables
      * @return 
      */
-    public WorkflowProcessResult processStartImmediately(String startProcUsername, String processDefId, String processId, WorkflowProcessResult result) {
+    public WorkflowProcessResult processStartImmediately(String startProcUsername, String processDefId, String processId, WorkflowProcessResult result, Map<String, String> variables) {
         SharkConnection sc = null;
 
         try {
@@ -3357,9 +3358,10 @@ public class WorkflowManagerImpl implements WorkflowManager {
             } else {
                 sc = connect();
             }
-
+            
             WfProcessMgr mgr = sc.getProcessMgr(processDefId);
             WfProcess wfProcess = sc.getProcess(processId);
+            validateAndSetProcessWorkflowVariables(variables, wfProcess);
             wfProcess.start();
 
             //redirect to assignment view accordingly
@@ -3386,6 +3388,21 @@ public class WorkflowManagerImpl implements WorkflowManager {
             }
         }
         return result;
+    }
+
+    private static void validateAndSetProcessWorkflowVariables(Map<String, String> workflowVariables, WfProcess wfProcess) throws Exception {
+        // set workflow variables if the signature matches
+        if (workflowVariables != null && !workflowVariables.isEmpty()) {
+            Map contextSignature = wfProcess.manager().context_signature();
+            Map<String, String> temp = new HashMap<>();
+            for (Map.Entry<String, String> entry : workflowVariables.entrySet()) {
+                String signature = (String) contextSignature.get(entry.getKey());
+                if (signature != null && !signature.trim().isEmpty()) {
+                    temp.put(entry.getKey(), entry.getValue());
+                }
+            }
+            wfProcess.set_process_context(temp);
+        }
     }
 
     /**
@@ -4323,6 +4340,18 @@ public class WorkflowManagerImpl implements WorkflowManager {
      */
     @Override
     public String assignmentComplete(String activityId) {
+        // complete assignment
+        return assignmentComplete(activityId, null);
+    }
+    
+    /**
+     * Complete an assignment (for the current user) while setting workflow variable values
+     * @param activityId
+     * @param variableMap key=variable name and value=variable value.
+     * @return
+     */
+    @Override
+    public String assignmentComplete(String activityId, final Map<String, String> variableMap) {
         String result = null;
         
         // create assignment instance first
@@ -4332,7 +4361,7 @@ public class WorkflowManagerImpl implements WorkflowManager {
         try {
             WfProcess process = wfa.activity().container();
             long timeout = getProcessAsyncTimeout(process.manager().name(), process.key(), activityId);            
-            WorkflowUtil.executeAsync(() -> assignmentCompleteImmediately(wfa), timeout);
+            WorkflowUtil.executeAsync(() -> assignmentCompleteImmediately(wfa, variableMap), timeout);
             result = "completed";
         } catch(TimeoutException te) {
             result = "pending";
@@ -4387,12 +4416,21 @@ public class WorkflowManagerImpl implements WorkflowManager {
      * @param wfa
      * @return
      */
-    protected boolean assignmentCompleteImmediately(WfAssignment wfa) {
+    protected boolean assignmentCompleteImmediately(WfAssignment wfa, Map<String, String> variableMap) {
         boolean result = false;
         SharkConnection sc = null;
 
         try {
             sc = connect();
+            
+            /**
+             * The workflow variable need to set in same thread, else the following activity is not getting its value. 
+             * The route also not working correctly too.
+             */
+            if (variableMap != null && !variableMap.isEmpty()) {
+                wfa.activity().set_result(variableMap);
+            }
+            
             wfa.activity().complete();
             result = true;            
         } catch (Exception ex) {
@@ -4405,21 +4443,6 @@ public class WorkflowManagerImpl implements WorkflowManager {
             }
         }
         return result;
-    }
-
-    /**
-     * Complete an assignment (for the current user) while setting workflow variable values
-     * @param activityId
-     * @param variableMap key=variable name and value=variable value.
-     * @return
-     */
-    @Override
-    public String assignmentComplete(String activityId, Map<String, String> variableMap) {
-        // set workflow variables
-        assignmentVariables(activityId, variableMap);
-
-        // complete assignment
-        return assignmentComplete(activityId);
     }
     
     /**

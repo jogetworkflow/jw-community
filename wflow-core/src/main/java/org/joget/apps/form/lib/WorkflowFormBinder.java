@@ -108,15 +108,11 @@ public class WorkflowFormBinder extends DefaultFormBinder implements FormLoadEle
                     Map<String, String> variableMap = new HashMap<String, String>();
                     variableMap = storeWorkflowVariables(element, row, variableMap);
 
-                    if (activityId != null) {
-                        workflowManager.activityVariables(activityId, variableMap);
+                    //handle by appServiceImpl.submitFormToStartProcess or completeAssignmentForm
+                    if (formData.getWorkflowVariables() == null) {
+                        formData.setWorkflowVariables(variableMap);
                     } else {
-                        //handle by appServiceImpl.submitFormToStartProcess
-                        if (formData.getWorkflowVariables() == null) {
-                            formData.setWorkflowVariables(variableMap);
-                        } else {
-                            formData.getWorkflowVariables().putAll(variableMap);
-                        }
+                        formData.getWorkflowVariables().putAll(variableMap);
                     }
                 }
             }

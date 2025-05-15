@@ -495,6 +495,13 @@ public class AppServiceImpl implements AppService {
                     if (!assignment.isAccepted()) {
                         workflowManager.assignmentAccept(activityId);
                     }
+                    
+                    if (formData.getWorkflowVariables() != null && !formData.getWorkflowVariables().isEmpty()) {
+                        if (workflowVariableMap == null) {
+                            workflowVariableMap = new HashMap<String, String>();
+                        }
+                        workflowVariableMap.putAll(formData.getWorkflowVariables()); //to handle workflow variables submitted from form fields
+                    }
 
                     // complete assignment
                     String result = workflowManager.assignmentComplete(activityId, workflowVariableMap);
@@ -516,66 +523,18 @@ public class AppServiceImpl implements AppService {
      */
     @Override
     public FormData completeAssignmentForm(String appId, String version, String activityId, FormData formData, Map<String, String> workflowVariableMap) {
-        if (formData == null) {
-            formData = new FormData();
-        }
-
         // get assignment
         WorkflowAssignment assignment = workflowManager.getAssignment(activityId);
-        String processId = assignment.getProcessId();
         String processDefId = assignment.getProcessDefId();
         String activityDefId = assignment.getActivityDefId();
-        Form form = null;
-        AppDefinition appDef = null;
         
-        final String key = activityId.intern();
-        synchronized (key) {
+        // get and submit mapped form
+        PackageActivityForm paf = retrieveMappedForm(appId, version, processDefId, activityDefId);
         
-            // get and submit mapped form
-            PackageActivityForm paf = retrieveMappedForm(appId, version, processDefId, activityDefId);
-            if (paf != null) {
-                String formDefId = paf.getFormId();
-                if (formDefId != null && !formDefId.isEmpty()) {
-                    String originProcessId = getOriginProcessId(processId);
-                    formData.setPrimaryKeyValue(originProcessId);
-                    formData.setAssignment(assignment);
-                    formData.setProcessId(processId);
-
-                    appDef = getAppDefinition(appId, version);
-                    form = retrieveForm(appDef, paf, formData, assignment, null);
-
-                    String originId = form.getPrimaryKeyValue(formData);
-                    boolean hasExistingRecord = true;
-                    if (formData.getLoadBinderData(form) != null && !formData.getLoadBinderData(form).isEmpty()) {
-                        String id = formData.getLoadBinderData(form).iterator().next().getId();
-                        if (id == null || id.isEmpty()) {
-                            hasExistingRecord = false;
-                        }
-                    }
-
-                    formData = submitForm(form, formData, false);
-
-                    if (!hasExistingRecord && processId.equals(originId) && !originId.equalsIgnoreCase(form.getPrimaryKeyValue(formData))) {
-                        workflowProcessLinkDao.addWorkflowProcessLink(form.getPrimaryKeyValue(formData), processId);
-                    }
-                }
-            }
-
-            Map<String, String> errors = formData.getFormErrors();
-            if (!formData.getStay() && (errors == null || errors.isEmpty())) {
-                if (!executeProcessFormModifierSubmission(form, formData, assignment, appDef)) {
-                    // accept assignment if necessary
-                    if (!assignment.isAccepted()) {
-                        workflowManager.assignmentAccept(activityId);
-                    }
-
-                    // complete assignment
-                    String result = workflowManager.assignmentComplete(activityId, workflowVariableMap);
-                    formData.addFormResult(AssignmentCompleteButton.DEFAULT_ID, result);
-                }
-            }
-        }
-        return formData;
+        AppDefinition appDef = getAppDefinition(appId, version);
+        Form form = retrieveForm(appDef, paf, formData, assignment, null);
+        
+        return completeAssignmentForm(form, assignment, formData, workflowVariableMap);
     }
     
     public WorkflowProcessResult executeStartProcessFormModifierSubmission(Form form, FormData formData, WorkflowProcessResult result, AppDefinition appDef) {
