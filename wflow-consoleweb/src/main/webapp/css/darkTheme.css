@@ -417,7 +417,6 @@ body.dark-mode .multiPagedForm .page-nav-panel .nav_item.current button {
     color: var(--theme-font-color);
     background-color: var(--theme-background);
     border-color: var(--theme-border-color);
-    border-bottom: 1px solid var(--theme-content-background);
 }
 
 body.dark-mode .multiPagedForm .page-nav-panel .nav_item button {

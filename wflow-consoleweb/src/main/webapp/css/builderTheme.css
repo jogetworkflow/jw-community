@@ -3183,7 +3183,7 @@ body[builder-theme='dark'].popupBody.builder-popup.dark-mode .chosen-container .
     color: #ccc;
 }
 body[builder-theme].popupBody .form-fileupload a.remove{
-    color: #EA5858;
+    color: #f8d7da;
 }
 body[builder-theme].popupBody .form-fileupload a.remove:hover{
     color: #EA5858;
@@ -3218,7 +3218,6 @@ body.rtl[builder-theme].popupBody input[type=checkbox]:checked::after{
 body.rtl[builder-theme].popupBody input[type=radio]:checked::after{
     left: -5px;
 }
-<<<<<<< HEAD
 body[builder-theme='dark'] jmexpander{
     color: #808080;
 }
@@ -3246,11 +3245,4 @@ body[builder-theme='dark'].rtl .flexigrid div.nBtn.srtd,
 body[builder-theme='dark'].rtl .flexigrid div.nBtn{
     border-left: 0px;
     border-right: 1px solid var(--theme-primary-color-2);
-body[builder-theme].popupBody .multiPagedForm .page-nav-panel .nav_item button{
-    box-shadow: none;
-    border-bottom-left-radius: 0;
-    border-bottom-right-radius: 0;
-}
-body[builder-theme].rtl.popupBody .selector_element .selector_button{
-    margin-right: 0px;   
 }
