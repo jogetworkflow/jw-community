@@ -525,6 +525,7 @@ body:not(.light-sidebar):not(.light-header):not(.light-inline) ul#moreSubMenu.su
 #sidebar .nav>li>ul>li>a>span:first-child {
     padding-right: 10px;
     display: inline-block;
+    height: var(--global-itemHeight);
 }
 
 body.rtl:not(.horizontal_menu) #sidebar .nav>li>ul>li>a>span:first-child {
