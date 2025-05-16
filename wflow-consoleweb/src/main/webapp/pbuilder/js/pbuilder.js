@@ -7274,7 +7274,7 @@ ProcessBuilder = {
         
         var id = obj.properties.id;
         if (self.selectedEl) {
-            var selectedData = self.selectedEl[0].data;
+            var selectedData = $(self.selectedEl).data("data");
             if (selectedData.properties.id === id) {
                 $(detailsDiv).find(".cbuilder-node-details-list").addClass("active");
                 var listId = $(list).attr("id");
