@@ -67,7 +67,7 @@ header.navbar {
     display: block;
     height: var(--global-headerHeight);
     margin-bottom: 0;
-    padding: 0;
+    padding: var(--global-headerPadding);
     position: fixed;
     -webkit-transition: all 0.2s ease;
     -o-transition: all 0.2s ease;
