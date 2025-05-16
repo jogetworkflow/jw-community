@@ -1612,7 +1612,6 @@ body#welcome div#main {
     background-size: 100% 100%;
     background-repeat: no-repeat;
     padding-bottom: 40px;
-    padding-top: 1px;
     min-height: 50vh;
 }
 div#main {

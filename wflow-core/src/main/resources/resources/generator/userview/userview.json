@@ -11,6 +11,7 @@
     "setting": {
         "properties": {
             "userviewName": "%s",
+            "userviewId": "%s",
             "userviewDescription": "%s",
             "theme": {
                 "className": "%s", 
@@ -33,12 +34,1381 @@
             "label": "@@generator.userview.home@@"
         }, 
         "menus": [{
-            "className": "org.joget.apps.userview.lib.HtmlPage", 
+            "referencePage": {
+                        "elements": [
+                            {
+                                "className": "menu-component"
+                            },
+                            {
+                                "elements": [
+                                    {
+                                        "elements": [
+                                            {
+                                                "className": "org.joget.apps.userview.lib.component.LabelComponent",
+                                                "properties": {
+                                                    "attr-data-events-listening": [],
+                                                    "style-font-weight": "500",
+                                                    "textContent": "@@generator.userview.welcome.message@@",
+                                                    "id": "06ED227AD2AF4906114D7573E7041E62",
+                                                    "customId": ""
+                                                }
+                                            }
+                                        ],
+                                        "className": "org.joget.apps.userview.lib.component.ContainerComponent",
+                                        "properties": {
+                                            "id": "08AC2E75FB0E46F50ACCE06E6E4C1623"
+                                        }
+                                    },
+                                    {
+                                        "elements": [
+                                            {
+                                                "elements": [
+                                                    {
+                                                        "elements": [
+                                                            {
+                                                                "elements": [
+                                                                    {
+                                                                        "elements": [
+                                                                            {
+                                                                                "className": "org.joget.plugin.enterprise.HtmlCodeComponent",
+                                                                                "properties": {
+                                                                                    "attr-data-events-listening": [],
+                                                                                    "textContent": "<iframe class=\"design-video embed-responsive-item card-rounded h-275px w-100\"\n  src=\"https://www.youtube.com/embed/BXeqa6qkvUM\"\n  allow=\"accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture\"\n  allowfullscreen\n  id=\"video1\"\n  title=\"Part 1 - Designing a New App\"\n  style=\"height: 203px; border: none; border-radius: 0.625rem;\">\n</iframe>\n<div id=\"designBlock\"\n   src=\"https://www.youtube.com/embed/BXeqa6qkvUM\"\n    style=\"\n      display:none;\n      position: absolute; \n      top: 0; \n      left: 0; \n      width: 100%%; \n      height: 100%%; \n      background: transparent; \n      z-index: 2;\n    \">\n<style>\n@media (max-width: 991px) {\n    #content main > *:not(.category-label-header, .breadcrumb, .quickEdit){\n    \tmargin-left: 10px !important;\n    \tmargin-right: 10px !important;\n    \tmax-width: 100%% !important;\n\t}\n}\n@media (max-width: 767px) {\n    .tutorial-video {\n        height: 200px !important;\n    }\n}\n@media (min-width: 768px) and (max-width: 1024px) {\n  #designBlock {\n    display: block !important;\n  }\n  .design-video{\n    height: 225px !important;\n  }\n}\n</style>\n<script> document.getElementById('designBlock').addEventListener('click', function() {\n    const url = this.getAttribute('src');\n    // Open URL in a new tab\n    window.open(url, '_blank');\n  });\n</script>",
+                                                                                    "id": "E5D4396702E548F7785424E371CBCA2A",
+                                                                                    "customId": ""
+                                                                                }
+                                                                            }
+                                                                        ],
+                                                                        "className": "org.joget.apps.userview.lib.component.ColumnComponent",
+                                                                        "properties": {
+                                                                            "style-padding-right": "20px",
+                                                                            "style-mobile-max-width": "100%%",
+                                                                            "style-position": "relative",
+                                                                            "style-mobile-padding-right": "10px",
+                                                                            "style-mobile-padding-left": "10px",
+                                                                            "style-flex": "0 0 50%%",
+                                                                            "style-mobile-flex": "0 0 100%%",
+                                                                            "style-padding-top": "0px",
+                                                                            "style-tablet-max-width": "50%%",
+                                                                            "style-padding-left": "20px",
+                                                                            "style-padding-bottom": "0px",
+                                                                            "style-tablet-flex": "0 0 50%%",
+                                                                            "style-tablet-padding-right": "10px",
+                                                                            "style-tablet-padding-left": "10px",
+                                                                            "id": "18C7A8EA6D824375692E9BAD89BF0CB5",
+                                                                            "style-max-width": "50%%"
+                                                                        }
+                                                                    },
+                                                                    {
+                                                                        "elements": [
+                                                                            {
+                                                                                "className": "org.joget.plugin.enterprise.HtmlCodeComponent",
+                                                                                "properties": {
+                                                                                    "attr-data-events-listening": [],
+                                                                                    "textContent": "@@generator.userview.welcome.part1@@",
+                                                                                    "id": "CAA2B6DC2CCD42D86B1A7B1C3E690EA0",
+                                                                                    "customId": ""
+                                                                                }
+                                                                            },
+                                                                            {
+                                                                                "className": "org.joget.apps.userview.lib.component.LabelComponent",
+                                                                                "properties": {
+                                                                                    "attr-data-events-listening": [],
+                                                                                    "style-font-weight": "500",
+                                                                                    "style-width": "100%%",
+                                                                                    "style-color": "#003A70",
+                                                                                    "style-tablet-font-size": "16px",
+                                                                                    "textContent": "@@generator.userview.welcome.design.app.title@@",
+                                                                                    "style-font-size": "21px",
+                                                                                    "id": "43F68A28FB0F4341B4233F45ED7461AE",
+                                                                                    "customId": "",
+                                                                                    "style-display": "block"
+                                                                                }
+                                                                            },
+                                                                            {
+                                                                                "className": "org.joget.apps.userview.lib.component.LabelComponent",
+                                                                                "properties": {
+                                                                                    "attr-data-events-listening": [],
+                                                                                    "style-width": "100%%",
+                                                                                    "style-margin-bottom": "10px",
+                                                                                    "style-color": "#5A83A5",
+                                                                                    "textContent": "@@generator.userview.welcome.design.app.desc@@",
+                                                                                    "style-font-size": "14px",
+                                                                                    "id": "244104723D8F47E58B625A5A0916496A",
+                                                                                    "customId": "",
+                                                                                    "style-display": "block"
+                                                                                }
+                                                                            },
+                                                                            {
+                                                                                "className": "org.joget.apps.userview.lib.component.ButtonComponent",
+                                                                                "properties": {
+                                                                                    "attr-data-events-listening": [],
+                                                                                    "style-background-color": "#4B6EEC",
+                                                                                    "style-padding-right": "24px",
+                                                                                    "style-custom": "height: unset;",
+                                                                                    "css-display-type": "btn btn-primary",
+                                                                                    "style-color": "#FFFFFF",
+                                                                                    "style-line-height": "24px",
+                                                                                    "textContent": "@@generator.userview.welcome.design.app.button@@",
+                                                                                    "style-padding-top": "10px",
+                                                                                    "customId": "",
+                                                                                    "style-padding-left": "24px",
+                                                                                    "style-padding-bottom": "10px",
+                                                                                    "attr-onclick": "appCreate()",
+                                                                                    "style-tablet-padding-left": "24px",
+                                                                                    "style-tablet-padding-right": "24px",
+                                                                                    "id": "6132B415F3CB44825128A0840A235910",
+                                                                                    "style-border-radius": "16px"
+                                                                                }
+                                                                            }
+                                                                        ],
+                                                                        "className": "org.joget.apps.userview.lib.component.ColumnComponent",
+                                                                        "properties": {
+                                                                            "style-padding-right": "20px",
+                                                                            "style-mobile-max-width": "100%%",
+                                                                            "style-mobile-padding-right": "10px",
+                                                                            "style-mobile-padding-left": "10px",
+                                                                            "style-flex": "0 0 50%%",
+                                                                            "style-mobile-flex": "0 0 100%%",
+                                                                            "style-tablet-max-width": "50%%",
+                                                                            "style-padding-left": "20px",
+                                                                            "style-tablet-flex": "0 0 50%%",
+                                                                            "style-tablet-padding-left": "15px",
+                                                                            "style-tablet-padding-right": "15px",
+                                                                            "id": "AA79C65C1AC147FCAE717BBFDED9D20B",
+                                                                            "style-max-width": "50%%"
+                                                                        }
+                                                                    }
+                                                                ],
+                                                                "className": "org.joget.apps.userview.lib.component.ColumnsComponent",
+                                                                "properties": {
+                                                                    "attr-data-events-listening": [],
+                                                                    "col-1-style-tablet-padding-left": "15px",
+                                                                    "style-tablet-padding-bottom": "25px",
+                                                                    "columns": [
+                                                                        {
+                                                                            "style-mobile-max-width": "100%%",
+                                                                            "style-max-width": "50%%",
+                                                                            "style-tablet-max-width": "50%%"
+                                                                        },
+                                                                        {
+                                                                            "style-mobile-max-width": "100%%",
+                                                                            "style-max-width": "50%%",
+                                                                            "style-tablet-max-width": "50%%"
+                                                                        }
+                                                                    ],
+                                                                    "col-0-style-tablet-padding-right": "10px",
+                                                                    "css-mobile-stack-columns": "true",
+                                                                    "style-height": "272px",
+                                                                    "col-1-style-mobile-padding-right": "10px",
+                                                                    "col-0-style-padding-left": "20px",
+                                                                    "customId": "",
+                                                                    "style-padding-left": "20px",
+                                                                    "col-1-style-padding-left": "20px",
+                                                                    "col-0-style-padding-right": "20px",
+                                                                    "col-1-style-tablet-padding-right": "15px",
+                                                                    "col-0-style-mobile-padding-left": "10px",
+                                                                    "id": "454FB19E8D5946C079ED6ED46F687804",
+                                                                    "col-0-style-padding-top": "0px",
+                                                                    "style-padding-right": "20px",
+                                                                    "col-0-style-position": "relative",
+                                                                    "col-0-style-padding-bottom": "0px",
+                                                                    "style-tablet-padding-top": "25px",
+                                                                    "col-1-style-mobile-padding-left": "10px",
+                                                                    "style-padding-top": "30px",
+                                                                    "col-0-style-tablet-padding-left": "10px",
+                                                                    "gutter": "5px",
+                                                                    "style-padding-bottom": "30px",
+                                                                    "col-0-style-mobile-padding-right": "10px",
+                                                                    "col-1-style-padding-right": "20px",
+                                                                    "style-mobile-height": "100%%"
+                                                                }
+                                                            }
+                                                        ],
+                                                        "className": "org.joget.apps.userview.lib.component.ColumnComponent",
+                                                        "properties": {
+                                                            "style-padding-right": "0px",
+                                                            "style-padding-bottom": "0px",
+                                                            "style-mobile-border-top-width": "0px",
+                                                            "style-flex": "0 0 65%%",
+                                                            "style-mobile-border-right-width": "0px",
+                                                            "style-mobile-border-bottom-width": "0px",
+                                                            "style-mobile-border-left-width": "0px",
+                                                            "style-padding-top": "0px",
+                                                            "style-max-width": "65%%",
+                                                            "style-padding-left": "0px"
+                                                        }
+                                                    },
+                                                    {
+                                                        "elements": [
+                                                            {
+                                                                "elements": [
+                                                                    {
+                                                                        "className": "org.joget.apps.userview.lib.component.LabelComponent",
+                                                                        "properties": {
+                                                                            "attr-data-events-listening": [],
+                                                                            "style-margin-bottom": "0px",
+                                                                            "style-color": "#5A83A5",
+                                                                            "textContent": "@@generator.userview.welcome.more@@",
+                                                                            "id": "1F38FC852D0F45D647AD1532EA5307C3",
+                                                                            "customId": ""
+                                                                        }
+                                                                    },
+                                                                    {
+                                                                        "elements": [
+                                                                            {
+                                                                                "elements": [
+                                                                                    {
+                                                                                        "className": "org.joget.plugin.enterprise.HtmlCodeComponent",
+                                                                                        "properties": {
+                                                                                            "attr-data-events-listening": [],
+                                                                                            "style-custom": "height: 80px;",
+                                                                                            "style-height": "80px",
+                                                                                            "textContent": "<a href=\"https://www.youtube.com/embed/ANmu9ckiqvI\" target=\"_blank\">\n  <img src=\"#request.contextPath#/images/welcomePage_video.png\" alt=\"Alt text\" style=\"width: 100%%; height: 100%%; object-fit: cover;\" />\n</a>",
+                                                                                            "id": "6D151D10B453472F55FFE2B504FF9EE7",
+                                                                                            "customId": ""
+                                                                                        }
+                                                                                    }
+                                                                                ],
+                                                                                "className": "org.joget.apps.userview.lib.component.ColumnComponent",
+                                                                                "properties": {
+                                                                                    "style-tablet-flex": "0 0 55%%",
+                                                                                    "style-flex": "0 0 40%%",
+                                                                                    "id": "81CE95E608724F29C6CEB43BE2228715",
+                                                                                    "style-max-width": "40%%",
+                                                                                    "style-tablet-max-width": "55%%"
+                                                                                }
+                                                                            },
+                                                                            {
+                                                                                "elements": [
+                                                                                    {
+                                                                                        "className": "org.joget.apps.userview.lib.component.LabelComponent",
+                                                                                        "properties": {
+                                                                                            "attr-data-events-listening": [],
+                                                                                            "textContent": "@@generator.userview.welcome.design.form@@",
+                                                                                            "id": "34CC6B9A77CD42347E3BDFE9CAF30454",
+                                                                                            "customId": ""
+                                                                                        }
+                                                                                    }
+                                                                                ],
+                                                                                "className": "org.joget.apps.userview.lib.component.ColumnComponent",
+                                                                                "properties": {
+                                                                                    "id": "45FB7E3C92AA42452D1F6D480E0848FA",
+                                                                                    "style-padding-left": "10px"
+                                                                                }
+                                                                            }
+                                                                        ],
+                                                                        "className": "org.joget.apps.userview.lib.component.ColumnsComponent",
+                                                                        "properties": {
+                                                                            "attr-data-events-listening": [],
+                                                                            "style-border-bottom-width": "1px",
+                                                                            "columns": [
+                                                                                {
+                                                                                    "style-mobile-max-width": "",
+                                                                                    "style-max-width": "40%%",
+                                                                                    "style-tablet-max-width": "55%%"
+                                                                                },
+                                                                                {
+                                                                                    "style-mobile-max-width": "",
+                                                                                    "style-max-width": "",
+                                                                                    "style-tablet-max-width": ""
+                                                                                }
+                                                                            ],
+                                                                            "css-mobile-stack-columns": "true",
+                                                                            "style-border-color": "#EEF1F1",
+                                                                            "customId": "",
+                                                                            "col-1-style-padding-left": "10px",
+                                                                            "gutter": "5px",
+                                                                            "style-padding-bottom": "6px",
+                                                                            "style-border-style": "solid",
+                                                                            "style-border-left-width": "0px",
+                                                                            "style-border-right-width": "0px",
+                                                                            "id": "54FABA91563F43D23510E4990A2F4C76",
+                                                                            "style-border-top-width": "0px"
+                                                                        }
+                                                                    },
+                                                                    {
+                                                                        "elements": [
+                                                                            {
+                                                                                "elements": [
+                                                                                    {
+                                                                                        "className": "org.joget.plugin.enterprise.HtmlCodeComponent",
+                                                                                        "properties": {
+                                                                                            "attr-data-events-listening": [],
+                                                                                            "style-height": "80px",
+                                                                                            "textContent": "<a href=\"https://www.youtube.com/embed/Z_mlAfVS_oQ\" target=\"_blank\">\n  <img src=\"#request.contextPath#/images/welcomePage_video.png\" alt=\"Alt text\" style=\"width: 100%%; height: 100%%; object-fit: cover;\" />\n</a>",
+                                                                                            "id": "348685986DB043463677702CC0ED538D",
+                                                                                            "customId": ""
+                                                                                        }
+                                                                                    }
+                                                                                ],
+                                                                                "className": "org.joget.apps.userview.lib.component.ColumnComponent",
+                                                                                "properties": {
+                                                                                    "style-tablet-flex": "0 0 55%%",
+                                                                                    "style-flex": "0 0 40%%",
+                                                                                    "id": "5C129FEA56B6499C2554FDFB98A0BF05",
+                                                                                    "style-max-width": "40%%",
+                                                                                    "style-tablet-max-width": "55%%"
+                                                                                }
+                                                                            },
+                                                                            {
+                                                                                "elements": [
+                                                                                    {
+                                                                                        "className": "org.joget.apps.userview.lib.component.LabelComponent",
+                                                                                        "properties": {
+                                                                                            "attr-data-events-listening": [],
+                                                                                            "textContent": "@@generator.userview.welcome.design.list@@",
+                                                                                            "id": "4632852A66454338485B073D9CF43BBB",
+                                                                                            "customId": ""
+                                                                                        }
+                                                                                    }
+                                                                                ],
+                                                                                "className": "org.joget.apps.userview.lib.component.ColumnComponent",
+                                                                                "properties": {
+                                                                                    "id": "2826CC8974FA4053469436A7F2E74E43",
+                                                                                    "style-padding-left": "10px"
+                                                                                }
+                                                                            }
+                                                                        ],
+                                                                        "className": "org.joget.apps.userview.lib.component.ColumnsComponent",
+                                                                        "properties": {
+                                                                            "attr-data-events-listening": [],
+                                                                            "style-border-bottom-width": "1px",
+                                                                            "columns": [
+                                                                                {
+                                                                                    "style-mobile-max-width": "",
+                                                                                    "style-max-width": "40%%",
+                                                                                    "style-tablet-max-width": "55%%"
+                                                                                },
+                                                                                {
+                                                                                    "style-mobile-max-width": "",
+                                                                                    "style-max-width": "",
+                                                                                    "style-tablet-max-width": ""
+                                                                                }
+                                                                            ],
+                                                                            "css-mobile-stack-columns": "true",
+                                                                            "style-border-color": "#EEF1F1",
+                                                                            "style-padding-top": "6px",
+                                                                            "customId": "",
+                                                                            "col-1-style-padding-left": "10px",
+                                                                            "gutter": "5px",
+                                                                            "style-padding-bottom": "6px",
+                                                                            "style-border-style": "solid",
+                                                                            "style-border-left-width": "0px",
+                                                                            "style-border-right-width": "0px",
+                                                                            "id": "F31273EED6EA406D57AA262C2F867464",
+                                                                            "style-border-top-width": "0px"
+                                                                        }
+                                                                    },
+                                                                    {
+                                                                        "elements": [
+                                                                            {
+                                                                                "elements": [
+                                                                                    {
+                                                                                        "className": "org.joget.plugin.enterprise.HtmlCodeComponent",
+                                                                                        "properties": {
+                                                                                            "attr-data-events-listening": [],
+                                                                                            "style-height": "80px",
+                                                                                            "textContent": "<a href=\"https://www.youtube.com/embed/FxD6olBFwhc\" target=\"_blank\">\n  <img src=\"#request.contextPath#/images/welcomePage_video.png\" alt=\"Alt text\" style=\"width: 100%%; height: 100%%; object-fit: cover;\" />\n</a>",
+                                                                                            "id": "ECFADC0D26324178452DBFA99BAAD871",
+                                                                                            "customId": ""
+                                                                                        }
+                                                                                    }
+                                                                                ],
+                                                                                "className": "org.joget.apps.userview.lib.component.ColumnComponent",
+                                                                                "properties": {
+                                                                                    "style-tablet-flex": "0 0 55%%",
+                                                                                    "style-flex": "0 0 40%%",
+                                                                                    "id": "D0FD3ED1CF664AC3BDA0A79B23530895",
+                                                                                    "style-max-width": "40%%",
+                                                                                    "style-tablet-max-width": "55%%"
+                                                                                }
+                                                                            },
+                                                                            {
+                                                                                "elements": [
+                                                                                    {
+                                                                                        "className": "org.joget.apps.userview.lib.component.LabelComponent",
+                                                                                        "properties": {
+                                                                                            "attr-data-events-listening": [],
+                                                                                            "textContent": "@@generator.userview.welcome.design.ui@@",
+                                                                                            "id": "92109E940588406354741FB1953863D3",
+                                                                                            "customId": ""
+                                                                                        }
+                                                                                    }
+                                                                                ],
+                                                                                "className": "org.joget.apps.userview.lib.component.ColumnComponent",
+                                                                                "properties": {
+                                                                                    "id": "ED56128960F44E1D52AE6677F236282B",
+                                                                                    "style-padding-left": "10px"
+                                                                                }
+                                                                            }
+                                                                        ],
+                                                                        "className": "org.joget.apps.userview.lib.component.ColumnsComponent",
+                                                                        "properties": {
+                                                                            "attr-data-events-listening": [],
+                                                                            "style-border-bottom-width": "1px",
+                                                                            "columns": [
+                                                                                {
+                                                                                    "style-mobile-max-width": "",
+                                                                                    "style-max-width": "40%%",
+                                                                                    "style-tablet-max-width": "55%%"
+                                                                                },
+                                                                                {
+                                                                                    "style-mobile-max-width": "",
+                                                                                    "style-max-width": "",
+                                                                                    "style-tablet-max-width": ""
+                                                                                }
+                                                                            ],
+                                                                            "css-mobile-stack-columns": "true",
+                                                                            "style-border-color": "#EEF1F1",
+                                                                            "style-padding-top": "6px",
+                                                                            "customId": "",
+                                                                            "col-1-style-padding-left": "10px",
+                                                                            "gutter": "5px",
+                                                                            "style-padding-bottom": "6px",
+                                                                            "style-border-style": "solid",
+                                                                            "style-border-left-width": "0px",
+                                                                            "style-border-right-width": "0px",
+                                                                            "id": "A55956FE4AB040B50807437A3C38B030",
+                                                                            "style-border-top-width": "0px"
+                                                                        }
+                                                                    },
+                                                                    {
+                                                                        "elements": [
+                                                                            {
+                                                                                "elements": [
+                                                                                    {
+                                                                                        "className": "org.joget.plugin.enterprise.HtmlCodeComponent",
+                                                                                        "properties": {
+                                                                                            "attr-data-events-listening": [],
+                                                                                            "style-height": "80px",
+                                                                                            "textContent": "<a href=\"https://www.youtube.com/embed/nzM_UtLzutA\" target=\"_blank\">\n  <img src=\"#request.contextPath#/images/welcomePage_video.png\" alt=\"Alt text\" style=\"width: 100%%; height: 100%%; object-fit: cover;\" />\n</a>",
+                                                                                            "id": "CE9946B13857407A381E6D43EF7D67FE",
+                                                                                            "customId": ""
+                                                                                        }
+                                                                                    }
+                                                                                ],
+                                                                                "className": "org.joget.apps.userview.lib.component.ColumnComponent",
+                                                                                "properties": {
+                                                                                    "style-tablet-flex": "0 0 55%%",
+                                                                                    "style-flex": "0 0 40%%",
+                                                                                    "id": "1917CCE2ECB04BDA3FBCA7FF1FD69354",
+                                                                                    "style-max-width": "40%%",
+                                                                                    "style-tablet-max-width": "55%%"
+                                                                                }
+                                                                            },
+                                                                            {
+                                                                                "elements": [
+                                                                                    {
+                                                                                        "className": "org.joget.apps.userview.lib.component.LabelComponent",
+                                                                                        "properties": {
+                                                                                            "attr-data-events-listening": [],
+                                                                                            "textContent": "@@generator.userview.welcome.design.process@@",
+                                                                                            "id": "1FA1000294DC4DA3C20B148AB91F4F08",
+                                                                                            "customId": ""
+                                                                                        }
+                                                                                    }
+                                                                                ],
+                                                                                "className": "org.joget.apps.userview.lib.component.ColumnComponent",
+                                                                                "properties": {
+                                                                                    "id": "DBA1C59E202B4732D6842EDF17F50694",
+                                                                                    "style-padding-left": "10px"
+                                                                                }
+                                                                            }
+                                                                        ],
+                                                                        "className": "org.joget.apps.userview.lib.component.ColumnsComponent",
+                                                                        "properties": {
+                                                                            "attr-data-events-listening": [],
+                                                                            "gutter": "5px",
+                                                                            "columns": [
+                                                                                {
+                                                                                    "style-mobile-max-width": "",
+                                                                                    "style-max-width": "40%%",
+                                                                                    "style-tablet-max-width": "55%%"
+                                                                                },
+                                                                                {
+                                                                                    "style-mobile-max-width": "",
+                                                                                    "style-max-width": "",
+                                                                                    "style-tablet-max-width": ""
+                                                                                }
+                                                                            ],
+                                                                            "css-mobile-stack-columns": "true",
+                                                                            "id": "AD5056B0ADFE4009ED125DE07B63D2D4",
+                                                                            "style-padding-top": "6px",
+                                                                            "customId": "",
+                                                                            "col-1-style-padding-left": "10px"
+                                                                        }
+                                                                    }
+                                                                ],
+                                                                "className": "org.joget.apps.userview.lib.component.ContainerComponent",
+                                                                "properties": {
+                                                                    "attr-data-events-listening": [],
+                                                                    "style-padding-right": "30px",
+                                                                    "style-custom": "overflow: scroll;\noverflow-x: hidden;",
+                                                                    "style-height": "272px",
+                                                                    "style-tablet-padding-left": "15px",
+                                                                    "style-tablet-padding-right": "15px",
+                                                                    "id": "C9C95AC2C9274240E5F613B73B15352B",
+                                                                    "customId": "moreVideos",
+                                                                    "style-mobile-height": "100%%",
+                                                                    "style-padding-left": "30px"
+                                                                }
+                                                            }
+                                                        ],
+                                                        "className": "org.joget.apps.userview.lib.component.ColumnComponent",
+                                                        "properties": {
+                                                            "style-padding-right": "0px",
+                                                            "style-padding-bottom": "0px",
+                                                            "style-flex": "0 0 35%%",
+                                                            "style-padding-top": "0px",
+                                                            "style-max-width": "35%%",
+                                                            "style-padding-left": "0px"
+                                                        }
+                                                    }
+                                                ],
+                                                "className": "org.joget.apps.userview.lib.component.ColumnsComponent",
+                                                "properties": {
+                                                    "attr-data-events-listening": [],
+                                                    "columns": [
+                                                        {
+                                                            "style-mobile-max-width": "",
+                                                            "style-max-width": "65%%",
+                                                            "style-tablet-max-width": ""
+                                                        },
+                                                        {
+                                                            "style-mobile-max-width": "",
+                                                            "style-max-width": "35%%",
+                                                            "style-tablet-max-width": ""
+                                                        }
+                                                    ],
+                                                    "col-1-style-padding-bottom": "0px",
+                                                    "css-mobile-stack-columns": "true",
+                                                    "style-height": "272px",
+                                                    "col-0-style-mobile-border-right-width": "0px",
+                                                    "col-0-style-padding-left": "0px",
+                                                    "col-0-style-mobile-border-bottom-width": "0px",
+                                                    "customId": "",
+                                                    "style-padding-left": "0px",
+                                                    "col-1-style-padding-left": "0px",
+                                                    "col-0-style-padding-right": "0px",
+                                                    "style-border-right-width": "0px",
+                                                    "style-border-left-width": "0px",
+                                                    "id": "970006C718A74338743C236B9D446229",
+                                                    "style-border-top-width": "0px",
+                                                    "col-0-style-padding-top": "0px",
+                                                    "style-padding-right": "0px",
+                                                    "style-background-color": "#FFFFFF",
+                                                    "col-1-style-padding-top": "0px",
+                                                    "style-custom": "box-shadow: 0px 1px 10px 0px rgba(16, 24, 40, 0.05);\n",
+                                                    "style-border-bottom-width": "0px",
+                                                    "col-0-style-padding-bottom": "0px",
+                                                    "style-border-color": "#EEF1F1",
+                                                    "style-padding-top": "0px",
+                                                    "gutter": "5px",
+                                                    "style-padding-bottom": "0px",
+                                                    "col-0-style-mobile-border-top-width": "0px",
+                                                    "col-1-style-padding-right": "0px",
+                                                    "col-0-style-mobile-border-left-width": "0px",
+                                                    "style-mobile-height": "100%%",
+                                                    "style-border-radius": "16px"
+                                                }
+                                            }
+                                        ],
+                                        "className": "org.joget.apps.userview.lib.component.ContainerComponent",
+                                        "properties": {
+                                            "attr-data-events-listening": [],
+                                            "style-padding-right": "0px",
+                                            "style-padding-bottom": "0px",
+                                            "id": "CFACECCCDA4F4C6D2D6FBD63D9882F72",
+                                            "style-padding-top": "0px",
+                                            "customId": "",
+                                            "style-padding-left": "0px"
+                                        }
+                                    },
+                                    {
+                                        "elements": [
+                                            {
+                                                "className": "org.joget.plugin.enterprise.HtmlCodeComponent",
+                                                "properties": {
+                                                    "attr-data-events-listening": [],
+                                                    "textContent": "@@generator.userview.welcome.tab@@",
+                                                    "id": "3CAB44529BAD4AA9C16CEB8697A04DB4",
+                                                    "customId": "",
+                                                    "style-padding-left": "15px",                                                    
+                                                    "style-padding-right": "15px"
+                                                }
+                                            }
+                                        ],
+                                        "className": "org.joget.apps.userview.lib.component.ContainerComponent",
+                                        "properties": {
+                                            "attr-data-events-listening": [],
+                                            "style-padding-right": "0px",
+                                            "style-padding-bottom": "0px",
+                                            "id": "F3E153E3F2BF4A67F911C0CB95611B56",
+                                            "style-padding-top": "20px",
+                                            "customId": "",
+                                            "style-padding-left": "0px"
+                                        }
+                                    },
+                                    {
+                                        "elements": [
+                                            {
+                                                "elements": [
+                                                    {
+                                                        "elements": [
+                                                            {
+                                                                "elements": [
+                                                                    {
+                                                                        "className": "org.joget.apps.userview.lib.component.LabelComponent",
+                                                                        "properties": {
+                                                                            "attr-data-events-listening": [],
+                                                                            "style-line-height": "31px",
+                                                                            "style-tablet-padding-left": "30px",
+                                                                            "textContent": "@@generator.userview.welcome.content.form1@@",
+                                                                            "id": "C58041F75B1249E1391DFF181A89A61E",
+                                                                            "customId": "",
+                                                                            "style-padding-left": "40px",
+                                                                            "style-font-weight": "500"
+                                                                        }
+                                                                    },
+                                                                    {
+                                                                        "elements": [
+                                                                            {
+                                                                                "className": "org.joget.apps.userview.lib.component.ImageComponent",
+                                                                                "properties": {
+                                                                                    "attr-data-events-listening": [],
+                                                                                    "style-custom": "  aspect-ratio: 16 / 9; /* keeps image ratio */\n  object-fit: contain; /* or cover */",
+                                                                                    "attr-width": "100%%",
+                                                                                    "attr-src": "#request.contextPath#/images/welcomePage_form1.png",
+                                                                                    "attr-height": "100%%",
+                                                                                    "id": "772D933C8B1F4E8F3D7FDC88F53405F4",
+                                                                                    "customId": ""
+                                                                                }
+                                                                            }
+                                                                        ],
+                                                                        "className": "org.joget.apps.userview.lib.component.ContainerComponent",
+                                                                        "properties": {
+                                                                            "attr-data-events-listening": [],
+                                                                            "style-width": "100%%",
+                                                                            "style-mobile-width": "100%%",
+                                                                            "style-custom": "height: auto;",
+                                                                            "id": "EDFB165FAEB54415F1B1BBD77643D888",
+                                                                            "customId": ""
+                                                                        }
+                                                                    }
+                                                                ],
+                                                                "className": "org.joget.apps.userview.lib.component.ContainerComponent",
+                                                                "properties": {
+                                                                    "attr-data-events-listening": [],
+                                                                    "style-background-color": "#ECF5F3",
+                                                                    "style-padding-right": "20px",
+                                                                    "style-padding-bottom": "20px",
+                                                                    "style-height": "100%%",
+                                                                    "id": "10A6BC107266462C53AF37401688D872",
+                                                                    "style-padding-top": "40px",
+                                                                    "customId": "",
+                                                                    "style-border-radius": "16px",
+                                                                    "style-padding-left": "20px"
+                                                                }
+                                                            }
+                                                        ],
+                                                        "className": "org.joget.apps.userview.lib.component.ColumnComponent",
+                                                        "properties": {
+                                                            "style-tablet-flex": "0 0 55%%",
+                                                            "style-flex": "0 0 60%%",
+                                                            "style-max-width": "60%%",
+                                                            "style-tablet-max-width": "55%%"
+                                                        }
+                                                    },
+                                                    {
+                                                        "elements": [
+                                                            {
+                                                                "elements": [
+                                                                    {
+                                                                        "className": "org.joget.apps.userview.lib.component.LabelComponent",
+                                                                        "properties": {
+                                                                            "attr-data-events-listening": [],
+                                                                            "style-margin-bottom": "220px",
+                                                                            "style-mobile-margin-bottom": "80%%",
+                                                                            "style-line-height": "31px",
+                                                                            "style-tablet-padding-left": "15px",
+                                                                            "textContent": "@@generator.userview.welcome.content.form2@@",
+                                                                            "id": "D4F0F9574D79492393C0219FE134A24B",
+                                                                            "customId": "",
+                                                                            "style-padding-left": "30px",
+                                                                            "style-font-weight": "500"
+                                                                        }
+                                                                    },
+                                                                    {
+                                                                        "elements": [
+                                                                            {
+                                                                                "className": "org.joget.apps.userview.lib.component.ImageComponent",
+                                                                                "properties": {
+                                                                                    "attr-data-events-listening": [],
+                                                                                    "style-custom": " ",
+                                                                                    "attr-width": "100%%",
+                                                                                    "attr-src": "#request.contextPath#/images/welcomePage_list2.png",
+                                                                                    "attr-height": "100%%",
+                                                                                    "id": "65BBA649C02246BBF97C99A7368677CE",
+                                                                                    "customId": ""
+                                                                                }
+                                                                            }
+                                                                        ],
+                                                                        "className": "org.joget.apps.userview.lib.component.ContainerComponent",
+                                                                        "properties": {
+                                                                            "attr-data-events-listening": [],
+                                                                            "style-padding-right": "0px",
+                                                                            "style-position": "absolute",
+                                                                            "style-custom": "height: auto;",
+                                                                            "style-bottom": "0px",
+                                                                            "style-padding-top": "0px",
+                                                                            "customId": "",
+                                                                            "style-padding-left": "0px",
+                                                                            "style-width": "94%%",
+                                                                            "style-right": "0px",
+                                                                            "style-padding-bottom": "40px",
+                                                                            "style-tablet-width": "92%%",
+                                                                            "id": "DBB41830BD4A49CB9E070EAD373ED0CA"
+                                                                        }
+                                                                    }
+                                                                ],
+                                                                "className": "org.joget.apps.userview.lib.component.ContainerComponent",
+                                                                "properties": {
+                                                                    "attr-data-events-listening": [],
+                                                                    "style-background-color": "#D3EDF7",
+                                                                    "style-padding-right": "20px",
+                                                                    "style-padding-bottom": "20px",
+                                                                    "style-position": "relative",
+                                                                    "style-height": "100%%",
+                                                                    "id": "5FC98985436B4776DB7FAF33D4B14D71",
+                                                                    "style-padding-top": "40px",
+                                                                    "customId": "",
+                                                                    "style-border-radius": "16px",
+                                                                    "style-padding-left": "20px"
+                                                                }
+                                                            }
+                                                        ],
+                                                        "className": "org.joget.apps.userview.lib.component.ColumnComponent",
+                                                        "properties": {}
+                                                    }
+                                                ],
+                                                "className": "org.joget.apps.userview.lib.component.ColumnsComponent",
+                                                "properties": {
+                                                    "attr-data-events-listening": [],
+                                                    "gutter": "10px",
+                                                    "columns": [
+                                                        {
+                                                            "style-mobile-max-width": "",
+                                                            "style-max-width": "60%%",
+                                                            "style-tablet-max-width": "55%%"
+                                                        },
+                                                        {
+                                                            "style-mobile-max-width": "",
+                                                            "style-max-width": "",
+                                                            "style-tablet-max-width": ""
+                                                        }
+                                                    ],
+                                                    "css-mobile-stack-columns": "true",
+                                                    "id": "6DD8348B5A7547D68C3B323452B013F9",
+                                                    "customId": ""
+                                                }
+                                            }
+                                        ],
+                                        "className": "org.joget.apps.userview.lib.component.ContainerComponent",
+                                        "properties": {
+                                            "attr-data-events-listening": [],
+                                            "style-padding-right": "0px",
+                                            "style-padding-bottom": "0px",
+                                            "id": "28A2F364A3B14DA9F7ED82E61F878842",
+                                            "style-padding-top": "0px",
+                                            "customId": "welcomePage_forms",
+                                            "style-padding-left": "0px"
+                                        }
+                                    },
+                                    {
+                                        "elements": [
+                                            {
+                                                "elements": [
+                                                    {
+                                                        "elements": [
+                                                            {
+                                                                "elements": [
+                                                                    {
+                                                                        "className": "org.joget.apps.userview.lib.component.LabelComponent",
+                                                                        "properties": {
+                                                                            "attr-data-events-listening": [],
+                                                                            "style-margin-bottom": "5%%",
+                                                                            "style-line-height": "31px",
+                                                                            "style-tablet-padding-left": "20px",
+                                                                            "textContent": "@@generator.userview.welcome.content.list1@@",
+                                                                            "id": "578A43CD2842459EA25C5C1642057EA7",
+                                                                            "customId": "",
+                                                                            "style-padding-left": "40px",
+                                                                            "style-font-weight": "500"
+                                                                        }
+                                                                    },
+                                                                    {
+                                                                        "elements": [
+                                                                            {
+                                                                                "className": "org.joget.apps.userview.lib.component.ImageComponent",
+                                                                                "properties": {
+                                                                                    "attr-data-events-listening": [],
+                                                                                    "attr-width": "100%%",
+                                                                                    "attr-src": "#request.contextPath#/images/welcomePage_list1.png",
+                                                                                    "attr-height": "100%%",
+                                                                                    "id": "3926F6477CFF4F14AF5EDDBD5F27705F",
+                                                                                    "customId": ""
+                                                                                }
+                                                                            }
+                                                                        ],
+                                                                        "className": "org.joget.apps.userview.lib.component.ContainerComponent",
+                                                                        "properties": {
+                                                                            "attr-data-events-listening": [],
+                                                                            "style-padding-right": "3%%",
+                                                                            "style-padding-bottom": "0px",
+                                                                            "style-custom": "height: auto;",
+                                                                            "id": "37B0F3B83D2B4D30B33014FA00016200",
+                                                                            "style-padding-top": "0px",
+                                                                            "customId": "",
+                                                                            "style-padding-left": "3%%"
+                                                                        }
+                                                                    }
+                                                                ],
+                                                                "className": "org.joget.apps.userview.lib.component.ContainerComponent",
+                                                                "properties": {
+                                                                    "attr-data-events-listening": [],
+                                                                    "style-background-color": "#ECF5F3",
+                                                                    "style-padding-right": "20px",
+                                                                    "style-padding-bottom": "20px",
+                                                                    "style-position": "relative",
+                                                                    "style-height": "100%%",
+                                                                    "id": "1AE23FC5C2264EFF7496E38E44D5A6E6",
+                                                                    "style-padding-top": "40px",
+                                                                    "customId": "",
+                                                                    "style-border-radius": "16px",
+                                                                    "style-padding-left": "20px"
+                                                                }
+                                                            }
+                                                        ],
+                                                        "className": "org.joget.apps.userview.lib.component.ColumnComponent",
+                                                        "properties": {
+                                                            "style-tablet-flex": "0 0 55%%",
+                                                            "style-flex": "0 0 60%%",
+                                                            "id": "403E1A9B901E446F4962DED432457AC3",
+                                                            "style-max-width": "60%%",
+                                                            "style-tablet-max-width": "55%%"
+                                                        }
+                                                    },
+                                                    {
+                                                        "elements": [
+                                                            {
+                                                                "elements": [
+                                                                    {
+                                                                        "className": "org.joget.apps.userview.lib.component.LabelComponent",
+                                                                        "properties": {
+                                                                            "attr-data-events-listening": [],
+                                                                            "style-mobile-margin-bottom": "65%%",
+                                                                            "style-line-height": "31px",
+                                                                            "style-tablet-padding-left": "10px",
+                                                                            "textContent": "@@generator.userview.welcome.content.list2@@",
+                                                                            "id": "4C64F188A3284C09D71038D55502CAA8",
+                                                                            "customId": "",
+                                                                            "style-padding-left": "30px",
+                                                                            "style-font-weight": "500"
+                                                                        }
+                                                                    },
+                                                                    {
+                                                                        "elements": [
+                                                                            {
+                                                                                "className": "org.joget.apps.userview.lib.component.ImageComponent",
+                                                                                "properties": {
+                                                                                    "attr-data-events-listening": [],
+                                                                                    "style-custom": " ",
+                                                                                    "attr-width": "100%%",
+                                                                                    "attr-src": "#request.contextPath#/images/welcomePage_form2.png",
+                                                                                    "attr-height": "100%%",
+                                                                                    "id": "FC8EF5664AB8488D1A88013A7B77B0EA",
+                                                                                    "customId": ""
+                                                                                }
+                                                                            }
+                                                                        ],
+                                                                        "className": "org.joget.apps.userview.lib.component.ContainerComponent",
+                                                                        "properties": {
+                                                                            "attr-data-events-listening": [],
+                                                                            "style-padding-right": "0px",
+                                                                            "style-position": "absolute",
+                                                                            "style-custom": "height: auto;",
+                                                                            "style-bottom": "0px",
+                                                                            "style-float": "right",
+                                                                            "style-padding-top": "0px",
+                                                                            "customId": "",
+                                                                            "style-padding-left": "0px",
+                                                                            "style-width": "92%%",
+                                                                            "style-right": "0px",
+                                                                            "style-padding-bottom": "0px",
+                                                                            "id": "85CB44D269CE4329A6ACA46A11A44F52"
+                                                                        }
+                                                                    }
+                                                                ],
+                                                                "className": "org.joget.apps.userview.lib.component.ContainerComponent",
+                                                                "properties": {
+                                                                    "attr-data-events-listening": [],
+                                                                    "style-background-color": "#D3EDF7",
+                                                                    "style-padding-right": "20px",
+                                                                    "style-padding-bottom": "20px",
+                                                                    "style-position": "relative",
+                                                                    "style-height": "100%%",
+                                                                    "id": "D3C731D242DE4C694881FC6788104E42",
+                                                                    "style-padding-top": "40px",
+                                                                    "customId": "",
+                                                                    "style-min-height": "400px",
+                                                                    "style-border-radius": "16px",
+                                                                    "style-padding-left": "20px"
+                                                                }
+                                                            }
+                                                        ],
+                                                        "className": "org.joget.apps.userview.lib.component.ColumnComponent",
+                                                        "properties": {
+                                                            "id": "944ACADA9B95471D53A1BF85D824F4B3"
+                                                        }
+                                                    }
+                                                ],
+                                                "className": "org.joget.apps.userview.lib.component.ColumnsComponent",
+                                                "properties": {
+                                                    "attr-data-events-listening": [],
+                                                    "gutter": "10px",
+                                                    "columns": [
+                                                        {
+                                                            "style-mobile-max-width": "",
+                                                            "style-max-width": "60%%",
+                                                            "style-tablet-max-width": "55%%"
+                                                        },
+                                                        {
+                                                            "style-mobile-max-width": "",
+                                                            "style-max-width": "",
+                                                            "style-tablet-max-width": ""
+                                                        }
+                                                    ],
+                                                    "css-mobile-stack-columns": "true",
+                                                    "id": "D7FFAD3AED06429CC286CD4C95DB4139",
+                                                    "customId": ""
+                                                }
+                                            }
+                                        ],
+                                        "className": "org.joget.apps.userview.lib.component.ContainerComponent",
+                                        "properties": {
+                                            "attr-data-events-listening": [],
+                                            "style-padding-right": "0px",
+                                            "style-padding-bottom": "0px",
+                                            "id": "AF9EE35C866044A6C12036046E81E7D7",
+                                            "style-padding-top": "0px",
+                                            "customId": "welcomePage_list",
+                                            "style-padding-left": "0px"
+                                        }
+                                    },
+                                    {
+                                        "elements": [
+                                            {
+                                                "elements": [
+                                                    {
+                                                        "elements": [
+                                                            {
+                                                                "elements": [
+                                                                    {
+                                                                        "className": "org.joget.apps.userview.lib.component.LabelComponent",
+                                                                        "properties": {
+                                                                            "attr-data-events-listening": [],
+                                                                            "style-padding-right": "50px",
+                                                                            "style-line-height": "31px",
+                                                                            "style-tablet-padding-left": "20px",
+                                                                            "style-tablet-padding-right": "20px",
+                                                                            "textContent": "@@generator.userview.welcome.content.chart1@@",
+                                                                            "id": "DA66B85C6FEB4CEF652AA6A4E73A439B",
+                                                                            "customId": "",
+                                                                            "style-padding-left": "50px",
+                                                                            "style-font-weight": "500"
+                                                                        }
+                                                                    },
+                                                                    {
+                                                                        "elements": [
+                                                                            {
+                                                                                "className": "org.joget.apps.userview.lib.component.ImageComponent",
+                                                                                "properties": {
+                                                                                    "attr-data-events-listening": [],
+                                                                                    "style-custom": "  aspect-ratio: 16 / 9; /* keeps image ratio */\n  object-fit: contain; /* or cover */",
+                                                                                    "attr-width": "100%%",
+                                                                                    "attr-src": "#request.contextPath#/images/welcomePage_chart1.png",
+                                                                                    "attr-height": "100%%",
+                                                                                    "id": "555DA7F0C31A47617704A3272C08A750",
+                                                                                    "customId": ""
+                                                                                }
+                                                                            }
+                                                                        ],
+                                                                        "className": "org.joget.apps.userview.lib.component.ContainerComponent",
+                                                                        "properties": {
+                                                                            "attr-data-events-listening": [],
+                                                                            "style-padding-right": "40px",
+                                                                            "style-width": "100%%",
+                                                                            "style-padding-bottom": "0px",
+                                                                            "style-custom": "height: auto;",
+                                                                            "style-tablet-padding-left": "15px",
+                                                                            "style-tablet-padding-right": "15px",
+                                                                            "id": "21D2220DAB834079FF568B3DE4DB6FF3",
+                                                                            "style-padding-top": "0px",
+                                                                            "customId": "",
+                                                                            "style-padding-left": "40px"
+                                                                        }
+                                                                    }
+                                                                ],
+                                                                "className": "org.joget.apps.userview.lib.component.ContainerComponent",
+                                                                "properties": {
+                                                                    "attr-data-events-listening": [],
+                                                                    "style-background-color": "#ECF5F3",
+                                                                    "style-padding-right": "20px",
+                                                                    "style-padding-bottom": "20px",
+                                                                    "style-height": "100%%",
+                                                                    "id": "73B1E5B6A0334DF46ACD7647F435E6B7",
+                                                                    "style-padding-top": "40px",
+                                                                    "customId": "",
+                                                                    "style-border-radius": "16px",
+                                                                    "style-padding-left": "20px"
+                                                                }
+                                                            }
+                                                        ],
+                                                        "className": "org.joget.apps.userview.lib.component.ColumnComponent",
+                                                        "properties": {
+                                                            "style-tablet-flex": "0 0 55%%",
+                                                            "style-flex": "0 0 60%%",
+                                                            "id": "60AD8D1E550C43ABF07726D8244F6113",
+                                                            "style-max-width": "60%%",
+                                                            "style-tablet-max-width": "55%%"
+                                                        }
+                                                    },
+                                                    {
+                                                        "elements": [
+                                                            {
+                                                                "elements": [
+                                                                    {
+                                                                        "className": "org.joget.apps.userview.lib.component.LabelComponent",
+                                                                        "properties": {
+                                                                            "attr-data-events-listening": [],
+                                                                            "style-padding-right": "30px",
+                                                                            "style-tablet-padding-left": "15px",
+                                                                            "style-tablet-padding-right": "15px",
+                                                                            "textContent": "@@generator.userview.welcome.content.chart2@@",
+                                                                            "id": "6C233F99A37946954736E191AA3A15B7",
+                                                                            "style-font-size": "31px",
+                                                                            "customId": "",
+                                                                            "style-padding-left": "30px",
+                                                                            "style-font-weight": "500"
+                                                                        }
+                                                                    },
+                                                                    {
+                                                                        "elements": [
+                                                                            {
+                                                                                "className": "org.joget.apps.userview.lib.component.ImageComponent",
+                                                                                "properties": {
+                                                                                    "attr-data-events-listening": [],
+                                                                                    "attr-width": "100%%",
+                                                                                    "attr-src": "#request.contextPath#/images/welcomePage_chart2.png",
+                                                                                    "attr-height": "100%%",
+                                                                                    "id": "7C14B6E822A64E2D7491B9FF49EA5F17",
+                                                                                    "customId": ""
+                                                                                }
+                                                                            }
+                                                                        ],
+                                                                        "className": "org.joget.apps.userview.lib.component.ContainerComponent",
+                                                                        "properties": {
+                                                                            "attr-data-events-listening": [],
+                                                                            "style-padding-right": "0px",
+                                                                            "style-width": "100%%",
+                                                                            "style-padding-bottom": "10px",
+                                                                            "style-custom": "height: auto;",
+                                                                            "id": "C80EB0115CF84C18B4C14875AE1345B5",
+                                                                            "style-padding-top": "10%%",
+                                                                            "customId": "",
+                                                                            "style-padding-left": "0px"
+                                                                        }
+                                                                    }
+                                                                ],
+                                                                "className": "org.joget.apps.userview.lib.component.ContainerComponent",
+                                                                "properties": {
+                                                                    "attr-data-events-listening": [],
+                                                                    "style-background-color": "#D3EDF7",
+                                                                    "style-padding-right": "20px",
+                                                                    "style-padding-bottom": "20px",
+                                                                    "style-position": "relative",
+                                                                    "style-height": "100%%",
+                                                                    "id": "D6EF85F121E14DD8D1DFCF6410446786",
+                                                                    "style-padding-top": "40px",
+                                                                    "customId": "",
+                                                                    "style-border-radius": "16px",
+                                                                    "style-padding-left": "20px"
+                                                                }
+                                                            }
+                                                        ],
+                                                        "className": "org.joget.apps.userview.lib.component.ColumnComponent",
+                                                        "properties": {
+                                                            "id": "D04C89C6D4B9464BC761277CAAE2D385"
+                                                        }
+                                                    }
+                                                ],
+                                                "className": "org.joget.apps.userview.lib.component.ColumnsComponent",
+                                                "properties": {
+                                                    "attr-data-events-listening": [],
+                                                    "gutter": "10px",
+                                                    "columns": [
+                                                        {
+                                                            "style-mobile-max-width": "",
+                                                            "style-max-width": "60%%",
+                                                            "style-tablet-max-width": "55%%"
+                                                        },
+                                                        {
+                                                            "style-mobile-max-width": "",
+                                                            "style-max-width": "",
+                                                            "style-tablet-max-width": ""
+                                                        }
+                                                    ],
+                                                    "css-mobile-stack-columns": "true",
+                                                    "id": "BCCA3874628649A3D5758BFB46194335",
+                                                    "customId": ""
+                                                }
+                                            }
+                                        ],
+                                        "className": "org.joget.apps.userview.lib.component.ContainerComponent",
+                                        "properties": {
+                                            "attr-data-events-listening": [],
+                                            "style-padding-right": "0px",
+                                            "style-padding-bottom": "0px",
+                                            "id": "1B9B571A552C4A300B39BBD0DE0207F4",
+                                            "style-padding-top": "0px",
+                                            "customId": "welcomePage_chart",
+                                            "style-padding-left": "0px"
+                                        }
+                                    },
+                                    {
+                                        "elements": [
+                                            {
+                                                "elements": [
+                                                    {
+                                                        "elements": [
+                                                            {
+                                                                "elements": [
+                                                                    {
+                                                                        "className": "org.joget.apps.userview.lib.component.LabelComponent",
+                                                                        "properties": {
+                                                                            "attr-data-events-listening": [],
+                                                                            "style-padding-right": "40px",
+                                                                            "style-line-height": "31px",
+                                                                            "style-tablet-padding-left": "10px",
+                                                                            "style-tablet-padding-right": "10px",
+                                                                            "textContent": "@@generator.userview.welcome.content.component1@@",
+                                                                            "id": "E63E44AB5563465F0AC0D414CBFDCFDF",
+                                                                            "customId": "",
+                                                                            "style-padding-left": "40px",
+                                                                            "style-font-weight": "500"
+                                                                        }
+                                                                    },
+                                                                    {
+                                                                        "elements": [
+                                                                            {
+                                                                                "className": "org.joget.apps.userview.lib.component.ImageComponent",
+                                                                                "properties": {
+                                                                                    "attr-data-events-listening": [],
+                                                                                    "style-custom": "  aspect-ratio: 16 / 9; /* keeps image ratio */\n  object-fit: contain; /* or cover */",
+                                                                                    "attr-width": "100%%",
+                                                                                    "attr-src": "#request.contextPath#/images/welcomePage_component1.png",
+                                                                                    "attr-height": "100%%",
+                                                                                    "id": "71CB6CFBD7A74CA57C028D33278B0E4F",
+                                                                                    "customId": ""
+                                                                                }
+                                                                            }
+                                                                        ],
+                                                                        "className": "org.joget.apps.userview.lib.component.ContainerComponent",
+                                                                        "properties": {
+                                                                            "attr-data-events-listening": [],
+                                                                            "style-padding-right": "40px",
+                                                                            "style-width": "100%%",
+                                                                            "style-padding-bottom": "0px",
+                                                                            "style-custom": "height: auto;",
+                                                                            "style-tablet-padding-left": "20px",
+                                                                            "style-tablet-padding-right": "0px",
+                                                                            "id": "D392AC4B8BA7451045C6DDC227001EB2",
+                                                                            "style-padding-top": "0px",
+                                                                            "customId": "",
+                                                                            "style-padding-left": "60px"
+                                                                        }
+                                                                    }
+                                                                ],
+                                                                "className": "org.joget.apps.userview.lib.component.ContainerComponent",
+                                                                "properties": {
+                                                                    "attr-data-events-listening": [],
+                                                                    "style-background-color": "#ECF5F3",
+                                                                    "style-padding-right": "20px",
+                                                                    "style-padding-bottom": "20px",
+                                                                    "style-height": "100%%",
+                                                                    "id": "52A3F186C086483781C2F7CEA6EC3740",
+                                                                    "style-padding-top": "40px",
+                                                                    "customId": "",
+                                                                    "style-border-radius": "16px",
+                                                                    "style-padding-left": "20px"
+                                                                }
+                                                            }
+                                                        ],
+                                                        "className": "org.joget.apps.userview.lib.component.ColumnComponent",
+                                                        "properties": {
+                                                            "style-tablet-flex": "0 0 55%%",
+                                                            "style-flex": "0 0 60%%",
+                                                            "id": "6E3DB68B24CC444B37E171631F1D0647",
+                                                            "style-max-width": "60%%",
+                                                            "style-tablet-max-width": "55%%"
+                                                        }
+                                                    },
+                                                    {
+                                                        "elements": [
+                                                            {
+                                                                "elements": [
+                                                                    {
+                                                                        "className": "org.joget.apps.userview.lib.component.LabelComponent",
+                                                                        "properties": {
+                                                                            "attr-data-events-listening": [],
+                                                                            "style-padding-right": "30px",
+                                                                            "style-margin-bottom": "80%%",
+                                                                            "style-mobile-margin-bottom": "81%%",
+                                                                            "style-line-height": "31px",
+                                                                            "textContent": "@@generator.userview.welcome.content.component2@@",
+                                                                            "id": "4D0D88DB87E7478956A923C040804D11",
+                                                                            "style-tablet-margin-bottom": "85%%",
+                                                                            "customId": "",
+                                                                            "style-padding-left": "30px",
+                                                                            "style-font-weight": "500"
+                                                                        }
+                                                                    },
+                                                                    {
+                                                                        "elements": [
+                                                                            {
+                                                                                "className": "org.joget.apps.userview.lib.component.ImageComponent",
+                                                                                "properties": {
+                                                                                    "attr-data-events-listening": [],
+                                                                                    "attr-width": "100%%",
+                                                                                    "attr-src": "#request.contextPath#/images/welcomePage_component2.png",
+                                                                                    "attr-height": "100%%",
+                                                                                    "id": "712D33F3DC274A9F7FAC5209AC1F905E",
+                                                                                    "customId": ""
+                                                                                }
+                                                                            }
+                                                                        ],
+                                                                        "className": "org.joget.apps.userview.lib.component.ContainerComponent",
+                                                                        "properties": {
+                                                                            "attr-data-events-listening": [],
+                                                                            "style-padding-right": "0px",
+                                                                            "style-position": "absolute",
+                                                                            "style-custom": "height: auto;",
+                                                                            "style-bottom": "0px",
+                                                                            "style-padding-top": "0px",
+                                                                            "customId": "",
+                                                                            "style-padding-left": "0px",
+                                                                            "style-width": "90%%",
+                                                                            "style-padding-bottom": "0px",
+                                                                            "style-right": "0px",
+                                                                            "style-margin-bottom": "30px",
+                                                                            "id": "9D42C5F2ECA2491A46F08879692861E6"
+                                                                        }
+                                                                    }
+                                                                ],
+                                                                "className": "org.joget.apps.userview.lib.component.ContainerComponent",
+                                                                "properties": {
+                                                                    "attr-data-events-listening": [],
+                                                                    "style-background-color": "#D3EDF7",
+                                                                    "style-padding-right": "20px",
+                                                                    "style-padding-bottom": "20px",
+                                                                    "style-position": "relative",
+                                                                    "style-height": "100%%",
+                                                                    "id": "747E360EAC484E6546254764C9AE64E2",
+                                                                    "style-padding-top": "40px",
+                                                                    "customId": "",
+                                                                    "style-border-radius": "16px",
+                                                                    "style-padding-left": "20px"
+                                                                }
+                                                            }
+                                                        ],
+                                                        "className": "org.joget.apps.userview.lib.component.ColumnComponent",
+                                                        "properties": {
+                                                            "id": "E5DDD859AD304827004EC3BF65A485A0"
+                                                        }
+                                                    }
+                                                ],
+                                                "className": "org.joget.apps.userview.lib.component.ColumnsComponent",
+                                                "properties": {
+                                                    "attr-data-events-listening": [],
+                                                    "gutter": "10px",
+                                                    "columns": [
+                                                        {
+                                                            "style-mobile-max-width": "",
+                                                            "style-max-width": "60%%",
+                                                            "style-tablet-max-width": "55%%"
+                                                        },
+                                                        {
+                                                            "style-mobile-max-width": "",
+                                                            "style-max-width": "",
+                                                            "style-tablet-max-width": ""
+                                                        }
+                                                    ],
+                                                    "css-mobile-stack-columns": "true",
+                                                    "id": "90EC0CDA41044B3F4CD206542CCAD3FB",
+                                                    "customId": ""
+                                                }
+                                            }
+                                        ],
+                                        "className": "org.joget.apps.userview.lib.component.ContainerComponent",
+                                        "properties": {
+                                            "attr-data-events-listening": [],
+                                            "style-padding-right": "0px",
+                                            "style-padding-bottom": "0px",
+                                            "id": "E0CF9DBBDF2E4B00FD0B13B72FEEA961",
+                                            "style-padding-top": "0px",
+                                            "customId": "welcomePage_new",
+                                            "style-padding-left": "0px"
+                                        }
+                                    }
+                                ],
+                                "className": "org.joget.apps.userview.lib.component.ContainerComponent",
+                                "properties": {
+                                    "attr-data-events-listening": [],
+                                    "style-background-color": "#FFFFFF",
+                                    "style-padding-right": "30px",
+                                    "style-mobile-padding-right": "10px",
+                                    "style-tablet-padding-bottom": "16px",
+                                    "style-mobile-padding-left": "10px",
+                                    "customId": "",
+                                    "style-tablet-margin-right": "15px",
+                                    "style-mobile-margin-right": "0px",
+                                    "style-padding-left": "30px",
+                                    "style-padding-bottom": "30px",
+                                    "style-mobile-margin-left": "0px",
+                                    "style-tablet-padding-left": "16px",
+                                    "style-tablet-padding-right": "16px",
+                                    "id": "B6967DB7ACB94E4B81176BE0704B7B37",
+                                    "style-tablet-margin-left": "15px",
+                                    "style-border-radius": "16px"
+                                }
+                            }
+                        ],
+                        "className": "org.joget.apps.userview.model.UserviewPage",
+                        "properties": {
+                            "id": "up-%s"
+                        }
+                    },
+            "className": "org.joget.apps.userview.lib.HtmlPage",
             "properties": {
-                "id": "%s", 
-                "customId": "@@generator.userview.welcome.id@@", 
-                "label": "@@generator.userview.welcome.label@@", 
-                "content": "@@generator.userview.welcome.content@@"
+                "id": "%s",
+                "customId": "@@generator.userview.welcome.id@@",
+                "label": "@@generator.userview.welcome.label@@",
+                "content": "<p>p</p>",
+                "style-display": "none",
+                "enableOffline": "",
+                "userviewCacheDuration": "",
+                "userviewCacheScope": ""
             }
         }]
     }]
