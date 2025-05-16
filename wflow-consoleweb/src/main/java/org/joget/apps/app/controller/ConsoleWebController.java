@@ -3049,8 +3049,7 @@ public class ConsoleWebController {
             if (userviewDefinitionDao.loadById(userviewDefinition.getId(), appDef) != null) {
                 errors.add("console.userview.error.label.exists");
             } else {
-                String json = GeneratorUtil.createNewUserviewJson(userviewDefinition.getId(), userviewDefinition.getName(), userviewDefinition.getDescription(), copy);
-                json = userviewService.saveUserviewPages(json, userviewDefinition.getId(), appDef);
+                String json = GeneratorUtil.createNewUserviewJson(userviewDefinition.getId(), userviewDefinition.getName(), userviewDefinition.getDescription(), copy, appDef);
                 userviewDefinition.setJson(json);
                 invalid = !userviewDefinitionDao.add(userviewDefinition);
             }

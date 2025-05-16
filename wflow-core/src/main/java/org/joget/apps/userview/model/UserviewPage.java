@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.Collection;
 import org.joget.apps.app.dao.BuilderDefinitionDao;
 import org.joget.apps.app.model.BuilderDefinition;
+import org.joget.apps.app.model.UserviewDefinition;
+import org.joget.apps.app.dao.UserviewDefinitionDao;
 import org.joget.apps.app.service.AppUtil;
 import org.joget.apps.userview.service.UserviewCache;
 import org.joget.commons.util.LogUtil;

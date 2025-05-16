@@ -34,6 +34,7 @@ import org.joget.apps.form.service.FormService;
 import org.joget.apps.generator.model.GeneratorPlugin;
 import org.joget.apps.userview.lib.RunProcess;
 import org.joget.apps.userview.model.UserviewTheme;
+import org.joget.apps.userview.service.UserviewService;
 import org.joget.commons.util.LogUtil;
 import org.joget.commons.util.ResourceBundleUtil;
 import org.joget.commons.util.StringUtil;
@@ -117,8 +118,8 @@ public class GeneratorUtil {
      * @param userviewDescription
      * @return 
      */
-    public static String createNewUserviewJson(String userviewId, String userviewName, String userviewDescription) {
-        return createNewUserviewJson(userviewId, userviewName, userviewDescription, null);
+    public static String createNewUserviewJson(String userviewId, String userviewName, String userviewDescription, AppDefinition appDef) {
+        return createNewUserviewJson(userviewId, userviewName, userviewDescription, null, appDef);
     }
     
     /**
@@ -129,7 +130,7 @@ public class GeneratorUtil {
      * @param copy
      * @return 
      */
-    public static String createNewUserviewJson(String userviewId, String userviewName, String userviewDescription, UserviewDefinition copy) {
+    public static String createNewUserviewJson(String userviewId, String userviewName, String userviewDescription, UserviewDefinition copy, AppDefinition appDef) {
         if (copy != null) {
             String copyJson = copy.getJson();
             try {
@@ -174,9 +175,11 @@ public class GeneratorUtil {
             userviewDescription = StringUtil.escapeString(userviewDescription, StringUtil.TYPE_JSON, null);
             theme = StringUtil.escapeString(theme, StringUtil.TYPE_JSON, null);
             String menuId = StringUtil.escapeString(UuidGenerator.getInstance().getUuid(), StringUtil.TYPE_JSON, null);
-            String json = AppUtil.readPluginResource(CorporatiTheme.class.getName(), "/resources/generator/userview/userview.json", new String[]{userviewId, userviewName, userviewName, userviewDescription, theme, themeProperties, menuId}, true, null);
+            String json = AppUtil.readPluginResource(CorporatiTheme.class.getName(), "/resources/generator/userview/userview.json", new String[]{userviewId, userviewName, userviewName, userviewId, userviewDescription, theme, themeProperties, menuId, menuId}, true, null);
 
             if (json != null && !json.isEmpty()) {
+                UserviewService userviewService = (UserviewService) AppUtil.getApplicationContext().getBean("userviewService");
+                json = userviewService.saveUserviewPages(json, userviewId, appDef);
                 return json;
             }
         }
@@ -603,7 +606,7 @@ public class GeneratorUtil {
             }
         }
         if (json == null || json.isEmpty()) {
-            json = GeneratorUtil.createNewUserviewJson(id, name, desc);
+            json = GeneratorUtil.createNewUserviewJson(id, name, desc, appDef);
         }
         
         json = addCategoryJsonToUserviewJson(categoryJson, json);
