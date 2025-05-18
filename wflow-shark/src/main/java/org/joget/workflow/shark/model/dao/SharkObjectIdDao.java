@@ -19,7 +19,6 @@ import org.joget.workflow.shark.model.SharkObjectId;
 public class SharkObjectIdDao extends AbstractSpringDao {
     
     public static final String ENTITY_NAME = "SharkObjectId";
-    private final static long CACHE_SIZE = 200;
 
     public SharkObjectId getNext(Long old) {
         int retryCount = 0;
@@ -45,6 +44,7 @@ public class SharkObjectIdDao extends AbstractSpringDao {
                 Query find = session.createQuery("SELECT e FROM " + ENTITY_NAME + " e");
                 Collection<SharkObjectId> result = (Collection<SharkObjectId>) find.list();
                 
+                long cacheSize = SharkCounterDao.getCacheSize();            
                 if (!result.isEmpty()) {
                     SharkObjectId nextOid = result.iterator().next();
                     
@@ -54,7 +54,7 @@ public class SharkObjectIdDao extends AbstractSpringDao {
                     LogUtil.debug(SharkObjectIdDao.class.getName(), "Retrieved number is " + nextOid.getNextoid() + ", old number is " + old);
                     
                     temp.setNextoid(nextOid.getNextoid());
-                    temp.setMaxoid(nextOid.getNextoid() + CACHE_SIZE);
+                    temp.setMaxoid(nextOid.getNextoid() + cacheSize);
                     
                     //update the next oid
                     Query query = session.createQuery("update " + ENTITY_NAME + " set nextoid=?1 where nextoid=?2");
