@@ -462,7 +462,7 @@ body.rtl .dataList span.pagelinks:not(.rtl) .pc.last:before {
 }
 
 .dataList .dropdown-menu a.dropdown-item:hover{
-    background-color: var(--jgt-dd-controlItemBgHover);
+    background-color: var(--jgt-dd-controlItemBgHover) !important;;
 }
 
 
