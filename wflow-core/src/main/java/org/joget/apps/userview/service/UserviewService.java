@@ -107,7 +107,7 @@ public class UserviewService {
             //set theme & permission
             try {
                 JSONObject themeObj = settingObj.getJSONObject("properties").getJSONObject("theme");
-                UserviewTheme theme = getTheme(themeObj, requestParameters, userview);
+                UserviewTheme theme = getTheme(themeObj, requestParameters, userview, false);
                 setting.setTheme(theme);
             } catch (Exception e) {
                 LogUtil.debug(getClass().getName(), "set theme error.");
@@ -224,7 +224,7 @@ public class UserviewService {
             try {
                 JSONObject themeObj = settingObj.getJSONObject("properties").getJSONObject("theme");
                 JSONObject themeProperties = themeObj.getJSONObject("properties");
-                UserviewTheme theme = getTheme(themeObj, requestParameters, userview);
+                UserviewTheme theme = getTheme(themeObj, requestParameters, userview, preview);
                 setting.setTheme(theme);
             } catch (Exception e) {
                 LogUtil.debug(getClass().getName(), "set theme error.");
@@ -510,7 +510,7 @@ public class UserviewService {
                         JSONObject settingObj = userviewObj.getJSONObject("setting");
                         JSONObject themeObj = settingObj.getJSONObject("properties").getJSONObject("theme");
 
-                        theme = getTheme(themeObj, requestParameters, userview);
+                        theme = getTheme(themeObj, requestParameters, userview, false);
                     } catch (Exception e) {
                         LogUtil.debug(getClass().getName(), "get userview theme error.");
                     }
@@ -823,7 +823,7 @@ public class UserviewService {
      * @param userview
      * @return 
      */
-    public UserviewTheme getTheme(JSONObject themeObj, Map<String, Object> requestParameters, Userview userview) {
+    public UserviewTheme getTheme(JSONObject themeObj, Map<String, Object> requestParameters, Userview userview, boolean preview) {
         UserviewTheme theme = null;
         JSONObject themeProperties = null;
         
@@ -834,7 +834,11 @@ public class UserviewService {
                 // If the Theme Builder is used, get the properties from the Theme Builder.
                 String[] result = getBuilderTheme(themeClassName);
                 themeClassName = result[0];
-                themeProperties = getThemeProperties(result[1]);
+                if (!preview) {
+                    themeProperties = getThemeProperties(result[1]);
+                } else {
+                    themeProperties = themeObj.getJSONObject("properties");
+                }
                 themeProperties.put("themeID", result[1]);
             } else {
                 themeProperties = themeObj.getJSONObject("properties");

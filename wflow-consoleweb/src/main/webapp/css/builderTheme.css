@@ -720,6 +720,7 @@ body[builder-theme] .property-editor-page-buttons,
 body[builder-theme] .property-editor-page-button-panel{
     padding: 10px;
     padding-top: 5px;
+    background-color: var(--theme-primary-color-1);
 }
 body[builder-theme] .builder-view-body {
     padding: 25px 35px;
