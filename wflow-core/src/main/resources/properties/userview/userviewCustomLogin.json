@@ -74,6 +74,31 @@
     "value": "@@userview.customLogin.subtitle@@"
 },
 {
+    "name" : "btnText",
+    "label" : "@@userview.customLogin.btnText@@",
+    "type" : "textfield",
+    "control_field": "template",
+    "control_value": "^[\\s\\S]*\\{\\{btnText[\\||\\}]{2}[\\s\\S]*$",
+    "control_use_regex": "true",
+    "value": "@@userview.customLogin.button.value@@"
+},
+{
+    "name" : "usernamePlaceholder",
+    "label" : "@@userview.customLogin.usernamePlaceholder@@",
+    "type" : "textfield",
+    "control_field": "template",
+    "control_value": "^[\\s\\S]*\\{\\{usernamePlaceholder[\\||\\}]{2}[\\s\\S]*$",
+    "control_use_regex": "true"
+},
+{
+    "name" : "passwordPlaceholder",
+    "label" : "@@userview.customLogin.passwordPlaceholder@@",
+    "type" : "textfield",
+    "control_field": "template",
+    "control_value": "^[\\s\\S]*\\{\\{passwordPlaceholder[\\||\\}]{2}[\\s\\S]*$",
+    "control_use_regex": "true"
+},
+{
     "name" : "direction",
     "label" : "@@userview.customLogin.direction@@",
     "type" : "textfield",
@@ -144,14 +169,6 @@
     "control_use_regex": "true"
 },
 {
-    "name" : "usernamePlaceholder",
-    "label" : "@@userview.customLogin.usernamePlaceholder@@",
-    "type" : "textfield",
-    "control_field": "template",
-    "control_value": "^[\\s\\S]*\\{\\{usernamePlaceholder[\\||\\}]{2}[\\s\\S]*$",
-    "control_use_regex": "true"
-},
-{
     "name" : "usernameFieldColor",
     "label" : "@@userview.customLogin.usernameFieldColor@@",
     "type" : "color",
@@ -165,14 +182,6 @@
     "type" : "color",
     "control_field": "template",
     "control_value": "^[\\s\\S]*\\{\\{customPasswordColor[\\||\\}]{2}[\\s\\S]*$",
-    "control_use_regex": "true"
-},
-{
-    "name" : "passwordPlaceholder",
-    "label" : "@@userview.customLogin.passwordPlaceholder@@",
-    "type" : "textfield",
-    "control_field": "template",
-    "control_value": "^[\\s\\S]*\\{\\{passwordPlaceholder[\\||\\}]{2}[\\s\\S]*$",
     "control_use_regex": "true"
 },
 {
@@ -190,15 +199,6 @@
     "control_field": "template",
     "control_value": "^[\\s\\S]*\\{\\{subtitleColor[\\||\\}]{2}[\\s\\S]*$",
     "control_use_regex": "true"
-},
-{
-    "name" : "btnText",
-    "label" : "@@userview.customLogin.btnText@@",
-    "type" : "textfield",
-    "control_field": "template",
-    "control_value": "^[\\s\\S]*\\{\\{btnText[\\||\\}]{2}[\\s\\S]*$",
-    "control_use_regex": "true",
-    "value": "@@userview.customLogin.button.value@@"
 },
 {
     "name" : "bgColor",

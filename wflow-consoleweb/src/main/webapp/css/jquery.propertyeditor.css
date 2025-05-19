@@ -2054,7 +2054,8 @@ body .ui-dialog .button_form.editor-panel-mode #main-body-header {
 .editor-panel-mode.narrow:not(.wider) .property-type-repeater .repeater-row .inputs .property-editor-property textarea{
     max-width: 100%;
 }
-.editor-panel-mode .property-type-repeater .repeater-row.compress > .inputs{
+.editor-panel-mode .property-type-repeater .repeater-row.compress > .inputs,
+#propertiesView.builder-view .property-type-repeater .repeater-row.compress > .inputs {
     max-height: 66px;
     overflow: hidden;
 }

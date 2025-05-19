@@ -52,17 +52,6 @@
                     }
 
                     if (event.type === "focusin"){
-                        //Check for image change
-                        if ($(this).attr("class")==="image" && (($(this).attr("data-value") !== $(this).val() && $(this).attr("data-value") !==  undefined))) {
-                            $(container).find('.reloadtemplate').click();
-                            
-                            if (!($(container).closest(".property-editor-property-container").get(0).scrollHeight > $(container).closest(".property-editor-property-container").get(0).clientHeight)){
-                                $(container).closest(".property-editor-pages").scrollTop(scroll);
-                            }else{
-                                $(container).closest(".property-editor-property-container").scrollTop(scroll);
-                            }
-                        }
-
                         //Save initial value for checking
                         $(this).attr("data-value", $(this).val());
                     }
@@ -99,19 +88,29 @@
                         handleChange.call(this, event);
                     }.bind(this), 1000);
                 });
+                
+                function onChooseFileClick(e) {
+                    const $btn = $(e.currentTarget);
+                    const $imgChooser = $btn.closest(".property-input").find("input");
+                    const currentImage = $imgChooser.val();
 
-                standardSiblings.find(".property-input input").off("focusin focusout", handleChange).on("focusin focusout", handleChange)
-                standardSiblings.find(".property-input input[type='number']")
-                .siblings("select")
-                .on("change", function() {
-                    $(this).off("change");
+                    setTimeout(function () {
+                        $("body").find("ul.app_resources > li").off("click.imgChoose").on("click.imgChoose", function () {
+                            setTimeout(function () {
+                                if (currentImage === undefined || currentImage !== $imgChooser.val()) {
+                                    $(container).find('.reloadtemplate').click();
+                                }
+                                $imgChooser.attr("data-value", $imgChooser.val());
+                            }, 100);
+                        });
+                    }, 100);
+                }
 
-                    if ($(this).val() === 'auto') {
-                        $(container).find('.reloadtemplate').click();
-                    }
+                standardSiblings.find("a.choosefile").off("click.loginImagePicker").on("click.loginImagePicker", onChooseFileClick);
+                repeater.off("click.loginImagePicker", "[property-name='image'] a.choosefile")
+                .on("click.loginImagePicker", "[property-name='image'] a.choosefile", onChooseFileClick);
 
-                    $(this).on("change", arguments.callee);
-                });
+                standardSiblings.not('[property-name="image"]').find(".property-input input").off("focusin focusout", handleChange).on("focusin focusout", handleChange)
 
                 icon.off("click.handleChange", ".la.la-check").on("click.handleChange", ".la.la-check", function(event){
                     $(this).data('colorValue', $(this).siblings('.color_value').css('display'));
