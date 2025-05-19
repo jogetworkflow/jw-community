@@ -257,6 +257,8 @@ public abstract class UserviewV5Theme extends UserviewTheme {
                 String html = "<style>\n" +
                 "body#login #loginForm {display: none;}\n" +
                 ".img100 {height: 100% !important;};\n" +
+                ".form-errors {margin-bottom: 0px;}\n" +
+                "body#login header, body#login footer {display: none;}\n" +
                 "</style>";
                 
                 infoTile.setProperties(getProperties());
@@ -284,6 +286,10 @@ public abstract class UserviewV5Theme extends UserviewTheme {
                 data.put("login_form_footer", ""); //empty it to prevent double insert
 
                 html += UserviewUtil.getTemplate(this, data, "/templates/userview/customLoginScript.ftl");;
+                
+                String bodyClasses = (String) data.get("body_classes");
+                data.put("body_classes", bodyClasses.replace("rtl", ""));
+                data.put("right_to_left", false);
                 
                 data.put("login_form_before", html);
             }
