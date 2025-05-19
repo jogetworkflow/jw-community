@@ -261,9 +261,9 @@ body.rtl .dataList span.pagelinks {
     background-color: var(--jgt-pg-colorBgContainer);
     border: var(--jgt-pg-lineWidth) var(--jgt-pg-lineType) transparent;
     width: var(--jgt-pg-itemSize);
-    height: var(--jgt-pg-itemSize);
+    height: var(--jgt-pg-controlHeight);
     font-size: var(--jgt-pg-fontSize);
-    line-height: var(--jgt-pg-itemSize);
+    line-height: var(--jgt-pg-lineHeight);
     text-align: center;
     border-radius: var(--jgt-pg-borderRadius);
     margin-inline-end: var(--jgt-pg-margin);
@@ -345,7 +345,7 @@ body.rtl .dataList span.pagelinks:not(.rtl) .pc.last:before {
 .dataList .pagelinks .pc.last-disabled {
     cursor: not-allowed;
     vertical-align: bottom;
-    line-height: var(--jgt-pg-itemSize);
+    line-height: var(--jgt-pg-lineHeight);
     background-color: rgba(0, 0, 0, .05);
 }
 
