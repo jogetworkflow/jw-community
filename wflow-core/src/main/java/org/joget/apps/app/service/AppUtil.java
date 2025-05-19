@@ -53,7 +53,9 @@ import org.apache.commons.mail.HtmlEmail;
 import org.joget.apps.app.dao.EnvironmentVariableDao;
 import org.joget.apps.app.dao.MessageDao;
 import org.joget.apps.app.dao.UserReplacementDao;
+import org.joget.apps.app.lib.CircularReferencedHashVariableException;
 import org.joget.apps.app.lib.EmailTool;
+import org.joget.apps.app.lib.HashVariableRecursionDepthException;
 import org.joget.apps.app.model.AppDefinition;
 import org.joget.apps.app.model.BuilderDefinition;
 import org.joget.apps.app.model.CreateAppOption;
@@ -780,12 +782,17 @@ public class AppUtil implements ApplicationContextAware {
                                         
                                         content = content.replaceAll(var, value);
                                     }
-                                } catch (Exception e) {}
+                                } catch (CircularReferencedHashVariableException |
+                                         HashVariableRecursionDepthException circularRefEx) {
+                                    LogUtil.warn(AppUtil.class.getName(), circularRefEx.getMessage());
+                                } catch (Exception e) {
+                                    LogUtil.error(AppUtil.class.getName(), e, e.getMessage());
+                                }
                             }
                         }
                     }
                 } catch (Exception ex) {
-                    LogUtil.error(AppUtil.class.getName(), ex, "");
+                    LogUtil.error(AppUtil.class.getName(), ex, ex.getMessage());
                 }
             }
         } finally {
