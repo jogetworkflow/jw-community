@@ -1169,7 +1169,7 @@ body.rtl .handsontable .htCore tr td:last-child {
     background-color: transparent;
 }
 
-.multiPagedForm.wizard .page-nav-panel .nav_item.current button{
+.multiPagedForm.wizard .page-nav-panel .nav_item button{
     color: var(--jgt-wizard-colorText);
     background-color: transparent;
     border-color: transparent;
