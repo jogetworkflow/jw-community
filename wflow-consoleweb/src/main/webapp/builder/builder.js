@@ -310,11 +310,6 @@ _CustomBuilder = {
             $("#builder_loader i.fa-stack-1x").attr("class", data.builderIcon + " fa-stack-1x");
             $("#save-btn").removeClass("unsaved");
             
-            //remove all toast messages that not auto hided.
-            $('.toast').each(function(){
-                $(this).toast("hide");
-            });
-            
             if (CustomBuilder.builderType === data.builderType && CustomBuilder.systemTheme === data.systemTheme && CustomBuilder.builderType !== "app") {
                 CustomBuilder.id = data.id;
                 CustomBuilder.appId = data.appId;
@@ -1415,14 +1410,7 @@ _CustomBuilder = {
                 type = "secondary";
                 delay = 1500;
             } else if (type === "danger") {
-                delay = 0;
-                
-                //show max 5 toasts only, hide the oldest
-                if ($("#builder-message").find(".toast").length > 4) {
-                    $("#builder-message").find(".toast").slice(4).each(function(){
-                        $(this).toast("hide");
-                    });
-                }
+                delay = 10000;
             }
             var toast = $('<div id="'+id+'" role="alert" aria-live="assertive" aria-atomic="true" class="toast alert-dismissible toast-'+type+'" data-autohide="true">\
                 '+message+'\
@@ -1430,17 +1418,11 @@ _CustomBuilder = {
               </div>');
             
             $("#builder-message").removeClass('center');
-            $("#builder-message").prepend(toast); //add to the top
+            $("#builder-message").append(toast);
             if (center) {
                 $("#builder-message").addClass('center');
             }
-            var option = {};
-            if (delay > 0) {
-                option.delay = delay;
-            } else {
-                option.autohide = false
-            }
-            $('#'+id).toast(option);
+            $('#'+id).toast({delay : delay});
             $('#'+id).toast("show");
             $('#'+id).on('hidden.bs.toast', function () {
                 $('#'+id).remove();
@@ -3061,7 +3043,6 @@ _CustomBuilder = {
                 width = parseInt($("#right-panel").css("min-width").replace("px", ""));
             } catch (e){}
         }
-        $("body").css("--builder-right-panel-width", width + 'px');
         
         if (width > 680) {
             $("#right-panel, #right-panel .property-editor-container").addClass("wider");

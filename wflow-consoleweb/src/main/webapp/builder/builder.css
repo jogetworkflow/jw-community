@@ -2187,8 +2187,8 @@ body.quick-nav-position-left #quick-nav-bar.active #closeQuickNav{
 #builder-message {
     position: fixed; 
     top: 85px; 
-    right: calc(13.5vw + 50px);
-    right: calc(var(--builder-right-panel-width) + 50px);
+    right: calc(13.5vw + 15px);
+    right: calc(var(--builder-right-panel-width) + 15px);
     z-index: 1000;
 }
 #builder-message.center{
@@ -2200,28 +2200,6 @@ body.quick-nav-position-left #quick-nav-bar.active #closeQuickNav{
     padding: 15px 35px 15px 15px;
     min-width: 300px;
     font-size: 16px;
-    max-height: 120px;
-    overflow: auto;
-    scrollbar-color: #721c23 #e4bdc1;
-    scrollbar-width: thin; 
-}
-#builder-message .toast::-webkit-scrollbar {
-    width: 6px;
-    height: 6px;
-    background-color: #721c23;
-    -webkit-box-shadow: none; 
-}
-#builder-message .toast::-webkit-scrollbar-track {
-    -webkit-box-shadow: inset 0 0 1px #e4bdc1; 
-    border-radius: 15px;
-}
-#builder-message .toast::-webkit-scrollbar-thumb {
-    background-color: #721c23;
-    outline: 1px solid #721c23; 
-    border-radius: 15px;
-}
-#builder-message .toast + .toast{
-    margin-top:5px;
 }
 #builder-message .toast .close{
     padding: 10px 10px;

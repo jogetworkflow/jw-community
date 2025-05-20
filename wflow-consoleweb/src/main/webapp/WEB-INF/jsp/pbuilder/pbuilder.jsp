@@ -26,10 +26,12 @@
             position: fixed; 
             top:85px;
             top : var(--builder-header-top-height); 
+            margin-right: 20vw;
             margin-left: 15vw;
+            margin-right: var(--builder-right-panel-width);
             margin-left: var(--builder-left-panel-width);
-            width: calc(100vw - (13.5vw + 30px));
-            width: calc( 100vw - (var(--builder-left-panel-width) + var(--builder-canvas-margin)));
+            width: calc(100vw - (13.5vw + 20vw + 30px));
+            width: calc( 100vw - (var(--builder-left-panel-width) + var(--builder-right-panel-width) + var(--builder-canvas-margin)));
             background: #fafbfc;
             padding: 5px 10px 5px 23px;
             z-index: 9;
