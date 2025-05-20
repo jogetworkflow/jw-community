@@ -3835,6 +3835,12 @@ textarea.form-control-lg {
   list-style: none;
 }
 
+@media (max-width: 767px) {
+    .header-nav ul.nav{
+        flex-wrap: nowrap !important;
+    }
+}
+
 .nav-link {
   display: block;
   padding: var(--jgt-nav-link-padding-y) var(--jgt-nav-link-padding-x);
