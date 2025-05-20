@@ -3,37 +3,52 @@ var cacheName = "jw-cache";
 var cache = cacheName + "-" + version;
 var urlsToCache = [];
 
+let currentPageUrlPromiseResolve;
+const currentPageUrlPromise = new Promise((resolve) => {
+    currentPageUrlPromiseResolve = resolve;
+});
+
+self.addEventListener('message', (event) => {
+    if (event.data.type === 'CURRENT_PAGE_URL') {
+        currentPageUrlPromiseResolve(event.data.url); // Resolve the promise when message is received
+    }
+});
+
 self.addEventListener('install', function(event) {
     console.log('base SW install event');
-    self.skipWaiting();
     event.waitUntil(
-        caches.delete(cache)
-            .then(function(){
-                caches.open(cache)
-                    .then(function(cacheObj) {
-                        //scope should already end with a '/'
-                        urlsToCache.push(self.registration.scope + 'home/style.css');
-                        urlsToCache.push(self.registration.scope + 'home/logo.png');
-                        urlsToCache.push(self.registration.scope + 'images/v3/joget.ico');
-                        urlsToCache.push(self.registration.scope + 'web/offline');
-
-                        //cache one by one to prevent duplicate url causing DOMexception
-                        return urlsToCache.map(function(url) {
-                            return caches.match(url).then(function(checkCache){
-                                if(checkCache === undefined){
-                                    cacheObj.addAll([url]).then(function() {
-                                        //console.log("base SW " + url + " cached");
-                                    }).catch(function(err) {
-                                        //ignore
-                                    });
-                                }else{
-                                    //console.log(url + ' already exists in cache');
-                                }
+        currentPageUrlPromise.then((url) => {
+            self.skipWaiting();
+            if (url !== "/jw/web/login") {
+                caches.delete(cache)
+                    .then(function(){
+                        caches.open(cache)
+                            .then(function(cacheObj) {
+                                //scope should already end with a '/'
+                                urlsToCache.push(self.registration.scope + 'home/style.css');
+                                urlsToCache.push(self.registration.scope + 'home/logo.png');
+                                urlsToCache.push(self.registration.scope + 'images/v3/joget.ico');
+                                urlsToCache.push(self.registration.scope + 'web/offline');
+        
+                                //cache one by one to prevent duplicate url causing DOMexception
+                                return urlsToCache.map(function(url) {
+                                    return caches.match(url).then(function(checkCache){
+                                        if(checkCache === undefined){
+                                            cacheObj.addAll([url]).then(function() {
+                                                //console.log("base SW " + url + " cached");
+                                            }).catch(function(err) {
+                                                //ignore
+                                            });
+                                        }else{
+                                            //console.log(url + ' already exists in cache');
+                                        }
+                                    })
+                                })
                             })
-                        })
                     })
-            })
                 
+            }
+        })
     );
 });
 
