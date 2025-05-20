@@ -244,6 +244,11 @@ body.rtl .dataList .actions.right {
     margin-top: 5px;
 }
 
+.pagelinks [class*="-disabled"] {
+    color: var(--jgt-pg-itemActiveColorDisabled) !important;
+    background-color: var(--jgt-pg-itemActiveBgDisabled) !important;
+}
+
 body.rtl .dataList span.pagelinks {
     text-align: right;
 }
