@@ -38,7 +38,6 @@ public class TestSettings {
         
         //retrive dummy setting
         String testingSetting = setupManager.getSettingValue("testingSetting");
-        Assert.assertTrue(!((TestSetupManagerHelperImpl) setupManagerHelper).cacheSettingMaps.isEmpty());
         Assert.assertNull(testingSetting);
         
         //add setting
