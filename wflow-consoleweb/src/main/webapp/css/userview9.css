@@ -49,6 +49,7 @@ input[type="radio"] {
     background-image: var(--theme-background-image, none);
     background-size: cover !important;
     background-position: center bottom;
+    background-attachment: fixed;
 }
 
 @media print {
