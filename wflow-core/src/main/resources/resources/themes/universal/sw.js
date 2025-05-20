@@ -123,39 +123,48 @@ function cacheUserview(){
         });
 }
 
+let currentPageUrlPromiseResolve;
+const currentPageUrlPromise = new Promise((resolve) => {
+    currentPageUrlPromiseResolve = resolve;
+});
+
 self.addEventListener('install', function (event) {
     console.log('SW install event');
-    self.skipWaiting();
     event.waitUntil(
-        caches.delete(appCacheName)
-            .then(function(){
-                caches.open(appCacheName)
-                    .then(function (cache) {
-                        var promises = [];
-
-                        urlsToCache.push(getPath() + '/_/pwaoffline');
-                        urlsToCache.push(getPath() + '/_/offline');
-                        promises.push(
-                            //cache one by one to prevent duplicate url causing DOMexception
-                            urlsToCache.map(function(url) {
-                                return caches.match(url).then(function(checkCache){
-                                    if(checkCache === undefined){
-                                        cache.addAll([url]).then(function() {
-                                            //console.log(url + " cached");
-                                        }).catch(function(err) {
-                                            //ignore
-                                        });
-                                    }else{
-                                        //console.log(url + ' already exists in cache');
-                                    }
-                                })
+        currentPageUrlPromise.then((url) => {
+            self.skipWaiting();
+            if (url !== "/jw/web/login") {
+                caches.delete(appCacheName)
+                    .then(function(){
+                        caches.open(appCacheName)
+                            .then(function (cache) {
+                                var promises = [];
+        
+                                urlsToCache.push(getPath() + '/_/pwaoffline');
+                                urlsToCache.push(getPath() + '/_/offline');
+                                promises.push(
+                                    //cache one by one to prevent duplicate url causing DOMexception
+                                    urlsToCache.map(function(url) {
+                                        return caches.match(url).then(function(checkCache){
+                                            if(checkCache === undefined){
+                                                cache.addAll([url]).then(function() {
+                                                    //console.log(url + " cached");
+                                                }).catch(function(err) {
+                                                    //ignore
+                                                });
+                                            }else{
+                                                //console.log(url + ' already exists in cache');
+                                            }
+                                        })
+                                    })
+                                );
+        
+                                return Promise.all(promises);
                             })
-                        );
-
-                        return Promise.all(promises);
-                    })
                 cacheUserview();
-            })
+                    })
+            }
+        })
     );
 });
 
@@ -709,6 +718,10 @@ function connectCacheDB(f, mode) {
 }
 
 self.addEventListener('message', function(event) {
+    if (event.data.type === 'CURRENT_PAGE_URL') {
+        currentPageUrlPromiseResolve(event.data.url); // Resolve the promise when message is received
+    }
+
     if (event.data.hasOwnProperty('sync')) {
         console.log('sync received');
         processStoredFormData();
