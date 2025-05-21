@@ -1008,8 +1008,11 @@ public class ConsoleWebController {
                     boolean passwordReset = false;
 
                     u = userDao.getUserById(user.getId());
-                    u.setFirstName(user.getFirstName());
-                    u.setLastName(user.getLastName());
+                    String firstName = StringUtil.stripAllHtmlTag(StringUtil.unescapeString(user.getFirstName(), StringUtil.TYPE_HTML, null));
+                    String lastName = StringUtil.stripAllHtmlTag(StringUtil.unescapeString(user.getLastName(), StringUtil.TYPE_HTML, null));
+                                                
+                    u.setFirstName(firstName);
+                    u.setLastName(lastName);
                     u.setEmail(user.getEmail());
                     if (user.getPassword() != null && !user.getPassword().trim().isEmpty()) {
                         u.setConfirmPassword(user.getPassword());

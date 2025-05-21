@@ -120,14 +120,24 @@
                 alertString += '<ui:msgEscJS key="console.directory.user.error.label.passwordNotMatch"/>';
                 valid = false;
             }
+            
+            UI.validateEmail('#email', true, function(isValid) {
+                if (!isValid) {
+                    if (alertString != "") {
+                        alertString += '\n';
+                    }
+                    alertString += '<ui:msgEscJS key="console.directory.user.error.label.invalidEmailFormat"/>';
+                    valid = false;
+                }
 
-            if(valid){
-                $("#profile").submit();
-            }else{
-                alert(alertString);
-            }
+                if(valid){
+                    $("#profile").submit();
+                }else{
+                    alert(alertString);
+                }
+            });
         }
-
+         
         function closeDialog() {
             if (parent && parent.PopupDialog.closeDialog) {
                 parent.PopupDialog.closeDialog();

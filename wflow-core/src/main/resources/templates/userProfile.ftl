@@ -212,11 +212,16 @@
             function validateField(){
                 var valid = true;
                 var alertString = "";
+                const firstName = $("#firstName").val();
+                const lastName = $("#lastName").val();
                 <#if element.properties.f_firstName! != 'hide'>
-                    if($("#firstName").val() == ""){
+                    if(firstName == ""){
                         alertString += '@@User.firstName[not.blank]@@';
                         valid = false;
-                    }
+                    } else if (containsXss(firstName) || containsXss(lastName)) {
+                        alertString += '@@console.directory.user.error.label.nameInvalid@@';
+                        valid = false;
+                    }            
                 </#if>
                 <#if element.properties.f_password! != 'hide'>
                     if($("#password").val() != $("#confirmPassword").val()){
@@ -255,6 +260,11 @@
                     }
                 </#if>
             }
+                
+            function containsXss(input) {
+                const pattern = /<[^>]*>|(javascript:)|(&#x?[0-9a-fA-F]+;)|(%[0-9a-fA-F]{2})/gi;
+                return pattern.test(input);        
+            }   
 
             // show/hide the field based on current locale and the chosen locale
             function updateWesternDigitDateField() {
