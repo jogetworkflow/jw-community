@@ -839,12 +839,16 @@ public class UserviewService {
                 } else {
                     themeProperties = themeObj.getJSONObject("properties");
                 }
-                themeProperties.put("themeID", result[1]);
+                if (themeProperties != null) {
+                    themeProperties.put("themeID", result[1]);
+                }
             } else {
                 themeProperties = themeObj.getJSONObject("properties");
             }
-            
-            theme = (UserviewTheme) pluginManager.getPlugin(themeClassName);
+
+            if (themeProperties != null) {
+                theme = (UserviewTheme) pluginManager.getPlugin(themeClassName);
+            }
         }
         
         if (theme == null) {
@@ -928,9 +932,10 @@ public class UserviewService {
 
             BuilderDefinitionDao dao = (BuilderDefinitionDao) AppUtil.getApplicationContext().getBean("builderDefinitionDao");
             BuilderDefinition def = dao.loadById(themeBuilderID, appDef);
-
-            JSONObject themeProperties = new JSONObject(def.getJson());
-            json = themeProperties.getJSONObject("theme").getJSONObject("properties");
+            if (def != null) {
+                JSONObject themeProperties = new JSONObject(def.getJson());
+                json = themeProperties.getJSONObject("theme").getJSONObject("properties");
+            }
         }
         return json;
     }
