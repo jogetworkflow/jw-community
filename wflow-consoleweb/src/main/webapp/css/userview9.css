@@ -106,10 +106,13 @@ body.rtl:not(.horizontal_menu) header.navbar .container-fluid {
     color: var(--theme-header-font, var(--theme-color2, #72777a));
     position: relative;
     box-shadow: none;
-    height: var(--global-headerHeight);
-    line-height: var(--global-headerHeight);
+    height: 100%;
+    line-height: var(--global-lineHeight);
     padding: 0 var(--global-padding);
     margin-bottom: 0px;
+    text-decoration: none;
+    display: flex;
+    align-items: center;
 }
 
 .header-nav a.btn i {
@@ -667,7 +670,6 @@ body.rtl #sidebar .nav-tabs.user-menu .mm-profile.type-no>a>span:before {
     display: inline-block;
     padding: 15px 0;
     left: 25px;
-    top: 2px;
 }
 
 body.rtl .hi-trigger {
