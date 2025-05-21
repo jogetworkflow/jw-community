@@ -239,12 +239,12 @@ public class UserProfileMenu extends UserviewMenu {
             String v = getRequestParameterString(f);
             if (v != null) {
                 if (v.length() > 50) {
-                    errors.add(ResourceBundleUtil.getMessage("form.defaultvalidator.err.invalid"));
+                    errors.add(ResourceBundleUtil.getMessage("form.defaultvalidator.err.invalidInputCharacter"));
                     break;
                 }
                 String e = StringUtil.unescapeString(StringUtil.stripAllHtmlTag(v), StringUtil.TYPE_HTML, null);
                 if (!e.equals(v)) {
-                    errors.add(ResourceBundleUtil.getMessage("form.defaultvalidator.err.invalid"));
+                    errors.add(ResourceBundleUtil.getMessage("form.defaultvalidator.err.invalidInputCharacter"));
                     break;
                 }
             }
