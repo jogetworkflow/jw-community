@@ -21,7 +21,7 @@ import org.joget.workflow.model.WorkflowProcessLink;
 import org.joget.workflow.model.WorkflowVariable;
 import org.joget.workflow.model.dao.WorkflowProcessLinkDao;
 import org.joget.workflow.model.service.WorkflowManager;
-import org.joget.workflow.model.service.WorkflowManagerImpl;
+import org.joget.workflow.shark.SharkWorkflowManager;
 import org.joget.workflow.shark.migrate.model.MigrateActivity;
 import org.joget.workflow.shark.migrate.model.MigrateAssignment;
 import org.joget.workflow.shark.migrate.model.MigrateProcess;
@@ -1188,7 +1188,7 @@ public class SharkWorkflowAssignmentDaoImpl extends AbstractSpringDao implements
                                 }
                             }
                             
-                            ((WorkflowManagerImpl) wm).internalUpdateMigratedProcess(process, acts);
+                            ((SharkWorkflowManager) wm).internalUpdateMigratedProcess(process, acts);
                             
                             return true;
                         }

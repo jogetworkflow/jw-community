@@ -101,6 +101,7 @@ import org.joget.workflow.shark.model.SharkActivityHistory;
 import org.joget.workflow.shark.model.SharkProcessHistory;
 import org.joget.workflow.shark.model.dao.SharkWorkflowAssignmentDao;
 import org.joget.workflow.model.dao.WorkflowAssignmentDao;
+import org.joget.workflow.shark.SharkWorkflowManager;
 import org.joget.workflow.util.DeadlineThreadManager;
 import org.json.JSONObject;
 import org.springframework.context.ApplicationContext;
@@ -110,7 +111,7 @@ import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.transaction.support.TransactionCallbackWithoutResult;
 import org.springframework.transaction.support.TransactionTemplate;
 
-public class WorkflowManagerImpl implements WorkflowManager {
+public class WorkflowManagerImpl implements SharkWorkflowManager {
 
     static boolean initialized = false;
     private WorkflowUserManager userManager;
