@@ -5089,6 +5089,9 @@ body.rtl .breadcrumb-item + .breadcrumb-item::before{
   background-color: var(--jgt-list-group-bg);
   border: var(--jgt-list-group-border-width) solid var(--jgt-list-group-border-color);
 }
+.list-group-item .ph_column_title {
+  color: var(--jgt-list-group-color);
+}
 .list-group-item:first-child {
   border-top-left-radius: inherit;
   border-top-right-radius: inherit;
