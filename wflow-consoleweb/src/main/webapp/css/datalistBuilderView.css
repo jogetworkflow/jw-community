@@ -510,6 +510,15 @@ body.rtl .filter-cell .hasDatepicker + a + a{
     right: unset;
     left: 22px;
 }
+.dataList .filter-cell .ui-autocomplete {
+    margin-bottom: 5px;
+    padding-left: 0px !important;
+    width: max-content !important;
+    max-width: 150px;
+}
+.dataList .filter-cell .ui-autocomplete li{
+    line-height: normal;
+}
 .dataList .actions.right{
     text-align:right;
 }

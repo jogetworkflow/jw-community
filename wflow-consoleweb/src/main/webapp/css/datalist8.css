@@ -156,6 +156,15 @@ body.rtl .filter-cell .hasDatepicker + a + a{
 .search_filter_popup .filter-cell.hidden-filter{
     display:none !important;
 }
+.dataList .filter-cell .ui-autocomplete {
+    margin-bottom: 5px;
+    padding-left: 0px !important;
+    width: max-content !important;
+    max-width: 150px;
+}
+.dataList .filter-cell .ui-autocomplete li{
+    line-height: normal;
+}
 .dataList .actions.right,
 body.rtl .dataList .actions.left {
     text-align:right;
