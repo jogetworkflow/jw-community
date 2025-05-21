@@ -306,9 +306,12 @@ $(document).ready(function() {
                 $(this).appendTo($(this).closest("div.Form_Menu").find("div.viewForm-body-content div#section-actions"));
             })
         }
-        $(".dataList .filters select").on("change", function() {
+        $(".dataList .filters select:not([multiple])").on("change", function() {
             $(this).closest("div.filters").find("input.form-button[type='submit'][value='Show']").click();
-        })
+        });
+        $(".dataList .filters select, .dataList .filters input").on("filter_updated", function() {
+            $(this).closest("div.filters").find("input.form-button[type='submit'][value='Show']").click();
+        });
     })
     $(window).resize(function() {
         if (($("body").hasClass("horizontal_menu") && $(window).outerWidth() < 768) || !$("body").hasClass("horizontal_menu")) {
