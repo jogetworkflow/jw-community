@@ -5,8 +5,8 @@ import java.util.Map;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import org.apache.commons.lang.ArrayUtils;
-import org.apache.commons.lang.StringEscapeUtils;
+import org.apache.commons.lang3.ArrayUtils;
+import org.apache.commons.lang3.StringEscapeUtils;
 import org.joget.apps.app.service.AppPluginUtil;
 import org.joget.apps.app.service.AppUtil;
 import org.joget.plugin.base.PluginWebSupport;
@@ -165,7 +165,7 @@ public class RulesDecisionPlugin extends DecisionPluginDefault implements Plugin
                     String[] list = value.split(";");
                     result = ArrayUtils.contains(list, variable);
                 } else if ("regex".equals(operation) && value != null) { // Check null before use
-                    result = variable.matches(StringEscapeUtils.unescapeJavaScript(value));
+                    result = variable.matches(StringEscapeUtils.unescapeEcmaScript(value));
                 }
             }
         }
