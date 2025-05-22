@@ -9,35 +9,33 @@
             <li><a href="#update"><span>Update</span> <span class="jgt-badge update_count">(0)</span></a></li>
         </ul>
         <div>
-            <div id="pluginDefault">
-                <div id="pluginDefault">
-                    <ui:jsontable url="${pageContext.request.contextPath}/web/json/console/app/${appId}/${appVersion}/pluginDefault/list?${pageContext.request.queryString}"
-                       var="JsonPluginDefaultDataTable"
-                       divToUpdate="pluginDefaultList"
-                       jsonData="data"
-                       rowsPerPage="15"
-                       width="100%"
-                       sort="id"
-                       desc="false"
-                       href="${pageContext.request.contextPath}/web/console/app/${appId}/${appVersion}/pluginDefault/config"
-                       hrefParam="id"
-                       hrefQuery="true"
-                       hrefDialog="true"
-                       hrefDialogTitle=""
-                       checkbox="${protectedReadonly != 'true'}"
-                       checkboxButton1="console.app.pluginDefault.create.label"
-                       checkboxCallback1="defaultPluginPropertiesCreate"
-                       checkboxOptional1="true"
-                       checkboxButton2="general.method.label.delete"
-                       checkboxCallback2="pluginDefaultDelete"
-                       searchItems="filter|Filter"
-                       fields="['id','pluginName','pluginDescription']"
-                       column1="{key: 'pluginName', label: 'console.plugin.label.name', sortable: true}"
-                       column2="{key: 'pluginDescription', label: 'console.plugin.label.description', sortable: true}"
-                       />
-                </div>
+            <div id="pluginDefault" class="pluginList_container">
+                <ui:jsontable url="${pageContext.request.contextPath}/web/json/console/app/${appId}/${appVersion}/pluginDefault/list?${pageContext.request.queryString}"
+                   var="JsonPluginDefaultDataTable"
+                   divToUpdate="pluginDefaultList"
+                   jsonData="data"
+                   rowsPerPage="15"
+                   width="100%"
+                   sort="id"
+                   desc="false"
+                   href="${pageContext.request.contextPath}/web/console/app/${appId}/${appVersion}/pluginDefault/config"
+                   hrefParam="id"
+                   hrefQuery="true"
+                   hrefDialog="true"
+                   hrefDialogTitle=""
+                   checkbox="${protectedReadonly != 'true'}"
+                   checkboxButton1="console.app.pluginDefault.create.label"
+                   checkboxCallback1="defaultPluginPropertiesCreate"
+                   checkboxOptional1="true"
+                   checkboxButton2="general.method.label.delete"
+                   checkboxCallback2="pluginDefaultDelete"
+                   searchItems="filter|Filter"
+                   fields="['id','pluginName','pluginDescription']"
+                   column1="{key: 'pluginName', label: 'console.plugin.label.name', sortable: true}"
+                   column2="{key: 'pluginDescription', label: 'console.plugin.label.description', sortable: true}"
+                   />
             </div>    
-            <div id="installed">
+            <div id="installed" class="pluginList_container">
                 <ui:jsontable url="${pageContext.request.contextPath}/web/json/app/${appId}/${appVersion}/plugin/listInstalledBundle?${pageContext.request.queryString}"
                     var="JsonDataTable1"
                     divToUpdate="pluginList"
@@ -46,6 +44,13 @@
                     width="100%"
                     sort="name"
                     desc="false"
+                    href="${pageContext.request.contextPath}/web/console/setting/plugin/details"
+                    hrefParam="pluginClass"
+                    hrefQuery="true"
+                    hrefDialog="true"
+                    hrefDialogWidth="600px"
+                    hrefDialogHeight="400px"
+                    hrefDialogTitle=""
                     searchItems="name|Name"
                     fields="['pluginClass','label','description','version','plugintype']"
                     column1="{key: 'label', label: 'console.plugin.label.name', sortable: false, width: 180}"
@@ -53,7 +58,7 @@
                     column3="{key: 'version', label: 'console.plugin.label.version', sortable: false, width: 140}"
                     />
             </div>
-            <div id="update">
+            <div id="update" class="pluginList_container">
                 <ui:jsontable url="${pageContext.request.contextPath}/web/json/app/${appId}/${appVersion}/plugin/listInstalledBundle?isUpdate=true"
                     var="JsonDataTable"
                     divToUpdate="pluginList2"

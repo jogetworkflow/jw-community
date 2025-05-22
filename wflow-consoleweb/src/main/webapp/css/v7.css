@@ -373,7 +373,7 @@ div#main-body-content-filter {
     max-width: 70%;
 }
 
-div#JsonDataTable1_pluginList-search, div#JsonDataTable_pluginList2-search,
+.pluginList_container div[id$='-search'],
 div#JsonMessageDataTable_messageList-search, div#JsonDataTable_processList-search,
 div#JsonDataTable_auditTrailList-search,
 div#JsonDataTable_groupList-search, div#JsonDataTable_userList-search,

@@ -66,7 +66,7 @@ public class PluginJsonController {
                 }
             }
             
-            writePluginsResponse(pluginList, filter, start, rows, false, writer);
+            writePluginsResponse(pluginList, filter, null, start, rows, false, writer);
         } catch (Exception e) {
             LogUtil.error(this.getClass().getName(), e, "");
         }
@@ -84,7 +84,7 @@ public class PluginJsonController {
                 pluginList = (List) pluginManager.list();
             }
 
-            writePluginsResponse(pluginList, filter, start, rows, true, writer);
+            writePluginsResponse(pluginList, filter, null, start, rows, true, writer);
         } catch (Exception e) {
             LogUtil.error(this.getClass().getName(), e, "");
         }
@@ -102,7 +102,7 @@ public class PluginJsonController {
                 pluginList = new ArrayList(pluginManager.listOsgiPlugin(null));
             }
 
-            writePluginsResponse(pluginList, filter, start, rows, true, writer);
+            writePluginsResponse(pluginList, filter, null, start, rows, true, writer);
         } catch (Exception e) {
             LogUtil.error(this.getClass().getName(), e, "");
         }
@@ -118,13 +118,13 @@ public class PluginJsonController {
     }
     
     @RequestMapping("/json/plugin/listBundlePlugins")
-    public void pluginListBundlePlugins(Writer writer, @RequestParam(value = "className") String className, @RequestParam(value = "name", required = false) String filter, @RequestParam(value = "sort", required = false) String sort, @RequestParam(value = "desc", required = false) Boolean desc, @RequestParam(value = "start", required = false) Integer start, @RequestParam(value = "rows", required = false) Integer rows) throws JSONException, IOException {
+    public void pluginListBundlePlugins(Writer writer, @RequestParam(value = "pluginClass") String pluginClass, @RequestParam(value = "className", required = false) String className, @RequestParam(value = "name", required = false) String filter, @RequestParam(value = "sort", required = false) String sort, @RequestParam(value = "desc", required = false) Boolean desc, @RequestParam(value = "start", required = false) Integer start, @RequestParam(value = "rows", required = false) Integer rows) throws JSONException, IOException {
         List<Plugin> pluginList = null;
 
         try {
-            pluginList = new ArrayList<Plugin>(pluginManager.listBundlePlugins(className));
+            pluginList = new ArrayList<Plugin>(pluginManager.listBundlePlugins(pluginClass));
             
-            writePluginsResponse(pluginList, filter, start, rows, false, writer);
+            writePluginsResponse(pluginList, filter, className, start, rows, false, writer);
         } catch (Exception e) {
             LogUtil.error(this.getClass().getName(), e, "");
         }
@@ -141,22 +141,9 @@ public class PluginJsonController {
         List<Plugin> pluginList = new ArrayList<>();
 
         try {
-            Collection<Plugin> fullPluginList = pluginManager.list(SystemConfigurablePlugin.class);
+            pluginList = new ArrayList(pluginManager.list(SystemConfigurablePlugin.class));
 
-            if (className != null && !className.isEmpty()) {
-                Class clazz = getClass(className);
-                if (clazz != null) {
-                    for (Plugin plugin : fullPluginList) {
-                        if (clazz.isAssignableFrom(plugin.getClass())) {
-                            pluginList.add(plugin);
-                        }
-                    }
-                }
-            } else {
-                pluginList.addAll(fullPluginList);
-            }
-            
-            writePluginsResponse(pluginList, filter, start, rows, false, writer);
+            writePluginsResponse(pluginList, filter, className, start, rows, false, writer);
         } catch (Exception e) {
             LogUtil.error(this.getClass().getName(), e, "");
         }
@@ -253,16 +240,33 @@ public class PluginJsonController {
      * 
      * @param pluginList
      * @param filter
+     * @param className plugin type class name
      * @param start
      * @param rows
      * @param checkUnintallable
      * @param writer
      */
-    protected void writePluginsResponse(List<Plugin> pluginList, String filter, int start, int rows, boolean checkUnintallable, Writer writer) {
-        Map<String, Plugin> sortedPluginList = sortPluginList(pluginList);
-        
+    protected void writePluginsResponse(List<Plugin> pluginList, String filter, String className, int start, int rows, boolean checkUnintallable, Writer writer) throws ClassNotFoundException {
         JSONObject jsonObject = new JSONObject();
         int counter = 0;
+        
+        //filter the list based on selected plugin type class
+        if (className != null && !className.isEmpty()) {
+            List<Plugin> filteredList = new ArrayList<>();
+            
+            Class clazz = getClass(className);
+            if (clazz != null) {
+                for (Plugin plugin : pluginList) {
+                    if (clazz.isAssignableFrom(plugin.getClass())) {
+                        filteredList.add(plugin);
+                    }
+                }
+            }
+            
+            pluginList = filteredList;
+        }
+        
+        Map<String, Plugin> sortedPluginList = sortPluginList(pluginList);
 
         Map<String, String> pluginType = PluginManager.getPluginType();
         for (Entry<String, Plugin> entry : sortedPluginList.entrySet()) {
