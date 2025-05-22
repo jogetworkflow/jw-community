@@ -1423,6 +1423,11 @@ _CustomBuilder = {
                         $(this).toast("hide");
                     });
                 }
+            } else if (type === "success") {
+                //remove all error messages when having a success message
+                $('.toast-danger').each(function(){
+                    $(this).toast("hide");
+                });
             }
             var toast = $('<div id="'+id+'" role="alert" aria-live="assertive" aria-atomic="true" class="toast alert-dismissible toast-'+type+'" data-autohide="true">\
                 '+message+'\
@@ -1938,7 +1943,7 @@ _CustomBuilder = {
     /*
      * Check change before close the properties panel
      */
-    checkChangeBeforeCloseElementProperties : function(callback) {
+    checkChangeBeforeCloseElementProperties : function(callback, abortCallback) {
         var hasChange = false;
         var isContinue = false;
         
@@ -1969,6 +1974,8 @@ _CustomBuilder = {
         
         if (isContinue && callback) {
             callback(hasChange);
+        }else if (!isContinue && abortCallback) {
+            abortCallback(hasChange);
         }
     },
     
