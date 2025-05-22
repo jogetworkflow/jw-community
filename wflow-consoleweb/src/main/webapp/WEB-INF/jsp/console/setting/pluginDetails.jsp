@@ -1,12 +1,12 @@
 <%@ include file="/WEB-INF/jsp/includes/taglibs.jsp" %>
 
-<commons:popupHeader />
+<commons:popupHeader bodyCssClass=" builder-popup" builderTheme="true"/>
 
     <div id="main-body-header">
         <c:out value="${title}"/>
     </div>
 
-    <div id="main-body-content" style="text-align: initial">
+    <div id="main-body-content" class="pluginList_container" style="text-align: initial">
         <div id="main-body-content-filter">
             <form>
                 <fmt:message key="console.plugin.label.typeFilter"/>
@@ -19,7 +19,7 @@
                 </select>
             </form>
         </div>
-        <ui:jsontable url="${pageContext.request.contextPath}/web/json/plugin/listBundlePlugins?className=${className}&${pageContext.request.queryString}"
+        <ui:jsontable url="${pageContext.request.contextPath}/web/json/plugin/listBundlePlugins?${pageContext.request.queryString}"
             var="JsonDataTable1"
             divToUpdate="pluginList1"
             jsonData="data"
@@ -45,6 +45,9 @@
     $(document).ready(function(){
         $('#JsonDataTable1_searchTerm').hide();
 
+        //Reposition the filter
+        $("#main-body-content-filter").appendTo("#JsonDataTable1_pluginList1-search");
+        $("#main-body-content-filter").show();
         
         var org_filter = window.filter;
         var filter = function(jsonTable, url, value){

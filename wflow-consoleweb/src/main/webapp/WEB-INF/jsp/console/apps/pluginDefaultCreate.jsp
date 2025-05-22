@@ -7,7 +7,7 @@
     </div>
 
     <div id="main-body-content">
-        <div id="main-body-content-filter">
+        <div id="main-body-content-filter" class="pluginList_container">
             <form>
             <fmt:message key="console.plugin.label.typeFilter"/>
             <select id="JsonDataTable_filterbytype" onchange="filter(JsonDataTable, '&className=', this.options[this.selectedIndex].value)">

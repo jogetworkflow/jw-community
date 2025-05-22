@@ -33,7 +33,7 @@
                 </c:if>    
             </ul>
             <div>
-                <div id="installed">
+                <div id="installed" class="pluginList_container">
                     <div id="main-body-content-filter">
                         <form>
                             <fmt:message key="console.plugin.label.typeFilter"/>
@@ -72,7 +72,7 @@
                         column3="{key: 'version', label: 'console.plugin.label.version', sortable: false, width: 140}"
                         />
                 </div>
-                <div id="update">
+                <div id="update" class="pluginList_container">
                     <div id="main-body-content-filter">
                         <form>
                             <fmt:message key="console.plugin.label.typeFilter"/>
@@ -111,7 +111,7 @@
                         />
                 </div>
                 <c:if test="${hasConfigurablePlugin}">
-                <div id="configurableplugins">
+                <div id="configurableplugins" class="pluginList_container">
                     <div id="main-body-content-filter">
                         <form>
                             <fmt:message key="console.plugin.label.typeFilter"/>
@@ -179,18 +179,17 @@
         });
 
         //Reposition the filter
-        $("div#installed #main-body-content-filter").appendTo("#JsonDataTable1_pluginList-search");
+        $("div#installed #main-body-content-filter").appendTo("#JsonDataTable1_pluginList1-search");
         $("div#installed #main-body-content-filter").show();
-
-        $("div#update #main-body-content-filter").appendTo("#JsonDataTable_pluginList2-search");
+        $("div#update #main-body-content-filter").appendTo("#JsonDataTable2_pluginList2-search");
         $("div#update #main-body-content-filter").show();
+        $("div#configurableplugins #main-body-content-filter").appendTo("#JsonDataTable3_pluginList3-search");
+        $("div#configurableplugins #main-body-content-filter").show();
 
-
-
-        $('<i class="fas fa-trash-alt"></i><span> </span>').prependTo('div#JsonDataTable1_pluginList-buttons button:nth-child(3)');
-        $('div#JsonDataTable1_pluginList-buttons button:nth-child(3)').addClass('console-danger')
-        $('<i class="fas fa-cloud-download-alt"></i><span> </span>').prependTo('div#JsonDataTable_pluginList2-buttons button:nth-child(3)');
-        $('div#JsonDataTable_pluginList2-buttons button:nth-child(3)').addClass('console-primary')
+        $('<i class="fas fa-trash-alt"></i><span> </span>').prependTo('div#JsonDataTable1_pluginList1-buttons button:nth-child(3)');
+        $('div#JsonDataTable1_pluginList1-buttons button:nth-child(3)').addClass('console-danger');
+        $('<i class="fas fa-cloud-download-alt"></i><span> </span>').prependTo('div#JsonDataTable2_pluginList2-buttons button:nth-child(3)');
+        $('div#JsonDataTable2_pluginList2-buttons button:nth-child(3)').addClass('console-primary');
     
         var selectedList = localStorage.getItem("selectedList");
         if(selectedList) {
@@ -198,7 +197,7 @@
             selectedList.forEach(function(item, index){
                 UI.showConsoleToast(index, item + '<ui:msgEscJS key="console.app.message.delete.toast.message"/>', "fas fa-exclamation-circle", 2000, $("div#main")); 
             })
-            localStorage.removeItem("selectedList")
+            localStorage.removeItem("selectedList");
         }
         
         $('#JsonDataTable1_searchTerm, #JsonDataTable2_searchTerm, #JsonDataTable3_searchTerm').hide();

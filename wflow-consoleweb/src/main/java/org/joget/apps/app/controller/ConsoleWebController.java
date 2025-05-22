@@ -5265,7 +5265,7 @@ public class ConsoleWebController {
         
         map.addAttribute("title", title);
         map.addAttribute("pluginType", getPluginType());
-        map.addAttribute("className", SecurityUtil.validateStringInput(className));
+        map.addAttribute("pluginClass", SecurityUtil.validateStringInput(className));
         return "console/setting/pluginDetails";
     }
 
