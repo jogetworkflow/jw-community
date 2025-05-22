@@ -537,8 +537,17 @@ public class UserviewThemeProcesser {
         if (customHomePage == null || customHomePage.isEmpty()) {
             customHomePage = userview.getPropertyString("homeMenuId");
         }
-            
+
+        String isPreview = userview.getParamString("isPreview");
+        if ("true".equalsIgnoreCase(isPreview)) {
+            return getPreviewBaseLink() + customHomePage;
+        }
         return getBaseLink() + customHomePage;
+    }
+
+    //For theme builder
+    protected String getPreviewBaseLink() {
+        return "/web/console/app/" + userview.getParamString("appId") + "/" + userview.getParamString("appVersion") + "/userview/builderPreview/" + userview.getPropertyString("id") + "/";
     }
 
     protected String getLoginLink() {
