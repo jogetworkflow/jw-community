@@ -5,6 +5,7 @@ ProcessBuilder = {
     readonly: false,
     refreshTimeout: null,
     updatePasteElement: true,
+    changeNodeId: false,
     
     /*
      * Intialize the builder, called from CustomBuilder.initBuilder
@@ -43,7 +44,8 @@ ProcessBuilder = {
                 "afterRenderNodeAdditional" : "ProcessBuilder.afterRenderNodeAdditional",
                 "beforeRenderNodeAdditional" : "ProcessBuilder.beforeRenderNodeAdditional",
                 "changeNodeAddtionalTarget" : "ProcessBuilder.changeNodeAddtionalTarget",
-                "modifyShowPropertiesData" : "ProcessBuilder.modifyShowPropertiesData"
+                "modifyShowPropertiesData" : "ProcessBuilder.modifyShowPropertiesData",
+                "parseDataToComponent" : "ProcessBuilder.parseDataToComponent",
             }
         }, function() {
             $("#builder_canvas").before('<div id="process-selector"></div>');
@@ -80,6 +82,11 @@ ProcessBuilder = {
             
             $(window).off('hashchange');
             $(window).on('hashchange', function(){
+                //remove all error messages when switch process
+                $('.toast').each(function(){
+                    $(this).toast("hide");
+                });
+                    
                 var id = window.location.hash.replace("#", "");
                 
                 //when no current process data or current process data is not match with the id in URL hash
@@ -1751,20 +1758,25 @@ ProcessBuilder = {
         // Handle node drop
         ProcessBuilder.lf.on('node:drop', ({ data }) => {
             const { id: nodeId } = data;
+            
             const node = ProcessBuilder.lf.getNodeDataById(nodeId);
             const nodeLane = ProcessBuilder.getActivityLane(nodeId);
             const previousLane = ProcessBuilder.getLFLane('laneID_' + nodeLane.properties.id);
-            const gapLimit = 30;
-
-            const nodeYStart = node.y - node.properties.height / 2;
-            const nodeYEnd = node.y + node.properties.height / 2;
-            const laneYStart = previousLane.y - previousLane.properties.height / 2;
-            const laneYEnd = previousLane.y + previousLane.properties.height / 2;
-            const gapHeight = nodeYEnd - laneYEnd;
-
+            
+            //the node is drop outside a lane
             const missingLane = ProcessBuilder.getNodeLaneID(nodeId) === null;
             
-            if (missingLane) {
+            if (missingLane) { 
+                //if the node is not drop to any lane, 
+                //give it a chance to put in it back to its previous lane if gap is allowed
+                const gapLimit = 40;
+
+                const nodeYStart = node.y - node.properties.height / 2;
+                const nodeYEnd = node.y + node.properties.height / 2;
+                const laneYStart = previousLane.y - previousLane.properties.height / 2;
+                const laneYEnd = previousLane.y + previousLane.properties.height / 2;
+                const gapHeight = nodeYEnd - laneYEnd;
+                
                 // Allow if the node is close enough to the lane bottom (within gapLimit)
                 if (gapHeight > 0 && gapHeight < gapLimit) {
                     previousLane.children.push(nodeId);
@@ -1773,13 +1785,6 @@ ProcessBuilder = {
                     });
                 } else {
                     // Remove if too far from the lane
-                    ProcessBuilder.removeNode(data);
-                    return;
-                }
-            } else {
-                // Remove if the node is positioned above the lane
-                // or if the vertical gap exceeds the limit
-                if (nodeYStart < laneYStart || gapHeight > gapLimit) {
                     ProcessBuilder.removeNode(data);
                     return;
                 }
@@ -1824,16 +1829,18 @@ ProcessBuilder = {
         
         // Handle adding a new edge
         ProcessBuilder.lf.on('edge:add', ({ data }) => {
-            if (data.targetNodeId.startsWith("poolID_") || data.targetNodeId.startsWith("laneID_")) {
-                let sourceNode = ProcessBuilder.lf.getNodeDataById(data.sourceNodeId);
-                ProcessBuilder.lf.deleteEdge(data.id);
-                ProcessBuilder.showContextMenu(sourceNode);
-                return false;
+            if (!ProcessBuilder.changeNodeId) {
+                if (data.targetNodeId.startsWith("poolID_") || data.targetNodeId.startsWith("laneID_")) {
+                    let sourceNode = ProcessBuilder.lf.getNodeDataById(data.sourceNodeId);
+                    ProcessBuilder.lf.deleteEdge(data.id);
+                    ProcessBuilder.showContextMenu(sourceNode);
+                    return false;
+                }
+                let transitionID = ProcessBuilder.addConnection(data);
+                var result = ProcessBuilder.getConnection(transitionID);
+                ProcessBuilder.lf.setProperties(transitionID, result.properties);
+                ProcessBuilder.lf.setProperties(transitionID, {xpdlObj: result.xpdlObj});
             }
-            let transitionID = ProcessBuilder.addConnection(data);
-            var result = ProcessBuilder.getConnection(transitionID);
-            ProcessBuilder.lf.setProperties(transitionID, result.properties);
-            ProcessBuilder.lf.setProperties(transitionID, {xpdlObj: result.xpdlObj});
         });
         
         // Handle adding a new node from the drag-and-drop menu
@@ -1843,56 +1850,38 @@ ProcessBuilder = {
         
         // Handle adding a new node
         ProcessBuilder.lf.on('node:add', ({ data }) => {
-            if (data.type !== 'lane') {
-                ProcessBuilder.renderLFNode(data);
-            } else {
-                let laneID = ProcessBuilder.renderLFNode(data);
-                setTimeout(() => {
-                    ProcessBuilder.resizePool();
-                    ProcessBuilder.adjustLane(true, laneID, data.properties.height);
-                }, 0);
-            }
-        });
-        
-        //Handle adding new lane
-        ProcessBuilder.lf.on('node:dnd-add', ({ data }) => {
-            const {x, y, type, id} = data;
-            if (type === 'pool') {
-                ProcessBuilder.lf.setProperties(data.id, {});
-                const poolModel = ProcessBuilder.lf.getNodeModelById(id);
-                const {width, height} = poolModel;
-                const {id: laneId} = ProcessBuilder.lf.addNode({
-                    type: 'lane',
-                    properties: {
-                        nodeSize: {
-                            width: width - 30,
-                            height
-                        }
-                    },
-                    x: x + 15,
-                    y
-                });
-                poolModel.addChild(laneId);
+            if (!ProcessBuilder.changeNodeId) {
+                if (data.type !== 'lane') {
+                    ProcessBuilder.renderLFNode(data);
+                } else {
+                    let laneID = ProcessBuilder.renderLFNode(data);
+                    setTimeout(() => {
+                        ProcessBuilder.resizePool();
+                        ProcessBuilder.adjustLane(true, laneID, data.properties.height);
+                    }, 0);
+                }
             }
         });
 
         // Handle for lane delete
         ProcessBuilder.lf.on('node:delete', ({ data }) => {
-            if(data.type === 'lane'){
-                let previousParticipant;
-                let index = ProcessBuilder.getLaneIndex(data.id);
-                if (index > 0) {
-                    let participants = ProcessBuilder.currentProcessData.participants;
-                    previousParticipant = participants[index - 1].properties.id;
-                } else {
-                    previousParticipant = data.id;
+            if (!ProcessBuilder.changeNodeId) {
+                if(data.type === 'lane'){
+                    let previousParticipant;
+                    let index = ProcessBuilder.getLaneIndex(data.id);
+                    if (index > 0) {
+                        let participants = ProcessBuilder.currentProcessData.participants;
+                        previousParticipant = participants[index - 1].properties.id;
+                    } else {
+                        previousParticipant = data.id;
+                    }
+                    ProcessBuilder.deleteLane(data);
+                    ProcessBuilder.removeNode(data);
+                    let adjustHeight = (data.properties.height)* -1;
+                    setTimeout(() => {
+                        ProcessBuilder.adjustLane(true, previousParticipant, adjustHeight);
+                    }, 0);
                 }
-                ProcessBuilder.deleteLane(data);
-                ProcessBuilder.removeNode(data);
-                let adjustHeight = (data.properties.height)* -1;
-                setTimeout(() => {
-                    ProcessBuilder.adjustLane(true, previousParticipant, adjustHeight);
-                }, 0);
             }
         });
         
@@ -2030,8 +2019,9 @@ ProcessBuilder = {
                 text: 'Node',
                 properties: {}
             });
-    
+            
             ProcessBuilder.lf.addEdge({
+                id : ProcessBuilder.getTransitionId(node.id, newNode.id),
                 sourceNodeId: node.id,
                 targetNodeId: newNode.id
             });
@@ -2355,6 +2345,7 @@ ProcessBuilder = {
     renderLFNode: function (data) {
         let nodeID = null;
         if (ProcessBuilder.getNodeLaneID(data.id) === null && data.type !== 'lane') {
+            //if node place outside lane, it will get deleted
             ProcessBuilder.lf.deleteElement(data.id);
         } else {
             var toolClass = null;
@@ -2479,7 +2470,13 @@ ProcessBuilder = {
         $(selector).trigger("chosen:updated");
         $(selector).off("change");
         $(selector).on("change", function(){
-            window.location.hash = $(selector).val();
+            CustomBuilder.checkChangeBeforeCloseElementProperties(function () {
+                window.location.hash = $(selector).val();
+            }, function() {
+                //revert the selected value
+                $(selector).val(ProcessBuilder.currentProcessData.properties.id);
+                $(selector).trigger("chosen:updated");
+            });
         });
     },
     
@@ -3718,7 +3715,6 @@ ProcessBuilder = {
         
         for (var a in participant.activities) {
             var activity = participant.activities[a];
-            
             if (activity.className !== "start" && activity.className !== "end") {
                 var xpdlObj = activity.xpdlObj;
                 if (xpdlObj === undefined) {
@@ -5101,6 +5097,11 @@ ProcessBuilder = {
                 $(window).off('hashchange');
                 window.location.hash = elementObj.properties.id;
                 setTimeout(function(){
+                    //remove all error messages when switch process
+                    $('.toast').each(function(){
+                        $(this).toast("hide");
+                    });
+                    
                     $(window).on('hashchange', ProcessBuilder.viewProcess);
                 }, 10);
                 
@@ -5164,8 +5165,10 @@ ProcessBuilder = {
             
     /*
      * Update Node Properties
+     * 
+     * @param {string} oldNodeId - used for change node id
      */ 
-    updateActivityProperties: function (activityId, newProperties) {
+    updateActivityProperties: function (activityId, newProperties, oldNodeId) {
         if(newProperties.className === 'participant'){
             activityId = activityId.replace('laneID_', '');
         }
@@ -5175,14 +5178,14 @@ ProcessBuilder = {
             if (participant.activities && newProperties.className !== 'participant') {
                 if (Array.isArray(participant.activities)) {
                     participant.activities.forEach(activity => {
-                        if (activity.properties.id === activityId) {
+                        if (activity.properties.id === activityId || activity.properties.id === oldNodeId) {
                             // Update the properties with the new values
                             Object.assign(activity.properties, newProperties);
                         }
                     });
                 }
             } else {
-                if (participant.properties.id === activityId) {
+                if (participant.properties.id === activityId || participant.properties.id === oldNodeId) {
                     // Update the properties with the new values
                     Object.assign(participant.properties, newProperties);
                 }
@@ -5206,27 +5209,30 @@ ProcessBuilder = {
 
     /*
      * Update logic flow node data
+     * 
+     * @param {string} oldNodeId - used for change node id
      */
-    updateLFData: function (element, elementObj) {
+    updateLFData: function (element, elementObj, oldNodeId) {
         let nodeId = element[0].data.id;
         if (elementObj.className === 'transition') {
             let label = "";
+            if (elementObj.properties.label) {
+                label = elementObj.properties.label;
+            }
             if (elementObj.properties.condition) {
-                if (elementObj.properties.label) {
-                    label = elementObj.properties.label + '\n' + elementObj.properties.condition + '\n';
-                } else {
-                    label = elementObj.properties.condition;
+                if (label !== "") {
+                    label += '\n';
                 }
+                label += elementObj.properties.condition;
             } else if (elementObj.properties.type === 'OTHERWISE' || elementObj.properties.type === 'EXCEPTION') {
                 let typeLabel = '[' + elementObj.properties.type + ']';
                 if (elementObj.properties.type === 'EXCEPTION') {
                     typeLabel = elementObj.properties.exceptionName;
                 }
-                if (elementObj.properties.label) {
-                    label = elementObj.properties.label + '\n' + typeLabel + '\n';
-                } else {
-                    label = typeLabel;
+                if (label !== "") {
+                    label += '\n';
                 }
+                label += typeLabel;
             }
             ProcessBuilder.lf.setProperties(nodeId, elementObj.properties);
             ProcessBuilder.lf.updateText(nodeId, label);
@@ -5239,7 +5245,7 @@ ProcessBuilder = {
             ProcessBuilder.lf.setProperties(nodeId, elementObj.properties);
             ProcessBuilder.lf.updateText(nodeId, elementObj.properties.label);
             element.attr("data-cbuilder-visible", "");
-            ProcessBuilder.updateActivityProperties(nodeId, elementObj.properties);
+            ProcessBuilder.updateActivityProperties(nodeId, elementObj.properties, oldNodeId);
         }
     },
     
@@ -5330,7 +5336,7 @@ ProcessBuilder = {
         ProcessBuilder.removeActivity(data.id);
         ProcessBuilder.lf.deleteElement(data.id); 
         $("body").addClass("no-right-panel");
-    },
+    },   
     
     //Handling for a connection event triggered 
     addConnection : function(connection) {
@@ -5367,12 +5373,13 @@ ProcessBuilder = {
                 data = {
                     className :'transition',
                     properties : {
+                        className :'transition',
+                        id: connection.id,
                         type : "",
                         style : "straight"
                     }
                 };
 
-                self.updateElementId(data);
                 parentDataArray.push(data);
 
                 $(connection.canvas).addClass("transition").attr("id", data.properties.id).attr("data-cbuilder-ignore-dragging", "");
@@ -5405,6 +5412,48 @@ ProcessBuilder = {
             return data.properties.id;
         }
     },
+    
+    /**
+     * Generate Id for new transition
+     * @param {type} startNodeId
+     * @param {type} endNodeId
+     * @returns {String}
+     */
+    getTransitionId : function(startNodeId, endNodeId) {
+        var node = null;
+        if (startNodeId.startsWith('start')) {
+            node = ProcessBuilder.lf.getNodeDataById(startNodeId);
+        } else if (endNodeId.startsWith('end')) {
+            node = ProcessBuilder.lf.getNodeDataById(endNodeId);
+        }
+        
+        if (node && (node.properties.className === "start" || node.properties.className === "end")) {
+            return "transition_" + startNodeId + "_" + endNodeId;
+        } else {
+            var data = ProcessBuilder.currentProcessData;
+            var xpdl = CustomBuilder.data.xpdl['Package'];
+        
+            if (data !== undefined && data !== null) {
+                var xpdlProcess = data.xpdlObj;
+                var xpdlTransitions = ProcessBuilder.getArray(xpdlProcess['Transitions'], 'Transition');
+                
+                var count = xpdlTransitions.length + 1;
+                
+                var allTranstionIds = [];
+                for (var t in xpdlTransitions) {
+                    var transition = xpdlTransitions[t];
+                    allTranstionIds.push(transition['-Id']);
+                }
+                
+                var id;
+                do {
+                    id = "transition" + count++;
+                } while (allTranstionIds.indexOf(id) !== -1);
+                
+                return id;
+            }
+        }
+    },        
     
     //Handling for a remove connection event triggered 
     removeConnection : function(connection) {
@@ -6327,13 +6376,15 @@ ProcessBuilder = {
     /*
      * Validation for duplicate id of activity node
      */
-     validateDuplicateId : function (name, value) {
-         var found = $('#lf-container').find('#' + value);
-         if (found.length > 0 && !(found.length === 1 && value === self.selectedEl.data.id)) {
-            return get_cbuilder_msg("pbuilder.label.duplicateId");
-         }
-         return null;
-     },
+    validateDuplicateId: function (name, value) {
+        if (value) { //check to prevent syntax error for jquery find
+            var found = $('#lf-container').find('#' + value);
+            if (found.length > 0 && !(found.length === 1 && value === self.selectedEl.data.id)) {
+                return get_cbuilder_msg("pbuilder.label.duplicateId");
+            }
+        }
+        return null;
+    },
     
     // Validate if the original XPDL and the new XPDL are identical by comparing their JSON string representations
     compareXPDL: function (oriXPDL, newXPDL) {
@@ -7216,9 +7267,11 @@ ProcessBuilder = {
         }
         
         //render variable list
-        for (var df=0; df<process.properties.dataFields.length; df++) {
-            var dataField = process.properties.dataFields[df];
-            ProcessBuilder.renderVariableListViewerDetail($(view), dataField);
+        if (process.properties.dataFields) {
+            for (var df=0; df<process.properties.dataFields.length; df++) {
+                var dataField = process.properties.dataFields[df];
+                ProcessBuilder.renderVariableListViewerDetail($(view), dataField);
+            }
         }
     },
          
@@ -7251,7 +7304,9 @@ ProcessBuilder = {
         dl.attr("data-cbuilder-select", obj.properties.id);
         
         var id = obj.properties.id;
-        if (self.selectedEl) {
+        
+        //the process object is not lofig flow data, need to check to prevent it
+        if (self.selectedEl && self.selectedEl.length > 0 && self.selectedEl[0].data) {
             var selectedData = self.selectedEl[0].data;
             if (selectedData.properties.id === id) {
                 $(detailsDiv).find(".cbuilder-node-details-list").addClass("active");
@@ -7703,48 +7758,145 @@ ProcessBuilder = {
             });
         });
     },
+        
+    /*
+     * A callback method called from CustomBuilder.parseDataToComponent when get component based on data
+     * Mainly because the transition fail to retrieve component correctly
+     */                
+    parseDataToComponent : function(data) {
+        var self = CustomBuilder.Builder;
+        
+        var component = null;
+        if (data !== undefined) {
+            var type = data.className;
+            if (!type && data.type) {
+                type = ProcessBuilder.getNodeType(data.type);
+            }
+            if (type) {
+                component = self.getComponent(type);
+            }
+        }
+        return component;
+    },
     
     /*
      * A callback method called from CustomBuilder.applyElementProperties when properties saved
      */
     saveEditProperties : function(container, elementProperty, elementObj, element) {
+        var nodeId = elementProperty.id;
+        
         if(elementProperty.className === "participant"){
-            elementProperty.id = 'laneID_' + elementProperty.id;
+            nodeId = 'laneID_' + elementProperty.id;
         }
-        if (elementProperty.id !== $(element)[0].data.id && elementObj.className !== "process") {
+        
+        var oldElementId = null;
+        if (elementObj.className !== "process" && nodeId !== $(element)[0].data.id) {
+            ProcessBuilder.changeNodeId = true;
             var self = CustomBuilder.Builder;
 
-            // update transition
-            var sourceConnSet = ProcessBuilder.lf.getNodeOutgoingEdge($(element)[0].data.id);
-            var targetConnSet = ProcessBuilder.lf.getNodeOutgoingEdge($(element)[0].data.id);
-            var transition = [];
-
-            for (var i in sourceConnSet) {
-                var data = ProcessBuilder.lf.getEdgeDataById(sourceConnSet[i].id);
-                data.properties.from = elementProperty.id;
-                if (data['xpdlObj'] !== undefined) { //end node is target, xpdl object is undefined
-                    data['xpdlObj']['-From'] = elementProperty.id;
+            var data = $(element)[0].data;
+            var oldNodeId = data.id;
+            oldElementId = data.id.replace('laneID_', ''); //remove the lane prefix if having it
+            var newElementId = data.properties.id;
+            
+            //update xpdl
+            data.properties.xpdlObj['-Id'] = newElementId;
+            data.id = nodeId;
+            
+            //update mapping
+            var participantMapping = CustomBuilder.data['participants'][ProcessBuilder.currentProcessData.properties.id + "::" + oldElementId];
+            if (participantMapping) {
+                delete CustomBuilder.data['participants'][ProcessBuilder.currentProcessData.properties.id + "::" + oldElementId];
+                CustomBuilder.data['participants'][ProcessBuilder.currentProcessData.properties.id + "::" + newElementId] = participantMapping;
+            }
+            var pluginMapping = CustomBuilder.data['activityPlugins'][ProcessBuilder.currentProcessData.properties.id + "::" + oldElementId];
+            if (pluginMapping) {
+                delete CustomBuilder.data['activityPlugins'][ProcessBuilder.currentProcessData.properties.id + "::" + oldElementId];
+                CustomBuilder.data['activityPlugins'][ProcessBuilder.currentProcessData.properties.id + "::" + newElementId] = pluginMapping;
+            }
+            var formMapping = CustomBuilder.data['activityForms'][ProcessBuilder.currentProcessData.properties.id + "::" + oldElementId];
+            if (formMapping) {   
+                delete CustomBuilder.data['activityForms'][ProcessBuilder.currentProcessData.properties.id + "::" + oldElementId];
+                CustomBuilder.data['activityForms'][ProcessBuilder.currentProcessData.properties.id + "::" + newElementId] = formMapping;
+            }
+            
+            if(elementProperty.className === "participant"){
+                //get original x & y
+                const x = data.x;
+                const y = data.y;
+                
+                //add new logic flow node
+                ProcessBuilder.lf.addNode(data);
+                
+                //update the pool
+                const poolId = "poolID_" + ProcessBuilder.currentProcessData.properties.id;
+                const poolModel = ProcessBuilder.lf.getNodeModelById(poolId);
+                poolModel.removeChild(oldNodeId);
+                poolModel.addChild(nodeId);
+                
+                //move nodes to new logic flow lane
+                const sourceLFLane = ProcessBuilder.getLFLane(oldNodeId);
+                const targetLFLane = ProcessBuilder.getLFLane(nodeId);
+                
+                while (sourceLFLane.children.length > 0) {
+                    targetLFLane.children.push(sourceLFLane.children.shift());
                 }
-                transition.push(data);
-            }
-            for (var i in targetConnSet) {
-                var data = ProcessBuilder.lf.getEdgeDataById(sourceConnSet[i].id);
-                data.properties.to = elementProperty.id;
-                if (data['xpdlObj'] !== undefined) { //start node is source, xpdl object is undefined
-                    data['xpdlObj']['-To'] = elementProperty.id;
+                
+                //update it back to logic flow to redraw
+                ProcessBuilder.lf.updateAttributes(oldNodeId, {
+                    children: sourceLFLane.children
+                });
+                ProcessBuilder.lf.updateAttributes(nodeId, {
+                    children: targetLFLane.children
+                });
+                
+                //update the XPDL participant
+                const sourceLane = ProcessBuilder.getLane(oldNodeId);
+                sourceLane.properties.id = newElementId;
+                
+                //delete old node
+                ProcessBuilder.lf.deleteElement(oldNodeId);
+                
+                //update position
+                ProcessBuilder.lf.updateAttributes(nodeId, {
+                    x: x,
+                    y: y
+                });
+            } else {
+                // retrieve transition
+                var transition = [];
+                var sourceConnSet = ProcessBuilder.lf.getNodeOutgoingEdge(oldNodeId);
+                var targetConnSet = ProcessBuilder.lf.getNodeIncomingEdge(oldNodeId);
+
+                //delete old node
+                ProcessBuilder.lf.deleteElement(oldNodeId);
+
+                //add new logic flow node
+                ProcessBuilder.lf.addNode(data);
+
+                //update transition logic flow data
+                for (var i in sourceConnSet) {
+                    var data = sourceConnSet[i];
+                    data.sourceNodeId = nodeId;
+                    transition.push(data);
                 }
-                transition.push(data);
-            }
+                for (var i in targetConnSet) {
+                    var data = targetConnSet[i];
+                    data.targetNodeId = nodeId;
+                    transition.push(data);
+                }
 
-            $(element).attr("id", elementProperty.id);
-
-            for (var i in transition) {
-                var data = transition[i];
-                var childComponent = self.parseDataToComponent(data);
-                var temp = $('<div></div>');
-                $(element).closest(".process").append(temp);
-                self.renderElement(data, temp, childComponent, false, [""]); //add a dummy deferreds as no need it, and to stop it trigger change event
+                //add transition and update transition xpdl data
+                for (var i in transition) {
+                    var data = transition[i];
+                    data.properties.from = data.sourceNodeId;
+                    data.properties.to = data.targetNodeId;
+                    ProcessBuilder.lf.addEdge(data);
+                    ProcessBuilder.updateTransitionProperties(data.id, data.properties);
+                }
             }
+            
+            ProcessBuilder.changeNodeId = false;
         }
         
         if (elementObj.className === "transition") {
@@ -7765,8 +7917,12 @@ ProcessBuilder = {
             }
 
         }
-        $(element).attr("id", elementProperty.id);
-        ProcessBuilder.updateLFData(element, elementObj);
+        
+        if (elementObj.className == "process") {
+            $(element).attr("id", elementProperty.id);
+        } else {
+            ProcessBuilder.updateLFData(element, elementObj, oldNodeId);
+        }
     },
 
     builderSaved : function(data) {
@@ -8026,6 +8182,8 @@ ProcessBuilder = {
             return 'subflow';
         } else if (type === 'bpmn:endEvent') {
             return 'end';
+        } else if (type === 'bpmn:sequenceFlow') {
+            return 'transition';
         } else if (type === 'lane') {
             return 'participant';
         }
@@ -8047,6 +8205,8 @@ ProcessBuilder = {
             return 'bpmn:subflow';
         } else if (type === 'end') {
             return 'bpmn:endEvent';
+        } else if (type === 'transition') {
+            return 'bpmn:sequenceFlow';
         } else if (type === 'participant') {
             return 'lane';
         }
