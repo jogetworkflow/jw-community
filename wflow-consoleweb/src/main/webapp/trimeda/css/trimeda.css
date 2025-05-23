@@ -1854,7 +1854,7 @@ button.form-button.CRUD_New {
     border-radius: 16px;
 }
 
-.dataList .filters span.filter-cell:has(input.form-button[type='submit'][value='Show']) {
+.dataList .filters span.filter-cell:has(input.form-button[type='submit']) {
     display: none;
 }
 

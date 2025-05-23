@@ -307,10 +307,10 @@ $(document).ready(function() {
             })
         }
         $(".dataList .filters select:not([multiple])").on("change", function() {
-            $(this).closest("div.filters").find("input.form-button[type='submit'][value='Show']").click();
+            $(this).closest("div.filters").find("input.form-button[type='submit']").click();
         });
         $(".dataList .filters select, .dataList .filters input").on("filter_updated", function() {
-            $(this).closest("div.filters").find("input.form-button[type='submit'][value='Show']").click();
+            $(this).closest("div.filters").find("input.form-button[type='submit']").click();
         });
     })
     $(window).resize(function() {
