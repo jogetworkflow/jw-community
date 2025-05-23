@@ -4488,8 +4488,8 @@ public class WorkflowManagerImpl implements WorkflowManager {
                 // suspend activity
                 wfa.activity().suspend();
                 
-                // TODO: clear assignment cache, this is required if in-memory caching is used for process assignments in commit 39e571b3
-                // SharkUtil.removeCacheWorkflowAssignment(processId, activityId, wfa.assignee().resource_key());
+                // clear assignment cache, this is required if in-memory caching is used for process assignments in commit 87434b0e
+                 SharkUtil.removeCacheWorkflowAssignment(processId, activityId, wfa.assignee().resource_key());
 
                 // slight delay to allow listener to complete quick transactions
                 Thread.sleep(100);
