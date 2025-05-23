@@ -1382,9 +1382,6 @@ body[builder-theme] .property-type-selectbox:hover .builder-link a.builderAddNew
 body[builder-theme] .editor-panel-mode.narrow:not(.wider) .property-input > table.grid .property-type-grid-action-column{
     visibility: hidden;
 }
-body[builder-theme].rtl .editor-panel-mode.narrow:not(.wider) .property-input > table.grid .property-type-grid-action-column{
-    margin-bottom: 20px;
-}
 body[builder-theme] .editor-panel-mode.narrow:not(.wider) .property-input > table.grid tr:hover .property-type-grid-action-column{
     visibility: visible;
 }
@@ -3671,4 +3668,32 @@ body[builder-theme='dark'].rtl .flexigrid div.nBtn.srtd,
 body[builder-theme='dark'].rtl .flexigrid div.nBtn{
     border-left: 0px;
     border-right: 1px solid var(--theme-primary-color-2);
+}
+body[builder-theme].popupBody .multiPagedForm .page-nav-panel .nav_item button{
+    box-shadow: none;
+    border-bottom-left-radius: 0;
+    border-bottom-right-radius: 0;
+}
+body[builder-theme].rtl.popupBody .selector_element .selector_button{
+    margin-right: 0px;   
+}
+body[builder-theme].rtl .editor-panel-mode .property-type-checkbox-truefalse .property-input .multiple_option label .hidden_label {
+    padding-right: 20px;
+    padding-left: 0px;
+}
+body[builder-theme].rtl .editor-panel-mode .property-type-checkbox-truefalse .property-input .multiple_option label input[type=checkbox]:checked::after,
+body[builder-theme].rtl .editor-panel-mode .property-type-checkbox-truefalse .property-input .multiple_option label input[type=radio]:checked::after{
+    left:0px;
+}
+body[builder-theme].rtl .property-input .multiple_option input{
+    margin-right: 0px;
+    margin-left: 12px;
+}
+body[builder-theme].rtl span.hidden_label{
+    margin-left: 0px;
+    margin-right: 10px;
+}
+body[builder-theme].rtl .editor-panel-mode .property-grid .property-input .grid input[type=checkbox]:checked::after{
+    position:relative;
+    left: -5px;
 }

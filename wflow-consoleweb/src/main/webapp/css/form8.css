@@ -1491,3 +1491,21 @@ body.rtl form.label-top .form-cell > label.label + input[size] + .numeric_field_
 .numeric_field_controls.disabled{
     display: none;
 }
+body.popupBody.builder-popup .form-section-title,
+body.popupBody.builder-popup .subform-section-title{
+    margin-bottom: 15px;
+}
+body.rtl ul.form-fileupload-value li .remove{
+     display: inline-block;
+}
+body.rtl ul.form-fileupload-value li .remove{
+    display: inline-block;
+}
+body.rtl ul.form-fileupload-value li .name{
+    direction: ltr;
+    unicode-bidi: isolate;
+}
+body.rtl .handsontable .filename_container .filename {
+    direction: ltr;
+    unicode-bidi: isolate;
+}

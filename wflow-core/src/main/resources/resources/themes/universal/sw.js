@@ -124,37 +124,46 @@ function cacheUserview(){
         });
 }
 
-self.addEventListener('install', (event) => {
-    console.log('SW install event');
-    self.skipWaiting();
-    event.waitUntil(
-        caches.delete(appCacheName)
-            .then(() => caches.open(appCacheName))
-            .then((cache) => {
-                urlsToCache.push(getPath() + '/_/pwaoffline');
-                urlsToCache.push(getPath() + '/_/offline');
+let currentPageUrlPromiseResolve;
+const currentPageUrlPromise = new Promise((resolve) => {
+    currentPageUrlPromiseResolve = resolve;
+});
 
-                return getUrlsFromIndexedDB().then((dbUrls) => {
-                    urlsToCache.push(...dbUrls);
-                    var promises = urlsToCache.map((url) => {
-                        return cache.match(url).then((checkCache) => {
-                            if(!checkCache) {
-                                return cache.addAll([url])
-                                    // .then(() => console.log(url + " cached"))
-                                    .catch((err) => console.error("Error caching " + url + ": " + err));
-                            } else {
-                                // console.log(url + " already exists in cache");
-                            }
+self.addEventListener('install', function (event) {
+    console.log('SW install event');
+    event.waitUntil(
+        currentPageUrlPromise.then((url) => {
+            self.skipWaiting();
+            if (url !== "/jw/web/login") {
+                caches.delete(appCacheName)
+                    .then(() => caches.open(appCacheName))
+                    .then((cache) => {
+                        urlsToCache.push(getPath() + '/_/pwaoffline');
+                        urlsToCache.push(getPath() + '/_/offline');
+
+                        return getUrlsFromIndexedDB().then((dbUrls) => {
+                            urlsToCache.push(...dbUrls);
+                            var promises = urlsToCache.map((url) => {
+                                return cache.match(url).then((checkCache) => {
+                                    if(!checkCache) {
+                                        return cache.addAll([url])
+                                            // .then(() => console.log(url + " cached"))
+                                            .catch((err) => console.error("Error caching " + url + ": " + err));
+                                    } else {
+                                        // console.log(url + " already exists in cache");
+                                    }
+                                });
+                            });
+                            return Promise.all(promises);
                         });
-                    });
-                    return Promise.all(promises);
-                });
-            })
-            .then(() => {
-                cacheUserview();
-                console.log('DONE SW install event');
-            })
-            .catch((err) => console.error("Error during installation: " + err))
+                    })
+                    .then(() => {
+                        cacheUserview();
+                        console.log('DONE SW install event');
+                    })
+                    .catch((err) => console.error("Error during installation: " + err))
+            }
+        })
     );
 });
 
@@ -708,6 +717,10 @@ function connectCacheDB(f, mode) {
 }
 
 self.addEventListener('message', function(event) {
+    if (event.data.type === 'CURRENT_PAGE_URL') {
+        currentPageUrlPromiseResolve(event.data.url); // Resolve the promise when message is received
+    }
+
     if (event.data.hasOwnProperty('sync')) {
         console.log('sync received');
         processStoredFormData();
