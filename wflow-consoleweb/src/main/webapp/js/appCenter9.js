@@ -1,6 +1,143 @@
 $(document).ready(function() {
+    $("#sidebar-trigger").find("img#light-thumbnail").attr('src', UI.base + '/images/dx9AppCenter/thumbnail_bar.svg');
+    
+    $("div#main #header-link").prepend("<img src='" + UI.base + "/images/dx9AppCenter/headerLogo.svg'>");
+
+    setTimeout(function(){
+        var $taskCounter = $("#taskCounter");
+        var $notifications = $("#page > header > div > div > div.nav-no-collapse.header-nav > ul > li.inbox-notification.dropdown > ul.notifications");
+        let inboxIndex = 0;
+        setInterval(function(){
+            if ($taskCounter.find("#tasksMessage > span.header").length > 0 && $notifications.find("li.task").length > 1){
+                $taskCounter.find("#tasksMessage").animate({
+                    opacity: 0.25
+                }, 500, 'linear', function() {
+                    if ($notifications.find("li.task").eq(inboxIndex + 1).length > 0) {
+                        inboxIndex += 1;
+                        $taskCounter.find("#tasksMessage").remove();
+                        $taskCounter.find("a#viewTasks").before("<div id='tasksMessage'> " + $notifications.find("li.task").eq(inboxIndex).html() + "</div>");
+                    } else {
+                        inboxIndex = 0;
+                        $taskCounter.find("#tasksMessage").remove();
+                        $taskCounter.find("a#viewTasks").before("<div id='tasksMessage'> " + $notifications.find("li.task").eq(inboxIndex).html() + "</div>");
+                    }
+
+                });
+            }
+        }, 3000);
+    }, 1500)
+    
+    $("body").off("page_loaded").on("page_loaded", function(){
+        $('.carousel-item', '.show-neighbors').each(function(){
+            var next = $(this).next();
+            if (! next.length) {
+                next = $(this).siblings(':first');
+            }
+            next.children(':first-child').clone().appendTo($(this));
+            }).each(function(){
+            var prev = $(this).prev();
+            if (! prev.length) {
+                prev = $(this).siblings(':last');
+            }
+            prev.children(':nth-last-child(2)').clone().prependTo($(this));
+        });
+    })
+
+    $(window).resize(function(){
+        if ($(window).outerWidth() < 1280) {
+            if ($("div#page > ul#category-container").length === 0) {
+                $("footer").after($("ul#category-container").clone());
+
+                $("div#page > ul#category-container > li.category").on("click", function() {
+                    $(this).siblings("li.active").removeClass("active");
+                    $(this).addClass("active");
+                })
+            } 
+
+            if ($("header.navbar .container-fluid > #header-link").length === 0) {
+                $("header.navbar .container-fluid").prepend($("#header-link").clone().prepend("<img src='" + UI.base + "/images/dx9AppCenter/headerLogo.svg'>"));
+            }
+
+            if ($(window).outerWidth() < 768 && $("header.navbar .container-fluid > li.user-link").length === 0) {
+                $("header.navbar .container-fluid").prepend($("header.navbar .header-nav > ul > li.user-link").clone());
+            } else if ($(window).outerWidth() >= 768){
+                $("header.navbar .container-fluid > li.user-link").remove();
+            }
+        } else {
+            if ($("div#page > ul#category-container").length > 0) {
+                $("div#page > ul#category-container").remove();
+            } 
+
+            if ($("header.navbar .container-fluid > #header-link").length > 0) {
+                $("header.navbar .container-fluid > #header-link").remove();
+            }
+
+            if($("header.navbar .container-fluid > li.user-link").length > 0) {
+                $("header.navbar .container-fluid > li.user-link").remove();
+            }
+        }
+    })
+
     $('body').off('page_loaded.appcenter');
     $('body').on('page_loaded.appcenter', function(){
+        $(window).on("resize", function(){
+            function fadeOut($el, callback) {
+                $el.css('opacity', 0);
+
+                $el.one('transitionend', function (e) {
+                    if (e.originalEvent.propertyName === 'opacity') {
+                        $el.addClass('hidden').css('opacity', '');
+                        if (callback) callback();
+                    }
+                });
+            }
+
+            function fadeIn($el, callback) {
+                $el.removeClass('hidden').css('opacity', 0);
+
+                $el.css('opacity', 1);
+
+                $el.one('transitionend', function (e) {
+                    if (e.originalEvent.propertyName === 'opacity') {
+                    if (callback) callback();
+                    }
+                });
+            }
+            const $tabs = $("ul#mobileTab > li");
+            const $leftCol = $("#searchColumnContainer > .row > .col:first-child");
+            const $rightCol = $("#searchColumnContainer > .row > .col:last-child");
+
+            if ($(window).outerWidth() < 768) {
+                $tabs.eq(0).addClass("active");
+                $leftCol.removeClass('hidden').css('opacity', 1);
+                $rightCol.addClass('hidden').css('opacity', 0);
+
+                $tabs.off("click").on("click", function () {
+                const $clicked = $(this);
+                if ($clicked.hasClass("active")) return;
+
+                $tabs.removeClass("active");
+                $clicked.addClass("active");
+
+                const isTaskTab = $clicked.attr("id") === "taskTab";
+                const isMiniTab = $clicked.attr("id") === "miniBannerTab";
+
+                if (isMiniTab) {
+                    fadeOut($leftCol, () => {
+                        fadeIn($rightCol);
+                    });
+                } else if (isTaskTab) {
+                    fadeOut($rightCol, () => {
+                        fadeIn($leftCol);
+                    });
+                }
+                });
+            } else {
+                $leftCol.removeClass('hidden').css('opacity', 1);
+                $rightCol.removeClass('hidden').css('opacity', 1);
+            }
+        })
+
         if ($('#dataList_list_appList').length > 0) {
             $('#dataList_list_appList .column_img').children('div').each(function () {
                 var style = $(this).attr('style');
@@ -17,7 +154,78 @@ $(document).ready(function() {
                         $('#NoAppAvailable').html("</h1><i class=\"zmdi zmdi-alert-circle-o\"></i><h2>"+msgs['ubuilder.noAppAvailable']+"</h2>");
                     });
                 }
-            } 
+            }
+
+            function updateArrows($container, $leftArrow, $rightArrow) {
+                var scrollLeft = $container.scrollLeft();
+                var containerWidth = $container.innerWidth();
+                var scrollWidth = $container[0].scrollWidth;
+
+                // When the apps in total are within the proposed width
+                if (!$container.hasClass("queue") && Math.abs(containerWidth - scrollWidth) <= 1) {
+                    $container.addClass("queue")
+                    $leftArrow.addClass("disabled");
+                    $rightArrow.addClass("disabled");
+                } else {
+                    // Remove queue styling when it is within the height
+                    if ($container.hasClass("queue") && $container[0].scrollHeight > parseFloat($container.css('max-height'))) {
+                        $container.removeClass("queue");
+                    }
+
+                    // Handle arrow enable and disable
+                    if (!$container.hasClass("queue") && scrollLeft <= 0) {
+                        $leftArrow.addClass("disabled");
+                        $rightArrow.removeClass("disabled");
+                    }
+                    else if (!$container.hasClass("queue") && scrollLeft + containerWidth >= scrollWidth - 1) {
+                        $leftArrow.removeClass("disabled");
+                        $rightArrow.addClass("disabled");
+                    }
+                    else if (!$container.hasClass("queue")) {
+                        $leftArrow.removeClass("disabled");
+                        $rightArrow.removeClass("disabled");
+                    }
+                }
+            }
+
+            if ($("div.appListNav").length) {
+                var $leftArrow = $("div.appListNav").find("i#left-arrow");
+                var $rightArrow = $("div.appListNav").find("i#right-arrow");
+                var $container = $("body#home #home_column div#dataList_applist .row.cards");
+
+                if ($(".addNew").length === 0) {
+                    $("div.appListNav").closest(".col").siblings().eq(0).hide();
+                }
+
+                $(window).on("resize", function(){
+                    updateArrows($container, $leftArrow, $rightArrow);
+                })
+
+                $("#customSearchInput").off("input.updateArrow").on("input.updateArrow", function(){
+                    updateArrows($container, $leftArrow, $rightArrow);
+                })
+
+                $leftArrow.on("click", function(){
+                    $container.scrollLeft($container.scrollLeft() - ($container.innerWidth()/2));
+
+                    setTimeout(() => {
+                        updateArrows($container, $leftArrow, $rightArrow);
+                    }, 250);
+                });
+                $rightArrow.on("click", function(){
+                    $container.scrollLeft($container.scrollLeft() + ($container.innerWidth()/2));
+
+                    setTimeout(() => {
+                        updateArrows($container, $leftArrow, $rightArrow);
+                    }, 250);
+                });
+
+                $container.on("scroll", function() {
+                    setTimeout(() => {
+                        updateArrows($container, $leftArrow, $rightArrow);
+                    }, 250);
+                })
+            }
         }
         if ($('body#design_app #tutorial_section').length === 1) {
             UI.loadMsg(['appcenter.video1','appcenter.video2','appcenter.video3','appcenter.video4','appcenter.video5'], function(msgs){
@@ -98,4 +306,4 @@ $(function() {
            $(".navbar").removeClass("active");
         }
     });
-});
+}); 
