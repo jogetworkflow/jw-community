@@ -269,7 +269,9 @@
                 UI.unblockUI(); 
                 JsonDataTable1.refresh();
                 JsonDataTable2.refresh();
-                JsonDataTable3.refresh();
+                if (typeof window.JsonDataTable3 !== 'undefined') {
+                    JsonDataTable3.refresh();
+                }
                 
                 if(updateSelectedList) {
                     updateSelectedList.forEach(function(item, index){
