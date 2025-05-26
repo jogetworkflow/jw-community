@@ -2980,6 +2980,9 @@ public class AppServiceImpl implements AppService {
             appId = orgAppDef.getAppId();
         }
         
+        //to create form table schema
+        Set<String> tablesNames = new HashSet<>();
+        
         AppDevUtil.setImportApp(true);
         try {
             LogUtil.info(getClass().getName(), "Importing app " + appDef.getId() + " ...");
@@ -3016,33 +3019,12 @@ public class AppServiceImpl implements AppService {
                     // clear cache
                     formColumnCache.remove(tableName);
                     formDataDao.clearFormTableCache(tableName);
+                    
+                    tablesNames.add(tableName);
                 }
                 // instead of calling individual DAOs to modify the DB now, we add to the new AppDefinition first
                 newAppDef.setFormDefinitionList(formDefinitions);
 
-                String currentTable = "";
-                try {
-                    for (FormDefinition form : importedForms) {
-                        currentTable = form.getTableName();
-                        // initialize db table by making a dummy load
-                        String dummyKey = "xyz123";
-                        formDataDao.loadWithoutTransaction(currentTable, currentTable, dummyKey);
-                        LogUtil.debug(getClass().getName(), "Initialized form table " + currentTable);
-                    }
-                } catch (EntityNotFoundException e) {
-                    // ignore
-                } catch (Exception e) {
-                    //error creating form data table, rollback
-                    for (FormDefinition form : importedForms) {
-                        formDefinitionDao.delete(form.getId(), newAppDef);
-                    }
-                    appDefinitionDao.delete(newAppDef);
-                    String errorMessage = "";
-                    if (currentTable.length() > 20) {
-                        errorMessage = ": " + ResourceBundleUtil.getMessage("form.form.invalidId");
-                    }
-                    throw new ImportAppException(ResourceBundleUtil.getMessage("console.app.import.error.createTable", new Object[]{currentTable, errorMessage}), e);
-                }
                 LogUtil.info(getClass().getName(), "Imported form definitions : " + appDef.getFormDefinitionList().size());        
             }
 
@@ -3093,13 +3075,8 @@ public class AppServiceImpl implements AppService {
                     o.setAppDefinition(newAppDef);
 
                     if (CustomFormDataTableUtil.TYPE.equals(o.getType())) {
-                        try {
-                            String dummyKey = "xyz123";
-                            String tableName = o.getId().substring(FormDataDaoImpl.FORM_PREFIX_TABLE_NAME.length());
-                            formDataDao.loadWithoutTransaction(tableName, tableName, dummyKey);
-                        } catch (Exception e) {
-                            LogUtil.error(getClass().getName(), e, "");
-                        }
+                        String tableName = o.getId().substring(FormDataDaoImpl.FORM_PREFIX_TABLE_NAME.length());
+                        tablesNames.add(tableName);
                     }
 
                     // try saving file in git
@@ -3292,6 +3269,28 @@ public class AppServiceImpl implements AppService {
             // using new API, we obtain the new persisted object from Hibernate
             newAppDef = appDefinitionDao.saveOrUpdateAndReturn(newAppDef);
             LogUtil.debug(getClass().getName(), "Finished importing app " + newAppDef.getId() + " version " + newAppDef.getVersion());
+            
+            //try create table schema
+            String currentTable = "";
+            try {
+                String dummyKey = "xyz123";
+                for (String name : tablesNames) {
+                    currentTable = name;
+                    // initialize db table by making a dummy load
+                    formDataDao.loadWithoutTransaction(currentTable, currentTable, dummyKey);
+                    LogUtil.debug(getClass().getName(), "Initialized form table " + currentTable);
+                }
+            } catch (EntityNotFoundException e) {
+                // ignore
+            } catch (Exception e) {
+                //error creating form data table, rollback
+                appDefinitionDao.delete(newAppDef);
+                String errorMessage = "";
+                if (currentTable.length() > 20) {
+                    errorMessage = ": " + ResourceBundleUtil.getMessage("form.form.invalidId");
+                }
+                throw new ImportAppException(ResourceBundleUtil.getMessage("console.app.import.error.createTable", new Object[]{currentTable, errorMessage}), e);
+            }
 
             if (!AppDevUtil.isGitDisabled()) {
                 Properties gitProperties = AppDevUtil.getAppDevProperties(newAppDef);
