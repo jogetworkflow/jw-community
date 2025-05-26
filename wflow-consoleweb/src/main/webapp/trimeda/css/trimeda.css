@@ -60,7 +60,8 @@ div#section-actions.form-section .form-cell button,
 footer,
 button.btn-danger,
 #content main button[class*=button].btn-danger, 
-#content main input[class*=button].btn-danger {
+#content main input[class*=button].btn-danger,
+#content main .dataList .filter-cell input[type="submit"] {
     font-family: "HindVadodara", sans-serif;
     font-weight: 500 !important;
     font-size: 16px !important;
@@ -151,6 +152,10 @@ div#dataList_columnslist tbody span.row_action_inner > a,
 #content .page-button-panel .page-button-prev.btn.button,
 #content .page-button-panel .page-button-next.btn.button {
     padding: 6px 12px !important;
+}
+
+#content main .dataList .filter-cell input[type="submit"] {
+    padding: 8px 32px !important;
 }
 
 .selector_element .selector_button, 
@@ -761,6 +766,49 @@ body.rtl #sidebar .nav > li > ul > li:not(:last-child){
     }
 }
 
+@media screen and (min-width: 1920px) {
+    body:not(.horizontal_menu) header.navbar .navbar-inner {
+        width: calc(1920px - calc(276 / 1440 * 100vw));
+    }
+
+    body:not(.horizontal_menu).sidebar-minimized header.navbar .navbar-inner {
+        width: calc(1920px - 95px);
+    }
+
+    body.horizontal_menu.inline_menu #sidebar {
+        width: fit-content !important;
+        max-width: 90% !important;
+    }
+
+    body.horizontal_menu.inline_menu:not(.rtl) #header-link {
+        margin-right: 0px;
+    }
+
+    body.horizontal_menu.inline_menu.rtl #header-link {
+        margin-left: 0px;
+        text-align: right;
+    }
+
+    .horizontal_menu:not(.inline_menu) .navbar-inner, 
+    .horizontal_menu:not(.inline_menu) #sidebar #navigation, 
+    body.horizontal_menu #content.page_content,
+    body.horizontal_menu.inline_menu #content.page_content {
+        max-width: 1920px;
+        margin: auto !important;
+    }
+
+    body.horizontal_menu header.navbar .container-fluid,
+    .horizontal_menu:not(.inline_menu) .navbar-inner, .horizontal_menu:not(.inline_menu) #sidebar #navigation {
+        padding-left: 0px !important;
+        padding-right: 0px !important;
+    }
+    
+
+    body.horizontal_menu #content.page_content {
+        margin-top: 16px !important;
+    }
+}
+
 @media screen and (max-width: 992px) {
     body.horizontal_menu.inline_menu header.navbar li.dropdown.user-link > a {
         background: transparent !important;
@@ -1218,10 +1266,6 @@ div.ui-timepicker-div dl dd > * > select {
     background-repeat: no-repeat !important;
     background-position: right 24.55px center;
     background-size: 10.5px 6.47px !important;
-}
-
-body.rtl select:not([class^="ui-"]){
-    background-position: left 24.55px center !important;
 }
 
 body.rtl div.ui-timepicker-div dl dd > * > select {
@@ -1853,10 +1897,6 @@ button.form-button.CRUD_New {
 
 .dataList .filters select {
     border-radius: 16px;
-}
-
-.dataList .filters span.filter-cell:has(input.form-button[type='submit'][value='Show']) {
-    display: none;
 }
 
 body.rtl .chosen-rtl .chosen-choices li.search-choice .search-choice-close {

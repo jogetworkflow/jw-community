@@ -94,14 +94,11 @@ $(document).ready(function() {
                     prevMenu = $(this);
                     totalMenuWidth += gap;
                 })
-                var breakpoint = $(window).outerWidth();
+                var breakpoint = $("#sidebar").outerWidth();
                 if ($("body").hasClass("inline_menu")) {
-                    breakpoint -= ($("header.navbar .container-fluid").outerWidth(true) - $("header.navbar .container-fluid").innerWidth());
-                    breakpoint -= $("a#header-link").outerWidth(true);
-                    breakpoint -= $("header.navbar .header-nav").outerWidth(true);
-                    breakpoint -= 20;
+                    breakpoint -= 30;
                 } else {
-                    breakpoint -= 32; //Cater for margin
+                    breakpoint -= 32;
                 }
 
                 $("body").find("nav button#leftNav").remove();
