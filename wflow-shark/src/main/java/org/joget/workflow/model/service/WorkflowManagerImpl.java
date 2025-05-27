@@ -3265,7 +3265,8 @@ public class WorkflowManagerImpl implements SharkWorkflowManager {
                         transactionTemplate.executeWithoutResult((TransactionStatus status) -> {
                             // complete assignment
                             String activityId = (String)data.get("activityId");
-                            assignmentComplete(activityId, null);
+                            Map variables = (Map)data.get("variables");
+                            assignmentCompleteActual(activityId, variables);
                         });
                     });
                     LogUtil.info(getClass().getName(), "Registered event stream listener for " + EVENT_STREAM_TOPIC_ASSIGNMENT_COMPLETE);
@@ -3347,6 +3348,7 @@ public class WorkflowManagerImpl implements SharkWorkflowManager {
                 eventStreamManager.send(eventStreamTopic, startProcessId, data);
 
                 // slight delay to allow listener to complete quick transactions
+                // so that inbox will immediately show the next assignment if it done fast
                 try {
                     Thread.sleep(100);
                 } catch(InterruptedException e) {
@@ -4456,13 +4458,14 @@ public class WorkflowManagerImpl implements SharkWorkflowManager {
         }
     }
 
-    /**
-     * Complete an assignment (for the current user) based on the activity instance ID.
-     * @param activityId
-     * @return
-     */
     @Override
     public String assignmentComplete(String activityId) {
+        // complete assignment
+        return assignmentComplete(activityId, null);
+    }
+
+    @Override
+    public String assignmentComplete(String activityId, final Map<String, String> variableMap) {
         String result = "pending";
         boolean runAsync = eventStreamManager != null && eventStreamManager.isEnabled();
         if (runAsync) {
@@ -4482,23 +4485,25 @@ public class WorkflowManagerImpl implements SharkWorkflowManager {
 
                 // send activity data to event stream
                 String eventStreamTopic = EVENT_STREAM_TOPIC_ASSIGNMENT_COMPLETE;
-                Map data = Map.of("activityId", activityId);
+                Map data = new HashMap();
+                data.putAll(Map.of("activityId", activityId));
+                if (variableMap != null) {
+                    data.put("variables", variableMap);
+                }
                 eventStreamManager.send(eventStreamTopic, processId, data);
 
-                // suspend activity
-                wfa.activity().suspend();
-                
                 // clear assignment cache, this is required if in-memory caching is used for process assignments in commit 87434b0e
-                 SharkUtil.removeCacheWorkflowAssignment(processId, activityId, wfa.assignee().resource_key());
+                SharkUtil.removeCacheWorkflowAssignment(processId, activityId, wfa.assignee().resource_key());
 
                 // slight delay to allow listener to complete quick transactions
+                // so that inbox will immediately show the next assignment if it done fast
                 Thread.sleep(100);
             } catch(Exception e) {
                 LogUtil.error(getClass().getName(), e, "Error completing assignment: " + e.getMessage());
             }
         } else {
             // complete assignment directly
-            result = assignmentComplete(activityId, null);
+            result = assignmentCompleteActual(activityId, null);
         }
         return result;
     }
@@ -4509,8 +4514,7 @@ public class WorkflowManagerImpl implements SharkWorkflowManager {
      * @param variableMap key=variable name and value=variable value.
      * @return
      */
-    @Override
-    public String assignmentComplete(String activityId, final Map<String, String> variableMap) {
+    public String assignmentCompleteActual(String activityId, final Map<String, String> variableMap) {
         String result = null;
         SharkConnection sc = null;
 
@@ -4538,7 +4542,7 @@ public class WorkflowManagerImpl implements SharkWorkflowManager {
     }
     
     /**
-     * Create activity instance.
+     * Create activity instance for event stream.
      * @param activityId
      * @return 
      */
@@ -4561,6 +4565,10 @@ public class WorkflowManagerImpl implements SharkWorkflowManager {
                     res = sc.getResource(username);
                 }
                 wfa.set_assignee(res);
+                
+                // suspend activity
+                wfa.activity().suspend();
+                
                 WorkflowUtil.addAuditTrail(this.getClass().getName(), "assignmentReassignUser", activityId, new Class[]{activityId.getClass()}, new Object[]{activityId}, null);
             }
             
