@@ -3312,7 +3312,19 @@ public class WorkflowManagerImpl implements SharkWorkflowManager {
         
         // create process instance in separate transaction first so that it will be accessible in a different thread
         final WorkflowProcessResult taskResult = result;
-        transactionTemplate.execute((TransactionStatus transactionStatus) -> processCreate(processDefId, processId, variables, startProcUsername, parentProcessId, taskResult));
+        
+        // Due to asynchronous nature of creating and starting processes, attempting to set workflow variables in
+        // both threads will cause a transaction rollback error due to race condition of version updates in Shark.
+        final Map<String, String> processVariables;
+        if (!startManually) {
+            // If block below will be executed, variables will be set in processStartImmediately method
+            processVariables = null;
+        } else {
+            // If block below will not be executed, variables will be set in processCreate method
+            processVariables = variables;
+        }
+            
+        transactionTemplate.execute((TransactionStatus transactionStatus) -> processCreate(processDefId, processId, processVariables, startProcUsername, parentProcessId, taskResult));
 
         if (!startManually) {
             final String startProcessId = result.getProcess().getInstanceId();
@@ -3354,19 +3366,6 @@ public class WorkflowManagerImpl implements SharkWorkflowManager {
         }
         final WorkflowProcessResult taskResult = result;
         try {
-            // Due to asynchronous nature of creating and starting processes, attempting to set workflow variables in
-            // both threads will cause a transaction rollback error due to race condition of version updates in Shark.
-            final Map<String, String> processVariables;
-            if (!startManually) {
-                // Try block below will be executed, variables will be set in processStartImmediately method
-                processVariables = null;
-            } else {
-                // Try block below will not be executed, variables will be set in processCreate method
-                processVariables = variables;
-            }
-            
-            // create process instance in separate transaction first so that it will be accessible in a different thread
-            transactionTemplate.execute((TransactionStatus transactionStatus) -> processCreate(processDefId, processId, processVariables, startProcUsername, parentProcessId, taskResult));
             if (!startManually) {
                 final String startUser = startProcUsername;
                 final String startProcessDefId = processDefId;
@@ -3375,7 +3374,7 @@ public class WorkflowManagerImpl implements SharkWorkflowManager {
                 // start process asynchronously with a timeout
                 try {
                     long timeout = getProcessAsyncTimeout(processDefId, processId, null);
-                    result = WorkflowUtil.executeAsync(() -> processStartImmediately(startUser, startProcessDefId, startProcessId, taskResult, processVariables), timeout);
+                    result = WorkflowUtil.executeAsync(() -> processStartImmediately(startUser, startProcessDefId, startProcessId, taskResult, variables), timeout);
                 } catch(TimeoutException te) {
                     result.setStatus("Pending");
                     LogUtil.info(getClass().getName(), "Timeout processStartImmediately for " + startProcessId);
