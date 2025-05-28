@@ -15,7 +15,7 @@
             autoReplaceSvg: false
         };
     </script>
-    <script src="${pageContext.request.contextPath}/js/fontawesome5/js/all.min.js?build=<fmt:message key="build.number"/>"></script>
+    <script src="${pageContext.request.contextPath}/js/fontawesome6/js/all.min.js?build=<fmt:message key="build.number"/>"></script>
 </c:set>
 <c:set var="builderCSS" scope="request">
     <style>

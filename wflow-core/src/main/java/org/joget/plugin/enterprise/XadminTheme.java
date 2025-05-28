@@ -778,7 +778,8 @@ public class XadminTheme extends UniversalTheme {
         urls.add(contextPath + "/wro/common.css");
         urls.add(contextPath + "/wro/xadmin.min.css");
         urls.add(contextPath + "/xadmin/css/font.css");
-        urls.add(contextPath + "/js/fontawesome5/css/all.min.css");
+        urls.add(contextPath + "/js/fontawesome6/css/all.min.css");
+        urls.add(contextPath + "/js/fontawesome6/css/v4-shims.min.css");
         urls.add(contextPath + "/wro/common.preload.js?build=" + bn);
         urls.add(contextPath + "/wro/common.js?build=" + bn);
         urls.add(contextPath + "/wro/form_common.js?build=" + bn);

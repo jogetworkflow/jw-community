@@ -11,7 +11,7 @@
     <group name="common">
         <css>/js/jquery/themes/ui-lightness/jquery-ui.min.css</css>
         <css>/js/jquery/themes/ui-lightness/jquery-ui-override.css</css>
-        <css>/js/fontawesome5/css/all.min.css</css>
+        <css>/js/fontawesome6/css/all.min.css</css>
         <css>/js/line-awesome-1.3.0/css/line-awesome.min.css</css>
         <css>/js/jquery/flexigrid/css/flexigrid/flexigrid.css</css>
         <css>/js/guiders/guiders-1.1.1.css</css>
@@ -76,8 +76,6 @@
         <css>/js/bootstrap/css/bootstrap.custom.css</css>
         <css>/js/bootstrap/css/bootstrap.min.css</css>
         <css>/js/bootstrap/css/bootstrap-responsive.min.css</css>
-        <css>/js/font-awesome/css/font-awesome.min.css</css>
-        <css>/js/font-awesome4/css/font-awesome.min.css</css>
     </group>
     <group name="universal.preload.min">
         <css>/css/form.css</css>
