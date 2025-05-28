@@ -668,17 +668,79 @@ body .sigPad .pad:hover{
 }
 
 /* datepicker */
-body .hasDatepicker + a, body .hasDatepicker + img {
+.hasDatepicker + a, .hasDatepicker + a + a {
     position: absolute;
     padding: 2px 5px;
     display: inline-block;
     cursor: pointer;
+    top: 8px;
+    right: -0.5rem;
+    z-index: 1;
 }
 body .hasDatepicker + a + a {
     padding: 2px 5px;
+    right: 0.8rem;
+}
+body.mediumFontSize .hasDatepicker + a, body.mediumFontSize .hasDatepicker + a + a {
+    right: -1.4rem;
+}
+body.mediumFontSize .hasDatepicker + a + a {
+    right: 0.3rem;
+}
+body.largeFontSize .hasDatepicker + a, body.largeFontSize .hasDatepicker + a + a {
+    right: -1.8rem;
+}
+body.largeFontSize .hasDatepicker + a + a {
+    right: 0;
 }
 body input.hasDatepicker {
     width: 60%;
+}
+body.rtl .hasDatepicker + a, body.rtl .hasDatepicker + a + a {
+    right: unset;
+    left: -0.5rem;
+}
+body.rtl .hasDatepicker + a + a {
+    right: unset;
+    left: 0.8rem;
+}
+body.rtl.mediumFontSize .hasDatepicker + a, body.rtl.mediumFontSize .hasDatepicker + a + a {
+    left: -1.4rem;
+}
+body.rtl.mediumFontSize .hasDatepicker + a + a {
+    left: 0.3rem;
+}
+body.rtl.largeFontSize .hasDatepicker + a, body.rtl.largeFontSize .hasDatepicker + a + a {
+    left: -1.8rem;
+}
+body.rtl.largeFontSize .hasDatepicker + a + a {
+    left: 0;
+}
+.label-top .hasDatepicker + a, .label-top .hasDatepicker + a + a {
+    top: auto;
+    bottom: 1.6rem;
+}
+.mediumFontSize .label-top .hasDatepicker + a, .mediumFontSize .label-top .hasDatepicker + a + a {
+    top: auto;
+    bottom: 1.8rem;
+}
+.largeFontSize .label-top .hasDatepicker + a, .largeFontSize .label-top .hasDatepicker + a + a {
+    top: auto;
+    bottom: 2rem;
+}
+@media (max-width: 768px) {
+    body.largeFontSize .hasDatepicker + a, body.largeFontSize .hasDatepicker + a + a {
+        right: -1.2rem;
+    }
+    body.largeFontSize .hasDatepicker + a + a {
+        right: 0.8rem;
+    }
+}
+@media (max-width: 480px) {
+    .hasDatepicker + a, .hasDatepicker + a + a {
+        top: auto;
+        bottom: 1rem;
+    }
 }
 body .filter-cell .hasDatepicker + a, body .filter-cell .hasDatepicker + img {
     right: auto;
@@ -1037,14 +1099,6 @@ body .handsontable input, .handsontable textarea{
     }
     body.rtl #form-canvas div.form-cell .label {
         text-align: right;
-    }
-    body.rtl #form-canvas .hasDatepicker + a {
-        left: 16px;
-        top: 32px;
-    }
-    body.rtl #form-canvas .hasDatepicker + a + a:after {
-        left: -22px;
-        top: 32px;
     }
 }
 

@@ -358,9 +358,8 @@ span.tablesaw-cell-content {
 .hasDatepicker + a + a{
     position: absolute;
     right: 5px;
-    top: 9px;
+    top: 12px;
     height: 18px;
-    width: 18px;
     font-family: "Font Awesome 5 Free";
     -moz-osx-font-smoothing: grayscale;
     -webkit-font-smoothing: antialiased;
@@ -383,7 +382,7 @@ body.rtl .hasDatepicker + a + a{
 }
 .hasDatepicker + a + a {
     color: #f8d7da;
-    right: 25px;
+    right: 22px;
     z-index: 1;
 }
 .datapicker-native.ui-screen-hidden.ios + .hasDatepicker + a + a {
@@ -394,7 +393,7 @@ body.rtl .hasDatepicker + a + a{
     text-decoration: none;
 }
 body.rtl .hasDatepicker + a + a{
-    left: 25px;
+    left: 22px;
     right: unset !important;
 }
 .hasDatepicker + a + a:before{
@@ -484,19 +483,19 @@ body.rtl.largeFontSize .hasDatepicker + a + a {
     bottom: 1.5rem;
 }
 
-@media screen and (max-width: 767px) {
+@media screen and (max-width: 480px) {
     /*Icon position for small font size*/
     .hasDatepicker + a, .hasDatepicker + a + a {
         top: auto;
         bottom: 1rem;
     }
     /*Icon position for medium font size*/
-    .mediumFontSize .hasDatepicker + a, .mediumFontSize .hasDatepicker + a + a {
+    body.mediumFontSize .hasDatepicker + a, .mediumFontSize .hasDatepicker + a + a {
         top: auto;
         bottom: 1.3rem;
     }
     /*Icon position for large font size*/
-    .largeFontSize .hasDatepicker + a, .largeFontSize .hasDatepicker + a + a {
+    body.largeFontSize .hasDatepicker + a, .largeFontSize .hasDatepicker + a + a {
         top: auto;
         bottom: 1.5rem;
     }
