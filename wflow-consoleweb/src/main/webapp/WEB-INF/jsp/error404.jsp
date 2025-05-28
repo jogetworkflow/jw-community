@@ -12,7 +12,7 @@
         <title><%= ResourceBundleUtil.getMessage("console.header.top.title", locale) %></title>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
         <link rel="shortcut icon" href="${pageContext.request.contextPath}/images/v3/joget.ico"/>
-        <link rel="stylesheet" href="${pageContext.request.contextPath}/js/fontawesome5/css/all.min.css"/>
+        <link rel="stylesheet" href="${pageContext.request.contextPath}/js/fontawesome6/css/all.min.css"/>
         <link rel="stylesheet" href="${pageContext.request.contextPath}/home/style.css"/>
     </head>
     <body class="page-body">

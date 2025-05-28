@@ -338,9 +338,8 @@ public class UniversalTheme extends UserviewV5Theme implements UserviewPwaTheme,
 
         String jsCssLink = "";
         jsCssLink += "<link href=\"" + data.get("context_path") + "/wro/" + getPathName() + ".preload.min.css" + "\" rel=\"stylesheet\" />\n";
-        jsCssLink += "<link rel=\"preload\" href=\"" + data.get("context_path") + "/js/fontawesome5/fonts/fontawesome-webfont.woff2?v=4.6.1\" as=\"font\" crossorigin />\n";
-        jsCssLink += "<link rel=\"preload\" href=\"" + data.get("context_path") + "/js/fontawesome5/webfonts/fa-brands-400.woff2\" as=\"font\" crossorigin />\n";
-        jsCssLink += "<link rel=\"preload\" href=\"" + data.get("context_path") + "/js/fontawesome5/webfonts/fa-solid-900.woff2\" as=\"font\" crossorigin />\n";
+        jsCssLink += "<link rel=\"preload\" href=\"" + data.get("context_path") + "/js/fontawesome6/webfonts/fa-brands-400.woff2\" as=\"font\" crossorigin />\n";
+        jsCssLink += "<link rel=\"preload\" href=\"" + data.get("context_path") + "/js/fontawesome6/webfonts/fa-solid-900.woff2\" as=\"font\" crossorigin />\n";
         jsCssLink += "<link rel=\"preload\" href=\"" + data.get("context_path") + "/universal/lib/material-design-iconic-font/fonts/Material-Design-Iconic-Font.woff2?v=2.2.0\" as=\"font\" crossorigin />\n";
         jsCssLink += "<script>loadCSS(\"" + data.get("context_path") + "/wro/" + getPathName() + ".min.css" + "\")</script>\n";
         

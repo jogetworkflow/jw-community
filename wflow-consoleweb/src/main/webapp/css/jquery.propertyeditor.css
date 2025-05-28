@@ -436,13 +436,19 @@
 .property-input > span.icon .property-icon-picker ul li:not(.iconset) {
     display: inline-block;
     font-size: 18px;
-    width: 28px;
-    height: 28px;
+    width: 36px;
+    height: 36px;
     text-align: center;
     border: 1px solid #ced4da;
     border-radius: 2px;
     margin: 3px;
     cursor: pointer;
+    padding: 5px;
+}
+
+.property-input > span.icon .property-icon-picker ul li.removeIcon{
+    background-color: #e9e7e7 !important;
+    color: #E91E63 !important;
 }
 
 .property-input > span.icon .property-icon-picker ul li.iconset{
@@ -451,7 +457,11 @@
     font-weight: 500;
     padding: 5px 2px;
 }
-
+.property-input > span.icon .property-icon-picker ul li[data-search-terms] i {
+    pointer-events: none;
+    user-select: none;
+    color: var(--icon-color);
+}
 .property-input > span.icon .property-icon-picker ul li:not(.iconset):hover {
     background: #212529;
     color:#fff;
@@ -463,10 +473,11 @@
 
 .property-input > span.icon .property-icon-picker .value_holder{
     position: relative;
+    padding-bottom: 0;
 }
 
 .property-input > span.icon .property-icon-picker .value_holder input {
-    padding: 6px 30px;
+    padding: 6px 10px;
 }
 
 .property-input > span.icon .property-icon-picker .value_holder .color {
@@ -485,7 +496,8 @@
     right: 15px;
     top: 15px;
     cursor: pointer;
-    color: #007bff;
+    color: #e46772;
+    text-shadow: 0 0 2px #000;
 }
 
 .property-input > span.icon .property-icon-picker input.search {
