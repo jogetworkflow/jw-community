@@ -1617,6 +1617,7 @@ body.rtl #ui-datepicker-div > table.ui-datepicker-calendar > tbody > tr > td:las
     align-items: center;
     justify-content: center;
     top: 16px;
+    right: 1.5em;
 }
 
 .label-top .hasDatepicker + a, 
@@ -1630,17 +1631,17 @@ body.rtl #ui-datepicker-div > table.ui-datepicker-calendar > tbody > tr > td:las
 }
 
 body.rtl .hasDatepicker + a, body.rtl .hasDatepicker + a + a {
-    left: 35px;
+    left: 1.5em;
     right: unset !important;
 }
 
-body.rtl .hasDatepicker + a + a {
-    left: 60px;
+body.rtl .hasDatepicker + a + a, body.rtl.mediumFontSize .hasDatepicker + a + a, body.rtl.largeFontSize .hasDatepicker + a + a  {
+    left: 3em;
     right: unset !important;
 }
 
-.hasDatepicker + a + a {
-    right: 50px;
+.hasDatepicker + a + a, .mediumFontSize .hasDatepicker + a + a, .largeFontSize .hasDatepicker + a + a {
+    right: 3em;
 }
 
 #ui-datepicker-div {
