@@ -11,8 +11,35 @@ import org.apache.commons.logging.LogFactory;
  */
 public class LogUtil {
     
+    /**
+     * System property to specify a custom class name for the Log implementation.
+     */
+    public static final String SYSTEM_PROPERTY_LOGGER = "wflow.logger";
+    private static String logClassName = null;
+    
+    /**
+     * Return the Log implementation specified by the wflow.logger system property. Defaults to commons-logging LogFactory.getLog(className).
+     * @param className
+     * @return
+     */
     protected static Log getLog(String className) {
-        return LogFactory.getLog(className);
+        Log logger = null;
+        String loggerClassName = System.getProperty(SYSTEM_PROPERTY_LOGGER);
+        if (loggerClassName != null && !loggerClassName.isEmpty()) {
+            try {
+                logger = (Log)Class.forName(loggerClassName).getDeclaredConstructor(String.class).newInstance(className);
+                if (logClassName == null) {
+                    logClassName = loggerClassName;
+                    System.out.println("LogUtil Log implementation: " + logger.getClass().getName());
+                }
+            } catch(Exception e) {
+                // ignore
+            }
+        }
+        if (logger == null) {
+            logger = LogFactory.getLog(className);
+        }
+        return logger;
     }
     
     /**
