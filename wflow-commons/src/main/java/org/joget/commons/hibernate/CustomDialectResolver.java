@@ -1,7 +1,6 @@
 package org.joget.commons.hibernate;
 
-import org.hibernate.dialect.Database;
-import org.hibernate.dialect.Dialect;
+import org.hibernate.dialect.*;
 import org.hibernate.engine.jdbc.dialect.spi.DialectResolutionInfo;
 import org.hibernate.engine.jdbc.dialect.spi.DialectResolver;
 
@@ -9,21 +8,25 @@ public class CustomDialectResolver implements DialectResolver {
     
     @Override
     public Dialect resolveDialect(DialectResolutionInfo info) {
-
-            for ( Database database : Database.values() ) {
-                if ( database.matchesResolutionInfo( info ) ) {
-                    if (database.name().equals(Database.ORACLE.name())) {
+        for (Database database : Database.values()) {
+            if (database.matchesResolutionInfo(info)) {
+                switch (database) {
+                    case ORACLE:
                         return new CustomOracleDialect(info);
-                    } else if (database.name().equals(Database.SQLSERVER.name())) {
+                    case SQLSERVER:
                         return new CustomSQLServerDialect(info);
-                    } else if (database.name().equals(Database.POSTGRESQL.name())) {
+                    case POSTGRESQL:
                         return new CustomPostgreSQLDialect(info);
-                    } else {
-                        return database.createDialect( info );
-                    }
+                    case MARIADB:
+                        return new CustomMariaDBDialect(info);
+                    case MYSQL:
+                        return new CustomMySQLDialect(info);
+                    default:
+                        return database.createDialect(info);
                 }
             }
+        }
 
-            return null;
+        return null;
     }
 }

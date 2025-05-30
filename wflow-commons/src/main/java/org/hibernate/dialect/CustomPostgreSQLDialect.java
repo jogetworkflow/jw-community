@@ -1,6 +1,5 @@
-package org.joget.commons.hibernate;
+package org.hibernate.dialect;
 
-import org.hibernate.dialect.PostgreSQLDialect;
 import org.hibernate.engine.jdbc.dialect.spi.DialectResolutionInfo;
 import static org.hibernate.type.SqlTypes.CLOB;
 import static org.hibernate.type.SqlTypes.NVARCHAR;
