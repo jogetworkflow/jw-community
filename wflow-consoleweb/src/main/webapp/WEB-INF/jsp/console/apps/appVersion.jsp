@@ -65,9 +65,16 @@
                 if (confirm('<ui:msgEscJS key="console.app.version.label.newVersion.confirm"/>')) {
                     showLoading();
                     var callback = {
-                        success : function() {
+                        success : function(data) {
+                            try {
+                                data = JSON.parse(data);
+                            } catch (e) {
+                                CustomBuilder.showMessage(get_cbuilder_msg("abuilder.invalidServerResponse"), "danger", false)
+                                console.error("Unable to parse data as JSON");
+                                return;
+                            }
                             parent.$.unblockUI();
-                            parent.CustomBuilder.ajaxRenderBuilder('${pageContext.request.contextPath}/web/console/app/<c:out value="${appId}"/>/_/builders');
+                            parent.CustomBuilder.ajaxRenderBuilder('${pageContext.request.contextPath}/web/console/app/<c:out value="${appId}"/>/'+data.appVersion+'/builders');
                         }
                     };
                     ConnectionManager.post('${pageContext.request.contextPath}/web/console/app/<c:out value="${appId}"/>/version/new?version='+version, callback, '');
