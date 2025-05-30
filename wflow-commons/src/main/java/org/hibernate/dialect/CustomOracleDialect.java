@@ -1,8 +1,9 @@
-package org.joget.commons.hibernate;
+package org.hibernate.dialect;
 
-import org.hibernate.dialect.OracleDialect;
 import org.hibernate.dialect.sequence.SequenceSupport;
 import org.hibernate.engine.jdbc.dialect.spi.DialectResolutionInfo;
+import org.joget.commons.hibernate.DisableSequenceSupport;
+
 import static org.hibernate.type.SqlTypes.CLOB;
 
 public class CustomOracleDialect extends OracleDialect {
