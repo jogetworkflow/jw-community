@@ -1,23 +1,23 @@
 $(document).ready(function() {
     const targetSpan = $("body").find(".header-nav a.btn .badge")[0];
-    const observer = new MutationObserver( (mutations) => {
-        mutations.forEach( (mutation) => {
-            if (mutation.type === "characterData" || mutation.type === "childList") {
-                if (targetSpan.textContent.trim() === "0") {
-                    $(targetSpan).addClass("empty");
-                } else {
-                    $(targetSpan).removeClass("empty");
+    if (targetSpan !== undefined) {
+        const observer = new MutationObserver( (mutations) => {
+            mutations.forEach( (mutation) => {
+                if (mutation.type === "characterData" || mutation.type === "childList") {
+                    if (targetSpan.textContent.trim() === "0") {
+                        $(targetSpan).addClass("empty");
+                    } else {
+                        $(targetSpan).removeClass("empty");
+                    }
                 }
-            }
-        }
-        );
+            });
+        });
+        observer.observe(targetSpan, {
+            characterData: true,
+            childList: true,
+            subtree: true
+        });
     }
-    );
-    observer.observe(targetSpan, {
-        characterData: true,
-        childList: true,
-        subtree: true
-    });
     $(window).off("load.inbox").on("load.inbox", function() {
         setTimeout(function() {
             loadInbox();
@@ -303,9 +303,6 @@ $(document).ready(function() {
                 $(this).appendTo($(this).closest("div.Form_Menu").find("div.viewForm-body-content div#section-actions"));
             })
         }
-        $(".dataList .filters select").on("change", function() {
-            $(this).closest("div.filters").find("input.form-button[type='submit'][value='Show']").click();
-        })
     })
     $(window).resize(function() {
         if (($("body").hasClass("horizontal_menu") && $(window).outerWidth() < 768) || !$("body").hasClass("horizontal_menu")) {
