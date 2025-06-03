@@ -3121,7 +3121,7 @@ PropertyEditor.Type.IconTextField = function() {};
 PropertyEditor.Type.IconTextField.prototype = {
     shortname: "icon-textfield",
     icons : {
-        "Font Awesome 5" : {
+        "Font Awesome 6" : {
             'fas fa-0': 'digit zero nada none zero zilch',
             'fas fa-1': 'digit one one',
             'fas fa-2': 'digit two two',

@@ -2655,7 +2655,7 @@ th:hover {
     text-decoration: underline;
     cursor: pointer;
 }
-i.fa-sort, i.fa-sort-asc, i.fa-sort-desc{
+.grid i.fa-sort, .grid i.fa-sort-asc, .grid i.fa-sort-desc{
     position:relative;
     float:right;
     padding: 4px 0px 0px 0px;
