@@ -262,8 +262,7 @@ public abstract class UserviewV5Theme extends UserviewTheme {
                 
                 String html = "<style>\n" +
                 "body#login #loginForm {display: none;}\n" +
-                ".img100 {height: 100% !important;};\n" +
-                ".form-errors {margin-bottom: 0px;}\n" +
+                ".img100 {height: 100% !important;}\n" +
                 "body#login header, body#login footer {display: none;}\n" +
                 "</style>";
                 
