@@ -68,7 +68,9 @@ header.navbar {
     display: block;
     height: var(--global-headerHeight);
     margin-bottom: 0;
-    padding: var(--global-headerPadding);
+    padding: var(--global-headerPaddingInline);
+    padding-top: 0px;
+    padding-bottom: 0px;
     position: fixed;
     -webkit-transition: all 0.2s ease;
     -o-transition: all 0.2s ease;
@@ -132,7 +134,7 @@ body.rtl:not(.horizontal_menu) header.navbar .container-fluid {
     padding: 3px 5.5px;
     position: absolute;
     right: 10px;
-    top: 15px;
+    top: 10px;
 }
 
 #header-info {
@@ -180,16 +182,16 @@ header.navbar .dropdown-menu {
 
 @media (max-width: 430px){
     /*57px width of user-link */
-    /*25px width of padding-right of .container-fluid */
+    /*32px width of padding-right of .container-fluid */
     header.navbar .dropdown-menu.notifications {
         position: absolute;
-        right: calc(0vw - 57px - 25px) !important;
+        right: calc(0vw - 57px - 32px - var(--global-headerPaddingInline)) !important;
         min-width: 100vw !important;
     }
     /*57px width of user-link */
-    /*20px width of padding-left of .container-fluid */
+    /*32px width of padding-left of .container-fluid */
     body.rtl header.navbar .dropdown-menu.notifications {
-        left: calc(0vw - 57px - 20px) !important;
+        left: calc(0vw - 57px - 32px - var(--global-headerPaddingInline)) !important;
         right: unset !important;
     }
 }
@@ -1029,7 +1031,7 @@ body.horizontal_menu #header-info {
     }
 
     body.horizontal_menu header.navbar .container-fluid {
-        padding: var(--global-headerPadding);
+        padding: var(--global-headerPaddingInline);
         padding-top: 0px;
         padding-bottom: 0px;
     }
@@ -1103,7 +1105,7 @@ body.horizontal_menu #header-info {
     body.horizontal_menu #sidebar #category-container {
         line-height: var(--global-headerHeight);
         height: var(--global-headerHeight);
-        padding: var(--global-headerPadding);
+        padding: var(--global-headerPaddingInline);
         padding-top: 0;
         padding-bottom: 0;
         max-width: var(--global-contentWidth);
@@ -2608,4 +2610,13 @@ body.rtl [class*="-selection"].dropdown .dropdown-menu i.zmdi-check {
 
 [class*="-selection"].dropdown .dropdown-menu {
     width: 220px;
+}
+
+li.user-link > a > i{
+    padding-right: 5px;
+}
+
+body.rtl li.user-link > a > i{
+    padding-right: 0px;
+    padding-left: 5px;
 }
