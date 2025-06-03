@@ -144,7 +144,7 @@
 
                         if (propertyName === "icon"){
                             dict[propertyName] = $(this).find('.value i').prop("outerHTML");
-                        }else if ($(this).find("input").val() !== ""){
+                        }else {
                             dict[propertyName] = $(this).find("input").val();
                         }
                     })
@@ -163,7 +163,7 @@
                     }else if ($(this).attr('type') === 'number' && $(this).siblings("select").length > 0 && $(this).siblings("select").val() === 'auto'){
                         dict[propertyName] = "auto";
                     }
-                    else if ($(this).val() !== ""){
+                    else if ($(this).attr('data-value') !== undefined) {
                         var value = $(this).val();
 
                         if ($(this).attr('type') === 'number' && $(this).siblings("select").length > 0) {
