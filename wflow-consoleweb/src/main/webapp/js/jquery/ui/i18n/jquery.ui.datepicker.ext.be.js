@@ -238,9 +238,22 @@
         },
         
         _restrictMinMax: function( inst, date ) {
-            var minDate = this._getMinMaxDate( inst, "min" ),
-                    maxDate = this._getMinMaxDate( inst, "max" ),
-                    newDate = ( minDate && date < minDate ? minDate : date );
+            const minDate = this._getMinMaxDate( inst, "min" );
+            const maxDate = this._getMinMaxDate( inst, "max" );
+
+            // ensure normal dates are used to calculate the min/max limits of the calendar
+            // else it will compare BE and CE dates
+            if (minDate) {
+                minDate.setFullYear(this._convertToCe(minDate.getFullYear()));
+            }
+            if (maxDate) {
+                maxDate.setFullYear(this._convertToCe(maxDate.getFullYear()));
+            }
+            if (date) {
+                date.setFullYear(this._convertToCe(date.getFullYear()));
+            }
+
+            const newDate = ( minDate && date < minDate ? minDate : date );
             return ( maxDate && newDate > maxDate ? maxDate : newDate );
 	},
 
@@ -327,11 +340,12 @@
             drawYear = $.datepicker._convertToBe(drawYear);
             let originalMinDate = minDate ? new Date(minDate.getTime()) : null;
             let originalMaxDate = maxDate ? new Date(maxDate.getTime()) : null;
+            // convert year to BE for the year selector
             if (minDate) {
-                minDate.setFullYear(minDate.getFullYear() + 543);
+                minDate = this._toBE(minDate);
             }
             if (maxDate) {
-                maxDate.setFullYear(maxDate.getFullYear() + 543);
+                maxDate = this._toBE(maxDate);
             }
             let result = d_generateMonthYearHeader.apply(this, arguments);
             if (originalMinDate) {
@@ -341,13 +355,15 @@
                 maxDate.setTime(originalMaxDate.getTime());
             }
             return result;
-            
+
         },
 
         _getMinMaxDate: function (inst, minMax) {
             let determinedDate = this._determineDate(inst, this._get(inst, minMax + "Date"), null);
             if (determinedDate) {
-                determinedDate.setFullYear((new Date()).getFullYear());
+                // ensure date is CE before returning for internal processing
+                const ceYear = this._convertToCe(determinedDate.getFullYear());
+                determinedDate.setFullYear(ceYear);
             }
             return determinedDate;
         },
