@@ -1,23 +1,23 @@
 $(document).ready(function() {
     const targetSpan = $("body").find(".header-nav a.btn .badge")[0];
-    const observer = new MutationObserver( (mutations) => {
-        mutations.forEach( (mutation) => {
-            if (mutation.type === "characterData" || mutation.type === "childList") {
-                if (targetSpan.textContent.trim() === "0") {
-                    $(targetSpan).addClass("empty");
-                } else {
-                    $(targetSpan).removeClass("empty");
+    if (targetSpan !== undefined) {
+        const observer = new MutationObserver( (mutations) => {
+            mutations.forEach( (mutation) => {
+                if (mutation.type === "characterData" || mutation.type === "childList") {
+                    if (targetSpan.textContent.trim() === "0") {
+                        $(targetSpan).addClass("empty");
+                    } else {
+                        $(targetSpan).removeClass("empty");
+                    }
                 }
-            }
-        }
-        );
+            });
+        });
+        observer.observe(targetSpan, {
+            characterData: true,
+            childList: true,
+            subtree: true
+        });
     }
-    );
-    observer.observe(targetSpan, {
-        characterData: true,
-        childList: true,
-        subtree: true
-    });
     $(window).off("load.inbox").on("load.inbox", function() {
         setTimeout(function() {
             loadInbox();
@@ -94,14 +94,11 @@ $(document).ready(function() {
                     prevMenu = $(this);
                     totalMenuWidth += gap;
                 })
-                var breakpoint = $(window).outerWidth();
+                var breakpoint = $("#sidebar").outerWidth();
                 if ($("body").hasClass("inline_menu")) {
-                    breakpoint -= ($("header.navbar .container-fluid").outerWidth(true) - $("header.navbar .container-fluid").innerWidth());
-                    breakpoint -= $("a#header-link").outerWidth(true);
-                    breakpoint -= $("header.navbar .header-nav").outerWidth(true);
-                    breakpoint -= 20;
+                    breakpoint -= 30;
                 } else {
-                    breakpoint -= 32; //Cater for margin
+                    breakpoint -= 32;
                 }
 
                 $("body").find("nav button#leftNav").remove();
@@ -306,12 +303,6 @@ $(document).ready(function() {
                 $(this).appendTo($(this).closest("div.Form_Menu").find("div.viewForm-body-content div#section-actions"));
             })
         }
-        $(".dataList .filters select:not([multiple])").on("change", function() {
-            $(this).closest("div.filters").find("input.form-button[type='submit']").click();
-        });
-        $(".dataList .filters select, .dataList .filters input").on("filter_updated", function() {
-            $(this).closest("div.filters").find("input.form-button[type='submit']").click();
-        });
     })
     $(window).resize(function() {
         if (($("body").hasClass("horizontal_menu") && $(window).outerWidth() < 768) || !$("body").hasClass("horizontal_menu")) {

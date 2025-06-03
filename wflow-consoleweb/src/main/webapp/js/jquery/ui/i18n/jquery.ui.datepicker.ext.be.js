@@ -12,7 +12,7 @@
  *
  * Changes:
  * - Tested on jQuery 3.5.1, Datepicker 1.13.1, Datetimepicker 1.6.3
- * - _toBE function added by owen convert date to BE 
+ * - _toBE function added by owen convert date to BE
  * - _restrictMinMax function added by owen to fix range limit to working for BE
  * - _daylightSavingAdjust function added by owen to fix today & selected date is not highlighted
  * - _showDatepicker function modified by cchunzhe to support "showOn: button" option
@@ -236,13 +236,26 @@
             }
             return result;
         },
-        
+
         _restrictMinMax: function( inst, date ) {
-            var minDate = this._getMinMaxDate( inst, "min" ),
-                    maxDate = this._getMinMaxDate( inst, "max" ),
-                    newDate = ( minDate && date < minDate ? minDate : date );
+            const minDate = this._getMinMaxDate( inst, "min" );
+            const maxDate = this._getMinMaxDate( inst, "max" );
+
+            // ensure normal dates are used to calculate the min/max limits of the calendar
+            // else it will compare BE and CE dates
+            if (minDate) {
+                minDate.setFullYear(this._convertToCe(minDate.getFullYear()));
+            }
+            if (maxDate) {
+                maxDate.setFullYear(this._convertToCe(maxDate.getFullYear()));
+            }
+            if (date) {
+                date.setFullYear(this._convertToCe(date.getFullYear()));
+            }
+
+            const newDate = ( minDate && date < minDate ? minDate : date );
             return ( maxDate && newDate > maxDate ? maxDate : newDate );
-	},
+        },
 
         _SetBEDisplay: function (inst) {
             var _inst = inst;
@@ -313,7 +326,7 @@
                 return year;
             }
         },
-        
+
         _toBE: function (date) {
             var year = date.getFullYear();
             if ((parseInt(year) - 543) < 1900) {
@@ -327,11 +340,12 @@
             drawYear = $.datepicker._convertToBe(drawYear);
             let originalMinDate = minDate ? new Date(minDate.getTime()) : null;
             let originalMaxDate = maxDate ? new Date(maxDate.getTime()) : null;
+            // convert year to BE for the year selector
             if (minDate) {
-                minDate.setFullYear(minDate.getFullYear() + 543);
+                minDate = this._toBE(minDate);
             }
             if (maxDate) {
-                maxDate.setFullYear(maxDate.getFullYear() + 543);
+                maxDate = this._toBE(maxDate);
             }
             let result = d_generateMonthYearHeader.apply(this, arguments);
             if (originalMinDate) {
@@ -341,24 +355,24 @@
                 maxDate.setTime(originalMaxDate.getTime());
             }
             return result;
-            
+
         },
 
         _getMinMaxDate: function (inst, minMax) {
             let determinedDate = this._determineDate(inst, this._get(inst, minMax + "Date"), null);
             if (determinedDate) {
-                determinedDate.setFullYear((new Date()).getFullYear());
+                // ensure date is CE before returning for internal processing
+                const ceYear = this._convertToCe(determinedDate.getFullYear());
+                determinedDate.setFullYear(ceYear);
             }
             return determinedDate;
         },
 
         formatDate: function (format, date, settings) {
-
-            if (date.getFullYear() === (new Date()).getFullYear()) {
+            if (date) {
                 date = this._toBE(date);
             }
-            let output = d_formatDate.apply(this, arguments);
-            return output;
+            return d_formatDate.apply(this, arguments);
         }
     });
 

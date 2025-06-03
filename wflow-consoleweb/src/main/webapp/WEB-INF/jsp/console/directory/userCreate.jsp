@@ -253,6 +253,9 @@
             var originalAppId = UI.userview_app_id;
             var alertString = "";
             var idMatch = /^[\.@0-9a-zA-Z_\+-]+$/.test($("#username").val());
+            const firstName = $("#firstName").val();
+            const lastName = $("#lastName").val();
+            
             if(!idMatch){
                 if(!idMatch){
                     alertString += '<ui:msgEscJS key="console.directory.user.error.label.usernameInvalid"/>';
@@ -260,6 +263,15 @@
                     valid = false;
                 }
             }
+                                     
+            if(firstName == ""){
+                alertString += '<ui:msgEscJS key="User.firstName[not.blank]"/>';
+                valid = false;
+            } else if (containsXss(firstName) || containsXss(lastName)) {
+                alertString += '<ui:msgEscJS key="console.directory.user.error.label.nameInvalid"/>';
+                valid = false;
+            }  
+            
             if($("[name=password]").val() == "" || $("[name=confirmPassword]").val() == ""){
                 if(alertString != ""){
                     alertString += '\n';
@@ -361,6 +373,11 @@
                 $(field).val(dvalue);
             }
         }
+        
+        function containsXss(input) {
+            const pattern = /<[^>]*>|(javascript:)|(&#x?[0-9a-fA-F]+;)|(%[0-9a-fA-F]{2})/gi;
+            return pattern.test(input);        
+        }    
 
         function closeDialog() {
             if (parent && parent.PopupDialog.closeDialog) {

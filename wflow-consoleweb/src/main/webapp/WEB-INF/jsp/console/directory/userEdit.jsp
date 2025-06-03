@@ -251,12 +251,23 @@
         function validateField(){
             var valid = true;
             var originalAppId = UI.userview_app_id;
-            var alertString = "";
+            var alertString = "";            
+            const firstName = $("#firstName").val();
+            const lastName = $("#lastName").val();
+    
+            if(firstName == ""){
+                alertString += '<ui:msgEscJS key="User.firstName[not.blank]"/>';
+                valid = false;
+            } else if (containsXss(firstName) || containsXss(lastName)) {
+                alertString += '<ui:msgEscJS key="console.directory.user.error.label.nameInvalid"/>';
+                valid = false;
+            }  
+            
             if($("[name=password]").val() != $("[name=confirmPassword]").val()){
                 alertString += '<ui:msgEscJS key="console.directory.user.error.label.passwordNotMatch"/>';
                 valid = false;
             }
-
+            
             UI.validateEmail('#email', true, function(isValid) {
                 if (!isValid) {
                     if (alertString != "") {
@@ -343,6 +354,11 @@
                 }
                 $(field).val(dvalue);
             }
+        }
+        
+        function containsXss(input) {
+            const pattern = /<[^>]*>|(javascript:)|(&#x?[0-9a-fA-F]+;)|(%[0-9a-fA-F]{2})/gi;
+            return pattern.test(input);        
         }
         
         function closeDialog() {
