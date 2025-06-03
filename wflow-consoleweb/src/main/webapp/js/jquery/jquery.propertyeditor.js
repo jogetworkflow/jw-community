@@ -6170,7 +6170,7 @@ PropertyEditor.Type.IconTextField.prototype = {
             if (this.properties.iconOnly !== undefined && this.properties.iconOnly === "true") {
                 value = iconValue;
             } else {
-                if (iconValue !== "") {
+                if (iconValue !== "" && value !== "") {
                     value = iconValue + " " + value;
                 }
             }
