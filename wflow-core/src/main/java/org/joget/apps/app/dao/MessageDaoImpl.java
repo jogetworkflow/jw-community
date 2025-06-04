@@ -67,7 +67,7 @@ public class MessageDaoImpl extends AbstractAppVersionedObjectDao<Message> imple
             for (Message message : results) {
                 messageMap.put(message.getMessageKey(), message);
             }
-            cache.put(cacheKey, cachedMap, appDefinition);
+            cache.put(cacheKey, messageMap, appDefinition);
         } else {
             messageMap = cachedMap;
         }
