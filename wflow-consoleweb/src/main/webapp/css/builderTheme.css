@@ -1375,7 +1375,7 @@ body[builder-theme] .editor-panel-mode .elementmultiselect > .repeater-row > .ac
 body[builder-theme] .editor-panel-mode .elementmultiselect > .repeater-row:hover > .actions.rowbuttons{
     visibility: visible;
 }
-body[builder-theme] .repeater-row .actions.rowbuttons .addrow{
+body[builder-theme] .editor-panel-mode .elementmultiselect > .repeater-row:hover .actions.rowbuttons .addrow{
     display: block;
 }
 body[builder-theme] .chosen-container-single .chosen-single abbr {
