@@ -16,8 +16,7 @@ public class AppDefCache {
         this.cache = cacheManager.getCache("org.joget.cache.FLU_CACHE");
     }
     
-    public Object getObject(String key, AppDefinition appDef) {
-        Object value = null;
+    protected CacheElement getCacheElement(String key, AppDefinition appDef) {
         CacheElement element = (CacheElement)cache.get(key);
         if (element != null) {
             Long lastModified = null;
@@ -28,8 +27,17 @@ public class AppDefCache {
                 cache.remove(key);
                 LogUtil.debug(AppDefCache.class.getName(), key + " need to refresh.");
             } else {
-                value = element.value;
+                return element;
             }
+        }
+        return null;
+    }
+    
+    public Object getObject(String key, AppDefinition appDef) {
+        Object value = null;
+        CacheElement element = getCacheElement(key, appDef);
+        if (element != null) {
+            value = element.value;
         }
         return value;
     }
@@ -78,12 +86,12 @@ public class AppDefCache {
      * @return 
      */
     public Element get(String key, AppDefinition appDef) {
-        Object value = getObject(key, appDef);
-        if (value != null) {
-            if (value instanceof Element) {
-                return (Element) value;
+        CacheElement element = getCacheElement(key, appDef);
+        if (element != null) {
+            if (element.value instanceof Element) {
+                return (Element) element.value;
             } else {
-                Element newValue = new Element(key, (Serializable) value);
+                Element newValue = new Element(key, (Serializable) element.value);
                 return newValue;
             }
         }

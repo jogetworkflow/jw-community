@@ -109,7 +109,7 @@ public class FormDefinitionDaoImpl extends AbstractAppVersionedObjectDao<FormDef
             FormDefinition formDef = load(id, appDefinition);
 
             if (formDef != null) {
-                cache.put(cacheKey, formDefinition, appDefinition);
+                cache.put(cacheKey, formDef, appDefinition);
             }
             return formDef;
         } else {

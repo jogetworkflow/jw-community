@@ -5,6 +5,7 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 import java.util.Properties;
+import net.sf.ehcache.Element;
 import org.joget.apps.app.model.AppDefinition;
 import org.joget.apps.app.model.PluginDefaultProperties;
 import org.joget.apps.app.service.AppDevUtil;
@@ -45,14 +46,15 @@ public class PluginDefaultPropertiesDaoImpl extends AbstractAppVersionedObjectDa
     @Override
     public PluginDefaultProperties loadById(String id, AppDefinition appDefinition) {
         String cacheKey = getCacheKey(id, appDefinition.getAppId(), appDefinition.getVersion());
-        PluginDefaultProperties cachedProps = (PluginDefaultProperties) cache.getObject(cacheKey, appDefinition);
-
-        if (cachedProps == null) {
+        
+        Element cacheElement = cache.get(cacheKey, appDefinition);
+        
+        if (cacheElement == null) {
             PluginDefaultProperties props = super.loadById(id, appDefinition);            
-            cache.put(cacheKey, cachedProps, appDefinition); //for PluginDefaultProperties, store to cache even it is null. It is used by audit trail & hash variable            
+            cache.put(cacheKey, props, appDefinition); //for PluginDefaultProperties, store to cache even it is null. It is used by audit trail & hash variable            
             return props;
         }else{
-            return cachedProps;
+            return (PluginDefaultProperties) cacheElement.getObjectValue();
         }
     }
 
