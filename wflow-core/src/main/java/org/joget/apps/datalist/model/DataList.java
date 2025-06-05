@@ -774,6 +774,8 @@ public class DataList {
             } else {
                 rowCount = (int) cachedElem.getValue();
             }
+        } else if (total != null && filterQueryObjects != null && filterQueryObjects.length == 0) {
+            rowCount = total; //when there is no filterQueryObjects, the size & total is same value.
         } else {
             rowCount = getCountLambda.get();
         }
