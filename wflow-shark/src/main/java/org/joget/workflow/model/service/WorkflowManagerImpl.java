@@ -133,6 +133,7 @@ public class WorkflowManagerImpl implements SharkWorkflowManager {
     private Map processStateMap;
     private String previousProfile;
     private EventStreamManager eventStreamManager;
+    private boolean eventStreamManagerInitialized = false;
     
     private static ThreadLocal migrationAssignmentUserList = new ThreadLocal() {
         @Override
@@ -3233,18 +3234,24 @@ public class WorkflowManagerImpl implements SharkWorkflowManager {
      * Initialize event stream listeners
      */
     protected void initEventStreamManager() {
-        
+        // get event stream manager        
         synchronized(this) {
             if (eventStreamManager == null) {
-                EventStreamManager evStreamManager = EventStreamManager.getEventStreamManager();
-                if (evStreamManager != null && evStreamManager.isEnabled()) {
-                    LogUtil.info(getClass().getName(), "EventStreamManager discovered: " + evStreamManager);
+                eventStreamManager = EventStreamManager.getEventStreamManager();
+            }
+        }
+
+        if (!eventStreamManagerInitialized) {
+            // event stream manager not ready, initialize if enabled
+            synchronized(this) {
+                if (eventStreamManager != null && eventStreamManager.isEnabled()) {
+                    LogUtil.info(getClass().getName(), "EventStreamManager discovered: " + eventStreamManager);
 
                     // register event stream message listener for process
                     String eventStreamProcessTopic = EVENT_STREAM_TOPIC_PROCESS_START;
                     String eventStreamGroup = EVENT_STREAM_GROUP_WORKFLOW;
-                    evStreamManager.createTopic(eventStreamProcessTopic);
-                    evStreamManager.listen(eventStreamProcessTopic, eventStreamGroup, (String topic, String key, Map data) -> {
+                    eventStreamManager.createTopic(eventStreamProcessTopic);
+                    eventStreamManager.listen(eventStreamProcessTopic, eventStreamGroup, (String topic, String key, Map data) -> {
                         transactionTemplate.executeWithoutResult((TransactionStatus status) -> {
                             // start process
                             String processDefId = (String)data.get("processDefId");
@@ -3260,8 +3267,8 @@ public class WorkflowManagerImpl implements SharkWorkflowManager {
 
                     // register event stream message listener for assignment
                     String eventStreamAssignmentTopic = EVENT_STREAM_TOPIC_ASSIGNMENT_COMPLETE;
-                    evStreamManager.createTopic(eventStreamAssignmentTopic);
-                    evStreamManager.listen(eventStreamAssignmentTopic, eventStreamGroup, (String topic, String key, Map data) -> {
+                    eventStreamManager.createTopic(eventStreamAssignmentTopic);
+                    eventStreamManager.listen(eventStreamAssignmentTopic, eventStreamGroup, (String topic, String key, Map data) -> {
                         transactionTemplate.executeWithoutResult((TransactionStatus status) -> {
                             // complete assignment
                             String activityId = (String)data.get("activityId");
@@ -3270,9 +3277,7 @@ public class WorkflowManagerImpl implements SharkWorkflowManager {
                         });
                     });
                     LogUtil.info(getClass().getName(), "Registered event stream listener for " + EVENT_STREAM_TOPIC_ASSIGNMENT_COMPLETE);
-                    eventStreamManager = evStreamManager;
-                } else {
-                    eventStreamManager = null;
+                    eventStreamManagerInitialized = true;
                 }
             }
         }
