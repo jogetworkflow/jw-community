@@ -3323,11 +3323,21 @@ public class WorkflowManagerImpl implements WorkflowManager {
             // If block below will not be executed, variables will be set in processCreate method
             processVariables = variables;
         }
-            
-        transactionTemplate.execute((TransactionStatus transactionStatus) -> processCreate(processDefId, processId, processVariables, startProcUsername, parentProcessId, taskResult));
-
+        
+        //only create the process when process id is null
+        if (processId == null) {
+            transactionTemplate.execute((TransactionStatus transactionStatus) -> processCreate(processDefId, processVariables, startProcUsername, parentProcessId, taskResult));
+            processId = result.getProcess().getInstanceId();
+        } else {
+            WorkflowProcess processStarted = new WorkflowProcess();
+            processStarted.setId(processDefId);
+            processStarted.setInstanceId(processId);
+            result.setProcess(processStarted);
+            result.setParentProcessId(parentProcessId);
+        }
+        
         if (!startManually) {
-            final String startProcessId = result.getProcess().getInstanceId();
+            final String startProcessId = processId;
             // check whether to run async, only when activity does not automatically continue to the next
             boolean runAsync = eventStreamManager != null && eventStreamManager.isEnabled() && !isActivityAutoContinue(processDefId, WorkflowUtil.ACTIVITY_DEF_ID_RUN_PROCESS);
             if (runAsync) {
@@ -3391,14 +3401,13 @@ public class WorkflowManagerImpl implements WorkflowManager {
     /**
      * Create process instance without actually starting it yet.
      * @param processDefId
-     * @param processId
      * @param variables
      * @param startProcUsername
      * @param parentProcessId
      * @param result
      * @return 
      */
-    protected WorkflowProcessResult processCreate(String processDefId, String processId, Map<String, String> variables, String startProcUsername, String parentProcessId, WorkflowProcessResult result) {
+    protected WorkflowProcessResult processCreate(String processDefId, Map<String, String> variables, String startProcUsername, String parentProcessId, WorkflowProcessResult result) {
         processDefId = getConvertedLatestProcessDefId(processDefId);
         String processInstanceId;
         SharkConnection sc = null;
@@ -3412,22 +3421,17 @@ public class WorkflowManagerImpl implements WorkflowManager {
                 sc = connect();
             }
             
-            // start process
+            // create process
             WfProcessMgr mgr = sc.getProcessMgr(processDefId);
             WfProcess wfProcess = null;
 
-            if (processId != null && processId.trim().length() > 0) {
-                wfProcess = sc.getProcess(processId);
-                processInstanceId = processId;
-            } else {
-                wfProcess = mgr.create_process(null);
-                processInstanceId = wfProcess.key();
-                
-                //Dummy operation just to execute a query to db after process creation.
-                //It need to be a select query. Else will causing transaction rollback.
-                //This is to solve always 1 variable missing during start process #907
-                sc.getResource("dummy");
-            }
+            wfProcess = mgr.create_process(null);
+            processInstanceId = wfProcess.key();
+
+            //Dummy operation just to execute a query to db after process creation.
+            //It need to be a select query. Else will causing transaction rollback.
+            //This is to solve always 1 variable missing during start process #907
+            sc.getResource("dummy");
 
             validateAndSetProcessWorkflowVariables(variables, wfProcess);
             
@@ -3487,7 +3491,7 @@ public class WorkflowManagerImpl implements WorkflowManager {
             WfProcess wfProcess = sc.getProcess(processId);
             validateAndSetProcessWorkflowVariables(variables, wfProcess);
             wfProcess.start();
-
+            
             //redirect to assignment view accordingly
             Shark shark = Shark.getInstance();
             AdminMisc admin = shark.getAdminMisc();
