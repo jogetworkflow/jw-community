@@ -1107,7 +1107,7 @@ public class AppServiceImpl implements AppService {
                 appDef == null || //there is no appDef in thread
                 !appDef.getId().equals(appId) || //different appDef in thread
                 (versionLong != null && versionLong == -1l && !appDef.isPublished()) || //required published version but appDef in thread is not
-                (versionLong != null && !appDef.getVersion().equals(versionLong))) { //required version not match 
+                (versionLong != null && versionLong != -1l && !appDef.getVersion().equals(versionLong))) { //required version not match 
             // no matching app in thread, load from DAO
             appDef = loadAppDefinition(appId, version);
         }
@@ -2199,6 +2199,14 @@ public class AppServiceImpl implements AppService {
      */
     public AppDefinition getPublishedAppDefinition(String appId) {
         try {
+            //check for current appDef to reduce db call
+            AppDefinition currentAppDef = AppUtil.getCurrentAppDefinition();
+            if (currentAppDef != null 
+                    && currentAppDef.getAppId().equals(appId)
+                    && currentAppDef.isPublished()) {
+                return currentAppDef;
+            }
+            
             AppDefinition appDef = appDefinitionDao.getPublishedAppDefinition(appId);
             
             if (!AppDevUtil.isGitDisabled()) {
