@@ -16,12 +16,14 @@ import org.joget.commons.util.LogUtil;
 import org.joget.commons.util.StringUtil;
 import org.joget.workflow.model.dao.WorkflowHelper;
 import org.joget.workflow.util.WorkflowUtil;
+import org.springframework.transaction.annotation.Transactional;
 
 /**
  * DAO to load/store AppVersionedObjects objects
  */
 public abstract class AbstractAppVersionedObjectDao<T extends AbstractAppVersionedObject> extends AbstractSpringDao implements AppVersionedObjectDao<T> {
     
+    @Transactional
     public T loadById(String id, AppDefinition appDefinition) {
         T result = null;
         Collection<T> results = find("and id=?", new Object[]{id}, appDefinition, null, null, 0, 1);
