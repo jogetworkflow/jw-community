@@ -15,6 +15,7 @@ import org.joget.apps.app.model.PackageActivityPlugin;
 import org.joget.apps.app.model.PackageDefinition;
 import org.joget.apps.app.model.PackageParticipant;
 import org.joget.apps.app.service.AppDevUtil;
+import org.joget.apps.app.service.AppService;
 import org.joget.apps.app.service.AppUtil;
 import org.joget.commons.util.LogUtil;
 import org.joget.workflow.model.WorkflowActivity;
@@ -23,6 +24,7 @@ import org.joget.workflow.model.WorkflowProcess;
 import org.joget.workflow.model.dao.WorkflowHelper;
 import org.joget.workflow.model.service.WorkflowManager;
 import org.joget.workflow.util.WorkflowUtil;
+import org.springframework.beans.factory.annotation.Autowired;
 
 /**
  * DAO to load/store PackageDefinition and mapping objects
@@ -31,6 +33,9 @@ public class PackageDefinitionDaoImpl extends AbstractVersionedObjectDao<Package
 
     public static final String ENTITY_NAME = "PackageDefinition";
     private AppDefinitionDao appDefinitionDao;
+    
+    @Autowired
+    AppService appService;
 
     public AppDefinitionDao getAppDefinitionDao() {
         return appDefinitionDao;
@@ -112,8 +117,8 @@ public class PackageDefinitionDaoImpl extends AbstractVersionedObjectDao<Package
     public PackageDefinition loadAppPackageDefinition(String appId, Long appVersion) {
         PackageDefinition packageDef = null;
 
-        // load the package definition
-        AppDefinition appDef = appDefinitionDao.loadVersion(appId, appVersion);
+        // load the package definition, getting from appService so that current app def is set correctly
+        AppDefinition appDef = appService.getAppDefinition(appId, Long.toString(appVersion));
         packageDef = appDef.getPackageDefinition();
 
         return packageDef;
