@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
+import net.sf.ehcache.Element;
 import org.joget.apps.app.model.AppDefinition;
 import org.joget.apps.app.model.BuilderDefinition;
 import org.joget.apps.app.model.CustomBuilder;
@@ -85,16 +86,15 @@ public class BuilderDefinitionDaoImpl extends AbstractAppVersionedObjectDao<Buil
     @Override
     public BuilderDefinition loadById(String id, AppDefinition appDefinition) {
         String cacheKey = getCacheKey(id, appDefinition.getAppId(), appDefinition.getVersion());
-        BuilderDefinition builderDef = (BuilderDefinition) cache.getObject(cacheKey, appDefinition);
-
-        if (builderDef == null) {
-            BuilderDefinition def = super.loadById(id, appDefinition);            
-            if (def != null) {
-                cache.put(cacheKey, def, appDefinition);
-            }
+        
+        Element cacheElement = cache.get(cacheKey, appDefinition);
+        
+        if (cacheElement == null) {
+            BuilderDefinition def = super.loadById(id, appDefinition);           
+            cache.put(cacheKey, def, appDefinition); //Store to cache even it is null. It is used by Userview to check for page components design           
             return def;
-        } else {
-            return builderDef;
+        }else{
+            return (BuilderDefinition) cacheElement.getObjectValue();
         }
     }
 
