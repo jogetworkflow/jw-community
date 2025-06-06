@@ -24,6 +24,7 @@ html[system-theme='dark'], body[system-theme='dark']{
 /* general */
 html {
     background: #f6f7fb;
+    height: 100%;
 }
 html[system-theme='dark'] {
     background: #1f1f1f;
@@ -33,7 +34,8 @@ body{
     margin: 0;
     font-size: 14px;
     color: var(--console-default-font-color) !important;
-    background: var(--console-secondary-background-color);
+    background: var(--console-secondary-background-color) !important;
+    height: 100%;
 }
 body, .flexigrid, button, input {
     font-family: "Inter", sans-serif !important;
