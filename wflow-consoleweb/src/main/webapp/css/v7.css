@@ -34,7 +34,7 @@ body{
     margin: 0;
     font-size: 14px;
     color: var(--console-default-font-color) !important;
-    background-color: var(--console-secondary-background-color) !important;
+    background: var(--console-secondary-background-color) !important;
     height: 100%;
 }
 body, .flexigrid, button, input {
