@@ -17,6 +17,7 @@ import org.joget.apps.app.model.PackageParticipant;
 import org.joget.apps.app.service.AppDevUtil;
 import org.joget.apps.app.service.AppService;
 import org.joget.apps.app.service.AppUtil;
+import org.joget.commons.util.DynamicDataSourceManager;
 import org.joget.commons.util.LogUtil;
 import org.joget.workflow.model.WorkflowActivity;
 import org.joget.workflow.model.WorkflowParticipant;
@@ -36,6 +37,20 @@ public class PackageDefinitionDaoImpl extends AbstractVersionedObjectDao<Package
     
     @Autowired
     AppService appService;
+    
+    private AppDefCache cache;
+    
+    public AppDefCache getCache() {
+        return cache;
+    }
+
+    public void setCache(AppDefCache cache) {
+        this.cache = cache;
+    }
+    
+    public static String getCacheKey(AppDefinition appDef){
+        return DynamicDataSourceManager.getCurrentProfile()+"_"+appDef.getAppId()+"_"+Long.toString(appDef.getVersion())+"_PACKAGE";
+    }
 
     public AppDefinitionDao getAppDefinitionDao() {
         return appDefinitionDao;
@@ -75,6 +90,9 @@ public class PackageDefinitionDaoImpl extends AbstractVersionedObjectDao<Package
             AppDevUtil.dirSyncAppPlugins(appDef);
         }
         
+        // remove from cache
+        cache.remove(getCacheKey(appDef), appDef);
+        
         WorkflowHelper appWorkflowHelper = (WorkflowHelper) WorkflowUtil.getApplicationContext().getBean("workflowHelper");
         appWorkflowHelper.cleanDeadlineAppDefinitionCache(packageDef.getId(), packageDef.getVersion().toString());
     }    
@@ -95,6 +113,9 @@ public class PackageDefinitionDaoImpl extends AbstractVersionedObjectDao<Package
         }
         // delete package definition
         super.delete(getEntityName(), obj);
+        
+        // remove from cache
+        cache.remove(getCacheKey(appDef), appDef);
 
         if (!AppDevUtil.isGitDisabled()) {
             // sync app plugins
@@ -115,13 +136,9 @@ public class PackageDefinitionDaoImpl extends AbstractVersionedObjectDao<Package
      */
     @Override
     public PackageDefinition loadAppPackageDefinition(String appId, Long appVersion) {
-        PackageDefinition packageDef = null;
-
         // load the package definition, getting from appService so that current app def is set correctly
         AppDefinition appDef = appService.getAppDefinition(appId, Long.toString(appVersion));
-        packageDef = appDef.getPackageDefinition();
-
-        return packageDef;
+        return appDef.getCachedPackageDefinition();
     }
 
     /**
@@ -282,6 +299,9 @@ public class PackageDefinitionDaoImpl extends AbstractVersionedObjectDao<Package
             appDef.getPackageDefinitionList().add(packageDef);
         }
         appDefinitionDao.merge(appDef);
+        
+        // remove from cache
+        cache.remove(getCacheKey(appDef), appDef);
         
         return packageDef;
     }

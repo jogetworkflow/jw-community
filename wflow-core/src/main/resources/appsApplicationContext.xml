@@ -89,6 +89,7 @@
     <bean id="packageDefinitionDao" class="org.joget.apps.app.dao.PackageDefinitionDaoImpl" lazy-init="true">
         <property name="sessionFactory" ref="appSessionFactory"/>
         <property name="appDefinitionDao" ref="appDefinitionDao"/>
+        <property name="cache" ref="appFluCache" />
     </bean>
 
     <bean id="messageDao" class="org.joget.apps.app.dao.MessageDaoImpl" lazy-init="true">

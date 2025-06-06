@@ -81,7 +81,7 @@ public class AppWorkflowHelper implements WorkflowHelper {
                         appDef = appService.getAppDefinitionWithProcessDefId(processDefId);
                     }
                     if (appDef != null) {
-                        packageDef = appDef.getPackageDefinition();
+                        packageDef = appDef.getCachedPackageDefinition();
 
                         if (!process.getPackageId().equals(appDef.getAppId()) || !process.getVersion().equals(packageDef.getVersion().toString()) ) {
                             packageDef = packageDefinitionDao.loadPackageDefinition(process.getPackageId(), Long.parseLong(process.getVersion()));
@@ -161,7 +161,7 @@ public class AppWorkflowHelper implements WorkflowHelper {
                     appDef = appService.getAppDefinitionWithProcessDefId(processDefId);
                 }
                 if (appDef != null) {
-                    packageDef = appDef.getPackageDefinition();
+                    packageDef = appDef.getCachedPackageDefinition();
 
                     if (!process.getPackageId().equals(appDef.getAppId()) || !process.getVersion().equals(packageDef.getVersion().toString()) ) {
                         packageDef = packageDefinitionDao.loadPackageDefinition(process.getPackageId(), Long.parseLong(process.getVersion()));
@@ -235,7 +235,7 @@ public class AppWorkflowHelper implements WorkflowHelper {
             }
             PackageDefinition packageDef = null;
             if (appDef != null) {
-                packageDef = appDef.getPackageDefinition();
+                packageDef = appDef.getCachedPackageDefinition();
 
                 if (packageDef == null || !packageId.equals(packageDef.getId()) || !version.equals(packageDef.getVersion().toString())) {
                     Long packageVersion = Long.parseLong(version);
@@ -727,7 +727,7 @@ public class AppWorkflowHelper implements WorkflowHelper {
                         appDef = appService.getAppDefinitionForWorkflowProcess(processId);
                     }
                     if (appDef != null) {
-                        PackageDefinition packageDef = appDef.getPackageDefinition();
+                        PackageDefinition packageDef = appDef.getCachedPackageDefinition();
 
                         if (!process.getPackageId().equals(appDef.getAppId()) || (packageDef != null && !process.getVersion().equals(packageDef.getVersion().toString()))) {
                             packageDef = packageDefinitionDao.loadPackageDefinition(process.getPackageId(), Long.parseLong(process.getVersion()));
@@ -788,7 +788,7 @@ public class AppWorkflowHelper implements WorkflowHelper {
         
         AppDefinition appDef = appService.getPublishedAppDefinition(packageId);
         if (appDef != null) {
-            PackageDefinition packageDef = appDef.getPackageDefinition();
+            PackageDefinition packageDef = appDef.getCachedPackageDefinition();
 
             if (packageDef != null && packageDef.getVersion() != null) {
                 return packageDef.getVersion().toString();
@@ -857,7 +857,7 @@ public class AppWorkflowHelper implements WorkflowHelper {
         Map<String, String> map = new HashMap<String, String>();
         
         for (AppDefinition appDef : list) {
-            PackageDefinition packageDefiniton = appDef.getPackageDefinition();
+            PackageDefinition packageDefiniton = appDef.getCachedPackageDefinition();
             if (packageDefiniton != null) {
                 map.put(packageDefiniton.getAppId(), packageDefiniton.getVersion().toString());
             }
