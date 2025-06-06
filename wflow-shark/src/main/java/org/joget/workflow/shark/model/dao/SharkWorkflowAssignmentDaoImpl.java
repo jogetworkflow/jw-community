@@ -436,7 +436,11 @@ public class SharkWorkflowAssignmentDaoImpl extends AbstractSpringDao implements
         setCacheable(q, null);
 
         int s = (start == null) ? 0 : start;
-        q.setFirstResult(s);
+        
+        //setting this unnecessarily causing performance issue 
+        if (s > 0) {
+            q.setFirstResult(s);
+        }
 
         if (rows != null && rows > 0) {
             q.setMaxResults(rows);
@@ -929,7 +933,11 @@ public class SharkWorkflowAssignmentDaoImpl extends AbstractSpringDao implements
         setCacheable(q, null);
 
         int s = (start == null) ? 0 : start;
-        q.setFirstResult(s);
+        
+        //setting this unnecessarily causing performance issue 
+        if (s > 0) {
+            q.setFirstResult(s);
+        }
 
         if (rows != null && rows > 0) {
             q.setMaxResults(rows);
@@ -1134,8 +1142,7 @@ public class SharkWorkflowAssignmentDaoImpl extends AbstractSpringDao implements
 
         Query q = session.createQuery(query);
         setCacheable(q, null);
-        q.setFirstResult(0);
-
+        
         q.setParameter(1, packageId + "#%");
 
         return q.list();
@@ -1153,8 +1160,7 @@ public class SharkWorkflowAssignmentDaoImpl extends AbstractSpringDao implements
 
         Query q = session.createQuery(query);
         setCacheable(q, null);
-        q.setFirstResult(0);
-
+        
         q.setParameter(1, packageId + "#%");
 
         return new HashSet<String>(q.list());
