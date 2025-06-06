@@ -104,7 +104,7 @@ FormBuilder = {
             for (var i in propertyOptions) {
                 if (propertyOptions[i].properties !== null && propertyOptions[i].properties !== undefined) {
                     for (var j in propertyOptions[i].properties) {
-                        if (propertyOptions[i].properties[j].name === "id" && propertyOptions[i].properties[j].js_validation === undefined) {
+                        if (propertyOptions[i].properties[j].name === "id" && propertyOptions[i].properties[j].js_validation === undefined && propertyOptions[i].properties[j].type !== "readonly") {
                             propertyOptions[i].properties[j].js_validation = 'FormBuilder.validateFieldId';
                             propertyOptions[i].properties[j].id_suggestion = "label";
                             propertyOptions[i].properties[j].checkIdLength = "true";
