@@ -1433,7 +1433,7 @@ FormBuilder = {
      * Utility method to validate the field id to prevent having the same with reserve keywords
      */
     validateFieldId: function(name, value) {
-        if ($.inArray(value, ["appId","appVersion","version","userviewId","menuId","key","embed"]) >= 0) {
+        if ($.inArray(value, ["appId","appVersion","version","userviewId","menuId","key","embed","primaryKey"]) >= 0) {
             return get_cbuilder_msg("fbuilder.reserveIds");
         }
         return null;    
