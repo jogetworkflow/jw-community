@@ -182,7 +182,7 @@ public class AppServiceImpl implements AppService {
     @Override
     public WorkflowProcess getWorkflowProcessForApp(String appId, String version, String processDefId) {
         AppDefinition appDef = getAppDefinition(appId, version);
-        PackageDefinition packageDef = appDef.getPackageDefinition();
+        PackageDefinition packageDef = appDef.getCachedPackageDefinition();
         String processDefIdWithVersion = AppUtil.getProcessDefIdWithVersion(packageDef.getId(), packageDef.getVersion().toString(), processDefId);
         WorkflowProcess process = workflowManager.getProcess(processDefIdWithVersion);
         return process;
@@ -219,10 +219,9 @@ public class AppServiceImpl implements AppService {
             if (process != null) {
                 String packageId = process.getPackageId();
                 Long packageVersion = Long.parseLong(process.getVersion());
-                PackageDefinition packageDef = packageDefinitionDao.loadPackageDefinition(packageId, packageVersion);
-                if (packageDef != null) {
-                    appDef = packageDef.getAppDefinition();
-                } else {
+                appDef = packageDefinitionDao.getAppDefinitionByPackage(packageId, packageVersion);
+                
+                if (appDef == null) {
                     appDef = getPublishedAppDefinition(packageId);
                 }
             }
@@ -258,10 +257,7 @@ public class AppServiceImpl implements AppService {
             String packageId = params[0];
             Long packageVersion = Long.parseLong(params[1]);
 
-            PackageDefinition packageDef = packageDefinitionDao.loadPackageDefinition(packageId, packageVersion);
-            if (packageDef != null) {
-                appDef = packageDef.getAppDefinition();
-            }
+            appDef = packageDefinitionDao.getAppDefinitionByPackage(packageId, packageVersion);
         }
         
         // set into thread
@@ -411,7 +407,7 @@ public class AppServiceImpl implements AppService {
     public void executeStartProcessFormModifier(Form form, FormData formData, AppDefinition appDef, String processDefId) {
         if (processDefId != null) {
             String processDefIdWithoutVersion = WorkflowUtil.getProcessDefIdWithoutVersion(processDefId);
-            PackageDefinition packageDef = appDef.getPackageDefinition();
+            PackageDefinition packageDef = appDef.getCachedPackageDefinition();
             if (packageDef != null) {
                 PackageActivityPlugin actPlugin = packageDef.getPackageActivityPlugin(processDefIdWithoutVersion, WorkflowUtil.ACTIVITY_DEF_ID_RUN_PROCESS);
                 if (actPlugin != null) {
@@ -431,7 +427,7 @@ public class AppServiceImpl implements AppService {
     public void executeProcessFormModifier(Form form, FormData formData, WorkflowAssignment assignment, AppDefinition appDef) {
         if (assignment != null) {
             String processDefIdWithoutVersion = WorkflowUtil.getProcessDefIdWithoutVersion(assignment.getProcessDefId());
-            PackageDefinition packageDef = appDef.getPackageDefinition();
+            PackageDefinition packageDef = appDef.getCachedPackageDefinition();
             if (packageDef != null) {
                 PackageActivityPlugin actPlugin = packageDef.getPackageActivityPlugin(processDefIdWithoutVersion, assignment.getActivityDefId());
                 if (actPlugin != null) {
@@ -540,7 +536,7 @@ public class AppServiceImpl implements AppService {
     public WorkflowProcessResult executeStartProcessFormModifierSubmission(Form form, FormData formData, WorkflowProcessResult result, AppDefinition appDef) {
         if (form != null && result != null && appDef != null) {
             String processDefIdWithoutVersion = result.getProcess().getIdWithoutVersion();
-            PackageDefinition packageDef = appDef.getPackageDefinition();
+            PackageDefinition packageDef = appDef.getCachedPackageDefinition();
             if (packageDef != null) {
                 PackageActivityPlugin actPlugin = packageDef.getPackageActivityPlugin(processDefIdWithoutVersion, WorkflowUtil.ACTIVITY_DEF_ID_RUN_PROCESS);
                 if (actPlugin != null) {
@@ -561,7 +557,7 @@ public class AppServiceImpl implements AppService {
     public boolean executeProcessFormModifierSubmission(Form form, FormData formData, WorkflowAssignment assignment, AppDefinition appDef) {
         if (form != null && assignment != null && appDef != null) {
             String processDefIdWithoutVersion = WorkflowUtil.getProcessDefIdWithoutVersion(assignment.getProcessDefId());
-            PackageDefinition packageDef = appDef.getPackageDefinition();
+            PackageDefinition packageDef = appDef.getCachedPackageDefinition();
             if (packageDef != null) {
                 PackageActivityPlugin actPlugin = packageDef.getPackageActivityPlugin(processDefIdWithoutVersion, assignment.getActivityDefId());
                 if (actPlugin != null) {
@@ -674,7 +670,7 @@ public class AppServiceImpl implements AppService {
         }
 
         AppDefinition appDef = getAppDefinition(appId, version);
-        PackageDefinition packageDef = appDef.getPackageDefinition();
+        PackageDefinition packageDef = appDef.getCachedPackageDefinition();
         String processDefIdWithVersion = AppUtil.getProcessDefIdWithVersion(packageDef.getId(), packageDef.getVersion().toString(), processDefId);
 
         // get form
@@ -783,7 +779,7 @@ public class AppServiceImpl implements AppService {
         PackageActivityForm paf = null;
         String processDefIdWithoutVersion = WorkflowUtil.getProcessDefIdWithoutVersion(processDefId);
         AppDefinition appDef = getAppDefinition(appId, version);
-        PackageDefinition packageDef = appDef.getPackageDefinition();
+        PackageDefinition packageDef = appDef.getCachedPackageDefinition();
         if (packageDef != null) {
              paf = packageDef.getPackageActivityForm(processDefIdWithoutVersion, activityDefId);
         }

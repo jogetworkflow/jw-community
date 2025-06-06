@@ -1,6 +1,9 @@
 package org.joget.apps.app.model;
 
 import java.util.Collection;
+import org.joget.apps.app.dao.AppDefCache;
+import org.joget.apps.app.service.AppUtil;
+import org.joget.commons.util.DynamicDataSourceManager;
 import org.simpleframework.xml.Element;
 import org.simpleframework.xml.ElementList;
 import org.simpleframework.xml.Path;
@@ -71,6 +74,29 @@ public class AppDefinition extends AbstractVersionedObject {
     public void setAppId(String id) {
         super.setAppId(id);
         setId(id);
+    }
+    
+    /**
+     * Convenience method to return the cached package definition for this app.
+     * @return null if there is none defined.
+     */
+    public PackageDefinition getCachedPackageDefinition() {
+        AppDefCache cache = (AppDefCache) AppUtil.getApplicationContext().getBean("appFluCache");
+        
+        if (cache != null) {          
+            String cacheKey = DynamicDataSourceManager.getCurrentProfile()+"_"+getAppId()+"_"+Long.toString(getVersion())+"_PACKAGE";
+            PackageDefinition packageDef = (PackageDefinition) cache.getObject(cacheKey, this);
+
+            if (packageDef == null) {
+                packageDef = getPackageDefinition();
+                if (packageDef != null) {
+                    cache.put(cacheKey, packageDef, this);
+                }
+            }
+            return packageDef;
+        }
+        
+        return getPackageDefinition();
     }
 
     /**

@@ -219,7 +219,7 @@ public class InboxMenu extends UserviewMenu implements PluginWebSupport, PwaOffl
             if (PROPERTY_FILTER_ALL.equals(appFilter)) {
                 AppDefinition appDef = AppUtil.getCurrentAppDefinition();
                 if (appDef != null) {
-                    PackageDefinition packageDef = appDef.getPackageDefinition();
+                    PackageDefinition packageDef = appDef.getCachedPackageDefinition();
                     if (packageDef != null) {
                         packageId = packageDef.getId();
                     }
@@ -276,7 +276,7 @@ public class InboxMenu extends UserviewMenu implements PluginWebSupport, PwaOffl
         if (PROPERTY_FILTER_ALL.equals(appFilter)) {
             AppDefinition appDef = AppUtil.getCurrentAppDefinition();
             if (appDef != null) {
-                PackageDefinition packageDef = appDef.getPackageDefinition();
+                PackageDefinition packageDef = appDef.getCachedPackageDefinition();
                 if (packageDef != null) {
                     packageId = packageDef.getId();
                 } 
