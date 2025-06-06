@@ -102,7 +102,11 @@ public abstract class AbstractVersionedObjectDao<T extends AbstractVersionedObje
         setCacheable(q, null);
 
         int s = (start == null) ? 0 : start;
-        q.setFirstResult(s);
+        
+        //setting this unnecessarily causing performance issue 
+        if (s > 0) {
+            q.setFirstResult(s);
+        }
 
         if (rows != null && rows > 0) {
             q.setMaxResults(rows);

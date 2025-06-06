@@ -125,8 +125,7 @@ public class MessageDaoImpl extends AbstractAppVersionedObjectDao<Message> imple
 
         Query q = findSession().createQuery(query);
         setCacheable(q, null);
-        q.setFirstResult(0);
-
+        
         if (params != null) {
             int i = 1;
             for (Object param : params) {
@@ -149,7 +148,6 @@ public class MessageDaoImpl extends AbstractAppVersionedObjectDao<Message> imple
 
         Query q = findSession().createQuery(query);
         setCacheable(q, null);
-        q.setFirstResult(0);
 
         if (params != null) {
             int i = 1;
