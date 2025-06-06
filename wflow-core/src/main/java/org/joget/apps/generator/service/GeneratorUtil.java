@@ -118,6 +118,18 @@ public class GeneratorUtil {
      * @param userviewDescription
      * @return 
      */
+    public static String createNewUserviewJson(String userviewId, String userviewName, String userviewDescription) {
+        return createNewUserviewJson(userviewId, userviewName, userviewDescription, null, null);
+    }
+    
+    /**
+     * Creates a new userview definition json with app definition
+     * @param userviewId
+     * @param userviewName
+     * @param userviewDescription
+     * @param appDef
+     * @return 
+     */
     public static String createNewUserviewJson(String userviewId, String userviewName, String userviewDescription, AppDefinition appDef) {
         return createNewUserviewJson(userviewId, userviewName, userviewDescription, null, appDef);
     }
@@ -128,6 +140,7 @@ public class GeneratorUtil {
      * @param userviewName
      * @param userviewDescription
      * @param copy
+     * @param appDef
      * @return 
      */
     public static String createNewUserviewJson(String userviewId, String userviewName, String userviewDescription, UserviewDefinition copy, AppDefinition appDef) {
@@ -178,8 +191,10 @@ public class GeneratorUtil {
             String json = AppUtil.readPluginResource(CorporatiTheme.class.getName(), "/resources/generator/userview/userview.json", new String[]{userviewId, userviewName, userviewName, userviewId, userviewDescription, theme, themeProperties, menuId, menuId}, true, null);
 
             if (json != null && !json.isEmpty()) {
-                UserviewService userviewService = (UserviewService) AppUtil.getApplicationContext().getBean("userviewService");
-                json = userviewService.saveUserviewPages(json, userviewId, appDef);
+                if (appDef != null) {
+                    UserviewService userviewService = (UserviewService) AppUtil.getApplicationContext().getBean("userviewService");
+                    json = userviewService.saveUserviewPages(json, userviewId, appDef);
+                }
                 return json;
             }
         }
