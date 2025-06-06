@@ -540,6 +540,8 @@ body.rtl:not(.horizontal_menu) #sidebar .nav > li > ul > li > a{
     display: inline-flex;
     align-items: center;
     gap: 5px;
+    word-break: break-word;
+    overflow-wrap: break-word;
 }
 body.rtl:not(.horizontal_menu) #sidebar .nav > li > ul > li > a > span:first-child{
     float: right;

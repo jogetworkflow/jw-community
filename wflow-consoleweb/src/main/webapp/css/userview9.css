@@ -382,7 +382,7 @@ body:not(.horizontal_menu) #navigation:not(:has(.user-menu)) {
     opacity: 1;
     cursor: pointer;
     line-height: var(--global-lineHeight);
-    height: var(--global-itemHeight);
+    min-height: var(--global-itemHeight);
 }
 
 body.rtl:not(.horizontal_menu) #sidebar .category>a>span:not(.badge) {
@@ -397,14 +397,18 @@ body:not(.light-sidebar):not(.light-header):not(.light-inline) #sidebar .nav>li>
 
 #sidebar .nav>li>a>span:not(.badge) {
     position: relative;
-    display: block;
+    display: inline-flex;
     white-space: pre-line;
     padding-left: calc(var(--global-iconMarginInline) + 30px);
     min-width: 0;
     overflow: hidden;
     text-overflow: ellipsis;
-    height: var(--global-itemHeight);
-    line-height: var(--global-itemHeight);
+    min-height: var(--global-itemHeight);
+    line-height: var(--global-lineHeight);
+    word-break: break-word;
+    overflow-wrap: break-word;
+    align-items: center;
+    padding-right: 12px;
 }
 
 body.rtl:not(.horizontal_menu) #sidebar .nav>li>a>span:not(.badge) {
@@ -414,7 +418,7 @@ body.rtl:not(.horizontal_menu) #sidebar .nav>li>a>span:not(.badge) {
 }
 
 #sidebar .nav>li>a.menu-link>span:not(.badge) {
-    display: inline-block;
+    display: inline-flex;
     max-width: 225px;
     padding-right: 10px;
 }
@@ -503,12 +507,12 @@ body.rtl:not(.horizontal_menu) #sidebar .nav>li.active:after {
     display: block;
     width: 100%;
     line-height: var(--global-lineHeight);
-    height: var(--global-itemHeight);
+    min-height: var(--global-itemHeight);
 }
 
 #sidebar .nav>li>ul>li>a,
 ul#moreSubMenu.sub-menu>li>ul>li>a {
-    display: block;
+    display: inline-flex;
     padding: 0 65px;
     color: var(--theme-sidebar-link, var(--theme-color2, #72777a));
     -webkit-transition: all 0.3s ease;
@@ -521,8 +525,10 @@ ul#moreSubMenu.sub-menu>li>ul>li>a {
     min-width: 0;
     overflow: hidden;
     text-overflow: ellipsis;
-    height: var(--global-itemHeight);
-    line-height: var(--global-itemHeight);
+    min-height: var(--global-itemHeight);
+    line-height: var(--global-lineHeight);
+    align-items: center;
+    width: calc(100% - var(--global-itemMarginInline) - var(--global-itemMarginInline));
 }
 
 #sidebar .active>a:not(.dropdown) {
@@ -540,8 +546,14 @@ body:not(.light-sidebar):not(.light-header):not(.light-inline) ul#moreSubMenu.su
 
 #sidebar .nav>li>ul>li>a>span:first-child {
     padding-right: 10px;
-    display: inline-block;
-    height: var(--global-itemHeight);
+    display: inline-flex;
+    line-height: var(--global-lineHeight);
+    word-break: break-word;
+    overflow-wrap: break-word;
+    gap: 10px;
+    align-items: center;
+    min-height: calc(var(--global-itemHeight) -(var(--global-itemPaddingBlock) * 2));
+    max-width: 200px;
 }
 
 body.rtl:not(.horizontal_menu) #sidebar .nav>li>ul>li>a>span:first-child {
@@ -1124,8 +1136,7 @@ body.horizontal_menu #header-info {
         display: inline-block;
         width: auto;
     }
-
-    body.horizontal_menu #sidebar .badge{
+    body.horizontal_menu #sidebar .nav>li>a .badge{
         position: relative;
         right: unset;
     }
