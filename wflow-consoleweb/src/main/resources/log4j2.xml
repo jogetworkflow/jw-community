@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Configuration status="info" name="JogetLogConfig">
     <Properties>
-        <Property name="LOGDIR">${sys:catalina.home}/logs</Property>
+        <Property name="LOGDIR">${sys:catalina.home:-${sys:user.dir}}/logs</Property>
     </Properties>
     <ThresholdFilter level="info"/>
  
