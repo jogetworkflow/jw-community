@@ -32,12 +32,13 @@
                        hrefQuery="false"
                        hrefDialog="false"
                        searchItems="search|Username"
-                       fields="['username', 'clazz','method','message','timestamp']"
+                       fields="['username', 'clazz','method','message','timestamp','appId']"
                        column1="{key: 'timestamp', label: 'console.monitoring.audittrail.label.timestamp', sortable: true}"
                        column2="{key: 'username', label: 'console.monitoring.audittrail.label.username', sortable: true}"
                        column3="{key: 'method', label: 'console.monitoring.audittrail.label.method', sortable: true}"
                        column4="{key: 'message', label: 'console.monitoring.audittrail.label.message', sortable: false}"
                        column5="{key: 'clazz', label: 'console.monitoring.audittrail.label.clazz', sortable: true}"
+                       column6="{key: 'appId', label: 'console.app.common.label.id', sortable: true}"
                        />
         </div>
     </div>

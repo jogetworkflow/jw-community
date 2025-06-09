@@ -76,6 +76,7 @@ public class AuditTrialJsonController {
             data.put("method", ResourceBundleUtil.getMessage(auditTrail.getMethod(), auditTrail.getMethod()));
             data.put("message", auditTrail.getMessage());
             data.put("timestamp", TimeZoneUtil.convertToTimeZone(auditTrail.getTimestamp(), null, AppUtil.getAppDateFormat()));
+            data.put("appId", auditTrail.getAppId());
             jsonObject.accumulate("data", data);
         }
         

@@ -3,6 +3,11 @@ package org.joget.apps.util;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+import org.json.simple.JSONObject;
+import org.joget.apps.app.model.AppDefinition;
+import org.joget.apps.app.service.AppService;
 import org.joget.apps.app.service.AppUtil;
 import org.joget.apps.workflow.security.AuthenticationTokenWrapper;
 import org.joget.apps.workflow.security.WorkflowUserDetails;
@@ -175,6 +180,23 @@ public final class UserAuthenticationService {
         }
         LogUtil.info(getClass().getName(), "Authentication for user " + username + " ("+ip+") : " + loginSuccess);
         WorkflowHelper workflowHelper = (WorkflowHelper) AppUtil.getApplicationContext().getBean("workflowHelper");
+
+        // Retrieve and set current app definition
+        HttpServletResponse response = WorkflowUtil.getHttpServletResponse();
+        SavedRequest savedRequest = new HttpSessionRequestCache().getRequest(request, response);
+        if (savedRequest != null) { // null can be triggered by accessing /jw/web/login directly
+            String savedUrl = savedRequest.getRedirectUrl(); // Get the redirect URL (which has the App ID) after login
+            Pattern pattern = Pattern.compile("/web/ulogin/([^/]+)/"); // Regex to extract the segment after /web/ulogin/ and before the next /
+            Matcher matcher = pattern.matcher(savedUrl);
+            if (matcher.find()) {
+                String appId = matcher.group(1);
+                AppService appService = (AppService)AppUtil.getApplicationContext().getBean("appService");
+                AppDefinition appDef = appService.getPublishedAppDefinition(appId); // Get the published version
+                AppUtil.setCurrentAppDefinition(appDef);
+            }
+        }
+
+        // Audit trail is added after setting the current app definition so that App ID column will be populated accordingly
         workflowHelper.addAuditTrail(this.getClass().getName(), "authenticate", "Authentication for user " + username + " ("+ip+") : " + loginSuccess, new Class[]{username.getClass()}, new Object[]{username}, loginSuccess);
     }
 }
