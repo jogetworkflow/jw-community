@@ -87,6 +87,7 @@ body.popupBody #main-body-header {
     padding: 8px;
     direction: ltr;
     cursor: pointer;
+    border: none;
 }
 
 #homePageBanner .carousel-control-prev {
@@ -271,16 +272,38 @@ body.rtl#home div.appListNav {
     gap: 27px;
     align-items: center;
 }
+#taskCounter {
+    display: flex;
+    gap: 27px;
+    align-items: center;
+    margin-right: 20px;
+}
+body.rtl #taskCounter {
+    margin-left: 20px;
+    margin-right: 0px;
+}
 #taskCounter > #viewTasks,
 #taskCounter > #tasksMessage > span.header  {
     color: #009265;
     text-decoration: none;
 }
+#taskCounter > #viewTasks {
+    flex-shrink: 0; 
+    white-space: nowrap;
+}
 #taskCounter > #tasksMessage {
     color: #092E28;
+    max-width: 60%;
+    flex: 1 1 auto;
+    min-width: 0;
 }
 body.rtl #taskCounter > #tasksMessage {
     text-align: right;
+}
+#taskCounter > #tasksMessage > .more-info {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
 }
 #taskCounter > #tasksMessage > .more-info > span.time,
 #taskCounter > #tasksMessage > span.header > a > i {
@@ -511,6 +534,7 @@ body#home #home_column .row .p-2{
 #design_app .card .column_desc {
     max-height:65px;
     overflow:hidden;
+    overflow-y: auto;
 }
 #design_app .card .card-body .card-actions {
     position: absolute;
@@ -723,6 +747,11 @@ body#home div.appListNav > i.disabled{
     body#home #taskCounter > #tasksMessage {
         order: 2;
         flex: 1 1 100%;
+        max-width: 100%;
+    }
+
+    body#home #taskCounter {
+        margin-right: 0px;
     }
 
     body#home #searchColumn > .row > .col:first-child {
@@ -1292,6 +1321,9 @@ body #sidebar .user-menu>li>a>small {
         width: 128px;
         display: block !important;
     }
+    body#home #searchColumn > .row > .col {
+        max-width: 50%;
+    }
     body #sidebar-trigger {
         display: block;
     }
@@ -1603,6 +1635,12 @@ body#home.rtl .more-action{
     }
     body#home #searchColumn > .row > .col:first-child {
         margin-bottom: 0px;
+    }
+    body#home #taskCounter {
+        margin-right: 0px;
+    }
+    body#home #taskCounter > #tasksMessage {
+        max-width: 70%;
     }
     body#home #home_column div#dataList_applist .row.cards {
         column-gap: 8.6vw;

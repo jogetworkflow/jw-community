@@ -197,6 +197,9 @@ $(document).ready(function() {
                     $("div.appListNav").closest(".col").siblings().eq(0).hide();
                 }
 
+                updateArrows($container, $leftArrow, $rightArrow);
+
+                //When screen resize
                 $(window).on("resize", function(){
                     updateArrows($container, $leftArrow, $rightArrow);
                 })
