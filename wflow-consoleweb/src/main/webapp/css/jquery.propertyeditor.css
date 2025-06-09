@@ -1129,6 +1129,12 @@ body.rtl .property-input > span.icon > span > span.dropdown{
 .repeater-row.error {
     border: 1px solid red;
 }
+.elementmultiselect .repeater-row .actions.sort{
+    left: 0;
+}
+.elementmultiselect .repeater-row .inputs{
+    padding: 5px 30px 5px 35px
+}
 .pebutton {
     color: #6c757d !important;
 }
