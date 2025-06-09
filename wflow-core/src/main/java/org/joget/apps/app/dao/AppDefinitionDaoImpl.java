@@ -329,6 +329,8 @@ public class AppDefinitionDaoImpl extends AbstractVersionedObjectDao<AppDefiniti
     @Override
     public void updateDateModified(AppDefinition appDef, Date date) {
         Session session = findSession();
+        
+        //without this, test cases will fail
         try {
             if (session.contains(appDef)) {
                 session.refresh(appDef);
@@ -336,8 +338,14 @@ public class AppDefinitionDaoImpl extends AbstractVersionedObjectDao<AppDefiniti
         } catch (Exception e) {
             //can ignore
         }
-        appDef.setDateModified(date);
-        session.merge(appDef);
+        
+        Query query = session.createQuery("UPDATE "+ENTITY_NAME+" e SET e.dateModified = :dateModified WHERE e.appId = :appId and e.version = :appVersion", null);
+        query.setParameter("dateModified", date);
+        query.setParameter("appId", appDef.getAppId());
+        query.setParameter("appVersion", appDef.getVersion());
+        query.executeUpdate();
+        
+        session.flush(); //without this, the query is not execute to db
     }
     
     @Override
