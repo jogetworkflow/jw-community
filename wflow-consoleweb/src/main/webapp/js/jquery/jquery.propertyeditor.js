@@ -9531,7 +9531,8 @@ PropertyEditor.Type.ElementMultiSelect.prototype = {
             var arr = [];
             $("#" + this.id + "_input  > div > .repeater-rows-container > .repeater-row").each(function(){
                 var temp = thisObj.getRow($(this), useDefault);
-                if (temp !== null) {
+                if (temp !== null 
+                        && !(temp.className === "" || Object.keys(temp.properties).length === 0)) { //make sure it is not empty selection before add it to data
                     arr.push(thisObj.getRow($(this), useDefault));
                 }
             });
