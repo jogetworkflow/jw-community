@@ -194,6 +194,8 @@ ProcessBuilder = {
         const {h} = Core;
         const {RectNode} = Core;
         const {RectNodeModel} = Core;
+        const {LineEdge} = Core;
+        const {LineEdgeModel} = Core;
         const miniMapOptions = {
             isShowHeader: false,
             isShowCloseIcon: false,
@@ -1685,6 +1687,129 @@ ProcessBuilder = {
             }
         }
 
+        class straightTransitionModel extends LineEdgeModel {
+            customTextPosition = true;
+
+            setAttributes(data) {
+                super.setAttributes(data);
+                const { properties } = this;
+                if(properties.type === "startend"){
+                    this.isHitable = false;
+                }
+                this.text.editable = false; 
+            }
+            
+            // Set transition style
+            getEdgeStyle() {
+                const style = super.getEdgeStyle();
+                const { properties } = this;
+                if (properties.type === "CONDITION") {
+                    style.stroke = '#4096ff';
+                    style.strokeWidth = 2;
+                } else if (properties.type === "OTHERWISE") {
+                    style.stroke = '#db973d';
+                    style.strokeWidth = 2;
+                } else if (properties.type === "EXCEPTION") {
+                    style.stroke = '#ff4d4f';
+                    style.strokeWidth = 2;
+                } else if (properties.type === "startend") {
+                    if ($('body').attr('builder-theme') === 'dark') {
+                        style.stroke = '#9A9CAE';
+                        style.strokeWidth = 2;
+                    } else {
+                        style.stroke = 'rgb(177, 177, 177)';
+                        style.strokeWidth = 2;
+                    }
+                } else {
+                    if ($('body').attr('builder-theme') === 'dark') {
+                        style.stroke = '#ffffff';
+                    } else {
+                        style.stroke = '#000000';
+                    }
+                    
+                }
+                style.zIndex = 2;
+                return style;
+            }
+
+            getArrowStyle() {
+                const style = super.getArrowStyle();
+                const { properties } = this;
+                if (properties.type === "CONDITION") {
+                    style.stroke = '#4096ff';
+                } else if (properties.type === "OTHERWISE") {
+                    style.stroke = '#db973d';
+                } else if (properties.type === "EXCEPTION") {
+                    style.stroke = '#ff4d4f';
+                } else if (properties.type === "startend") {
+                    if ($('body').attr('builder-theme') === 'dark') {
+                        style.stroke = '#9A9CAE';
+                        style.strokeWidth = 2;
+                    } else {
+                        style.stroke = 'rgb(177, 177, 177)';
+                        style.strokeWidth = 2;
+                    }
+                } else {
+                    if ($('body').attr('builder-theme') === 'dark') {
+                        style.stroke = '#ffffff';
+                        style.strokeWidth = 2;
+                    } else {
+                        style.stroke = '#000000';
+                    }
+                }
+
+                return style;
+            }
+
+            // Set transition text style
+            getTextStyle() {
+                const style = super.getTextStyle();
+                const edgeStyle = super.getEdgeStyle();
+                const { opacity = 1 } = edgeStyle;
+                
+                style.opacity = opacity;
+                if ($('body').attr('builder-theme') === 'dark') {
+                    style.color = '#ffffff';
+                } else {
+                    style.color = '#000000';
+                }
+                
+                style.fontSize = 12;
+                style.background = Object.assign({}, style.background, {
+                    fill: 'transparent'
+                });
+                return style;
+            }
+
+            getTextPosition() {
+                const position = super.getTextPosition();
+                position.y = position.y - 15;
+                return position;
+            }
+
+            // Set hover outline style
+            getOutlineStyle() {
+                const { danger } = this.properties;
+                const style = super.getOutlineStyle();
+                style.stroke = '#4285f4';
+                style.fill = 'rgba(66, 133, 244, 0.1)';
+                style.strokeWidth = 2;
+                style.strokeDasharray = '0';
+                if (danger) {
+                    style.stroke = '#FF4D4F ';
+                    style.fill = 'rgba(255, 77, 79, 0.1)';
+                    style.hover.stroke = '#FF4D4F';
+                    style.hover.fill = 'rgba(255, 77, 79, 0.1)';
+                } else {
+                    style.stroke = '#4285f4';
+                    style.fill = 'rgba(66, 133, 244, 0.1)';
+                    style.hover.stroke = '#54c5fc';
+                    style.hover.fill = 'rgba(255, 255, 255, 0.1)';
+                }
+                return style;
+            }
+        }
+
         ProcessBuilder.lf.register({
             ...activityNode,
             view: activityNodeView,
@@ -1725,6 +1850,11 @@ ProcessBuilder = {
             view: transitionView,
             model: transitionModel
         });
+        ProcessBuilder.lf.register({
+            type: 'bpmn:straightSequenceFlow',
+            view: LineEdge,
+            model: straightTransitionModel
+        });
 
         ProcessBuilder.lf.extension.highlight.setMode('neighbour');
         ProcessBuilder.lf.extension.highlight.setEnable(false);
@@ -1762,6 +1892,7 @@ ProcessBuilder = {
         ProcessBuilder.lf.setContextMenuByType('bpmn:subflow', [commonMenuConfig]);
         ProcessBuilder.lf.setContextMenuByType('bpmn:endEvent', [commonMenuConfig]);
         ProcessBuilder.lf.setContextMenuByType('bpmn:sequenceFlow', [commonMenuConfig]);
+        ProcessBuilder.lf.setContextMenuByType('bpmn:straightSequenceFlow', [commonMenuConfig]);
 
         // Variable to track the previous selected node
         ProcessBuilder.previousSelectedNodeId = null;
@@ -3215,17 +3346,19 @@ ProcessBuilder = {
             lfTransition.properties.condition = condition;
             lfTransition.properties.exceptionName = exceptionName;
             
-            var style = "straight";
+            var style = "orthogonal";
             var transitionConditions = "";
             var extendedAttributes = ProcessBuilder.getArray(xpdlTransitions[t]['ExtendedAttributes'], 'ExtendedAttribute');
             for (var i in extendedAttributes) {
                 if (extendedAttributes[i]['-Name'] === "JaWE_GRAPH_BREAK_POINTS") {
-                    style = "orthogonal";
+                    style = "straight";
                 } else if (extendedAttributes[i]['-Name'] === "PBUILDER_TRANSITION_CONDITIONS") {
                     transitionConditions = extendedAttributes[i]['-Value'];
                 }
             }
-            transition.properties.style = style;
+            transition.properties.transitionStyle = style;
+            lfTransition.properties.transitionStyle = style;
+            lfTransition.type = ProcessBuilder.getEdgeType(style);
             if (transitionConditions !== "") {
                 transition.properties.conditions = JSON.decode(transitionConditions);
                 transition.properties.conditionHelper = "yes";
@@ -3438,14 +3571,14 @@ ProcessBuilder = {
 
                 extendedAttribute.push({
                     "-Name": "JaWE_GRAPH_TRANSITION_STYLE",
-                    "-Value": "NO_ROUTING_ORTHOGONAL",
+                    "-Value": "NO_ROUTING_STRAIGHT",
                     "-self-closing": "true"
                 });
 
-                if (transition.properties.style === 'orthogonal') {
+                if (transition.properties.transitionStyle === 'straight') {
                     extendedAttribute.push({
                         "-Name": "JaWE_GRAPH_BREAK_POINTS",
-                        "-Value": "orthogonal",
+                        "-Value": "straight",
                         "-self-closing": "true"
                     });
                 }
@@ -4022,7 +4155,7 @@ ProcessBuilder = {
                         actId = connSet[0].sourceNodeId;
                     }
                 }
-                xpdlObj['-Value'] = "JaWE_GRAPH_PARTICIPANT_ID="+participant.properties.id+",CONNECTING_ACTIVITY_ID="+actId+",X_OFFSET="+activity.x_offset+",Y_OFFSET="+activity.y_offset+",JaWE_GRAPH_TRANSITION_STYLE=NO_ROUTING_ORTHOGONAL,TYPE="+activity.className.toUpperCase()+"_DEFAULT";
+                xpdlObj['-Value'] = "JaWE_GRAPH_PARTICIPANT_ID="+participant.properties.id+",CONNECTING_ACTIVITY_ID="+actId+",X_OFFSET="+activity.x_offset+",Y_OFFSET="+activity.y_offset+",JaWE_GRAPH_TRANSITION_STYLE=NO_ROUTING_STRAIGHT,TYPE="+activity.className.toUpperCase()+"_DEFAULT";
             }
             
             ProcessBuilder.updateActivityMapping(activity);
@@ -4133,7 +4266,7 @@ ProcessBuilder = {
                     },
                     {
                         "-Name": "JaWE_GRAPH_START_OF_WORKFLOW",
-                        "-Value": "JaWE_GRAPH_PARTICIPANT_ID="+pid+",CONNECTING_ACTIVITY_ID=,X_OFFSET=75,Y_OFFSET=46,JaWE_GRAPH_TRANSITION_STYLE=NO_ROUTING_ORTHOGONAL,TYPE=START_DEFAULT",
+                        "-Value": "JaWE_GRAPH_PARTICIPANT_ID="+pid+",CONNECTING_ACTIVITY_ID=,X_OFFSET=75,Y_OFFSET=46,JaWE_GRAPH_TRANSITION_STYLE=NO_ROUTING_STRAIGHT,TYPE=START_DEFAULT",
                         "-self-closing": "true"
                     }
                 ]
@@ -4965,7 +5098,7 @@ ProcessBuilder = {
                     required: 'False',
                     value: get_cbuilder_msg("pbuilder.label.transition")
                 },{
-                    name: 'style',
+                    name: 'transitionStyle',
                     label: get_cbuilder_msg("pbuilder.label.style"),
                     type: 'radio',
                     options: [{
@@ -4975,7 +5108,7 @@ ProcessBuilder = {
                         value: 'orthogonal',
                         label: get_cbuilder_msg("pbuilder.label.orthogonal")
                     }],
-                    value: 'straight'
+                    value: 'orthogonal'
                 },{
                     name: 'type',
                     label: get_cbuilder_msg("cbuilder.type"),
@@ -5433,7 +5566,7 @@ ProcessBuilder = {
                         className :'transition',
                         id: connection.id,
                         type : "",
-                        style : "straight"
+                        transitionStyle : "orthogonal"
                     }
                 };
 
@@ -7958,6 +8091,11 @@ ProcessBuilder = {
         }
         
         if (elementObj.className === "transition") {
+            //Check if the transition style has changed
+            if ((ProcessBuilder.getEdgeType(elementObj.properties.transitionStyle) !== ProcessBuilder.lf.getEdgeModelById(elementObj.properties.id).type)) {
+                ProcessBuilder.changeTransitionType(elementObj);
+            }
+            
             if (elementObj.properties.type === "CONDITION") {
                 if (elementObj.properties.conditionHelper === "yes") {
                     elementObj.properties.condition = ProcessBuilder.buildConditions(elementObj.properties.conditions);
@@ -7973,7 +8111,6 @@ ProcessBuilder = {
                 elementObj.properties.condition = "";
                 elementObj.properties.exceptionName = "";
             }
-
         }
         
         if (elementObj.className == "process") {
@@ -7981,6 +8118,31 @@ ProcessBuilder = {
         } else {
             ProcessBuilder.updateLFData(element, elementObj, oldNodeId);
         }
+    },
+    
+    /**
+     * Switch between Orthogonal and Straight transitions
+     */
+    changeTransitionType: function (elementObj) {
+        ProcessBuilder.changeNodeId = true;
+        // Get the edge
+        const transitionId = elementObj.properties.id;
+        const edge = ProcessBuilder.lf.getEdgeModelById(transitionId);
+
+        // Remove the old edge
+        ProcessBuilder.lf.deleteEdge(transitionId);
+
+        // Add a new edge with a different type but same source and target
+        ProcessBuilder.lf.addEdge({
+            id: transitionId,
+            type: ProcessBuilder.getEdgeType(elementObj.properties.transitionStyle),
+            sourceNodeId: edge.sourceNodeId,
+            targetNodeId: edge.targetNodeId,
+            sourceAnchorId: edge.sourceAnchorId,
+            targetAnchorId: edge.targetAnchorId,
+            properties: edge.properties
+        });
+        ProcessBuilder.changeNodeId = false;
     },
 
     builderSaved : function(data) {
@@ -8267,6 +8429,14 @@ ProcessBuilder = {
             return 'bpmn:sequenceFlow';
         } else if (type === 'participant') {
             return 'lane';
+        }
+    },
+
+    getEdgeType: function (type) {
+        if (type === 'orthogonal') {
+            return 'bpmn:sequenceFlow';
+        } else {
+            return 'bpmn:straightSequenceFlow';
         }
     },
     
