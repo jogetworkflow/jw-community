@@ -12714,4 +12714,7 @@ body.rtl .accordion-button::after{
 .navbar-dark .navbar-text a:hover {
     color: #fff;
 }
+.pull-right {
+    float: right;
+}
 /*# sourceMappingURL=bootstrap.css.map */
