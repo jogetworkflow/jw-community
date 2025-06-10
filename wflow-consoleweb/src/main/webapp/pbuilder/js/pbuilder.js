@@ -2480,13 +2480,25 @@ ProcessBuilder = {
         $(selector).trigger("chosen:updated");
         $(selector).off("change");
         $(selector).on("change", function(){
-            CustomBuilder.checkChangeBeforeCloseElementProperties(function () {
-                window.location.hash = $(selector).val();
-            }, function() {
+            var hasChange = false;
+            
+            //check for changes
+            if ($("body").hasClass("property-editor-right-panel") && !$("body").hasClass("no-right-panel")) {
+                $(".element-properties .property-editor-container").each(function() {
+                    var editor = $(this).parent().data("editor");
+                    if (editor !== undefined && !editor.saved && editor.isChange()) {
+                        hasChange = true;
+                    }
+                });
+            }
+            
+            if (hasChange && !confirm(get_cbuilder_msg('ubuilder.saveBeforeClose'))) {
                 //revert the selected value
                 $(selector).val(ProcessBuilder.currentProcessData.properties.id);
                 $(selector).trigger("chosen:updated");
-            });
+            } else {
+                window.location.hash = $(selector).val();
+            }
         });
     },
     
@@ -4430,7 +4442,7 @@ ProcessBuilder = {
                     label: get_cbuilder_msg("pbuilder.label.id"),
                     type: 'textfield',
                     required: 'True',
-                    js_validation: "ProcessBuilder.validateParticipantDuplicateId",
+                    js_validation: "ProcessBuilder.validateDuplicateId",
                     regex_validation: '^[a-zA-Z0-9_]+$',
                     validation_message: get_cbuilder_msg("pbuilder.label.invalidId"),
                     id_suggestion: 'label'
@@ -6377,34 +6389,26 @@ ProcessBuilder = {
     },
     
     /*
-     * Validation for duplicate id of participant
+     * Validation for duplicate id of participant & node
      */
-    validateParticipantDuplicateId : function (name, value) {
+    validateDuplicateId : function (name, value) {
         var self = CustomBuilder.Builder;
-        var data = ProcessBuilder.getSelectedNode().properties;
+        var data = self.selectedEl[0].data;
         
-        //find in the participant list which is not a match
-        var xpdl = CustomBuilder.data.xpdl['Package'];
-        var xpdlParticipants = ProcessBuilder.getArray(xpdl['Participants'], 'Participant');
-        for (var p in xpdlParticipants) {
-            var participant = xpdlParticipants[p];
-            if (participant['-Id'] === value && !(ProcessBuilder.compareXPDL(data.xpdlObj, participant))) {
+        if (data.id !== value) { //check for duplicate id when id changed
+            var nodeId = value;
+            
+            if (data.className === "participant") {
+                nodeId = 'laneID_' + value;
+            }
+            
+            //check if the node exist
+            var node = ProcessBuilder.lf.getNodeDataById(nodeId);
+            if (node) {
                 return get_cbuilder_msg("pbuilder.label.duplicateId");
             }
         }
-        return null;
-    },
-    
-    /*
-     * Validation for duplicate id of activity node
-     */
-    validateDuplicateId: function (name, value) {
-        if (value) { //check to prevent syntax error for jquery find
-            var found = $('#lf-container').find('#' + value);
-            if (found.length > 0 && !(found.length === 1 && value === self.selectedEl.data.id)) {
-                return get_cbuilder_msg("pbuilder.label.duplicateId");
-            }
-        }
+        
         return null;
     },
     
@@ -7188,8 +7192,12 @@ ProcessBuilder = {
                 $(view).find(".cbuilder-node-details-list").removeClass("active");
                 $(this).addClass("active");
                 var id = $(this).attr("data-cbuilder-select");
-                var node = self.frameBody.find("[data-cbuilder-id='"+id+"']");
-                self.selectNode(node);
+                
+                //set the selected node
+                ProcessBuilder.selectElementById(id);
+                self.selectedEl = {'data' : ProcessBuilder.getSelectedNode()};
+
+                self.selectNode(self.selectedEl);
             });
             
             $(view).find('.search-container input').off("keyup");
@@ -7323,7 +7331,12 @@ ProcessBuilder = {
         var detailsDiv = $('<div class="cbuilder-node-details"><dl class=\"cbuilder-node-details-list\"></dl></div>');
         $(list).append(detailsDiv);
         var dl = detailsDiv.find('dl');
-        dl.attr("data-cbuilder-select", obj.properties.id);
+        
+        var selectId =  obj.properties.id;
+        if (obj.className === "participant") {
+            selectId = 'laneID_' + selectId;       
+        }
+        dl.attr("data-cbuilder-select", selectId);
         
         var id = obj.properties.id;
         
