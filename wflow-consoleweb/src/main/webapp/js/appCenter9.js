@@ -41,6 +41,8 @@ $(document).ready(function() {
             }
             prev.children(':nth-last-child(2)').clone().prependTo($(this));
         });
+
+        $('.carousel').carousel('cycle');
     })
 
     $(window).resize(function(){
@@ -108,29 +110,38 @@ $(document).ready(function() {
             const $rightCol = $("#searchColumnContainer > .row > .col:last-child");
 
             if ($(window).outerWidth() < 768) {
-                $tabs.eq(0).addClass("active");
-                $leftCol.removeClass('hidden').css('opacity', 1);
-                $rightCol.addClass('hidden').css('opacity', 0);
+                if ($("ul#mobileTab > li.active").length === 0) {
+                    $tabs.eq(0).addClass("active");
+                    $leftCol.removeClass('hidden').css('opacity', 1);
+                    $rightCol.addClass('hidden').css('opacity', 0);
+                } else {
+                    var activeTab = $("ul#mobileTab > li.active").attr('id');
+                    if (activeTab === "taskTab") {
+                        $rightCol.addClass('hidden').css('opacity', 0);
+                    }else {
+                        $leftCol.addClass('hidden').css('opacity', 0);
+                    }
+                }
 
                 $tabs.off("click").on("click", function () {
-                const $clicked = $(this);
-                if ($clicked.hasClass("active")) return;
+                    const $clicked = $(this);
+                    if ($clicked.hasClass("active")) return;
 
-                $tabs.removeClass("active");
-                $clicked.addClass("active");
+                    $tabs.removeClass("active");
+                    $clicked.addClass("active");
 
-                const isTaskTab = $clicked.attr("id") === "taskTab";
-                const isMiniTab = $clicked.attr("id") === "miniBannerTab";
+                    const isTaskTab = $clicked.attr("id") === "taskTab";
+                    const isMiniTab = $clicked.attr("id") === "miniBannerTab";
 
-                if (isMiniTab) {
-                    fadeOut($leftCol, () => {
-                        fadeIn($rightCol);
-                    });
-                } else if (isTaskTab) {
-                    fadeOut($rightCol, () => {
-                        fadeIn($leftCol);
-                    });
-                }
+                    if (isMiniTab) {
+                        fadeOut($leftCol, () => {
+                            fadeIn($rightCol);
+                        });
+                    } else if (isTaskTab) {
+                        fadeOut($rightCol, () => {
+                            fadeIn($leftCol);
+                        });
+                    }
                 });
             } else {
                 $leftCol.removeClass('hidden').css('opacity', 1);

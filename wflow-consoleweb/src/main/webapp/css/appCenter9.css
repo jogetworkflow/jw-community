@@ -775,8 +775,21 @@ body#home div.appListNav > i.disabled{
 
     ul#mobileTab > li.active > span {
         color: #092E28;
+    }
+
+    ul#mobileTab > li.active {
+        position: relative;
         padding-bottom: 8px;
-        border-bottom: 1px solid #003A70
+    }
+
+    ul#mobileTab > li.active::after {
+        content: "";
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        height: 1.5px;
+        width: 100%;
+        background-color: #003A70;
     }
 
     ul#mobileTab > li > span {
@@ -1329,9 +1342,23 @@ body #sidebar .user-menu>li>a>small {
     }
     body header.navbar {
         width: calc(100% - 128px);
+        max-width: calc(1920px - 128px);
+    }
+    body:not(.horizontal_menu) header.navbar > .navbar-inner, 
+    header.navbar .container-fluid {
+        width: 100%;
+        transition: max-width 0.3s ease, margin 0.3s ease;
+    }
+    body.rtl:not(.horizontal_menu) header.navbar .container-fluid {
+        padding: 18.5px 60px 18.5px 16px !important;
+    }
+    body.sidebar-minimized header.navbar > .navbar-inner, 
+    body.sidebar-minimized header.navbar .container-fluid {
+        width: 100%;
     }
     body.sidebar-minimized header.navbar {
         width: calc(100% - 16px);
+        max-width: calc(1920px - 16px);
     }
     body.sidebar-minimized header.navbar .container-fluid {
         margin-right:0px;
@@ -1399,14 +1426,14 @@ body #sidebar .user-menu>li>a>small {
         top: 27.5px;
     }
     body.rtl #sidebar-trigger {
-        right: calc(276 / 1440 * 100vw + 25px) !important;
+        right: calc(216px + 100px) !important;
     }
     body.rtl .sidebar_brand.no_logo #header-link {
         right: 16px;
     }
     body #sidebar-trigger {
         position: fixed;
-        left: calc(276 / 1440 * 100vw + 25px);
+        left: calc(216px + 100px);
         margin-left: 0px;
     }
     body.sidebar-minimized #sidebar .nav li{
