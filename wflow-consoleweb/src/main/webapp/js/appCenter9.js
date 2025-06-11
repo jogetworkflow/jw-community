@@ -46,6 +46,7 @@ $(document).ready(function() {
     })
 
     $(window).resize(function(){
+        // $("#content.page_content main").mCustomScrollbar('destroy');
         if ($(window).outerWidth() < 1280) {
             if ($("div#page > ul#category-container").length === 0) {
                 $("footer").after($("ul#category-container").clone());
@@ -166,80 +167,23 @@ $(document).ready(function() {
                     });
                 }
             }
+            
+            //Group the app badges together
+            $("body#home #home_column div#dataList_applist .row.cards > .card-icon").each(function () {
+                const $card = $(this);
 
-            function updateArrows($container, $leftArrow, $rightArrow) {
-                var scrollLeft = $container.scrollLeft();
-                var containerWidth = $container.innerWidth();
-                var scrollWidth = $container[0].scrollWidth;
+                // Extract the elements
+                const $col1 = $card.find(".appIcon > .column_1").detach();
+                const $col6 = $card.find(".appIcon > .column_6").detach();
 
-                // When the apps in total are within the proposed width
-                if (!$container.hasClass("queue") && Math.abs(containerWidth - scrollWidth) <= 1) {
-                    $container.addClass("queue")
-                    $leftArrow.addClass("disabled");
-                    $rightArrow.addClass("disabled");
-                } else {
-                    // Remove queue styling when it is within the height
-                    if ($container.hasClass("queue") && $container[0].scrollHeight > parseFloat($container.css('max-height'))) {
-                        $container.removeClass("queue");
-                    }
-
-                    // Handle arrow enable and disable
-                    if (!$container.hasClass("queue") && scrollLeft <= 0) {
-                        $leftArrow.addClass("disabled");
-                        $rightArrow.removeClass("disabled");
-                    }
-                    else if (!$container.hasClass("queue") && scrollLeft + containerWidth >= scrollWidth - 1) {
-                        $leftArrow.removeClass("disabled");
-                        $rightArrow.addClass("disabled");
-                    }
-                    else if (!$container.hasClass("queue")) {
-                        $leftArrow.removeClass("disabled");
-                        $rightArrow.removeClass("disabled");
-                    }
-                }
-            }
-
-            if ($("div.appListNav").length) {
-                var $leftArrow = $("div.appListNav").find("i#left-arrow");
-                var $rightArrow = $("div.appListNav").find("i#right-arrow");
-                var $container = $("body#home #home_column div#dataList_applist .row.cards");
-
-                if ($(".addNew").length === 0) {
-                    $("div.appListNav").closest(".col").siblings().eq(0).hide();
-                }
-
-                updateArrows($container, $leftArrow, $rightArrow);
-
-                //When screen resize
-                $(window).on("resize", function(){
-                    updateArrows($container, $leftArrow, $rightArrow);
-                })
-
-                $("#customSearchInput").off("input.updateArrow").on("input.updateArrow", function(){
-                    updateArrows($container, $leftArrow, $rightArrow);
-                })
-
-                $leftArrow.on("click", function(){
-                    $container.scrollLeft($container.scrollLeft() - ($container.innerWidth()/2));
-
-                    setTimeout(() => {
-                        updateArrows($container, $leftArrow, $rightArrow);
-                    }, 250);
-                });
-                $rightArrow.on("click", function(){
-                    $container.scrollLeft($container.scrollLeft() + ($container.innerWidth()/2));
-
-                    setTimeout(() => {
-                        updateArrows($container, $leftArrow, $rightArrow);
-                    }, 250);
-                });
-
-                $container.on("scroll", function() {
-                    setTimeout(() => {
-                        updateArrows($container, $leftArrow, $rightArrow);
-                    }, 250);
-                })
-            }
+                // Create the flex wrapper and append both columns
+                const $badgeGroup = $("<div class='version-badge-group d-flex gap-1 align-items-center justify-content-center'></div>")
+                    .append($col1)
+                    .append($col6);
+                
+                //Insert it
+                $card.find(".appIcon h5").after($badgeGroup);
+            });
         }
         if ($('body#design_app #tutorial_section').length === 1) {
             UI.loadMsg(['appcenter.video1','appcenter.video2','appcenter.video3','appcenter.video4','appcenter.video5'], function(msgs){
