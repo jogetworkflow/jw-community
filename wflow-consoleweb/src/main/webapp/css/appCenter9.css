@@ -117,10 +117,6 @@ body.popupBody #main-body-header {
     padding: 0px;
 }
 
-body #content main {
-    padding-bottom: 0px;
-}
-
 body.rtl #content main #searchColumnContainer {
     margin-left: 0px !important;
     margin-right: 20px !important;
@@ -689,6 +685,7 @@ body#home .dataList#dataList_applist .appIcon .column_1,
 
 body#home .dataList#dataList_applist .appIcon .column_1 {
     margin-right: 2px;
+    text-transform: uppercase;
 }
 
 body#home .dataList#dataList_applist .appIcon .column_6 {
@@ -709,9 +706,9 @@ body#home .dataList#dataList_applist .appIcon .column_2 {
 }
 
 body#home #dataList_applist .card-icon:hover .card-actions a.rowAction_0 {
-    bottom: calc(100%) !important;
+    bottom: calc(95%) !important;
     top: unset !important;
-    right: -20px !important;
+    right: 0px !important;
     margin-right: 0px;
 }
 
