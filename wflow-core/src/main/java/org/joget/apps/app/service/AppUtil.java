@@ -81,6 +81,7 @@ import org.joget.apps.userview.model.UserviewTheme;
 import org.joget.apps.userview.model.UserviewV5Theme;
 import org.joget.apps.userview.service.UserviewService;
 import org.joget.commons.spring.model.Setting;
+import org.joget.commons.util.CsvUtil;
 import org.joget.commons.util.DistributedIdGenerator;
 import org.joget.commons.util.FileLimitException;
 import org.joget.commons.util.FileStore;
@@ -2195,10 +2196,25 @@ public class AppUtil implements ApplicationContextAware {
     
     protected static void populateActivityPlugin(JSONObject o, PackageActivityPlugin p) throws JSONException {
         o.put("className", p.getPluginName());
-        if (p.getPluginProperties() != null && !p.getPluginProperties().isEmpty()) {
-            o.put("properties", new JSONObject(p.getPluginProperties()));
-        } else {
-            o.put("properties", new JSONObject());
+        o.put("properties", parsePluginProperties(p.getPluginProperties()));
+    }
+    
+    private static JSONObject parsePluginProperties(String pluginProperties) {
+        if (pluginProperties == null || pluginProperties.isEmpty()) {
+            return new JSONObject();
+        }
+        // Try parsing as JSON first
+        try {
+            return new JSONObject(pluginProperties);
+        } catch (JSONException jsonException) {
+            // Backward compatible: try parsing as CSV because it's an old plugin configuration format which some plugins still uses
+            try {
+                Map propertyMap = CsvUtil.getPluginPropertyMap(pluginProperties);
+                return new JSONObject(propertyMap);
+            } catch (IOException e) {
+                // If both parsing attempts fail, return empty JSON
+                return new JSONObject();
+            }
         }
     }
     
