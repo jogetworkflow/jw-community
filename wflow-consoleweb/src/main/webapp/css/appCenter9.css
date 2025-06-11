@@ -1316,12 +1316,15 @@ body #sidebar .user-menu>li>a>small {
     min-width:25px; 
     border-radius: 20%
 }
+.jgt-count-badge {
+    display: inline-block;
+}
 .jgt-count-badge > i {
    margin-right: 4px;
 }
 .rtl .jgt-count-badge > i{
-    margin-right: 0px;
-    margin-left: 4px;
+    margin-right: 4px;
+    margin-left: 0px;
 }
 
 @media (max-width: 767px) {
