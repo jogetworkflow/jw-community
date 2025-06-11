@@ -46,6 +46,17 @@ FormUtil = {
             field = $(element).find("[name$=_"+fieldId+"]:not(form)");
         }
         
+        //check if the field is in deeper subform and the subform is hidden, remove it
+        if ($(field).length > 0) {
+            field = $(field).filter(function(index, f) {
+                var parent = $(f).closest(".subform-section, .form-section").parent();
+                if (parent[0] !== element[0] && $(parent).closest('.section-visibility-hidden').length > 0) {
+                    return false;
+                }
+                return true;
+            });
+        }
+        
         //to prevent return field with similar name, get the field with shorter name (Field in the subform)
         if ($(field).length > 1) {
             var fieldname;
