@@ -15,6 +15,8 @@ public interface BuilderDefinitionDao extends AppVersionedObjectDao<BuilderDefin
     @Override
     public boolean update(BuilderDefinition object);
     
+    public boolean delete(BuilderDefinition object);
+    
     public Collection<BuilderDefinition> getBuilderDefinitionList(String type, String filterString, AppDefinition appDefinition, String sort, Boolean desc, Integer start, Integer rows);
 
     public Long getBuilderDefinitionListCount(String type, String filterString, AppDefinition appDefinition);
