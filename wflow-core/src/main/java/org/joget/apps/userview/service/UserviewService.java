@@ -794,6 +794,8 @@ public class UserviewService {
     
     public String saveUserviewPages(String json, String userviewId, AppDefinition appDef) {
         try {
+            Set<String> menuIds = new HashSet<>();
+            
             JSONObject userviewObj = new JSONObject(json);
             JSONArray categoriesArray = userviewObj.getJSONArray("categories");
             for (int i = 0; i < categoriesArray.length(); i++) {
@@ -801,7 +803,27 @@ public class UserviewService {
                 JSONArray menusArray = categoryObj.getJSONArray("menus");
                 for (int j = 0; j < menusArray.length(); j++) {
                     JSONObject menuObj = (JSONObject) menusArray.get(j);
-                    savePageDefinition(menuObj, userviewId, appDef);
+                    savePageDefinition(menuObj, userviewId, appDef, menuIds);
+                }
+            }
+            
+            //clear removed page definition, find the page definition description is userview id and it is not appear in the found menu ids
+            StringBuilder condition = new StringBuilder();
+            condition.append("AND e.type = ? AND e.description = ?");
+            Collection<Object> params = new ArrayList<>();
+            params.add("INTERNAL_USERVIEW_PAGE");
+            params.add(userviewId);
+            
+            if (!menuIds.isEmpty()) {
+                condition.append(" AND e.id NOT IN ?");
+                params.add(menuIds);
+            }
+            
+            Collection<BuilderDefinition> removed = builderDefinitionDao.find(condition.toString(), params.toArray(), appDef, null, null, null, null);
+            
+            if (removed != null && !removed.isEmpty()) {
+                for (BuilderDefinition d : removed) {
+                    builderDefinitionDao.delete(d);
                 }
             }
             
@@ -862,7 +884,7 @@ public class UserviewService {
         return theme;        
     }
     
-    protected void savePageDefinition(JSONObject menuObj, String userviewId, AppDefinition appDef) throws JSONException {
+    protected void savePageDefinition(JSONObject menuObj, String userviewId, AppDefinition appDef, Set<String> menuIds) throws JSONException {
         if (menuObj.has("referencePage")) {
             JSONObject properties = menuObj.getJSONObject("properties");
             String id = properties.getString("id");
@@ -890,6 +912,7 @@ public class UserviewService {
 
                 builderDefinitionDao.add(page);
             }
+            menuIds.add("up-"+id);
             
             menuObj.remove("referencePage");
         }
@@ -898,7 +921,7 @@ public class UserviewService {
             JSONArray menusArray = menuObj.getJSONArray("menus");
             for (int j = 0; j < menusArray.length(); j++) {
                 JSONObject mObj = (JSONObject) menusArray.get(j);
-                savePageDefinition(mObj, userviewId, appDef);
+                savePageDefinition(mObj, userviewId, appDef, menuIds);
             }
         }
     }
