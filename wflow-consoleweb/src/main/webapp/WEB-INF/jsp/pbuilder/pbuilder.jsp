@@ -64,7 +64,8 @@
                 "getDefinitionUrl" : "${pageContext.request.contextPath}/web/console/app/${appId}/${version}/process/builder/json",
                 "rightPropertyPanel" : true,
                 "defaultBuilder" : true,
-                "submitDiff" : true
+                "submitDiff" : true,
+                "idSuggestionFormat" : "camelCase"
             },
             "callbacks" : {
                 "initBuilder" : "ProcessBuilder.initBuilder",
