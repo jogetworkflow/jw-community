@@ -1,6 +1,7 @@
 package org.joget.workflow.shark.model.dao;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Collection;
 import java.util.Date;
@@ -11,6 +12,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeoutException;
 import java.util.stream.Collectors;
 import javax.cache.Cache;
 import org.enhydra.shark.SharkUtil;
@@ -43,6 +46,8 @@ import org.json.JSONObject;
  * WorkflowAssignmentDAO implementation for the Enhydra Shark workflow engine.
  */
 public class SharkWorkflowAssignmentDaoImpl extends AbstractSpringDao implements SharkWorkflowAssignmentDao {
+
+    public static final String SYSTEM_PROPERTY_CACHE_ALL_USER_ASSIGNMENTS = "wflow.cacheAllAssignments";
     
     private WorkflowProcessLinkDao workflowProcessLinkDao;
     
@@ -466,27 +471,69 @@ public class SharkWorkflowAssignmentDaoImpl extends AbstractSpringDao implements
             Collection<String> uncachedProcessIds = new TreeSet<>(processIds);
             String cacheKeyForUser = SharkUtil.getCacheKeyForUser(username);
             Collection<String> cachedProcessIds = (Collection<String>)cache.get(cacheKeyForUser);
-            if (cachedProcessIds != null) {
-                uncachedProcessIds.removeAll(cachedProcessIds);
-            }
-            
-            if (!uncachedProcessIds.isEmpty()) {
-                // cache process ids for user
-                Collection<String> newCachedProcessIds = (cachedProcessIds != null) ? cachedProcessIds : new HashSet<>();
-                newCachedProcessIds.addAll(processIds);
-                cache.put(cacheKeyForUser, newCachedProcessIds);                
-                
-                // load uncached user assignments from database
-                LogUtil.debug(getClass().getName(), "Loading uncached process IDs " + uncachedProcessIds);
-                Collection<WorkflowAssignment> userAssignments = loadAssignmentsByProcessIds(uncachedProcessIds, username, state, sort, desc, start, rows);
 
-                // store assignments in cache
-                Map<String, List<WorkflowAssignment>> processAssignmentMap = userAssignments.stream()
-                    .collect(Collectors.groupingBy(WorkflowAssignment::getProcessId));
-                processAssignmentMap.forEach((processId, assignments) -> {
-                    String key = SharkUtil.getCacheKeyForAssignments(processId, username);
-                    cache.put(key, assignments);
-                });
+            // check for wflow.cacheAllAssignments system property, defaults to true
+            // if true, all assignments for a user will be cached up-front in the background
+            boolean cacheAllUserAssignments = "true".equals(System.getProperty(SYSTEM_PROPERTY_CACHE_ALL_USER_ASSIGNMENTS, "true"));
+            if (cacheAllUserAssignments) {
+                boolean cacheEmpty = (cachedProcessIds == null || cachedProcessIds.isEmpty());
+                if (cacheEmpty) {
+                    // cache is empty, populate cache with all user assignments in the background, subject to a timeout to avoid blocking too long
+                    // put dummy value first to prevent duplicate work
+                    String dummyValue = "---";
+                    cache.put(cacheKeyForUser, Arrays.asList(new String[] {dummyValue}));
+                    try {
+                        long timeout = 5000;
+                        WorkflowUtil.executeAsync(()-> {
+                            // load all user assignments from database
+                            LogUtil.info(getClass().getName(), "Loading all process IDs for " + username);
+                            Collection<WorkflowAssignment> userAssignments = loadAssignmentsByProcessIds(null, username, state, null, null, null, null);
+
+                            // store assignments in cache
+                            Collection<String> newCachedProcessIds = new HashSet<>();
+                            Map<String, List<WorkflowAssignment>> processAssignmentMap = userAssignments.stream()
+                                .collect(Collectors.groupingBy(WorkflowAssignment::getProcessId));
+                            processAssignmentMap.forEach((processId, assignments) -> {
+                                String key = SharkUtil.getCacheKeyForAssignments(processId, username);
+                                cache.put(key, assignments);
+                                newCachedProcessIds.add(processId);
+                            });
+                            cache.put(cacheKeyForUser, newCachedProcessIds);
+                            LogUtil.info(getClass().getName(), "Completed loading all process IDs for " + username);
+                            return null;
+                        }, timeout);
+                    } catch(TimeoutException e) {
+                        // ignore timeout
+                    } catch(InterruptedException | ExecutionException e) {
+                        // unexpected error, clear the cache
+                        cache.remove(cacheKeyForUser);
+                        LogUtil.error(getClass().getName(), e, "Error loading user assignments for " + username);
+                    }
+                }
+            } else {
+                // determine uncached process IDs
+                if (cachedProcessIds != null) {
+                    uncachedProcessIds.removeAll(cachedProcessIds);
+                }
+
+                if (!uncachedProcessIds.isEmpty()) {
+                    // cache process ids for user
+                    Collection<String> newCachedProcessIds = (cachedProcessIds != null) ? cachedProcessIds : new HashSet<>();
+                    newCachedProcessIds.addAll(processIds);
+                    cache.put(cacheKeyForUser, newCachedProcessIds);                
+
+                    // load uncached user assignments from database
+                    LogUtil.debug(getClass().getName(), "Loading uncached process IDs " + uncachedProcessIds);
+                    Collection<WorkflowAssignment> userAssignments = loadAssignmentsByProcessIds(uncachedProcessIds, username, state, sort, desc, start, rows);
+
+                    // store assignments in cache
+                    Map<String, List<WorkflowAssignment>> processAssignmentMap = userAssignments.stream()
+                        .collect(Collectors.groupingBy(WorkflowAssignment::getProcessId));
+                    processAssignmentMap.forEach((processId, assignments) -> {
+                        String key = SharkUtil.getCacheKeyForAssignments(processId, username);
+                        cache.put(key, assignments);
+                    });
+                }
             }
             
             // get cache keys based on profile, username and processId
