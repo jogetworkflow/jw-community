@@ -360,7 +360,7 @@ public class SharkUtil {
         if (cache != null) {
             // get assignments
             WorkflowManager workflowManager = (WorkflowManager)WorkflowUtil.getApplicationContext().getBean("workflowManager");
-            WorkflowAssignment assignment = workflowManager.getAssignment(activityId);
+            WorkflowAssignment assignment = workflowManager.getMockAssignment(activityId);
             
             // add to assignment cache
             String key = getCacheKeyForAssignments(processId, username);
