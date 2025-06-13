@@ -351,18 +351,14 @@ public class SharkUtil {
     
     /**
      * Add an assignment to the in-memory grid cache.
-     * @param processId
-     * @param activityId
+     * @param assignment
      * @param username 
      */
-    public static void addCacheWorkflowAssignment(String processId, String activityId, String username) {
+    public static void addCacheWorkflowAssignment(WorkflowAssignment assignment, String username) {
         Cache cache = getWorkflowAssignmentCache();
         if (cache != null) {
-            // get assignments
-            WorkflowManager workflowManager = (WorkflowManager)WorkflowUtil.getApplicationContext().getBean("workflowManager");
-            WorkflowAssignment assignment = workflowManager.getMockAssignment(activityId);
-            
             // add to assignment cache
+            String processId = assignment.getProcessId();
             String key = getCacheKeyForAssignments(processId, username);
             List<WorkflowAssignment> cachedAssignments = (List<WorkflowAssignment>)cache.get(key);
             if (cachedAssignments == null) {
