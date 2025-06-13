@@ -265,11 +265,21 @@ public class FormData {
      * @param values
      */
     public void addRequestParameterValues(String parameter, String[] values) {
-        
-        if (values.length > 1) {
+        addRequestParameterValues(parameter, values, false);        
+    }
+    
+    /**
+     * Adds duplicate request parameter values.
+     * @param parameter
+     * @param values
+     * @param allowDuplicateValues
+     */
+    public void addRequestParameterValues(String parameter, String[] values, boolean allowDuplicateValues) {      
+        // do not remove duplicate values if allowed 
+        if (values.length > 1 && !allowDuplicateValues) {
             Set result = new LinkedHashSet(Arrays.asList(values));
             values = (String[]) result.toArray(new String[0]);
-        }
+        }        
         
         requestParamMap.put(parameter, values);
     }

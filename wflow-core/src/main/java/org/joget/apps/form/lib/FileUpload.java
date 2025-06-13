@@ -185,7 +185,9 @@ public class FileUpload extends Element implements FormBuilderPaletteElement, Fi
         String id = getPropertyString(FormUtil.PROPERTY_ID);
         
         Set<String> remove = null;
-        if ("true".equals(getPropertyString("removeFile"))) {
+        boolean removeFile = "true".equals(getPropertyString("removeFile"));
+
+        if (removeFile) {
             remove = new HashSet<String>();
             Form form = FormUtil.findRootForm(this);
             String originalValues = formData.getLoadBinderDataProperty(form, id);
@@ -228,8 +230,10 @@ public class FileUpload extends Element implements FormBuilderPaletteElement, Fi
                 // formulate values
                 String delimitedValue = FormUtil.generateElementPropertyValues(resultedValue.toArray(new String[]{}));
                 String paramName = FormUtil.getElementParameterName(this);
-                formData.addRequestParameterValues(paramName, resultedValue.toArray(new String[]{}));
-                        
+                                     
+                // do not allow duplicate if delete actual file is checked
+                formData.addRequestParameterValues(paramName,resultedValue.toArray(new String[]{}),!removeFile);               
+                            
                 // set value into Properties and FormRowSet object
                 result.setProperty(id, delimitedValue);
                 rowSet = new FormRowSet();
