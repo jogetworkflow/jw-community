@@ -40,6 +40,8 @@ import org.enhydra.shark.xpdl.elements.Activity;
 import org.enhydra.shark.xpdl.elements.Deadline;
 import org.enhydra.shark.xpdl.elements.WorkflowProcess;
 import org.joget.commons.util.LogUtil;
+import org.joget.workflow.model.WorkflowAssignment;
+import org.joget.workflow.model.service.WorkflowManager;
 import org.joget.workflow.shark.migrate.model.MigrateActivity;
 import org.joget.workflow.shark.model.CustomDeadlinePersistenceObject;
 import org.joget.workflow.shark.model.dao.DeadlineDao;
@@ -462,6 +464,8 @@ public class CustomWfActivityImpl extends WfActivityImpl {
                     .getAllResources(shandle);
         }
 
+        WorkflowManager workflowManager = (WorkflowManager)WorkflowUtil.getApplicationContext().getBean("workflowManager");
+        WorkflowAssignment assignment = null;
         Iterator resourcesIt = users.iterator();
         while (resourcesIt.hasNext()) {
             String username = (String) resourcesIt.next();
@@ -495,7 +499,10 @@ public class CustomWfActivityImpl extends WfActivityImpl {
             getAssignmentResourceIds(shandle).add(username);
             
             // add to cache
-            SharkUtil.addCacheWorkflowAssignment(processId, activityId, username);
+            if (assignment == null) {
+                assignment = workflowManager.getMockAssignment(activityId);
+            }
+            SharkUtil.addCacheWorkflowAssignment(assignment, username);
         }
     }
 
