@@ -6,6 +6,7 @@ ProcessBuilder = {
     refreshTimeout: null,
     updatePasteElement: true,
     changeNodeId: false,
+    previousPositionMap: {},
     
     /*
      * Intialize the builder, called from CustomBuilder.initBuilder
@@ -1764,6 +1765,16 @@ ProcessBuilder = {
 
         // Variable to track the previous selected node
         ProcessBuilder.previousSelectedNodeId = null;
+        
+        // Store position before drag starts
+        ProcessBuilder.lf.on('node:dragstart', ({ data }) => {
+            const node = ProcessBuilder.lf.getNodeDataById(data.id);
+            
+            ProcessBuilder.previousPositionMap[data.id] = {
+                x: node.x,
+                y: node.y
+            };
+        });
 
         // Handle node drop
         ProcessBuilder.lf.on('node:drop', ({ data }) => {
@@ -1794,8 +1805,20 @@ ProcessBuilder = {
                         children: previousLane.children
                     });
                 } else {
-                    // Remove if too far from the lane
-                    ProcessBuilder.removeNode(data);
+                    // Revert to the previous position if the drop location is invalid
+                    const previousNode = ProcessBuilder.previousPositionMap[data.id];
+                    const node = ProcessBuilder.lf.getNodeModelById(data.id);
+                    if (node) {
+                        const nodeType = data.properties.className;
+                        node.x = previousNode.x;
+                        node.y = previousNode.y;
+                        node.text.x = previousNode.x;
+                        node.text.y = previousNode.y;
+
+                        delete ProcessBuilder.previousPositionMap[data.id];
+                        ProcessBuilder.adjustLane(false, null);
+                        CustomBuilder.showMessage(nodeType.charAt(0).toUpperCase() + nodeType.slice(1) + " " + get_cbuilder_msg("pbuilder.nodeMovingFailed"), "info");
+                    }
                     return;
                 }
             }
