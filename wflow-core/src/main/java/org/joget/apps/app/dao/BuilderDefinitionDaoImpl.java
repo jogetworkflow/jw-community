@@ -105,6 +105,9 @@ public class BuilderDefinitionDaoImpl extends AbstractAppVersionedObjectDao<Buil
         object.setDateCreated(date);
         object.setDateModified(date);
         
+        // remove from cache
+        cache.remove(getCacheKey(object.getId(), object.getAppId(), object.getAppVersion()), object.getAppDefinition());
+        
         boolean result = super.add(object);
         appDefinitionDao.updateDateModified(object.getAppDefinition(), date);
         
