@@ -812,15 +812,16 @@ public class WorkflowAssignmentDao extends AbstractSpringDao {
     }
     
     /**
-     * Only stuck tools having "open.running" status during startup
+     * Retrieve stuck subflow, tools & route which having "open.*" status and does no having assignment during startup.
+     * Stuck subflow does not having performer
      * @return 
      */
     public Collection<Object[]> getStuckTools() {
         Session session = findSession();
-        String query = "SELECT e.processDefId, e.processId, e.activityId FROM SharkActivity e WHERE e.state.name = ?1";
+        String query = "SELECT e.processDefId, e.processId, e.activityId FROM SharkActivity e LEFT JOIN SharkAssignment a ON a.activity.activityId = e.activityId WHERE e.state.name like ?1 AND e.performer IS NULL AND a.id IS NULL";
         Query q = session.createQuery(query);
 
-        q.setParameter(1, "open.running");
+        q.setParameter(1, "open.%");
         return q.list();
     }
     

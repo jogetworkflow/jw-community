@@ -5178,35 +5178,47 @@ public class WorkflowManagerImpl implements WorkflowManager {
     }
     
     /**
-     * Internal method used to recover stuck tool activities due to improper shutdown
+     * Internal method used to recover stuck activities (tool, route, subflow) due to improper shutdown
      */
     @Override
     public void internalRecoverStuckToolActivities() {
-        final Collection<Object[]> stuckTools = workflowAssignmentDao.getStuckTools();
-        if (stuckTools != null && !stuckTools.isEmpty()) {
-            LogUtil.info(WorkflowManagerImpl.class.getName(), "Found " + stuckTools.size() + " stuck tool. Trying recover it...");
-            
-            Thread stuckToolsRecover = new PluginThread(new Runnable() {
+        final Collection<Object[]> stuckActivities = workflowAssignmentDao.getStuckTools();
+        if (stuckActivities != null && !stuckActivities.isEmpty()) {
+            Thread stuckActivitiesRecover = new PluginThread(new Runnable() {
 
                 @Override
                 public void run() {
+                    //add delay to wait for other beans (AppPluginUtil & AppUtil) ready
+                    try {
+                        ApplicationContext ac = null;
+                        do {
+                            Thread.sleep(5000);
+                            ac = WorkflowUtil.getApplicationContext();
+                        } while (ac == null);
+                    } catch (Exception e) {}
+                    LogUtil.info(WorkflowManagerImpl.class.getName(), "Found possible stuck activities. Trying to recover it...");
+                    
                     transactionTemplate.execute(new TransactionCallbackWithoutResult() {
 
                         protected void doInTransactionWithoutResult(TransactionStatus transactionStatus) {
                             SharkConnection sc = null;
-
+                            int recorvered = 0;
+                            
                             try {
                                 sc = connect();
                                 WMSessionHandle sessionHandle = sc.getSessionHandle();
-
-                                for (Object[] sa : stuckTools) {
+                                
+                                for (Object[] sa : stuckActivities) {
                                     try {
                                         CustomWfActivityWrapper wrapper = new CustomWfActivityWrapper(sessionHandle, sa[0].toString(), sa[1].toString(), sa[2].toString());
                                         wrapper.getProcessImpl().setReadOnly(false);
                                         CustomWfActivityImpl activity = (CustomWfActivityImpl) wrapper.getActivityImpl();
-                                        activity.restartToolActivity(sessionHandle);
+                                        if (activity.recoverStuckActivity(sessionHandle)){
+                                            LogUtil.info(WorkflowManagerImpl.class.getName(), "Recovered " + sa[2].toString());
+                                            recorvered++;
+                                        }
                                     } catch (Exception e) {
-                                        LogUtil.error(getClass().getName(), e, "Fail to restart tool " + sa[2].toString());
+                                        LogUtil.error(getClass().getName(), e, "Fail to restart activity " + sa[2].toString());
                                     }
                                 }
                             } catch (Exception ex) {
@@ -5218,12 +5230,14 @@ public class WorkflowManagerImpl implements WorkflowManager {
                                     LogUtil.error(getClass().getName(), e, "");
                                 }
                             }
+                            
+                            LogUtil.info(WorkflowManagerImpl.class.getName(), "Recovered " + recorvered + " stuck activities");
                         }
                     });
                 }
             });
-            stuckToolsRecover.setDaemon(true);
-            stuckToolsRecover.start();
+            stuckActivitiesRecover.setDaemon(true);
+            stuckActivitiesRecover.start();
         }
     }
 
