@@ -795,9 +795,19 @@ PropertyEditor.Util = {
         } else if (window['Aromanize'] !== undefined) { //for Korean
             text = window['Aromanize'].romanize(text);
         }
+        //get idSuggestionFormat that was previously set
+        let idSuggestionFormat =  field.options.idSuggestionFormat;
+
         if (getSlug !== undefined) {
+            //snake case
             var lang = UI.locale.substring(0,2); 
             text = getSlug(text, { separator: "_",  truncate: 30, lang:lang});
+            //camel case for Process builder
+            if (idSuggestionFormat === "camelCase") {
+                text = text
+                        .toLowerCase()
+                        .replace(/[^a-zA-Z0-9]+(.)/g, (_, chr) => chr.toUpperCase());
+            }
         }
         
         var data = field.getData(true);
