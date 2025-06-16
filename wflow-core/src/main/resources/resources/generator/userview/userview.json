@@ -95,6 +95,7 @@
                                                                             "style-tablet-flex": "0 0 50%%",
                                                                             "style-tablet-padding-right": "10px",
                                                                             "style-tablet-padding-left": "10px",
+                                                                            "id": "18C7A8EA6D824375692E9BAD89BF0CB5",
                                                                             "style-max-width": "50%%"
                                                                         }
                                                                     },
@@ -116,7 +117,7 @@
                                                                                     "style-font-weight": "500",
                                                                                     "style-width": "100%%",
                                                                                     "style-color": "#003A70",
-                                                                                    "style-tablet-font-size": "17px",
+                                                                                    "style-tablet-font-size": "16px",
                                                                                     "textContent": "@@generator.userview.welcome.design.app.title@@",
                                                                                     "style-font-size": "21px",
                                                                                     "id": "43F68A28FB0F4341B4233F45ED7461AE",
@@ -143,16 +144,20 @@
                                                                                 "properties": {
                                                                                     "attr-data-events-listening": [],
                                                                                     "style-background-color": "#4B6EEC",
-                                                                                    "style-padding-right": "32px",
+                                                                                    "style-padding-right": "24px",
+                                                                                    "style-custom": "height: unset;",
                                                                                     "css-display-type": "btn btn-primary",
                                                                                     "style-color": "#FFFFFF",
+                                                                                    "style-line-height": "24px",
                                                                                     "textContent": "@@generator.userview.welcome.design.app.button@@",
                                                                                     "style-padding-top": "10px",
                                                                                     "customId": "",
-                                                                                    "style-padding-left": "32px",
+                                                                                    "style-padding-left": "24px",
                                                                                     "style-padding-bottom": "10px",
                                                                                     "attr-onclick": "appCreate()",
-                                                                                    "id": "F9397DE5E22547D7D286DCC45959EDD1",
+                                                                                    "style-tablet-padding-left": "24px",
+                                                                                    "style-tablet-padding-right": "24px",
+                                                                                    "id": "6132B415F3CB44825128A0840A235910",
                                                                                     "style-border-radius": "16px"
                                                                                 }
                                                                             }
@@ -162,15 +167,16 @@
                                                                             "style-padding-right": "20px",
                                                                             "style-mobile-max-width": "100%%",
                                                                             "style-mobile-padding-right": "10px",
-                                                                            "style-tablet-flex": "0 0 50%%",
                                                                             "style-mobile-padding-left": "10px",
                                                                             "style-flex": "0 0 50%%",
+                                                                            "style-mobile-flex": "0 0 100%%",
+                                                                            "style-tablet-max-width": "50%%",
+                                                                            "style-padding-left": "20px",
+                                                                            "style-tablet-flex": "0 0 50%%",
                                                                             "style-tablet-padding-left": "15px",
                                                                             "style-tablet-padding-right": "15px",
-                                                                            "style-mobile-flex": "0 0 100%%",
-                                                                            "style-max-width": "50%%",
-                                                                            "style-tablet-max-width": "50%%",
-                                                                            "style-padding-left": "20px"
+                                                                            "id": "AA79C65C1AC147FCAE717BBFDED9D20B",
+                                                                            "style-max-width": "50%%"
                                                                         }
                                                                     }
                                                                 ],
@@ -266,10 +272,11 @@
                                                                                 ],
                                                                                 "className": "org.joget.apps.userview.lib.component.ColumnComponent",
                                                                                 "properties": {
-                                                                                    "style-max-width": "40%%",
+                                                                                    "style-tablet-flex": "0 0 55%%",
                                                                                     "style-flex": "0 0 40%%",
-                                                                                    "style-tablet-max-width": "55%%",
-                                                                                    "style-tablet-flex": "0 0 55%%"
+                                                                                    "id": "81CE95E608724F29C6CEB43BE2228715",
+                                                                                    "style-max-width": "40%%",
+                                                                                    "style-tablet-max-width": "55%%"
                                                                                 }
                                                                             },
                                                                             {
@@ -286,6 +293,7 @@
                                                                                 ],
                                                                                 "className": "org.joget.apps.userview.lib.component.ColumnComponent",
                                                                                 "properties": {
+                                                                                    "id": "45FB7E3C92AA42452D1F6D480E0848FA",
                                                                                     "style-padding-left": "10px"
                                                                                 }
                                                                             }
@@ -296,14 +304,14 @@
                                                                             "style-border-bottom-width": "1px",
                                                                             "columns": [
                                                                                 {
+                                                                                    "style-mobile-max-width": "",
                                                                                     "style-max-width": "40%%",
-                                                                                    "style-tablet-max-width": "55%%",
-                                                                                    "style-mobile-max-width": ""
+                                                                                    "style-tablet-max-width": "55%%"
                                                                                 },
                                                                                 {
+                                                                                    "style-mobile-max-width": "",
                                                                                     "style-max-width": "",
-                                                                                    "style-tablet-max-width": "",
-                                                                                    "style-mobile-max-width": ""
+                                                                                    "style-tablet-max-width": ""
                                                                                 }
                                                                             ],
                                                                             "css-mobile-stack-columns": "true",
@@ -336,10 +344,11 @@
                                                                                 ],
                                                                                 "className": "org.joget.apps.userview.lib.component.ColumnComponent",
                                                                                 "properties": {
-                                                                                    "style-max-width": "40%%",
+                                                                                    "style-tablet-flex": "0 0 55%%",
                                                                                     "style-flex": "0 0 40%%",
-                                                                                    "style-tablet-max-width": "55%%",
-                                                                                    "style-tablet-flex": "0 0 55%%"
+                                                                                    "id": "5C129FEA56B6499C2554FDFB98A0BF05",
+                                                                                    "style-max-width": "40%%",
+                                                                                    "style-tablet-max-width": "55%%"
                                                                                 }
                                                                             },
                                                                             {
@@ -356,6 +365,7 @@
                                                                                 ],
                                                                                 "className": "org.joget.apps.userview.lib.component.ColumnComponent",
                                                                                 "properties": {
+                                                                                    "id": "2826CC8974FA4053469436A7F2E74E43",
                                                                                     "style-padding-left": "10px"
                                                                                 }
                                                                             }
@@ -366,14 +376,14 @@
                                                                             "style-border-bottom-width": "1px",
                                                                             "columns": [
                                                                                 {
+                                                                                    "style-mobile-max-width": "",
                                                                                     "style-max-width": "40%%",
-                                                                                    "style-tablet-max-width": "55%%",
-                                                                                    "style-mobile-max-width": ""
+                                                                                    "style-tablet-max-width": "55%%"
                                                                                 },
                                                                                 {
+                                                                                    "style-mobile-max-width": "",
                                                                                     "style-max-width": "",
-                                                                                    "style-tablet-max-width": "",
-                                                                                    "style-mobile-max-width": ""
+                                                                                    "style-tablet-max-width": ""
                                                                                 }
                                                                             ],
                                                                             "css-mobile-stack-columns": "true",
@@ -407,10 +417,11 @@
                                                                                 ],
                                                                                 "className": "org.joget.apps.userview.lib.component.ColumnComponent",
                                                                                 "properties": {
-                                                                                    "style-max-width": "40%%",
+                                                                                    "style-tablet-flex": "0 0 55%%",
                                                                                     "style-flex": "0 0 40%%",
-                                                                                    "style-tablet-max-width": "55%%",
-                                                                                    "style-tablet-flex": "0 0 55%%"
+                                                                                    "id": "D0FD3ED1CF664AC3BDA0A79B23530895",
+                                                                                    "style-max-width": "40%%",
+                                                                                    "style-tablet-max-width": "55%%"
                                                                                 }
                                                                             },
                                                                             {
@@ -427,6 +438,7 @@
                                                                                 ],
                                                                                 "className": "org.joget.apps.userview.lib.component.ColumnComponent",
                                                                                 "properties": {
+                                                                                    "id": "ED56128960F44E1D52AE6677F236282B",
                                                                                     "style-padding-left": "10px"
                                                                                 }
                                                                             }
@@ -437,14 +449,14 @@
                                                                             "style-border-bottom-width": "1px",
                                                                             "columns": [
                                                                                 {
+                                                                                    "style-mobile-max-width": "",
                                                                                     "style-max-width": "40%%",
-                                                                                    "style-tablet-max-width": "55%%",
-                                                                                    "style-mobile-max-width": ""
+                                                                                    "style-tablet-max-width": "55%%"
                                                                                 },
                                                                                 {
+                                                                                    "style-mobile-max-width": "",
                                                                                     "style-max-width": "",
-                                                                                    "style-tablet-max-width": "",
-                                                                                    "style-mobile-max-width": ""
+                                                                                    "style-tablet-max-width": ""
                                                                                 }
                                                                             ],
                                                                             "css-mobile-stack-columns": "true",
@@ -478,10 +490,11 @@
                                                                                 ],
                                                                                 "className": "org.joget.apps.userview.lib.component.ColumnComponent",
                                                                                 "properties": {
-                                                                                    "style-max-width": "40%%",
+                                                                                    "style-tablet-flex": "0 0 55%%",
                                                                                     "style-flex": "0 0 40%%",
-                                                                                    "style-tablet-max-width": "55%%",
-                                                                                    "style-tablet-flex": "0 0 55%%"
+                                                                                    "id": "1917CCE2ECB04BDA3FBCA7FF1FD69354",
+                                                                                    "style-max-width": "40%%",
+                                                                                    "style-tablet-max-width": "55%%"
                                                                                 }
                                                                             },
                                                                             {
@@ -498,6 +511,7 @@
                                                                                 ],
                                                                                 "className": "org.joget.apps.userview.lib.component.ColumnComponent",
                                                                                 "properties": {
+                                                                                    "id": "DBA1C59E202B4732D6842EDF17F50694",
                                                                                     "style-padding-left": "10px"
                                                                                 }
                                                                             }
@@ -508,14 +522,14 @@
                                                                             "gutter": "5px",
                                                                             "columns": [
                                                                                 {
+                                                                                    "style-mobile-max-width": "",
                                                                                     "style-max-width": "40%%",
-                                                                                    "style-tablet-max-width": "55%%",
-                                                                                    "style-mobile-max-width": ""
+                                                                                    "style-tablet-max-width": "55%%"
                                                                                 },
                                                                                 {
+                                                                                    "style-mobile-max-width": "",
                                                                                     "style-max-width": "",
-                                                                                    "style-tablet-max-width": "",
-                                                                                    "style-mobile-max-width": ""
+                                                                                    "style-tablet-max-width": ""
                                                                                 }
                                                                             ],
                                                                             "css-mobile-stack-columns": "true",
@@ -583,6 +597,7 @@
                                                     "style-border-top-width": "0px",
                                                     "col-0-style-padding-top": "0px",
                                                     "style-padding-right": "0px",
+                                                    "style-background-color": "#FFFFFF",
                                                     "col-1-style-padding-top": "0px",
                                                     "style-custom": "box-shadow: 0px 1px 10px 0px rgba(16, 24, 40, 0.05);\n",
                                                     "style-border-bottom-width": "0px",
@@ -618,7 +633,9 @@
                                                     "attr-data-events-listening": [],
                                                     "textContent": "@@generator.userview.welcome.tab@@",
                                                     "id": "3CAB44529BAD4AA9C16CEB8697A04DB4",
-                                                    "customId": ""
+                                                    "customId": "",
+                                                    "style-padding-left": "15px",                                                    
+                                                    "style-padding-right": "15px"
                                                 }
                                             }
                                         ],
@@ -645,11 +662,13 @@
                                                                         "className": "org.joget.apps.userview.lib.component.LabelComponent",
                                                                         "properties": {
                                                                             "attr-data-events-listening": [],
+                                                                            "style-line-height": "31px",
                                                                             "style-tablet-padding-left": "30px",
                                                                             "textContent": "@@generator.userview.welcome.content.form1@@",
                                                                             "id": "C58041F75B1249E1391DFF181A89A61E",
                                                                             "customId": "",
-                                                                            "style-padding-left": "40px"
+                                                                            "style-padding-left": "40px",
+                                                                            "style-font-weight": "500"
                                                                         }
                                                                     },
                                                                     {
@@ -711,11 +730,13 @@
                                                                             "attr-data-events-listening": [],
                                                                             "style-margin-bottom": "220px",
                                                                             "style-mobile-margin-bottom": "80%%",
+                                                                            "style-line-height": "31px",
                                                                             "style-tablet-padding-left": "15px",
                                                                             "textContent": "@@generator.userview.welcome.content.form2@@",
                                                                             "id": "D4F0F9574D79492393C0219FE134A24B",
                                                                             "customId": "",
-                                                                            "style-padding-left": "30px"
+                                                                            "style-padding-left": "30px",
+                                                                            "style-font-weight": "500"
                                                                         }
                                                                     },
                                                                     {
@@ -817,11 +838,13 @@
                                                                         "properties": {
                                                                             "attr-data-events-listening": [],
                                                                             "style-margin-bottom": "5%%",
+                                                                            "style-line-height": "31px",
                                                                             "style-tablet-padding-left": "20px",
                                                                             "textContent": "@@generator.userview.welcome.content.list1@@",
                                                                             "id": "578A43CD2842459EA25C5C1642057EA7",
                                                                             "customId": "",
-                                                                            "style-padding-left": "40px"
+                                                                            "style-padding-left": "40px",
+                                                                            "style-font-weight": "500"
                                                                         }
                                                                     },
                                                                     {
@@ -871,6 +894,7 @@
                                                         "properties": {
                                                             "style-tablet-flex": "0 0 55%%",
                                                             "style-flex": "0 0 60%%",
+                                                            "id": "403E1A9B901E446F4962DED432457AC3",
                                                             "style-max-width": "60%%",
                                                             "style-tablet-max-width": "55%%"
                                                         }
@@ -884,11 +908,13 @@
                                                                         "properties": {
                                                                             "attr-data-events-listening": [],
                                                                             "style-mobile-margin-bottom": "65%%",
+                                                                            "style-line-height": "31px",
                                                                             "style-tablet-padding-left": "10px",
                                                                             "textContent": "@@generator.userview.welcome.content.list2@@",
                                                                             "id": "4C64F188A3284C09D71038D55502CAA8",
                                                                             "customId": "",
-                                                                            "style-padding-left": "30px"
+                                                                            "style-padding-left": "30px",
+                                                                            "style-font-weight": "500"
                                                                         }
                                                                     },
                                                                     {
@@ -942,7 +968,9 @@
                                                             }
                                                         ],
                                                         "className": "org.joget.apps.userview.lib.component.ColumnComponent",
-                                                        "properties": {}
+                                                        "properties": {
+                                                            "id": "944ACADA9B95471D53A1BF85D824F4B3"
+                                                        }
                                                     }
                                                 ],
                                                 "className": "org.joget.apps.userview.lib.component.ColumnsComponent",
@@ -991,12 +1019,14 @@
                                                                         "properties": {
                                                                             "attr-data-events-listening": [],
                                                                             "style-padding-right": "50px",
+                                                                            "style-line-height": "31px",
                                                                             "style-tablet-padding-left": "20px",
                                                                             "style-tablet-padding-right": "20px",
                                                                             "textContent": "@@generator.userview.welcome.content.chart1@@",
                                                                             "id": "DA66B85C6FEB4CEF652AA6A4E73A439B",
                                                                             "customId": "",
-                                                                            "style-padding-left": "50px"
+                                                                            "style-padding-left": "50px",
+                                                                            "style-font-weight": "500"
                                                                         }
                                                                     },
                                                                     {
@@ -1049,6 +1079,7 @@
                                                         "properties": {
                                                             "style-tablet-flex": "0 0 55%%",
                                                             "style-flex": "0 0 60%%",
+                                                            "id": "60AD8D1E550C43ABF07726D8244F6113",
                                                             "style-max-width": "60%%",
                                                             "style-tablet-max-width": "55%%"
                                                         }
@@ -1066,8 +1097,10 @@
                                                                             "style-tablet-padding-right": "15px",
                                                                             "textContent": "@@generator.userview.welcome.content.chart2@@",
                                                                             "id": "6C233F99A37946954736E191AA3A15B7",
+                                                                            "style-font-size": "31px",
                                                                             "customId": "",
-                                                                            "style-padding-left": "30px"
+                                                                            "style-padding-left": "30px",
+                                                                            "style-font-weight": "500"
                                                                         }
                                                                     },
                                                                     {
@@ -1115,7 +1148,9 @@
                                                             }
                                                         ],
                                                         "className": "org.joget.apps.userview.lib.component.ColumnComponent",
-                                                        "properties": {}
+                                                        "properties": {
+                                                            "id": "D04C89C6D4B9464BC761277CAAE2D385"
+                                                        }
                                                     }
                                                 ],
                                                 "className": "org.joget.apps.userview.lib.component.ColumnsComponent",
@@ -1164,12 +1199,14 @@
                                                                         "properties": {
                                                                             "attr-data-events-listening": [],
                                                                             "style-padding-right": "40px",
+                                                                            "style-line-height": "31px",
                                                                             "style-tablet-padding-left": "10px",
                                                                             "style-tablet-padding-right": "10px",
                                                                             "textContent": "@@generator.userview.welcome.content.component1@@",
                                                                             "id": "E63E44AB5563465F0AC0D414CBFDCFDF",
                                                                             "customId": "",
-                                                                            "style-padding-left": "40px"
+                                                                            "style-padding-left": "40px",
+                                                                            "style-font-weight": "500"
                                                                         }
                                                                     },
                                                                     {
@@ -1222,6 +1259,7 @@
                                                         "properties": {
                                                             "style-tablet-flex": "0 0 55%%",
                                                             "style-flex": "0 0 60%%",
+                                                            "id": "6E3DB68B24CC444B37E171631F1D0647",
                                                             "style-max-width": "60%%",
                                                             "style-tablet-max-width": "55%%"
                                                         }
@@ -1237,11 +1275,13 @@
                                                                             "style-padding-right": "30px",
                                                                             "style-margin-bottom": "80%%",
                                                                             "style-mobile-margin-bottom": "81%%",
+                                                                            "style-line-height": "31px",
                                                                             "textContent": "@@generator.userview.welcome.content.component2@@",
                                                                             "id": "4D0D88DB87E7478956A923C040804D11",
                                                                             "style-tablet-margin-bottom": "85%%",
                                                                             "customId": "",
-                                                                            "style-padding-left": "30px"
+                                                                            "style-padding-left": "30px",
+                                                                            "style-font-weight": "500"
                                                                         }
                                                                     },
                                                                     {
@@ -1293,7 +1333,9 @@
                                                             }
                                                         ],
                                                         "className": "org.joget.apps.userview.lib.component.ColumnComponent",
-                                                        "properties": {}
+                                                        "properties": {
+                                                            "id": "E5DDD859AD304827004EC3BF65A485A0"
+                                                        }
                                                     }
                                                 ],
                                                 "className": "org.joget.apps.userview.lib.component.ColumnsComponent",
@@ -1333,10 +1375,22 @@
                                 "className": "org.joget.apps.userview.lib.component.ContainerComponent",
                                 "properties": {
                                     "attr-data-events-listening": [],
-                                    "id": "EC4945782DD345FF8B487FFBC9303B2F",
+                                    "style-background-color": "#FFFFFF",
+                                    "style-padding-right": "30px",
+                                    "style-mobile-padding-right": "10px",
+                                    "style-tablet-padding-bottom": "16px",
+                                    "style-mobile-padding-left": "10px",
                                     "customId": "",
                                     "style-tablet-margin-right": "15px",
-                                    "style-tablet-margin-left": "15px"
+                                    "style-mobile-margin-right": "0px",
+                                    "style-padding-left": "30px",
+                                    "style-padding-bottom": "30px",
+                                    "style-mobile-margin-left": "0px",
+                                    "style-tablet-padding-left": "16px",
+                                    "style-tablet-padding-right": "16px",
+                                    "id": "B6967DB7ACB94E4B81176BE0704B7B37",
+                                    "style-tablet-margin-left": "15px",
+                                    "style-border-radius": "16px"
                                 }
                             }
                         ],
