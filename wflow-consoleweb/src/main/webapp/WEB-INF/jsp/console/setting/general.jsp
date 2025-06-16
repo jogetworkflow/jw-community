@@ -755,6 +755,26 @@
                         </div>
                     </span>
                 </div>
+                <div class="main-body-row" data-header="smtpSettings">
+                    <span class="row-content">
+                        <div class="form-row">
+                            <label for="retryCount"><fmt:message key="app.emailtool.error"/> <fmt:message key="app.emailtool.retryCount"/></label>
+                            <span class="form-input">
+                                <input id="retryCount" type="number" size="50" name="retryCount" value="<c:out value="${settingMap['retryCount']}"/>"/>
+                            </span>
+                        </div>
+                    </span>
+                </div>
+                <div class="main-body-row" data-header="smtpSettings">
+                    <span class="row-content">
+                        <div class="form-row">
+                            <label for="retryInterval"><fmt:message key="app.emailtool.error"/> <fmt:message key="app.emailtool.retryInterval"/></label>
+                            <span class="form-input">
+                                <input id="retryInterval" type="number" size="50" name="retryInterval" value="<c:out value="${settingMap['retryInterval']}"/>"/>
+                            </span>
+                        </div>
+                    </span>
+                </div>
             </div>
             <div class="form-buttons">
 
