@@ -746,7 +746,7 @@ ProcessBuilder = {
                                               'div',
                                               {
                                                   xmlns: 'http://www.w3.org/1999/xhtml',
-                                                  title: mapping_act_plugin.className,
+                                                  title: plugin.label,
                                                   style: {
                                                       fontSize: '14px',
                                                       color: '#4c90ff',
@@ -5555,7 +5555,8 @@ ProcessBuilder = {
             } else {
                 targetData.properties.join = "";
             }
-
+            ProcessBuilder.updateSourceTargetData(sourceData, targetData);
+            
             var data = $(connection.canvas).data("data");
             if (data === undefined) {
                 // new connection
@@ -5600,6 +5601,16 @@ ProcessBuilder = {
             CustomBuilder.update();
             self._updateBoxes();
             return data.properties.id;
+        }
+    },
+      
+    //update source node data and target node data
+    updateSourceTargetData: function (sourceData, targetData) {
+        if (sourceData) {
+            ProcessBuilder.lf.setProperties(sourceData.id, sourceData.properties);
+        }
+        if (targetData) {
+            ProcessBuilder.lf.setProperties(targetData.id, targetData.properties);
         }
     },
     
@@ -5666,6 +5677,8 @@ ProcessBuilder = {
         if (index !== -1) {
             parentDataArray.splice(index, 1);
         }
+        // Delete transition
+        ProcessBuilder.lf.deleteElement(data.id);
         
         var source = connection.sourceNodeId;
         var target = connection.targetNodeId;
@@ -5688,8 +5701,8 @@ ProcessBuilder = {
         } else {
             targetData.properties.join = "";
         }
-        
-        ProcessBuilder.lf.deleteElement(data.id); 
+        ProcessBuilder.updateSourceTargetData(sourceData, targetData);
+       
         CustomBuilder.update();
         self._updateBoxes();
     },
