@@ -157,18 +157,10 @@ public class UserNotificationAuditTrail extends DefaultAuditTrailPlugin implemen
                     
                     String retryCountStr = (String) props.get("retryCount");
                     String retryIntervalStr = (String) props.get("retryInterval");
-                    int retryCount = 0;
-                    long retryInterval = 10000;
-                    try {
-                        if (retryCountStr != null && !retryCountStr.isEmpty()) {
-                            retryCount = Integer.parseInt(retryCountStr);
-                        }
-                        if (retryIntervalStr != null && !retryIntervalStr.isEmpty()) {
-                            retryInterval = Integer.parseInt(retryIntervalStr) * 1000l;
-                        }
-                    } catch (Exception e) {
-                        LogUtil.debug(EmailTool.class.getName(), e.getLocalizedMessage());
-                    }
+
+                    // Gets the retry configuration for email sending.
+                    int retryCount = AppUtil.getEmailRetryCount(retryCountStr);
+                    long retryInterval = AppUtil.getEmailRetryInterval(retryIntervalStr);
                     
                     try {
                         for (String username : users) {

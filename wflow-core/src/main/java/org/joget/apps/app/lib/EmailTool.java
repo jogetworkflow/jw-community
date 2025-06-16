@@ -130,21 +130,10 @@ public class EmailTool extends DefaultApplicationPlugin implements PluginWebSupp
             
             String retryCountStr = (String) properties.get("retryCount");
             String retryIntervalStr = (String) properties.get("retryInterval");
-            int retryCount = 0;
-            long retryInterval = 10000;
-            try {
-                if (retryCountStr != null && !retryCountStr.isEmpty()) {
-                    retryCount = Integer.parseInt(retryCountStr);
-                }
-                if (retryIntervalStr != null && !retryIntervalStr.isEmpty()) {
-                    retryInterval = Integer.parseInt(retryIntervalStr) * 1000l;
-                }
-            } catch (Exception e) {
-                LogUtil.debug(EmailTool.class.getName(), e.getLocalizedMessage());
-            }
-            
-            final int emailRetryCount = retryCount;
-            final long emailRetryInterval = retryInterval;
+
+            // Gets the retry configuration for email sending.
+            final int emailRetryCount = AppUtil.getEmailRetryCount(retryCountStr);
+            final long emailRetryInterval = AppUtil.getEmailRetryInterval(retryIntervalStr);
 
             Thread emailThread = new PluginThread(new Runnable() {
                 int retry = 0;
