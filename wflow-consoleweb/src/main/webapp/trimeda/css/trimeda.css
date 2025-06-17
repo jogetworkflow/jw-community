@@ -18,6 +18,90 @@ body:not(.dark-mode) {
 
 body {
     --danger-button-background-color:#EA5858;
+
+    --header-height: 88px;
+    --header-horizontal-not-inline-padding: 18.5px;
+    --hi-trigger-top: 17px;
+
+    --sidebar-li-padding: 8px;
+    --sidebar-category-dropdown-padding: 5px;
+    --sidebar-menu-container-padding: 16px;
+    --sidebar-horizontal-not-inline-padding: 12px;
+    --sidebar-horizontal-height: 64px;
+    --menu-horizontal-padding: 10px;
+
+    --button-secondary-height: 40px;
+    --button-secondary-padding: 10px 32px;
+    --page-button-panel-padding: 6px 12px;
+
+    --breadcrumb-spacing: 32px;
+
+    --input-padding : 16px;
+    --input-min-height: 56px;
+
+    --content-margin: 16px;
+    --content-horizontal-page-padding: 20px;
+
+    --section-spacing: 20px;
+
+    --form-section-margin: 25px;
+    --form-section-title-spacing: 20px;
+    --form-cell-spacing: 32px;
+    --form-label-spacing: 4px;
+    --form-button-height: 48px;
+    --form-button-padding: 11px 32px;
+    
+    --datalist-table-spacing: 70px;
+    --datalist-padding: 12px 10px;
+    --datalist-header-padding: 16px;
+    --datalist-filter-select-height: 40px;
+    --datalist-filter-select-padding: 8px 32px;
+
+    --selector-padding: 6px;
+    --checkbox-gap: 16px;
+}
+
+body.compact-mode {
+    --header-height: 72px;
+    --header-horizontal-not-inline-padding: 9px;
+    --hi-trigger-top: 7px;
+
+    --sidebar-li-padding: 0px;
+    --sidebar-category-dropdown-padding: 0px;
+    --sidebar-menu-container-padding: 4px;
+    --sidebar-horizontal-not-inline-padding: 4px;
+    --sidebar-horizontal-height: fit-content;
+    --menu-horizontal-padding: 4px;
+
+    --button-secondary-height: 32px;
+    --button-secondary-padding: 4px 24px;
+    --page-button-panel-padding: 3px 12px;
+
+    --breadcrumb-spacing: 16px;
+
+    --input-padding : 8px 12px;
+    --input-min-height: 44px;
+    
+    --content-margin: 0px;
+    --content-horizontal-page-padding: 0px;
+
+    --section-spacing: 10px;
+
+    --form-section-margin: 0px;
+    --form-section-title-spacing: 0px;
+    --form-cell-spacing: 16px;
+    --form-label-spacing: 4px;
+    --form-button-height: 36px;
+    --form-button-padding: 4px 12px;
+
+    --datalist-table-spacing: 35px;
+    --datalist-padding: 4px 8px;
+    --datalist-header-padding: 4px 0px 4px 8px;
+    --datalist-filter-select-height: 32px;
+    --datalist-filter-select-padding: 4px 32px;
+
+    --selector-padding: 2px;
+    --checkbox-gap: 8px;
 }
 
 /* Login CSS */
@@ -109,7 +193,7 @@ h6,
 /* Primary Button */
 div#section-actions.form-section .form-cell input,
 div#section-actions.form-section .form-cell button {
-    height: 48px;
+    height: var(--form-button-height);
 }
 
 #content main button[class*=button] {
@@ -119,7 +203,7 @@ div#section-actions.form-section .form-cell button {
 input.form-button,
 .dropdown-menu > li#logout-link,
 .btn-secondary  {
-    padding: 11px 32px !important;
+    padding: var(--form-button-padding) !important;
     border-radius: 16px;
 }
 
@@ -135,14 +219,14 @@ div#dataList_columnslist div.dropdown > a,
 div#dataList_columnslist tbody span.row_action_inner > a,
 #content .page-button-panel .page-button-prev.btn.button,
 #content .page-button-panel .page-button-next.btn.button {
-    height: 40px;
+    height: var(--button-secondary-height);
     flex-grow: 0;
     display: inline-flex !important;
     flex-direction: row;
     justify-content: center;
     align-items: center;
     gap: 8px;
-    padding: 10px 32px !important;
+    padding: var(--button-secondary-padding) !important;
     object-fit: contain;
     border-radius: 16px !important;
     margin: 0 !important;
@@ -151,11 +235,11 @@ div#dataList_columnslist tbody span.row_action_inner > a,
 
 #content .page-button-panel .page-button-prev.btn.button,
 #content .page-button-panel .page-button-next.btn.button {
-    padding: 6px 12px !important;
+    padding: var(--page-button-panel-padding) !important;
 }
 
 #content main .dataList .filter-cell input[type="submit"] {
-    padding: 8px 32px !important;
+    padding: var(--datalist-filter-select-padding) !important;
 }
 
 .selector_element .selector_button, 
@@ -203,6 +287,19 @@ button.btn-danger > i:not(:only-child) {
     margin-right: 8px;
 }
 /* End of Buttons Styling */
+.dropdown > ul#density-selector > #dropdown-title > .header {
+    padding: 0;
+    margin: 0;
+}
+
+/* Hide as the dark theme is not ready */
+.theme-selection.dropdown {
+    display: none;
+}
+
+.dropdown > ul#density-selector > #dropdown-title {
+    margin-bottom: 12px;
+}
 
 .dropdown-menu > span.dropdown-header,
 header.navbar .dropdown-menu.notifications > li.task > div.more-info > span.time,
@@ -349,7 +446,7 @@ body.dark-mode header.navbar div#sidebar-trigger > img#light-thumbnail {
     background-size: 100% 100%;
     gap: 8px;
     border-radius: 16px;
-    min-height: calc(100vh - 88px - 11px);
+    min-height: calc(100vh - var(--header-height) - 11px);
     align-content: flex-start;
 }
 
@@ -364,6 +461,7 @@ body.dark-mode header.navbar div#sidebar-trigger > img#light-thumbnail {
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
+    padding: var(--sidebar-category-dropdown-padding) 15px;
 }
 
 #sidebar .nav li > a > span:not(.badge) {
@@ -373,10 +471,14 @@ body.dark-mode header.navbar div#sidebar-trigger > img#light-thumbnail {
     transition: transform 0.3s ease-in-out;
 }
 
+body.compact-mode #sidebar .nav li > a > span:not(.badge) {
+    min-height: fit-content;
+}
+
 #sidebar .nav > li > ul {
     background-color: var(--theme-sidebar-dropdown-bg-color);
     margin: 8px 14.5px 8px 14.5px;
-    padding: 16px 10px 16px 10px !important;
+    padding: var(--sidebar-menu-container-padding) 10px var(--sidebar-menu-container-padding) 10px !important;
     border-radius: 8px;
     width: calc(100% - 30px) !important;
 }
@@ -401,7 +503,7 @@ body.rtl #sidebar .nav > li > ul > li:not(:last-child){
 }
 
 #sidebar .nav > li > ul > li > a {
-    padding: 8px 16px !important;
+    padding: var(--sidebar-li-padding) 16px !important;
 }
 
 #sidebar .active > a, #sidebar .nav > li > ul > li > a:hover {
@@ -440,7 +542,7 @@ body.rtl #sidebar .nav > li > ul > li:not(:last-child){
 /* Horizontal Menu Below */
 @media screen and (max-width: 768px) { 
     body.horizontal_menu #content.page_content {
-        margin-top: 88px;
+        margin-top: var(--header-height);
     }
 
     body.rtl.horizontal_menu .hi-trigger {
@@ -517,7 +619,7 @@ body.rtl #sidebar .nav > li > ul > li:not(:last-child){
     }
 
     body.horizontal_menu.navigationEnabled ul.menu-container.mouseover li a {
-        padding: 10px 15px;
+        padding: var(--menu-horizontal-padding) 15px;
         text-decoration: none;
         color: var(--theme-sidebar-link, var(--theme-color2, #72777a));
         -webkit-transition: all .3s ease;
@@ -670,8 +772,8 @@ body.rtl #sidebar .nav > li > ul > li:not(:last-child){
     }
 
     body.horizontal_menu #sidebar {
-        height: 64px;
-        max-height: 64px;
+        height: var(--sidebar-horizontal-height);
+        max-height: var(--sidebar-horizontal-height);
     }
 
     body.horizontal_menu #sidebar #navigation {
@@ -704,7 +806,7 @@ body.rtl #sidebar .nav > li > ul > li:not(:last-child){
     body.horizontal_menu:not(.inline_menu) header.navbar .container-fluid {
         align-items: center;
         height: 100%;
-        padding: 18.5px 16px 18.5px 40px;
+        padding: var(--header-horizontal-not-inline-padding) 16px var(--header-horizontal-not-inline-padding) 40px;
     }
 
     body.horizontal_menu:not(.inline_menu) #sidebar #navigation {
@@ -718,21 +820,37 @@ body.rtl #sidebar .nav > li > ul > li:not(:last-child){
 
     body.horizontal_menu:not(.inline_menu) #sidebar #category-container {
         margin: 0;
-        height: 64px;
-        padding: 12px 8px !important;
+        padding: var(--sidebar-horizontal-not-inline-padding) 8px !important;
     }
 
     body.horizontal_menu:not(.inline_menu) header.navbar .header-nav {
         height: initial;
         width: initial;
     }
+
+    body.horizontal_menu #content.page_content {
+        padding: var(--content-horizontal-page-padding);
+    }
+
+    body.horizontal_menu #header-name,
+    body.horizontal_menu #header-info {
+        display:inline-flex;
+        align-items: center;
+    }
 }
 /* End of Horizontal Menu Below */
 
 /* Horizontal Menu Inline */
 @media screen and (min-width: 768px) {
+    body.horizontal_menu.inline_menu #sidebar {
+        width: 100%;
+    }
+
+    body.horizontal_menu.inline_menu #header-name,
     body.horizontal_menu.inline_menu #header-info {
         display:inline-flex;
+        flex: 0 1 auto;
+        min-width: 0;
     }
 
     body.horizontal_menu.inline_menu div.header-info {
@@ -741,6 +859,7 @@ body.rtl #sidebar .nav > li > ul > li:not(:last-child){
 
     body.horizontal_menu.inline_menu header.navbar .header-nav {
         width: fit-content;
+        flex: 0 1 fit-content;
     }
 
     body.horizontal_menu.inline_menu #content.page_content {
@@ -752,7 +871,11 @@ body.rtl #sidebar .nav > li > ul > li:not(:last-child){
     }
 
     body.horizontal_menu.inline_menu header.navbar .container-fluid {
-        padding: 20px 40px;
+        padding: 20px 20px 20px 40px;
+    }
+
+    body.rtl.horizontal_menu.inline_menu header.navbar .container-fluid {
+        padding: 20px 40px 20px 20px;
     }
 
     body.horizontal_menu.inline_menu #header-link {
@@ -761,7 +884,7 @@ body.rtl #sidebar .nav > li > ul > li:not(:last-child){
     }
 
     body.horizontal_menu.inline_menu #sidebar {
-        height: 64px;
+        height: 100%;
         padding: 12px 8px !important;
     }
 }
@@ -773,11 +896,6 @@ body.rtl #sidebar .nav > li > ul > li:not(:last-child){
 
     body:not(.horizontal_menu).sidebar-minimized header.navbar .navbar-inner {
         width: calc(1920px - 95px);
-    }
-
-    body.horizontal_menu.inline_menu #sidebar {
-        width: fit-content !important;
-        max-width: 90% !important;
     }
 
     body.horizontal_menu.inline_menu:not(.rtl) #header-link {
@@ -818,25 +936,13 @@ body.rtl #sidebar .nav > li > ul > li:not(:last-child){
     body.horizontal_menu.inline_menu header.navbar li.dropdown.user-link > a > span.caret, header.navbar li.dropdown.user-link > a::after {
         display: none !important;
     } 
-    
-    body.horizontal_menu.inline_menu #sidebar {
-        width: calc(100vw - 430px);
-        height: 100%;
-    }
-}
-
-@media screen and (min-width: 992px) {
-    body.horizontal_menu.inline_menu #sidebar {
-        width: calc(95vw - 520px);
-        height: 100%;
-    }
 }
 
 /* Header */
 header.navbar {
     box-shadow: none;
     top: 0px;
-    height: 88px;
+    height: var(--header-height);
     width: calc(100% - 19.1667vw);
 }
 
@@ -845,7 +951,7 @@ header.navbar {
 }
 
 .sidebar_brand {
-    height: 88px;
+    height: var(--header-height);
     padding: 18.5px 10px 18.5px 40px;
 }
 
@@ -872,13 +978,13 @@ header.navbar .header-nav {
     width: fit-content;
 }
 
-header.navbar .container-fluid {
+body:not(.compact-mode) header.navbar .container-fluid {
     padding-right: 16px !important;
     padding: 18.5px 20px 18.5px 60px;
 }
 
 .hi-trigger {
-    top: 17px;
+    top: var(--hi-trigger-top);
 }
 
 .header-nav .user-link img {
@@ -1120,7 +1226,7 @@ header.navbar .dropdown-menu.notifications > li.task.showMoreInfo > div.more-inf
 }
 
 body:not(.embeded, .horizontal_menu) #content.page_content {
-    margin-top: 88px !important;
+    margin-top: var(--header-height) !important;
 }
 
 body.embeded #content.page_content {
@@ -1153,7 +1259,7 @@ body.rtl:not(.horizontal_menu) #page {
 /* Breadcrumb */
 ul.breadcrumb {
     border-bottom: 1px solid var(--field-border-color);
-    padding: 0px 48px 32px 48px;
+    padding: 0px 48px var(--breadcrumb-spacing) 48px;
     margin-bottom: 0px;
     margin-left: 0;
     border-radius: 0px;
@@ -1183,7 +1289,7 @@ body.rtl ul.breadcrumb > li > span.separator {
 }
 
 #content main > *:not(.category-label-header, .breadcrumb, .quickEdit) {
-    margin-top: 16px !important;
+    margin-top: var(--content-margin) !important;
     margin-left: 47px !important;
     margin-bottom: 0px !important;
     margin-right: 47px !important;
@@ -1197,8 +1303,12 @@ footer {
 
 /* Form */
 #content main {
-    padding-top: 32px;
-    padding-bottom: 32px;
+    padding-top: var(--breadcrumb-spacing);
+    padding-bottom: var(--breadcrumb-spacing);
+}
+
+.form-section {
+    padding-bottom: var(--section-spacing);
 }
 
 .mCSB_inside > .mCSB_container {
@@ -1213,6 +1323,10 @@ legend,
 body #form-canvas .form-section-title span,
 body #form-canvas .subform-section-title span {
     font-size: 18px;
+}
+
+body.popupBody {
+    background-color: var(--theme-content-background, #ffffffcc);
 }
 
 body.popupBody #form-canvas .form-container{
@@ -1246,10 +1360,10 @@ body.rtl .form-cell > label.label + input:has(+ .numeric_field_controls) {
 }
 
 div.chosen-container.chosen-container-multi .chosen-choices {
-    min-height: 56px !important;
+    min-height: var(--input-min-height) !important;
     border: 1.5px solid var(--field-border-color) !important;
     color: var(--primary-text-color) !important;
-    padding: 16px 16px !important;
+    padding: var(--input-padding) !important;
     border-radius: 16px;
 }
 
@@ -1315,7 +1429,8 @@ body.rtl div.ui-timepicker-div dl dd > * > select {
 
 .label-top.form-cell > label.label, 
 .label-top.subform-cell > label.label {
-    margin-bottom: 8px;
+    margin-bottom: var(--form-label-spacing);
+    padding-top: 0px;
 }
 
 #content .main-body-content {
@@ -1329,6 +1444,10 @@ body.rtl div.ui-timepicker-div dl dd > * > select {
     border: none;
 }
 
+.form-section + .form-section:not(.no_label), .subform-section + .subform-section:not(.no_label) {
+    margin-top: var(--form-section-margin);
+}
+
 #section-actions {
     border-top: 1px solid var(--field-border-color);
     display: flex;
@@ -1339,10 +1458,12 @@ body.rtl div.ui-timepicker-div dl dd > * > select {
 
 .form-section > div.form-section-title, .subform-section > div.form-section-title {
     border-bottom: none;
+    margin-bottom: var(--form-section-title-spacing);
 }
 
 .form-section-title, .subform-section-title {
     color: var(--primary-text-color);
+    margin-bottom: var(--form-section-title-spacing);
 }
 
 input:not([type]), input[type=text], input[type=password], input[type=email], 
@@ -1350,12 +1471,35 @@ input[type=url], input[type=time], input[type=date], input[type=datetime],
 input[type=datetime-local], input[type=tel], input[type=number], input[type=search], 
 select, textarea, .ql-container.ql-bubble,
 .filter-cell .multiselect.dropdown-toggle{
-    padding: 16px;
+    padding: var(--input-padding);
     color: var(--primary-text-color);
     background-color: #fff;
     border: 1.5px solid var(--field-border-color);
     border-radius: 16px;
-    min-height: 56px;
+    min-height: var(--input-min-height);
+}
+
+body.compact-mode .numeric_field_controls {
+    top: 4px;
+}
+
+body.compact-mode .label-top .numeric_field_controls {
+    top: 32px;
+}
+
+body.rtl.compact-mode .label-top .numeric_field_controls {
+    top: 40px;
+}
+
+body.compact-mode .hasDatepicker + a,
+body.compact-mode .hasDatepicker + a + a {
+    top: 10px;
+}
+
+body.compact-mode .label-top .hasDatepicker + a, 
+body.compact-mode .label-top .hasDatepicker + a + a {
+    top: unset;
+    bottom: 11px;
 }
 
 input:not([type]):focus, input[type=text]:focus, input[type=password]:focus, 
@@ -1386,7 +1530,7 @@ textarea:focus, .chosen-container-multi .chosen-choices:focus, .selector_element
     border-radius: 16px;
     color: var(--primary-text-color);
     border: 1.5px solid var(--field-border-color);
-    min-height: 56px !important;
+    min-height: var(--input-min-height) !important;
 }
 
 .selector_element:has(.selector_items .selector_item) {
@@ -1412,7 +1556,7 @@ textarea:focus, .chosen-container-multi .chosen-choices:focus, .selector_element
 div.chosen-container ul.chosen-choices  > li.search-choice {
     background-color: var(--secondary-box-background-color);
     color: var(--primary-text-color);
-    padding: 6px 36px 6px 16px;
+    padding: var(--selector-padding) 36px var(--selector-padding) 16px;
     border: 1px solid var(--field-border-color);
     border-radius: 16px;
 }
@@ -1514,7 +1658,7 @@ input[type=radio] {
 .form-cell > label[for='checkBox'] + div.form-cell-value > label:not(:last-of-type),
 .subform-cell > label[field-tooltip='radio'] + div.form-cell-value > label:not(:last-of-type),
 .form-cell > label[field-tooltip='radio'] + div.form-cell-value > label:not(:last-of-type) {
-    margin-bottom: 16px;
+    margin-bottom: var(--checkbox-gap);
 }
 
 .form-fileupload.dropzone {
@@ -1526,7 +1670,7 @@ input[type=radio] {
 }
 
 input[type=hidden] + .form-cell, .form-cell + .form-cell, .subform-cell + .subform-cell, .form-cell + .subform-cell, .subform-cell + .form-cell {
-    margin-top: 32px;
+    margin-top: var(--form-cell-spacing);
 }
 
 .numeric_field_controls {
@@ -1540,7 +1684,7 @@ body.rtl .numeric_field_controls {
 }
 
 .label-top .numeric_field_controls {
-    top: 49px;
+    top: 37px;
 }
 
 .form-element.multiPagedForm > .page-nav-panel.top {
@@ -1698,9 +1842,22 @@ body.rtl #ui-datepicker-div > table.ui-datepicker-calendar > tbody > tr > td:las
     bottom: 15px;
 }
 
+.dataList .filters {
+    margin-bottom: var(--form-section-margin);
+}
+
 .dataList .filters > .filter-cell .hasDatepicker + a, 
 .dataList .filters > .filter-cell.hasDatepicker + a + a {
     top: 9px;
+}
+
+body.compact-mode .dataList .filters > .filter-cell .hasDatepicker + a, 
+body.compact-mode .dataList .filters > .filter-cell.hasDatepicker + a + a {
+    top: 6px;
+}
+
+body.compac-mode .dataList .actions.top {
+    margin-bottom: 0px;
 }
 
 body.rtl .hasDatepicker + a, body.rtl .hasDatepicker + a + a {
@@ -1975,8 +2132,7 @@ body.rtl .accordion .card-header::after {
 .dataList thead th,
 .grid table th,
 .dataList th.sortable a {
-    padding-top: 16px !important; 
-    padding-bottom: 16px !important;
+    padding: var(--datalist-header-padding) !important;
 }
 
 .grid table + .pg-navigator + .grid-action-add {
@@ -1984,13 +2140,15 @@ body.rtl .accordion .card-header::after {
 }
 
 .dataList .filters input, .dataList .filters select, .dataList .filters textarea {
-    min-height: 40px;
+    min-height: var(--datalist-filter-select-height);
+    padding: var(--datalist-filter-select-padding);
+    height: initial;
 }
 
 .dataList td,
-.grid:not(.adgrid) table td {
-    padding-top: 12px !important;
-    padding-bottom: 12px !important;
+.grid:not(.adgrid) table td,
+.dataList thead th.select_checkbox {
+    padding: var(--datalist-padding) !important;
 }
 
 .dataList thead th.select_checkbox {
@@ -2046,7 +2204,7 @@ body.rtl .accordion .card-header::after {
 }
 
 .dataList .table-wrapper {
-    padding-bottom: 70px;
+    padding-bottom: var(--datalist-table-spacing);
 }
 
 .dataList .pagebanner {
@@ -2064,7 +2222,7 @@ body.rtl .accordion .card-header::after {
 }
 
 .dataList span.pagelinks {
-    padding: 16px 21px;
+    padding: var(--input-padding, 16px 21px);
     background-color: var(--secondary-box-background-color);
     border-radius: 16px;
     width: 100%;
@@ -2157,12 +2315,28 @@ body.rtl .accordion .card-header::after {
 }
 
 @media screen and (max-width: 767px) {
+    body.compact-mode.rtl.horizontal_menu #sidebar .nav:not(.user-menu) > li > a {
+       padding: var(--sidebar-category-dropdown-padding) 15px;
+    }
+
+
     #header-info > #header-name > .logo, #header-message, .header-nav .user-link {
         display: block !important;
     }
     
     #header-info > #header-name > #header-link {
         display: none;
+    }
+
+    body.compact-mode .numeric_field_controls {
+        top: unset;
+        bottom: 40px;
+    }
+
+    body.compact-mode .hasDatepicker + a, 
+    body.compact-mode .hasDatepicker + a + a {
+        top: unset;
+        bottom: 11px;
     }
 
     .form-cell > label.label {
@@ -2306,6 +2480,12 @@ div#dataList_columnslist div.list-group .list-group-item:last-of-type {
 div#dataList_simplelist div.list-group .list-group-item,
 div#dataList_columnslist div.list-group .list-group-item {
     background-color: var(--secondary-box-background-color);
+}
+
+body.compact-mode div#dataList_simplelist div.list-group .list-group-item,
+body.compact-mode div#dataList_columnslist div.list-group .list-group-item {
+    padding-top: 4px;
+    padding-bottom: 4px;
 }
 
 div#dataList_simplelist div.list-group .list-group-item  > div.flex-fill > h5 {
