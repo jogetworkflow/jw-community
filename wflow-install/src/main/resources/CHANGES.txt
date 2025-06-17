@@ -2,6 +2,147 @@ Joget DX COMMUNITY
 ====================
 For more information, please refer to https://community.joget.org
 
+9.0-BETA2
+=========
+a1ed234e4 Added: wflow-consoleweb - Logging - Proper log location during unit tests. #1043 @9.0-SNAPSHOT
+a784cbb84 Modified: wflow-consoleweb - Logging - Proper log location in other application servers. #1043 @9.0-SNAPSHOT
+238cefb86 Modified: wflow-shark - In-Memory Cache - Avoid unnecessary looping calls to retrieve workflow assignment when adding to cache @9.0-SNAPSHOT
+ed62a681b Fixed: wflow-core - Performance - Cache is not clear when new builder item created from Custom Builder. #952 @9.0-SNAPSHOT
+69f7aab74 Modified: wflow-shark - In-Memory Cache - Added wflow.cacheAllAssignments option to cache all user assignments in the background, enabled by default @9.0-SNAPSHOT
+85e9b59b6 Fixed: wflow-shark - In-Memory Cache - Regression in 87434b0 where assignments are missing because assignments could not be loaded for other users before caching @9.0-SNAPSHOT
+6e39f61d8 Fixed: wflow-core - Performance - App date modified is not save correctly causing cache does not update in other cluster node. #952 @9.0-SNAPSHOT
+867d6186c Modified: wflow-core - Performance - Added cache for package definition used for runtime. #952 @9.0-SNAPSHOT
+ff9277398 Fixed: jw-community - Performance - Setting start offset unnecessarily causing performance issue in Hibernate. #952 @9.0-SNAPSHOT
+c98fcc8c0 Fixed: wflow-core - Performance - List size and total should use same value when there is no filter value is set. #952 @9.0-SNAPSHOT
+5f74a6908 Fixed: wflow-core - Performance - Page component definition does not cached correctly. #952 @9.0-SNAPSHOT
+1d1301155 Fixed: wflow-core - Performance - App Definition is retrieved unnecessarily. #952 @9.0-SNAPSHOT
+9f1d23b29 Modified: wflow-core - Performance - Prevent missing transaction for current thread on load during cold start @9.0-SNAPSHOT
+63c6f0ce4 Modified: wflow-shark - Performance - Removed bottleneck on WorkflowManagerImpl.initEventStreamManager during load @9.0-SNAPSHOT
+af41bd564 Fixed: wflow-core - Performance - Removal of unnecessary DB calls. #952 @9.0-SNAPSHOT
+b01cfdafe Fixed: wflow-core - App - Regression of Ehcache upgrade. Cache does not set correctly. #952 @9.0-SNAPSHOT
+72391867c Modified: wflow-commons - Logging - Updated LogUtil to support custom Log implementation via wflow.logger system property @9.0-SNAPSHOT
+805e629d4 Fixed: wflow-shark - Event Streams - Regression causing complete assignment does not consider event streams handling. #952 @9.0-SNAPSHOT
+6206c0e4a Fixed: wflow-shark - Event Streams - Regression causing run process variables does not set correctly. #952 @9.0-SNAPSHOT
+81a564e8a Modified: wflow-shark - In-Memory Cache - Remove from cache upon assignment completion @9.0-SNAPSHOT
+515cf1627 Modified: wflow-core, wflow-consoleweb - Maven Dependency - Prevent cyclic reference between wflow-core and wflow-shark and moved unit tests to wflow-consoleweb @9.0-SNAPSHOT
+40d717562 Modified: wflow-shark - Event Streams -  Process start and assignment completion to run synchronously if activity configured to auto continue @9.0-SNAPSHOT
+8a8fa0676 Modified: wflow-shark - Event Streams - Suspend activity initially on assignment completion to prevent duplicate submission @9.0-SNAPSHOT
+3f2e2f8c4 Fixed: wflow-shark - Event Streams - Initialization does not run after first configuration @9.0-SNAPSHOT
+3e0a59d3e Modified: wflow-shark - Event Streams - Updated WorkflowManager to use EventStreamManager for process start and assignment completion @9.0-SNAPSHOT
+39694cb87 Added: wflow-wfengine - Event Streams - Added EventStreamManager interface for integration to event stream platforms @9.0-SNAPSHOT
+78da33edf Added: wflow-core/wflow-consoleweb - Added New welcome page design for app generation. #955 @9.0-SNAPSHOT
+bffab5174 Updated: wflow-core/wflow-consoleweb - Updated font awesome to the latest version 6.7.2
+77b6e2dae Fixed: wflow-consoleweb - Design System - Fixed missing pull-right class support. @9.0-SNAPSHOT
+136294502 Fixed: wflow-consoleweb - Theme Builder - Fixed header padding issue and pagination line height issue. @9.0-SNAPSHOT
+4af13601b Modified: wflow-consoleweb - DX9 App Center Enhancement - Enhanced the appearance of the home page & added some banners #918 @9.0-SNAPSHOT
+681e916fa Fixed: wflow-consoleweb - DX8/9 Theme - Fixed menu word after the space will disappear if the text is too long. @9.0-SNAPSHOT
+8cf12350b Fixed: wflow-consoleweb - Fixed missing height for menu > span element. @9.0-SNAPSHOT
+f88452334 Fixed: wflow-consoleweb - Process Builder - Fixed list view, duplicate id validation and switch process issue. #990 @9.0-SNAPSHOT
+f93a688dc Fixed: wflow-consoleweb - Process Builder - Fixed edit process, change id, move node & list view issue. #990 @9.0-SNAPSHOT
+1e6bec290 Modified: wflow-commons - Security - Update spring-security to 6.5.0. #1042 T5364 @9.0-SNAPSHOT
+eb2d354be Fixed: wflow-commons - Unit Test - Fixed test instable for settings test cases. @9.0-SNAPSHOT
+c9ff45859 Modified: wflow-consoleweb - Performance - Reduce blocking when reading servers.json on high load @9.0-SNAPSHOT
+da2788b35 Modified: wflow-consoleweb - Performance - Reduce blocking when broadcasting logs and rolling over log files @9.0-SNAPSHOT
+9e25cc4f6 Modified: wflow-shark - Performance - Added -Dwflow.sharkCacheSize system property to configure Shark counter and object ID cache sizes for high loads @9.0-SNAPSHOT
+171f2be5f Modified: wflow-commons - Performance - Bottleneck in file I/O in PresenceManager @9.0-SNAPSHOT
+2e9780a96 Modified: wflow-commons - Performance - Bottleneck in LogViewerAppender.getWriter due to synchronized block @9.0-SNAPSHOT
+761c37934 Modified: wflow-commons - Performance - Improved SetupManager cache performance by implementing stale-while-revalidate and avoiding unnecessary eviction @9.0-SNAPSHOT
+14ccf6f32 Modified: wflow-commons - Performance - Prevent "java.lang.IllegalStateException: The request object has been recycled and is no longer associated with this facade" errors during high load @9.0-SNAPSHOT
+7cf06fbdb Modified: wflow-core - Performance - Prevent possible NullPointerException when clearing userview menu caches during high load @9.0-SNAPSHOT
+263b830ce Modified: jw-community - Performance - In-Memory Cache - Avoid unnecessary cache evictions to prevent unnecessary database queries @9.0-SNAPSHOT
+f0f266b52 Modified: wflow-shark - Performance - In-Memory Cache - Reduce process assignment hotspot during high load @9.0-SNAPSHOT
+35a783386 Modified: wflow-wfengine - Performance - In-Memory Cache - Reduce workflow process link hotspot during high load @9.0-SNAPSHOT
+e90578ee3 Fixed: wflow-shark - WorkflowManagerImpl - Workflow variables are not set in activity when asynchronous request timeout is enabled. #907 @9.0-SNAPSHOT
+f9792cd2e Fixed: wflow-shark - Process Migration - Regression causing ClassCastException. @9.0-SNAPSHOT
+7635a5e63 Fixed: wflow-core - Custom Login Page - Fixed issues found on Custom Login Page #550 @9.0-SNAPSHOT
+b1600e6e5 Fixed: wflow-consoleweb/wflow-core - Custom Login Page - Enhancements and issues fixing. #550 @9.0-SNAPSHOT
+4321e6e79 Fixed: wflow-enterprise-plugins - Theme Builder - Prevent NPE when a theme builder in use does not exist. #569 @9.0-SNAPSHOT
+075fdf04b Fixed: wflow-consoleweb - AjaxUniversal CSS - Header text and icons are not aligned with large header height. #569 @9.0-SNAPSHOT
+a1611eb52 Fixed: wflow-consoleweb - Design System - No colour for Simple List title text. #569 @9.0-SNAPSHOT
+8dc85b524 Fixed: wflow-core - Theme Processor - Breadcrumbs in builder to use preview links instead of userview links. #569 @9.0-SNAPSHOT
+a96b3ccb5 Fixed: wflow-consoleweb - DX9 Theme - Fixed background image moves when expanding or collapsing accordion #569 @9.0-SNAPSHOT
+2bf7f8020 Fixed: wflow-consoleweb - List Header - Fixed profile header getting displaced on smaller screen #569 @9.0-SNAPSHOT
+468894b4f Fixed: wflow-consoleweb - Pagination - Fixed pagination does not reflect some color property in theme builder #569 @9.0-SNAPSHOT
+8096f0299 Fixed: wflow-consoleweb - Pagination Component - Fixed control and line height property is not working #569 @9.0-SNAPSHOT
+c740b654a Fixed: wflow-consoleweb - Wizard Component - Fixed font size property does not applied to inactive item #569 @9.0-SNAPSHOT
+644c68f85 Fixed: wflow-consoleweb - Dropdown Component - Fixed dropdown hover background color is not working #569 @ 9.0-SNAPSHOT
+ab8438938 Fixed: wflow-consoleweb - DX9 Builder Theme - Fixed header padding property is not applied #569 @9.0-SNAPSHOT
+6431d8b90 Fixed: wflow-core - Userview Theme Processor - Fixed system error when selected theme builder is deleted #569 @9.0-SNAPSHOT
+9dd75ba01 Fixed: wflow-consoleweb - Property Editor - Fixed sort filter overlapping when expanded #569 @9.0-SNAPSHOT
+0565cadc2 Fixed: wflow-consoleweb - Custom Builder - Fixed no padding in naming config with prefix #569 @9.0-SNAPSHOT
+9d0a91383 Fixed: wflow-consoleweb/wflow-core - Theme Builder - Fixed theme builder UI issues. @9.0-SNAPSHOT
+f9b7a76fb Fixed: wflow-consoleweb - Manage Plugin - Fixed no update message when updating the plugin. @9.0-SNAPSHOT
+7d60cc90f Fixed: wflow-core - Builder - Error toast messages are hard to read due to auto hide. #184 T4187 @9.0-SNAPSHOT
+c68c5da8f Fixed: wflow-consoleweb - Manage Plugins - Fixed filter and styling issues. #603 @9.0-SNAPSHOT
+902dfd575 Modified: wflow-consoleweb - Manage Plugins - Adding popup dialog to show the plugins of an installed plugin bundle. #603 @9.0-SNAPSHOT
+954370d1b Fixed: wflow-commons - File Manager - Possible unreleased resources. @9.0-SNAPSHOT
+d0cf336fa Fixed: wflow-consoleweb - Trimeda Theme - List filters do not auto submit in other languages. #959 @8.2-SNAPSHOT
+aba669bcd Fixed: wflow-consoleweb - Trimeda Theme - Multi select filter close on value checked. #488 @8.2-SNAPSHOT
+0cc7394f7 Fixed: wflow-consoleweb - List Filter - Auto complete field does not work on mobile. #488 @8.2-SNAPSHOT
+27b896c8f Fixed: wflow-consoleweb - UI Theme - List Multi Select Filter does not present correctly. #959 T5364 @9.0-SNAPSHOT
+a21ba74a8 Fixed: wflow-consoleweb - DX8 Trimeda Theme - List Multi Select Filter does not present correctly. #959 T5364 @8.2-SNAPSHOT
+802cf28d0 Fixed: wflow-consoleweb - Manage Plugins - Regression of 13e61d0. Update tab is not functioning. @9.0-SNAPSHOT
+1dab6a5b7 Fixed: wflow-core - Add new button Xadmin- Fixed: Add new button not working in Xadmin theme. #937 @9.0-SNAPSHOT
+16aa324e1 Fixed: wflow-consoleweb - Progressive/Universal/X-admin Theme - Date picker icon does not work correctly. #938 @9.0-SNAPSHOT
+3baf23d63 Fixed: wflow-consoleweb - App composor - Fixed grid layout display vertically in app resources. #938 @9.0-SNAPSHOT
+e7100ab76 Fixed: wflow-consoleweb - Progressive/ Universal Theme - Fixed row count text invisible in sidebar. #938 @9.0-SNAPSHOT
+e4cad8e7a Fixed: wflow-consoleweb - Hyperlink <a> tag - Fixed underline not appear when hovering. #938 @9.0-SNAPSHOT
+810c1d4e0 Fixed: wflow-consoleweb - Builders - dropdown icon overlapping the label text in left side panel when small screen width. #939 @9.0-SNAPSHOT
+94ab2a4d9 Fixed: wflow-consoleweb - Process Builder - added default light/dark theme color for screenshot download button. #939 @9.0-SNAPSHOT
+ef04e594c Fixed: wflow-consoleweb - Process Builder - added default light/dark theme text color for additional process information display. #939 @9.0-SNAPSHOT
+a1ee776b7 Fixed: wflow-consoleweb - Process Builder - Auto Layout, Highlight Mode, and Navigator buttons (specific to Process) appearing in other builders. #939 @9.0-SNAPSHOT
+f71c889b2 Fixed: wflow-consoleweb - Process Builder - not able to paste Start, End, or Route elements after copying. #939 @9.0-SNAPSHOT
+f6ab99388 Fixed: wflow-consoleweb - Custom Builder - Configure Mapping content not showing when clicked on item in List View. #939 @9.0-SNAPSHOT
+0324d21cd Fixed: wflow-consoleweb - Process Builder - Preview of the form mapped to an activity not showing. @9.0-SNAPSHOT
+f43805cc4 Modified: wflow-core - rulesEditor.js - Remove references to message keys from old tensorflow tool. #947 @9.0-SNAPSHOT
+f3423ca61 Fixed: wflow-core - RulesDecisionPlugin - Use commons-lang3 to prevent error in tensorflow tool. #947 @9.0-SNAPSHOT
+e6d39e389 Fixed: wflow-core - Security - Upgrade POI to 5.4.1 and commons-io to 2.19.0. @8.2-SNAPSHOT
+96081234f Fixed: wflow-core - Form Option Binder - AJAX Cascading throw exception. #962 @9.0-SNAPSHOT
+23b847ead Fixed: wflow-core - Import App - Imported form data is empty. #996 @9.0-SNAPSHOT
+5d2053e71 Fixed: wflow-commons - Hibernate - MySQL and MariaDB dialects using text instead of longtext. #1023 @9.0-SNAPSHOT
+108a61cd5 Fixed: wflow-consoleweb - Calculation Field - Regression of 13ca597c. Same field id under show/hide inner subform is not calculated correctly. #961 T6167 @8.2-SNAPSHOT
+c3c5b99f3 Fixed: wflow-plugin-base - Plugin - Governance Health Check plugin is unable to install. #940 @8.2-SNAPSHOT
+78b953bd4 Fixed: wflow-core - EnvironmentVariableHashVariable - Added support for recursively resolving hash variables. #941 T6090 @8.2-SNAPSHOT
+4309626fa Fixed: wflow-consoleweb - Admin UI - Fixed system information page not opening @9.0-SNAPSHOT
+934236f60 Fixed: wflow-consoleweb - Admin UI - Saved the tab last opened before saving the setting(s) @9.0-SNAPSHOT
+0d5c511ec Fixed: wflow-consoleweb - Admin UI - Fixed the update message on Plugin Section of the App Composer@9.0-SNAPSHOT
+60c58748c Fixed: wflow-consoleweb - Admin UI - Fixed styling issues on Marketplace popup @9.0-SNAPSHOT
+83101694a Fixed: wflow-consoleweb - Admin UI - Increase the width of the dropdown for the theme builder creation form @9.0-SNAPSHOT
+d89b2d629 Fixed: wflow-consoleweb - Admin UI - Change the color of the Cancel button to secondary @9.0-SNAPSHOT
+e55fdf67e Fixed: wflow-consoleweb - Admin UI - Fixed the position of the toast message, and also refactored codes @9.0-SNAPSHOT
+0b692ef60 Fixed: wflow-consoleweb - Admin UI - Changed Cancel Button to Danger Color @9.0-SNAPSHOT
+ace1ea370 Fixed: wflow-consoleweb - Admin UI - Fixed some styling issues & UX issue @9.0-SNAPSHOT
+191f943c1 Fixed: wflow-consoleweb - Admin UI - Fixed header links not visible under light theme, and buttons misarranged @9.0-SNAPSHOT
+7ec97f83e Fixed: wflow-consoleweb - Admin UI - Fixed issues found in Admin UI, and also did some enhancements @9.0-SNAPSHOT
+ca0f7bbe1 Fixed: wflow-core - App Import - Slow import on some DB configurations due to improper cascading saves. T5916 @9.0-SNAPSHOT
+a19163d37 Fixed: wflow-core - Logging - Exclude old slf4j-api transitive dependency. @9.0-SNAPSHOT
+a1bc1e940 Fixed: wflow-commons - Logging - Upgrade to SLF4J 2 to resolve logs not showing on some systems. @9.0-SNAPSHOT
+32c950903 Fixed: wflow-consoleweb - Builders - Marketplace link was invisible in dark theme due to Bootstrap changes. #915 @9.0-SNAPSHOT
+1fbb96c01 Fixed: wflow-consoleweb - Process Builder - Marketplace link not render correctly. @9.0-SNAPSHOT
+e29d07fb3 Fixed: wflow-consoleweb - Flexigrid - Fixed separator line in Flexigrid not fully visible issue. @8.2-SNAPSHOT
+6e5a8710f Modified: wflow-plugin-archetype - Added plugin name and description to new plugins. #877 @8.2-SNAPSHOT
+bb8e1fc93 Fixed: wflow-consoleweb - Code Quality - Remove unused custom tag which flagged security issue. @8.2-SNAPSHOT
+6af72ff22 Fixed: wflow-consoleweb - Form Builder - Fixed additional RTL issues found in Form builder. #502 @8.2-SNAPSHOT
+064e2be74 Fixed: wflow-consoleweb - Builder Checkbox - Fixed checkbox overlapping label in RTL issue. #502 @8.2-SNAPSHOT
+5c1a6036b Fixed: wflow-core - DependenciesUtil - Allow processing with security manager and ensure thread safety. #832 @8.2-SNAPSHOT
+63cb84844 Fixed: wflow-core- Synchronisation - Fixed synchronization issues. @8.1-SNAPSHOT
+5799790e2 Modified: wflow-consoleweb - Service Worker - Fixed caching causing login redirection does not work correctly. #861 T5911 @8.2-SNAPSHOT
+3c972e107 Fixed: wflow-consoleweb - X-Admin Font Size Control - Fixed Font Size Control not fully clickable issue. @8.2-SNAPSHOT
+2aeddd55e Fixed: wflow-consoleweb - File Upload and Image Upload Form Elements - Added fix to DX9 Themes. #896 @9.0-SNAPSHOT
+b11ca4718 Fixed: wflow-consoleweb - File Upload Fields - Fixed file upload name when special characters are used while in RTL. #896 @8.2-SNAPSHOT
+7bbf5f626 Fixed: wflow-consoleweb - File Upload and Image Upload Fields - Fixed RTL inconsistent styling issue. @8.2-SNAPSHOT
+28130dfa6 Fixed: wflow-plugin-base - Manage Plugin - Plugin shown empty type after depended plugin updated. #905  @8.2-SNAPSHOT
+a92dc0130 Fixed: wflow-consoleweb - Popup Form - Process related hash variable does not parse in nested popup form. #909 T6055 @8.2-SNAPSHOT
+f4e1b0f41 Fixed: wflow-consoleweb - Process Builder - Properly escape characters in tag content in XPDL. T6083 @8.2-SNAPSHOT
+80b1eb3c3 Fixed: wflow-consoleweb - Process Builder - Content for Condition tags in XPDL view is not being parsed. T6083 @8.2-SNAPSHOT
+992d913de Fixed: wflow-consoleweb - Flexigird - Fixed separator line in Flexigrid not fully visible issue for DX9. @9.0-SNAPSHOT
+705901319 Fixed: wflow-wfengine - Workflow Manager - Fixed process status missing after process migration. #T6076 @8.2-SNAPSHOT
+1be35b978 Fixed: wflow-consoleweb - Form Builder - Multi Paged Form tab should not clickable in the builder canvas. @8.2-SNAPSHOT
+13ca597c8 Fixed: wflow-consoleweb - Calculation Field - Incorrect result return when field with common suffix is in hidden section. #961 T6167 @8.2-SNAPSHOT
+0b7d659aa Fixed: jw-community - Security - Update Apache Tomcat to 11.0.6 for CVE-2025-31650. @9.0-SNAPSHOT
+3f9f26ae6 Fixed: jw-community - Security - Update Apache Tomcat to 9.0.104 for CVE-2025-31650. @8.2-SNAPSHOT
+a57a77764 Added: wflow-consoleweb/wflow-core - Trimeda Theme - Added Trimeda theme @8.2-SNAPSHOT
+
 9.0-BETA
 ========
 416331676 Modified: wflow-core - AI - Separate Tensorflow as individual plugin and removed Tensorflow dependencies, components, and references. @9.0-SNAPSHOT
