@@ -70,6 +70,8 @@
                connectionTimeout="20000"
                compression="on"
                useSendfile="false"
+               maxPartCount="1000"
+               maxPartHeaderSize="10240"
                redirectPort="8443" />
     <!-- A "Connector" using the shared thread pool-->
     <!--
