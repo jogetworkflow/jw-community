@@ -787,7 +787,7 @@ public class AppUtil implements ApplicationContextAware {
                                          HashVariableRecursionDepthException circularRefEx) {
                                     LogUtil.warn(AppUtil.class.getName(), circularRefEx.getMessage());
                                 } catch (Exception e) {
-                                    LogUtil.error(AppUtil.class.getName(), e, e.getMessage());
+                                    LogUtil.error(AppUtil.class.getName(), e, "Error processing hash variable " + var);
                                 }
                             }
                         }
