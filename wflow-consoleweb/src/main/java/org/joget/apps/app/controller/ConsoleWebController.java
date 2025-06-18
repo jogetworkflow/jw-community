@@ -4807,13 +4807,20 @@ public class ConsoleWebController {
         map.addAttribute("userSecurity", us);
         
         // userviews to select app center
+        boolean appExists = false;
+        String defaultUserview = settingMap.getOrDefault("defaultUserview", "");
         Collection<UserviewDefinition> userviewDefinitionList = new ArrayList<UserviewDefinition>();
-        Collection<AppDefinition> appDefinitionList = appDefinitionDao.findLatestVersions(null, null, null, "name", Boolean.FALSE, null, null);
+        Collection<AppDefinition> appDefinitionList = appDefinitionDao.findPublishedApps("name", Boolean.FALSE, null, null);
         for (Iterator<AppDefinition> i = appDefinitionList.iterator(); i.hasNext();) {
             AppDefinition appDef = i.next();
             userviewDefinitionList.addAll(appDef.getUserviewDefinitionList());
-            map.addAttribute("userviewDefinitionList", userviewDefinitionList);
-        }        
+            if (!appExists && defaultUserview.startsWith(appDef.getId())) {
+                appExists = true;
+            }
+        }
+        map.addAttribute("userviewDefinitionList", userviewDefinitionList);
+        // ensuring that the select box is empty if no app is published
+        map.addAttribute("appExists", appExists);
         return "console/setting/general";
     }
 
