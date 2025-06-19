@@ -1,70 +1,12 @@
 package org.joget.plugin.base;
 
-import java.util.HashMap;
 import java.util.Map;
-import org.joget.plugin.property.service.PropertyUtil;
-import org.springframework.util.ClassUtils;
 
 /**
  * A base abstract class that must be extended by every plugins
  * 
  */
 public abstract class ExtDefaultPlugin extends DefaultPlugin {
-    protected Map<String, Object> properties;
-    
-    /**
-     * Get plugin properties.
-     * @return 
-     */
-    public Map<String, Object> getProperties() {
-        return properties;
-    }
-
-    /**
-     * Set plugin properties.
-     * @param properties 
-     */
-    public void setProperties(Map<String, Object> properties) {
-        this.properties = PropertyUtil.getHashVariableSupportedMap(properties);
-    }
-    
-    /**
-     * Get a plugin property value by property key.
-     * 
-     * @param property 
-     */
-    public Object getProperty(String property) {
-        Object value = (properties != null) ? properties.get(property) : null;
-        return value;
-    }
-    
-    /**
-     * Get a plugin property value by property key and return in java.lang.String. Non-exist key 
-     * will return an empty string instead of NULL value.
-     * 
-     * @param property 
-     */
-    public String getPropertyString(String property) {
-        Object value = (properties != null) ? properties.get(property) : null;
-        return (value != null) ? value.toString() : "";
-    }
-    
-    /**
-     * Set a plugin property
-     * 
-     * @param property A property key
-     * @param value 
-     */
-    public void setProperty(String property, Object value) {
-        if (properties == null) {
-            properties = new HashMap<String, Object>();
-        }
-        properties.put(property, value);
-    }
-    
-    public String getClassName() {
-        return ClassUtils.getUserClass(this).getName();
-    }
     
     /**
      * Return a set of plugin properties to configure by admin user
@@ -75,6 +17,7 @@ public abstract class ExtDefaultPlugin extends DefaultPlugin {
      * 
      * @return 
      */
+    @Deprecated
     public PluginProperty[] getPluginProperties() {
         return null;
     }

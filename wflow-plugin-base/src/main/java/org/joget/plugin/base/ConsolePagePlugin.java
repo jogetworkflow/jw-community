@@ -10,7 +10,7 @@ import javax.servlet.http.HttpServletResponse;
 /**
  * Used to add menu to admin console and render the page for the added menu.
  */
-public interface ConsolePagePlugin {
+public interface ConsolePagePlugin extends Plugin{
     
     /**
      * Annotation to put on method to mark the method as additional URL path 
