@@ -191,6 +191,14 @@ public class AppWebController {
         appId = SecurityUtil.validateStringInput(appId);        
         recordId = SecurityUtil.validateStringInput(recordId);        
         processDefId = WorkflowUtil.getProcessDefIdWithoutVersion(processDefId);
+        
+        //get published version if not mentioned
+        if (version == null || version.isEmpty()) {
+            Long appVersion = appService.getPublishedVersion(appId);
+            if (appVersion != null) {
+                version = appVersion.toString();
+            }
+        }
 
         // set app and process details
         AppDefinition appDef = appService.getAppDefinition(appId, version);
@@ -290,8 +298,13 @@ public class AppWebController {
             // get app
             AppDefinition appDef = null;
             if (appId != null && !appId.isEmpty()) {
+                
+                //get published version if not mentioned
                 if (version == null || version.isEmpty()) {
-                    version = appService.getPublishedVersion(appId).toString();
+                    Long appVersion = appService.getPublishedVersion(appId);
+                    if (appVersion != null) {
+                        version = appVersion.toString();
+                    }
                 }
                 appDef = appService.getAppDefinition(appId, version);
             } else {
@@ -351,6 +364,15 @@ public class AppWebController {
         SecurityUtil.validateStringInput(activityId);
         AppDefinition appDef = null;
         if (appId != null && !appId.isEmpty()) {
+            
+            //get published version if not mentioned
+            if (version == null || version.isEmpty()) {
+                Long appVersion = appService.getPublishedVersion(appId);
+                if (appVersion != null) {
+                    version = appVersion.toString();
+                }
+            }
+            
             appDef = appService.getAppDefinition(appId, version);
         } else {
             appDef = appService.getAppDefinitionForWorkflowActivity(activityId);
@@ -450,6 +472,14 @@ public class AppWebController {
                     && formDefId != null && !formDefId.isEmpty() 
                     && primaryKeyValue != null && !primaryKeyValue.isEmpty() 
                     && fileName != null && !fileName.isEmpty()) {
+                
+                //get published version if not mentioned
+                if (version == null || version.isEmpty()) {
+                    Long appVersion = appService.getPublishedVersion(appId);
+                    if (appVersion != null) {
+                        version = appVersion.toString();
+                    }
+                }
                 
                 appDef = appService.getAppDefinition(appId, version);
                 FormDefinition formDef = formDefinitionDao.loadById(formDefId, appDef);
