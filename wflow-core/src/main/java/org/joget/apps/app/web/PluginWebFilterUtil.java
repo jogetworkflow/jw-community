@@ -14,11 +14,17 @@ public class PluginWebFilterUtil {
     protected static Map<String, PluginWebFilterChain> proxies = new HashMap<String, PluginWebFilterChain>();
     
     public static PluginWebFilterChain getPluginFilterChainProxy(boolean afterSecurity) {
-        String profile = DynamicDataSourceManager.getCurrentProfile() + "::" + afterSecurity;
-        if (!proxies.containsKey(profile)) {
-            proxies.put(profile, new PluginWebFilterChain());
+        try {
+            String profile = DynamicDataSourceManager.getCurrentProfile() + "::" + afterSecurity;
+            if (!proxies.containsKey(profile)) {
+                proxies.put(profile, new PluginWebFilterChain());
+            }
+            return proxies.get(profile);
+        } catch (Exception e) {
+            //ignore it
+            //the cache is not ready due to instance haven't setup, and causing it fail to redirect to setup page
         }
-        return proxies.get(profile);
+        return new PluginWebFilterChain();
     }
     
     /**
