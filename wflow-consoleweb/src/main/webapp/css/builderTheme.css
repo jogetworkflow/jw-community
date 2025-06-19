@@ -1486,7 +1486,6 @@ body[builder-theme] .property-input > span.icon .property-icon-picker input.sear
 body[builder-theme] .property-input > span.icon .property-icon-picker ul{
     padding: 10px;
     padding-right: 5px;
-    top: 75px;
     margin-top: 10px;
     padding-top: 0px;
 }
@@ -2374,6 +2373,13 @@ body[builder-theme='dark'] #builders-seperator > span {
     height: 100%;
     border-left: 1px solid var(--theme-border-color-1);
     position: absolute;
+}
+body[builder-theme='dark'] .property-type-colorscheme ul {
+    border: 1px solid var(--theme-border-color-1);
+    background: var(--theme-primary-color-3) !important;
+}
+body[builder-theme='dark'] .property-type-colorscheme li::before {
+    color: #FFF;
 }
 @media screen and (max-width:1284px) {
     body[builder-theme='dark'] #builders > div:nth-child(n+4){border-top:1px solid var(--theme-border-color-1); padding-top: 20px !important;}

@@ -351,5 +351,11 @@
         <css>/js/codemirror/addon/advanced_dialog/dialog.css</css>
         <css>/js/codemirror/addon/search/matchesonscrollbar.css</css>
         <css>/js/codemirror/addon/fold/foldgutter.css</css>
-    </group>  
+    </group> 
+    <group name="coloris.min">
+        <css>/js/coloris/coloris.min.css</css>
+        <css>/js/coloris/coloris_custom.css</css>
+        <js>/js/coloris/coloris.min.js</js>
+        <js>/js/coloris/coloris_custom.js</js>
+    </group>
 </groups> 

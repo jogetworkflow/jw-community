@@ -32,12 +32,14 @@
 <script type="text/javascript">// Immediately after the js include
     Dropzone.autoDiscover = false;
 </script>
+<script type="text/javascript" src="${pageContext.request.contextPath}/wro/coloris.min.js"></script>
 
 <link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/js/sweetAlert2/resources/sweetalert2.min.css" />
 <link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/js/dropzone/dropzone.css" />
 <link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/js/tooltipster/css/tooltipster.bundle.min.css" />
 <link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/css/jquery.propertyeditor.css?build=<fmt:message key="build.number"/>" />
 <link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/universal/lib/material-design-iconic-font/css/material-design-iconic-font.min.css" />
+<link rel="stylesheet" href="${pageContext.request.contextPath}/wro/coloris.min.css" />
 
 <link rel="stylesheet" href="${pageContext.request.contextPath}/wro/codeMirror.min.css" />
 

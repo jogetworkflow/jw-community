@@ -7010,7 +7010,7 @@ PropertyEditor.Type.IconTextField.prototype = {
                 
                 var i = $(icon);
                 if ($(i).find('.property-icon-picker').length === 0) {
-                    $(i).append('<div class="property-icon-picker"><div class="value_holder"><input class="text_value" placeholder="Value" readonly/><i class="fas fa-xmark removeIcon" title="' + get_peditor_msg('peditor.remove.icon') + '"></i><input class="color_value" type="text" placeholder="Color"/></input><i class="fas fa-xmark remove-color" title="' + get_peditor_msg('peditor.remove.color') + '"></i></div><div><input class="search" placeholder="Search"/><ul></ul></div></div>');
+                    $(i).append('<div class="property-icon-picker"><div class="value_holder"><input class="text_value" placeholder="Value" readonly/><i class="fas fa-xmark removeIcon" title="' + get_peditor_msg('peditor.remove.icon') + '"></i><input class="color_value" type="text" placeholder="Color"/></input></div><div><input class="search" placeholder="Search"/><ul></ul></div></div>');
 
                     for (var set in field.icons) {
                         $(i).find("ul").append('<li class="iconset">'+set+'</li>');
@@ -7020,28 +7020,54 @@ PropertyEditor.Type.IconTextField.prototype = {
                     }
                     
                     function initializeColorPicker(color) {
-                        $('.color_value').colorPicker({
-                            color: color || '',
-                            renderCallback: function ($elm, toggled) {
-                                var hex = this.color.colors.HEX;
-                                if (hex) {
-                                    $elm.val('#' + hex);
-                                }
-                            }
-                        });
-                        if (color) {
-                            $('.remove-color').show();
-                        } else {
-                            $('.remove-color').hide();
+                        var themeMode = 'light';
+                        if ($('body').attr('builder-theme') === 'dark') {
+                            themeMode = 'dark';
                         }
+                        function debounce(fn, delay) {
+                            let timeout;
+                            return function(...args) {
+                                clearTimeout(timeout);
+                                timeout = setTimeout(() => fn.apply(this, args), delay);
+                            };
+                        }
+                        const iconSpan = $(i).find("span.value");
+                        var iconElement = iconSpan.find("i");
+                        const iconPicker = $(i).find(".property-icon-picker");
+            
+                        Coloris({
+                                el: $(i).find(".color_value")[0],
+                                wrap: true,
+                                theme: 'large',
+                                themeMode: themeMode,
+                                rtl: true,
+                                formatToggle: true,
+                                alpha: true,
+                                forceAlpha: false,
+                                focusInput: true,
+                                selectInput: false,
+                                clearButton: true,
+                                closeButton: false,
+                                swatchesOnly: false,
+                                defaultValue: color || '',
+                                onChange: debounce((c, input) => {
+                                    if ($(input).is('.color_value')) {
+                                        iconElement = iconSpan.find("i");
+                                        if (iconElement.length > 0) {
+                                            iconElement.css("color", c);
+                                        }
+                                        iconPicker.css('--icon-color', c);
+                                    } 
+                                }, 100)
+                            });
                     }
                     
                     $(i).find("input.text_value").val($(icon).find("span.value i").attr("class"));
                     if ($(icon).find("span.value i").length > 0) {
                         var color = $(icon).find("span.value i")[0].style.color;
+
                         if (color !== undefined) {
                             $(i).find("input.color_value").val(color);
-                            $(i).find(".value_holder .color").css("background", color);
                             initializeColorPicker(color);
                             $(i).find(".property-icon-picker").css('--icon-color', color);
                         } else {
@@ -7052,6 +7078,14 @@ PropertyEditor.Type.IconTextField.prototype = {
                         initializeColorPicker();
                         $('.removeIcon').hide();
                     }
+
+                    //Remove color by manual deletion
+                    $(i).find(".color_value").off("change").on("change", function(){
+                        if($(this).val() === "") {
+                            $(i).find(".property-icon-picker").css('--icon-color', '');
+                            $(i).find("span.value i").css("color", '');
+                        }
+                    })
                     
                     $(i).find("input.search").off("keyup");
                     $(i).find("input.search").on("keyup", function() {
@@ -7075,18 +7109,13 @@ PropertyEditor.Type.IconTextField.prototype = {
                     const iconSpan = $(i).find("span.value");
                     const iconElement = iconSpan.find("i");
                     const textInput = $(i).find("input.text_value");
-                    const colorInput = $(i).find("input.color_value");
+                    const colorField = $(i).find(".clr-field");
+                    const colorInput = colorField.find("> input");
                     const colorValue = colorInput.val();
 
                     // Click outside the picker
                     if (!container.is(target) && container.has(target).length === 0) {
-                        if (target.closest(".cp-color-picker").length > 0) {
-                            $('.remove-color').show();
-                            if (iconElement.length > 0) {
-                                iconElement.css("color", colorValue);
-                            }
-                            $(i).find(".property-icon-picker").css('--icon-color', colorValue);
-                        } else {
+                        if (target.closest(".clr-picker").length === 0) {
                             $(i).removeClass("open");
                             $("body").off("click.icon-picker");
                         }
@@ -7116,32 +7145,12 @@ PropertyEditor.Type.IconTextField.prototype = {
                         return;
                     }
                     
-                    // Remove icon color
-                    if (target.is("i.remove-color")) {
-                        $(i).find("input.color_value").colorPicker('close');
-                        iconElement.removeAttr('style');
-                        $(i).find(".property-icon-picker").css('--icon-color', '');
-                        $('.remove-color').hide();
-                        setTimeout(function () {
-                            colorInput.val('').css("background", '#fff').change();
-                            return;
-                        }, 100);
-                    }
-                    
-                    // Set default color on input
-                    if (target.is("input.color_value")) {
-                        if (colorInput.val() === "") {
-                            colorInput.val('#000').css("background", '#000').change();
-                            $('.remove-color').show();
-                        }
-                        return;
-                    }
-                    
                     // Remove icon
                     if (target.is("i.removeIcon") || target.is("li.removeIcon")) {
                         iconElement.remove();
                         textInput.val("");
-                        colorInput.val('').css("background", '#fff').change();
+                        colorInput.val('').change();
+                        colorField.css({'color' : ''});
                         $(i).find(".property-icon-picker").css('--icon-color', '');
                         $('.removeIcon').hide();
                         $('.remove-color').hide();
@@ -7255,23 +7264,58 @@ PropertyEditor.Type.Color.prototype = {
         if (this.value.indexOf("#") === 0) {
             this.value = this.value.toUpperCase();
         }
-        return '<input class="jscolor" type="text" id="' + this.id + '" name="' + this.id + '"' + ' value="' + PropertyEditor.Util.escapeHtmlTag(this.value) + '"/>';
+        return '<input class="clr-field" type="text" id="' + this.id + '" name="' + this.id + '" value="' + PropertyEditor.Util.escapeHtmlTag(this.value) + '" data-coloris/>';
     },
     initScripting: function() {
+        var thisObj = this;
         try {
-            $("#" + this.id).colorPicker({
-                renderCallback: function($elm, toggled) {
-                    if ($elm.val() !== "" && $elm.val() !== undefined) {
-                        if (this.color.colors.alpha === 1) {
-                            $elm.val('#' + this.color.colors.HEX);
-                        } else {
-                            $elm.val(this.color.toString('RGB'));
-                        }
-                    }
+            // If user set a predfined palette, use those instead
+            $("#" + thisObj.id).off("focus").on("focus", (e) => {
+                if (thisObj.properties.predefinedPalette !== undefined && thisObj.properties.predefinedPalette !== null && thisObj.properties.predefinedPalette.length > 1) {
+                    localStorage.setItem('Coloris_customPalette', JSON.stringify(thisObj.properties.predefinedPalette));
+                } else {
+                    localStorage.setItem('Coloris_customPalette', JSON.stringify([]));
                 }
-            }).off("focusin.tcp");
-        } catch (err) {}
-        PropertyEditor.Util.supportHashField(this);
+                window.renderSwatches();
+            });
+
+            var themeMode = 'light';
+            if ($('body').attr('builder-theme') === 'dark') {
+                themeMode = 'dark';
+            }   
+            
+            Coloris({
+                el: '#' + this.id,
+                wrap: true,
+                theme: 'large',
+                themeMode: themeMode,
+                rtl: true,
+                formatToggle: true,
+                alpha: true,
+                forceAlpha: false,
+                focusInput: true,
+                selectInput: false,
+                clearButton: true,
+                closeButton: false,
+                swatchesOnly: false,
+                swatches: [
+                    '#1677ff',
+                    '#722ed1', 
+                    '#52c41a', 
+                    '#fadb14', 
+                    '#f5222d', 
+                    '#000000' 
+                ]
+            });
+
+            if (thisObj.properties.enableRecentColors !== undefined && thisObj.properties.enableRecentColors === 'true') {
+                $("#" + thisObj.id).parent(".clr-field").addClass("allowRecentColors");
+            } 
+            
+            PropertyEditor.Util.supportHashField(this);
+        } catch (err) {
+            console.error("Error initializing Coloris:", err);
+        }
     }
 };
 PropertyEditor.Type.Color = PropertyEditor.Util.inherit(PropertyEditor.Model.Type, PropertyEditor.Type.Color.prototype);
@@ -12155,18 +12199,50 @@ PropertyEditor.Type.ColorScheme.prototype = {
         var selector = $("#" + this.id + "_scheme_selector");
         
         if (thisObj.properties.editColor === undefined || thisObj.properties.editColor.toLowerCase() !== "false") {
-            $(selector).find(".color-input input").colorPicker({
-                renderCallback: function($elm, toggled) {
-                    if ($elm.val() !== "" && $elm.val() !== undefined) {
-                        if (this.color.colors.alpha === 1) {
-                            $elm.val('#' + this.color.colors.HEX);
-                        } else {
-                            $elm.val(this.color.toString('RGB'));
-                        }
+            try { 
+                // If user set a predfined palette, use those instead
+                $("#" + thisObj.id).off("focus").on("focus", (e) => {
+                    if (thisObj.properties.predefinedPalette !== undefined && thisObj.properties.predefinedPalette !== null && thisObj.properties.predefinedPalette.length > 1) {
+                        localStorage.setItem('Coloris_customPalette', JSON.stringify(thisObj.properties.predefinedPalette));
+                    } else {
+                        localStorage.setItem('Coloris_customPalette', JSON.stringify([]));
                     }
+                    window.renderSwatches();
+                });
+
+                var themeMode = 'light';
+                if ($('body').attr('builder-theme') === 'dark') {
+                    themeMode = 'dark';
                 }
-            }).off("focusin.tcp");
-            
+                
+                Coloris({
+                    el: $(selector).find(".color-input input")[0],
+                    wrap: true,
+                    theme: 'pill',
+                    themeMode: themeMode,
+                    rtl: true,
+                    formatToggle: true,
+                    alpha: true,
+                    forceAlpha: false,
+                    focusInput: true,
+                    selectInput: false,
+                    clearButton: true,
+                    closeButton: false,
+                    swatchesOnly: false,
+                    swatches: [
+                        '#FF0000', // Red
+                        '#00FF00', // Green
+                        '#0000FF', // Blue
+                        '#FFFF00', // Yellow
+                        '#FF00FF', // Magenta
+                        '#00FFFF' // Cyan
+                    ]
+                });
+                PropertyEditor.Util.supportHashField(this);
+            } catch (err) {
+                console.error("Error initializing Coloris:", err);
+            }
+
             $(selector).find(".color_values").off("click", "colorgroup");
             $(selector).find(".color_values").on("click", "colorgroup", function(e){
                 if (!$(selector).hasClass("showEditor")) {
@@ -12179,6 +12255,11 @@ PropertyEditor.Type.ColorScheme.prototype = {
                     $(selector).find(".color-input input").val("");
                     $(selector).find(".color-input").show();
                     $(selector).find(".color-input input").val(color).trigger("click");
+
+                    //Changed the color programatically, since there is only one color input field
+                    $("input#clr-color-value").val(color);
+                    $("input#clr-color-value")[0].dispatchEvent(new Event('input', { bubbles: true }));
+                    $("input#clr-color-value")[0].dispatchEvent(new Event('change', { bubbles: true }));
                 } else {
                     $(selector).find(".color_values .editing").css("background-color", $(selector).find(".color-input input").val());
                     $(selector).find(".color-input input").val("");

@@ -492,9 +492,8 @@ body.rtl .property-input > span.icon .property-icon-picker .value_holder input.t
     margin-left: 1%;
 }
 
-.property-input > span.icon .property-icon-picker .value_holder input.color_value {
-    width: 39%;
-    min-width: 39%;
+.property-input > span.icon .property-icon-picker .value_holder .clr-field {
+    max-width: 39%;
 }
 
 .property-input > span.icon .property-icon-picker .value_holder .color {
@@ -2506,6 +2505,10 @@ body:not(.right-panel-mode-window) .property-editor-container.narrow.wider .assi
     background: #fff;
     border-radius: 5px;
     counter-reset: colorshema;
+}
+body.rtl .property-type-colorscheme ul {
+    left: unset;
+    right: 0;
 }
 .property-type-colorscheme .selector.showPicker ul {
     display: block !important;

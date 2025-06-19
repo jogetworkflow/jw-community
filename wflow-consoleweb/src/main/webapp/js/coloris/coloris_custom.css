@@ -1,0 +1,359 @@
+/* === Color Preview === */
+.clr-field.clr-rtl button{
+    width: 22px;
+    height: 22px;
+    left: 5px;
+    right: auto;
+    border-radius: 5px;
+    padding: 0;
+    z-index: 2;
+    background-clip: padding-box;
+}
+
+/* Color Picker */
+.clr-picker {
+    z-index: 100000;
+}
+
+/* Coloris Container */
+.clr-field {
+    max-width: 100%;
+}
+
+div.clr-field > .assist_icon {
+    display: none;
+}
+
+/* === Color Picker Eyedropper === */
+.clr-picker .clr-eyedropper {
+    margin-right: 10px;
+    border: 0;
+    cursor: pointer;
+    background: none;
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.clr-picker .clr-eyedropper i {
+    font-size: 22px;
+    color: rgb(53 50 50 / 80%);
+}
+
+.clr-picker .clr-eyedropper:not([disabled='true']):hover i {
+    color: rgba(137, 137, 137, 0.8);
+}
+
+/* === Color Picker Buttons === */
+.clr-picker .clr-save-btn {
+    order: 2;
+    height: 24px;
+    margin: 0 15px 20px;
+    padding: 0 20px;
+    border: 0;
+    border-radius: 12px;
+    color: #fff;
+    background-color: #666;
+    font-family: inherit;
+    font-size: 12px;
+    font-weight: 400;
+    cursor: pointer;
+}
+
+.clr-clear {
+    font-size: 12px !important;
+    border-radius: 12px !important;
+    padding: 0 20px !important;
+    margin: 0 15px 20px;
+}
+
+.clr-picker .clr-button-row {
+    display: flex;
+    width: 100%;
+    order: 999;
+    justify-content: space-around;
+}
+
+/* === Color Picker Hue and Alpha Sliders === */
+.clr-picker .clr-hue-alpha-container {
+    display: flex;
+    flex-direction: column;
+    width: calc(100% - 40px);
+    margin: 5px 0;
+}
+
+.clr-picker .clr-hue,
+.clr-picker .clr-alpha {
+    margin: 5px 0;
+    width: calc(100% - 20px);
+}
+
+/* === Color Picker Format Selector === */
+.clr-format {
+    margin: 0 20px 10px;
+}
+
+/* === Color Swatches === */
+.clr-swatches div {
+    padding-bottom: 6px;
+}
+
+.clr-swatches button {
+    border-radius: 50% !important;
+    padding: 0 !important;
+}
+
+.clr-picker .clr-swatches {
+    border-top: 1px solid rgba(100, 100, 100, 0.1);
+    padding-top: 10px;
+}
+
+.clr-picker .clr-swatches-label {
+    font-size: 12px;
+    color: rgba(0, 0, 0, 0.8);
+}
+
+.clr-field button:after {
+    border-radius: 4px;
+}
+
+/* === Recent Colors Section === */
+.clr-picker .clr-recent {
+    flex-direction: column;
+    border-top: 1px solid rgba(100, 100, 100, 0.1);
+    display: none;
+}
+
+.clr-picker.allow-recent-colors .clr-recent {
+    display: block;
+}
+
+.clr-picker .clr-swatch-buttons {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+}
+
+.clr-picker .clr-color-item {
+    position: relative;
+    width: 20px;
+    height: 20px;
+    overflow: hidden;
+    background-color: transparent;
+    cursor: pointer;
+}
+
+.clr-picker .clr-color-item:hover {
+    transform: scale(1.1);
+}
+
+.clr-picker .clr-color-item .clr-delete {
+    position: absolute;
+    top: -5px;
+    right: -5px;
+    background: rgba(0, 0, 0, 0.5);
+    border-radius: 50%;
+    width: 15px;
+    height: 15px;
+    font-size: 10px;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    color: rgba(255, 255, 255, 0.8);
+}
+
+.clr-picker .clr-color-item:hover .clr-delete {
+    display: flex;
+}
+
+.clr-picker .clr-delete:hover {
+    background: rgba(255, 0, 0, 0.7);
+    color: #fff;
+}
+
+/* === Favorite Colors === */
+.clr-swatch-fav-wrapper {
+    position: relative;
+    display: inline-block;
+}
+
+.clr-delete-fav {
+    display: none;
+    position: absolute;
+    top: -8px;
+    right: -5px;
+    cursor: pointer;
+    font-size: 10px;
+    color: #333;
+    padding: 2px;
+}
+
+.clr-swatch-fav-wrapper:hover .clr-delete-fav {
+    display: inline;
+}
+
+.clr-swatch-fav-wrapper:hover .clr-delete-fav:hover {
+    color: red;
+}
+
+/* === Settings Button === */
+.clr-settings-btn {
+    position: absolute;
+    top: 4px;
+    right: 6px;
+    background: transparent;
+    border: none;
+    font-size: 18px !important;
+    cursor: pointer;
+    color: rgb(53 50 50 / 80%);
+    z-index: 999;
+    display: none;
+}
+
+.clr-settings-btn:hover {
+    color: rgba(137, 137, 137, 0.8);
+}
+
+/* === Palette Settings Modal === */
+.clr-palette-settings-modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.3);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1001;
+    font-family: sans-serif;
+}
+
+.clr-palette-settings-content {
+    background: #fff;
+    border-radius: 12px;
+    padding: 20px 24px;
+    width: 400px;
+    max-width: 90%;
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.2);
+    color: #333;
+}
+
+.clr-palette-settings-content h3 {
+    margin-top: 0;
+    font-size: 1.2em;
+}
+
+.clr-palette-settings-content textarea {
+    width: 100%;
+    border-radius: 8px;
+    padding: 8px;
+    border: 1px solid #ccc;
+    font-family: monospace;
+    font-size: 0.95em;
+    resize: vertical;
+}
+
+.clr-palette-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 8px;
+    margin-top: 16px;
+}
+
+.clr-palette-actions button {
+    background: #666;
+    color: #fff;
+    padding: 6px 14px;
+    border: none;
+    border-radius: 6px;
+    font-size: 0.9em;
+    cursor: pointer;
+    transition: background 0.2s ease;
+}
+
+.clr-palette-actions button:hover {
+    background: #444;
+}
+
+/* === Dark Theme Overrides === */
+body[builder-theme="dark"] .clr-dark input.clr-color {
+    color: #fff !important;
+}
+
+body[builder-theme="dark"] .clr-picker .clr-eyedropper i {
+    color: rgba(255, 255, 255, 0.8);
+}
+
+body[builder-theme="dark"] .clr-picker .clr-eyedropper:hover i {
+    color: rgba(255, 255, 255, 1);
+}
+
+body[builder-theme="dark"] .clr-picker .clr-save-btn {
+    background-color: #888;
+}
+
+body[builder-theme="dark"] .clr-dark .clr-clear {
+    background-color: #888 !important;
+    color: #fff !important;
+}
+
+body[builder-theme="dark"] .clr-dark .clr-swatches {
+    border-top: 1px solid rgba(255, 255, 255, 0.2) !important;
+}
+
+body[builder-theme="dark"] .clr-picker .clr-swatches-label {
+    color: rgba(255, 255, 255, 0.8);
+}
+
+body[builder-theme="dark"] .clr-picker .clr-recent {
+    border-top: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+body[builder-theme="dark"] .clr-picker .clr-color-item .clr-delete {
+    background: rgba(255, 255, 255, 0.5);
+    color: rgba(0, 0, 0, 0.8);
+}
+
+body[builder-theme="dark"] .clr-picker .clr-delete:hover {
+    background: rgba(255, 100, 100, 0.7);
+    color: #fff;
+}
+
+body[builder-theme="dark"] .clr-delete-fav {
+    color: rgba(255, 255, 255, 0.8);
+}
+
+body[builder-theme="dark"] .clr-settings-btn {
+    color: rgba(255, 255, 255, 0.8);
+}
+
+body[builder-theme="dark"] .clr-settings-btn:hover {
+    color: rgba(255, 255, 255, 1);
+}
+
+body[builder-theme="dark"] .clr-palette-settings-modal {
+    background: rgba(255, 255, 255, 0.3);
+}
+
+body[builder-theme="dark"] .clr-palette-settings-content {
+    background: #333;
+    color: #fff;
+    box-shadow: 0 6px 20px rgba(255, 255, 255, 0.2);
+}
+
+body[builder-theme="dark"] .clr-palette-settings-content textarea {
+    border: 1px solid #555;
+    background: #444;
+    color: #fff;
+}
+
+body[builder-theme="dark"] .clr-palette-actions button {
+    background: #888;
+}
+
+body[builder-theme="dark"] .clr-palette-actions button:hover {
+    background: #aaa;
+}
