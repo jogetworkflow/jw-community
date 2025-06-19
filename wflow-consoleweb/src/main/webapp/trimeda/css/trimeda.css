@@ -1579,6 +1579,14 @@ select, textarea, .ql-container.ql-bubble,
     padding-bottom: var(--input-padding-y) !important;
 }
 
+.ql-tooltip-editor input[type="text"]{
+    min-height: auto;
+}
+
+.ql-bubble .ql-tooltip-editor input[type=text]{
+    border-radius: 1.5rem;
+}
+
 body:not(.compact-mode) select {
     padding-top: var(--input-padding-y) !important;
     padding-bottom: var(--input-padding-y) !important;
