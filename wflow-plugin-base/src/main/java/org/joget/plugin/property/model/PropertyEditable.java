@@ -11,9 +11,14 @@ public interface PropertyEditable {
      * Return plugin label. This value will be used when a Resource Bundle 
      * Message Key "<i>plugin.className</i>.pluginlabel" is not found by getI18nLabel() method.
      * 
+     * Default implementation added for old plugin that still using getPluginProperties method to provide plugin
+     * configuration options and didn't implement PropertyEditable
+     * 
      * @return
      */
-    public String getLabel();
+    default public String getLabel() {
+        return "";
+    }
 
     /**
      * Return Class Name for the plugin.
@@ -23,9 +28,15 @@ public interface PropertyEditable {
 
     /**
      * Return the plugin properties options in JSON format.
+     * 
+     * Default implementation added for old plugin that still using getPluginProperties method to provide plugin
+     * configuration options and didn't implement PropertyEditable
+     * 
      * @return
      */
-    public String getPropertyOptions();
+    default public String getPropertyOptions() {
+        return "";
+    }
     
     /**
      * Get plugin properties.
