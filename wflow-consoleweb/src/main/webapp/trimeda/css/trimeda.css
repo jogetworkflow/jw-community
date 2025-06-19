@@ -1460,6 +1460,10 @@ select, textarea, .ql-container.ql-bubble,
     min-height: var(--input-min-height);
 }
 
+.ql-tooltip-editor input[type="text"]{
+    min-height: auto;
+}
+
 body.compact-mode .numeric_field_controls {
     top: 4px;
 }
