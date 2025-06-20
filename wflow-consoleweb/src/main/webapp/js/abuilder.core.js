@@ -459,6 +459,12 @@ AppBuilder = {
     
     resizeBuilders: function(){
         var builders = $('#builders')[0];
+        // Check because in cases where e.g. Form Builder is being loaded, #builders won't be there
+        if (!(builders instanceof Element)) {
+            console.warn("resizeBuilders: #builders not found or not a valid DOM element.");
+            return;
+        }
+
         var rowHeight = ($(window).height() - 270) / 2;
         if ($(window).width() <= 1290) {
             rowHeight = 200;
@@ -573,6 +579,9 @@ AppBuilder = {
                                         showDetail(detailLink);
                                     });
                                 } else {
+                                    // Reinitializing aceEditor here to prevent error when navigating to another App Composer and opening script editor ...
+                                    // ... as aceEditor is redeclared and becomes undefined when builders are initialized
+                                    aceEditor = $("iframe#overview_data_more_detail")[0].contentWindow.ace;
                                     showDetail(detailLink);
                                 }
                             });
@@ -707,7 +716,7 @@ AppBuilder = {
         
         setTimeout(function(){
             AppBuilder.resizeBuilders();
-        }, 10);
+        }, 100);
     },
     
     overviewMapViewInit : function(view) {
