@@ -143,7 +143,7 @@
         <dependency>
             <groupId>org.springframework.security</groupId>
             <artifactId>spring-security-acl</artifactId>
-            <version>6.5.0</version>
+            <version>6.5.1</version>
             <exclusions>
                 <exclusion>
                     <groupId>org.springframework</groupId>
@@ -154,7 +154,7 @@
         <dependency>
             <groupId>org.springframework.security</groupId>
             <artifactId>spring-security-web</artifactId>
-            <version>6.5.0</version>
+            <version>6.5.1</version>
             <exclusions>
                 <exclusion>
                     <groupId>org.springframework</groupId>
@@ -165,7 +165,7 @@
         <dependency>
             <groupId>org.springframework.security</groupId>
             <artifactId>spring-security-config</artifactId>
-            <version>6.5.0</version>
+            <version>6.5.1</version>
             <exclusions>
                 <exclusion>
                     <groupId>org.springframework</groupId>
