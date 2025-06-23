@@ -74,7 +74,8 @@
                 "rightPropertyPanel" : true,
                 "defaultBuilder" : true,
                 "submitDiff" : true,
-                "marketplacePaletteClass" : "org.joget.plugin.base.ApplicationPlugin"
+                "marketplacePaletteClass" : "org.joget.plugin.base.ApplicationPlugin",
+                "idSuggestionFormat" : "camelCase"
             },
             "callbacks" : {
                 "initBuilder" : "ProcessBuilder.initBuilder",

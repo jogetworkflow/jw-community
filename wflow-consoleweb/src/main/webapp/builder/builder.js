@@ -22,7 +22,8 @@ _CustomBuilder = {
                 rightPropertyPanel : false,
                 defaultBuilder : false,
                 submitDiff : false, //use for saving, prepare diff and post together with json definition
-                marketplacePaletteClass : '' //use for set a default plugin type when click on palette marketplace link
+                marketplacePaletteClass : '', //use for set a default plugin type when click on palette marketplace link
+                idSuggestionFormat : "" //used to determine id suggestion naming convention (snakeCase, camelCase), default(leaving it blank) is snake case.
             },
             callbacks : {
                 initBuilder : "",
@@ -1768,6 +1769,7 @@ _CustomBuilder = {
             showCancelButton:true,
             changeCheckIgnoreUndefined: true,
             scrollToField: CustomBuilder.overviewPropertiesPath,
+            idSuggestionFormat: CustomBuilder.config.builder.options["idSuggestionFormat"],
             cancelCallback: function() {
                 CustomBuilder.callback(CustomBuilder.config.builder.callbacks["cancelEditProperties"], [elementObj, element]);
             },

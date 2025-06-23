@@ -795,9 +795,19 @@ PropertyEditor.Util = {
         } else if (window['Aromanize'] !== undefined) { //for Korean
             text = window['Aromanize'].romanize(text);
         }
+        //get idSuggestionFormat that was previously set
+        let idSuggestionFormat =  field.options.idSuggestionFormat;
+
         if (getSlug !== undefined) {
+            //snake case
             var lang = UI.locale.substring(0,2); 
             text = getSlug(text, { separator: "_",  truncate: 30, lang:lang});
+            //camel case for Process builder
+            if (idSuggestionFormat === "camelCase") {
+                text = text
+                        .toLowerCase()
+                        .replace(/[^a-zA-Z0-9]+(.)/g, (_, chr) => chr.toUpperCase());
+            }
         }
         
         var data = field.getData(true);
@@ -10568,10 +10578,15 @@ PropertyEditor.Type.ElementMultiSelect.prototype = {
             $("#" + thisObj.id + "_input .error").removeClass("error");
             $("#" + thisObj.id + "_input .property-input-error").remove();
 
-            $("#" + thisObj.id + "_input  > div > .repeater-rows-container > .repeater-row").each(function(i){
-                var deffers = thisObj.validateRow($(this), value[i], errors, checkEncryption);
-                if (deffers !== null && deffers !== undefined && deffers.length > 0) {
-                    deferreds = $.merge(deferreds, deffers);
+            let i = 0; //for retrieve the data of the position which ignored empty selection
+            $("#" + thisObj.id + "_input  > div > .repeater-rows-container > .repeater-row").each(function(){
+                var field = $(this).find("> .inputs > .inputs-container > select");
+                if (field.val() !== "") { //check for non empty value selection
+                    var deffers = thisObj.validateRow($(this), value[i], errors, checkEncryption);
+                    if (deffers !== null && deffers !== undefined && deffers.length > 0) {
+                        deferreds = $.merge(deferreds, deffers);
+                    }
+                    i++;
                 }
             });
         }
@@ -10623,7 +10638,7 @@ PropertyEditor.Type.ElementMultiSelect.prototype = {
     },
     getRow: function(row, useDefault) {
         var thisObj = this;
-        var field = $(row).find("select");
+        var field = $(row).find("> .inputs > .inputs-container > select"); //more specify selection in case there is another select box under the element proeprties
         var id = $(field).attr("id");
         var anchor = $(this.editor).find(".anchor[anchorField=\"" + id + "\"]");
         

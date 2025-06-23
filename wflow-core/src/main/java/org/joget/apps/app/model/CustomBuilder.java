@@ -3,12 +3,13 @@ package org.joget.apps.app.model;
 import java.util.Map;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import org.joget.plugin.base.Plugin;
 
 /**
  * Interface to provide additional builder to platform
  * 
  */
-public interface CustomBuilder {
+public interface CustomBuilder extends Plugin{
     
     /**
      * The classname of the builder implementation
