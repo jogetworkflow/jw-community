@@ -320,7 +320,7 @@
         <dependency>
             <groupId>org.eclipse.jgit</groupId>
             <artifactId>org.eclipse.jgit</artifactId>
-            <version>6.8.0.202311291450-r</version>
+            <version>6.10.1.202505221210-r</version>
             <exclusions>
                 <exclusion>
                     <groupId>org.slf4j</groupId>
