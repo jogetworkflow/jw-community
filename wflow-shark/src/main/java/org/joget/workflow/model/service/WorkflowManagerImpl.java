@@ -4022,7 +4022,7 @@ public class WorkflowManagerImpl implements SharkWorkflowManager {
         }
         
         String username = getWorkflowUserManager().getCurrentUsername();
-        Set<String> assignmentList = workflowAssignmentDao.getAssignmentProcessIds(packageId, processDefId, processId, activityDefId, username, "open.not_running.not_started");
+        Set<String> assignmentList = workflowAssignmentDao.getAssignmentProcessIds(packageId, processDefId, processId, activityDefId, username, "open");
         
         return assignmentList;
     }
@@ -4038,7 +4038,7 @@ public class WorkflowManagerImpl implements SharkWorkflowManager {
      */
     public Collection<WorkflowAssignment> getAssignmentsByProcessIds(Collection<String> processIds, String sort, Boolean desc, Integer start, Integer rows) {
         String username = getWorkflowUserManager().getCurrentUsername();
-        Collection<WorkflowAssignment> assignmentList = workflowAssignmentDao.getAssignmentsByProcessIds(processIds, username, "open.not_running.not_started", sort, desc, start, rows);
+        Collection<WorkflowAssignment> assignmentList = workflowAssignmentDao.getAssignmentsByProcessIds(processIds, username, "open", sort, desc, start, rows);
         
         return assignmentList;
     }
@@ -4061,7 +4061,7 @@ public class WorkflowManagerImpl implements SharkWorkflowManager {
         }
         
         String username = getWorkflowUserManager().getCurrentUsername();
-        Collection<WorkflowAssignment> assignmentList = workflowAssignmentDao.getAssignments(packageId, processDefId, processId, activityDefId, username, "open.not_running.not_started", sort, desc, start, rows);
+        Collection<WorkflowAssignment> assignmentList = workflowAssignmentDao.getAssignments(packageId, processDefId, processId, activityDefId, username, "open", sort, desc, start, rows);
         
         return assignmentList;
     }
@@ -4381,7 +4381,7 @@ public class WorkflowManagerImpl implements SharkWorkflowManager {
         }
         
         String username = getWorkflowUserManager().getCurrentUsername();
-        String state = "open.not_running.not_started";
+        String state = "open";
         
         return workflowAssignmentDao.getAssignmentSize(packageId, processDefId, processId, activityDefId, username, state);
     }
@@ -5652,7 +5652,7 @@ public class WorkflowManagerImpl implements SharkWorkflowManager {
      * @return 
      */
     public Collection<String> getRunningProcessIds() {
-        return workflowAssignmentDao.getProcessIdsByRequester(null, null, null, "open.not_running.not_started");
+        return workflowAssignmentDao.getProcessIdsByRequester(null, null, null, "open.running");
     }
     
     /**
@@ -5663,7 +5663,7 @@ public class WorkflowManagerImpl implements SharkWorkflowManager {
      * @return 
      */
     public Collection<String> getRunningProcessIdsByRequester(String packageId, String processDefId, String username) {
-        return workflowAssignmentDao.getProcessIdsByRequester(packageId, processDefId, username, "open.not_running.not_started");
+        return workflowAssignmentDao.getProcessIdsByRequester(packageId, processDefId, username, "open");
     }
     
     /**
