@@ -237,7 +237,8 @@ public class SharkWorkflowAssignmentDaoImpl extends AbstractSpringDao implements
                     condition += " and s.name = ?";
                     params.add(state);
                 } else {
-                    condition += " and s.name like ?";
+                    condition += " and s.name <> ? and s.name like ?";
+                    params.add("open.not_running.suspended");
                     params.add(state + "%");
                 }
             }
@@ -405,7 +406,8 @@ public class SharkWorkflowAssignmentDaoImpl extends AbstractSpringDao implements
             }
             
             if (state != null && !state.isEmpty()) {
-                condition += " and s.name like ?";
+                condition += " and s.name <> ? and s.name like ?";
+                params.add("open.not_running.suspended");
                 params.add(state + "%");
             }
         }
@@ -669,7 +671,8 @@ public class SharkWorkflowAssignmentDaoImpl extends AbstractSpringDao implements
             }
             
             if (state != null && !state.isEmpty()) {
-                condition += " and s.name like ?";
+                condition += " and s.name <> ? and s.name like ?";
+                params.add("open.not_running.suspended");
                 params.add(state + "%");
             }
         }
@@ -833,9 +836,10 @@ public class SharkWorkflowAssignmentDaoImpl extends AbstractSpringDao implements
             }
             
             if (state != null && !state.isEmpty()) {
-                condition += " and s.name like ?";
+                condition += " and s.name <> ? and s.name like ?";
+                params.add("open.not_running.suspended");
                 params.add(state + "%");
-            }
+             }
         }
         Long total = count(ENTITY_NAME, condition, params.toArray(new String[0]));
         
