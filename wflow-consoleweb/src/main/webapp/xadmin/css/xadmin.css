@@ -58,6 +58,60 @@ body{
     background: #fff;
 }
 
+/* brand-tool tip to display long brand name when hover */
+.brand-tooltip-wrap {
+    position: relative;
+    display: flex;
+    align-items: center;
+    height: 100%;
+}
+
+.brand-tooltip {
+    display: none;
+    opacity: 0;
+    background-color: rgb(255, 255, 255);
+    color:black;
+    font-size: 10px;
+    padding: 2px 8px;
+    border: 1px black solid;
+    border-radius: 4px;
+    position: fixed;
+    top: 40px;
+    white-space: normal;
+    line-height: 1.7;
+    z-index: 3;
+    transition: opacity 0.2s;
+    max-width: 280px;
+}
+
+.brand-tooltip-wrap:hover .brand-tooltip {
+    display: block;
+    opacity: 1;
+}
+
+.brand-text {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 100%;
+    display: inline-block;
+    vertical-align: top;
+}
+body.has-logo .brand-tooltip-wrap{
+    margin-top: 10px;
+}
+body.has-logo .brand-tooltip{
+    top: 50px;
+}
+body.has-logo .brand-tooltip{
+    left: 89px; 
+}
+body.rtl.has-logo .brand-tooltip {
+    right: 89px;
+    left:unset;
+}
+/* brand-tool tip to display long brand name when hover */
+
 /*登录样式*/
 /*头部*/
 .container{

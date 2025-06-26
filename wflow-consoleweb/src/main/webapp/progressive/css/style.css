@@ -103,8 +103,52 @@ div#header-name img {
     max-width: 390px;  
     text-overflow: ellipsis;    
     white-space: nowrap;    
-    overflow: hidden;
+    overflow: visible;
 }
+
+/* brand-tool tip to display long brand name when hover */
+.brand-tooltip-wrap {
+    position: relative;
+    display: flex;
+    align-items: center;
+    padding-left: 55px;
+    height: 100%;
+}
+
+.brand-tooltip {
+    display: none;
+    opacity: 0;
+    background-color: rgb(255, 255, 255);
+    color:black;
+    font-size: 10px;
+    padding: 3px 8px 1px 8px;
+    border: 1px black solid;
+    border-radius: 4px;
+    position: fixed;
+    top: 50px;
+    white-space: normal;
+    z-index: 1002;
+    transition: opacity 0.2s;
+    max-width: 280px;
+}
+
+.brand-tooltip-wrap:hover .brand-tooltip {
+    display: block;
+    opacity: 1;
+}
+.brand-text {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 100%;
+    display: inline-block;
+    vertical-align: top;
+}
+body.rtl .brand-tooltip {
+    text-align:right;
+}
+/* brand-tool tip to display long brand name when hover */
+
 
 .hi-trigger {
     position: relative;
@@ -523,6 +567,9 @@ ul#category-container {
         white-space: nowrap;
         overflow: hidden;
         display: block;
+    }
+    #header-name a#header-link{
+        max-width:190px;
     }
     body.horizontal_menu #header-name a {
         white-space: wrap;
@@ -1056,7 +1103,7 @@ body.rtl #sidebar li ul>li>a > span:first-child{
     }
     body.horizontal_menu.inline_menu div#header-name img {
         position: relative;
-        top: -15px;
+        top: 0;
     }
 }
 @media (max-width:767.999px) {
@@ -1903,6 +1950,14 @@ body:not(#login) #content > main > .datalist-body-content:not(.quickEdit) {
 @media (min-width:768px) and (max-width:1279px) {
     body.horizontal_menu.inline_menu #sidebar {
         width: calc(85vw - 720px);
+    }
+}
+@media screen and (max-width: 360px) { 
+    .brand-text { 
+        max-width: 80px !important; 
+    } 
+    .brand-tooltip{
+        z-index: 1001 !important;
     }
 }
 /*Priority Menu*/ 

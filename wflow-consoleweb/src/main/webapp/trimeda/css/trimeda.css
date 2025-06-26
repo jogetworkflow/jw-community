@@ -1280,6 +1280,10 @@ header.navbar .dropdown-menu.notifications > li.task.showMoreInfo > div.more-inf
 .header-nav a.btn:focus {
     box-shadow: none;
 }
+
+#header-link .brand-tooltip{
+    top:60px;
+}
 /* Content */
 #content.page_content {
     border-radius: 16px;
