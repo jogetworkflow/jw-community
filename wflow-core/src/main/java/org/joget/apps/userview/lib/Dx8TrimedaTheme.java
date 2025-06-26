@@ -52,6 +52,10 @@ public class Dx8TrimedaTheme extends AjaxUniversalTheme {
 
     @Override
     public String getJsCssLib(Map<String, Object> data) {
+        //Reset the property
+        setProperty("darkMode", "");
+        setProperty("compactTheme", "");
+
         String jsCssLink = super.getJsCssLib(data);
         
         //Remove ajaxuniversal.min.js
@@ -67,6 +71,17 @@ public class Dx8TrimedaTheme extends AjaxUniversalTheme {
         
         jsCssLink += "<style>" + generateLessCss() + "</style>";
         
+        // Compact Mode
+        if ("true".equals(getPropertyString("compactMode"))) {
+            jsCssLink += "<script src=\"" + data.get("context_path") + "/wro/compactTheme.js\" defer></script>\n";
+            jsCssLink += "<script>" +
+                        "$(function() {" +
+                        "  const density = localStorage.getItem(\"density\");" +
+                        "  if (density) { $(\"body\").addClass(density + \"-mode\"); }" +
+                        "});" +
+                        "</script>\n";
+        }
+
         return jsCssLink;
     }
 
@@ -416,6 +431,10 @@ public class Dx8TrimedaTheme extends AjaxUniversalTheme {
                   + "        <a href=\"#\" class=\"refresh\" >" + ResourceBundleUtil.getMessage("general.method.label.refresh") + "</a>"
                   + "    </ul>\n"
                   + "<li>";
+        }
+
+        if ("true".equals(getPropertyString("compactMode"))) {
+            html += super.getCompactThemeSwitch(data);
         }
         
         return html;

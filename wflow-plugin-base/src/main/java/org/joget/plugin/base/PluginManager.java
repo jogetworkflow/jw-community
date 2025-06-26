@@ -480,7 +480,8 @@ public class PluginManager implements ApplicationContextAware {
      * @return  
      */
     protected boolean reloadDependentPlugins(Bundle bundle) {
-        boolean reloaded = false;
+        Collection<Bundle> bundleList = new ArrayList<Bundle>();
+        
         try {
             String groupId = getBundleGroupId(bundle);
             
@@ -491,19 +492,22 @@ public class PluginManager implements ApplicationContextAware {
                         uninstallBundle(b.getLocation());
                         Bundle newBundle = installBundle(b.getLocation());
                         if (newBundle != null) {
-                            startBundle(newBundle);
+                            bundleList.add(newBundle);
                         }
-                        
-                        reloaded = true;
-                        
-                        LogUtil.info(PluginManager.class.getName(), "Reloaded plugin " + b.getSymbolicName());
                     }
+                }
+                
+                //start all dependent plugins all together after all bundle re-installed
+                //so that same CustomPluginInterface is used
+                for (Bundle b : bundleList) {
+                    startBundle(b); 
+                    LogUtil.info(PluginManager.class.getName(), "Reloaded plugin " + b.getSymbolicName());
                 }
             }
         } catch (Exception be) {
             LogUtil.error(PluginManager.class.getName(), be, "");
         }
-        return reloaded;
+        return !bundleList.isEmpty();
     }
     
     /**
@@ -567,7 +571,7 @@ public class PluginManager implements ApplicationContextAware {
                 String line;
                 while ((line = reader.readLine()) != null) {
                     if (line.contains("<groupId>"+groupId+"</groupId>")) {
-                        return true;
+                         return true;
                     }
                 }
             } catch (Exception be) {

@@ -85,7 +85,7 @@ $(document).ready(function() {
                 $("body").find("ul#category-container > li.category").each(function() {
                     if (!$(this).hasClass("first") && prevMenu !== null) {
                         if ($("body").hasClass("rtl")) {
-                            gap = $(prevMenu).offset().left - $(this).offset().left + $(this).outerWidth();
+                            gap = $(this).offset().left + $(this).outerWidth() - $(prevMenu).offset().left;
                         } else {
                             gap = $(this).offset().left - ($(prevMenu).offset().left + $(prevMenu).outerWidth());
                         }
