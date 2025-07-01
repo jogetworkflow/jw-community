@@ -3220,3 +3220,7 @@ body[builder-theme].rtl .editor-panel-mode .property-grid .property-input .grid 
     position:relative;
     left: -5px;
 }
+body[builder-theme].rtl .property-editor-container:not(.editor-panel-mode) .elementmultiselect .repeater-row .actions.sort,
+body[builder-theme].rtl .property-editor-container:not(.editor-panel-mode) .repeater-row .actions.rowbuttons{
+    border-color: var(--theme-border-color-1);
+}
