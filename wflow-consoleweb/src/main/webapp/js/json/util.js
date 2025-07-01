@@ -326,7 +326,9 @@ function loadScript(url, callback){
         try {
             while(loadingScript[name].length > 0) {
                 var c = loadingScript[name].shift();
-                c();
+                if (typeof c === "function") {
+                    c();
+                }
             }
         } catch (err) {
             console.log(err);
