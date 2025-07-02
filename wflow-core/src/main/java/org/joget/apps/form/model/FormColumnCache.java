@@ -20,14 +20,14 @@ public class FormColumnCache {
     
     public Collection<String> get(String tableName) {
         String cacheKey = getCacheKey(tableName);
-        Collection<String> columnList = (Collection<String>)cache.get(cacheKey);
+        Collection<String> columnList = (Collection<String>)cache.getObject(cacheKey);
         return columnList;
     }
 
     public void put(String tableName, Collection<String> columnList) {
         if (columnList != null) {
             String cacheKey = getCacheKey(tableName);
-            cache.put(cacheKey, columnList);
+            cache.putObject(cacheKey, columnList);
         } else {
             remove(tableName);
         }
@@ -35,14 +35,14 @@ public class FormColumnCache {
     
     public Collection<String> getIndexes(String tableName) {
         String cacheKey = getIndexCacheKey(tableName);
-        Collection<String> indexesList = (Collection<String>)cache.get(cacheKey);
+        Collection<String> indexesList = (Collection<String>)cache.getObject(cacheKey);
         return indexesList;
     }
     
     public void putIndexes(String tableName, Collection<String> indexesList) {
         if (indexesList != null) {
             String cacheKey = getIndexCacheKey(tableName);
-            cache.put(cacheKey, indexesList);
+            cache.putObject(cacheKey, indexesList);
         } else {
             remove(tableName);
         }

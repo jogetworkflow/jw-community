@@ -36,14 +36,14 @@ public class ResourceBundleMessageDao extends AbstractSpringDao {
 
     public ResourceBundleMessage getMessage(String key, String locale) {        
         String cacheKey = getCacheKey(key,locale);
-        Map<String, ResourceBundleMessage> messageMap = (Map<String, ResourceBundleMessage>)cache.get(cacheKey);
+        Map<String, ResourceBundleMessage> messageMap = (Map<String, ResourceBundleMessage>)cache.getObject(cacheKey);
         if (messageMap == null) {
             messageMap = new HashMap<String, ResourceBundleMessage>();
             Collection<ResourceBundleMessage> results = super.find(ENTITY_NAME, "WHERE e.locale = ?", new String[]{locale}, null, null, null, null);
             for (ResourceBundleMessage message : results) {
                 messageMap.put(message.getKey(), message);
             }
-            cache.put(cacheKey, messageMap);
+            cache.putObject(cacheKey, messageMap);
         }
         ResourceBundleMessage result = messageMap.get(key);
         return result;
