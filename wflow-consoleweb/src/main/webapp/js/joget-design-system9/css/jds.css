@@ -4906,10 +4906,10 @@ body.rtl .breadcrumb-item + .breadcrumb-item::before{
 }
 .alert-dismissible .btn-close {
   position: absolute;
-  top: 0;
+  top: 0.25rem;
   right: 0;
   z-index: 2;
-  padding: 1.25rem 1rem;
+  padding: 1rem;
 }
 
 .alert-primary {
