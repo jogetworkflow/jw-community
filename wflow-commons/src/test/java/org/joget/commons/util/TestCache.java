@@ -75,7 +75,7 @@ public class TestCache {
         Assert.isTrue(cache.containsKey(cacheKey), "cache should exist retrieve messages");
         
         //check long term cache can return correctly
-        Map<String, ResourceBundleMessage> messageMap = (Map<String, ResourceBundleMessage>) longTermCache.get(cacheKey);
+        Map<String, ResourceBundleMessage> messageMap = (Map<String, ResourceBundleMessage>) longTermCache.getObject(cacheKey);
         Assert.isTrue(messageMap.size() == 1, "messages size is wrong");
         Assert.isTrue(messageMap.get("test") != null, "return messages is wrong");
         
@@ -83,7 +83,7 @@ public class TestCache {
         setupManager.updateSetting("CACHE_LAST_CLEAR_" + cacheKey, Long.toString((new Date()).getTime()) + 5);
         
         //check long term cache return null
-        messageMap = (Map<String, ResourceBundleMessage>) longTermCache.get(cacheKey);
+        messageMap = (Map<String, ResourceBundleMessage>) longTermCache.getObject(cacheKey);
         Assert.isNull(messageMap, "long term cache should exist");
         
         // remove the modified last clear date
@@ -97,7 +97,7 @@ public class TestCache {
         Assert.isTrue(cache.containsKey(cacheKey), "cache should exist after refresh");
         
         //check long term cache can return correctly
-        messageMap = (Map<String, ResourceBundleMessage>) longTermCache.get(cacheKey);
+        messageMap = (Map<String, ResourceBundleMessage>) longTermCache.getObject(cacheKey);
         Assert.isTrue(messageMap.size() == 1, "messages size is wrong after refresh");
         Assert.isTrue(messageMap.get("test") != null, "return messages is wrong after refresh");
         
@@ -115,7 +115,7 @@ public class TestCache {
         Assert.isTrue("test message 2".equals(returnMessage.getMessage()), "the message is not correct after update");
         
         //check long term cache can return correctly
-        messageMap = (Map<String, ResourceBundleMessage>) longTermCache.get(cacheKey);
+        messageMap = (Map<String, ResourceBundleMessage>) longTermCache.getObject(cacheKey);
         Assert.isTrue(messageMap.size() == 1, "messages size is wrong after upate");
         Assert.isTrue(messageMap.get("test") != null, "return messages is wrong after update");
         

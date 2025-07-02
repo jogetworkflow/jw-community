@@ -15,6 +15,12 @@ public class Element implements Serializable, Cloneable {
         this.objectValue = (Object) objectValue;
         this.creationTime = (new Date()).getTime();
     } 
+    
+    public Element(String key, Object objectValue, long creationTime) {
+        this.key = key;
+        this.objectValue = objectValue;
+        this.creationTime = creationTime;
+    } 
 
     public final String getKey() {
         return key;
