@@ -150,13 +150,27 @@ public class BuilderDefinitionDaoImpl extends AbstractAppVersionedObjectDao<Buil
         cache.remove(getCacheKey(object.getId(), object.getAppId(), object.getAppVersion()), object.getAppDefinition());
         return result;
     }
-
+    
     @Override
     public boolean delete(String id, AppDefinition appDef) {
+        BuilderDefinition obj = loadById(id, appDef);
+        return delete(obj);
+    }
+
+    /**
+     * Delete the object directly without another load. This is needed to delete an object from a collection using find. Else, it will 
+     * causing session EntityExistsException when delete by id.
+     * 
+     * @param obj
+     * @return 
+     */
+    @Override
+    public boolean delete(BuilderDefinition obj) {
         boolean result = false;
         try {
-            BuilderDefinition obj = super.loadById(id, appDef);
-
+            String id = obj.getId();
+            AppDefinition appDef = obj.getAppDefinition();
+            
             if (obj != null) {
                 appDef = obj.getAppDefinition();
 

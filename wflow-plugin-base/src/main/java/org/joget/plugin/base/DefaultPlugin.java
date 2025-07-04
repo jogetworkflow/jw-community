@@ -1,10 +1,14 @@
 package org.joget.plugin.base;
 
+import java.util.HashMap;
+import java.util.Map;
 import org.joget.commons.util.ResourceBundleUtil;
 import org.joget.plugin.property.model.PropertyEditable;
+import org.joget.plugin.property.service.PropertyUtil;
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceRegistration;
+import org.springframework.util.ClassUtils;
 
 /**
  * Parent abstract class of org.joget.plugin.base.ExtDefaultPlugin
@@ -15,6 +19,61 @@ import org.osgi.framework.ServiceRegistration;
 public abstract class DefaultPlugin implements Plugin, BundleActivator {
 
     protected ServiceRegistration registration;
+    protected Map<String, Object> properties;
+    
+    public String getClassName() {
+        return ClassUtils.getUserClass(this).getName();
+    }
+    
+    /**
+     * Get plugin properties.
+     * @return 
+     */
+    public Map<String, Object> getProperties() {
+        return properties;
+    }
+
+    /**
+     * Set plugin properties.
+     * @param properties 
+     */
+    public void setProperties(Map<String, Object> properties) {
+        this.properties = PropertyUtil.getHashVariableSupportedMap(properties);
+    }
+    
+    /**
+     * Get a plugin property value by property key.
+     * 
+     * @param property 
+     */
+    public Object getProperty(String property) {
+        Object value = (properties != null) ? properties.get(property) : null;
+        return value;
+    }
+    
+    /**
+     * Get a plugin property value by property key and return in java.lang.String. Non-exist key 
+     * will return an empty string instead of NULL value.
+     * 
+     * @param property 
+     */
+    public String getPropertyString(String property) {
+        Object value = (properties != null) ? properties.get(property) : null;
+        return (value != null) ? value.toString() : "";
+    }
+    
+    /**
+     * Set a plugin property
+     * 
+     * @param property A property key
+     * @param value 
+     */
+    public void setProperty(String property, Object value) {
+        if (properties == null) {
+            properties = new HashMap<String, Object>();
+        }
+        properties.put(property, value);
+    }
 
     /**
      * Method used by Felix OSGI framework to register the plugin
