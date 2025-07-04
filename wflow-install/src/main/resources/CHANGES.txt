@@ -2,6 +2,32 @@ Joget DX COMMUNITY
 ====================
 For more information, please refer to https://community.joget.org
 
+8.2.2
+=====
+0c8609a78 Fixed: wflow-consoleweb - Date Picker - Incorrect styling in Trimeda theme. #465 @8.2-SNAPSHOT
+f902fb30e Fixed: wflow-consoleweb - Date Picker - Icons misaligned in compact theme and bigger font sizes in smaller screens. #465 @8.2-SNAPSHOT
+657795ce8 Fixed: wflow-wfengine - Workflow - Recover corrupted assignment during startup. #1033 @8.2-SNAPSHOT
+5bbd2d72d Fixed: wflow-wfengine - Workflow - Failed to recover stuck route & subflow during startup. #1033 @8.2-SNAPSHOT
+a8fc93c23 Fixed: wflow-core - AppUtil - Show hash variable in logs when error occurs. #1070 @8.2-SNAPSHOT
+208416a82 Fixed: jw-community - Security - Upgrade Apache Tomcat to 9.0.106. #1081 @8.2-SNAPSHOT
+8a1fb06eb Fixed: wflow-commons - Security - Upgrade commons-beanutils to 1.11.0. #1074 T6328 @8.2-SNAPSHOT
+3f83445a1 Fixed: wflow-core - Security - Upgrade to JGit 6.10.1. #1098 @8.2-SNAPSHOT
+524eafb1b Fixed: wflow-consoleweb - Profile - Fixed inconsistent profile behavior in user page profile #926 @8.2-SNAPSHOT
+40f1571ee Fixed: wflow-consoleweb - Profile - Fixed edit profile with does not check for xss for name field. #926 T6104 @8.2-SNAPSHOT
+0cc4ecc84 Fixed: wflow-consoleweb - App Version Table - newly created version not being redirected issue. #933 @8.2-SNAPSHOT
+4e78da75e Fixed: wflow-consoleweb - DX8 Trimeda Theme - Correction of 44e592a7. #980 @8.2-SNAPSHOT
+12297b900 Fixed: wflow-consoleweb - DX8 Trimeda Theme - Fixed header styling issue, show button & observer issue #980 @8.2-SNAPSHOT
+ded6e467c Fixed: wflow-consoleweb - Icon text field - Fixed issue where the icon text field allowed an empty label. @8.2-SNAPSHOT
+a5617d716 Fixed: wflow-core - Setup - Cache not ready causing redirection to setup page showing error page. #1012 @8.2-SNAPSHOT
+967c08f4a Fixed: wflow-consoleweb - General Settings - Default UI setting still selecting unpublished UI. #1038 T6302 @8.2-SNAPSHOT
+c7f38e7aa Fixed: jw-community - Deprecated some V2 plugin methods and bring back its support which is removed without deprecated it. #1045 T6307 @8.2-SNAPSHOT
+a1102ad50 Fixed: wflow-core - AppUtil - back compatibility for old plugin type properties configuration data. #1045 T6307 @8.2-SNAPSHOT
+74667e52e Fixed: wflow-core - UI Builder - Deleted page definition is still exist in DB. #1051 @8.2-SNAPSHOT
+9bf0de784 Fixed: wflow-consoleweb - Image upload - Permission wrongly retrieving from unpublished app version. #1061 @8.2-SNAPSHOT
+7abbf7e50 Fixed: wflow-plugin-base - Plugin Manager - Dependent plugins does not reload correctly. #1097 @8.2-SNAPSHOT
+a21ba74a8 Fixed: wflow-consoleweb - DX8 Trimeda Theme - List Multi Select Filter does not present correctly. #959 T5364 @8.2-SNAPSHOT
+e6d39e389 Fixed: wflow-core - Security - Upgrade POI to 5.4.1 and commons-io to 2.19.0. @8.2-SNAPSHOT
+
 8.2.1
 =====
 c3c5b99f3 Fixed: wflow-plugin-base - Plugin - Governance Health Check plugin is unable to install. #940 @8.2-SNAPSHOT
