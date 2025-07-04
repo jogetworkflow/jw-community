@@ -33,6 +33,7 @@ body {
     --button-secondary-height: 40px;
     --button-secondary-padding: 10px 32px;
     --page-button-panel-padding: 6px 12px;
+    --button-secondary-line-height: 1.5;
 
     --breadcrumb-spacing: 32px;
 
@@ -76,6 +77,7 @@ body.compact-mode {
     --button-secondary-height: 32px;
     --button-secondary-padding: 4px 24px;
     --page-button-panel-padding: 3px 12px;
+    --button-secondary-line-height: 1;
 
     --breadcrumb-spacing: 16px;
 
@@ -193,7 +195,7 @@ h6,
 /* Primary Button */
 div#section-actions.form-section .form-cell input,
 div#section-actions.form-section .form-cell button {
-    height: var(--form-button-height);
+    min-height: var(--form-button-height);
 }
 
 #content main button[class*=button] {
@@ -218,8 +220,9 @@ div#dataList_simplelist div.list-group .list-group-item  div.rowActions > a,
 div#dataList_columnslist div.dropdown > a,
 div#dataList_columnslist tbody span.row_action_inner > a,
 #content .page-button-panel .page-button-prev.btn.button,
-#content .page-button-panel .page-button-next.btn.button {
-    height: var(--button-secondary-height);
+#content .page-button-panel .page-button-next.btn.button,
+.dataList .row_action a:not(.btn) {
+    min-height: var(--button-secondary-height);
     flex-grow: 0;
     display: inline-flex !important;
     flex-direction: row;
@@ -231,6 +234,8 @@ div#dataList_columnslist tbody span.row_action_inner > a,
     border-radius: 16px !important;
     margin: 0 !important;
     font-size: 16px;
+    line-height: var(--button-secondary-line-height) !important;
+    text-align: center !important; 
 }
 
 #content .page-button-panel .page-button-prev.btn.button,
@@ -774,6 +779,10 @@ body.rtl #sidebar .nav > li > ul > li:not(:last-child){
     body.horizontal_menu #sidebar {
         height: var(--sidebar-horizontal-height);
         max-height: var(--sidebar-horizontal-height);
+    }
+
+    body.quickEditModeActive.horizontal_menu.compact-mode #sidebar #category-container {
+        margin-bottom: 0px;
     }
 
     body.horizontal_menu #sidebar #navigation {
