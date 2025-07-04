@@ -4473,10 +4473,15 @@ public class ConsoleWebController {
             } else {
                 properties = setupManager.getSettingValue(DirectoryUtil.IMPL_PROPERTIES);
             }
-            
+
             //make sure the properties is json format
-            properties = AppUtil.parsePluginProperties(properties).toString();
-            map.addAttribute("properties", PropertyUtil.propertiesJsonLoadProcessing(properties));
+            JSONObject parsedProperties = AppUtil.parsePluginProperties(properties);
+            properties = parsedProperties.toString();
+
+            // If the JSON is not empty, add it to the map
+            if (!parsedProperties.isEmpty()) {
+                map.addAttribute("properties", PropertyUtil.propertiesJsonLoadProcessing(properties));
+            }
 
             map.addAttribute("propertyEditable", plugin);
             map.addAttribute("propertiesDefinition", PropertyUtil.injectHelpLink(plugin.getHelpLink(), plugin.getPropertyOptions()));
