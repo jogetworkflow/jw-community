@@ -1624,16 +1624,21 @@ public class FormDataDaoImpl implements FormDataDao {
                     }
                     fieldsQuery += f;
                 }
+                fieldsQuery = replaceColumnNameWithPrefix(tableName, fieldsQuery);
             }
             
             String conditionQuery = "";
             if (condition != null && !condition.isEmpty()) {
                 String newCondition = StringUtil.replaceOrdinalParameters(condition, params);
                 conditionQuery = " " + newCondition;
+                
+                conditionQuery = replaceColumnNameWithPrefix(tableName, conditionQuery);
             }
             String havingConditionQuery = "";
             if (havingCondition != null && !havingCondition.isEmpty()) {
                 havingConditionQuery = " HAVING " + havingCondition;
+                
+                havingConditionQuery = replaceColumnNameWithPrefix(tableName, havingConditionQuery);
             }
             
             String joinQuery = "";
@@ -1660,17 +1665,20 @@ public class FormDataDaoImpl implements FormDataDao {
                     }
                     groupByQuery += f;
                 }
+                groupByQuery = replaceColumnNameWithPrefix(tableName, groupByQuery);
+                
                 query += " GROUP BY " + groupByQuery + havingConditionQuery;
             }
 
             if ((sort != null && !sort.trim().isEmpty()) && !query.toLowerCase().contains("order by")) {
-                String sortQuery = sort;
+                String sortQuery = replaceColumnNameWithPrefix(tableName, sort);
                 query += " ORDER BY " + sortQuery;
 
                 if (desc) {
                     query += " DESC";
                 }
             }
+            
             Query q = session.createQuery(processQuery(query));
             InMemoryCacheManager cacheManager = InMemoryCacheManager.getInMemoryCacheManager();
             cacheManager.setCacheable(q, tableName);
@@ -1763,20 +1771,25 @@ public class FormDataDaoImpl implements FormDataDao {
             if (condition != null && !condition.isEmpty()) {
                 String newCondition = StringUtil.replaceOrdinalParameters(condition, params);
                 conditionQuery = " " + newCondition;
+                
+                conditionQuery = replaceColumnNameWithPrefix(tableName, conditionQuery);
             }
             String havingConditionQuery = "";
             if (havingCondition != null && !havingCondition.isEmpty()) {
                 havingConditionQuery = " HAVING " + havingCondition;
+                havingConditionQuery = replaceColumnNameWithPrefix(tableName, havingConditionQuery);
             }
             
             if (groupBys != null && groupBys.length > 0) {
-                selectField = groupBys[0];
+                selectField = replaceColumnNameWithPrefix(tableName, groupBys[0]);
                 for (String f : groupBys) {
                     if (!groupByQuery.isEmpty()) {
                         groupByQuery += ", ";
                     }
                     groupByQuery += f;
                 }
+                groupByQuery = replaceColumnNameWithPrefix(tableName, groupByQuery);
+                
                 groupByQuery = " GROUP BY " + groupByQuery + havingConditionQuery;
             }
             
