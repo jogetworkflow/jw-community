@@ -73,9 +73,9 @@ public class AccordionChildComponent extends SimplePageComponent implements Hidd
         }
         
         String html = "<div id=\""+id+"\" class=\"panel accordion-item\" "+attr+">";
-        html += "<h2 class=\"accordion-header\"><button class=\"panel-heading accordion-heading accordion-button accordion-toggle " + collapse+ "\" id=\"heading-"+id+"\" tabindex=\"0\" data-bs-toggle=\"collapse\" data-bs-target=\"#body-"+id+"\" data-parent=\"#pc-"+parentId+"\" role=\"button\" aria-expanded=\""+(!show.isEmpty())+"\" aria-controls=\"body-"+id+"\">"+getPropertyString("label")+"</button></h2>";
-        html += "<div id=\"body-"+id+"\" tabindex=\"0\" class=\"card-body accordion-collapse collapse "+show+"\" data-parent=\"#pc-"+parentId+"\" "+builderAttr+">" + renderChildren() + "</div> "+ style + "</div>";
-        
+        html += "<h2 class=\"accordion-header\"><button class=\"panel-heading accordion-heading accordion-button accordion-toggle " + collapse+ "\" id=\"heading-"+id+"\" tabindex=\"0\" data-bs-toggle=\"collapse\" data-bs-target=\"#body-"+id+"\" data-bs-parent=\"#pc-"+parentId+"\" role=\"button\" aria-expanded=\""+(!show.isEmpty())+"\" aria-controls=\"body-"+id+"\">"+getPropertyString("label")+"</button></h2>";
+        html += "<div id=\"body-"+id+"\" tabindex=\"0\" class=\"card-body accordion-collapse collapse "+show+"\" data-bs-parent=\"#pc-"+parentId+"\" "+builderAttr+">" + renderChildren() + "</div> "+ style + "</div>";
+
         return html;
     }
 
