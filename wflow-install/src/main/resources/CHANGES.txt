@@ -18,8 +18,6 @@ a8fc93c23 Fixed: wflow-core - AppUtil - Show hash variable in logs when error oc
 ded6e467c Fixed: wflow-consoleweb - Icon text field - Fixed issue where the icon text field allowed an empty label. @8.2-SNAPSHOT
 a5617d716 Fixed: wflow-core - Setup - Cache not ready causing redirection to setup page showing error page. #1012 @8.2-SNAPSHOT
 967c08f4a Fixed: wflow-consoleweb - General Settings - Default UI setting still selecting unpublished UI. #1038 T6302 @8.2-SNAPSHOT
-c7f38e7aa Fixed: jw-community - Deprecated some V2 plugin methods and bring back its support which is removed without deprecated it. #1045 T6307 @8.2-SNAPSHOT
-a1102ad50 Fixed: wflow-core - AppUtil - back compatibility for old plugin type properties configuration data. #1045 T6307 @8.2-SNAPSHOT
 74667e52e Fixed: wflow-core - UI Builder - Deleted page definition is still exist in DB. #1051 @8.2-SNAPSHOT
 9bf0de784 Fixed: wflow-consoleweb - Image upload - Permission wrongly retrieving from unpublished app version. #1061 @8.2-SNAPSHOT
 7abbf7e50 Fixed: wflow-plugin-base - Plugin Manager - Dependent plugins does not reload correctly. #1097 @8.2-SNAPSHOT
