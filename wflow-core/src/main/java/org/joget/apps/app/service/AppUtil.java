@@ -2199,14 +2199,7 @@ public class AppUtil implements ApplicationContextAware {
         o.put("properties", parsePluginProperties(p.getPluginProperties()));
     }
     
-    /**
-     * Used to parse and make sure the properties values are in JSON format,
-     * if it is in CSV format, convert it to JSON format
-     * 
-     * @param pluginProperties
-     * @return 
-     */
-    public static JSONObject parsePluginProperties(String pluginProperties) {
+    private static JSONObject parsePluginProperties(String pluginProperties) {
         if (pluginProperties == null || pluginProperties.isEmpty()) {
             return new JSONObject();
         }
@@ -2215,23 +2208,24 @@ public class AppUtil implements ApplicationContextAware {
             return new JSONObject(pluginProperties);
         } catch (JSONException jsonException) {
             // Backward compatible: try parsing as CSV because it's an old plugin configuration format which some plugins still uses
-            if (pluginProperties.contains(",")) {
-                try {
-                    Map propertyMap = CsvUtil.getPluginPropertyMap(pluginProperties);
-                    return new JSONObject(propertyMap);
-                } catch (IOException e) {
-                    //ignore this
-                }
+            try {
+                Map propertyMap = CsvUtil.getPluginPropertyMap(pluginProperties);
+                return new JSONObject(propertyMap);
+            } catch (IOException e) {
+                // If both parsing attempts fail, return empty JSON
+                return new JSONObject();
             }
         }
-        // If both parsing attempts fail, return empty JSON
-        return new JSONObject();
     }
     
     protected static void populateParticipant(JSONObject o, PackageParticipant p) throws JSONException {
         o.put("type", p.getType());
         o.put("value", p.getValue());
-        o.put("properties", parsePluginProperties(p.getPluginProperties()));
+        if (p.getPluginProperties() != null && !p.getPluginProperties().isEmpty()) {
+            o.put("properties", new JSONObject(p.getPluginProperties()));
+        } else {
+            o.put("properties", new JSONObject());
+        }
     }
     
     /**

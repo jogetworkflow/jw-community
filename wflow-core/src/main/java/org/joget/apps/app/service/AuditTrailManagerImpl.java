@@ -155,8 +155,14 @@ public class AuditTrailManagerImpl implements AuditTrailManager {
                                 AuditTrailPlugin plugin = (AuditTrailPlugin) plugins.get(prop.getPluginName());
                                 Map propertiesMap = new HashMap();
 
-                                String json = prop.getPluginProperties();
-                                propertiesMap = PropertyUtil.getPropertiesValueFromJson(json);
+                                if (!(plugin instanceof PropertyEditable)) {
+                                    try {
+                                        propertiesMap = CsvUtil.getPluginPropertyMap(prop.getPluginProperties());
+                                    } catch (IOException e) {}
+                                } else {
+                                    String json = prop.getPluginProperties();
+                                    propertiesMap = PropertyUtil.getPropertiesValueFromJson(json);
+                                }
 
                                 propertiesMap.put(AUDIT_TRAIL_PLUGIN_NAME, prop.getPluginName());
                                 propertiesList.add(propertiesMap);

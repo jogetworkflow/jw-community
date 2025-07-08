@@ -718,8 +718,12 @@ public class AppWorkflowHelper implements WorkflowHelper {
                     if (pluginDefaultProperties != null) {
                         Map propertiesMap = new HashMap();
 
-                        String json = pluginDefaultProperties.getPluginProperties();
-                        propertiesMap = PropertyUtil.getPropertiesValueFromJson(json);
+                        if (!(plugin instanceof PropertyEditable)) {
+                            propertiesMap = CsvUtil.getPluginPropertyMap(pluginDefaultProperties.getPluginProperties());
+                        } else {
+                            String json = pluginDefaultProperties.getPluginProperties();
+                            propertiesMap = PropertyUtil.getPropertiesValueFromJson(json);
+                        }
 
                         propertiesMap.put("processId", processId);
                         propertiesMap.put("activityId", activityId);
