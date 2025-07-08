@@ -181,18 +181,22 @@ public class BuilderDefinitionDaoImpl extends AbstractAppVersionedObjectDao<Buil
             if (obj != null) {
                 String id = obj.getId();
                 AppDefinition appDef = obj.getAppDefinition();
-            
-                // detach from app
-                Collection<BuilderDefinition> list = appDef.getBuilderDefinitionList();
-                for (BuilderDefinition object : list) {
-                    if (obj.getId().equals(object.getId())) {
-                        list.remove(obj);
+
+                // delete obj
+                Collection<BuilderDefinition> builderDefs = appDef.getBuilderDefinitionList();
+                for (BuilderDefinition b : builderDefs) {
+                    // same object in memory, don't to do anything
+                    if (obj == b) {
+                        break;
+                    }
+                    // get updated definition object because appDefinitionDao.updateDateModified() calls session.refresh()
+                    // which will instantiate new objects for all definitions in appDef.
+                    if (id.equals(b.getId())) {
+                        obj = b;
                         break;
                     }
                 }
-                obj.setAppDefinition(null);
-
-                // delete obj
+                builderDefs.remove(obj);
                 super.delete(getEntityName(), obj);
                 appDefinitionDao.updateDateModified(appDef);
                 result = true;
