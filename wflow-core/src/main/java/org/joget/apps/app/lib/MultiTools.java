@@ -100,7 +100,7 @@ public class MultiTools extends DefaultApplicationPlugin implements ProcessMappi
                         }
                     }
                 });
-                PluginThread.start(newThread);
+                newThread.start();
             } else {
                 for (Object tool : tools) {
                     if (tool != null && tool instanceof Map) {
@@ -126,7 +126,7 @@ public class MultiTools extends DefaultApplicationPlugin implements ProcessMappi
                                             appPlugin.execute(((PropertyEditable) appPlugin).getProperties());
                                         }
                                     });
-                                    PluginThread.start(newThread);
+                                    newThread.start();
                                     threads.add(newThread);
                                 } else {
                                     appPlugin.execute(((PropertyEditable) appPlugin).getProperties());

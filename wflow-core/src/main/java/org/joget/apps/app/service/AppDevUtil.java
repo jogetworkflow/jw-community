@@ -1592,7 +1592,7 @@ public class AppDevUtil {
                     }
                 });
                 bgSync.setDaemon(true);
-                PluginThread.start(bgSync);
+                bgSync.start();
             } else {
                 // first time init project files
                 LogUtil.info(AppDevUtil.class.getName(), "Git project not found, first time init for app " + appDef);

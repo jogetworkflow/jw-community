@@ -233,39 +233,33 @@ public class LogViewerAppender extends AbstractAppender {
     @Override
     public void append(LogEvent event) {
         if (checkStartLogging(event)) { 
-            Thread newThread = new PluginThread(new Runnable() {
-                @Override
-                public void run() {
-                    try {
-                        Writer systemWriter = getWriter(CONSOLE_LOG);
-                        Writer appWriter = null;
+            try {
+                Writer systemWriter = getWriter(CONSOLE_LOG);
+                Writer appWriter = null;
 
-                        String appId = getCurrentAppId();
-                        if (appId != null) {
-                            appWriter = getWriter(appId);
-                        }
-                        String output = new String(getLayout().toByteArray(event));
-                        write(systemWriter, appWriter, output);
-
-                        if (systemWriter != null) {
-                            systemWriter.flush();
-                        }
-                        if (appWriter != null) {
-                            appWriter.flush();
-                        }
-                
-                        rollOver(CONSOLE_LOG);
-                        if (appId != null) {
-                            rollOver(appId);
-                        }
-                    } catch (IOException e) {
-                        if (!"Stream closed".equals(e.getMessage())) {
-                            e.printStackTrace();
-                        }
-                    }
+                String appId = getCurrentAppId();
+                if (appId != null) {
+                    appWriter = getWriter(appId);
                 }
-            });
-            PluginThread.start(newThread);    
+                String output = new String(getLayout().toByteArray(event));
+                write(systemWriter, appWriter, output);
+
+                if (systemWriter != null) {
+                    systemWriter.flush();
+                }
+                if (appWriter != null) {
+                    appWriter.flush();
+                }
+                
+                rollOver(CONSOLE_LOG);
+                if (appId != null) {
+                    rollOver(appId);
+                }
+            } catch (IOException e) {
+                if (!"Stream closed".equals(e.getMessage())) {
+                    e.printStackTrace();
+                }
+            }
         }
     }
 
@@ -393,20 +387,7 @@ public class LogViewerAppender extends AbstractAppender {
                 }            
             }            
         });
-
-        PluginThread.start(newThread);
-        
-        //if the server list having other cluster node, broadcast to other server
-        if (node == null && appId !=null && !appId.isEmpty()) {
-            String[] servers = ServerUtil.getServerList();
-            if (servers.length > 1) {
-                for (String server : servers) {
-                    if (!ServerUtil.getServerName().equalsIgnoreCase(server) && !unreachableNodes.contains(server)) {
-                        broadcastClusterNode(message, server, appId);
-                    }
-                }
-            }
-        }
+        newThread.start();
     }
     
     /**
@@ -527,7 +508,7 @@ public class LogViewerAppender extends AbstractAppender {
                         }
                     }
                 });
-                PluginThread.start(newThread);
+                newThread.start();
             }
         }
     }

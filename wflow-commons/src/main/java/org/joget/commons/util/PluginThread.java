@@ -36,8 +36,6 @@ import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import jakarta.servlet.http.HttpUpgradeHandler;
 import jakarta.servlet.http.Part;
-import java.beans.Expression;
-import java.util.concurrent.ThreadFactory;
 import org.apache.commons.lang3.reflect.MethodUtils;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
@@ -61,7 +59,6 @@ public final class PluginThread extends Thread {
     private static Unsafe unsafe;
     private static Field threadHolderField;
     private static Field threadTaskField;
-    private static ThreadFactory virtualThreadFactory;
     static {
         try {
             // get internal thread holder and task fields using reflection
@@ -75,21 +72,11 @@ public final class PluginThread extends Thread {
             final Field unsafeField = Unsafe.class.getDeclaredField("theUnsafe");
             unsafeField.setAccessible(true);
             unsafe = (Unsafe) unsafeField.get(null);
-
-            if (Runtime.version().feature() >= 21) {
-                // Java 21 and above, get virtual thread factory via Reflection using the java.beans.Expression class to maintain backward compatibility
-                Object builder = new Expression(Thread.class, "ofVirtual", null).getValue();
-                builder = new Expression(builder, "name", new Object[] {"joget-vt"}).getValue();
-                virtualThreadFactory = (ThreadFactory)new Expression(builder, "factory", null).getValue(); 
-                LogUtil.info(PluginThread.class.getName(), "Using Java 21+ virtual thread factory");
-            } else {
-                LogUtil.info(PluginThread.class.getName(), "Java 21+ virtual thread factory not available");
-            }
         } catch (NoSuchFieldException | IllegalArgumentException | IllegalAccessException ex) {
             // ignore if fields do not exist
         } catch (Exception ex) {
-            ex.printStackTrace(); 
-       }
+            ex.printStackTrace();
+        }
     }
     
     /**
@@ -263,40 +250,12 @@ public final class PluginThread extends Thread {
      * @return 
      */
     public static ExecutorService getAsyncExecutorService() {
-        ExecutorService asyncExecutorService = null;
-        if (!HostManager.isVirtualHostEnabled() && virtualThreadFactory != null) {
-            // use virtual threads for non-multitenant Java 21 and above
-            try {
-                asyncExecutorService = Executors.newCachedThreadPool((Runnable r) -> {
-                    Thread t = virtualThreadFactory.newThread(new PluginThread(r));
-                    return t;
-                });
-            } catch(Exception e) {
-                LogUtil.warn(PluginThread.class.getName(), "Cannot use virtual thread executor:" + e.toString());
-            }
-        }
-        if (asyncExecutorService == null) {
-            asyncExecutorService = Executors.newSingleThreadExecutor((Runnable r) -> {
-                Thread t = new PluginThread(r);
-                t.setDaemon(false);
-                return t;
-            });
-        }
+        ExecutorService asyncExecutorService = Executors.newSingleThreadExecutor((Runnable r) -> {
+            Thread t = new PluginThread(r);
+            t.setDaemon(false);
+            return t;
+        });
         return asyncExecutorService;
-    }
-    
-    /**
-     * Starts a thread. If running on Java 21+ and on non-multitenant, it will run as a virtual thread.
-     * @param thread 
-     */
-    public static void start(Thread thread) {
-        if (!HostManager.isVirtualHostEnabled() && virtualThreadFactory != null) {
-            // use virtual threads for non-multitenant Java 21 and above
-            Thread virtualThread = virtualThreadFactory.newThread(thread);
-            virtualThread.start();
-        } else { 
-            thread.start();
-        }
     }
     
     /**
