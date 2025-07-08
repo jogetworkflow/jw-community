@@ -6,8 +6,6 @@ For more information, please refer to https://community.joget.org
 =====
 0c8609a78 Fixed: wflow-consoleweb - Date Picker - Incorrect styling in Trimeda theme. #465 @8.2-SNAPSHOT
 f902fb30e Fixed: wflow-consoleweb - Date Picker - Icons misaligned in compact theme and bigger font sizes in smaller screens. #465 @8.2-SNAPSHOT
-657795ce8 Fixed: wflow-wfengine - Workflow - Recover corrupted assignment during startup. #1033 @8.2-SNAPSHOT
-5bbd2d72d Fixed: wflow-wfengine - Workflow - Failed to recover stuck route & subflow during startup. #1033 @8.2-SNAPSHOT
 a8fc93c23 Fixed: wflow-core - AppUtil - Show hash variable in logs when error occurs. #1070 @8.2-SNAPSHOT
 208416a82 Fixed: jw-community - Security - Upgrade Apache Tomcat to 9.0.106. #1081 @8.2-SNAPSHOT
 8a1fb06eb Fixed: wflow-commons - Security - Upgrade commons-beanutils to 1.11.0. #1074 T6328 @8.2-SNAPSHOT
