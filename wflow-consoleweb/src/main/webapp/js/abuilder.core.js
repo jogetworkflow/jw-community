@@ -293,6 +293,27 @@ AppBuilder = {
                 }
             });
         },1);
+
+        // Check for missing environment variables
+        setTimeout(function(){
+            CustomBuilder.cachedAjax({
+                type: "POST",
+                url: CustomBuilder.contextPath + '/web/json/console/app' + CustomBuilder.appPath + '/builders/missingEnvVars',
+                dataType : "json",
+                beforeSend: function (request) {
+                   request.setRequestHeader(ConnectionManager.tokenName, ConnectionManager.tokenValue);
+                },
+                success: function(response) {
+                    if (response !== undefined && response.result !== undefined && response.result.length > 0) {
+                        $(".canvas-header").prepend('<div class="alert alert-warning error missingenvvars" role="alert">'+response.error+'<ul></ul></div>');
+                        for (var i in response.result) {
+                            $(".canvas-header .missingenvvars ul").append('<li>'+response.result[i]+'</li>');
+                        }
+                    }
+                }
+            });
+        }, 2); // Slightly delayed to avoid conflicts
+
     },
     
     /*

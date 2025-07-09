@@ -2934,6 +2934,24 @@ public class AppServiceImpl implements AppService {
         }
     }
 
+    // Modified method to return generated ID info instead of using instance variable
+    private String generateMissingEnvVarId(EnvironmentVariable envVar, AppDefinition appDef) {
+        if (envVar.getId() == null || envVar.getId().trim().isEmpty()) {
+            String newId = "__gen_missing_id_" + UuidGenerator.getInstance().getUuid();
+            LogUtil.warn(getClass().getName(), "Generated new ID: " + newId + " for empty env var in app " + appDef.getAppId());
+            envVar.setId(newId);
+
+            String originalRemarks = envVar.getRemarks();
+            String appendedRemarks = (originalRemarks == null || originalRemarks.trim().isEmpty())
+                ? "Note: This variable was missing an ID during import, so a new ID was automatically generated."
+                : "Original remarks: " + originalRemarks + "\n | Note: This variable was missing an ID during import, so a new ID was automatically generated.";
+
+            envVar.setRemarks(appendedRemarks);
+            return newId;
+        }
+        return null;
+    }
+
     /**
      * Import an app definition object and XPDL content into the system.
      * @param appDef
@@ -2948,7 +2966,10 @@ public class AppServiceImpl implements AppService {
         Boolean overridePluginDefault = false;
         Boolean doNotImportParticipant = false;
         Boolean doNotImportTool = false;
-        
+
+        // Use local list for thread safety - each request gets its own list
+        List<String> generatedEnvVarIds = new ArrayList<>();
+
         HttpServletRequest request = WorkflowUtil.getHttpServletRequest();
         if (request != null && request.getParameterValues("overrideEnvVariable") != null) {
             overrideEnvVariable = true;
@@ -2962,7 +2983,7 @@ public class AppServiceImpl implements AppService {
         if (request != null && request.getParameterValues("doNotImportTool") != null) {
             doNotImportTool = true;
         }
-        
+
         //fix app id letter case issue during import
         AppDefinition orgAppDef = getPublishedAppDefinition(appDef.getAppId());
         if (orgAppDef == null) {
@@ -2972,7 +2993,7 @@ public class AppServiceImpl implements AppService {
         if (orgAppDef != null) {
             appId = orgAppDef.getAppId();
         }
-        
+
         AppDevUtil.setImportApp(true);
         try {
             LogUtil.info(getClass().getName(), "Importing app " + appDef.getId() + " ...");
@@ -3076,7 +3097,7 @@ public class AppServiceImpl implements AppService {
                 }
                 LogUtil.info(getClass().getName(), "Imported addon builder definitions : " + appDef.getBuilderDefinitionList().size());
             }
-            
+
             if (!overrideEnvVariable && orgAppDef != null && orgAppDef.getEnvironmentVariableList() != null) {
                 Set<String> existId = new HashSet<String>();
                 for (EnvironmentVariable o : orgAppDef.getEnvironmentVariableList()) {
@@ -3091,27 +3112,33 @@ public class AppServiceImpl implements AppService {
 
                 if (appDef.getEnvironmentVariableList() != null) {
                     for (EnvironmentVariable o : appDef.getEnvironmentVariableList()) {
+                        // Only process if ID doesn't exist in original app
                         if (!existId.contains(o.getId())) {
-                            if (o.getValue() == null) {
-                                o.setValue("");
+                            String generatedId = generateMissingEnvVarId(o, newAppDef);
+                            if (generatedId != null) {
+                                generatedEnvVarIds.add(generatedId);
                             }
-                            o.setAppDefinition(newAppDef);
-                            environmentVariableDao.add(o);
+                            prepareAndAddEnvironmentVariable(o, newAppDef);
                         }
                     }
                 }
             } else {
                 if (appDef.getEnvironmentVariableList() != null) {
                     for (EnvironmentVariable o : appDef.getEnvironmentVariableList()) {
-                        if (o.getValue() == null) {
-                            o.setValue("");
+                        // Check if ID was generated and track it
+                        String generatedId = generateMissingEnvVarId(o, newAppDef);
+                        if (generatedId != null) {
+                            generatedEnvVarIds.add(generatedId);
                         }
-                        o.setAppDefinition(newAppDef);
-
-                        environmentVariableDao.add(o);
+                        prepareAndAddEnvironmentVariable(o, newAppDef);
                     }
                     LogUtil.info(getClass().getName(), "Imported environments variables : " + appDef.getEnvironmentVariableList().size());
                 }
+            }
+
+            // Log if any IDs were generated
+            if (!generatedEnvVarIds.isEmpty()) {
+                LogUtil.warn(getClass().getName(), "Generated " + generatedEnvVarIds.size() + " environment variable IDs during import for app " + appDef.getAppId() + ": " + String.join(", ", generatedEnvVarIds));
             }
 
             if (appDef.getMessageList() != null) {
@@ -3243,6 +3270,14 @@ public class AppServiceImpl implements AppService {
         } finally {
             AppDevUtil.setImportApp(null);
         }
+    }
+    
+    private void prepareAndAddEnvironmentVariable(EnvironmentVariable o, AppDefinition newAppDef) {
+        if (o.getValue() == null) {
+            o.setValue("");
+        }
+        o.setAppDefinition(newAppDef);
+        environmentVariableDao.add(o);
     }
 
     /**
