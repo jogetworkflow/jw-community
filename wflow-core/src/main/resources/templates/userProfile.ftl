@@ -208,7 +208,6 @@
             </div>
         </form>
         <script type="text/javascript">
-
             function validateField(){
                 var valid = true;
                 var alertString = "";
@@ -218,7 +217,7 @@
                     if(firstName == ""){
                         alertString += '@@User.firstName[not.blank]@@';
                         valid = false;
-                    } else if (containsXss(firstName) || containsXss(lastName)) {
+                    } else if (!UI.isValidInput(firstName) || !UI.isValidInput(lastName)) {
                         alertString += '@@console.directory.user.error.label.nameInvalid@@';
                         valid = false;
                     }            
@@ -261,10 +260,6 @@
                 </#if>
             }
                 
-            function containsXss(input) {
-                const pattern = /<[^>]*>|(javascript:)|(&#x?[0-9a-fA-F]+;)|(%[0-9a-fA-F]{2})/gi;
-                return pattern.test(input);        
-            }   
 
             // show/hide the field based on current locale and the chosen locale
             function updateWesternDigitDateField() {

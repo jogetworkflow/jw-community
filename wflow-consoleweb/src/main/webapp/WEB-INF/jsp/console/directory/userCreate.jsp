@@ -255,6 +255,8 @@
             var idMatch = /^[\.@0-9a-zA-Z_\+-]+$/.test($("#username").val());
             const firstName = $("#firstName").val();
             const lastName = $("#lastName").val();
+            const employeeCode = $("#employeeCode").val();
+            const employeeRole = $("#employeeRole").val();
             
             if(!idMatch){
                 if(!idMatch){
@@ -267,7 +269,7 @@
             if(firstName == ""){
                 alertString += '<ui:msgEscJS key="User.firstName[not.blank]"/>';
                 valid = false;
-            } else if (containsXss(firstName) || containsXss(lastName)) {
+            } else if (!UI.isValidInput(firstName) || !UI.isValidInput(lastName)) {
                 alertString += '<ui:msgEscJS key="console.directory.user.error.label.nameInvalid"/>';
                 valid = false;
             }  
@@ -283,6 +285,22 @@
                     alertString += '\n';
                 }
                 alertString += '<ui:msgEscJS key="console.directory.user.error.label.passwordNotMatch"/>';
+                valid = false;
+            }
+
+            if (!UI.isValidInput(employeeCode)) {
+                if(alertString != ""){
+                    alertString += '\n';
+                }
+                alertString += '<ui:msgEscJS key="console.directory.user.error.label.employeeCodeInvalid"/>';
+                valid = false;
+            }
+
+            if (!UI.isValidInput(employeeRole)) {
+                if(alertString != ""){
+                    alertString += '\n';
+                }
+                alertString += '<ui:msgEscJS key="console.directory.user.error.label.jobTitleInvalid"/>';
                 valid = false;
             }
             
@@ -372,12 +390,7 @@
                 }
                 $(field).val(dvalue);
             }
-        }
-        
-        function containsXss(input) {
-            const pattern = /<[^>]*>|(javascript:)|(&#x?[0-9a-fA-F]+;)|(%[0-9a-fA-F]{2})/gi;
-            return pattern.test(input);        
-        }    
+        }  
 
         function closeDialog() {
             if (parent && parent.PopupDialog.closeDialog) {

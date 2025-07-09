@@ -1120,10 +1120,13 @@ public class ConsoleWebController {
                     employment = new Employment();
                 }
             }
+            
+            String sanitizedEmployeeCode = StringUtil.stripAllHtmlTag(StringUtil.unescapeString(employeeCode, StringUtil.TYPE_HTML, null));
+            String sanitizedEmployeeRole = StringUtil.stripAllHtmlTag(StringUtil.unescapeString(employeeRole, StringUtil.TYPE_HTML, null));
 
             employment.setUserId(user.getId());
-            employment.setEmployeeCode(employeeCode);
-            employment.setRole(employeeRole);
+            employment.setEmployeeCode(sanitizedEmployeeCode);
+            employment.setRole(sanitizedEmployeeRole);
             DateFormat df = new SimpleDateFormat("yyyy-MM-dd");
             try {
                 if (employeeStartDate != null && employeeStartDate.trim().length() > 0) {

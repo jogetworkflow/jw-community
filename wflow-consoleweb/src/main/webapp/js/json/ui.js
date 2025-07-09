@@ -252,6 +252,25 @@ UI = {
         ConnectionManager.post(UI.base + '/web/api/validateEmail', internalCallback, params);
 
         return false; // Prevent default behavior
+    },
+    isValidInput: function(input) {
+        // XSS and security patterns
+        const COMMON_XSS_PATTERNS = /<[^>]*>|javascript:|data:|vbscript:|&#x?[0-9a-fA-F]+;|%[0-9a-fA-F]{2}|\bon\w+\s*=/i;
+        
+        // Valid input pattern - allows alphanumeric, spaces, and specific special characters
+        const VALID_PATTERN = /^[a-zA-Z0-9 ._'\-]+$/;
+        
+        // Patterns for consecutive special characters and start/end validation
+        const CONSECUTIVE_SPECIALS = /[._'\-]{2,}/;
+        const START_END_SPECIALS = /^[._'\-]|[._'\-]$/;
+
+        if (input === null || input === "") return true;
+        if (COMMON_XSS_PATTERNS.test(input)) return false;
+        if (!VALID_PATTERN.test(input)) return false;
+        if (CONSECUTIVE_SPECIALS.test(input)) return false;
+        if (START_END_SPECIALS.test(input.trim())) return false;
+        
+        return true;
     }
 };
 
