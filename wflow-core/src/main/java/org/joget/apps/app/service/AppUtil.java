@@ -1600,14 +1600,16 @@ public class AppUtil implements ApplicationContextAware {
         // If empty, uses the value set in System Settings
         if(retryCountStr == null || retryCountStr.isEmpty()){
             SetupManager setupManager = (SetupManager)AppUtil.getApplicationContext().getBean("setupManager");
-            retryCountStr = setupManager.getSettingValue("retryCount").toString();
+            retryCountStr = setupManager.getSettingValue("retryCount");
         }
         // Parsing the string
         int retryCount = 0;
-        try {
-            retryCount = Integer.parseInt(retryCountStr);
-        } catch (Exception e) {
-            LogUtil.debug(AppUtil.class.getName(), e.getLocalizedMessage());
+        if (retryCountStr != null && !retryCountStr.isEmpty()) {
+            try {
+                retryCount = Integer.parseInt(retryCountStr);
+            } catch (Exception e) {
+                LogUtil.debug(AppUtil.class.getName(), e.getLocalizedMessage());
+            }
         }
 
         return retryCount;
@@ -1622,14 +1624,16 @@ public class AppUtil implements ApplicationContextAware {
         // If empty, uses the value set in System Settings
         if(retryIntervalStr == null || retryIntervalStr.isEmpty()){
             SetupManager setupManager = (SetupManager)AppUtil.getApplicationContext().getBean("setupManager");
-            retryIntervalStr = setupManager.getSettingValue("retryInterval").toString();
+            retryIntervalStr = setupManager.getSettingValue("retryInterval");
         }
         // Parsing the string
         long retryInterval = 10000;
-        try {
-            retryInterval = Integer.parseInt(retryIntervalStr) * 1000l;
-        } catch (Exception e) {
-            LogUtil.debug(AppUtil.class.getName(), e.getLocalizedMessage());
+        if (retryIntervalStr != null && !retryIntervalStr.isEmpty()) {
+            try {
+                retryInterval = Integer.parseInt(retryIntervalStr) * 1000l;
+            } catch (Exception e) {
+                LogUtil.debug(AppUtil.class.getName(), e.getLocalizedMessage());
+            }
         }
 
         return retryInterval;
