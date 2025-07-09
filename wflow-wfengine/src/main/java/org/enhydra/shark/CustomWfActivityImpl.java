@@ -439,12 +439,6 @@ public class CustomWfActivityImpl extends WfActivityImpl {
                 } else {
                     startActivity(shandle);
                 }
-            } else if (type == XPDLConstants.ACTIVITY_TYPE_NO) {
-                if (SharkConstants.STATE_OPEN_RUNNING.equals(state) && performerId != null) {
-                    finish(shandle);
-                } else {
-                    reevaluateAssignments(shandle);
-                }
             }
         }
     }
