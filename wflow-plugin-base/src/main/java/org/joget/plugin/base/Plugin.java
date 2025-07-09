@@ -1,16 +1,12 @@
 package org.joget.plugin.base;
 
 import java.util.Map;
-import org.joget.commons.util.LogUtil;
-import org.joget.plugin.property.model.PropertyEditable;
-import org.json.JSONArray;
-import org.json.JSONObject;
 
 /**
  * Basic interface of a plugin 
  * 
  */
-public interface Plugin extends PropertyEditable {
+public interface Plugin {
 
     /**
      * Return a unique name for the plugin. You can override a existing System plugin by providing the same name as the System plugin.
@@ -64,7 +60,6 @@ public interface Plugin extends PropertyEditable {
      * 
      * @return 
      */
-    @Deprecated
     PluginProperty[] getPluginProperties();
 
     /**
@@ -77,72 +72,5 @@ public interface Plugin extends PropertyEditable {
      * 
      * @return
      */
-    @Deprecated
     Object execute(Map properties);
-    
-    /**
-     * Return plugin label. This value will be used when a Resource Bundle 
-     * Message Key "<i>plugin.className</i>.pluginlabel" is not found by getI18nLabel() method.
-     * 
-     * Default implementation added for old plugin that still using getPluginProperties method to provide plugin
-     * configuration options and didn't implement PropertyEditable
-     * 
-     * @return
-     */
-    @Override
-    default public String getLabel() {
-        return getName();
-    }
-    
-    /**
-     * Return the plugin properties options in JSON format.
-     * 
-     * Default implementation added for old plugin that still using getPluginProperties method to provide plugin
-     * configuration options and didn't implement PropertyEditable
-     * 
-     * @return
-     */
-    @Override
-    default public String getPropertyOptions() {
-        
-        try {
-            PluginProperty[] properties = getPluginProperties();
-
-            if (properties != null && properties.length > 0) {
-                JSONArray propsArr = new JSONArray();
-                for (PluginProperty p : properties) {
-                    JSONObject pObj = new JSONObject();
-                    pObj.put("name", p.getName());
-                    pObj.put("label", p.getLabel());
-                    pObj.put("type", p.getType());
-                    pObj.put("value", p.getValue());
-                    
-                    String[] options = p.getOptions();
-                    if (options != null) {
-                        JSONArray optionsArr = new JSONArray();
-                        for (String o : options) {
-                            JSONObject oObj = new JSONObject();
-                            oObj.put("value", o);
-                            oObj.put("label", o);
-                            optionsArr.put(oObj);
-                        }
-                        pObj.put("options", optionsArr);
-                    }
-                    propsArr.put(pObj);
-                }   
-                JSONObject pageObj = new JSONObject();
-                pageObj.put("title", getLabel());
-                pageObj.put("properties", propsArr);
-                
-                JSONArray propetiesArr = new JSONArray();
-                propetiesArr.put(pageObj);
-                
-                return propetiesArr.toString();
-            }
-        } catch (Exception e) {
-            LogUtil.error(getClassName(), e, "fail to backward compatible this plugin");
-        }
-        
-        return "";
-    }
 }

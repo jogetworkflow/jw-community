@@ -1,6 +1,5 @@
 package org.joget.plugin.property.service;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -10,7 +9,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import org.joget.commons.util.CsvUtil;
 import org.joget.commons.util.LogUtil;
 import org.joget.commons.util.SecurityUtil;
 import org.joget.commons.util.StringUtil;
@@ -140,27 +138,11 @@ public class PropertyUtil implements ApplicationContextAware {
     public static Map<String, Object> getPropertiesValueFromJson(String json) {
         try {
             if (json != null) {
-                String newJson = json.replaceAll("\n","\\\\n").replaceAll("\r","\\\\r");
-                JSONObject obj = new JSONObject(newJson);
+                json = json.replaceAll("\n","\\\\n").replaceAll("\r","\\\\r");
+                JSONObject obj = new JSONObject(json);
                 return getProperties(obj);
             }
         } catch (Exception e) {
-            //fallback handle for CSV data
-            if (json != null && json.contains(",")) {
-                try {
-                    Map<String, Object> properties = new HashMap<String, Object>();
-                    
-                    Map propertyMap = CsvUtil.getPluginPropertyMap(json);
-                    if (propertyMap != null && !propertyMap.isEmpty()) {
-                        properties.putAll(propertyMap);
-                    }
-                    return properties;
-                } catch (IOException ex) {
-                    //ignore
-                }
-            }
-            
-            //log the error if can't handle with CSV
             LogUtil.error(PropertyUtil.class.getName(), e, e.getMessage());
         }
         return new HashMap<String, Object>();
