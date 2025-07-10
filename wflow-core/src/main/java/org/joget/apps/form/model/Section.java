@@ -292,27 +292,27 @@ public class Section extends Element implements FormBuilderEditable, FormContain
     
     @Override
     public Map<String, String> getElementStyles(String styleClass, Map<String, String> attrs) {
-        Map<String, String> styles = super.getElementStyles(styleClass, attrs);
+        Map<String, String> styles = super.getElementStyles(styleClass, attrs, false);
         
         //section header styles
         Map<String, String> sectionHeaderAttrs = AppPluginUtil.generateAttrAndStyles(getProperties(), "header-");
         if (!sectionHeaderAttrs.get("desktopStyle").isEmpty()) {
-            styles.put("DESKTOP", styles.get("DESKTOP") + " ." + styleClass + " .form-section-title, ." + styleClass + " .subform-section-title{" + sectionHeaderAttrs.get("desktopStyle") + "} ");
+            styles.put("DESKTOP", styles.get("DESKTOP") + " ." + styleClass + " .form-section-title, ." + styleClass + " .subform-section-title, ." + styleClass + " .form-section-title span, ." + styleClass + " .subform-section-title span{" + sectionHeaderAttrs.get("desktopStyle") + "} ");
         }
         if (!sectionHeaderAttrs.get("tabletStyle").isEmpty()) {
-            styles.put("TABLET", styles.get("TABLET") + " ." + styleClass + " .form-section-title, ." + styleClass + " .subform-section-title{" + sectionHeaderAttrs.get("tabletStyle") + "} ");
+            styles.put("TABLET", styles.get("TABLET") + " ." + styleClass + " .form-section-title, ." + styleClass + " .subform-section-title, ." + styleClass + " .form-section-title span, ." + styleClass + " .subform-section-title span{" + sectionHeaderAttrs.get("tabletStyle") + "} ");
         }
         if (!sectionHeaderAttrs.get("mobileStyle").isEmpty()) {
-            styles.put("MOBILE", styles.get("MOBILE") + " ." + styleClass + " .form-section-title, ." + styleClass + " .subform-section-title{" + sectionHeaderAttrs.get("mobileStyle") + "} ");
+            styles.put("MOBILE", styles.get("MOBILE") + " ." + styleClass + " .form-section-title, ." + styleClass + " .subform-section-title, ." + styleClass + " .form-section-title span, ." + styleClass + " .subform-section-title span{" + sectionHeaderAttrs.get("mobileStyle") + "} ");
         }
         if (!sectionHeaderAttrs.get("hoverDesktopStyle").isEmpty()) {
-            styles.put("DESKTOP", styles.get("DESKTOP") + " ." + styleClass + ":hover .form-section-title, ." + styleClass + ":hover .subform-section-title{" + sectionHeaderAttrs.get("hoverDesktopStyle") + "} ");
+            styles.put("DESKTOP", styles.get("DESKTOP") + " ." + styleClass + ":hover .form-section-title, ." + styleClass + ":hover .subform-section-title, ." + styleClass + ":hover .form-section-title span, ." + styleClass + ":hover .subform-section-title span{" + sectionHeaderAttrs.get("hoverDesktopStyle") + "} ");
         }
         if (!sectionHeaderAttrs.get("hoverTabletStyle").isEmpty()) {
-            styles.put("TABLET", styles.get("TABLET") + " ." + styleClass + ":hover .form-section-title, ." + styleClass + ":hover .subform-section-title{" + sectionHeaderAttrs.get("hoverTabletStyle") + "} ");
+            styles.put("TABLET", styles.get("TABLET") + " ." + styleClass + ":hover .form-section-title, ." + styleClass + ":hover .subform-section-title, ." + styleClass + ":hover .form-section-title span, ." + styleClass + ":hover .subform-section-title span{" + sectionHeaderAttrs.get("hoverTabletStyle") + "} ");
         }
         if (!sectionHeaderAttrs.get("hoverMobileStyle").isEmpty()) {
-            styles.put("MOBILE", styles.get("MOBILE") + " ." + styleClass + ":hover .form-section-title, ." + styleClass + ":hover .subform-section-title{" + sectionHeaderAttrs.get("hoverMobileStyle") + "} ");
+            styles.put("MOBILE", styles.get("MOBILE") + " ." + styleClass + ":hover .form-section-title, ." + styleClass + ":hover .subform-section-title, ." + styleClass + ":hover .form-section-title span, ." + styleClass + ":hover .subform-section-title span{" + sectionHeaderAttrs.get("hoverMobileStyle") + "} ");
         } 
         
         return styles;

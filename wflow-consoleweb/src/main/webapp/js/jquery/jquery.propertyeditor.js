@@ -6443,7 +6443,7 @@ PropertyEditor.Type.Number.prototype = {
         var cssClass = "";
         if (this.properties.mode === "css_unit") {
             cssClass = "withUnitSlector";
-            var unit = ['em', 'px', '%', 'rem', 'auto'];
+            var unit = ['rem', 'em', 'px', '%', 'auto'];
             
             var unitValue = 'px';
             for (var i in unit) {
