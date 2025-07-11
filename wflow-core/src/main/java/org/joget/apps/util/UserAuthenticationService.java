@@ -5,7 +5,6 @@ import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import org.json.simple.JSONObject;
 import org.joget.apps.app.model.AppDefinition;
 import org.joget.apps.app.service.AppService;
 import org.joget.apps.app.service.AppUtil;
@@ -18,6 +17,7 @@ import org.joget.workflow.model.dao.WorkflowHelper;
 import org.joget.workflow.model.service.WorkflowUserManager;
 import org.joget.workflow.util.WorkflowUtil;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -44,6 +44,19 @@ public final class UserAuthenticationService {
     public UserAuthenticationService(WorkflowUserManager workflowUserManager, DirectoryManagerProxyImpl directoryManager) {
         this.workflowUserManager = workflowUserManager;
         this.directoryManager = directoryManager;
+    }
+
+    /**
+     * Convenience method to obtain the Bean
+     *
+     * @return the {@link UserAuthenticationService} bean
+     */
+    public static UserAuthenticationService getInstance() {
+        ApplicationContext ac = AppUtil.getApplicationContext();
+        if (ac == null) {
+            throw new IllegalStateException("Application context is null");
+        }
+        return ac.getBean("userAuthenticationService", UserAuthenticationService.class);
     }
 
     /**
