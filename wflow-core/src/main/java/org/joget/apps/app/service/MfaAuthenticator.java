@@ -1,18 +1,10 @@
 package org.joget.apps.app.service;
 
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.apache.commons.lang.StringEscapeUtils;
-import org.joget.apps.workflow.security.WorkflowUserDetails;
-import org.joget.commons.util.LogUtil;
+import org.joget.apps.util.UserAuthenticationService;
 import org.joget.directory.dao.UserMetaDataDao;
-import org.joget.directory.model.Role;
 import org.joget.directory.model.User;
 import org.joget.directory.model.UserMetaData;
 import org.joget.directory.model.service.DirectoryUtil;
@@ -22,15 +14,13 @@ import org.joget.plugin.base.ExtDefaultPlugin;
 import org.joget.plugin.base.PluginManager;
 import org.joget.plugin.property.model.PropertyEditable;
 import org.joget.plugin.property.service.PropertyUtil;
-import org.joget.workflow.model.dao.WorkflowHelper;
 import org.joget.workflow.util.WorkflowUtil;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.web.savedrequest.HttpSessionRequestCache;
 import org.springframework.security.web.savedrequest.SavedRequest;
+
+import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 
 public abstract class MfaAuthenticator extends ExtDefaultPlugin implements PropertyEditable {
     
@@ -144,33 +134,17 @@ public abstract class MfaAuthenticator extends ExtDefaultPlugin implements Prope
         ExtDirectoryManager dm = (ExtDirectoryManager) DirectoryUtil.getApplicationContext().getBean("directoryManager");
         User user = dm.getUserByUsername(username);
 
-        Collection<Role> roles = dm.getUserRoles(username);
-        List<GrantedAuthority> gaList = new ArrayList<GrantedAuthority>();
-        if (roles != null && !roles.isEmpty()) {
-            for (Role role : roles) {
-                GrantedAuthority ga = new SimpleGrantedAuthority(role.getId());
-                gaList.add(ga);
+        // Login user
+        boolean loginSuccess = UserAuthenticationService.getInstance().loginUser(user);
+
+        // Post login processing
+        if (loginSuccess) {
+            UserSecurity userSecurity = DirectoryUtil.getUserSecurity();
+            if (userSecurity != null) {
+                userSecurity.loginPostProcessing(user, null, true);
             }
         }
 
-        // return result
-        UserDetails details = new WorkflowUserDetails(user);
-        UsernamePasswordAuthenticationToken result = new UsernamePasswordAuthenticationToken(user.getUsername(), "", gaList);
-        result.setDetails(details);
-        SecurityContextHolder.getContext().setAuthentication(result);
-        
-        HttpServletRequest httpRequest = WorkflowUtil.getHttpServletRequest();
-        String ip = AppUtil.getClientIp(httpRequest);
-        LogUtil.info(getClass().getName(), "Authentication for user " + username + " ("+ip+") : true");
-        WorkflowHelper workflowHelper = (WorkflowHelper) AppUtil.getApplicationContext().getBean("workflowHelper");
-        workflowHelper.addAuditTrail(this.getClass().getName(), "authenticate", "Authentication for user " + username + " ("+ip+") : true"); 
-        
-        //post login processing
-        UserSecurity userSecurity = DirectoryUtil.getUserSecurity();
-        if (userSecurity != null) {
-            userSecurity.loginPostProcessing(user, null, true);
-        }
-        
         return "<script>parent.window.location = '"+getRedirectUrl()+"';</script>";
     }
     
