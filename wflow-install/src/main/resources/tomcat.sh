@@ -2,4 +2,4 @@
 
 export JAVA_OPTS="-Xmx768M -Dfile.encoding=UTF-8 --add-opens=java.base/java.nio=ALL-UNNAMED -Dwflow.home=./wflow/ -javaagent:./wflow/aspectjweaver-1.9.22.jar"
 
-apache-tomcat-11.0.8/bin/catalina.sh $*
+apache-tomcat-11.0.9/bin/catalina.sh $*
