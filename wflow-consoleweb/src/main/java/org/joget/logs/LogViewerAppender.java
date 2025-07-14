@@ -445,8 +445,8 @@ public class LogViewerAppender extends AbstractAppender {
                                 final String token = getLogViewerToken(currentNode);
                                 updateJsonIPWhitelist(currentNode);
 
-                                String broadcastURL = "http://" + nodeIp + ":" + httpRequest.getLocalPort() + "/jw/web/json/log/broadcast?";
-                                
+                                String broadcastURL = "http://" + nodeIp + ":" + httpRequest.getLocalPort() + httpRequest.getContextPath() +"/web/json/log/broadcast?";
+
                                 broadcastURL = StringUtil.addParamsToUrl(broadcastURL, "node", currentNode);
                                 broadcastURL = StringUtil.addParamsToUrl(broadcastURL, "profile", HostManager.getCurrentProfile());
                                 broadcastURL = StringUtil.addParamsToUrl(broadcastURL, "appId", appId);
