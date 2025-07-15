@@ -273,6 +273,9 @@ public class DatePicker extends Element implements FormBuilderPaletteElement, Pw
                
         if (value != null && !value.isEmpty()) {
             String displayFormat = getJavaDateFormat(getFormat());
+            Locale currentLocale = LocaleContextHolder.getLocale();
+            Locale tagLocale = Locale.forLanguageTag("th-TH");
+            boolean isThaiLocale = tagLocale.equals(currentLocale);
             
             String timeformat = getTimeFormat();
             if ("timeOnly".equalsIgnoreCase(getPropertyString("datePickerType"))) {
@@ -290,7 +293,12 @@ public class DatePicker extends Element implements FormBuilderPaletteElement, Pw
 
             if (getPropertyString("disableWeekends").equals("true")) {
                 try {
-                    SimpleDateFormat display = new SimpleDateFormat(displayFormat);
+                    SimpleDateFormat display;
+                    if (isThaiLocale) {
+                        display = new SimpleDateFormat(displayFormat, new Locale("th", "TH", "TH"));
+                    } else {
+                        display = new SimpleDateFormat(displayFormat);
+                    }
                     Date date = display.parse(value);
                     Calendar calendar = Calendar.getInstance();
                     calendar.setTime(date);
@@ -347,9 +355,6 @@ public class DatePicker extends Element implements FormBuilderPaletteElement, Pw
             String type = getPropertyString("currentDateAs");
             if (!type.isEmpty()) {
                 String formattedCompare = TimeZoneUtil.convertToTimeZone(new Date(), null, displayFormat);
-                Locale currentLocale = LocaleContextHolder.getLocale();
-                Locale tagLocale = Locale.forLanguageTag("th-TH");
-                boolean isThaiLocale = tagLocale.equals(currentLocale);
 
                 if (!Locale.ENGLISH.getLanguage().equals(currentLocale.getLanguage()) && !isThaiLocale) {
                     try {
