@@ -139,7 +139,11 @@ $(document).ready(function () {
             }, 500);
         };
         const observer = new ResizeObserver(debounceResize);
-        observer.observe(sidebar);
+        try {
+            observer.observe(sidebar);
+        } catch (e) {
+            console.error(e);
+        }
         function resizeMenuWidth (callback, checkWidth){
             // header title and header nav button container width
             const headerLinkWidth = $('#header-link').outerWidth(true);
