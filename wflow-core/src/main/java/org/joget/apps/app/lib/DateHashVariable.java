@@ -2,6 +2,15 @@ package org.joget.apps.app.lib;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.ZonedDateTime;
+import java.time.chrono.ThaiBuddhistChronology;
+import java.time.chrono.ThaiBuddhistDate;
+import java.time.chrono.ChronoZonedDateTime;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeFormatterBuilder;
+import java.util.Locale;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collection;
@@ -11,6 +20,7 @@ import org.joget.apps.app.model.DefaultHashVariablePlugin;
 import org.joget.apps.app.service.AppUtil;
 import org.joget.commons.util.LogUtil;
 import org.joget.commons.util.TimeZoneUtil;
+import org.springframework.context.i18n.LocaleContextHolder;
 
 public class DateHashVariable extends DefaultHashVariablePlugin {
 
@@ -108,13 +118,44 @@ public class DateHashVariable extends DefaultHashVariablePlugin {
                 }
             }
 
-            return TimeZoneUtil.convertToTimeZoneWithLocale(cal.getTime(), timezone, variableKey, locale);
+            String dateOutput = TimeZoneUtil.convertToTimeZoneWithLocale(cal.getTime(), timezone, variableKey, locale);
+            if ("th".equals(LocaleContextHolder.getLocale().getLanguage()) && "TH".equals(LocaleContextHolder.getLocale().getCountry())) {
+                dateOutput = convertToBuddhistFormat(dateOutput, variableKey);
+            }
+            return dateOutput;
+
         } catch (IllegalArgumentException iae) {
             return new Date().toString();
         } catch (Exception ex) {
             LogUtil.error(DateHashVariable.class.getName(), ex, "");
             return null;
         }
+    }
+
+    protected String convertToBuddhistFormat (String value, String format) {
+        DateTimeFormatter inputFormatter = new DateTimeFormatterBuilder()
+                .parseCaseInsensitive()
+                .appendPattern(format)
+                .toFormatter(Locale.ENGLISH);
+        DateTimeFormatter outputFormatter = DateTimeFormatter.ofPattern(format, Locale.ENGLISH)
+                .withChronology(ThaiBuddhistChronology.INSTANCE);
+
+        // Date only
+        try {
+            LocalDate localDate = LocalDate.parse(value, inputFormatter);
+            ThaiBuddhistDate thaiDate = ThaiBuddhistDate.from(localDate);
+            return outputFormatter.format(thaiDate);
+        } catch (Exception e) {}
+
+        // Date & Time
+        try {
+            LocalDateTime localDateTime = LocalDateTime.parse(value, inputFormatter);
+            ChronoZonedDateTime<ThaiBuddhistDate> thaiDateTime = ThaiBuddhistChronology.INSTANCE.zonedDateTime(localDateTime.atZone(java.time.ZoneId.systemDefault()));
+            return outputFormatter.format(thaiDateTime);
+        } catch (Exception e) {}
+
+        // Time only or unformatted
+        return value;
     }
 
     public String getName() {
