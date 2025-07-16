@@ -86,7 +86,11 @@ public class AppPluginUtil implements ApplicationContextAware {
         Map propertyMap = new HashMap();
 
         try {
-            propertyMap = PropertyUtil.getPropertiesValueFromJson(properties);
+            if (!(plugin instanceof PropertyEditable)) {
+                propertyMap = CsvUtil.getPluginPropertyMap(properties);
+            } else {
+                propertyMap = PropertyUtil.getPropertiesValueFromJson(properties);
+            }
         } catch (Exception e) {
             LogUtil.error(AppPluginUtil.class.getName(), e, "Error @ getDefaultProperties");
         }
@@ -116,8 +120,14 @@ public class AppPluginUtil implements ApplicationContextAware {
             PluginDefaultProperties pluginDefaultProperties = getPluginDefaultProperties(ClassUtils.getUserClass(plugin).getName(), appDef);
 
             if (pluginDefaultProperties != null && pluginDefaultProperties.getPluginProperties() != null && pluginDefaultProperties.getPluginProperties().trim().length() > 0) {
-                String json = pluginDefaultProperties.getPluginProperties();
-                Map defaultPropertyMap = PropertyUtil.getPropertiesValueFromJson(json);
+                Map defaultPropertyMap = new HashMap();
+
+                if (!(plugin instanceof PropertyEditable)) {
+                    defaultPropertyMap = CsvUtil.getPluginPropertyMap(pluginDefaultProperties.getPluginProperties());
+                } else {
+                    String json = pluginDefaultProperties.getPluginProperties();
+                    defaultPropertyMap = PropertyUtil.getPropertiesValueFromJson(json);
+                }
 
                 Map tempPropertyMap = new HashMap(propertyMap);
                 for (Object s : defaultPropertyMap.keySet()) {

@@ -9,7 +9,7 @@ import org.joget.plugin.base.Plugin;
  * Interface to provide additional builder to platform
  * 
  */
-public interface CustomBuilder extends Plugin{
+public interface CustomBuilder {
     
     /**
      * The classname of the builder implementation

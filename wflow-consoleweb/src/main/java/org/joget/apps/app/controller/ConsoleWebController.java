@@ -3059,12 +3059,20 @@ public class ConsoleWebController {
         PluginDefaultProperties pluginDefaultProperties = pluginDefaultPropertiesDao.loadById(id, appDef);
         
         if (pluginDefaultProperties != null && pluginDefaultProperties.getPluginProperties() != null && pluginDefaultProperties.getPluginProperties().trim().length() > 0) {
-            String propertiseValue = AppUtil.parsePluginProperties(pluginDefaultProperties.getPluginProperties()).toString();
-            map.addAttribute("properties", PropertyUtil.propertiesJsonLoadProcessing(propertiseValue));
+            if (!(plugin instanceof PropertyEditable)) {
+                Map propertyMap = new HashMap();
+                propertyMap = CsvUtil.getPluginPropertyMap(pluginDefaultProperties.getPluginProperties());
+                map.addAttribute("propertyMap", propertyMap);
+            } else {
+                map.addAttribute("properties", PropertyUtil.propertiesJsonLoadProcessing(pluginDefaultProperties.getPluginProperties()));
+            }
         }
 
-        map.addAttribute("propertyEditable", plugin);
-        map.addAttribute("propertiesDefinition", PropertyUtil.injectHelpLink(plugin.getHelpLink(), plugin.getPropertyOptions()));
+        if (plugin instanceof PropertyEditable) {
+            PropertyEditable pe = (PropertyEditable) plugin;
+            map.addAttribute("propertyEditable", pe);
+            map.addAttribute("propertiesDefinition", PropertyUtil.injectHelpLink(plugin.getHelpLink(), pe.getPropertyOptions()));
+        }
 
         String url = request.getContextPath() + "/web/console/app/" + appDef.getId() + "/" + appDef.getVersion() + "/pluginDefault/submit/";
         if (pluginDefaultProperties == null) {
@@ -4474,17 +4482,19 @@ public class ConsoleWebController {
                 properties = setupManager.getSettingValue(DirectoryUtil.IMPL_PROPERTIES);
             }
 
-            //make sure the properties is json format
-            JSONObject parsedProperties = AppUtil.parsePluginProperties(properties);
-            properties = parsedProperties.toString();
-
-            // If the JSON is not empty, add it to the map
-            if (!parsedProperties.isEmpty()) {
+            if (!(plugin instanceof PropertyEditable)) {
+                Map propertyMap = new HashMap();
+                propertyMap = CsvUtil.getPluginPropertyMap(properties);
+                map.addAttribute("propertyMap", propertyMap);
+            } else {
                 map.addAttribute("properties", PropertyUtil.propertiesJsonLoadProcessing(properties));
             }
 
-            map.addAttribute("propertyEditable", plugin);
-            map.addAttribute("propertiesDefinition", PropertyUtil.injectHelpLink(plugin.getHelpLink(), plugin.getPropertyOptions()));
+            if (plugin instanceof PropertyEditable) {
+                PropertyEditable pe = (PropertyEditable) plugin;
+                map.addAttribute("propertyEditable", pe);
+                map.addAttribute("propertiesDefinition", PropertyUtil.injectHelpLink(plugin.getHelpLink(), pe.getPropertyOptions()));
+            }
 
             map.addAttribute("plugin", plugin);
 
@@ -4693,9 +4703,12 @@ public class ConsoleWebController {
             map.addAttribute("properties", PropertyUtil.propertiesJsonLoadProcessing(setting.getValue()));
         }
 
-        map.addAttribute("propertyEditable", plugin);
-        map.addAttribute("propertiesDefinition", PropertyUtil.injectHelpLink(plugin.getHelpLink(), plugin.getPropertyOptions()));
-
+        if (plugin instanceof PropertyEditable) {
+            PropertyEditable pe = (PropertyEditable) plugin;
+            map.addAttribute("propertyEditable", pe);
+            map.addAttribute("propertiesDefinition", PropertyUtil.injectHelpLink(plugin.getHelpLink(), pe.getPropertyOptions()));
+        }
+        
         if ("POST".equalsIgnoreCase(request.getMethod()) && pluginProperties != null) {
             if (setting == null) {
                 setting = new Setting();

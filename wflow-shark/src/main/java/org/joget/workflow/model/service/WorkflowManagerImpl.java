@@ -5530,23 +5530,18 @@ public class WorkflowManagerImpl implements SharkWorkflowManager {
     }
     
     /**
-     * Internal method used to recover stuck activities (tool, route, subflow) due to improper shutdown
+     * Internal method used to recover stuck tool activities due to improper shutdown
      */
     @Override
     public void internalRecoverStuckToolActivities() {
-        final Collection<Object[]> stuckActivities = workflowAssignmentDao.getStuckTools();
-        if (stuckActivities != null && !stuckActivities.isEmpty()) {
-            LogUtil.info(WorkflowManagerImpl.class.getName(), "Found " + stuckActivities.size() + " stuck activities. Trying recover it...");
+        final Collection<Object[]> stuckTools = workflowAssignmentDao.getStuckTools();
+        if (stuckTools != null && !stuckTools.isEmpty()) {
+            LogUtil.info(WorkflowManagerImpl.class.getName(), "Found " + stuckTools.size() + " stuck tool. Trying recover it...");
             
-            Thread stuckActivitiesRecover = new PluginThread(new Runnable() {
+            Thread stuckToolsRecover = new PluginThread(new Runnable() {
 
                 @Override
                 public void run() {
-                    //add delay to wait for other beans (AppPluginUtil & AppUtil) ready
-                    try {
-                        Thread.sleep(5000);
-                    } catch (Exception e) {}
-                    
                     transactionTemplate.execute(new TransactionCallbackWithoutResult() {
 
                         protected void doInTransactionWithoutResult(TransactionStatus transactionStatus) {
@@ -5556,15 +5551,14 @@ public class WorkflowManagerImpl implements SharkWorkflowManager {
                                 sc = connect();
                                 WMSessionHandle sessionHandle = sc.getSessionHandle();
 
-                                for (Object[] sa : stuckActivities) {
+                                for (Object[] sa : stuckTools) {
                                     try {
-                                        LogUtil.info(WorkflowManagerImpl.class.getName(), "Recovering " + sa[2].toString());
                                         CustomWfActivityWrapper wrapper = new CustomWfActivityWrapper(sessionHandle, sa[0].toString(), sa[1].toString(), sa[2].toString());
                                         wrapper.getProcessImpl().setReadOnly(false);
                                         CustomWfActivityImpl activity = (CustomWfActivityImpl) wrapper.getActivityImpl();
-                                        activity.recoverStuckActivity(sessionHandle);
+                                        activity.restartToolActivity(sessionHandle);
                                     } catch (Exception e) {
-                                        LogUtil.error(getClass().getName(), e, "Fail to restart activity " + sa[2].toString());
+                                        LogUtil.error(getClass().getName(), e, "Fail to restart tool " + sa[2].toString());
                                     }
                                 }
                             } catch (Exception ex) {
@@ -5580,8 +5574,8 @@ public class WorkflowManagerImpl implements SharkWorkflowManager {
                     });
                 }
             });
-            stuckActivitiesRecover.setDaemon(true);
-            stuckActivitiesRecover.start();
+            stuckToolsRecover.setDaemon(true);
+            stuckToolsRecover.start();
         }
     }
 

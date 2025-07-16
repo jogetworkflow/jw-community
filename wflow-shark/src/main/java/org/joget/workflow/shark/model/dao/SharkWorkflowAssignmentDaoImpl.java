@@ -947,10 +947,10 @@ public class SharkWorkflowAssignmentDaoImpl extends AbstractSpringDao implements
     @Override
     public Collection<Object[]> getStuckTools() {
         Session session = findSession();
-        String query = "SELECT e.processDefId, e.processId, e.activityId FROM SharkActivity e LEFT JOIN SharkAssignment a ON a.activity.activityId = e.activityId WHERE e.state.name like ?1 AND e.performer IS NULL AND a.id IS NULL";
+        String query = "SELECT e.processDefId, e.processId, e.activityId FROM SharkActivity e WHERE e.state.name = ?1";
         Query q = session.createQuery(query);
 
-        q.setParameter(1, "open.%");
+        q.setParameter(1, "open.running");
         return q.list();
     }
     
