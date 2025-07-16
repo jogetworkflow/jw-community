@@ -785,6 +785,7 @@ body.rtl #sidebar .nav > li > ul > li:not(:last-child){
         width: initial;
         padding: 0px 0px !important;
         min-height: 100%;
+        overflow-x: hidden;
     }
     
     body.horizontal_menu #content.page_content {
@@ -844,6 +845,8 @@ body.rtl #sidebar .nav > li > ul > li:not(:last-child){
 @media screen and (min-width: 768px) {
     body.horizontal_menu.inline_menu #sidebar {
         width: 100%;
+        flex: 1 1 auto;
+        min-width: 0;
     }
 
     body.horizontal_menu.inline_menu #header-name,
@@ -953,6 +956,13 @@ header.navbar {
 .sidebar_brand {
     height: var(--header-height);
     padding: 18.5px 10px 18.5px 40px;
+    position: relative;
+}
+
+.sidebar_brand .logo_container {
+    top: 50%;
+    left: 18.5px;
+    transform: translateY(-50%);
 }
 
 .nav {
@@ -1448,6 +1458,10 @@ select, textarea, .ql-container.ql-bubble,
     border: 1.5px solid var(--field-border-color);
     border-radius: 16px;
     min-height: var(--input-min-height);
+}
+
+.ql-tooltip-editor input[type="text"]{
+    min-height: auto;
 }
 
 body.compact-mode .numeric_field_controls {
@@ -2298,7 +2312,7 @@ body.rtl .accordion .card-header::after {
     }
 
 
-    #header-info > #header-name > .logo, #header-message, .header-nav .user-link {
+    .header-nav .user-link {
         display: block !important;
     }
     

@@ -325,8 +325,13 @@ self.addEventListener('push', function (event) {
                             break;
                         }
                     }
-                    if (!found && serviceWorkerList[0].indexOf(appUserviewId.replace('-', '/')) !== -1) {
-                        show = true; //can't found the service worker for current url, use the first 1 to show
+                                        
+                    if (!found) {
+                        const appPath = appUserviewId.replace('-', '/');
+                        const fallbackMatch = serviceWorkerList.find(sw => sw.indexOf(appPath) !== -1);
+                        if (fallbackMatch) {
+                            show = true; // can't find the service worker for current url, use the matched appUserviewId in the list
+                        }
                     }
                 }
 
