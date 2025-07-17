@@ -173,7 +173,7 @@
                                                </c:when>
                                                <c:otherwise>
                                                    <fmt:message key="dbuilder.selectAll" var="selectAllLabel" />
-                                                   <display:column headerClass="select_checkbox" class="select_checkbox" property="checkbox" media="html" title="<label><input type='checkbox' title='${selectAllLabel}' onclick='toggleAll(this)' style='float:left;'/><i></i></label>" />
+                                                   <display:column headerClass="select_checkbox" class="select_checkbox" property="checkbox" media="html" title="<label><input class='form-check-input' type='checkbox' title='${selectAllLabel}' onclick='toggleAll(this)' style='float:left;'/><i></i></label>" />
                                                </c:otherwise>
                                            </c:choose>
                                        </c:if>
@@ -240,7 +240,7 @@
                                                </c:when>
                                                <c:otherwise>
                                                    <fmt:message key="dbuilder.selectAll" var="selectAllLabel" />
-                                                   <display:column headerClass="select_checkbox" class="select_checkbox" property="checkbox" media="html" title="<label><input type='checkbox' title='${selectAllLabel}' onclick='toggleAll(this)' style='float:left;'/><i></i></label>" />
+                                                   <display:column headerClass="select_checkbox" class="select_checkbox" property="checkbox" media="html" title="<label><input class='form-check-input' type='checkbox' title='${selectAllLabel}' onclick='toggleAll(this)' style='float:left;'/><i></i></label>" />
                                                </c:otherwise>
                                            </c:choose>
                                        </c:if>

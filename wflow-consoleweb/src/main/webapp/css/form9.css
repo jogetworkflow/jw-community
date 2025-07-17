@@ -127,7 +127,7 @@ body .subform-cell>.subform-container.has-frame,
 .subform-cell>label.label {
     white-space: normal;
     position: relative;
-    margin-bottom: 0px;
+    margin-bottom: var(--jgt-form-marginBottom, 0px);
     font-weight: var(--jgt-form-fontWeight);
     width: calc(var(--jgt-form-labelWidth) - var(--jgt-form-labelMarginInlineEnd));
     float: var(--jgt-form-labelFloat);
@@ -135,7 +135,7 @@ body .subform-cell>.subform-container.has-frame,
     font-size: var(--jgt-form-labelFontSize);
     line-height: var(--jgt-form-lineHeight);
     height: var(--jgt-form-labelHeight);
-    
+    padding-top: 4px;
 }
 
 .form-cell:not(.full_width_field) > label.label,
@@ -319,7 +319,11 @@ body #form-canvas .subform-section-title span {
     -webkit-border-radius: 0px;
     font-weight: var(--jgt-form-headerFontWeight);
     font-size: var(--jgt-form-headerFontSize);
-    display: block;
+    display: inline-block;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 100%;
 }
 
 
@@ -485,6 +489,11 @@ body textarea[disabled]{
     width: 50%;
 }
 
+body.rtl .form-cell-value>label,
+body.rtl .subform-cell-value>label {
+    float: right;
+}
+
 @media screen and (max-width:480px) {
     .form-container [class*=form-cell-value] {
         float: unset !important;
@@ -506,7 +515,6 @@ body textarea[disabled]{
 .form-cell-value>label>input,
 .subform-cell-value>label>input {
     position: relative;
-    top: 2px;
     height: 15px;
     width: 15px;
 }
@@ -1436,6 +1444,13 @@ body.rtl .handsontable .htCore tr td:last-child {
     .subform-column {
         width: 100% !important;
     }
+    input[size] {
+        width: 100% !important;
+    }
+    .form-cell-value>label,
+    .subform-cell-value>label {
+        width: 100%;
+    }
 }
 
 .form-cell table:not([class]) td,
@@ -1543,6 +1558,20 @@ body.rtl .handsontable .htCore tr td:last-child {
         float: none;
         text-align: left !important;
     }
+    
+    body.rtl .form-cell>label.label,
+    body.rtl .subform-cell>label.label,
+    body.rtl .form-cell>label.label+*:not(.ui-screen-hidden),
+    body.rtl .subform-cell>label.label+*:not(.ui-screen-hidden),
+    body.rtl .form-cell>label.label+.ui-screen-hidden+*,
+    body.rtl .subform-cell>label.label+.ui-screen-hidden+* {
+        text-align: right !important;
+    }
+    
+    .rtl .form-cell>label.label,
+    .rtl .subform-cell>label.label {
+        float: unset;
+    }
 
     .hasDatepicker+a {
         top: unset;
@@ -1646,7 +1675,7 @@ body.rtl .form-container [class*=form-cell-value] {
 
 body.rtl .ui-html.ql-editor,
 body.rtl table:not(.ui-datepicker-calendar) * {
-    text-align: right;
+    text-align: right !important;
 }
 
 /* numeric field */
@@ -1660,13 +1689,9 @@ body.rtl .label-top .numeric_field_controls {left: 25px; right: auto;}
 body.rtl .numeric_field_control {left:10px; right:auto;}
 .numeric_field_control.numeric_field_control_decr {top: 15px;} 
 @media (max-width: 768px) {
-    .numeric_field_controls {right: 15px; bottom: 35px;}
+    .numeric_field_controls {right: 25px; bottom: 35px;}
     body.compact-mode .numeric_field_controls {top:auto; bottom: 32px;}
-    body.rtl .numeric_field_controls {left: 15px; right: auto;}
-}
-body.rtl .form-cell > label.label,
-body.rtl .subform-cell > label.label{
-    padding: 8px 0 0 10px;
+    body.rtl .numeric_field_controls {left: 25px; right: auto;}
 }
 .form-cell > label.label > i,
 .subform-cell > label.label > i,

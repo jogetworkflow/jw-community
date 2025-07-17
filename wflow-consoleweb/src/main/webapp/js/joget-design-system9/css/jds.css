@@ -5047,6 +5047,7 @@ body.rtl .breadcrumb-item + .breadcrumb-item::before{
   padding-left: 0;
   margin-bottom: 0;
   border-radius: var(--jgt-list-group-border-radius);
+  min-width: 300px;
 }
 
 .list-group-numbered {

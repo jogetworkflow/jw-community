@@ -1140,7 +1140,7 @@ body.horizontal_menu #header-info{
     --ripple-duration: 1s;
     --ripple-fuzz: 5px;
     border-color: transparent !important;
-    margin-bottom: 5px;
+    margin-bottom: 5px !important;
 }
 #sidebar a{
     margin-bottom: 0px;

@@ -100,7 +100,7 @@ public class DataListDecorator extends CheckboxTableDecorator {
         }
 
         StringBuffer buffer = new StringBuffer();
-        buffer.append("<label><input type=\"checkbox\" name=\"");
+        buffer.append("<label><input class=\"form-check-input\" type=\"checkbox\" name=\"");
         buffer.append(fieldName);
         buffer.append("\" value=\"");
         buffer.append(StringEscapeUtils.escapeHtml(evaluatedId));
@@ -124,7 +124,7 @@ public class DataListDecorator extends CheckboxTableDecorator {
         }
 
         StringBuffer buffer = new StringBuffer();
-        buffer.append("<label><input type=\"radio\" name=\"");
+        buffer.append("<label><input class=\"form-check-input\" type=\"radio\" name=\"");
         buffer.append(fieldName);
         buffer.append("\" value=\"");
         buffer.append(StringEscapeUtils.escapeHtml(evaluatedId));

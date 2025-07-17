@@ -365,8 +365,8 @@ body.rtl .dataList span.pagelinks:not(.rtl) .pc.last:before {
     }
 
     .dataList .exportlinks {
-        width: 200px;
-        display: inline-block
+        width: 100%;
+        display: inline-block;
     }
 }
 

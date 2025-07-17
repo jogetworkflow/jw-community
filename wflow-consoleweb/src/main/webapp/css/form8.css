@@ -390,10 +390,16 @@ body input[readonly] {
 .form-cell-value > label > input,
 .subform-cell-value > label > input{
     position: relative;
-    top: 2px;
     margin-right: 3px;
     height: 15px;
     width: 15px;
+    margin-top: 2px;
+}
+
+body.rtl .form-cell-value > label > input,
+body.rtl .subform-cell-value > label > input{
+    margin-right: 0;
+    margin-left: 3px
 }
 
 div.pq-grid * {
