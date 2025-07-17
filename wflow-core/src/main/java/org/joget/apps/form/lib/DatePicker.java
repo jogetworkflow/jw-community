@@ -298,7 +298,7 @@ public class DatePicker extends Element implements FormBuilderPaletteElement, Pw
             String timeformat = getTimeFormat();
             if ("timeOnly".equalsIgnoreCase(getPropertyString("datePickerType"))) {
                 displayFormat = timeformat;
-            } else if ("dateTime".equalsIgnoreCase(getPropertyString("datePickerType"))) {
+            } else if ("dateTime".equalsIgnoreCase(getPropertyString("datePickerType")) || "utcdateTime".equalsIgnoreCase(getPropertyString("datePickerType"))) {
                 displayFormat = displayFormat + " " + timeformat;
             }
             
