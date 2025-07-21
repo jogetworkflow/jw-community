@@ -1,12 +1,10 @@
 ProcessBuilder = {
     currentProcessData : {},
     draggingElementId : null,
-    jsPlumb: null,
     readonly: false,
-    refreshTimeout: null,
     updatePasteElement: true,
     changeNodeId: false,
-    previousPositionMap: {},
+    disableUpdate: false,
     
     /*
      * Intialize the builder, called from CustomBuilder.initBuilder
@@ -40,11 +38,8 @@ ProcessBuilder = {
             "enableViewport" : false,
             callbacks : {
                 "initComponent" : "ProcessBuilder.initComponent",
-                "renderElement" : "ProcessBuilder.renderElement",
-                "decorateBoxActions": "ProcessBuilder.decorateBoxActions",
                 "updateElementId" : "ProcessBuilder.updateElementId",
                 "copyNode" : "ProcessBuilder.copyNode",
-                "unloadElement" : "ProcessBuilder.unloadElement",
                 "renderXray" : "ProcessBuilder.renderXray",
                 "pasteElement" : "ProcessBuilder.pasteElement",
                 "renderTreeMenuAdditionalNode" : "ProcessBuilder.renderTreeMenuAdditionalNode",
@@ -86,10 +81,6 @@ ProcessBuilder = {
             CustomBuilder.Builder.setHead('<link data-pbuilder-style href="' + CustomBuilder.contextPath + '/pbuilder/css/pbuilder.css" rel="stylesheet" />');
 
             ProcessBuilder.initialLogicFlow();
-            CustomBuilder.Builder.bindEvent("change.builder", function(){
-                ProcessBuilder.refresh();
-            });
-            CustomBuilder.Builder.bindEvent("nodeAdditionalSelected nodeAdditionalAdded nodeAdditionalRemoved nodeAdditionalModeChanged", ProcessBuilder.refreshConnections);
             
             $(window).off('hashchange');
             $(window).on('hashchange', function(){
@@ -104,6 +95,10 @@ ProcessBuilder = {
                 if (ProcessBuilder.currentProcessData === null || ProcessBuilder.currentProcessData === undefined || (ProcessBuilder.currentProcessData.properties === undefined || (ProcessBuilder.currentProcessData.properties !== undefined && id !== ProcessBuilder.currentProcessData.properties.id))) {
                     ProcessBuilder.viewProcess();
                 }
+            });
+            
+            $("#lf-container").on("click", ".previewForm", function(e){
+                ProcessBuilder.previewForm(e);
             });
 
             var deferreds = [];
@@ -143,9 +138,6 @@ ProcessBuilder = {
                         'absolutePosition': true,
                         'parentContainerAttr': 'activities',
                         'parentDataHolder': 'activities',
-                        'dragging': ProcessBuilder.dragActivity,
-                        'render': ProcessBuilder.renderActivity,
-                        'unload': ProcessBuilder.unloadActivity,
                         'getStylePropertiesDefinition': ProcessBuilder.getToolDef,
                         'nodeDetailContainerColorNumber': function () {
                             return 4;
@@ -280,7 +272,6 @@ ProcessBuilder = {
         const startNode = TaskNodeFactory('bpmn:startEvent', icon);
         const routeNode = TaskNodeFactory('bpmn:exclusiveGateway', icon);
         const endNode = TaskNodeFactory('bpmn:endEvent', icon);
-        const participantNode = TaskNodeFactory('group', icon);
         const transition = sequenceFlowFactory('bpmn:sequenceFlow', icon);
 
         class activityNodeView extends activityNode.view{
@@ -292,7 +283,7 @@ ProcessBuilder = {
                 var newWidth = 120;
                 const style = model.getNodeStyle();
                 const { opacity = 1 } = style;
-            
+                
                 // Conditionally rendering the text element based on the 'limit' property
                 const textElement = limit ? h('text', {
                     x: x + newWidth / 2 - 15,  // Positioning at the top-right (20px from the right edge)
@@ -323,7 +314,7 @@ ProcessBuilder = {
                     height: height,
                     opacity: 1
                 });
-
+                
                 return h('g', {id: model.id, 
                                 class: 'node ' + properties.className, 
                                 'data-cbuilder-visible': true,
@@ -368,8 +359,7 @@ ProcessBuilder = {
                         }, [
                             h('i', {
                                 className: 'las la-file-alt previewForm',
-                                formId: mapping_act_formId,
-                                'data-cbuilder-action': 'previewForm'
+                                formId: mapping_act_formId
                             })
                         ])
                     ]) : null, // Render nothing if condition is not met
@@ -948,6 +938,25 @@ ProcessBuilder = {
                 );
             }
         }
+        
+        class straightTransitionView extends LineEdge {
+            // Define how the edge should render
+            getEdge() {
+                const { model } = this.props;
+                const edgeStyle = model.getEdgeStyle();
+                const { opacity = 1 } = edgeStyle;
+                const { startPoint, endPoint, properties, arrowConfig } = model;
+                const lineData = {
+                    x1: startPoint.x,
+                    y1: startPoint.y,
+                    x2: endPoint.x,
+                    y2: endPoint.y,
+                };
+                return h('g', {id: properties.id, class: properties.className},
+                    h("line", { ...lineData, ...edgeStyle, ...arrowConfig })
+                );
+            }
+        }
 
         class activityNodeModel extends activityNode.model {
             initNodeData(data) {
@@ -961,7 +970,6 @@ ProcessBuilder = {
                 // manually set the shape attribute
                 this.width = width * scale;
                 this.height = height * scale;
-                this.zIndex = 0;
             }
 
             // Customize text style
@@ -992,6 +1000,7 @@ ProcessBuilder = {
                 style.fill = '#ffffff';
                 style.strokeWidth = '1',
                 style.rx = '18';
+                style.zIndex = 1;
                 return style;
             }
 
@@ -1052,7 +1061,6 @@ ProcessBuilder = {
                 // manually set the shape attribute
                 this.width = width * scale;
                 this.height = height * scale;
-                this.zIndex = 0;
             }
 
             // Customize text style
@@ -1088,6 +1096,7 @@ ProcessBuilder = {
                 
                 style.strokeWidth = '1';
                 style.rx = '18';
+                style.zIndex = 1;
                 return style;
             }
 
@@ -1149,7 +1158,6 @@ ProcessBuilder = {
                 // manually set the shape attribute
                 this.width = width * scale;
                 this.height = height * scale;
-                this.zIndex = 0;
             }
 
             // Customize text style
@@ -1180,6 +1188,7 @@ ProcessBuilder = {
                 style.fill = '#ffffff';
                 style.strokeWidth = '1',
                 style.rx = '18';
+                style.zIndex = 1;
                 return style;
             }
 
@@ -1244,7 +1253,6 @@ ProcessBuilder = {
                 // manually set the shape attribute
                 this.width = width * scale;
                 this.height = height * scale;
-                this.zIndex = 0;
             }
 
             // Customize text style
@@ -1273,6 +1281,7 @@ ProcessBuilder = {
                 }
                 style.rx = '30';
                 style.fill = '#f6ffed';
+                style.zIndex = 1;
                 return style;
             }
 
@@ -1332,7 +1341,6 @@ ProcessBuilder = {
                 // manually set the shape attribute
                 this.width = width * scale;
                 this.height = height * scale;
-                this.zIndex = 0;
             }
 
             // Customize text style
@@ -1360,6 +1368,7 @@ ProcessBuilder = {
                     style.stroke = '#faad14';
                 }
                 style.fill = '#fffbe6';
+                style.zIndex = 1;
                 return style;
             }
 
@@ -1415,7 +1424,6 @@ ProcessBuilder = {
                 this.text.editable = false; 
                 this.width = width * scale;
                 this.height = height * scale;
-                this.zIndex = 0;
             }
 
             // Customize text style
@@ -1442,6 +1450,7 @@ ProcessBuilder = {
                 } else {
                     style.stroke = '#ff4d4f';
                 }
+                style.zIndex = 1;
                 return style;
             }
 
@@ -1483,93 +1492,13 @@ ProcessBuilder = {
             }
         }
 
-        class participantNodeModel extends participantNode.model {
-            // Set the model shape attribute, triggered every time properties change, including during initialization.
-            setAttributes() {
-                const { scale = 1, width = 36, height = 36 } = this.properties;
-                // manually set the shape attribute
-                this.width = width * scale;
-                this.height = height * scale;
-                this.text.editable = false; 
-            }
-
-            // Customize text style
-            getTextStyle() {
-                const style = super.getTextStyle();
-                const nodeStyle = super.getNodeStyle();
-                const { opacity = 1 } = nodeStyle;
-                
-                style.opacity = opacity;
-                style.fontSize = 20;
-                style.overflowMode = 'autowrap';
-                style.lineHeight = 1.2;
-                const { isClicked } = this.properties;
-                style.color = isClicked ? 'red' : '#000000';
-                return style;
-            }
-
-            // Customize node style
-            getNodeStyle() {
-                const style = super.getNodeStyle();
-                const { isClicked } = this.properties;
-                if (isClicked) {
-                    style.stroke = 'red';
-                } else {
-                    style.stroke = '#AAAAAA';
-                }
-                return style;
-            }
-
-            // Customize anchor point style attributes
-            getAnchorStyle() {
-                const style = super.getAnchorStyle();
-                const newStyle = Object.assign({}, style, {
-                    stroke: 'rgb(24, 125, 255)',
-                    r: 4.5,
-                    hover: {
-                        r: 7,
-                        fill: 'rgb(24, 125, 255)',
-                        stroke: 'rgb(24, 125, 255)'
-                    }
-                });
-                return newStyle;
-            }
-
-            // Customize the style attributes of the connection line dragged from the node anchor point
-            getAnchorLineStyle() {
-                const style = super.getAnchorLineStyle();
-                style.stroke = '#282828';
-                return style;
-            }
-
-            // Customize the style attributes of the node outline box
-            getOutlineStyle() {
-                const { danger } = this.properties;
-                const style = super.getOutlineStyle();
-                style.strokeWidth = 2;
-                style.strokeDasharray = '0';
-                if (danger) {
-                    style.stroke = '#FF4D4F ';
-                    style.fill = 'rgba(255, 77, 79, 0.1)';
-                    style.hover.stroke = '#FF4D4F';
-                    style.hover.fill = 'rgba(255, 77, 79, 0.1)';
-                } else {
-                    style.stroke = '#4285f4';
-                    style.fill = 'rgba(66, 133, 244, 0.1)';
-                    style.hover.stroke = '#54c5fc';
-                    style.hover.fill = 'rgba(255, 255, 255, 0.1)';
-                }
-            
-                return style;
-            }
-        }
-
         class transitionModel extends transition.model {
             customTextPosition = true;
 
             setAttributes(data) {
                 super.setAttributes(data);
                 const { properties } = this;
+                this.draggable = false; //disable resize the transition
                 if(properties.type === "startend"){
                     this.isHitable = false;
                 }
@@ -1605,7 +1534,7 @@ ProcessBuilder = {
                     }
                     
                 }
-                style.zIndex = 2;
+                style.zIndex = 5;
                 return style;
             }
 
@@ -1634,6 +1563,7 @@ ProcessBuilder = {
                         style.stroke = '#000000';
                     }
                 }
+                style.zIndex = 5;
 
                 return style;
             }
@@ -1655,6 +1585,7 @@ ProcessBuilder = {
                 style.background = Object.assign({}, style.background, {
                     fill: 'transparent'
                 });
+                style.zIndex = 5;
                 return style;
             }
 
@@ -1683,6 +1614,7 @@ ProcessBuilder = {
                     style.hover.stroke = '#54c5fc';
                     style.hover.fill = 'rgba(255, 255, 255, 0.1)';
                 }
+                style.zIndex = 5;
                 return style;
             }
         }
@@ -1728,7 +1660,7 @@ ProcessBuilder = {
                     }
                     
                 }
-                style.zIndex = 2;
+                style.zIndex = 5;
                 return style;
             }
 
@@ -1757,6 +1689,7 @@ ProcessBuilder = {
                         style.stroke = '#000000';
                     }
                 }
+                style.zIndex = 5;
 
                 return style;
             }
@@ -1778,6 +1711,7 @@ ProcessBuilder = {
                 style.background = Object.assign({}, style.background, {
                     fill: 'transparent'
                 });
+                style.zIndex = 5;
                 return style;
             }
 
@@ -1806,6 +1740,7 @@ ProcessBuilder = {
                     style.hover.stroke = '#54c5fc';
                     style.hover.fill = 'rgba(255, 255, 255, 0.1)';
                 }
+                style.zIndex = 5;
                 return style;
             }
         }
@@ -1841,18 +1776,13 @@ ProcessBuilder = {
             model: subflowNodeModel
         });
         ProcessBuilder.lf.register({
-            ...participantNode,
-            view: participantNode.view,
-            model: participantNodeModel
-        });
-        ProcessBuilder.lf.register({
             ...transition,
             view: transitionView,
             model: transitionModel
         });
         ProcessBuilder.lf.register({
             type: 'bpmn:straightSequenceFlow',
-            view: LineEdge,
+            view: straightTransitionView,
             model: straightTransitionModel
         });
 
@@ -1896,16 +1826,6 @@ ProcessBuilder = {
 
         // Variable to track the previous selected node
         ProcessBuilder.previousSelectedNodeId = null;
-        
-        // Store position before drag starts
-        ProcessBuilder.lf.on('node:dragstart', ({ data }) => {
-            const node = ProcessBuilder.lf.getNodeDataById(data.id);
-            
-            ProcessBuilder.previousPositionMap[data.id] = {
-                x: node.x,
-                y: node.y
-            };
-        });
 
         // Handle node drop
         ProcessBuilder.lf.on('node:drop', ({ data }) => {
@@ -1913,44 +1833,35 @@ ProcessBuilder = {
             
             const node = ProcessBuilder.lf.getNodeDataById(nodeId);
             const nodeLane = ProcessBuilder.getActivityLane(nodeId);
-            const previousLane = ProcessBuilder.getLFLane('laneID_' + nodeLane.properties.id);
             
-            //the node is drop outside a lane
-            const missingLane = ProcessBuilder.getNodeLaneID(nodeId) === null;
-            
-            if (missingLane) { 
-                //if the node is not drop to any lane, 
-                //give it a chance to put in it back to its previous lane if gap is allowed
-                const gapLimit = 40;
+            //find a closest lane, then move the node to that lane if it is not in that lane
+            const targetLaneId = ProcessBuilder.getNodeLaneID(nodeId);
+            let newLane = null;
+            let graphData = ProcessBuilder.lf.getGraphData();
+            let lanes = graphData.nodes.filter(lane => lane.type === "lane");
+            lanes = lanes.sort((a, b) => b.y - a.y);
 
-                const nodeYStart = node.y - node.properties.height / 2;
-                const nodeYEnd = node.y + node.properties.height / 2;
-                const laneYStart = previousLane.y - previousLane.properties.height / 2;
-                const laneYEnd = previousLane.y + previousLane.properties.height / 2;
-                const gapHeight = nodeYEnd - laneYEnd;
-                
-                // Allow if the node is close enough to the lane bottom (within gapLimit)
-                if (gapHeight > 0 && gapHeight < gapLimit) {
-                    previousLane.children.push(nodeId);
-                    ProcessBuilder.lf.updateAttributes(previousLane.id, {
-                        children: previousLane.children
+            lanes.forEach(lane => { 
+                if (!newLane || node.y < lane.y + (lane.properties.height / 2)) {
+                    newLane = lane;
+                }
+            });
+
+            if (targetLaneId !== newLane.id) {
+                if (!newLane.children?.includes(nodeId)) {
+                    newLane.children.push(nodeId);
+                    ProcessBuilder.lf.updateAttributes(newLane.id, {
+                        children: new Set(newLane.children)
                     });
-                } else {
-                    // Revert to the previous position if the drop location is invalid
-                    const previousNode = ProcessBuilder.previousPositionMap[data.id];
-                    const node = ProcessBuilder.lf.getNodeModelById(data.id);
-                    if (node) {
-                        const nodeType = data.properties.className;
-                        node.x = previousNode.x;
-                        node.y = previousNode.y;
-                        node.text.x = previousNode.x;
-                        node.text.y = previousNode.y;
-
-                        delete ProcessBuilder.previousPositionMap[data.id];
-                        ProcessBuilder.adjustLane(false, null);
-                        CustomBuilder.showMessage(nodeType.charAt(0).toUpperCase() + nodeType.slice(1) + " " + get_cbuilder_msg("pbuilder.nodeMovingFailed"), "info");
-                    }
-                    return;
+                }
+                
+                //remove from wrong target lane
+                if (targetLaneId) {
+                    const targeLFLane = ProcessBuilder.getLFLane(targetLaneId);
+                    const updatedChildren = targeLFLane.children.filter(node => node !== nodeId);
+                    ProcessBuilder.lf.updateAttributes(targeLFLane.id, {
+                        children: new Set(updatedChildren)
+                    });
                 }
             }
 
@@ -1959,16 +1870,32 @@ ProcessBuilder = {
                 const targetLane = ProcessBuilder.getLane(currentLaneId);
                 const sourceLane = ProcessBuilder.getLane(nodeLane.properties.id);
                 const movingNode = ProcessBuilder.getActivity(nodeId);
-        
+                
                 // Remove the node from the source lane
                 sourceLane.activities = sourceLane.activities.filter(activity => activity.properties.id !== movingNode.properties.id);
         
                 // Add the selected node to target lane
+                if (!targetLane.activities) {
+                    targetLane.activities = [];
+                }
                 targetLane.activities.push(movingNode);
-        
-                CustomBuilder.update();
             }
-            ProcessBuilder.adjustLane(true, null);
+            
+            const nodeModel = ProcessBuilder.lf.getNodeModelById(data.properties.id);
+            if (nodeModel) {
+                let node = ProcessBuilder.getActivity(data.properties.id);
+                if (node) {
+                    node.x_offset = nodeModel.x;
+                    node.y_offset = nodeModel.y;
+                }
+            }
+            
+            setTimeout(() => {
+                ProcessBuilder.adjustLane(true, true);
+                
+                //select the node back after move
+                ProcessBuilder.selectElementById(nodeId);
+            }, 0);
         });
 
         ProcessBuilder.lf.on('set-danger', ({ id }) => {
@@ -1977,18 +1904,6 @@ ProcessBuilder = {
 
         ProcessBuilder.lf.on('remove-danger', ({ id }) => {
             ProcessBuilder.lf.setProperties(id, { danger: false });
-        });
-
-        ProcessBuilder.lf.on('node:drop', ({ data }) => {
-            const nodeModel = ProcessBuilder.lf.getNodeModelById(data.properties.id);
-            if (nodeModel) {
-                let node = ProcessBuilder.getActivity(data.properties.id);
-                if (node) {
-                    node.x_offset = nodeModel.x;
-                    node.y_offset = nodeModel.y;
-                    CustomBuilder.update();
-                }
-            }
         });
         
         // Handle adding a new edge
@@ -2000,16 +1915,16 @@ ProcessBuilder = {
                     ProcessBuilder.showContextMenu(sourceNode);
                     return false;
                 }
-                let transitionID = ProcessBuilder.addConnection(data);
-                var result = ProcessBuilder.getConnection(transitionID);
-                ProcessBuilder.lf.setProperties(transitionID, result.properties);
-                ProcessBuilder.lf.setProperties(transitionID, {xpdlObj: result.xpdlObj});
+                ProcessBuilder.addConnection(data, !ProcessBuilder.disableUpdate);
             }
         });
         
         // Handle adding a new node from the drag-and-drop menu
         ProcessBuilder.lf.on('node:dnd-add', ({ data }) => {
             ProcessBuilder.renderLFNode(data);
+            setTimeout(() => {
+                ProcessBuilder.adjustLane(true, true);
+            }, 0);
         });
         
         // Handle adding a new node
@@ -2017,11 +1932,15 @@ ProcessBuilder = {
             if (!ProcessBuilder.changeNodeId) {
                 if (data.type !== 'lane') {
                     ProcessBuilder.renderLFNode(data);
+                    
+                    if (!ProcessBuilder.disableUpdate) {
+                        CustomBuilder.update();
+                    }
                 } else {
                     let laneID = ProcessBuilder.renderLFNode(data);
                     setTimeout(() => {
                         ProcessBuilder.resizePool();
-                        ProcessBuilder.adjustLane(true, laneID, data.properties.height);
+                        ProcessBuilder.adjustLane(true, true);
                     }, 0);
                 }
             }
@@ -2041,9 +1960,8 @@ ProcessBuilder = {
                     }
                     ProcessBuilder.deleteLane(data);
                     ProcessBuilder.removeNode(data);
-                    let adjustHeight = (data.properties.height)* -1;
                     setTimeout(() => {
-                        ProcessBuilder.adjustLane(true, previousParticipant, adjustHeight);
+                        ProcessBuilder.adjustLane(true, true);
                     }, 0);
                 }
             }
@@ -2061,11 +1979,6 @@ ProcessBuilder = {
                         }
                         if (self.mousedown) {
                             CustomBuilder.Builder.selectNodeAndShowProperties(selectedNode, false, true);
-                        } else {
-                            var data = $(target).data("data");
-                            if (data !== undefined) {
-                                self.selectNode(target);
-                            }
                         }
                     });
                 } catch (err) { }
@@ -2081,9 +1994,10 @@ ProcessBuilder = {
             }
 
             setTimeout(() => {
+                var self = CustomBuilder.Builder;
                 if ($('.element-properties .nav-tabs .nav-link.has-properties-errors').length > 0 && self.selectedEl) {
                     if (self.selectedEl) {
-                        ProcessBuilder.selectElementById(self.selectedEl.data.id);
+                        ProcessBuilder.selectElementById(self.selectedEl.data.properties.id);
                         ProcessBuilder.lf.hideContextMenu();
                     }
                 } else {
@@ -2100,18 +2014,6 @@ ProcessBuilder = {
     getMousePosition: function () {
         return ProcessBuilder.lf.getPointByClient(window.event.clientX, window.event.clientY);
     },
-
-    decorateBoxActions: function (element, data, component, box, boxOffset) {
-        $("#paste-element-btn").addClass("disabled");
-        if (ProcessBuilder.isPastable(data, component)) {
-            $("#paste-element-btn").removeClass("disabled");
-        }
-
-        $("#copy-element-btn").addClass("disabled");
-        if (component.builderTemplate.isCopyable(data, component)) {
-            $("#copy-element-btn").removeClass("disabled");
-        }
-    },
     
     /**
      * Adds a new node to the process builder via the menu
@@ -2119,80 +2021,47 @@ ProcessBuilder = {
     addNodeFromMenu: function (node, type, x, y) {
         let graphData = ProcessBuilder.lf.getGraphData();
         let lanes = graphData.nodes.filter(lane => lane.type === "lane");
-        let pool = graphData.nodes.filter(pool => pool.type === "pool");
-        let targetLane;
-        let yGap = 70;
-        let xGap = 50;
-        let extendWidth = 150;
-        let extendHeight = 40;
+        let targetLFLane;
 
-        lanes = lanes.sort((a, b) => a.y - b.y);
-        for (const lane of lanes) {
-            let laneYEnd = lane.y + (lane.properties.height / 2);
-            if (laneYEnd > y) {
-                targetLane = lane;
-                break; // Stop looping once a lane is found
+        lanes = lanes.sort((a, b) => b.y - a.y);
+
+        lanes.forEach(lane => { 
+            if (!targetLFLane || y < lane.y + (lane.properties.height / 2)) {
+                targetLFLane = lane;
             }
-        }
+        });
         
-        let targetLaneYStart = targetLane.y - (targetLane.properties.height / 2);
-        let targetLaneYEnd = targetLane.y + (targetLane.properties.height / 2);
-        let targetLaneXStart = targetLane.x - (targetLane.properties.width / 2);
-        let targetLaneXEnd = targetLane.x + (targetLane.properties.width / 2);
-
-
-        let nodeYStart = y - 40;
-        let nodeYEnd = y + 40;
-        let nodeXStart = x - 60;
-        let nodeXEnd = x + 60;
-        let addHeight = 0;
-
-        if (nodeYStart <= targetLaneYStart) {
-            y = targetLaneYStart + yGap;
-        } else if (targetLaneYEnd <= nodeYEnd) {
-            addHeight = nodeYEnd - targetLaneYEnd + extendHeight;
+        ProcessBuilder.disableUpdate = true; //to disable update
+        let newNode = ProcessBuilder.lf.addNode({
+            type: type, // Change based on your node type
+            x: x,  // Adjust position
+            y: y,
+            text: 'Node',
+            properties: {}
+        });
+        
+        ProcessBuilder.lf.addEdge({
+            id : ProcessBuilder.getTransitionId(node.id, newNode.id),
+            type: ((node.type === "bpmn:startEvent" || type === "bpmn:endEvent")?"bpmn:straightSequenceFlow":"bpmn:sequenceFlow"),
+            sourceNodeId: node.id,
+            targetNodeId: newNode.id
+        });
+        ProcessBuilder.disableUpdate = false; 
+        
+        targetLFLane.children.push(newNode.id);
+        ProcessBuilder.lf.updateAttributes(targetLFLane.id, {
+            children: new Set(targetLFLane.children)
+        });
+        
+        // Add the new node to target lane
+        const targetLane = ProcessBuilder.getLane(targetLFLane.id);
+        const currentNode = ProcessBuilder.getActivity(newNode.id);
+        if (!targetLane.activities) {
+            targetLane.activities = [];
         }
+        targetLane.activities.push(currentNode);
 
-        if (nodeXStart <= targetLaneXStart) {
-            x = targetLaneXStart + xGap;
-        } else if (targetLaneXEnd <= nodeXEnd) {
-            let newWidth = targetLane.properties.width + (nodeXEnd - targetLaneXEnd + extendWidth);
-
-            pool[0].properties.width = newWidth;
-            pool[0].properties.nodeSize.width = newWidth;
-            lanes.forEach(lane => {
-                lane.properties.width = newWidth;
-                lane.properties.nodeSize.width = newWidth;
-            });
-            ProcessBuilder.lf.render(graphData);
-            ProcessBuilder.resizePool();
-        }
-
-        if (addHeight > 0) {
-            const laneModel = ProcessBuilder.lf.getNodeModelById(targetLane.id);
-            laneModel.changeAttribute({ width: targetLane.properties.width, height: targetLane.properties.height + addHeight, x: targetLane.x, y: targetLane.y });
-            ProcessBuilder.lf.updateAttributes(targetLane.id, laneModel);
-            ProcessBuilder.resizePool();
-        }
-
-        setTimeout(function () {
-            let newNode = ProcessBuilder.lf.addNode({
-                type: type, // Change based on your node type
-                x: x,  // Adjust position
-                y: y,
-                text: 'Node',
-                properties: {}
-            });
-            
-            ProcessBuilder.lf.addEdge({
-                id : ProcessBuilder.getTransitionId(node.id, newNode.id),
-                sourceNodeId: node.id,
-                targetNodeId: newNode.id
-            });
-
-            CustomBuilder.update();
-            ProcessBuilder.adjustLane(true);
-        }, 0);
+        ProcessBuilder.adjustLane(true, true);
 
         ProcessBuilder.lf.extension.menu.setMenuConfig({
             nodeMenu: [],
@@ -2294,7 +2163,7 @@ ProcessBuilder = {
     /**
      * Renders the LogicFlow graph with optional auto-layout.
      */
-    renderLFWithAutoLayout: function (graphData, enableAutoLayout) {
+    renderLFWithAutoLayout: function (graphData, enableAutoLayout, addToUndo = false) {
         graphData = ProcessBuilder.updatePoolHeight(graphData);
         ProcessBuilder.lf.render(graphData);
         ProcessBuilder.resizePool();
@@ -2302,7 +2171,7 @@ ProcessBuilder = {
         if (enableAutoLayout) {
             ProcessBuilder.autoLayout();    
         }
-        ProcessBuilder.adjustLane(false, null);
+        ProcessBuilder.adjustLane(true, addToUndo);
         ProcessBuilder.recenter();
     },
     
@@ -2314,7 +2183,7 @@ ProcessBuilder = {
         ProcessBuilder.lf.render(graphData);
         ProcessBuilder.resizePool();
         ProcessBuilder.currentLFProcessData = ProcessBuilder.lf.getGraphData();
-        ProcessBuilder.adjustLane(false, null);
+        ProcessBuilder.adjustLane(true);
     },
     
     /**
@@ -2322,156 +2191,144 @@ ProcessBuilder = {
      * Ensures that lanes expand or contract to fit their contained nodes while maintaining alignment.
      *
      * @param {boolean} adjustNode - Whether to adjust child node positions.
-     * @param {string|null} targetLane - ID of the lane to be adjusted (if applicable).
-     * @param {number} adjustHeight - Height adjustment value for the target lane.
+     * @param {boolean} addToUndo - Whether to add the change to undo, default is false
      */
-    adjustLane: function (adjustNode, targetLane, adjustHeight) {
+    adjustLane: function (adjustNode, addToUndo = false) {
         let graphData = ProcessBuilder.lf.getGraphData();
         let lanes = graphData.nodes.filter(lane => lane.type === "lane");
         let pool = graphData.nodes.filter(pool => pool.type === "pool");
         let poolHeight = 0;
         let finalLaneWidth = 0;
-        let initialY = 0;
-        let initialX = 0;
+        let initialY;
+        let initialX;
         let laneDefaultHeight = 216;
-        let totalLaneHeightAdjusted = 0;
-        let extraSpaceForLane = 70;
+        let extraSpaceForLane = 64;
+        let prevLaneYEnd;
         lanes = lanes.sort((a, b) => a.y - b.y);
         // Adjust the lane height and width
         lanes.forEach(lane => { 
-            let laneYStart = 0;
-            let laneYEnd = 0;
-            let laneXStart = lane.x - (lane.properties.width / 2);
-            let laneXEnd = lane.x + (lane.properties.width / 2);
-            let yChanges = false;
-            let xChanges = false;
+            let totalLaneHeightAdjusted = (prevLaneYEnd?(prevLaneYEnd - (lane.y - (lane.properties.height / 2))):0); //find the different for new y start position based on prev lane Y end
+            let laneOriYStart = lane.y - (lane.properties.height / 2) + totalLaneHeightAdjusted;
+            let laneYStart;
+            let laneYEnd; 
+            let laneXStart;
+            let laneXEnd;
+            let totalLaneStartAdjusted = 0;
+            
             if (lane.children.length > 0) {
+                // check node is within the lane
                 lane.children.forEach(child => {
                     let node = graphData.nodes.filter(node => node.id === child)[0];
-                    if (laneYStart === 0 && laneYEnd === 0) {
-                        laneYStart = node.y - (laneDefaultHeight / 2);
-                        laneYEnd = node.y + (laneDefaultHeight / 2);
-                    }
-
-                    let nodeYStart = node.y - (node.properties.height / 2);
-                    let nodeYEnd = node.y + (node.properties.height / 2);
-                    let nodeXStart = node.x - (node.properties.width / 2);
-                    let nodeXEnd = node.x + (node.properties.width / 2) + 100;
-
-                    if (nodeYStart < laneYStart || nodeYEnd > laneYEnd || (laneYEnd - nodeYEnd < 30)) {
-                        yChanges = true;
-                        if (nodeYStart < laneYStart) {
+                    let nodeYStart = node.y - (node.properties.height / 2) - extraSpaceForLane + totalLaneHeightAdjusted;
+                    let nodeYEnd = node.y + (node.properties.height / 2) + extraSpaceForLane + totalLaneHeightAdjusted;
+                    let nodeXStart = node.x - (node.properties.width / 2) - extraSpaceForLane;
+                    let nodeXEnd = node.x + (node.properties.width / 2) + extraSpaceForLane;
+                    if (laneYStart === undefined || laneYEnd  === undefined || nodeYStart < laneYStart || nodeYEnd > laneYEnd) {
+                        if (laneYStart  === undefined || nodeYStart < laneYStart) {
                             laneYStart = nodeYStart;
-                        } else if (nodeYEnd > laneYEnd || (laneYEnd - nodeYEnd < 30)) {
+                        }
+                        if (laneYEnd  === undefined || nodeYEnd > laneYEnd) {
                             laneYEnd = nodeYEnd;
                         }
                     }
 
-                    if (nodeXStart < laneXStart || nodeXEnd > laneXEnd) {
-                        xChanges = true;
-                        if (nodeXStart < laneXStart) {
+                    if (laneXStart  === undefined || laneXEnd  === undefined || nodeXStart < laneXStart || nodeXEnd > laneXEnd) {
+                        if (laneXStart === undefined || nodeXStart < laneXStart) {
                             laneXStart = nodeXStart;
-                        } else {
+                        } 
+                        if (laneXEnd  === undefined || nodeXEnd > laneXEnd) {
                             laneXEnd = nodeXEnd;
                         }
                     }
-                    // Adjust the node position based on the previous Lane Height Adjusted
-                    if (totalLaneHeightAdjusted && adjustNode) {
-                        node.y = node.y + totalLaneHeightAdjusted;
-                        if (node.text) {
-                            node.text.y = node.text.y + totalLaneHeightAdjusted;
-                        }
-                    }
                 });
-            } 
+                
+                //check if lane start is changed, if yes, add the different to the adjust height
+                if (laneYStart !== laneOriYStart) {
+                    totalLaneStartAdjusted = (laneOriYStart - laneYStart);
+                }
+                
+                //adjust the position of all nodes
+                if (totalLaneStartAdjusted + totalLaneHeightAdjusted !== 0 && adjustNode) {
+                    lane.children.forEach(child => {
+                        let node = graphData.nodes.filter(node => node.id === child)[0];
+                        node.y = node.y + totalLaneStartAdjusted + totalLaneHeightAdjusted;
+                        if (node.text) {
+                            node.text.y = node.text.y + totalLaneStartAdjusted + totalLaneHeightAdjusted;
+                        }
+                    });
+                }
 
-            let originalLaneHeight = lane.properties.height;
-            let laneHeight = laneYEnd - laneYStart;
-            if (laneHeight > 0) {
-                lane.properties.height = laneHeight;
-                lane.properties.nodeSize.height = laneHeight;
-            }  
-
-            if (targetLane !== null && lane.properties.id === targetLane) {
-                totalLaneHeightAdjusted += adjustHeight;
+                let laneHeight = laneYEnd - laneYStart;
+                //make sure the lane have min height
+                if (laneHeight < laneDefaultHeight) {
+                    laneYEnd = laneYEnd + laneDefaultHeight - laneHeight;
+                    laneHeight = laneDefaultHeight;
+                }
+                
+                //update lane y
+                lane.y = laneOriYStart - (laneHeight/2);
+                
+                //update lane new height
+                if (laneHeight > 0) {
+                    lane.properties.height = laneHeight;
+                    lane.properties.nodeSize.height = laneHeight;
+                } 
+                
+                //update lane new width
+                let laneWidth = laneXEnd - laneXStart + 150;
+                if (laneWidth > 0) {
+                    lane.properties.width = laneWidth;
+                    lane.properties.nodeSize.width = laneWidth;
+                }
+                
+                prevLaneYEnd = laneOriYStart + laneHeight;
             }
             
-            lane.properties.width = laneXEnd - laneXStart;
-            lane.properties.nodeSize.width = laneXEnd - laneXStart;
-            if (yChanges) {
-                lane.properties.height = lane.properties.height + 100;
-                lane.properties.nodeSize.height = lane.properties.nodeSize.height + 100;
-            }
-            if (xChanges && finalLaneWidth < lane.properties.width + 100) {
-                finalLaneWidth = lane.properties.width + 100;
+            //find the larger lane width
+            if (finalLaneWidth < lane.properties.width) {
+                finalLaneWidth = lane.properties.width;
+            } 
+            
+            //find the smaller lane x position
+            if (initialX === undefined || initialX > laneXStart) {
+                initialX = laneXStart;
             }
 
-            if (originalLaneHeight !== lane.properties.height) {
-                if (originalLaneHeight < lane.properties.height) {
-                    // If the lane height is increased, add the difference to the totalLaneHeightAdjusted
-                    totalLaneHeightAdjusted += lane.properties.height - originalLaneHeight;
-                } else {
-                    // If the lane height is decreased, subtract the difference from the totalLaneHeightAdjusted
-                    totalLaneHeightAdjusted += (originalLaneHeight - lane.properties.height) * -1;
-                }
+            //find the smaller lane y position
+            if (initialY === undefined || initialY > laneOriYStart) {
+                initialY = laneOriYStart;
             }
+            
+            //calculate the pool height
             poolHeight += lane.properties.height;
         });
-
-        lanes.forEach(lane => {
-            lane.children.forEach(child => {
-                let node = graphData.nodes.filter(node => node.id === child)[0];
-                let nodeStartX = node.x - (node.properties.width / 2);
-                if (nodeStartX < initialX || initialX === 0) {
-                    initialX = nodeStartX;
-                }
-            });
-        });
-
-        // resize pool and lanes width
+        
+        if (finalLaneWidth < 1450) { // set min width
+            finalLaneWidth = 1450;
+        }
+        
+        // Adjust pool and lanes width
         if (finalLaneWidth > 0) {
             pool[0].properties.width = finalLaneWidth;
             pool[0].properties.nodeSize.width = finalLaneWidth;
             lanes.forEach(lane => {
                 lane.properties.width = finalLaneWidth;
                 lane.properties.nodeSize.width = finalLaneWidth;
+                
+                lane.x = initialX + (finalLaneWidth/2);
             });
-            pool[0].x = initialX - 100 + (finalLaneWidth / 2);
+            pool[0].x = initialX + (finalLaneWidth/2);
         }
-
-        // Get the initial Y position of the pool
-        let stopLoop = false;
-        let previousLaneHeight = 0;
-        lanes.forEach(lane => {
-            if (stopLoop) return;
-            lane.children.forEach(child => {
-                let initPoolYStart = 0;
-                let node = graphData.nodes.filter(node => node.id === child)[0];
-                if ((node.y - (node.properties.height / 2)) < initialY || initialY === 0) {
-                    initPoolYStart = node.y - (node.properties.height / 2) - extraSpaceForLane;
-                    if ((node.y - (node.properties.height / 2)) > initPoolYStart) {
-                        initialY = initPoolYStart;
-                    }
-                }
-            });
-            if (initialY !== 0) {
-                initialY = initialY - previousLaneHeight;
-                stopLoop = true; // Set flag to stop further execution
-                return; // Break the inner loop
-            } else {
-                previousLaneHeight += lane.properties.height;
-            }
-        });
-
+        
         // Adjust the pool height and position
         if (poolHeight > 0) {
             pool[0].properties.height = poolHeight;
             pool[0].properties.nodeSize.height = poolHeight;
-            pool[0].y = initialY + (poolHeight / 2);
+            pool[0].y = initialY + (poolHeight/2);
         }
         
         graphData = ProcessBuilder.updateEdges(graphData);
-        ProcessBuilder.updateNodePosition(graphData);
+        ProcessBuilder.updateNodePosition(graphData, addToUndo);
         ProcessBuilder.lf.render(graphData);
         ProcessBuilder.resizePool();
     },
@@ -2517,7 +2374,7 @@ ProcessBuilder = {
                 toolClass = ProcessBuilder.draggingElementId.replace("Tool_", "");
             }
             ProcessBuilder.addElement(data, ProcessBuilder.updatePasteElement);
-            CustomBuilder.update();
+            
             var result;
             if (data.type === 'lane') {
                 result = ProcessBuilder.getLane(ProcessBuilder.draggingElementId);
@@ -2547,6 +2404,15 @@ ProcessBuilder = {
                     ProcessBuilder.lf.updateAttributes(data.id, { id: "laneID_" + result.properties.id });
                 } else {
                     ProcessBuilder.lf.updateAttributes(data.id, { id: result.properties.id });
+                    
+                    //update the id in lane
+                    const targetLaneId = ProcessBuilder.getNodeLaneID(data.id);
+                    const targeLFLane = ProcessBuilder.getLFLane(targetLaneId);
+                    const updatedChildren = targeLFLane.children.filter(node => node !== data.id);
+                    updatedChildren.push(result.properties.id);
+                    ProcessBuilder.lf.updateAttributes(targetLaneId, {
+                        children: new Set(updatedChildren)
+                    });
                 }
                 nodeID = result.properties.id;
             }
@@ -2705,6 +2571,9 @@ ProcessBuilder = {
         var self = CustomBuilder.Builder;
         var id = window.location.hash.replace("#", "");
         
+        //select back the element when undo/redo
+        var selectedEl = self.selectedEl;
+        
         //if id not empty or id is empty but there is remaining process in package. 
         //The generateProcessData method will redirect to the first remaining process when id is empty
         if (id !== "" || $("#processes_list option").length > 0) {
@@ -2712,17 +2581,19 @@ ProcessBuilder = {
             if (ProcessBuilder.currentProcessData !== undefined && ProcessBuilder.currentProcessData !== null && ProcessBuilder.currentProcessData.properties !== undefined) {
                 CustomBuilder.Builder.load(ProcessBuilder.currentProcessData, function(){
                     ProcessBuilder.validate();
-
+                    
                     setTimeout(function(){
                         if (ProcessBuilder.preSelect !== "") {
-                            var node = self.frameBody.find("[data-cbuilder-id='"+ProcessBuilder.preSelect+"']");
-                            self.selectNode(node);
+                            ProcessBuilder.selectElementById(ProcessBuilder.preSelect);
+                            self.selectNode(self.selectedEl);
                             ProcessBuilder.preSelect = "";
+                        } else if (selectedEl) {
+                            ProcessBuilder.selectElementById(selectedEl.data.id);
                         }
                         if (ProcessBuilder.view !== "") {
                             $("[data-cbuilder-view='"+ProcessBuilder.view+"']").trigger("click");
                         }
-                    }, 1000);
+                    }, 500);
                     
                     ProcessBuilder.updateAdvancedView();
                 });
@@ -3191,6 +3062,7 @@ ProcessBuilder = {
         //add start and end node
         for (var p in xpdlProcessesAttrs) {
             if (xpdlProcessesAttrs[p]['-Name'] === "JaWE_GRAPH_END_OF_WORKFLOW" || xpdlProcessesAttrs[p]['-Name'] === "JaWE_GRAPH_START_OF_WORKFLOW") {
+                let isValid = true;
                 var participantId;
                 var values = xpdlProcessesAttrs[p]['-Value'].split(",");
                 var obj = {
@@ -3234,7 +3106,7 @@ ProcessBuilder = {
 
                             var lfTransition = {
                                 id: "transition_" + obj.properties.id,
-                                type: 'bpmn:sequenceFlow',
+                                type: 'bpmn:straightSequenceFlow',
                                 properties : {
                                     className :'transition',
                                     id : "transition_" + obj.properties.id,
@@ -3256,6 +3128,8 @@ ProcessBuilder = {
 
                             process['transitions'].push(transition);
                             lfEdges.push(lfTransition);
+                        } else {
+                            isValid = false;
                         }
                     } else if (attr[0] === "X_OFFSET") {
                         obj.x_offset = attr[1];
@@ -3265,33 +3139,36 @@ ProcessBuilder = {
                         logicFlowObj.y = Number(attr[1]);
                     }
                 }
-                const laneRequester = $.grep(lfNode, function (element) {
-                    return element.type === 'lane' && element.id === 'laneID_'+participantId;
-                });
-    
-                // Check if the lane exists
-                if (laneRequester.length > 0) {
-                    const requesterLane = laneRequester[0];
-    
-                    // Check if the 'children' property exists, if not, initialize it as an array
-                    if (!requesterLane.children) {
-                        requesterLane.children = [];
-                    }
-    
-                    // Add the new value to the children array
-                    requesterLane.children.push(logicFlowObj.id);
-                }         
                 
-                if (!ProcessBuilder.readonly) {
-                    //find mapping
-                    ProcessBuilder.populateActivityMapping(obj);
-                    ProcessBuilder.populateActivityMapping(logicFlowObj);
-                    if (obj.className === "start") {
-                        ProcessBuilder.populateParticipantMapping(obj);
-                        ProcessBuilder.populateParticipantMapping(logicFlowObj);
+                if (isValid || xpdlActivities.length === 0) { //valid start/end node connected to other node, or it is a new process without activity
+                    const laneRequester = $.grep(lfNode, function (element) {
+                        return element.type === 'lane' && element.id === 'laneID_'+participantId;
+                    });
+
+                    // Check if the lane exists
+                    if (laneRequester.length > 0) {
+                        const requesterLane = laneRequester[0];
+
+                        // Check if the 'children' property exists, if not, initialize it as an array
+                        if (!requesterLane.children) {
+                            requesterLane.children = [];
+                        }
+
+                        // Add the new value to the children array
+                        requesterLane.children.push(logicFlowObj.id);
+                    }         
+
+                    if (!ProcessBuilder.readonly) {
+                        //find mapping
+                        ProcessBuilder.populateActivityMapping(obj);
+                        ProcessBuilder.populateActivityMapping(logicFlowObj);
+                        if (obj.className === "start") {
+                            ProcessBuilder.populateParticipantMapping(obj);
+                            ProcessBuilder.populateParticipantMapping(logicFlowObj);
+                        }
                     }
+                    lfNode.push(logicFlowObj);
                 }
-                lfNode.push(logicFlowObj);
             }
         }
         graphData["nodes"] = lfNode;
@@ -4475,12 +4352,11 @@ ProcessBuilder = {
         var self = CustomBuilder.Builder;
         
         var process = ProcessBuilder.addEmptyProcess();
-        CustomBuilder.update();
         ProcessBuilder.updateProcessSelector();
         self.triggerChange();
         
         let graphData = ProcessBuilder.lf.getGraphData();
-        ProcessBuilder.renderLFWithAutoLayout(graphData);
+        ProcessBuilder.renderLFWithAutoLayout(graphData, null, true);
         window.location.hash = process['-Id'];
     },
     
@@ -4615,9 +4491,6 @@ ProcessBuilder = {
             'childsContainerAttr' : 'activities',
             'parentDataHolder' : 'participants',
             'childsDataHolder' : 'activities',
-            'render' : ProcessBuilder.renderParticipant,
-            'dragging' : ProcessBuilder.dragParticipant,
-            'unload' : ProcessBuilder.unloadParticipant,
             'getStylePropertiesDefinition' : ProcessBuilder.getParticipantDef,
             'dropEnd' : ProcessBuilder.dropParticipantEnd
         }});
@@ -4634,9 +4507,6 @@ ProcessBuilder = {
             'absolutePosition' : true,
             'parentContainerAttr' : 'activities',
             'parentDataHolder' : 'activities',
-            'render' : ProcessBuilder.renderActivity,
-            'dragging' : ProcessBuilder.dragActivity,
-            'unload' : ProcessBuilder.unloadActivity,
             'getStylePropertiesDefinition' : ProcessBuilder.getActivityDef,
             'nodeDetailContainerColorNumber' : function() {
                 return 3;
@@ -4769,9 +4639,6 @@ ProcessBuilder = {
             'absolutePosition' : true,
             'parentContainerAttr' : 'activities',
             'parentDataHolder' : 'activities',
-            'dragging' : ProcessBuilder.dragActivity,
-            'render' : ProcessBuilder.renderActivity,
-            'unload' : ProcessBuilder.unloadActivity,
             'getStylePropertiesDefinition' : ProcessBuilder.getToolDef,
             'nodeDetailContainerColorNumber' : function() {
                 return 4;
@@ -4841,9 +4708,6 @@ ProcessBuilder = {
             'absolutePosition' : true,
             'parentContainerAttr' : 'activities',
             'parentDataHolder' : 'activities',
-            'render' : ProcessBuilder.renderActivity,
-            'dragging' : ProcessBuilder.dragActivity,
-            'unload' : ProcessBuilder.unloadActivity,
             'getStylePropertiesDefinition' : ProcessBuilder.getRouteDef,
             'nodeDetailContainerColorNumber' : function() {
                 return 5;
@@ -4910,9 +4774,6 @@ ProcessBuilder = {
             'absolutePosition' : true,
             'parentContainerAttr' : 'activities',
             'parentDataHolder' : 'activities',
-            'render' : ProcessBuilder.renderActivity,
-            'dragging' : ProcessBuilder.dragActivity,
-            'unload' : ProcessBuilder.unloadActivity,
             'supportStyle' : false,
             'nodeDetailContainerColorNumber' : function() {
                 return 6;
@@ -5055,9 +4916,6 @@ ProcessBuilder = {
             'absolutePosition' : true,
             'parentContainerAttr' : 'activities',
             'parentDataHolder' : 'activities',
-            'render' : ProcessBuilder.renderActivity,
-            'dragging' : ProcessBuilder.dragActivity,
-            'unload' : ProcessBuilder.unloadActivity,
             'nodeDetailContainerColorNumber' : function() {
                 return 7;
             },
@@ -5078,9 +4936,6 @@ ProcessBuilder = {
             'supportStyle' : false,
             'parentContainerAttr' : 'activities',
             'parentDataHolder' : 'activities',
-            'render' : ProcessBuilder.renderActivity,
-            'dragging' : ProcessBuilder.dragActivity,
-            'unload' : ProcessBuilder.unloadActivity,
             'nodeDetailContainerColorNumber' : function() {
                 return 8;
             }
@@ -5247,9 +5102,6 @@ ProcessBuilder = {
             'supportProperties' : true,
             'supportStyle' : false,
             'parentDataHolder' : 'transitions',
-            'render' : ProcessBuilder.renderTransition,
-            'unload' : ProcessBuilder.unloadTransition,
-            'customTreeMenu' : ProcessBuilder.renderTransitionTreeMenu,
             'nodeDetailContainerColorNumber' : function() {
                 return 9;
             }
@@ -5305,31 +5157,7 @@ ProcessBuilder = {
             element.attr("id", "process_" + elementObj.properties.id);
             element.html("");
             element.attr("data-cbuilder-uneditable", "").attr("data-cbuilder-participants", "");
-             
-            var deferreds = [];
-            var dummy = $.Deferred();
-            deferreds.push(dummy);
-
-            //render participants
-            for (var i in elementObj.participants) {
-                var childComponent = self.parseDataToComponent(elementObj.participants[i]);
-                var temp = $('<div></div>');
-                $(element).append(temp);
-                self.renderElement(elementObj.participants[i], temp, childComponent, false, deferreds);
-            }
-
-            dummy.resolve();
-
-            $.when.apply($, deferreds).then(function() {
-                //render transitions
-                for (var i in elementObj.transitions) {
-                    var childComponent = self.parseDataToComponent(elementObj.transitions[i]);
-                    var temp = $('<div></div>');
-                    $(element).append(temp);
-                    self.renderElement(elementObj.transitions[i], temp, childComponent, false, [""]); //add a dummy deferreds as no need it, and to stop it trigger change event
-                }
-                callback(element);
-            });
+            
             if (ProcessBuilder.currentProcessData.properties.autoLayout) {
                 ProcessBuilder.renderLFWithAutoLayout(ProcessBuilder.currentLFProcessData, true);
             } else {
@@ -5337,20 +5165,6 @@ ProcessBuilder = {
             }
             ProcessBuilder.recenter();
         }
-    },
-    
-    //Render the participant
-    renderParticipant : function(element, elementObj, component, callback) {
-        element.html('<div class="participant_inner"><div class="participant_handle"><div class="participant_label">'+elementObj.properties.label+'</div></div><div class="activities-container" data-cbuilder-activities></div></div>');
-        element.addClass("participant");
-        element.attr("id", "participant_" + elementObj.properties.id);
-        
-        callback(element);
-    },
-    
-    //Render activity, tool, subflow, route,s tart & end
-    renderActivity : function(element, elementObj, component, callback) {
-        callback(element);
     },
             
     /*
@@ -5361,6 +5175,9 @@ ProcessBuilder = {
     updateActivityProperties: function (activityId, newProperties, oldNodeId) {
         if(newProperties.className === 'participant'){
             activityId = activityId.replace('laneID_', '');
+            if (oldNodeId) {
+                oldNodeId = oldNodeId.replace('laneID_', '');
+            }
         }
         let ProcessData = ProcessBuilder.currentProcessData.participants;
         // Loop through each participant
@@ -5378,6 +5195,16 @@ ProcessBuilder = {
                 if (participant.properties.id === activityId || participant.properties.id === oldNodeId) {
                     // Update the properties with the new values
                     Object.assign(participant.properties, newProperties);
+                    
+                    if (oldNodeId) { //update activities performers
+                        if (Array.isArray(participant.activities)) {
+                            participant.activities.forEach(activity => {
+                                if (activity.xpdlObj) {
+                                    activity.xpdlObj.Performer = activityId;
+                                }
+                            });
+                        }
+                    }
                 }
             }
         });
@@ -5439,44 +5266,6 @@ ProcessBuilder = {
         }
     },
     
-    //Render transition
-    renderTransition : function(element, elementObj, component, callback) {
-        callback(element);
-    },
-    
-    //To redraw the connections when dragging participant
-    dragParticipant : function(dragElement, component) {
-        var self = CustomBuilder.Builder;
-        return dragElement;
-    },
-    
-    //To reposition the connections after moved participant
-    dropParticipantEnd : function(dragElement) {
-        ProcessBuilder.refreshConnections();
-        return dragElement;
-    },
-    
-    //To redraw the connection when dragging node (activity, tool, subflow, route, start & end)
-    dragActivity : function(dragElement, component) {
-        return dragElement;
-    },
-    
-    //To remove related transitions when participant deleted
-    unloadParticipant : function(element, elementObj, component) {
-        $(element).find(".node").each(function(){
-            ProcessBuilder.removeNode($(this));
-        });
-    },
-    
-    //To remove related transitions when node (activity, tool, subflow, route, start & end) deleted
-    unloadActivity : function(element, elementObj, component) {
-        ProcessBuilder.removeNode($(element));
-    },
-    
-    //to remove transition                
-    unloadTransition : function(element, elementObj, component) {
-    },
-    
     // Find the index of an object in the array by matching the "-Id" property.
     findObjectIndexById: function (arr, objToFind) {
         return arr.findIndex(function(item) {
@@ -5515,30 +5304,69 @@ ProcessBuilder = {
         
         var connSet =  ProcessBuilder.lf.getNodeOutgoingEdge(data.id);
         for (var c in connSet) {
-            ProcessBuilder.removeConnection(ProcessBuilder.lf.getEdgeDataById(connSet[c].id));
+            ProcessBuilder.removeConnection(ProcessBuilder.lf.getEdgeDataById(connSet[c].id), false);
         }
         
         connSet = ProcessBuilder.lf.getNodeIncomingEdge(data.id);
         for (var c in connSet) {
-            ProcessBuilder.removeConnection(ProcessBuilder.lf.getEdgeDataById(connSet[c].id));
+            ProcessBuilder.removeConnection(ProcessBuilder.lf.getEdgeDataById(connSet[c].id), false);
         }
 
         ProcessBuilder.removeActivity(data.id);
         ProcessBuilder.lf.deleteElement(data.id); 
+        
+        CustomBuilder.update();
         $("body").addClass("no-right-panel");
     },   
     
     //Handling for a connection event triggered 
-    addConnection : function(connection) {
-        var self = CustomBuilder.Builder;
-        
-        if (self.frameBody.find(".process").data("data") !== undefined) {
+    addConnection : function(connection, update = true) {
+        if (ProcessBuilder.currentProcessData !== undefined) {
             var source = connection.sourceNodeId;
             var target = connection.targetNodeId;
 
-            // update split & join
-            var sourceConnSet = ProcessBuilder.lf.getNodeOutgoingEdge(source);
+            ProcessBuilder.updateSourceTargetData(source, target);
+            
+            // new connection
+            var parentDataArray = ProcessBuilder.currentProcessData['transitions'];
+            var data = {
+                className :'transition',
+                properties : {
+                    className :'transition',
+                    id: connection.id,
+                    type : "",
+                    transitionStyle : "orthogonal"
+                }
+            };
+            parentDataArray.push(data);
+
             var sourceData = ProcessBuilder.lf.getNodeDataById(source);
+            var targetData = ProcessBuilder.lf.getNodeDataById(target);
+            data.properties.from = sourceData.properties.id;
+            data.properties.to = targetData.properties.id;
+            if (sourceData.properties.className === "start" || targetData.properties.className === "end") {
+                data.properties.type = "startend";
+            } else {
+                if (data.properties.type === "startend") {
+                    data.properties.type = "";
+                }
+            }
+            
+            //update to logicflow
+            ProcessBuilder.lf.setProperties(connection.id, data);
+                
+            if (update) {
+                CustomBuilder.update();
+            }
+        }
+    },
+      
+    //update source node data and target node data
+    updateSourceTargetData: function (source, target) {
+        // update split & join
+        var sourceConnSet = ProcessBuilder.lf.getNodeOutgoingEdge(source);
+        var sourceData = ProcessBuilder.lf.getNodeDataById(source);
+        if (sourceData) {
             if (sourceConnSet.length > 1) {
                 if (sourceData.properties.split === "") {
                     sourceData.properties.split = "XOR";
@@ -5546,8 +5374,12 @@ ProcessBuilder = {
             } else {
                 sourceData.properties.split = "";
             }
-            var targetConnSet = ProcessBuilder.lf.getNodeOutgoingEdge(target);
-            var targetData = ProcessBuilder.lf.getNodeDataById(target);
+            ProcessBuilder.lf.setProperties(sourceData.id, sourceData.properties);
+        }
+        
+        var targetConnSet = ProcessBuilder.lf.getNodeOutgoingEdge(target);
+        var targetData = ProcessBuilder.lf.getNodeDataById(target);
+        if (targetData) {
             if (targetConnSet.length > 1) {
                 if (targetData.properties.join === "") {
                     targetData.properties.join = "XOR";
@@ -5555,61 +5387,6 @@ ProcessBuilder = {
             } else {
                 targetData.properties.join = "";
             }
-            ProcessBuilder.updateSourceTargetData(sourceData, targetData);
-            
-            var data = $(connection.canvas).data("data");
-            if (data === undefined) {
-                // new connection
-                var parentDataArray = self.frameBody.find(".process").data("data")['transitions'];
-                data = {
-                    className :'transition',
-                    properties : {
-                        className :'transition',
-                        id: connection.id,
-                        type : "",
-                        transitionStyle : "orthogonal"
-                    }
-                };
-
-                parentDataArray.push(data);
-
-                $(connection.canvas).addClass("transition").attr("id", data.properties.id).attr("data-cbuilder-ignore-dragging", "");
-
-                //add group select
-                for (var e in connection.endpoints) {
-                    $(connection.endpoints[e].canvas).attr("data-cbuilder-group", data.properties.id).attr("data-cbuilder-ignore-dragging", "");
-                }
-
-                $(connection.canvas).attr("data-cbuilder-classname", 'transition');
-                $(connection.canvas).attr("data-cbuilder-id", data.properties.id);
-                $(connection.canvas).data("data", data);
-                
-                data.connection = connection;
-            }
-
-            data.properties.from = sourceData.properties.id;
-            data.properties.to = targetData.properties.id;
-            if (sourceData.properties.className === "start" || targetData.properties.className === "end") {
-                data.properties.type = "startend";
-                $(connection.canvas).attr("data-cbuilder-uneditable", "");  
-            } else {
-                if (data.properties.type === "startend") {
-                    data.properties.type = "";
-                    $(connection.canvas).removeAttr("data-cbuilder-uneditable", "");
-                }
-            }
-            CustomBuilder.update();
-            self._updateBoxes();
-            return data.properties.id;
-        }
-    },
-      
-    //update source node data and target node data
-    updateSourceTargetData: function (sourceData, targetData) {
-        if (sourceData) {
-            ProcessBuilder.lf.setProperties(sourceData.id, sourceData.properties);
-        }
-        if (targetData) {
             ProcessBuilder.lf.setProperties(targetData.id, targetData.properties);
         }
     },
@@ -5657,9 +5434,8 @@ ProcessBuilder = {
     },        
     
     //Handling for a remove connection event triggered 
-    removeConnection : function(connection) {
-        var self = CustomBuilder.Builder;
-        var parentDataArray = self.frameBody.find(".process").data("data")['transitions'];
+    removeConnection : function(connection, update = true) {
+        var parentDataArray = ProcessBuilder.currentProcessData['transitions'];
         
         var data = connection.properties;
         if (data.xpdlObj !== undefined) {
@@ -5682,74 +5458,12 @@ ProcessBuilder = {
         
         var source = connection.sourceNodeId;
         var target = connection.targetNodeId;
-        // update split & join
-        var sourceConnSet = ProcessBuilder.lf.getNodeOutgoingEdge(source);
-        var sourceData = ProcessBuilder.lf.getNodeDataById(source);
-        if (sourceConnSet.length > 1) {
-            if (sourceData.properties.split === "") {
-                sourceData.properties.split = "XOR";
-            }
-        } else {
-            sourceData.properties.split = "";
-        }
-        var targetConnSet = ProcessBuilder.lf.getNodeIncomingEdge(target);
-        var targetData = ProcessBuilder.lf.getNodeDataById(target);
-        if (targetConnSet.length > 1) {
-            if (targetData.properties.join === "") {
-                targetData.properties.join = "XOR";
-            }
-        } else {
-            targetData.properties.join = "";
-        }
-        ProcessBuilder.updateSourceTargetData(sourceData, targetData);
+        
+        ProcessBuilder.updateSourceTargetData(source, target);
        
-        CustomBuilder.update();
-        self._updateBoxes();
-    },
-    
-    /*
-     * Move the transition under activity in tree viewer
-     */
-    renderTransitionTreeMenu : function(li, elementObj, component) {
-        var sourceId = elementObj.properties.from;
-        var sourceNodeConatiner = $(li).closest(".tree-container").find("[data-cbuilder-node-id='"+sourceId+"'] > ol");
-        sourceNodeConatiner.append(li);
-    },
-    
-    /*
-     * On canvas changed, adjust the participants Size
-     */
-    adjustParticipantSize : function() {
-        var self = CustomBuilder.Builder;
-        var participantWidth = 0;
-        self.frameBody.find(".participant").each(function(){
-            var $participant = $(this);
-            var bottomOffset = null;
-            var rightOffset = 0;
-            
-            $participant.find(".activities-container").children().each(function (i, e) {
-                var $e = $(e),
-                eBottomOffset = ($e.offset().top / self.zoom) + $e.outerHeight(),
-                eRightOffset = ($e.offset().left / self.zoom) + $e.outerWidth();
-                
-                if (eBottomOffset > bottomOffset) {
-                    bottomOffset = eBottomOffset;
-                }
-                if (eRightOffset > rightOffset) {
-                    rightOffset = eRightOffset;
-                }
-            });
-            // recalculate participant height
-            var childrenHeight = (bottomOffset - ($participant.offset().top / self.zoom)) + 50;
-            $participant.find("> div").css("height", childrenHeight + "px");
-
-            // recalculate participant width
-            var childrenWidth = (rightOffset - ($participant.offset().left / self.zoom)) + 100;
-            if (childrenWidth > participantWidth) {
-                participantWidth = childrenWidth;
-            }
-        });
-        self.frameBody.find(".process").css({"width" : participantWidth + "px", "min-width" : "100%"});
+        if (update) {
+            CustomBuilder.update();
+        }
     },
     
     /*
@@ -5804,31 +5518,6 @@ ProcessBuilder = {
         delete elementObj['xpdlObj'];
     },
     
-    /*
-     * triggered on canvas changed to update participants size and connection position
-     */
-    refresh : function() {
-        var self = CustomBuilder.Builder;
-        
-        ProcessBuilder.adjustParticipantSize();
-        ProcessBuilder.refreshConnections();
-        setTimeout(function(){
-            self._updateBoxes();
-        }, 10);
-    },
-    
-    /*
-     * recalculate the connection position
-     */
-    refreshConnections : function() {
-        var self = CustomBuilder.Builder;
-        
-        if (self.frameBody.find(".process").length > 0) {
-            if (ProcessBuilder.refreshTimeout) {
-                clearTimeout(ProcessBuilder.refreshTimeout);
-            }
-        }
-    },
     
     /*
      * Action implementation for zoom minus icon
@@ -5897,22 +5586,16 @@ ProcessBuilder = {
      */
     autoLayout: function () {
         var self = CustomBuilder.Builder;
-        var nextData = ProcessBuilder.lf.layout('bpmn:startEvent');
+        ProcessBuilder.lf.layout('bpmn:startEvent');
         var newData = ProcessBuilder.lf.getGraphData();
         var newGrapData = ProcessBuilder.updateEdges(newData);
         newGrapData = ProcessBuilder.updatePoolHeight(newGrapData);
         ProcessBuilder.renderLFWithAutoLayout(newGrapData, false);
         ProcessBuilder.updateNodePosition(newGrapData);
         
-        if (self.selectedEl) {
-            var selectedData = self.selectedEl[0].data;
-            if (selectedData) {
-                var selectID = selectedData.properties.id;
-            }
-        } else {
-            selectID = $('#lf-container').find('.node.participant').last().attr('id');
+        if (self.selectedEl && self.selectedEl && self.selectedEl.data) {
+            ProcessBuilder.selectElementById(self.selectedEl.data.properties.id);
         }
-        ProcessBuilder.selectElementById(selectID);
     },
     
     /**
@@ -5920,8 +5603,9 @@ ProcessBuilder = {
      * Ensures that node positions in the graphical representation are reflected in the process data.
      *
      * @param {Object} graphData - The current process graph data containing nodes.
+     * @param {boolean} addToUndo - Whether to add the change to undo, default to true
      */
-    updateNodePosition: function (graphData) {
+    updateNodePosition: function (graphData, addToUndo = true) {
         let processData = ProcessBuilder.currentProcessData;
         graphData.nodes.forEach(node => {
             if (node.type !== 'pool' && node.type !== 'lane') {
@@ -5939,7 +5623,7 @@ ProcessBuilder = {
         });
         ProcessBuilder.currentProcessData = processData;
         if (!ProcessBuilder.readonly) {
-            CustomBuilder.update();
+            CustomBuilder.update(addToUndo);
         }
     },
     
@@ -5947,7 +5631,22 @@ ProcessBuilder = {
      * Select logic flow node/edge with id
      */
     selectElementById: function (id) {
-        ProcessBuilder.lf.selectElementById(id, false, false);
+        if (id) {
+            ProcessBuilder.lf.selectElementById(id, false, false);
+
+            var nodeData = ProcessBuilder.getSelectedNode();
+            if (!nodeData) { 
+                if (id.includes("laneID_")) {
+                    nodeData = ProcessBuilder.getLFLane(id);
+                } else {
+                    //if not activity node, then try get transition
+                    nodeData = ProcessBuilder.getLFEdge(id);
+                }
+            }
+            if (nodeData) {
+                CustomBuilder.Builder.selectedEl = {'data' : nodeData};
+            }
+        }
     },
             
     /*
@@ -5970,6 +5669,8 @@ ProcessBuilder = {
 
     //Before the final render, adjust all the edges this is due to node changed during auto layout
     updateEdges: function (nodeData) {
+        let transitionPosData = {};
+        
         nodeData.edges.forEach(existEdge => {
             nodeData.edges = nodeData.edges.filter(edge => edge.id !== existEdge.id);
             
@@ -5984,7 +5685,7 @@ ProcessBuilder = {
                 targetNodeId: existEdge.targetNodeId,
                 properties: existEdge.properties,
                 text: text,
-                ...ProcessBuilder.getEdgeDataPoints(existEdge.sourceNodeId, existEdge.targetNodeId, nodeData.nodes)
+                ...ProcessBuilder.getEdgeDataPoints(existEdge.sourceNodeId, existEdge.targetNodeId, nodeData.nodes, transitionPosData)
             });
         });
         nodeData.edges = ProcessBuilder.adjustEdgePositions(nodeData.edges);
@@ -5999,41 +5700,24 @@ ProcessBuilder = {
         // loop to change y
         let gap = 7;
         edges.forEach((currentEdge) => {
-            let yPosition = currentEdge.startPoint.y;
-            const filteredEdges = edges.filter(edge =>
-                (edge.startPoint.y === yPosition || edge.endPoint.y === yPosition) && currentEdge.id !== edge.id
-            );
-            filteredEdges.forEach((targetEdge) => {
-                if (ProcessBuilder.isOverlappingX(currentEdge, targetEdge)) {
-                    if (targetEdge.startPoint.y === targetEdge.endPoint.y && (targetEdge.startPoint.y === yPosition || targetEdge.endPoint.y === yPosition)) {
-                        targetEdge.startPoint.y = targetEdge.startPoint.y + gap;
-                        targetEdge.endPoint.y = targetEdge.endPoint.y + gap;
+            edges.forEach((targetEdge) => {
+                if (currentEdge.id !== targetEdge.id && ProcessBuilder.areStacked(currentEdge, targetEdge)) {
+                    if (targetEdge.startPoint.x === targetEdge.endPoint.x) {
+                        targetEdge.startPoint.x += gap;
+                        targetEdge.endPoint.x += gap;
+                    } else if (targetEdge.startPoint.y === targetEdge.endPoint.y) {
+                        targetEdge.startPoint.y += gap;
+                        targetEdge.endPoint.y += gap;
                     } else {
-                        if (targetEdge.startPoint.y === yPosition) {
-                            targetEdge.startPoint.y = targetEdge.startPoint.y + gap;
-                        } else if (targetEdge.endPoint.y === yPosition) {
-                            targetEdge.endPoint.y = targetEdge.endPoint.y + gap;
+                        if (targetEdge.startPoint.position === "top" || targetEdge.startPoint.position === "bottom") {
+                            targetEdge.startPoint.x += gap;
+                        } else {
+                            targetEdge.startPoint.y += gap;
                         }
-                    }
-                }
-            });
-        });
-
-        edges.forEach((currentEdge) => {
-            let xPosition = currentEdge.startPoint.x;
-            const filteredEdges = edges.filter(edge =>
-                (edge.startPoint.x === xPosition || edge.endPoint.x === xPosition) && currentEdge.id !== edge.id
-            );
-            filteredEdges.forEach((targetEdge) => {
-                if (ProcessBuilder.isOverlappingY(currentEdge, targetEdge)) {
-                    if (targetEdge.startPoint.x === targetEdge.endPoint.x && (targetEdge.startPoint.x === xPosition || targetEdge.endPoint.x == xPosition)) {
-                        targetEdge.startPoint.x = targetEdge.startPoint.x + gap;
-                        targetEdge.endPoint.x = targetEdge.endPoint.x + gap;
-                    } else {
-                        if (targetEdge.startPoint.x === xPosition) {
-                            targetEdge.startPoint.x = targetEdge.startPoint.x + gap;
-                        } else if (targetEdge.endPoint.x === xPosition) {
-                            targetEdge.endPoint.x = targetEdge.endPoint.x + gap;
+                        if (targetEdge.endPoint.position === "top" || targetEdge.endPoint.position === "bottom") {
+                            targetEdge.endPoint.x += gap;
+                        } else {
+                            targetEdge.endPoint.y += gap;
                         }
                     }
                 }
@@ -6043,41 +5727,33 @@ ProcessBuilder = {
     },
     
     /**
-     * Checks if two edges overlap on the X-axis.
-     * This function determines whether the horizontal projection of `currentEdge`
-     * and `targetEdge` intersects, meaning their X-coordinates overlap.
+     * Checks if two edges stacked
      */
-    isOverlappingX: function(currentEdge, targetEdge) {
-        let currStartPointX = currentEdge.startPoint.x;
-        let currEndPointX = currentEdge.endPoint.x;
-        let targetStartPointX = targetEdge.startPoint.x;
-        let targetEndPointX = targetEdge.endPoint.x;
-        
-        let currentMin = Math.min(currStartPointX, currEndPointX);
-        let currentMax = Math.max(currStartPointX, currEndPointX);
-        let targetMin = Math.min(targetStartPointX, targetEndPointX);
-        let targetMax = Math.max(targetStartPointX, targetEndPointX);
-    
-        return currentMin <= targetMax && targetMin <= currentMax;
-    },
-    
-    /**
-     * Checks if two edges overlap on the Y-axis.
-     * This function determines whether the vertical projection of `currentEdge`
-     * and `targetEdge` intersects, meaning their Y-coordinates overlap.
-     */
-    isOverlappingY: function(currentEdge, targetEdge) {
-        let currStartPointY = currentEdge.startPoint.y;
-        let currEndPointY = currentEdge.endPoint.y;
-        let targetStartPointY = targetEdge.startPoint.y;
-        let targetEndPointY = targetEdge.endPoint.y;
-        
-        let currentMin = Math.min(currStartPointY, currEndPointY);
-        let currentMax = Math.max(currStartPointY, currEndPointY);
-        let targetMin = Math.min(targetStartPointY, targetEndPointY);
-        let targetMax = Math.max(targetStartPointY, targetEndPointY);
-    
-        return currentMin <= targetMax && targetMin <= currentMax;
+    areStacked(edge1, edge2) {
+        function cross(v1, v2) {
+            return v1.x * v2.y - v1.y * v2.x;
+        }
+
+        function isColinear(a, b, c) {
+            const v1 = { x: b.x - a.x, y: b.y - a.y };
+            const v2 = { x: c.x - a.x, y: c.y - a.y };
+            return cross(v1, v2) === 0;
+        }
+
+        function isOverlap1D(a1, a2, b1, b2) {
+            return Math.max(Math.min(a1, a2), Math.min(b1, b2)) <= Math.min(Math.max(a1, a2), Math.max(b1, b2));
+        }
+
+        // Step 1: Colinearity
+        if (!isColinear(edge1.startPoint, edge1.endPoint, edge2.startPoint) || !isColinear(edge1.startPoint, edge1.endPoint, edge2.endPoint)) {
+            return false;
+        }
+
+        // Step 2: Overlapping in x and y directions
+        const xOverlap = isOverlap1D(edge1.startPoint.x, edge1.endPoint.x, edge2.startPoint.x, edge2.endPoint.x);
+        const yOverlap = isOverlap1D(edge1.startPoint.y, edge1.endPoint.y, edge2.startPoint.y, edge2.endPoint.y);
+
+        return xOverlap && yOverlap;
     },
     
     /*
@@ -6095,24 +5771,30 @@ ProcessBuilder = {
             RIGHT_TOP: 5, // Source is to the top-right of the target
             RIGHT_BOTTOM: 6 // Source is to the bottom-right of the target
         };
-
+        
         // Destructure x, y coordinates from source and target objects
         const {x, y} = source,
-        {x: x1, y: y1} = target;
-
+        {x: x1, y: y1} = target,
+        w = source.properties.width,
+        h = source.properties.height,
+        w1 = target.properties.width,
+        h1 = target.properties.height,
+        xGap = 30 + Math.max(w, w1) / 2,
+        yGap = 30 + Math.max(h, h1) / 2;
+        
         // Determine the relative position of source with respect to target
-        if (x < x1)
-            return y < y1 ? POSITION_TYPE.LEFT_TOP :
-                    y > y1 ? POSITION_TYPE.LEFT_BOTTOM :
+        if (x < x1 - xGap)
+            return y < y1 - yGap ? POSITION_TYPE.LEFT_TOP :
+                    y > y1 + yGap ? POSITION_TYPE.LEFT_BOTTOM :
                     POSITION_TYPE.LEFT;
 
-        if (x > x1)
-            return y < y1 ? POSITION_TYPE.RIGHT_TOP :
-                    y > y1 ? POSITION_TYPE.RIGHT_BOTTOM :
+        if (x > x1 + xGap)
+            return y < y1 - yGap ? POSITION_TYPE.RIGHT_TOP :
+                    y > y1 + yGap ? POSITION_TYPE.RIGHT_BOTTOM :
                     POSITION_TYPE.RIGHT;
 
         // If x coordinates are equal, determine if source is above or below the target
-        return y < y1 ? POSITION_TYPE.TOP :
+        return y <= y1 ? POSITION_TYPE.TOP :
                 y > y1 ? POSITION_TYPE.BOTTOM :
                 POSITION_TYPE.LEFT; // Default case if source and target overlap
     },
@@ -6120,7 +5802,7 @@ ProcessBuilder = {
     /*
      * Generate start point and end point position based on node position
      */
-    getEdgeDataPoints: function (sourceNodeId, targetNodeId, nodeData) {
+    getEdgeDataPoints: function (sourceNodeId, targetNodeId, nodeData, transitionPosData = {}) {
         const POSITION_TYPE = {
             LEFT_TOP: -1,
             LEFT: 0,
@@ -6131,185 +5813,142 @@ ProcessBuilder = {
             RIGHT_TOP: 5,
             RIGHT_BOTTOM: 6
         };
-        let transitionPosData = {};
         var source;
         var target;
         if (nodeData) {
             source = nodeData.find(node => node.id === sourceNodeId);
             target = nodeData.find(node => node.id === targetNodeId);
         }
-        const width = source.properties.width;
-        const height = source.properties.height;
-        const targetWidth = target.properties.width;
-        const targetHeight = target.properties.height;
         const positionType = ProcessBuilder.getRelativePosition(source, target);
-        const startPoint = {
-            x: source.x,
-            y: source.y
-        };
-        const endPoint = {
-            x: target.x,
-            y: target.y
-        };
-
+        
         // Variables to record entry/exit positions (top, bottom, left, right)
         let startTransitionPosition = '';
         let endTransitionPosition = '';
-        let gap = 10;
-        var initSource;
-        var initTarget;
-        var biggestCount;
-        var biggestValue;
-        var sourcePositionCount;
-        var targetPositionCount;
-
+        
         switch (positionType) {
             // LEFT - Source node is to the left of the target node
             case POSITION_TYPE.LEFT:
                 startTransitionPosition = 'right';
                 endTransitionPosition = 'left';
-
-                sourcePositionCount = ProcessBuilder.countPosition(sourceNodeId, startTransitionPosition, transitionPosData);
-                targetPositionCount = ProcessBuilder.countPosition(targetNodeId, endTransitionPosition, transitionPosData);
-                biggestCount = Math.max(sourcePositionCount, targetPositionCount);
-                biggestValue = ProcessBuilder.checkOdd(biggestCount) * gap;
-
-                startPoint.x = source.x + width / 2;
-                startPoint.y = startPoint.y + biggestValue;
-                endPoint.x = target.x - targetWidth / 2;
-                endPoint.y = endPoint.y + biggestValue;
-
                 break
             // LEFT_TOP - Source node is to the left and above the target node
             case POSITION_TYPE.LEFT_TOP:
                 startTransitionPosition = 'bottom';
                 endTransitionPosition = 'left';
-
-                sourcePositionCount = ProcessBuilder.countPosition(sourceNodeId, startTransitionPosition, transitionPosData);
-                targetPositionCount = ProcessBuilder.countPosition(targetNodeId, endTransitionPosition, transitionPosData);
-                initSource = ProcessBuilder.checkOdd(sourcePositionCount) * gap;
-                initTarget = ProcessBuilder.checkOdd(targetPositionCount) * gap;
-
-                startPoint.x = source.x + initSource;
-                startPoint.y = source.y + height / 2;
-                endPoint.x = target.x - targetWidth / 2;
-                endPoint.y = target.y + initTarget;
                 break
             // LEFT_BOTTOM - Source node is to the left and below the target node
             case POSITION_TYPE.LEFT_BOTTOM:
                 startTransitionPosition = 'right';
                 endTransitionPosition = 'bottom';
-
-                sourcePositionCount = ProcessBuilder.countPosition(sourceNodeId, startTransitionPosition, transitionPosData);
-                targetPositionCount = ProcessBuilder.countPosition(targetNodeId, endTransitionPosition, transitionPosData);
-                initSource = ProcessBuilder.checkOdd(sourcePositionCount) * gap;
-                initTarget = ProcessBuilder.checkOdd(targetPositionCount) * gap;
-
-                startPoint.x = source.x + width / 2;
-                startPoint.y = startPoint.y + initSource;
-                endPoint.x = target.x + initTarget;
-                endPoint.y = target.y + targetHeight / 2;
                 break
             // TOP - Source node is above the target node (same x-coordinate)
             case POSITION_TYPE.TOP:
                 startTransitionPosition = 'bottom';
                 endTransitionPosition = 'top';
-
-                sourcePositionCount = ProcessBuilder.countPosition(sourceNodeId, startTransitionPosition, transitionPosData);
-                targetPositionCount = ProcessBuilder.countPosition(targetNodeId, endTransitionPosition, transitionPosData);
-                biggestCount = Math.max(sourcePositionCount, targetPositionCount);
-                biggestValue = ProcessBuilder.checkOdd(biggestCount) * gap;
-
-                startPoint.x = source.x + biggestValue;
-                startPoint.y = source.y + height / 2;
-                endPoint.x = target.x + biggestValue;
-                endPoint.y = target.y - targetHeight / 2;
                 break;
-
             // BOTTOM - Source node is below the target node (same x-coordinate)
             case POSITION_TYPE.BOTTOM:
                 startTransitionPosition = 'top';
                 endTransitionPosition = 'bottom';
-
-                sourcePositionCount = ProcessBuilder.countPosition(sourceNodeId, startTransitionPosition, transitionPosData);
-                targetPositionCount = ProcessBuilder.countPosition(targetNodeId, endTransitionPosition, transitionPosData);
-                biggestCount = Math.max(sourcePositionCount, targetPositionCount);
-                biggestValue = ProcessBuilder.checkOdd(biggestCount) * gap;
-
-                startPoint.x = source.x + biggestValue;
-                startPoint.y = source.y - height / 2;
-                endPoint.x = target.x + biggestValue;
-                endPoint.y = target.y + targetHeight / 2;
                 break;
-
             // RIGHT - Source node is to the right of the target node
             case POSITION_TYPE.RIGHT:
                 startTransitionPosition = 'left';
                 endTransitionPosition = 'right';
-
-                sourcePositionCount = ProcessBuilder.countPosition(sourceNodeId, startTransitionPosition, transitionPosData);
-                targetPositionCount = ProcessBuilder.countPosition(targetNodeId, endTransitionPosition, transitionPosData);
-                biggestCount = Math.max(sourcePositionCount, targetPositionCount);
-                biggestValue = ProcessBuilder.checkOdd(biggestCount) * gap;
-
-                startPoint.x = source.x - width / 2;
-                startPoint.y = source.y + biggestValue;
-                endPoint.x = target.x + targetWidth / 2;
-                endPoint.y = target.y + biggestValue;
                 break;
-
             // RIGHT_TOP - Source node is to the right and above the target node
             case POSITION_TYPE.RIGHT_TOP:
                 startTransitionPosition = 'left';
                 endTransitionPosition = 'top';
-
-                sourcePositionCount = ProcessBuilder.countPosition(sourceNodeId, startTransitionPosition, transitionPosData);
-                targetPositionCount = ProcessBuilder.countPosition(targetNodeId, endTransitionPosition, transitionPosData);
-                initSource = ProcessBuilder.checkOdd(sourcePositionCount) * gap;
-                initTarget = ProcessBuilder.checkOdd(targetPositionCount) * gap;
-
-                startPoint.x = source.x - width / 2;
-                startPoint.y = source.y + initSource;
-                endPoint.x = target.x + initTarget;
-                endPoint.y = target.y - targetHeight / 2;
                 break;
-
             // RIGHT_BOTTOM - Source node is to the right and below the target node
             case POSITION_TYPE.RIGHT_BOTTOM:
                 startTransitionPosition = 'left';
                 endTransitionPosition = 'bottom';
-
-                sourcePositionCount = ProcessBuilder.countPosition(sourceNodeId, startTransitionPosition, transitionPosData);
-                targetPositionCount = ProcessBuilder.countPosition(targetNodeId, endTransitionPosition, transitionPosData);
-                initSource = ProcessBuilder.checkOdd(sourcePositionCount) * gap;
-                initTarget = ProcessBuilder.checkOdd(targetPositionCount) * gap;
-
-                startPoint.x = source.x - width / 2;
-                startPoint.y = source.y + initSource;
-                endPoint.x = target.x + initTarget;
-                endPoint.y = target.y + targetHeight / 2;
                 break;
-
             default:
                 break;
         }
-
-        // Update transition positions for source and target nodes
-        if (!transitionPosData[sourceNodeId]) {
-            transitionPosData[sourceNodeId] = { positions: [] };
+        
+        const startPoint = ProcessBuilder.getPoint(sourceNodeId, source, startTransitionPosition, transitionPosData);
+        const endPoint = ProcessBuilder.getPoint(targetNodeId, target, endTransitionPosition, transitionPosData);
+        
+        //to make sure the vertical/horizontal line remains vertical/horizontal
+        if (startPoint.x === endPoint.x) {
+            const xGap = startPoint.xGap !== 0?startPoint.xGap:endPoint.xGap;
+            startPoint.x += xGap;
+            endPoint.x += xGap;
+        } else if (startPoint.y === endPoint.y) {
+            const yGap = startPoint.yGap !== 0?startPoint.yGap:endPoint.yGap;
+            startPoint.y += yGap;
+            endPoint.y += yGap;
+        } else {
+            startPoint.x += startPoint.xGap;
+            startPoint.y += startPoint.yGap;
+            endPoint.x += endPoint.xGap;
+            endPoint.y += endPoint.yGap;
         }
-        if (!transitionPosData[targetNodeId]) {
-            transitionPosData[targetNodeId] = { positions: [] };
-        }
-
-        transitionPosData[sourceNodeId].positions.push(startTransitionPosition);
-        transitionPosData[targetNodeId].positions.push(endTransitionPosition);
-
+        
         return {
             startPoint,
             endPoint
         };
     },
+    
+    /**
+     * Get the point position for the transition
+     */                
+    getPoint : function (nodeId, node, position, transitionPosData) {
+        var x = ProcessBuilder.snapToGrid(node.x);
+        var y = ProcessBuilder.snapToGrid(node.y);
+        var w = node.properties.width;
+        var h = node.properties.height;
+        var xGap = 0;
+        var yGap = 0;
+        
+        var positionCount = ProcessBuilder.countPosition(nodeId, position, transitionPosData);
+        var gap = ProcessBuilder.checkPositionIndex(positionCount) * 10;
+        
+        switch (position) {
+            case "top":
+                xGap = gap;
+                y = y - h/2;
+                break;
+            case "right":    
+                x = x + w/2;
+                yGap =  gap;
+                break;
+            case "bottom": 
+                xGap = gap;
+                y = y + h/2;
+                break;
+            case "left": 
+                x = x - w/2;
+                yGap =  gap;
+                break;    
+        }
+        
+        if (!transitionPosData[nodeId]) {
+            transitionPosData[nodeId] = { positions: [] };
+        }
+        transitionPosData[nodeId].positions.push(position);
+        
+        return {
+            x : x,
+            y : y,
+            xGap : xGap,
+            yGap : yGap,
+            position: position
+        }
+    },   
+    
+    /*
+     * get the node position based on grid, grid size is 20 
+     * @returns {undefined}
+     */               
+    snapToGrid : function(v) {
+        return 20 * Math.round(v / 20) || v;
+    },        
     
     /*
      * Count the occurrences of a specific position for a given node ID in transitionPosData
@@ -6321,20 +5960,15 @@ ProcessBuilder = {
         return 0; // Return 0 if node ID or positions are not found
     },
     
-    // Check if a value is odd and adjust accordingly.
-    // Returns the value itself if it's 0 or 1.
-    // If the value is odd, subtracts 1.
-    // If the value is even, returns the negative of (value - 1).
-    checkOdd: function (value) {
-        if (value === 0 || value === 1) {
-            return value;
-        } else if (value % 2 !== 0) {
-            return value - 1;
-        } else {
-            return -(value - 1);
-        }
+    // adjust the position based on center index 
+    //  6   4   2  0  1  3  5  7
+    // -3  -2  -1  0  1  2  3  4
+    checkPositionIndex: function (index) {
+        if (index === 0) return 0;
+        const value = Math.ceil(index / 2);
+        return index % 2 === 1 ? value : -value;
     },
-
+        
     /*
      * Turn Higtlight on/off
      */
@@ -6562,9 +6196,9 @@ ProcessBuilder = {
      */
     validateDuplicateId : function (name, value) {
         var self = CustomBuilder.Builder;
-        var data = self.selectedEl[0].data;
+        var data = self.selectedEl.data;
         
-        if (data.id !== value) { //check for duplicate id when id changed
+        if (data && data.id !== value) { //check for duplicate id when id changed
             var nodeId = value;
             
             if (data.className === "participant") {
@@ -7095,7 +6729,7 @@ ProcessBuilder = {
         var options = [];
         
         var act = CustomBuilder.Builder.selectedEl;
-        var sourceConnSet = ProcessBuilder.lf.getNodeOutgoingEdge($(act)[0].data.id);
+        var sourceConnSet = ProcessBuilder.lf.getNodeOutgoingEdge(act.data.properties.id);
         for (var i = sourceConnSet.length - 1; i >= 0; i--) {
             let node = ProcessBuilder.getActivity(sourceConnSet[i].targetNodeId);
             if (node.className !== 'end') {
@@ -7364,8 +6998,6 @@ ProcessBuilder = {
                 
                 //set the selected node
                 ProcessBuilder.selectElementById(id);
-                self.selectedEl = {'data' : ProcessBuilder.getSelectedNode()};
-
                 self.selectNode(self.selectedEl);
             });
             
@@ -7510,8 +7142,8 @@ ProcessBuilder = {
         var id = obj.properties.id;
         
         //the process object is not lofig flow data, need to check to prevent it
-        if (self.selectedEl && self.selectedEl.length > 0 && self.selectedEl[0].data) {
-            var selectedData = self.selectedEl[0].data;
+        if (self.selectedEl && self.selectedEl.length > 0 && self.selectedEl.data) {
+            var selectedData = self.selectedEl.data;
             if (selectedData.properties.id === id) {
                 $(detailsDiv).find(".cbuilder-node-details-list").addClass("active");
                 var listId = $(list).attr("id");
@@ -7776,7 +7408,7 @@ ProcessBuilder = {
      * escape unsafe char in xml attr value
      */                
     escapeXml : function(unsafe) {
-        if (unsafe === undefined || unsafe === null || unsafe === "") {
+        if (unsafe === undefined || unsafe === null || unsafe === "" || typeof(unsafe) !== "string") {
             return unsafe;
         }
         return unsafe.replace(/[<>&'"]/g, function (c) {
@@ -7920,6 +7552,7 @@ ProcessBuilder = {
         $("#process-selector, .toolzoom-buttons, #listviewer-btn, #xpdl-btn").remove();
         $("#auto-layout, #hightlight, #navigator").parent(".toolbar-group").remove();
         $("#launch-btn").parent().remove();
+        $("#lf-container").off("click", "i.previewForm");
         $(window).off('hashchange');        
     },
     
@@ -7934,8 +7567,7 @@ ProcessBuilder = {
         CustomBuilder.Builder.init({
             "enableViewport" : false,
             callbacks : {
-                "initComponent" : "ProcessBuilder.initComponent",
-                "renderElement" : "ProcessBuilder.renderElement"
+                "initComponent" : "ProcessBuilder.initComponent"
             }
         }, function() {
             ProcessBuilder.initComponents();
@@ -7994,6 +7626,7 @@ ProcessBuilder = {
         }
         
         var oldElementId = null;
+        //change node id
         if (elementObj.className !== "process" && nodeId !== $(element)[0].data.id) {
             ProcessBuilder.changeNodeId = true;
             var self = CustomBuilder.Builder;
@@ -8004,7 +7637,9 @@ ProcessBuilder = {
             var newElementId = data.properties.id;
             
             //update xpdl
-            data.properties.xpdlObj['-Id'] = newElementId;
+            if (data.properties && data.properties.xpdlObj) {
+                data.properties.xpdlObj['-Id'] = newElementId;
+            }
             data.id = nodeId;
             
             //update mapping
@@ -8025,47 +7660,14 @@ ProcessBuilder = {
             }
             
             if(elementProperty.className === "participant"){
-                //get original x & y
-                const x = data.x;
-                const y = data.y;
-                
-                //add new logic flow node
-                ProcessBuilder.lf.addNode(data);
+                data.children = new Set(data.children);
+                ProcessBuilder.lf.updateAttributes(oldNodeId, data);
                 
                 //update the pool
                 const poolId = "poolID_" + ProcessBuilder.currentProcessData.properties.id;
                 const poolModel = ProcessBuilder.lf.getNodeModelById(poolId);
                 poolModel.removeChild(oldNodeId);
                 poolModel.addChild(nodeId);
-                
-                //move nodes to new logic flow lane
-                const sourceLFLane = ProcessBuilder.getLFLane(oldNodeId);
-                const targetLFLane = ProcessBuilder.getLFLane(nodeId);
-                
-                while (sourceLFLane.children.length > 0) {
-                    targetLFLane.children.push(sourceLFLane.children.shift());
-                }
-                
-                //update it back to logic flow to redraw
-                ProcessBuilder.lf.updateAttributes(oldNodeId, {
-                    children: sourceLFLane.children
-                });
-                ProcessBuilder.lf.updateAttributes(nodeId, {
-                    children: targetLFLane.children
-                });
-                
-                //update the XPDL participant
-                const sourceLane = ProcessBuilder.getLane(oldNodeId);
-                sourceLane.properties.id = newElementId;
-                
-                //delete old node
-                ProcessBuilder.lf.deleteElement(oldNodeId);
-                
-                //update position
-                ProcessBuilder.lf.updateAttributes(nodeId, {
-                    x: x,
-                    y: y
-                });
             } else {
                 // retrieve transition
                 var transition = [];
@@ -8131,6 +7733,8 @@ ProcessBuilder = {
         } else {
             ProcessBuilder.updateLFData(element, elementObj, oldNodeId);
         }
+        
+        CustomBuilder.update(true);
     },
     
     /**
@@ -8156,6 +7760,10 @@ ProcessBuilder = {
             properties: edge.properties
         });
         ProcessBuilder.changeNodeId = false;
+        
+        //adjust the edges to prevent stack together, also prevent position changes after refresh
+        const graphData = ProcessBuilder.updateEdges(ProcessBuilder.lf.getGraphData());
+        ProcessBuilder.lf.render(graphData);
     },
 
     builderSaved : function(data) {
@@ -8311,6 +7919,11 @@ ProcessBuilder = {
         const data = ProcessBuilder.lf.getGraphData();
         return data.nodes.find(node => node.type === 'lane' && node.id === laneID);
     },
+            
+    getLFEdge: function (id) {
+        const data = ProcessBuilder.lf.getGraphData();
+        return data.edges.find(edge => edge.id === id);
+    },        
     
     /*
      * Get the activity data from current process data with activityId
@@ -8415,7 +8028,7 @@ ProcessBuilder = {
             return 'subflow';
         } else if (type === 'bpmn:endEvent') {
             return 'end';
-        } else if (type === 'bpmn:sequenceFlow') {
+        } else if (type === 'bpmn:sequenceFlow' || type === 'bpmn:straightSequenceFlow') {
             return 'transition';
         } else if (type === 'lane') {
             return 'participant';
@@ -8586,9 +8199,30 @@ ProcessBuilder = {
     
     /*
      * A callback method called from the CustomBuilder.Builder.renderNodeAdditional
-     * It is used to handle the li click event to select the target node
+     * It is used to render the tree and handle the li click event to select the target node
      */
     renderTreeMenuAdditionalNode: function (container, target) {
+        //render tree node
+        let graphData = ProcessBuilder.lf.getGraphData();
+        let lanes = graphData.nodes.filter(lane => lane.type === "lane");
+        lanes = lanes.sort((a, b) => a.y - b.y);
+        lanes.forEach(lane => { 
+            let laneLi = ProcessBuilder.renderTreeNode(container, lane);
+            if (lane.children.length > 0) {
+                lane.children.forEach(child => {
+                    let node = graphData.nodes.filter(node => node.id === child)[0];
+                    let nodeLi = ProcessBuilder.renderTreeNode(laneLi, node);
+                    
+                    //render outgoing transition
+                    var sourceConnSet = ProcessBuilder.lf.getNodeOutgoingEdge(child);
+                    sourceConnSet.forEach(edge => {
+                        let edgeData = ProcessBuilder.getLFEdge(edge.id);
+                        ProcessBuilder.renderTreeNode(nodeLi, edgeData);
+                    });
+                });
+            }
+        });
+        
         if (ProcessBuilder.getSelectedNode()) {
             let selectedElementId = ProcessBuilder.removeLanePrefix(ProcessBuilder.getSelectedNode().id);
             ProcessBuilder.selectActiveTreeItem(selectedElementId);
@@ -8596,16 +8230,52 @@ ProcessBuilder = {
 
         $(container).off("click", "li.tree-viewer-item  label");
         $(container).on("click", "li.tree-viewer-item  label", function (e) {
-            let node = $(this).parent().data("node");
-            node = $(node).data("data");
-            if (node.className === 'participant') {
-                ProcessBuilder.selectElementById("laneID_" + node.properties.id);
-            } else {
-                ProcessBuilder.selectElementById(node.properties.id);
-            }
+            let nodeData = $(this).parent().data("nodeData");
+            ProcessBuilder.selectElementById(nodeData.id);
         });
         return container;
     },
+            
+    renderTreeNode: function(container, data) {
+        if (container.find("> ol").length === 0) {
+            container.append('<ol></ol>');
+        }
+        
+        var self = CustomBuilder.Builder;
+        var rid = "r" + (new Date().getTime());
+        var component = self.parseDataToComponent(data);
+        var props = self.parseElementProps(data);
+        
+        if (component.builderTemplate.customPropertiesData) {
+            props = component.builderTemplate.customPropertiesData(props, data, component);
+        }
+
+        var label = component.label;
+        if (component.builderTemplate.getLabel) {
+            label = component.builderTemplate.getLabel(data, component);
+        } else if (component.builderTemplate.isSupportProperties(data, component)) {
+            if (props.label !== undefined && props.label !== "") {
+                label = props.label;
+            } else if (props.textContent !== undefined && props.textContent !== "") {
+                label = props.textContent;
+            } else if (props.id !== undefined && props.id !== "" && props.id.length < 32) {
+                label = props.id;
+            }
+        }
+
+        label = UI.stripHtmlTags(label);
+        if (label.length > 30) {
+            label += label.substring(0, 27) + "...";
+        }
+
+        var li = $('<li class="tree-viewer-item"><label>'+component.icon+' <a>'+label+'</a></label><input type="checkbox" id="'+rid+'" checked/></li>');
+        $(li).data("nodeData", data);
+        $(li).attr("data-cbuilder-node-id", props.id);
+
+        container.find("> ol").append(li);
+        
+        return li;
+    },        
 
     /*
      * Remove 'laneID_' prefix from lane ID if present
@@ -8834,7 +8504,6 @@ ProcessBuilder = {
             } else {
                 $('body').removeClass("show-node-details-single");
             }
-            self._updateBoxes();
             self.triggerEvent("nodeAdditionalModeChanged");
         });
         $('body').addClass("show-node-details");
@@ -8887,12 +8556,14 @@ ProcessBuilder = {
         $(target).find('.xray-view').prepend(detailsDiv);
     },
 
-     /*
+    /*
     * A callback method called from the CustomBuilder.Builder.modifyShowPropertiesData
     * It is used to handle modify properties data
     */
     modifyShowPropertiesData: function (data, target) {
-        var data = target.data("data");
+        if (typeof(target.data) === "function") {
+            data = target.data("data");
+        }
         if (!data) {
             data = target[0].data.properties;
             data = {
@@ -8903,7 +8574,7 @@ ProcessBuilder = {
         }
         return data;
     },
-    
+            
     lineIcon2SVG: function () {
         $('#lf-container i[class^="la"]').each(function () {
             const $icon = $(this);
@@ -8924,16 +8595,6 @@ ProcessBuilder = {
                                 cursor: 'pointer' // Optional: to indicate it's clickable
                             });
     
-                        // Handle previewForm setup
-                        if (iconName === 'file-alt') {
-                            let formID = $icon.attr('formid');
-                            if (formID) {
-                                // Attach the click event
-                                $svg.on('click', function () {
-                                    ProcessBuilder.previewForm(formID);
-                                });
-                            }
-                        }
                         // Comment out the original <i> element
                         const originalHTML = $icon[0].outerHTML;
                         const commentNode = document.createComment(originalHTML);
