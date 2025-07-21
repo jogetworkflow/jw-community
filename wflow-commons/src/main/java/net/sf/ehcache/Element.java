@@ -54,4 +54,8 @@ public class Element implements Serializable, Cloneable {
     public void setTimeToIdle(final int timeToIdleSeconds) {
         //ignore
     }
+
+    public void setEternal(boolean eternal) {
+        //ignore
+    }
 }
