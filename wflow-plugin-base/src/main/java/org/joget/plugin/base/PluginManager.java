@@ -1179,6 +1179,10 @@ public class PluginManager implements ApplicationContextAware {
         migration.setSource(pluginJar);
         migration.setDestination(transformed);
         migration.execute();
+        
+        //backup old plugin
+        File backup = new File(pluginJar.getAbsolutePath() + ".original");
+        Files.copy(pluginJar.toPath(), backup.toPath(), StandardCopyOption.REPLACE_EXISTING);
 
         // replace old plugin JAR
         Files.move(transformed.toPath(), pluginJar.toPath(), StandardCopyOption.REPLACE_EXISTING);
