@@ -179,4 +179,15 @@
         </resources>
     </cache>
 
+    <!-- Cache for Beanshell Transformer -->
+    <cache alias="org.joget.cache.BEANSHELL_TRANSFORMER_CACHE">
+        <expiry>
+            <ttl unit="seconds">600</ttl>
+        </expiry>
+        <resources>
+            <heap unit="entries">1000</heap>
+            <!-- No overflow to disk -->
+        </resources>
+    </cache>
+
 </config>

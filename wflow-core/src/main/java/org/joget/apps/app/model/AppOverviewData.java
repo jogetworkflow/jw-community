@@ -62,7 +62,7 @@ public class AppOverviewData extends HashMap {
      * @param isError 
      */
     public void addItemData(String key, AppOverviewTool tool, String selector, String label, String content, boolean isError) {
-        addItemData(key, tool, selector, label, content, false, null, null);
+        addItemData(key, tool, selector, label, content, isError, null, null);
     }
     
     /**
