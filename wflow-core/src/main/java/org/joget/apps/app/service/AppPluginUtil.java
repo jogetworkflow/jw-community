@@ -3,7 +3,7 @@ package org.joget.apps.app.service;
 import bsh.EvalError;
 import bsh.Interpreter;
 import com.google.gson.Gson;
-import java.util.Arrays;
+
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
@@ -212,9 +212,23 @@ public class AppPluginUtil implements ApplicationContextAware {
             return null;
         }
     }
-    
+
     public static Object executeScript(String script, Map properties, boolean throwException) throws RuntimeException {
+        return executeScript(script, properties, throwException, true);
+    }
+    
+    public static Object executeScript(String script, Map properties, boolean throwException, boolean transformScript) throws RuntimeException {
         Object result = null;
+        if (transformScript) {
+            try {
+                script = BeanshellTransformer.doTransform(script);
+            } catch (Exception e) {
+                LogUtil.error(AppPluginUtil.class.getName(), e, "Error transforming script, falling back to initial script");
+                if (throwException) {
+                    throw new RuntimeException("Error executing script");
+                }
+            }
+        }
         try {
             Interpreter interpreter = new Interpreter();
             interpreter.setClassLoader(AppPluginUtil.class.getClassLoader());
