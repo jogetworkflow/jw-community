@@ -132,14 +132,17 @@ public class AppPluginUtil implements ApplicationContextAware {
                 Map tempPropertyMap = new HashMap(propertyMap);
                 for (Object s : defaultPropertyMap.keySet()) {
                     String key = (String) s;
-                    String defaultValue = defaultPropertyMap.get(key).toString().trim();
-                    String value = "";
+                    Object defaultValue = defaultPropertyMap.get(key);
+                    Object value = propertyMap.get(key);
 
-                    if (propertyMap.get(key) != null) {
-                        value = SecurityUtil.decrypt(propertyMap.get(key).toString().trim());
+                    if (value != null && value instanceof String) {
+                        value = SecurityUtil.decrypt(value.toString().trim());
+                        if (value.toString().isEmpty()) { // set value to null if empty
+                            value = null;
+                        }
                     }
 
-                    if (value.equals("") && !defaultValue.equals("")) {
+                    if (value == null && defaultValue != null) {
                         tempPropertyMap.put(key, defaultValue);
                     }
                 }
