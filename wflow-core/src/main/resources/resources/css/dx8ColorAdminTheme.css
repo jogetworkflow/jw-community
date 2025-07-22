@@ -4,6 +4,7 @@ body{
     font-weight: 400;
 }
 header.navbar{
+    background-color: var(--theme-header, var(--theme-color6, #fff));
     box-shadow: 0 1px 1px rgba(0, 0, 0, 0.14);
     border-bottom: 1px solid rgba(0,0,0,.0625);
 }
@@ -30,7 +31,7 @@ header.navbar .inbox-notification .dropdown-toggle:after{
     box-shadow: none;
 }
 .sidebar_brand{
-    background-color: var(--theme-header,  #fff);
+    background-color: var(--theme-header, var(--theme-color6, #fff));
     border-bottom: 1px solid rgba(0,0,0,.0625); 
     box-shadow: 0 1px 1px rgba(0, 0, 0, 0.14)
 }
@@ -426,7 +427,6 @@ body.popupBody .form-section-title, body.popupBody .subform-section-title {
 
 input:focus, select:focus, textarea:focus {
     box-shadow: 0 0 0 0.25rem rgba(52,143,226,.25);
-    border-radius: 1.5rem;
     border: 1px solid var(--theme-primary, var(--theme-color3, #007C01));
     outline: 0;
 }
