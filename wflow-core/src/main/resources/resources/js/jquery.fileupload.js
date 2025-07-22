@@ -155,7 +155,7 @@
                             // Go through the list of all <ul> elements created
                             $(target).find(".form-fileupload-value").find("li").each(function() {
                                 // Check each <ul> element's input value with current file name
-                                if (!$(this).is($(file.previewElement)) && ($(this).find("input[name$='_path']").val().split("\\").pop() === resp.filename || $(this).find("input[name$='_path']").val().split("\\").pop() === resp.newFilename)) {
+                                if (!$(this).is($(file.previewElement)) && ($(this).find("input[name$='_path']").val().split(/[\\\/]/).pop() === resp.filename || $(this).find("input[name$='_path']").val().split(/[\\\/]/).pop() === resp.newFilename)) {
                                     // If the same, remove the previous instance
                                     $(this).remove();
                                 }
