@@ -1414,7 +1414,6 @@ body.rtl .property-input > span.icon > span > span.dropdown{
     top: 7px;
 }
 .pluginConfig .builder-link a.openbuilder, .pluginConfig .property-input a.elementHelplink{
-    right: 38.5vw;
     top: 10px;
 }
 .property-type-selectbox a.builderAddNew{
