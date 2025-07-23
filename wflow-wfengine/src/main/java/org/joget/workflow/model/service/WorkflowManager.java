@@ -73,19 +73,36 @@ public interface WorkflowManager {
      */
     @Deprecated
     void assignmentAccept(String activityId);
-
+    
     /**
      * Complete an assignment (for the current user) based on the activity instance ID.
+     * This for existing plugin that used void
      * @param activityId 
      */
-    String assignmentComplete(String activityId);
+    void assignmentComplete(String activityId);
 
     /**
      * Complete an assignment (for the current user) while setting workflow variable values
+     * This for existing plugin that used void
      * @param activityId
      * @param variableMap 
      */
-    String assignmentComplete(String activityId, Map<String, String> variableMap);
+    void assignmentComplete(String activityId, Map<String, String> variableMap);
+
+    /**
+     * Complete an assignment (for the current user) based on the activity instance ID.
+     * This for DX9 Asynchronous request processing for process start and assignment completion
+     * @param activityId 
+     */
+    String assignmentCompleteWithStatus(String activityId);
+
+    /**
+     * Complete an assignment (for the current user) while setting workflow variable values
+     * This for DX9 Asynchronous request processing for process start and assignment completion
+     * @param activityId
+     * @param variableMap 
+     */
+    String assignmentCompleteWithStatus(String activityId, Map<String, String> variableMap);
 
     /**
      * Force completes an activity

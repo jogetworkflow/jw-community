@@ -926,7 +926,7 @@ public class WorkflowJsonController {
             }
 
             Map<String, String> workflowVariableMap = AppUtil.retrieveVariableDataFromRequest(request);
-            String result = workflowManager.assignmentComplete(activityId, workflowVariableMap);
+            String result = workflowManager.assignmentCompleteWithStatus(activityId, workflowVariableMap);
             LogUtil.info(getClass().getName(), "Assignment " + activityId + " completed");
             JSONObject jsonObject = new JSONObject();
             jsonObject.accumulate("assignment", assignment.getAssigneeId());
@@ -969,7 +969,7 @@ public class WorkflowJsonController {
                 workflowManager.assignmentAccept(activityId);
             }
 
-            workflowManager.assignmentComplete(activityId);
+            workflowManager.assignmentCompleteWithStatus(activityId);
             LogUtil.info(getClass().getName(), "Assignment " + activityId + " completed");
             JSONObject jsonObject = new JSONObject();
             jsonObject.accumulate("status", "completed");

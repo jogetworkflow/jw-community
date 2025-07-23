@@ -102,7 +102,7 @@ public class TestWorkflowManager {
     public void testAcceptedA(){
         System.out.println(">>> testAcceptedA");
         Map activityInstance = workflowManager.getActivityInstanceByProcessIdAndStatus(processId, true);
-        workflowManager.assignmentComplete(String.valueOf(activityInstance.get("A")));
+        workflowManager.assignmentCompleteWithStatus(String.valueOf(activityInstance.get("A")));
     }
 
     public void testStartActivityC() {

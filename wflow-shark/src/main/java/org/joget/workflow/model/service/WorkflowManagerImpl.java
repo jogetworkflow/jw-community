@@ -4474,15 +4474,26 @@ public class WorkflowManagerImpl implements SharkWorkflowManager {
             }
         }
     }
-
+    
+    // Implement the new void methods for backward compatibility
     @Override
-    public String assignmentComplete(String activityId) {
-        // complete assignment
-        return assignmentComplete(activityId, null);
+    public void assignmentComplete(String activityId) {
+        assignmentCompleteWithStatus(activityId);
     }
 
     @Override
-    public String assignmentComplete(String activityId, final Map<String, String> variableMap) {
+    public void assignmentComplete(String activityId, Map<String, String> variableMap) {
+        assignmentCompleteWithStatus(activityId, variableMap);
+    }
+
+    @Override
+    public String assignmentCompleteWithStatus(String activityId) {
+        // complete assignment
+        return assignmentCompleteWithStatus(activityId, null);
+    }
+
+    @Override
+    public String assignmentCompleteWithStatus(String activityId, final Map<String, String> variableMap) {
         String result = "pending";
         boolean runAsync = eventStreamManager != null && eventStreamManager.isEnabled();
         if (runAsync) {

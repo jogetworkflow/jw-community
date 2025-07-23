@@ -500,7 +500,7 @@ public class AppServiceImpl implements AppService {
                     }
 
                     // complete assignment
-                    String result = workflowManager.assignmentComplete(activityId, workflowVariableMap);
+                    String result = workflowManager.assignmentCompleteWithStatus(activityId, workflowVariableMap);
                     formData.addFormResult(AssignmentCompleteButton.DEFAULT_ID, result);
                 }
             }
