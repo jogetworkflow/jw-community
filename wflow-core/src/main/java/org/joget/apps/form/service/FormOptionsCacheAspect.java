@@ -138,7 +138,8 @@ public class FormOptionsCacheAspect {
                         LogUtil.debug(FormOptionsCacheAspect.class.getName(), "cache " + cacheKey + " is not ready! waiting...");
                     }
                     Thread.sleep(100);
-                    rowset = (FormRowSet)cache.get(cacheKey);
+                    cacheElement = (DynamicCacheElement) cache.get(cacheKey);
+                    rowset = (FormRowSet) cacheElement.getValue();
                     count++;
                 }
                 if (rowset == null && count == 100) { //fallback
