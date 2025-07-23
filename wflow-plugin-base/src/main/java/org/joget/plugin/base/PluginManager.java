@@ -364,22 +364,25 @@ public class PluginManager implements ApplicationContextAware {
                 return null;
             }
 
-            BundleContext context = getOsgiContainer().getBundleContext();
-            Bundle newBundle = context.installBundle(location);
-            if (newBundle.getSymbolicName() == null) {
-                newBundle.uninstall();
-                newBundle = null;
-            } else {
-                newBundle.update();
-            }  
-            
-            // clear cache
-            clearCache();
-            return newBundle;
+            Felix osgiContainer = getOsgiContainer();
+            if (osgiContainer != null) {
+                BundleContext context = osgiContainer.getBundleContext();
+                Bundle newBundle = context.installBundle(location);
+                if (newBundle.getSymbolicName() == null) {
+                    newBundle.uninstall();
+                    newBundle = null;
+                } else {
+                    newBundle.update();
+                }  
+                
+                // clear cache
+                clearCache();
+                return newBundle;
+            }
         } catch (Exception be) {
             LogUtil.error(PluginManager.class.getName(), be, "Failed bundle installation from " + location + ": " + be.toString());
-            return null;
         }
+        return null;
     }
     
     /**
@@ -390,16 +393,19 @@ public class PluginManager implements ApplicationContextAware {
      */
     protected void checkDependency(Bundle bundle) {
         try {
-            BundleContext context = getOsgiContainer().getBundleContext();
+            Felix osgiContainer = getOsgiContainer();
+            if (osgiContainer != null) {
+                BundleContext context = osgiContainer.getBundleContext();
             
-            //if addon builder, relaod dependent plugins
-            if (isAddonBuilder(context, bundle)) {
-                if (reloadDependentPlugins(bundle)) {
-                    // clear cache
-                    clearCache();
+                //if addon builder, relaod dependent plugins
+                if (isAddonBuilder(context, bundle)) {
+                    if (reloadDependentPlugins(bundle)) {
+                        // clear cache
+                        clearCache();
+                    }
+                } else {
+                    checkAndReloadDependentPlugins(context, bundle);
                 }
-            } else {
-                checkAndReloadDependentPlugins(context, bundle);
             }
         } catch (Exception be) {
             LogUtil.error(PluginManager.class.getName(), be, "Failed to check dependency: " + be.toString());
@@ -487,22 +493,25 @@ public class PluginManager implements ApplicationContextAware {
             String groupId = getBundleGroupId(bundle);
             
             if (groupId != null) {
-                BundleContext context = getOsgiContainer().getBundleContext();
-                for (Bundle b : context.getBundles()) {
-                    if (!b.equals(bundle) && isDependentPlugins(b, groupId)) {
-                        uninstallBundle(b.getLocation());
-                        Bundle newBundle = installBundle(b.getLocation());
-                        if (newBundle != null) {
-                            bundleList.add(newBundle);
+                Felix osgiContainer = getOsgiContainer();
+                if (osgiContainer != null) {
+                    BundleContext context = osgiContainer.getBundleContext();
+                    for (Bundle b : context.getBundles()) {
+                        if (!b.equals(bundle) && isDependentPlugins(b, groupId)) {
+                            uninstallBundle(b.getLocation());
+                            Bundle newBundle = installBundle(b.getLocation());
+                            if (newBundle != null) {
+                                bundleList.add(newBundle);
+                            }
                         }
                     }
-                }
-                
-                //start all dependent plugins all together after all bundle re-installed
-                //so that same CustomPluginInterface is used
-                for (Bundle b : bundleList) {
-                    startBundle(b); 
-                    LogUtil.info(PluginManager.class.getName(), "Reloaded plugin " + b.getSymbolicName());
+
+                    //start all dependent plugins all together after all bundle re-installed
+                    //so that same CustomPluginInterface is used
+                    for (Bundle b : bundleList) {
+                        startBundle(b); 
+                        LogUtil.info(PluginManager.class.getName(), "Reloaded plugin " + b.getSymbolicName());
+                    }
                 }
             }
         } catch (Exception be) {
@@ -584,30 +593,33 @@ public class PluginManager implements ApplicationContextAware {
 
     protected void uninstallBundle(String location) {
         try {
-            BundleContext context = getOsgiContainer().getBundleContext();
-            Bundle bundle = context.getBundle(location);
-            if (bundle != null && uninstallable(bundle.getSymbolicName())) {
-                
-                //find ActivationAwarePlugin plugin to call beforeUnregister method
-                ServiceReference[] refs = bundle.getRegisteredServices();
-                if (refs != null) {
-                    for (ServiceReference sr : refs) {
-                        Object obj = context.getService(sr);
-                        if (obj instanceof ActivationAwarePlugin) {
-                            Plugin plugin = weavePluginAspect((Plugin) obj); //plugin could be null if having error in multitenant
-                            if (plugin != null) {
-                                ((ActivationAwarePlugin) obj).beforeUnregister();
+            Felix osgiContainer = getOsgiContainer();
+            if (osgiContainer != null) {
+                BundleContext context = osgiContainer.getBundleContext();
+                Bundle bundle = context.getBundle(location);
+                if (bundle != null && uninstallable(bundle.getSymbolicName())) {
+
+                    //find ActivationAwarePlugin plugin to call beforeUnregister method
+                    ServiceReference[] refs = bundle.getRegisteredServices();
+                    if (refs != null) {
+                        for (ServiceReference sr : refs) {
+                            Object obj = context.getService(sr);
+                            if (obj instanceof ActivationAwarePlugin) {
+                                Plugin plugin = weavePluginAspect((Plugin) obj); //plugin could be null if having error in multitenant
+                                if (plugin != null) {
+                                    ((ActivationAwarePlugin) obj).beforeUnregister();
+                                }
                             }
+                            context.ungetService(sr);
                         }
-                        context.ungetService(sr);
                     }
+
+                    bundle.stop();
+                    bundle.uninstall();
+
+                    // clear cache
+                    clearCache();
                 }
-                
-                bundle.stop();
-                bundle.uninstall();
-                
-                // clear cache
-                clearCache();
             }
         } catch (Exception be) {
             LogUtil.error(PluginManager.class.getName(), be, "Failed bundle uninstallation from " + location + ": " + be.toString());
@@ -634,18 +646,21 @@ public class PluginManager implements ApplicationContextAware {
             LogUtil.info(PluginManager.class.getName(), "Bundle " + bundle.getSymbolicName() + " started");
             
             //find ActivationAwarePlugin plugin to call afterRegister method
-            BundleContext context = getOsgiContainer().getBundleContext();
-            ServiceReference[] refs = bundle.getRegisteredServices();
-            if (refs != null) {
-                for (ServiceReference sr : refs) {
-                    Object obj = context.getService(sr);
-                    if (obj instanceof ActivationAwarePlugin) {
-                        Plugin plugin = weavePluginAspect((Plugin) obj); //plugin could be null if having error in multitenant
-                        if (plugin != null) {
-                            ((ActivationAwarePlugin) obj).afterRegister();
+            Felix osgiContainer = getOsgiContainer();
+            if (osgiContainer != null) {
+                BundleContext context = osgiContainer.getBundleContext();
+                ServiceReference[] refs = bundle.getRegisteredServices();
+                if (refs != null) {
+                    for (ServiceReference sr : refs) {
+                        Object obj = context.getService(sr);
+                        if (obj instanceof ActivationAwarePlugin) {
+                            Plugin plugin = weavePluginAspect((Plugin) obj); //plugin could be null if having error in multitenant
+                            if (plugin != null) {
+                                ((ActivationAwarePlugin) obj).afterRegister();
+                            }
                         }
+                        context.ungetService(sr);
                     }
-                    context.ungetService(sr);
                 }
             }
 
@@ -662,107 +677,110 @@ public class PluginManager implements ApplicationContextAware {
         Map<String, Object> bundles = new HashMap<String, Object>();
         Set<String> checked = new HashSet<String>(); 
         
-        BundleContext context = getOsgiContainer().getBundleContext();
-        
-        //retrieve all osgi plugins based on filter class
-        Collection<Plugin> plugins; 
-        if (classes == null || classes.isEmpty()) {
-            plugins = listOsgiPlugin(null);
-        } else {
-            plugins = new ArrayList<Plugin>();
-            
-            for (String c : classes) {
-                try {
-                    Class clazz;
-                    CustomPluginInterface cpi = getCustomPluginInterface(c);
-                    if (cpi != null) {
-                        clazz = cpi.getClassObj();
-                    } else {
-                        clazz = Class.forName(c);
+        Felix osgiContainer = getOsgiContainer();
+        if (osgiContainer != null) {
+            BundleContext context = osgiContainer.getBundleContext();
+
+            //retrieve all osgi plugins based on filter class
+            Collection<Plugin> plugins; 
+            if (classes == null || classes.isEmpty()) {
+                plugins = listOsgiPlugin(null);
+            } else {
+                plugins = new ArrayList<Plugin>();
+
+                for (String c : classes) {
+                    try {
+                        Class clazz;
+                        CustomPluginInterface cpi = getCustomPluginInterface(c);
+                        if (cpi != null) {
+                            clazz = cpi.getClassObj();
+                        } else {
+                            clazz = Class.forName(c);
+                        }
+
+                        plugins.addAll(listOsgiPlugin(clazz));
+                    } catch (Exception e) {
+                        LogUtil.warn(PluginManager.class.getName(), c + " not found!");
                     }
-                    
-                    plugins.addAll(listOsgiPlugin(clazz));
-                } catch (Exception e) {
-                    LogUtil.warn(PluginManager.class.getName(), c + " not found!");
                 }
             }
-        }
-        
-        //find the bundle and add to JSON object
-        for (Plugin p : plugins) {
-            String pluginClass = ClassUtils.getUserClass(p).getName();
-            
-            if (filterClasses != null) {
-                if (!filterClasses.contains(pluginClass)) {
-                    continue;
-                }
-            }
-        
-            ServiceReference sr = context.getServiceReference(pluginClass);
-            if (sr != null) {
-                try {
-                    Bundle bundle = sr.getBundle();
-                    
-                    if (checked.contains(bundle.getSymbolicName())) {
+
+            //find the bundle and add to JSON object
+            for (Plugin p : plugins) {
+                String pluginClass = ClassUtils.getUserClass(p).getName();
+
+                if (filterClasses != null) {
+                    if (!filterClasses.contains(pluginClass)) {
                         continue;
                     }
-                    
-                    Dictionary<String,String> dic = bundle.getHeaders();
-                    String name = dic.get("Bundle-Name");
-                    
-                    String version = bundle.getVersion().toString();
-                    String filename = bundle.getLocation();
-                    filename = filename.substring(filename.lastIndexOf(File.separator) + 1);
-                    
-                    if (!filename.contains(name) && !filename.contains(version)) { //need to be same with Marketplace
-                        // Remove the extension (.jar) first
-                        String withoutExtension = filename.substring(0, filename.lastIndexOf("."));
+                }
 
-                        // Split based on the first occurrence of a digit
-                        String[] parts = withoutExtension.split("-(?=\\d)", 2); 
+                ServiceReference sr = context.getServiceReference(pluginClass);
+                if (sr != null) {
+                    try {
+                        Bundle bundle = sr.getBundle();
 
-                        if (parts.length == 2) {
-                            name = parts[0];  
-                            version = parts[1];  
+                        if (checked.contains(bundle.getSymbolicName())) {
+                            continue;
                         }
-                    } else if (!filename.contains(version)) {
-                        //the bundle version may converted the 8.0-BETA to 8.0.0.BETA, read it from properties
-                        String path = bundle.getSymbolicName();
-                        path = path.substring(0, path.lastIndexOf(".")) + "/" + path.substring(path.lastIndexOf(".") + 1);
-                        URL resourceUrl = bundle.getResource("META-INF/maven/"+path+"/pom.properties");
-                        if (resourceUrl == null) {
-                            path = bundle.getSymbolicName();
-                            path = path.substring(0, path.lastIndexOf(".")) + "/" + name;
-                            
-                            resourceUrl = bundle.getResource("META-INF/maven/"+path+"/pom.properties");
-                        }
-                        if (resourceUrl != null) {
-                            try (InputStream inputStream = resourceUrl.openStream()) {
-                                Properties properties = new Properties();
-                                properties.load(inputStream);
-                                
-                                version = properties.getProperty("version");
+
+                        Dictionary<String,String> dic = bundle.getHeaders();
+                        String name = dic.get("Bundle-Name");
+
+                        String version = bundle.getVersion().toString();
+                        String filename = bundle.getLocation();
+                        filename = filename.substring(filename.lastIndexOf(File.separator) + 1);
+
+                        if (!filename.contains(name) && !filename.contains(version)) { //need to be same with Marketplace
+                            // Remove the extension (.jar) first
+                            String withoutExtension = filename.substring(0, filename.lastIndexOf("."));
+
+                            // Split based on the first occurrence of a digit
+                            String[] parts = withoutExtension.split("-(?=\\d)", 2); 
+
+                            if (parts.length == 2) {
+                                name = parts[0];  
+                                version = parts[1];  
+                            }
+                        } else if (!filename.contains(version)) {
+                            //the bundle version may converted the 8.0-BETA to 8.0.0.BETA, read it from properties
+                            String path = bundle.getSymbolicName();
+                            path = path.substring(0, path.lastIndexOf(".")) + "/" + path.substring(path.lastIndexOf(".") + 1);
+                            URL resourceUrl = bundle.getResource("META-INF/maven/"+path+"/pom.properties");
+                            if (resourceUrl == null) {
+                                path = bundle.getSymbolicName();
+                                path = path.substring(0, path.lastIndexOf(".")) + "/" + name;
+
+                                resourceUrl = bundle.getResource("META-INF/maven/"+path+"/pom.properties");
+                            }
+                            if (resourceUrl != null) {
+                                try (InputStream inputStream = resourceUrl.openStream()) {
+                                    Properties properties = new Properties();
+                                    properties.load(inputStream);
+
+                                    version = properties.getProperty("version");
+                                }
                             }
                         }
+
+                        if (getVersionOnly) {
+                            bundles.put(name, version);
+                        } else {
+                            Map<String, String> data = new HashMap<String, String>();
+
+                            data.put("version", version);
+                            data.put("id", filename);
+                            data.put("label", dic.get("Joget-Name") != null?dic.get("Joget-Name"):dic.get("Bundle-Name"));
+                            data.put("description", dic.get("Joget-Description") != null?dic.get("Joget-Description"):"");
+                            data.put("pluginClass", ClassUtils.getUserClass(p).getName()); //just add 1 for easy locate the bundle later
+
+                            bundles.put(name, data);
+                        }
+
+                        checked.add(bundle.getSymbolicName());
+                    } catch (Exception ex) {
+                        LogUtil.error(PluginManager.class.getName(), ex, "");
                     }
-                    
-                    if (getVersionOnly) {
-                        bundles.put(name, version);
-                    } else {
-                        Map<String, String> data = new HashMap<String, String>();
-                        
-                        data.put("version", version);
-                        data.put("id", filename);
-                        data.put("label", dic.get("Joget-Name") != null?dic.get("Joget-Name"):dic.get("Bundle-Name"));
-                        data.put("description", dic.get("Joget-Description") != null?dic.get("Joget-Description"):"");
-                        data.put("pluginClass", ClassUtils.getUserClass(p).getName()); //just add 1 for easy locate the bundle later
-                        
-                        bundles.put(name, data);
-                    }
-                    
-                    checked.add(bundle.getSymbolicName());
-                } catch (Exception ex) {
-                    LogUtil.error(PluginManager.class.getName(), ex, "");
                 }
             }
         }
@@ -829,27 +847,30 @@ public class PluginManager implements ApplicationContextAware {
         
         Plugin plugin = loadOsgiPlugin(className);
         if (plugin != null) { //check plugin is exist to retrieve it bundle
-            BundleContext context = getOsgiContainer().getBundleContext();
+            Felix osgiContainer = getOsgiContainer();
+            if (osgiContainer != null) {
+                BundleContext context = osgiContainer.getBundleContext();
 
-            ServiceReference psr = context.getServiceReference(className);
-            if (psr != null) {
-                //find bundle from the service reference of the plugin class
-                Bundle bundle = psr.getBundle(); 
-                context.ungetService(psr);
+                ServiceReference psr = context.getServiceReference(className);
+                if (psr != null) {
+                    //find bundle from the service reference of the plugin class
+                    Bundle bundle = psr.getBundle(); 
+                    context.ungetService(psr);
 
-                //retrieve all plugins in the bundle
-                ServiceReference[] refs = bundle.getRegisteredServices();
-                if (refs != null) {
-                    for (ServiceReference sr : refs) {
-                        LogUtil.debug(PluginManager.class.getName(), " bundle service: " + sr);
-                        Object obj = context.getService(sr);
-                        if (obj instanceof Plugin) {
-                            Plugin tempPlugin = weavePluginAspect((Plugin) obj); //plugin could be null if having error in multitenant
-                            if (tempPlugin != null) {
-                                pluginList.add(tempPlugin);
+                    //retrieve all plugins in the bundle
+                    ServiceReference[] refs = bundle.getRegisteredServices();
+                    if (refs != null) {
+                        for (ServiceReference sr : refs) {
+                            LogUtil.debug(PluginManager.class.getName(), " bundle service: " + sr);
+                            Object obj = context.getService(sr);
+                            if (obj instanceof Plugin) {
+                                Plugin tempPlugin = weavePluginAspect((Plugin) obj); //plugin could be null if having error in multitenant
+                                if (tempPlugin != null) {
+                                    pluginList.add(tempPlugin);
+                                }
                             }
+                            context.ungetService(sr);
                         }
-                        context.ungetService(sr);
                     }
                 }
             }
@@ -947,21 +968,24 @@ public class PluginManager implements ApplicationContextAware {
      */
     protected Collection<Plugin> loadOsgiPlugins() {
         Collection<Plugin> list = new ArrayList<Plugin>();
-        BundleContext context = getOsgiContainer().getBundleContext();
-        Bundle[] bundles = context.getBundles();
-        for (Bundle b : bundles) {
-            ServiceReference[] refs = b.getRegisteredServices();
-            if (refs != null) {
-                for (ServiceReference sr : refs) {
-                    LogUtil.debug(PluginManager.class.getName(), " bundle service: " + sr);
-                    Object obj = context.getService(sr);
-                    if (obj instanceof Plugin) {
-                        Plugin plugin = weavePluginAspect((Plugin) obj); //plugin could be null if having error in multitenant
-                        if (plugin != null) {
-                            list.add(plugin);
+        Felix osgiContainer = getOsgiContainer();
+        if (osgiContainer != null) {
+            BundleContext context = osgiContainer.getBundleContext();
+            Bundle[] bundles = context.getBundles();
+            for (Bundle b : bundles) {
+                ServiceReference[] refs = b.getRegisteredServices();
+                if (refs != null) {
+                    for (ServiceReference sr : refs) {
+                        LogUtil.debug(PluginManager.class.getName(), " bundle service: " + sr);
+                        Object obj = context.getService(sr);
+                        if (obj instanceof Plugin) {
+                            Plugin plugin = weavePluginAspect((Plugin) obj); //plugin could be null if having error in multitenant
+                            if (plugin != null) {
+                                list.add(plugin);
+                            }
                         }
+                        context.ungetService(sr);
                     }
-                    context.ungetService(sr);
                 }
             }
         }
@@ -974,15 +998,18 @@ public class PluginManager implements ApplicationContextAware {
      */
     public boolean disable(String name) {
         boolean result = false;
-        BundleContext context = getOsgiContainer().getBundleContext();
-        ServiceReference sr = context.getServiceReference(name);
-        if (sr != null) {
-            try {
-                sr.getBundle().stop();
-                context.ungetService(sr);
-                result = true;
-            } catch (Exception ex) {
-                LogUtil.error(PluginManager.class.getName(), ex, "");
+        Felix osgiContainer = getOsgiContainer();
+        if (osgiContainer != null) {
+            BundleContext context = osgiContainer.getBundleContext();
+            ServiceReference sr = context.getServiceReference(name);
+            if (sr != null) {
+                try {
+                    sr.getBundle().stop();
+                    context.ungetService(sr);
+                    result = true;
+                } catch (Exception ex) {
+                    LogUtil.error(PluginManager.class.getName(), ex, "");
+                }
             }
         }
         return result;
@@ -1270,20 +1297,23 @@ public class PluginManager implements ApplicationContextAware {
     }
     
     public String getJarFileName(String pluginName) {
-        BundleContext context = getOsgiContainer().getBundleContext();
-        ServiceReference sr = context.getServiceReference(pluginName);
-        if (sr != null) {
-            try {
-                Bundle bundle = sr.getBundle();
-                if (uninstallable(bundle.getSymbolicName())) {
-                    String location = bundle.getLocation();
+        Felix osgiContainer = getOsgiContainer();
+        if (osgiContainer != null) {
+            BundleContext context = osgiContainer.getBundleContext();
+            ServiceReference sr = context.getServiceReference(pluginName);
+            if (sr != null) {
+                try {
+                    Bundle bundle = sr.getBundle();
+                    if (uninstallable(bundle.getSymbolicName())) {
+                        String location = bundle.getLocation();
 
-                    if (location != null) {
-                        return location.substring(location.lastIndexOf("/") + 1);
+                        if (location != null) {
+                            return location.substring(location.lastIndexOf("/") + 1);
+                        }
                     }
+                } catch (Exception ex) {
+                    LogUtil.error(PluginManager.class.getName(), ex, "");
                 }
-            } catch (Exception ex) {
-                LogUtil.error(PluginManager.class.getName(), ex, "");
             }
         }
         return null;
@@ -1317,24 +1347,27 @@ public class PluginManager implements ApplicationContextAware {
      */
     public boolean uninstall(String name, boolean deleteFile) {
         boolean result = false;
-        BundleContext context = getOsgiContainer().getBundleContext();
-        ServiceReference sr = context.getServiceReference(name);
-        if (sr != null) {
-            try {
-                Bundle bundle = sr.getBundle();
-                if (bundle != null && uninstallable(bundle.getSymbolicName())) {
-                    String location = bundle.getLocation();
-                    uninstallBundle(location);
+        Felix osgiContainer = getOsgiContainer();
+        if (osgiContainer != null) {
+            BundleContext context = osgiContainer.getBundleContext();
+            ServiceReference sr = context.getServiceReference(name);
+            if (sr != null) {
+                try {
+                    Bundle bundle = sr.getBundle();
+                    if (bundle != null && uninstallable(bundle.getSymbolicName())) {
+                        String location = bundle.getLocation();
+                        uninstallBundle(location);
 
-                    // delete location
-                    if (deleteFile) {
-                        File file = new File(new URI(location));
-                        file.delete();
+                        // delete location
+                        if (deleteFile) {
+                            File file = new File(new URI(location));
+                            file.delete();
+                        }
+                        result = true;
                     }
-                    result = true;
+                } catch (Exception ex) {
+                    LogUtil.error(PluginManager.class.getName(), ex, "");
                 }
-            } catch (Exception ex) {
-                LogUtil.error(PluginManager.class.getName(), ex, "");
             }
         }
         return result;
@@ -1413,13 +1446,16 @@ public class PluginManager implements ApplicationContextAware {
             try {
                 Class clazz = getCache().getOsgiPluginClassCache().get(name);
                 if (clazz == null) {
-                    BundleContext context = getOsgiContainer().getBundleContext();
+                    Felix osgiContainer = getOsgiContainer();
+                    if (osgiContainer != null) {
+                        BundleContext context = osgiContainer.getBundleContext();
 
-                    ServiceReference sr = context.getServiceReference(name);
-                    if (sr != null) {
-                        clazz = sr.getBundle().loadClass(name);
-                        getCache().getOsgiPluginClassCache().put(name, clazz);
-                        context.ungetService(sr);
+                        ServiceReference sr = context.getServiceReference(name);
+                        if (sr != null) {
+                            clazz = sr.getBundle().loadClass(name);
+                            getCache().getOsgiPluginClassCache().put(name, clazz);
+                            context.ungetService(sr);
+                        }
                     }
                 }
 
@@ -1844,14 +1880,17 @@ public class PluginManager implements ApplicationContextAware {
      * Method used by Felix Framework to Stop the plugin manager
      */
     public synchronized void shutdown() {
-        if (getOsgiContainer() != null) {
+        Felix osgiContainer = getOsgiContainer();
+        if (osgiContainer != null) {
             try {
-                uninstallAll(false);
-                getOsgiContainer().stop();
-                
                 if (monitor != null) {
                     monitor.stop();
                 }
+                
+                uninstallAll(false);
+                LogUtil.info(PluginManager.class.getName(), "Waiting 5s for PluginManager to shutdown ...");
+                osgiContainer.waitForStop(5 * 1000); //wait for 5s for Felix Resolver to shutdown
+                osgiContainer.stop();
             } catch (Exception ex) {
                 LogUtil.error(PluginManager.class.getName(), ex, "Could not stop Felix");
             }
@@ -2086,27 +2125,33 @@ public class PluginManager implements ApplicationContextAware {
     }
     
     public boolean isOsgi(String classname) {
-        BundleContext context = getOsgiContainer().getBundleContext();
-        ServiceReference sr = context.getServiceReference(classname);
-        if (sr != null) {
-            context.ungetService(sr);
-            return true;
+        Felix osgiContainer = getOsgiContainer();
+        if (osgiContainer != null) {
+            BundleContext context = osgiContainer.getBundleContext();
+            ServiceReference sr = context.getServiceReference(classname);
+            if (sr != null) {
+                context.ungetService(sr);
+                return true;
+            }
         }
         return false;
     }
     
     public String getOsgiPluginPath(String className) {
         String path = null;
-        BundleContext context = getOsgiContainer().getBundleContext();
-        ServiceReference sr = context.getServiceReference(className);
-        if (sr != null) {
-            try {
-                Bundle bundle = sr.getBundle();
-                String location = bundle.getLocation();            
-                File file = new File(new URI(location));
-                path = file.getAbsolutePath();
-             } catch (Exception ex) {
-                LogUtil.error(PluginManager.class.getName(), ex, ex.getMessage());
+        Felix osgiContainer = getOsgiContainer();
+        if (osgiContainer != null) {
+            BundleContext context = osgiContainer.getBundleContext();
+            ServiceReference sr = context.getServiceReference(className);
+            if (sr != null) {
+                try {
+                    Bundle bundle = sr.getBundle();
+                    String location = bundle.getLocation();            
+                    File file = new File(new URI(location));
+                    path = file.getAbsolutePath();
+                 } catch (Exception ex) {
+                    LogUtil.error(PluginManager.class.getName(), ex, ex.getMessage());
+                }
             }
         }
         return path;
