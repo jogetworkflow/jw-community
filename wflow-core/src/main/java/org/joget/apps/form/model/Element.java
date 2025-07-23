@@ -351,15 +351,28 @@ public abstract class Element extends ExtDefaultPlugin implements PropertyEditab
         }
     }
     
+    /**
+     * Helper method to find the index of the first occurence of class attribute in the HTML string.
+     * @param html The HTML string to search.
+     * @return The index of the class attribute.
+     */
+    public int findClassAttrIndex(String html) {
+        int index = html.indexOf("class=");
+        if (this instanceof Form) {
+            index = html.indexOf("class=\"form-container");
+        }
+        return index;
+    }
+
     public String decorateWithBuilderProperties(String html, FormData formData) {
         Map<String, String> attrs = AppPluginUtil.generateAttrAndStyles(getProperties(), "");
-        
+
         String builderStyles = "";
         String cssClass = attrs.get("cssClass");
         String styleClass = "builder-style-"+getPropertyString("elementUniqueKey");
-        
+
         Map<String, String> styles = getElementStyles(styleClass, attrs);
-        
+
         if (!styles.get("DESKTOP").isEmpty() || !styles.get("TABLET").isEmpty() || !styles.get("MOBILE").isEmpty()) {
             cssClass += " " + styleClass;
             if (!styles.get("DESKTOP").isEmpty()) {
@@ -372,15 +385,19 @@ public abstract class Element extends ExtDefaultPlugin implements PropertyEditab
                 builderStyles += " @media (max-width: 767px) {" + styles.get("MOBILE") + "} ";
             }
         }
-        
+
         if (!cssClass.isEmpty() || !attrs.get("attr").isEmpty()) {
-            int index = html.indexOf("class=");
-            if (this instanceof Form) {
-                index = html.indexOf("class=\"form-container");
-            }
-            html = html.substring(0, index) + attrs.get("attr") + " " + html.substring(index, index+7) + cssClass + " " + html.substring(index + 7);
+            int index = findClassAttrIndex(html);
+            String remainingHtml = html.substring(index); //remaining html after class index
+            int closingQuoteIndex = remainingHtml.indexOf("\"", 7); //find closing quote afer class="
+            
+            // Insert attrs.get("attr") first.
+            html = html.substring(0, index) + attrs.get("attr") + " ";
+            
+            //adding css class before closing quote of the class attr
+            html += remainingHtml.substring(0, closingQuoteIndex) + " " + cssClass + remainingHtml.substring(closingQuoteIndex);
         }
-        
+
         if (!builderStyles.isEmpty()) {
             if (this instanceof Form) {
                 int index = html.lastIndexOf("</form>");
@@ -390,7 +407,7 @@ public abstract class Element extends ExtDefaultPlugin implements PropertyEditab
                 html = html.substring(0, index) + "<style id=\""+styleClass+"\">" + builderStyles + "</style></div>";
             }
         }
-        
+
         return html;
     }
 
