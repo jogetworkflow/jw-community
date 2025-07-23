@@ -1728,9 +1728,8 @@ body[builder-theme].popupBody{
     font-family: -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,"Noto Sans",sans-serif,"Apple Color Emoji","Segoe UI Emoji","Segoe UI Symbol","Noto Color Emoji";
 }
 body[builder-theme] .ui-dialog .ui-dialog-content {
-    padding: 0px !important;
-    border-radius: 3px;
-    border: 1px solid var(--theme-border-color-1);
+    border-radius: 0px;
+    border: 0px;
 }
 body[builder-theme] .ui-dialog{
     padding: 0px;
@@ -2006,7 +2005,7 @@ body[builder-theme].popupBody #advancedView > h5{
     text-transform: none;
     font-size: 15px;
 }
-body[builder-theme].popupBody a:not(.btn) {
+body[builder-theme].popupBody a:not(.btn):not(.chosen-single) {
     color: var(--theme-active-color-2);
 }
 body[builder-theme] .apmtable tr.row > td, 
@@ -3061,6 +3060,14 @@ body[builder-theme] .api-container .element-operations .operation {
 }
 body[builder-theme]#cbuilder.tox-fullscreen > #top-panel{
     display: none;
+}
+body[builder-theme] .ui-dialog .ui-dialog-buttonpane {
+    background-color: var(--theme-primary-color-1);
+    border-color: var(--theme-border-color-1);
+    margin-top: 0px;
+}
+body[builder-theme] .ui-dialog .ui-dialog-buttonpane button{
+    border: 0px !important;
 }
 /* Guider Dark Theme */
 body[builder-theme='dark'] .guider {
