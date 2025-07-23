@@ -61,8 +61,17 @@ public class PresenceManager {
                 String presenceFilePath = SetupManager.getBaseDirectory() + "/app_presence.json";
                 FileUtils.deleteQuietly(new File(presenceFilePath));
             }
+            
+            if (executorService != null) {
+                LogUtil.info(PresenceManager.class.getName(), "Shutdown PresenceManager...");
+                executorService.shutdown();
+            }
         }
     };
+    
+    static {
+        ServerUtil.addServerShutdownCleaningTask("cleanAppPresence", cleaning);
+    }
 
     // Thread that waits for new message and then redistribute it
     private static final Thread notifier = new Thread(new Runnable() {
@@ -85,7 +94,7 @@ public class PresenceManager {
             }
         }
 
-    });   
+    }, "PresenceManager-Notifier-1");   
 
     static ExecutorService executorService = PluginThread.getAsyncExecutorService();
         
@@ -128,8 +137,6 @@ public class PresenceManager {
     }
     
     public static void startNotifier() {
-        ServerUtil.addAllServersShutdownCleaningTask("cleanAppPresence", cleaning);
-        
         // Start thread
         running = true;
         notifier.setDaemon(true);
