@@ -1146,7 +1146,7 @@ body.embeded #content main > *:not(.category-label-header, .breadcrumb, .quickEd
     padding-left: calc(276 / 1440 * 100vw);
 }
 
-body.rtl:not(.horizontal_menu) #page {
+body.rtl:not(.horizontal_menu):not(#login) #page {
     padding-right: calc(276 / 1440 * 100vw) !important;
 }
 

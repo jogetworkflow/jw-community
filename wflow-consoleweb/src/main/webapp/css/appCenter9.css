@@ -1407,7 +1407,7 @@ body #sidebar .user-menu>li>a>small {
     body #page {
         padding-left: 128px;
     }
-    body.rtl:not(.horizontal_menu) #page {
+    body.rtl:not(.horizontal_menu):not(#login) #page {
         padding-right: 128px !important;
     }
     body.rtl:not(.horizontal_menu).sidebar-minimized #page {
