@@ -58,7 +58,7 @@ input[type="radio"] {
     }
 }
 
-body.rtl:not(.horizontal_menu) #page {
+body.rtl:not(.horizontal_menu):not(#login) #page {
     padding-right: 280px;
     padding-left: unset;
 }

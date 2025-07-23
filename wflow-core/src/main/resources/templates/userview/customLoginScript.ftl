@@ -37,7 +37,7 @@
             'html::-webkit-scrollbar-thumb { background: transparent; }' +
             '.form-errors {margin-bottom: 0px;}' +
             'body:has(#custom_login) #page #content main {padding-top: 0px}' +
-            'body:has(#custom_login) #content main > *:not(.category-label-header, .breadcrumb, .quickEdit) {    margin-top: 0px !important;margin-left: 0px !important;margin-right: 0px !important;margin-bottom: 0px !important;max-width:100%;}' +
+            'body:has(#custom_login) #content main > *:not(.category-label-header, .breadcrumb, .quickEdit) {direction: ltr;margin-top: 0px !important;margin-left: 0px !important;margin-right: 0px !important;margin-bottom: 0px !important;max-width:100%;}' +
             '</style>').appendTo('head');
     });
 </script>
