@@ -2675,3 +2675,7 @@ a.marketplaceLink {
 #cbuilder.tox-fullscreen > #quick-nav-bar{
     display: none;
 }
+body[builder-theme] .property-type-elementselect .chosen-container .chosen-drop ul li.disabled-result,
+body[builder-theme] .property-type-elementmultiselect .chosen-container .chosen-drop ul li.disabled-result{
+    display: block;
+}

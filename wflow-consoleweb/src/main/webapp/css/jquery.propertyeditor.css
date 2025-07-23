@@ -2733,8 +2733,9 @@ th:hover {
 }
 .property-type-elementselect .chosen-container .chosen-drop ul li.disabled-result,
 .property-type-elementmultiselect .chosen-container .chosen-drop ul li.disabled-result{
-    color: var(--blue);
+    color: var(--theme-active-color-2, var(--blue, #0069d9));
     cursor: pointer;
+    display: none;
 }
 .property-type-elementselect .chosen-container .chosen-drop ul li.disabled-result:hover,
 .property-type-elementmultiselect .chosen-container .chosen-drop ul li.disabled-result:hover{
