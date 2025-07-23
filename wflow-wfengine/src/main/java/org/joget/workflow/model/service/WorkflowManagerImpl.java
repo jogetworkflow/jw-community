@@ -1,5 +1,7 @@
 package org.joget.workflow.model.service;
 
+import org.enhydra.shark.api.internal.repositorypersistence.RepositoryException;
+import org.enhydra.shark.xpdl.elements.Activity;
 import org.joget.commons.util.LogUtil;
 import org.joget.commons.util.SetupManager;
 import org.joget.workflow.model.*;
@@ -354,7 +356,13 @@ public class WorkflowManagerImpl implements WorkflowManager {
 
             WMSessionHandle sessionHandle = sc.getSessionHandle();
             PackageAdministration pa = getSharkPackageAdmin(sessionHandle);
-            WMEntity entity = pa.getPackageEntity(sessionHandle, packageId, version);
+            WMEntity entity;
+            try {
+                entity = pa.getPackageEntity(sessionHandle, packageId, version);
+            } catch (RepositoryException e) {
+                // thrown when no package found. if no package found this method should return null
+                return null;
+            }
             workflowPackage = new WorkflowPackage();
             workflowPackage.setPackageId(packageId);
             workflowPackage.setPackageName(entity.getName());
@@ -5609,7 +5617,7 @@ public class WorkflowManagerImpl implements WorkflowManager {
             XPDLBrowser xpdl = shark.getXPDLBrowser();
             
             org.enhydra.shark.xpdl.elements.WorkflowProcess wp = SharkUtil.getWorkflowProcess(sessionHandle, processDefId);
-            org.enhydra.shark.xpdl.elements.Activity wa = wp.getActivity(activityDefId);
+            Activity wa = wp.getActivity(activityDefId);
             
             //get limit
             double limit = -1;
