@@ -46,6 +46,9 @@
                     UI.userview_id = '<c:out value="${param.__u_}"/>';
                     $(document).ready(function() {
                         UI.initThemeParams();
+                        if (window.self !== window.top && $("#main-body-header").length > 0) {
+                            $("body.popupBody").css("padding-top", $("#main-body-header").outerHeight(true) + "px");
+                        }
                     });
                 </c:when>
                 <c:otherwise>
