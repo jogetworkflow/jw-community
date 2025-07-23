@@ -36,6 +36,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import jakarta.servlet.http.HttpUpgradeHandler;
 import jakarta.servlet.http.Part;
+import java.util.concurrent.ConcurrentHashMap;
 import org.apache.commons.lang3.reflect.MethodUtils;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
@@ -45,7 +46,7 @@ import sun.misc.Unsafe;
  * Thread implementation to used by plugin
  */
 public final class PluginThread extends Thread {
-    
+      
     private final String profile;
     private HttpServletRequest request;
     private HttpServletResponse response;
@@ -59,6 +60,27 @@ public final class PluginThread extends Thread {
     private static Unsafe unsafe;
     private static Field threadHolderField;
     private static Field threadTaskField;
+    
+    //clean the threads (wait 1 mins to complete) when server shutdown
+    private final static ConcurrentHashMap<String, Thread> ACTIVE_THREADS = new ConcurrentHashMap<>();
+    private static final Runnable cleaning = new Runnable() {
+        @Override
+        public void run() {
+            for (Thread thread : ACTIVE_THREADS.values()) {
+                try {
+                    LogUtil.info(getClass().getName(), "Waiting thread " + thread + " for max 1 min to complete.");
+                    if (!thread.isAlive()) {
+                        thread.start(); //start it if it is not running
+                    }
+                    thread.join(60 * 1000); // Wait up to 1 minute for thread to run
+                } catch (Exception e) {
+                    LogUtil.debug(getClass().getName(), "Fail to clean thread " + thread);
+                }
+            }
+            ACTIVE_THREADS.clear();
+        }
+    };
+    
     static {
         try {
             // get internal thread holder and task fields using reflection
@@ -72,6 +94,8 @@ public final class PluginThread extends Thread {
             final Field unsafeField = Unsafe.class.getDeclaredField("theUnsafe");
             unsafeField.setAccessible(true);
             unsafe = (Unsafe) unsafeField.get(null);
+            
+            ServerUtil.addServerShutdownCleaningTask("cleanPluginThread", cleaning);
         } catch (NoSuchFieldException | IllegalArgumentException | IllegalAccessException ex) {
             // ignore if fields do not exist
         } catch (Exception ex) {
@@ -92,6 +116,8 @@ public final class PluginThread extends Thread {
     
     public PluginThread(Runnable r) {
         super(r);
+        ACTIVE_THREADS.put(this.getName(), this);
+                
         profile = DynamicDataSourceManager.getCurrentProfile();
         ServletRequestAttributes sra = null;
         try {
@@ -229,7 +255,9 @@ public final class PluginThread extends Thread {
                 }
             } catch (IllegalAccessException ex) {
                 LogUtil.warn(getClass().getName(), ex.toString());
-            }            
+            }    
+            
+            ACTIVE_THREADS.remove(this.getName());
         }
     }
 
@@ -252,6 +280,7 @@ public final class PluginThread extends Thread {
     public static ExecutorService getAsyncExecutorService() {
         ExecutorService asyncExecutorService = Executors.newSingleThreadExecutor((Runnable r) -> {
             Thread t = new PluginThread(r);
+            t.setName("AsyncExecutor-" + t.getName());
             t.setDaemon(false);
             return t;
         });
