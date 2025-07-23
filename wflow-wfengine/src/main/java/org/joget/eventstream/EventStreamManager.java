@@ -2,7 +2,9 @@ package org.joget.eventstream;
 
 import java.util.Collection;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicBoolean;
 import org.joget.commons.util.SecurityUtil;
+import org.joget.commons.util.ServerUtil;
 import org.joget.plugin.base.Plugin;
 import org.joget.plugin.base.PluginManager;
 
@@ -11,6 +13,7 @@ import org.joget.plugin.base.PluginManager;
  */
 public interface EventStreamManager {
 
+    static final AtomicBoolean HAS_CLEANING_TASK = new AtomicBoolean(false);
     public static final String SYSTEM_PROPERTY_EVENT_STREAM_MANAGER = "wflow.eventStreamManager";
     
     /**
@@ -18,6 +21,17 @@ public interface EventStreamManager {
      * @return
      */
     public static EventStreamManager getEventStreamManager() {
+        if (!HAS_CLEANING_TASK.get()) {
+            //add cleaning task to shutdown event stream manager when server shutdown
+            ServerUtil.addServerShutdownCleaningTask("shutdownEventStreamManager", () -> {
+                EventStreamManager manager = EventStreamManager.getEventStreamManager();
+                if (manager != null) {
+                    manager.shutdown();
+                }
+            });
+            HAS_CLEANING_TASK.set(true);
+        }
+        
         EventStreamManager eventStreamManager = null;
         PluginManager pluginManager = (PluginManager)SecurityUtil.getApplicationContext().getBean("pluginManager");
         String eventStreamManagerClassName = System.getProperty(SYSTEM_PROPERTY_EVENT_STREAM_MANAGER);
