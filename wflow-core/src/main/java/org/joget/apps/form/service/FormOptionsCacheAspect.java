@@ -40,7 +40,7 @@ public class FormOptionsCacheAspect {
     @Around("org.joget.apps.form.service.FormOptionsCacheAspect.setPropertiesMethod()")
     public Object setProperties(ProceedingJoinPoint pjp) throws Throwable {
         Object obj = pjp.proceed();
-        
+
         Object thisObj = pjp.getThis();
         if (thisObj instanceof FormLoadOptionsBinder && !((FormBinder)thisObj).getPropertyString("cacheInterval").isEmpty()) {
             final String cacheKey = getCacheKey((FormBinder) thisObj);
@@ -138,7 +138,10 @@ public class FormOptionsCacheAspect {
                         LogUtil.debug(FormOptionsCacheAspect.class.getName(), "cache " + cacheKey + " is not ready! waiting...");
                     }
                     Thread.sleep(100);
-                    rowset = (FormRowSet)cache.get(cacheKey);
+                    cacheElement = (DynamicCacheElement) cache.get(cacheKey);
+                    if (cacheElement != null) {
+                        rowset = (FormRowSet) cacheElement.getValue();
+                    }
                     count++;
                 }
                 if (rowset == null && count == 100) { //fallback
@@ -161,7 +164,7 @@ public class FormOptionsCacheAspect {
         }
         return rowset;
     }
-    
+
     public static synchronized void startSyncCache(String cacheKey, String durationStr, String idleStr, AppDefinition appDef) {
         if (syncPaused(cacheKey)) {
             Integer duration = 0;
@@ -254,7 +257,7 @@ public class FormOptionsCacheAspect {
             }
         }
     }
-    
+
     protected static String getCacheKey(FormBinder binder) {
         String profile = DynamicDataSourceManager.getCurrentProfile();
         String json = "";
