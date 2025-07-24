@@ -2,6 +2,7 @@ var version = "7.0.0";
 var cacheName = "jw-cache";
 var cache = cacheName + "-" + version;
 var urlsToCache = [];
+const contextPath = new URL(self.registration.scope).pathname.replace(/\/$/, '');
 
 let currentPageUrlPromiseResolve;
 const currentPageUrlPromise = new Promise((resolve) => {
@@ -19,7 +20,7 @@ self.addEventListener('install', function(event) {
     event.waitUntil(
         currentPageUrlPromise.then((url) => {
             self.skipWaiting();
-            if (url !== "/jw/web/login") {
+            if (url !== contextPath + "/web/login") {
                 caches.delete(cache)
                     .then(function(){
                         caches.open(cache)

@@ -377,6 +377,10 @@ body label > [type="radio"]:checked {
     display:none;
 }
 
+.property-input input[type="radio"] {
+    display: inline-block !important;
+}
+
 body .select_radio label > input[type="radio"] + i:after,
 body label > input[type="radio"] + i:after {
     font: normal normal normal 14px/1 FontAwesome;
@@ -409,6 +413,10 @@ body .select_checkbox label > [type="checkbox"]:checked,
 body label > [type="checkbox"]:not(:checked),
 body label > [type="checkbox"]:checked {
     display:none;
+}
+
+.property-input input[type="checkbox"] {
+    display: inline-block !important;
 }
 
 body .select_checkbox label > [type="checkbox"] + i:after,

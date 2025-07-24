@@ -176,7 +176,7 @@
 }
 
 .property-editor-property-container{
-    padding:5px 10px;
+    padding:8px 10px;
     height:390px;
     border-bottom:1px solid #efefef;
     overflow:auto;
@@ -1134,6 +1134,12 @@ body.rtl .property-input > span.icon > span > span.dropdown{
 }
 .elementmultiselect .repeater-row .inputs{
     padding: 5px 30px 5px 35px
+}
+.property-editor-container:not(.editor-panel-mode) .repeater-rows-container{
+    width: 54%;
+}
+.property-editor-container:not(.editor-panel-mode) .repeater-row .chosen-container{
+    width: 99% !important;
 }
 .pebutton {
     color: #6c757d !important;
@@ -2962,4 +2968,26 @@ body.rtl:not(.right-panel-mode-window) .property-editor-container.narrow.wider .
 .rtl .editor-panel-mode:not(.wider) .property-grid .property-type-grid-action-add span{
     padding-right: 5px;
     padding-left: 0px;
+}
+.rtl .property-editor-container:not(.editor-panel-mode) .repeater-rows-container{
+    float: right;
+}
+.rtl .property-editor-container:not(.editor-panel-mode) .elementmultiselect .repeater-row .inputs{
+    padding: 5px 35px 5px 30px
+}
+.rtl .property-editor-container:not(.editor-panel-mode) .elementmultiselect .repeater-row .actions.sort{
+    right: 0;
+    left: unset;
+    border-left: 1px solid #acc1cb;
+    border-right: 0px;
+}
+.rtl .property-editor-container:not(.editor-panel-mode) .repeater-row .actions.rowbuttons{
+    left: 0;
+    right: unset;
+    border-right: 1px solid #acc1cb;
+    border-left: 0;
+}
+.rtl .property-editor-container:not(.editor-panel-mode) .pebutton.addrow{
+    float: right;
+    clear: right;
 }

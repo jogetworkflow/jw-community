@@ -133,7 +133,7 @@ self.addEventListener('install', function (event) {
     event.waitUntil(
         currentPageUrlPromise.then((url) => {
             self.skipWaiting();
-            if (url !== "/jw/web/login") {
+            if (url !== contextPath + "/web/login") {
                 caches.delete(appCacheName)
                     .then(() => caches.open(appCacheName))
                     .then((cache) => {
