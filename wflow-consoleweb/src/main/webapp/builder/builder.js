@@ -1245,6 +1245,30 @@
                             $("#loadingMessage").text("");
                         }
                     }, 3000);
+                },
+                error: function(xhr, status, error) {
+                    let errorText = (UI.stripHtmlTags(xhr.responseText) || status || error);
+                    
+                    // Show a generic or detailed error message
+                    CustomBuilder.showMessage(
+                        get_cbuilder_msg('ubuilder.saveFailed') + " <br>" + errorText,
+                        "danger"
+                    );
+
+                    // Optional callback for external handling
+                    CustomBuilder.callback(CustomBuilder.config.builder.callbacks["builderSaveFailed"], [{
+                        success: false,
+                        error: error,
+                        status: status,
+                        response: xhr.responseText
+                    }]);
+                    
+                    if (typeof $('body').attr("builder-theme") !== 'undefined' && $('body').attr("builder-theme") !== false) {
+                        // Re-enable the button if disabled
+                        $("#save-btn").removeAttr("disabled");
+                        $("body").removeClass("initializing");
+                        $("#loadingMessage").text("");
+                    }
                 }
             });
         } else {
