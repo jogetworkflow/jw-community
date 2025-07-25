@@ -3350,6 +3350,38 @@ public class ConsoleWebController {
         
         AppUtil.writeJson(writer, jsonObject, callback);
     }
+
+    //Add a method to check for generated environment variables
+    private List<String> findGeneratedEnvVars(AppDefinition appDef) {
+        List<String> generatedIds = new ArrayList<>();
+        if (appDef != null && appDef.getEnvironmentVariableList() != null) {
+            for (EnvironmentVariable envVar : appDef.getEnvironmentVariableList()) {
+                if (envVar.getId() != null && envVar.getId().startsWith("__gen_missing_id_")) {
+                    generatedIds.add(envVar.getId());
+                }
+            }
+        }
+        return generatedIds;
+    }
+
+    //Add a new REST endpoint for checking generated environment variables
+    @RequestMapping("/json/console/app/(*:appId)/(~:version)/builders/missingEnvVars")
+    public void consoleBuilderMissingEnvVars(Writer writer, @RequestParam String appId, @RequestParam(required = false) String version, @RequestParam(value = "callback", required = false) String callback) throws IOException, JSONException {
+        AppDefinition appDef = appService.getAppDefinition(appId, version);
+
+        JSONObject jsonObject = new JSONObject();
+        if (appDef != null) {
+            List<String> generatedEnvVars = findGeneratedEnvVars(appDef);
+            jsonObject.accumulate("result", generatedEnvVars);
+            if (!generatedEnvVars.isEmpty()) {
+                jsonObject.accumulate("error",  ResourceBundleUtil.getMessage("dependency.tree.warning.MissingAppVariable"));
+            }
+        } else {
+            jsonObject.accumulate("error", "App not found!");
+        }
+
+        AppUtil.writeJson(writer, jsonObject, callback);
+    }
     
     @RequestMapping("/json/console/app/(*:appId)/(~:version)/builders/overview")
     public void consoleBuilderOverview(Writer writer, @RequestParam String appId, @RequestParam(required = false) String version, @RequestParam(value = "callback", required = false) String callback) throws IOException, JSONException {

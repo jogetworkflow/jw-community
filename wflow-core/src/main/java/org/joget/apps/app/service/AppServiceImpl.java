@@ -2904,6 +2904,23 @@ public class AppServiceImpl implements AppService {
         }
     }
 
+    private String generateMissingEnvVarId(EnvironmentVariable envVar, AppDefinition appDef) {
+        if (envVar.getId() == null || envVar.getId().trim().isEmpty()) {
+            String newId = "__gen_missing_id_" + UuidGenerator.getInstance().getUuid();
+            LogUtil.warn(getClass().getName(), "Generated new ID: " + newId + " for empty env var in app " + appDef.getId());
+            envVar.setId(newId);
+
+            String originalRemarks = envVar.getRemarks();
+            String appendedRemarks = (originalRemarks == null || originalRemarks.trim().isEmpty())
+                ? "Note: This variable was missing an ID during import, so a new ID was automatically generated."
+                : "Original remarks: " + originalRemarks + "\n | Note: This variable was missing an ID during import, so a new ID was automatically generated.";
+
+            envVar.setRemarks(appendedRemarks);
+            return newId; // Return the generated ID instead of adding to instance list
+        }
+        return null; // No ID was generated
+    }
+
     /**
      * Import an app definition object and XPDL content into the system.
      * @param appDef
@@ -3051,7 +3068,9 @@ public class AppServiceImpl implements AppService {
             }
 
             // ----- Environment variables -----
+            List<String> generatedEnvVarIds = new ArrayList<>(); // Track generated IDs
             Map<String, EnvironmentVariable> envVariables = new HashMap<>();
+            
             if (orgAppDef != null && orgAppDef.getEnvironmentVariableList() != null) {
                 for (EnvironmentVariable o : orgAppDef.getEnvironmentVariableList()) {
                     EnvironmentVariable temp = new EnvironmentVariable();
@@ -3068,6 +3087,13 @@ public class AppServiceImpl implements AppService {
                     if (o.getValue() == null) {
                         o.setValue("");
                     }
+                    
+                    // Check if ID was generated and track it
+                    String generatedId = generateMissingEnvVarId(o, newAppDef);
+                    if (generatedId != null) {
+                        generatedEnvVarIds.add(generatedId);
+                    }
+                    
                     o.setAppDefinition(newAppDef);
                     // add new env variable if override enabled or if it does not already exist in the map
                     if (overrideEnvVariable || !envVariables.containsKey(o.getId())) {
@@ -3076,6 +3102,12 @@ public class AppServiceImpl implements AppService {
                 }
             }
             newAppDef.setEnvironmentVariableList(envVariables.values());
+            
+            // Log if any IDs were generated
+            if (!generatedEnvVarIds.isEmpty()) {
+                LogUtil.warn(getClass().getName(), "Generated " + generatedEnvVarIds.size() + " environment variable IDs during import for app " + appDef.getAppId() + ": " + String.join(", ", generatedEnvVarIds));
+            }
+
             if (overrideEnvVariable) {
                 LogUtil.info(getClass().getName(), "Imported environments variables : " + appDef.getEnvironmentVariableList().size());
             }
