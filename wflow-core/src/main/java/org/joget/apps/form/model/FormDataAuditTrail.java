@@ -1,8 +1,9 @@
 package org.joget.apps.form.model;
 
+import java.io.Serializable;
 import java.util.Date;
 
-public class FormDataAuditTrail {
+public class FormDataAuditTrail implements Serializable {
     private String id;
     private String appId;
     private String appVersion;
