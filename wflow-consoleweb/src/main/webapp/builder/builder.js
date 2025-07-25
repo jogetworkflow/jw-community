@@ -1357,6 +1357,10 @@
         if(CustomBuilder.undoStack.length === 1){
             $('#undo-btn').removeClass('disabled');
         }
+        
+        //clean redo when new json add to undo
+        CustomBuilder.redoStack = new Array();
+        $('#redo-btn').addClass('disabled');
 
         CustomBuilder.updateSaveStatus("+");
     },
