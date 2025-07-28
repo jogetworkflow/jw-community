@@ -4458,7 +4458,7 @@ public class ConsoleWebController {
         // add plugin DMs
         for (Plugin plugin : plugins) {
             map = new HashMap<>();
-            map.put("directoryManagerImpl", plugin.getClass().getName());
+            map.put("directoryManagerImpl", ClassUtils.getUserClass(plugin).getName());
             map.put("name", plugin.getName());
             map.put("description", plugin.getDescription());
             map.put("version", plugin.getVersion());
