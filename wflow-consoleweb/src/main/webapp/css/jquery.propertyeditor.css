@@ -1932,7 +1932,8 @@ body .ui-dialog .button_form.editor-panel-mode #main-body-header {
     overflow: hidden;
     padding-bottom: 15px !important;
 }
-.editor-panel-mode .element-pages .property-editor-page.collapsed .property-editor-property-container * {
+.editor-panel-mode .element-pages .property-editor-page.collapsed .property-editor-property-container *,
+.editor-panel-mode .element-pages .property-editor-page.collapsed .property-editor-page-buttons *  {
     display: none;
 }
 .editor-panel-mode .elementmultiselect > .repeater-row > .inputs > .element-pages {
