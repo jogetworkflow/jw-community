@@ -1997,11 +1997,11 @@ ProcessBuilder = {
                 var self = CustomBuilder.Builder;
                 if ($('.element-properties .nav-tabs .nav-link.has-properties-errors').length > 0 && self.selectedEl) {
                     if (self.selectedEl) {
-                        ProcessBuilder.selectElementById(self.selectedEl.data.properties.id);
+                        ProcessBuilder.selectElementById(self.selectedEl[0].data.properties.id);
                         ProcessBuilder.lf.hideContextMenu();
                     }
                 } else {
-                    self.selectedEl = data;
+                    self.selectedEl = $(data);
                 }
             }, 100);
             return false;
@@ -2266,7 +2266,7 @@ ProcessBuilder = {
                 }
                 
                 //update lane y
-                lane.y = laneOriYStart - (laneHeight/2);
+                lane.y = laneOriYStart + (laneHeight/2);
                 
                 //update lane new height
                 if (laneHeight > 0) {
@@ -2280,9 +2280,9 @@ ProcessBuilder = {
                     lane.properties.width = laneWidth;
                     lane.properties.nodeSize.width = laneWidth;
                 }
-                
-                prevLaneYEnd = laneOriYStart + laneHeight;
             }
+            
+            prevLaneYEnd = laneOriYStart + lane.properties.height;
             
             //find the larger lane width
             if (finalLaneWidth < lane.properties.width) {
@@ -2588,7 +2588,7 @@ ProcessBuilder = {
                             self.selectNode(self.selectedEl);
                             ProcessBuilder.preSelect = "";
                         } else if (selectedEl) {
-                            ProcessBuilder.selectElementById(selectedEl.data.id);
+                            ProcessBuilder.selectElementById(selectedEl[0].data.id);
                         }
                         if (ProcessBuilder.view !== "") {
                             $("[data-cbuilder-view='"+ProcessBuilder.view+"']").trigger("click");
@@ -5587,16 +5587,59 @@ ProcessBuilder = {
     autoLayout: function () {
         var self = CustomBuilder.Builder;
         ProcessBuilder.lf.layout('bpmn:startEvent');
-        var newData = ProcessBuilder.lf.getGraphData();
-        var newGrapData = ProcessBuilder.updateEdges(newData);
-        newGrapData = ProcessBuilder.updatePoolHeight(newGrapData);
-        ProcessBuilder.renderLFWithAutoLayout(newGrapData, false);
-        ProcessBuilder.updateNodePosition(newGrapData);
+        var graphData = ProcessBuilder.lf.getGraphData();
+        graphData = ProcessBuilder.autoLayoutNodePosition(graphData);
+        ProcessBuilder.renderLFWithAutoLayout(graphData, false);
+        ProcessBuilder.updateNodePosition(graphData);
         
-        if (self.selectedEl && self.selectedEl && self.selectedEl.data) {
-            ProcessBuilder.selectElementById(self.selectedEl.data.properties.id);
+        if (self.selectedEl && self.selectedEl && self.selectedEl[0].data) {
+            ProcessBuilder.selectElementById(self.selectedEl[0].data.properties.id);
         }
     },
+            
+    autoLayoutNodePosition: function(graphData) {
+        let lanes = graphData.nodes.filter(lane => lane.type === "lane");
+        lanes = lanes.sort((a, b) => a.y - b.y);
+        lanes.forEach(lane => { 
+            let row = 0;
+            if (lane.children.length > 0) {
+                let childs = graphData.nodes.filter(node => lane.children.indexOf(node.id) !== -1);
+                childs = childs.sort((a, b) => a.x - b.x);
+                
+                childs.forEach(child => {
+                    var incoming = ProcessBuilder.lf.getNodeIncomingEdge(child.id);
+                    if (incoming.length > 0) {
+                        let processed = false;
+                        
+                        //check there is source node in same swimlane 
+                        for (var i in incoming) {
+                            if (incoming[i].length === 1 && lane.children.indexOf(incoming[i].sourceNodeId) !== -1) {
+                                let sourceNode = incoming[i].sourceNode;
+                                //make the y same with source node
+                                child.y = sourceNode.y;
+                                if (child.text) {
+                                    child.text.y = sourceNode.y;
+                                }
+                                break;
+                            }
+                        }
+                        
+                        if (!processed) {
+                            child.y += (100 * row);
+                            if (child.text) {
+                                child.text.y = child.y;
+                            }
+                            
+                            if (++row == 2) {
+                                row = 0;
+                            }
+                        }
+                    }
+                });
+            }
+        });
+        return graphData;
+    },        
     
     /**
      * Updates the x and y coordinates of activity nodes in the process data.
@@ -5644,7 +5687,7 @@ ProcessBuilder = {
                 }
             }
             if (nodeData) {
-                CustomBuilder.Builder.selectedEl = {'data' : nodeData};
+                CustomBuilder.Builder.selectedEl = $({'data' : nodeData});
             }
         }
     },
@@ -5670,6 +5713,30 @@ ProcessBuilder = {
     //Before the final render, adjust all the edges this is due to node changed during auto layout
     updateEdges: function (nodeData) {
         let transitionPosData = {};
+        
+        //sort edge based on start node & end node x & y
+        nodeData.edges.sort((a, b) => {
+            const aSourceNode = ProcessBuilder.lf.getNodeDataById(a.sourceNodeId);
+            const aTargetNode = ProcessBuilder.lf.getNodeDataById(a.targetNodeId);
+            const bSourceNode = ProcessBuilder.lf.getNodeDataById(b.sourceNodeId);
+            const bTargetNode = ProcessBuilder.lf.getNodeDataById(b.targetNodeId);
+            
+            // Get top-left corner of each edge
+            let ax = Math.min(aSourceNode.x, aTargetNode.x);
+            let ay = Math.min(aSourceNode.y, aTargetNode.y);
+            let bx = Math.min(bSourceNode.x, bTargetNode.x);
+            let by = Math.min(bSourceNode.y, bTargetNode.y);
+
+            // First sort by y, then by x
+            if (ay !== by) return ay - by;
+            if (ax !== bx) return bx - ax;
+            
+            //compare max y pos if both top-left corner is same
+            ay = Math.max(aSourceNode.y, aTargetNode.y);
+            by = Math.max(aSourceNode.y, aTargetNode.y);
+            
+            return by - ay;
+        });
         
         nodeData.edges.forEach(existEdge => {
             nodeData.edges = nodeData.edges.filter(edge => edge.id !== existEdge.id);
@@ -5859,7 +5926,7 @@ ProcessBuilder = {
             // RIGHT_TOP - Source node is to the right and above the target node
             case POSITION_TYPE.RIGHT_TOP:
                 startTransitionPosition = 'left';
-                endTransitionPosition = 'top';
+                endTransitionPosition = 'right';
                 break;
             // RIGHT_BOTTOM - Source node is to the right and below the target node
             case POSITION_TYPE.RIGHT_BOTTOM:
@@ -6196,7 +6263,7 @@ ProcessBuilder = {
      */
     validateDuplicateId : function (name, value) {
         var self = CustomBuilder.Builder;
-        var data = self.selectedEl.data;
+        var data = self.selectedEl[0].data;
         
         if (data && data.id !== value) { //check for duplicate id when id changed
             var nodeId = value;
@@ -6728,7 +6795,7 @@ ProcessBuilder = {
     getCurrentActivityOutgoingTransition : function() {
         var options = [];
         
-        var act = CustomBuilder.Builder.selectedEl;
+        var act = CustomBuilder.Builder.selectedEl[0];
         var sourceConnSet = ProcessBuilder.lf.getNodeOutgoingEdge(act.data.properties.id);
         for (var i = sourceConnSet.length - 1; i >= 0; i--) {
             let node = ProcessBuilder.getActivity(sourceConnSet[i].targetNodeId);
@@ -7142,8 +7209,8 @@ ProcessBuilder = {
         var id = obj.properties.id;
         
         //the process object is not lofig flow data, need to check to prevent it
-        if (self.selectedEl && self.selectedEl.length > 0 && self.selectedEl.data) {
-            var selectedData = self.selectedEl.data;
+        if (self.selectedEl && self.selectedEl.length > 0 && self.selectedEl[0].data) {
+            var selectedData = self.selectedEl[0].data;
             if (selectedData.properties.id === id) {
                 $(detailsDiv).find(".cbuilder-node-details-list").addClass("active");
                 var listId = $(list).attr("id");
@@ -7734,7 +7801,7 @@ ProcessBuilder = {
             ProcessBuilder.updateLFData(element, elementObj, oldNodeId);
         }
         
-        CustomBuilder.update(true);
+        ProcessBuilder.adjustLane(true, true);
     },
     
     /**
@@ -7750,16 +7817,11 @@ ProcessBuilder = {
         ProcessBuilder.lf.deleteEdge(transitionId);
 
         // Add a new edge with a different type but same source and target
-        ProcessBuilder.lf.addEdge({
-            id: transitionId,
-            type: ProcessBuilder.getEdgeType(elementObj.properties.transitionStyle),
-            sourceNodeId: edge.sourceNodeId,
-            targetNodeId: edge.targetNodeId,
-            sourceAnchorId: edge.sourceAnchorId,
-            targetAnchorId: edge.targetAnchorId,
-            properties: edge.properties
-        });
+        edge.type = ProcessBuilder.getEdgeType(elementObj.properties.transitionStyle);
+        ProcessBuilder.lf.addEdge(edge);
         ProcessBuilder.changeNodeId = false;
+        
+        ProcessBuilder.selectElementById(transitionId);
         
         //adjust the edges to prevent stack together, also prevent position changes after refresh
         const graphData = ProcessBuilder.updateEdges(ProcessBuilder.lf.getGraphData());
