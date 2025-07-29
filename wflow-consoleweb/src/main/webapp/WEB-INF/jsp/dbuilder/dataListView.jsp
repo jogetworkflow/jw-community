@@ -322,7 +322,7 @@
             $("#filters_${dataListId}").removeClass("show");
             DataListUtil.submitForm(this);
         });
-        $('.mobile_search_trigger').off("click").on("click", function(){
+        $('#filters_${dataListId} > .mobile_search_trigger').off("click").on("click", function(){
             $("#filters_${dataListId}").toggleClass("show");
         });
         $(".exportlinks a").attr("target", "_blank"); //download in new page so that it won't block access
