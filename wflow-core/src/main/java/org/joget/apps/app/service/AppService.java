@@ -6,6 +6,7 @@ import java.io.UnsupportedEncodingException;
 import java.util.Collection;
 import java.util.Map;
 import java.util.zip.ZipOutputStream;
+
 import org.joget.apps.app.model.AppDefinition;
 import org.joget.apps.app.model.FormDefinition;
 import org.joget.apps.app.model.ImportAppException;
@@ -671,6 +672,13 @@ public interface AppService {
      * @return 
      */
     public String getFormTableName(AppDefinition appDef, String formDefID);
+
+    /**
+     * Retrieve list of unpublished apps available to the current user
+     * @param appId
+     * @return 
+     */
+    public Collection<AppDefinition> getUnpublishedApps(String appId);
 
     /**
      * Retrieve list of published apps available to the current user

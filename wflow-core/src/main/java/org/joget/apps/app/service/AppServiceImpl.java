@@ -3562,22 +3562,43 @@ public class AppServiceImpl implements AppService {
         return resultAppDefinitionList;
     }
 
+    public Collection<AppDefinition> getPublishedApps(String appId, boolean mobileView, boolean mobileCache) {
+        Collection<AppDefinition> resultAppDefinitionList = getApps(appId, false, false, false);
+        return resultAppDefinitionList;
+    }
+
+    /**
+     * Retreive list of unpublished apps
+     * @param appId Optional filter by appId
+     * @param mobileView
+     * @param mobileCache
+     */
+    public Collection<AppDefinition> getUnpublishedApps(String appId) {
+        Collection<AppDefinition> resultAppDefinitionList = getApps(appId, false, false, true);
+        return resultAppDefinitionList;
+    }
+
     /**
      * Retrieve list of published apps available to the current user. Overloaded
      * to additionally filter by mobile view support.
      * @param appId Optional filter by appId
      * @param mobileView
      * @param mobileCache
+     * @param getUnpublishedApp true, if wants to get unpublished app, else fale
      * @return
      */
-public Collection<AppDefinition> getPublishedApps(String appId, boolean mobileView, boolean mobileCache) {
+    public Collection<AppDefinition> getApps(String appId, boolean mobileView, boolean mobileCache, boolean getUnpublishedApps) {
         AppDefinition orgAppDef = AppUtil.getCurrentAppDefinition();
         Collection<AppDefinition> resultAppDefinitionList = new ArrayList<AppDefinition>();
         try {
             Collection<AppDefinition> appDefinitionList;
             if (appId == null || appId.trim().isEmpty()) {
                 // get list of published apps.
-                appDefinitionList = appDefinitionDao.findPublishedApps("name", Boolean.FALSE, null, null);
+                if (!getUnpublishedApps) {
+                    appDefinitionList = appDefinitionDao.findPublishedApps("name", Boolean.FALSE, null, null);
+                } else {
+                    appDefinitionList = appDefinitionDao.findUnpublishedApps("name", Boolean.FALSE, null, null);
+                }
             } else {
                 // get specific app
                 appDefinitionList = new ArrayList<AppDefinition>();

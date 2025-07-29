@@ -170,6 +170,34 @@ public class AppDefinitionDaoImpl extends AbstractVersionedObjectDao<AppDefiniti
         return q.list();
     }
     
+    @Override
+    public Collection<AppDefinition> findUnpublishedApps(final String sort, final Boolean desc, final Integer start, final Integer rows) {
+        String query = "SELECT e FROM " + getEntityName() + " e WHERE 1=1 AND e.published = false AND e.appId NOT IN (SELECT e2.appId FROM " + getEntityName() + " e2 WHERE e2.published = true)";
+
+        if (sort != null && !sort.equals("")) {
+            query += " ORDER BY " + sort;
+
+            if (desc) {
+                query += " DESC";
+            }
+        }
+        Query q = findSession().createQuery(query);
+        setCacheable(q, null);
+
+        int s = (start == null) ? 0 : start;
+        
+        //setting this unnecessarily causing performance issue 
+        if (s > 0) {
+            q.setFirstResult(s);
+        }
+
+        if (rows != null && rows > 0) {
+            q.setMaxResults(rows);
+        }
+
+        return q.list();
+    }
+    
     /**
      * Find a specific version of an object by ID, and refresh from database
      * @param id

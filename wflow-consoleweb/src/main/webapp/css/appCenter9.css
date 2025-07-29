@@ -1,9 +1,38 @@
+body {
+    --breadcrumb-spacing: 24px;
+    --content-margin: 32px;
+}
+
 body.popupBody{
     color:#333 !important;
 }
 
 body.popupBody #main-body-header {
     color:#333 !important;
+}
+body .systemAlert:has(> .systemAlertMessage:only-of-type),
+.systemAlert .systemAlertMessage.passwordExpired {
+    display: none;
+}
+body.systemAlertPresent:has(.systemAlert):not(.embeded, .horizontal_menu) #content.page_content {
+    margin-top: var(--header-height) !important;
+}
+body .renew-banner {
+    transform: translateX(-50%);
+    position: fixed;
+    left: 50%;
+}
+#sidebar .nav > li > a:hover > span > svg:first-child {
+    color: var(--theme-sidebar-active-icon, var(--sidebar-active-icon-default-color, var(--dx8theme-color6, var(--theme-color3, #03a9f4))))
+}
+ul#category-container li.category.first i::before {
+    color: transparent;
+    -webkit-text-stroke-width: 1.5px;
+    -webkit-text-stroke-color: #39414A;
+}
+ul#category-container li.category.first.active i::before,
+ul#category-container li.category.first > a:hover i::before {
+    -webkit-text-stroke-color: var(--theme-sidebar-active-icon, var(--sidebar-active-icon-default-color, var(--dx8theme-color6, var(--theme-color3, #03a9f4)))) !important;
 }
 /* Homepage Banners CSS */
 #homePageBanner.tablet,
@@ -209,14 +238,11 @@ body.rtl select:not([class^="ui-"]) {
     color: #181c32;
     background-color: #eff2f5;
 }
-
+body#home .dataList .dropdown-menu a.dropdown-item {
+    font-weight: 500;
+}
 #dataList_list_appList > form:nth-child(6) > div > div.template_pagelinks > span{
     margin-top: 30px;
-}
-#dataList_list_appList > form:nth-child(6) > div > div.cards.row > div > div > div > div.card-actions > a.ph_rowActions.rowAction_1.rowaction_body.body_rowAction_1.btn.btn-sm.btn-light.link_rowAction_1{
-    padding-left: 50px;
-    padding-right: 50px;
-    background-color: #F8F9FA !important;
 }
 #dataList_list_appList .card-title {
     margin-bottom: 0rem;
@@ -234,41 +260,10 @@ body.rtl select:not([class^="ui-"]) {
 #dataList_list_appList .filters{
     text-align: left;
 }
-#dataList_list_appList .column_desc:after {
-    content: "";
-    position: absolute;
-    background-image: linear-gradient(to top, #ffffff, #ffffff00);
-    height: 25px;
-    bottom: 0px;
-    left: 0px;
-    right: 0px;
-    display: block;
-}
 #dataList_list_appList .card {
     height: 100%;
     border: none;
     border-radius: 10px;
-}
-#dataList_list_appList .p-2 {
-    padding: .5rem!important;
-    min-height: 330px;
-    padding-inline: 32px !important;
-}
-#dataList_list_appList .column_rating{
-    right: 10px;
-    position: absolute;
-    bottom: 10px;
-    font-weight: 500;
-}
-#dataList_list_appList .column_count{
-    font-weight: 500;
-    left: 20px;
-    position: absolute;
-    bottom: 10px;
-}
-#dataList_list_appList .card-actions{
-    bottom: 50px;
-    position: absolute;
 }
 #dataList_list_appList .exportlinks {
     display:none;
@@ -476,23 +471,13 @@ body#home #home_column .row .p-2{
 #dataList_applist > form > div > div.template_pagelinks{
     float: right !important;
 }
-
-#admin #content .InformationTileComponent {
-    border: 1px solid #F1F1F4 !important;
-    border-radius: 0.625rem !important;
-    box-shadow: 0px 3px 4px 0px rgba(0, 0, 0, 0.03);
-}
-#admin #content .InformationTileComponent .card-footer{
-    border-bottom-left-radius: 10px;
-    border-bottom-right-radius: 10px;
-}
 #templates #content .main-body-content:not(.Dashboard){
     padding: 0px;
 }
-
 #templates #dataList_list_appList  .table-wrapper .row{
     margin-left: 0px;
     margin-right: 0px;
+    margin-bottom: 40px;
 }
 #templates #content .card .card-footer{
     border-radius: 0 0 10px 10px;
@@ -505,34 +490,1096 @@ body#home #home_column .row .p-2{
 #templates #content main [class*="-body-content"] > div > h2 {
     background-color:transparent;
 }
-#templates #content .card {
-  border-radius: 0;
-  margin: 0 auto;
-  width: 500px;
-  max-width: 100%;
-  min-height: 300px;
-  overflow: hidden;
-  background-size: 100% 98% !important;
-  box-shadow: 0px 3px 4px 0px rgba(0, 0, 0, 0.03) !important;
-  position:relative;
-  border: 1px solid var(--theme-border-color);
-}
-#templates #content .card-body {
-    position: absolute;
-    width: 100%;
-    height: 100%;
-    background-color: #fff;
-    transform: translateY(100%)
-        translateY(-88px)
-        translateZ(0);
-    transition: transform 0.5s ease-out;
-    padding-top: 20px;
-}
-#templates #content .card:hover .card-body{
-    transform: translateY(0);
-}
 #dataList_list_newTemplate .template_pagelinks{
     display:none;
+}
+/* General Page Design */
+body:not(#home) div#main #content {
+    background: linear-gradient(179.5deg, #F1FDF1 0.4%, rgba(235, 255, 248, 0.8) 48.14%, rgba(237, 249, 245, 0) 99.54%) top no-repeat, rgba(255, 255, 255, 0.8);
+}
+body:not(#home) main > ul.breadcrumb {
+    display: none;
+}
+body:not(#home) main span.breadcrumb-description {
+    color: var(--theme-sidebar-link);
+    display: block;
+    font-weight: 500;
+    font-size: 16px;
+    line-height: 24px;
+    letter-spacing: 0%;
+    vertical-align: bottom;
+    font-family: "HindVadodara", sans-serif;
+}
+body:not(#home) main > ul.breadcrumb > li:not(:last-child) {
+    display: none;
+}
+/* End of Styling */
+#content main > *:nth-child(3) {
+    margin-top: 0px !important;
+}
+/* design app page styling */
+body#design_app .design-app-arrows > i.fas {
+    cursor: pointer;
+}
+body#design_app .design-app-arrows > i.fas.disabled {
+    opacity: 0.1;
+    pointer-events: none;
+}
+body#design_app ul#nav,
+body#admin ul#admin-nav {
+    list-style-type: none;
+    display: flex;
+    padding: 0;
+    column-gap: 32px;
+    color: var(--theme-sidebar-active-link);
+    margin-bottom: 0px;
+    overflow-y: auto;
+}
+body#design_app ul#nav > li,
+body#admin ul#admin-nav > li,
+.apps-data ul.header-title > li,
+ul.published-unpublished-apps > li,
+ul.header-title > li,
+ul#user-tab-nav > li {
+    opacity: 65%;
+    cursor: pointer;
+}
+body#design_app ul#nav > li:hover,
+body#admin ul#admin-nav > li:hover,
+.apps-data ul.header-title > li:hover,
+ul.published-unpublished-apps > li:hover,
+ul.header-title > li:hover,
+ul#user-tab-nav > li:hover {
+    opacity: 100%;
+}
+
+body#design_app ul#nav > li.active,
+body#admin ul#admin-nav > li.active {
+    opacity: 100%;
+    border-bottom: 1px solid var(--theme-sidebar-active-link);
+    padding-bottom: 12px;
+}
+.apps-data ul.header-title > li.active,
+ul.published-unpublished-apps > li.active,
+ul.header-title > li.active,
+ul#user-tab-nav > li.active { 
+    opacity: 100%;
+}
+@keyframes fadeIn {
+    from { opacity: 0; }
+      to { opacity: 1; }
+}
+body#design_app div.ContainerComponent:is(#community, #tutorial, #joget_academy, #contact) > :not(.hide) {
+    -webkit-animation: fadeIn 1s;
+    animation: fadeIn 1s;
+}
+body#design_app div.ContainerComponent:is(#community, #tutorial, #joget_academy, #contact) > .hide{
+    display: none;
+}
+body#design_app div.ContainerComponent.active:is(#community, #tutorial, #joget_academy, #contact),
+body#admin div.ContainerComponent.active:is(#monitor_section, #apps_section, #users_section) {
+    display: block;
+    -webkit-animation: fadeIn 1s;
+    animation: fadeIn 1s;
+}
+body#design_app div.ContainerComponent#community,
+body#design_app div.ContainerComponent#tutorial,
+body#design_app div.ContainerComponent#joget_academy,
+body#design_app div.ContainerComponent#contact,
+body#admin div.ContainerComponent:not(.active):is(#monitor_section, #apps_section, #users_section) {
+    display: none;
+    padding: 0px;
+}
+body#design_app div.ContainerComponent#community h3 {
+    font-family: "Commissioner", sans-serif;
+    font-weight: 600;
+}
+body#design_app div.ContainerComponent#tutorial .ContainerComponent {
+    padding: 0;
+}  
+body#design_app div.ContainerComponent#tutorial a.btn,
+body#design_app div.ContainerComponent#joget_academy a.btn {
+    width: fit-content;
+    height: 30px;
+    border-radius: 16px;
+    margin-bottom: 8px;
+
+    font-family: "HindVadodara", sans-serif;
+    font-weight: 500;
+    font-size: 14px;
+    line-height: 20px;
+
+    background-color: var(--theme-sidebar-active-link-bg);
+    padding-top: 4px;
+    margin-right: 4px;
+
+    color: var(--theme-sidebar-active-link);
+}
+body#design_app div.ContainerComponent#tutorial h3,
+body#design_app div.ContainerComponent#joget_academy h3,
+body#design_app h3#community_title,
+body#design_app h3#contact_header {
+    font-family: "Commissioner", sans-serif;
+    font-weight: 500 !important;
+    font-size: 18px;
+    line-height: 24px;
+    letter-spacing: 0%;
+    color: var(--theme-sidebar-active-link);
+    margin-bottom: 16px;
+
+    text-overflow: ellipsis !important;
+    overflow: hidden !important;
+    margin-top: auto;
+    margin-bottom: auto;
+    height: fit-content;
+    margin-bottom: 16px;
+}
+body#design_app div.ContainerComponent#joget_academy .row > .col:not(:has(.Link_Menu)) {
+    display: grid !important;
+    grid-template-columns: auto 1fr; /* Each button takes its own width */
+    grid-template-rows: auto auto 1fr;
+}
+body#design_app div.ContainerComponent#joget_academy .row > .col > .ButtonComponent:nth-of-type(1) {
+    grid-column: 1;
+    grid-row: 1;
+}
+body#design_app div.ContainerComponent#joget_academy .row > .col > .ButtonComponent:nth-of-type(2) {
+    grid-column: 2;
+    grid-row: 1;
+}
+body#design_app div.ContainerComponent#joget_academy .row > .col > h3 {
+    grid-column: 1 / -1;
+    grid-row: 2;
+}
+body#design_app div.ContainerComponent#joget_academy .row > .col > .HtmlCodeComponent {
+    grid-column: 1 / -1;
+    grid-row: 3;
+    align-self: end;
+}
+body#design_app div.ContainerComponent#contact span,
+body#design_app #design_app_header,
+body#design_app .createAppCard > .card-body > .column_name,
+.dataList#dataList_list_newTemplate .column_0,
+body#templates h3#template_header,
+body#admin h3#admin_header {
+    display: -webkit-box !important;
+    -webkit-line-clamp: 2 !important;
+    -webkit-box-orient: vertical !important;
+}
+body#design_app #design_app_header,
+body#templates h3#template_header,
+body#admin h3#admin_header {
+    margin-bottom: 0px;
+    height: fit-content;
+    color: #092E28;
+}
+body#design_app #design_app_header_subtitle,
+body#templates #template_header_subtitle {
+    font-family: "HindVadodara", sans-serif;
+    font-weight: 500;
+    font-size: 16px;
+    line-height: 24px;
+    color: var(--theme-sidebar-link);
+    margin-top: 0px !important;
+}
+body#design_app h3#community_title,
+body#design_app h3#contact_header {
+    opacity: 0.65 !important;
+}
+body#design_app div.ContainerComponent#contact span {
+    margin-top: 19px;
+    width: fit-content;
+    font-family: "Commissioner", sans-serif;
+}
+body#design_app div.ContainerComponent#tutorial img {
+    width: 100%;
+}
+body#design_app div.ContainerComponent#tutorial .row,
+body#design_app div.ContainerComponent#joget_academy .row {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    column-gap: 32px;
+}
+@media (min-width: 768px) and (max-width: 1200px) {
+    body#design_app #perPageView > .row > .col .col-description > .actions > a.btn, 
+    body#design_app #perPageView > .row > .col .col-description > .actions > .dropdown {
+        width: 100%;
+        margin-right: 8px !important;
+        text-align: center;
+        margin-bottom: 10px;
+    }
+}
+@media (min-width: 991px) {
+    body#design_app div.ContainerComponent#tutorial.active,
+    body#design_app div.ContainerComponent#joget_academy.active {
+        display: grid;
+        grid-auto-flow: column;
+        grid-auto-columns: 100%;
+        overflow: hidden;
+        scroll-behavior: smooth;
+    }
+}
+@media (max-width: 990px) {
+    .design-app-arrows {
+        display: none;
+    }
+    body#design_app div.ContainerComponent#tutorial .row,
+    body#design_app div.ContainerComponent#joget_academy .row {
+        column-gap: 16px;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        row-gap: 8px;
+    }
+}
+@media (max-width: 400px) {
+    body#design_app div.ContainerComponent#tutorial .row,
+    body#design_app div.ContainerComponent#joget_academy .row {
+        column-gap: 16px;
+        grid-template-columns: repeat(auto-fit, minmax(100%, 1fr));
+    }
+}
+/* Design View Options Stylings */
+body#design_app .design-view-options {
+    display: flex;
+    gap: 24px;
+    text-align: right;
+    justify-content: flex-end;
+    align-items: center;
+}
+body#design_app .design-view-options > #view-templates,
+body#design_app .design-view-options > .active {
+    color: var(--theme-sidebar-active-icon);
+}
+body#design_app .design-view-options > .active {
+    background-color: var(--theme-sidebar-active-link-bg);
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    position: relative;
+}
+body#design_app .design-view-options > .active > .far {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 15px;
+}
+body#design_app .design-view-options > .far {
+    font-size: 16px;
+}
+body#design_app .design-view-options > a {
+    cursor: pointer;
+}
+body#design_app .design-view-options > a:hover {
+    color: var(--theme-sidebar-active-icon);
+}
+body#design_app .design-view-options > :not(.active) {
+    color: #1C1B1F;
+}
+/* Design App Per Page View Stylings */
+body#design_app #perPageView > .row > .col,
+body#design_app #gridView,
+body#design_app #perPageView {
+    display: none;
+}
+body#design_app:has(.design-view-options > a#per-view.active) #perPageView,
+body#design_app:has(.design-view-options > a#grid-view.active) #gridView,
+body#design_app #perPageView > .row > .col.show {
+    display: block;
+    -webkit-animation: fadeIn 1s;
+    animation: fadeIn 1s;
+}
+body#design_app #perPageView > .row > .col .col-description {
+    padding-right: 12%;
+}
+body#design_app #perPageView > .row > .col .col-description > span,
+body#design_app #perPageView > .row > .col .col-description > .actions > a:not(:first-child) > span,
+body#design_app #perPageView > .row > .col .col-description > .actions > span.arrow-message,
+body#design_app .createAppCard > .card-body > .column_desc > p,
+#design_app .card .column_desc {
+    font-family: "HindVadodara", sans-serif;
+    font-weight: 500;
+    font-size: 16px;
+    margin-bottom: 16px;
+    display: block;
+    line-height: 24px;
+    color: #09583D;
+}
+body#design_app #perPageView > .row > .col .col-description > h1 {
+    font-family: "Commissioner", sans-serif;
+    font-weight: 400;
+    font-size: 32px;
+    line-height: 1.2;
+    letter-spacing: 0%;
+    color: var(--theme-sidebar-active-link);
+    margin-bottom: 48px;
+}
+body#design_app #perPageView > .row > .col .col-description > .actions {
+    flex-wrap: wrap;
+}
+body#design_app #perPageView > .row > .col .col-description > .actions > a.btn,
+body#design_app #perPageView > .row > .col .col-description > .actions > .dropdown {
+    background-color: var(--theme-sidebar-active-icon);
+    min-height: 56px;
+    border-radius: 16px;
+    padding: 16px 24px;
+    margin-right: 40px;
+    font-weight: 500;
+}
+body#design_app #perPageView > .row > .col .col-description > .actions > .dropdown {
+    background-color: var(--theme-sidebar-active-icon);
+    color: #FFF;
+    cursor: pointer;
+}
+body#design_app #perPageView > .row > .col .col-description > .actions > .dropdown > .dropdown-box {
+    width: 100%;
+    left: 0px;
+    top: 105%;
+    border: 1.5px solid var(--theme-sidebar-active-link-bg);
+    box-shadow: 2px 4px 10px 0px #2A6AA405;
+    border-radius: 16px;
+    padding: 15px 5px;
+    background-color: var(--white-color);
+}
+body#design_app #perPageView > .row > .col .col-description > .actions:has(.dropdown) > span.arrow-message {
+    margin: 0px 16px;
+}
+body#design_app #perPageView > .row > .col .col-description > .actions > .dropdown > .dropdown-box > a {
+    display: block;
+    padding: 8px 16px;
+    text-decoration: none;
+    color: var(--theme-sidebar-active-link);
+}
+body#design_app #perPageView > .row > .col .col-description > .actions > .dropdown > .dropdown-box > a:hover {
+    background: #0092653D;
+    border-radius: 8px;
+    cursor: pointer;
+}
+body#design_app #perPageView > .row > .col .col-description > .actions {
+    display: flex;
+    align-items: center;
+}
+body#design_app #perPageView > .row > .col .col-description > .actions > a:not(:first-child) {
+    color: #09583D;
+}
+body#design_app #perPageView > .row > .col .col-description > .actions > a:not(:first-child) > span {
+    margin-right:16px;
+    display: initial;
+}
+/* Design App Grid View Stylings */
+body#design_app:has(a#per-view.active) #designAppSection {
+    background-color: #DAE6E23D !important;
+    padding-right: 40px !important;
+    box-shadow: 0px 3px 4px 0px rgba(0, 0, 0, 0.03) !important;
+    border: 1px solid #F1F1F4 !important;
+    border-bottom-width: 1px !important;
+    border-color: #F1F1F4 !important;
+    padding-top: 40px !important;
+    padding-left: 40px !important;
+    padding-bottom: 40px !important;
+    border-left-width: 1px !important;
+    border-right-width: 1px !important;
+    border-top-width: 1px !important;
+    border-radius: 16px !important;
+}
+body#design_app .createAppCard {
+    background-color: transparent;
+}
+body#design_app .createAppCard > .card-body > .column_img,
+body#design_app .dataList#dataList_list_newTemplate .column_5 {
+    background-color: #DAE6E23D;
+    padding: 36px 25px;
+    border-radius: 16px;
+    margin-bottom: 16px !important;
+}
+body#design_app .createAppCard > .card-body > .column_img {
+    padding: 35px 25px;
+}
+body#design_app .dataList#dataList_list_newTemplate .column_5 > div {
+    border-radius: 4px !important;
+}
+body#design_app .createAppCard > .card-body > .column_name,
+body#design_app .dataList#dataList_list_newTemplate .column_0 {
+    margin-bottom: 8px !important;
+    height:fit-content;
+    color: #09583D !important;
+    font-family: "Commissioner", sans-serif;
+    font-size: 18px;
+}
+body#design_app .createAppCard > .card-body > .column_desc > p,
+#design_app .card .column_desc {
+    color: var(--theme-sidebar-link);
+}
+body#design_app .createAppCard > .card-body > .column_desc > p {
+    margin-bottom: 0px;
+}
+body#design_app .card .card-body .card-actions > a,
+body#templates #content .card-body > .card-actions > a.link_rowAction_0,
+body#admin #performance_column a.btn {
+    background-color: var(--theme-sidebar-active-icon);
+    min-height: 56px;
+    border-radius: 16px;
+    padding: 16px 24px;
+    margin-right: 28px;
+    font-weight: 500;
+}
+body#design_app .card .card-body .card-actions > a.link_rowAction_0,
+body#templates #content .card-body > .card-actions > a.link_rowAction_0 {
+    font-weight: 600;
+}
+body#design_app .card .card-body .card-actions > a.rowAction_1,
+body#templates #content .card-body > .card-actions > a.link_rowAction_1 {
+    background-color: transparent;
+    color: #09583D;
+    width: fit-content;
+    padding: 0px !important;
+    margin-left: 0px !important;
+    animation: none !important;
+
+    font-size: 16px;
+    font-weight: 500;
+}
+body#design_app #newTemplate.main-body-content {
+    background: transparent;
+    padding: 0px;
+}
+body#design_app #newTemplate.main-body-content .card {
+    background: transparent;
+}
+body#design_app #newTemplate.main-body-content .card .card-body .card-actions {
+    margin-top: 0px;
+}
+@media (min-width: 421px) {
+    body#design_app #perPageView > .row > .col .col-description > .actions > ul {
+        display: none;
+    }
+}
+@media (max-width: 430px) {
+    body#design_app #perPageView > .row > .col .col-description > .actions > a.btn,
+    body#design_app #perPageView > .row > .col .col-description > .actions > div.dropdown {
+        min-width: 100%;
+        text-align: center;
+    }
+    body#design_app #perPageView > .row > .col .col-description > .actions > a:not(.btn),
+    body#design_app #perPageView > .row > .col .col-description > .actions > .arrow-message {
+        display: none !important;
+    }
+    body#design_app #perPageView > .row > .col .col-description > .actions > ul {
+        display: flex;
+        flex-direction: row;
+        gap: 2px;
+        width: 100%;
+        justify-content: center;
+        margin-top: 10px;
+    }
+    
+    body#design_app #perPageView > .row > .col .col-description > .actions > ul > li {
+        width: 10px;
+        height: 10px;
+        border-radius: 15px;
+    }
+
+    body#design_app #perPageView > .row > .col .col-description > .actions > ul > li::marker {
+        color: grey;
+    }
+
+    body#design_app #perPageView > .row > .col:nth-child(1) .col-description > .actions > ul > li:nth-child(1)::marker,
+    body#design_app #perPageView > .row > .col:nth-child(2) .col-description > .actions > ul > li:nth-child(2)::marker,
+    body#design_app #perPageView > .row > .col:nth-child(3) .col-description > .actions > ul > li:nth-child(3)::marker {
+        color: var(--theme-sidebar-active-icon);
+    }
+
+    body#design_app div.ContainerComponent#tutorial h3,
+    body#design_app div.ContainerComponent#joget_academy h3 {
+        font-size: 14px;
+    }
+}
+/* Template Page Stylings */
+body#templates .filters .chosen-container {
+    width: fit-content !important   ;
+}
+body#templates .filters .chosen-container .chosen-single {
+    height: 56px !important;
+    box-shadow: 2px 4px 10px 0px #2A6AA405;
+    border: 1.5px solid #DAE6E2;
+    border-radius: 16px;
+    padding-right: 50px;
+}
+body#templates .filters .chosen-container .chosen-single > * {
+    height: 100%;
+    display: flex;
+    align-items: center;
+    color: #092E28;
+}
+body#templates .filters .chosen-container .chosen-single > span {
+    margin-right: 0px;
+    font-size: 16px;
+}
+body#templates .filters .chosen-container .chosen-single > div {
+    right: 21px;        
+}
+body#templates .filters .chosen-container .chosen-single div b:after {
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 12px;
+}
+body#templates .filters .chosen-container .chosen-results > li  {
+    color: #092E28 !important;
+    width: 100% !important;    
+    justify-content: space-around;
+}
+body#templates .filters .chosen-container .chosen-results > li:hover,
+body#templates .filters .chosen-container .chosen-results > li.highlighted {
+    background-color: rgba(0, 146, 101, 0.24) !important;
+    color: #009265 !important;
+}
+body#templates .filters .chosen-container.chosen-with-drop .chosen-drop {
+    padding: 8px 8px;
+}
+body#templates .filters .chosen-container.chosen-with-drop .chosen-drop .chosen-results{
+    padding: 0px 0px;
+    margin: 0px 0px;
+}
+body#templates #content .cards > * {
+    padding: 0px !important;
+}
+body#templates #content .cards > *:not(:last-child) {
+    padding-right: 16px !important;
+}
+body#templates #content .card {
+    background-image: none !important;
+    height: fit-content !important;
+    padding: 0 !important;
+}
+body#templates #content .card-body {
+    width: 100%;
+    height: 100%;
+    transition: transform 0.5s ease-out;
+    padding: 0px;
+}
+body#templates #content .card-body > .card-title {
+    display: none;
+}
+body#templates #content .card-body > .column_img {
+    padding: 36px 25px;
+    border-radius: 16px;
+    background-color: #DAE6E23D;
+    margin-bottom: 24px;
+}
+body#templates #content .card-body > .column_img > div {
+    border-radius: 4px;
+}
+body#templates #content .card-body > .column_rating,
+body#templates #content .card-body > .column_count {
+    display: inline-flex;
+    align-items: center;
+}
+body#templates #content .card-body > .column_count {
+    color: #7F7F7F;
+    margin-left: 24px;
+}
+body#templates #content .card-body > .column_count > i {
+    margin-right: 4px;
+}
+body#templates #content .card-body > .column_name {
+    font-family: "Commissioner", sans-serif;
+    font-weight: 500;
+    font-size: 18px;
+    line-height: 24px;
+    letter-spacing: 0%;
+    color: #09583D;
+    margin-bottom: 8px;
+}
+body#templates #content .card-body > .column_desc:hover {
+    overflow-y: auto;
+    scrollbar-width: thin;
+    scrollbar-color: #808080 transparent;
+}
+body#templates #content .card-body > .column_desc {
+    margin-top: 0px;
+    margin-bottom: 24px !important;
+}
+body#templates #content .card-body > .card-actions {
+    margin-top: 0px;
+}
+body#templates #content .card-body > .column_rating {
+    font-size: 16px;
+}
+body#templates #content .main-body-content:not(.Dashboard) {
+    margin-top: 24px !important;
+}
+body#templates input,
+body#templates select,
+body#templates .filters .chosen-container .chosen-single {
+    min-height: 40px !important;
+    height: 40px !important;
+}
+body#templates .filters .filter-cell.filter_0:after {
+    content: '\f002';
+    position: absolute;
+    top: 50%;
+    left: 10px;
+    transform: translateY(-50%);
+    font: normal normal normal 14px / 1 FontAwesome;
+    font-size: 15px;
+    color: #03543D;
+}
+@media (max-width: 766px) {
+    body#templates .filters .filter-cell.filter_0:after {
+        bottom: 25%;
+        transform: translateY(25%);
+    }
+}
+body#templates .filters .filter-cell.filter_0 input:focus {
+    border: 1px solid #009265 !important;
+    outline-color: var(--theme-sidebar-active-icon) !important;
+}
+body#templates #dataList_list_appList .filters {
+    margin-bottom: 32px;
+}
+body#templates .dataList .filters > .filter-cell {
+    margin-bottom: 0px;
+    margin-left: 0px;
+}
+/* Admin Page Stylings */
+body#admin h3#admin_header {
+    margin-bottom: 28px;
+}
+body#admin .value-number {
+    font-family: "Commissioner", sans-serif;
+}
+.apps-data:has(li[data-container="formSection"].active) #formSection, 
+.apps-data:has(li[data-container="listSection"].active) #listSection, 
+.apps-data:has(li[data-container="uiSection"].active) #uiSection {
+    -webkit-animation: fadeIn 1s;
+    animation: fadeIn 1s;
+}
+body#admin .ContainerComponent.active > *,
+body#admin .ContainerComponent.active > #performance_column > .row > .col > * {
+    position: relative;
+    background: #FFFFFF;
+    border: 1px solid #DAE6E2;
+    border-radius: 16px;
+    margin-bottom: 16px;
+}
+@media (min-width: 577px) {
+    body#admin .ContainerComponent.active > #performance_column > .row > .col > * {
+        margin-bottom: 0px;
+        height: 100%;
+    }
+}
+body#admin .ContainerComponent.active > * a.reload{
+    display: none;
+}
+body#admin .ContainerComponent.active *:hover > a.reload{
+    display: block;
+    position: absolute;
+    color: #808080 !important;
+    right: 10px;
+    top: 1px;
+    font-size: 14px;
+}
+body#admin .ContainerComponent.active > #performance_column {
+    background: none;
+    border: none;
+    margin-bottom: 16px;
+}
+body#admin #performance_column a.btn {
+    width: fit-content;
+    font-family: "HindVadodara", sans-serif;
+    font-weight: 500;
+    font-size: 16px;
+    line-height: 24px;
+}
+body#admin #performance_column .card-body.row > *:not(a.btn) {
+    padding-left: 0px !important;
+    padding-right: 0px !important;
+}
+body#admin #performance_column .card-body,
+body#admin .apps-data .total-section > div > span:first-child {
+    font-family: "Commissioner", sans-serif;
+    font-weight: 400;
+    line-height: 1;
+    letter-spacing: 0%;
+    color: #09583D;
+    margin-bottom: 8px;
+}
+body#admin #performance_column .card-body > div:first-of-type > span:last-of-type{
+    font-family: "HindVadodara", sans-serif;
+    font-style: Medium;
+    font-size: 14px;
+    line-height: 20px;
+    letter-spacing: 0%;
+    vertical-align: middle;
+    font-weight: 500;
+}
+body#admin #performance_column .header-title {
+    color: #03543D;
+}
+body#admin #performance_column .card-body > div:first-of-type > span:first-of-type,
+body#admin .apps-data .total-section > div > span:first-child {
+    color: #009265;
+}
+body#admin #performance_column .card-body > div.group-container:last-of-type {
+    padding-top: 16px;
+    margin-top: 16px;
+    border-top: 1px solid #DAE6E2
+}
+body#admin #performance_column .card-body > div.group-container {
+    font-family: "Commissioner", sans-serif;
+    font-weight: 500;
+    font-size: 18px;
+    line-height: 24px;
+    vertical-align: middle;
+}
+body#admin .header-tag > .badge {
+    height: 32px;
+    padding: 10px 16px;
+    background-color: #DAE6E2;
+    color: #092E28;
+    border-radius: 16px;
+    width: fit-content;
+    font-weight: 600;
+    font-size: 14px;
+}
+@media (max-width: 768px) {
+    body:not(.home) #content main > *:not(.category-label-header, .breadcrumb, .quickEdit) {
+        margin-left: 12.5px !important;
+        margin-right: 12.5px !important ;
+    }
+}
+body#admin #publishedUnpublishedAppSection .datalist-body-content .cards.row > * {
+    pointer-events: none;
+}
+body#admin #publishedUnpublishedAppSection .datalist-body-content .cards.row > * {
+    padding: 0px !important;
+}
+body#admin #publishedUnpublishedAppSection .datalist-body-content .table-wrapper {
+    padding-bottom: 0px;
+}
+body#admin #publishedUnpublishedAppSection .datalist-body-content .table-wrapper > .cards.row {
+    row-gap: 56px;
+}
+body#admin #publishedUnpublishedAppSection .datalist-body-content .cards.row > *.hide {
+    display: none;
+}
+body#admin #publishedUnpublishedAppSection .datalist-body-content .cards.row > * .card {
+    border: none;
+}
+body#admin #publishedUnpublishedAppSection .datalist-body-content .cards.row > * .card > .card-body > .ph_column_title,
+body#admin #publishedUnpublishedAppSection .datalist-body-content .template_pagelinks {
+    display: none;
+}
+body#admin #publishedUnpublishedAppSection .datalist-body-content .cards.row > * .card > .card-body {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 0px;
+}
+body#admin #publishedUnpublishedAppSection .datalist-body-content .cards.row > * .card > .card-body > .ph_columns {
+    text-align: center;
+}
+body#admin #publishedUnpublishedAppSection .datalist-body-content .cards.row > * .card > .card-body > .column_imageUrl {
+    margin-bottom: 16px !important;
+}
+body#admin #publishedUnpublishedAppSection .datalist-body-content .cards.row > * .card > .card-body > .column_imageUrl > div {
+    border-radius: 18px;
+}
+body#admin #publishedUnpublishedAppSection .datalist-body-content .cards.row > * .card > .card-body > .column_apps_name {
+    margin-bottom: 0px !important;
+    color: #092E28;
+}
+body#admin #publishedUnpublishedAppSection .datalist-body-content .cards.row > * .card > .card-body > .column_version {
+    position: absolute;
+    left: calc(50% + 32px + 5px);
+    top: -24px;
+    margin-bottom: 0px !important;
+    background-color: #DAE6E2;
+    color: #008C60;
+    padding: 4px 12px;
+    border-radius: 16px;
+    
+    font-family: "HindVadodara", sans-serif;
+    font-weight: 600;
+    font-size: 14px;
+    line-height: 20px;
+    vertical-align: middle;
+}
+body#admin #users_section thead th.column_header,
+body#admin #users_section .dataList.size_sm > form > .table-wrapper > table.responsivetable > tbody > tr > td > .cell-label,
+.dataList thead th a,
+.dataList thead th, 
+.grid table th {
+    color: #98B3A9;
+}
+body#admin #users_section .column_active > a.btn {
+    background-color: #DAE6E2;
+    border-radius: 16px;
+    height: 30px;
+    padding: 2px 12px;
+    color: #008C60;
+    cursor: default;
+    font-weight: 600;
+}
+body#admin #users_section .pagebanner,
+body#admin #users_section .exportlinks,
+body#admin #users_section .exportlinks > a,
+body#admin #users_section .dataList tbody tr > td,
+.dataList td, 
+.dataList td > a,
+.dataList .pagebanner,
+.dataList .exportlinks,
+.dataList .exportlinks > a {
+    color: #092E28;
+}
+.dataList .exportlinks > a:hover,
+body#admin #users_section .exportlinks > a:hover {
+    color: #008C60;
+}
+body#admin #users_section .filters > span.filter-cell:last-of-type input,
+body#admin #users_section .filter_form a.btn {
+    min-height: 32px;
+    height: 32px;
+    border-radius: 16px !important;
+    padding: 2px 12px !important;
+    margin-left: 10px;
+    margin-bottom: 10px;
+}
+body#admin #users_section .filter_form a.btn {
+    background-color: #009265;
+}
+body#admin ul#user-tab-nav {
+    overflow-x: auto !important;
+}
+body#admin #users_section input[type="checkbox"]:checked {
+    background-color: #98B3A9;
+}
+a.mobile_search_trigger {
+    color: #09583D;
+    font-size: 14px;
+}
+a.mobile_search_trigger > i {
+    font-size: 18px;
+}
+body#admin #users_section .table-wrapper > table.responsivetable > tbody > tr > td.select_checkbox > label >:checked + i {
+    box-shadow: 0px 0px 8px 0 #98b3a9cd !important;
+}
+body#admin #users_section .table-wrapper .select_checkbox {
+    display: none;
+}
+body#admin #users_section span.value > span.description {
+    font-family: "HindVadodara", sans-serif;
+}
+@media (min-width: 767px) {
+    body#admin #users_section .filters {
+        display: flex;
+        align-items: center;
+        justify-content: flex-end;
+        flex-wrap: wrap;
+    }
+}
+@media (max-width: 767px) {
+    .app-summary {
+        row-gap: 20px;
+    }
+    .app-summary > * {
+        flex: 1 1 100%;
+        justify-content: center !important;
+    }
+    body#admin #users_section .filters a.btn {
+        width: 100%;
+        margin-left: 0px;
+    }
+
+    body#admin #users_section .mobile_search_trigger {
+        display: inline-block;
+    }
+
+    body#admin #users_section .filter_form {
+        display: flex;
+        align-items: center;
+        justify-content: flex-end;
+    }
+    body#templates input {
+        width: 100% !important;
+    }
+}
+@media (max-width: 400px) {
+    body#admin div.user-heading .header-tag .description {
+        display: none;
+    }
+}
+/* RTL Stylings */
+body.rtl:not(.horizontal_menu) #sidebar .nav > li > a.menu-link > span:not(.badge) {
+    float: none;
+    text-align: center;
+}
+body.rtl#design_app #design_app_heading > .row > .col:first-of-type {
+    text-align: right;
+}
+body.rtl#design_app #perPageView > .row > .col .col-description > .actions > a.btn, 
+body.rtl#design_app #perPageView > .row > .col .col-description > .actions > .dropdown {
+    margin-left: 40px;
+    margin-right: 0px !important;
+}
+body.rtl#design_app #perPageView > .row > .col .col-description > .actions > a:not(:first-child) > span {
+    margin-left: 16px;
+    margin-right: 0px;
+}
+body.rtl#design_app #perPageView .actions i:hover {
+    transform: rotate(180deg) scale(1.2);
+}
+body.rtl#design_app #perPageView .actions i,
+body.rtl#design_app #design_nav i {
+    transform: rotate(180deg);
+}
+body.rtl#design_app #design_nav .design-app-arrows {
+    display: flex;
+    justify-content: flex-end;
+    gap: 25px;
+}
+body.rtl#design_app #design_nav .design-app-arrows > i:first-of-type {
+    margin-right: 25px;
+}
+body.rtl#design_app .card .card-body .card-actions > a,
+body.rtl#templates #content .card-body > .card-actions > a.link_rowAction_0, 
+body.rtl#admin #performance_column a.btn {
+    margin-left: 28px !important;
+    margin-right: 0px !important;
+}
+body.rtl #template_header,
+body.rtl #template_header_subtitle {
+    text-align: right;
+}
+body.rtl#templates #dataList_list_appList .table-wrapper .ph_columns.column_img {
+    display: block !important;
+}
+body.rtl#templates #content .cards > :not(:last-child) {
+    padding-left: 16px !important;
+    padding-right: 0px !important;
+}
+body.rtl#templates #content .card-body > .column_count > i {
+    margin-left: 4px;
+    margin-right: 0px;
+}
+body.rtl#templates .filters .filter-cell.filter_0::after {
+    right: 10px;
+    left: initial;
+}
+body.rtl#templates {
+    direction: ltr;
+}
+body.rtl#templates #page {
+    direction: rtl;
+}
+body.rtl#admin #monitor-summary .header-title {
+    padding-left: 16px;
+    margin-left: 16px;
+    padding-right: 0px !important;
+    margin-right: 0px !important;
+    border-right: none !important;
+    border-left: 1px solid #DAE6E2;
+}
+body.rtl#admin #monitor-summary .stats-info > :nth-child(2) {
+    margin-right: 12px;
+    margin-left: 0px !important;
+}
+body.rtl#admin #monitor-summary .stats-info > :nth-child(3) {
+    margin-right: 32px;
+    margin-left: 0px !important;
+}
+body.rtl#admin #monitor-summary .stats-info > :nth-child(4) {
+    margin-right: 32px;
+    margin-left: 0px !important;
+}
+body.rtl#admin #monitor-summary .stats-info > :nth-child(5) {
+    padding-left: 40px;
+    padding-right: 0px !important;
+    margin-right: 32px;
+    margin-left: 0px !important;
+    border-right: none !important;
+    border-left: 1px solid #09583D;
+}
+@media (max-width: 640px) {
+    body.rtl#admin #monitor-summary .stats-info > :nth-child(5) {
+        padding-left: none;
+        border-left: none;
+    }
+}
+body.rtl#admin #performance_column a.btn {
+    height: fit-content;
+    margin-left: 0px !important;
+}
+body.rtl#admin .app-summary .header-title {
+    margin-right: 0px !important;
+    margin-left: 16px;
+    border-left: 1px solid #DAE6E2 !important;
+    border-right: none !important;
+    padding-right: 0px !important;
+    padding-left: 16px;
+}
+body.rtl#admin .app-summary #publishedAppCountVal + p,
+body.rtl#admin .app-summary #unpublishedAppCountVal + p {
+    margin-right: 12px;
+    margin-left: 0px !important;
+}
+body.rtl#admin .app-summary #unpublishedAppCountVal {
+    margin-right: 32px;
+    margin-left: 0px !important;
+}
+body.rtl#admin .app-summary #create-btn,
+body.rtl#admin .app-summary #import-btn {
+    margin-left: 0px !important;
+    margin-right: 16px !important;
+}
+body.rtl .app-summary .search-bar > .fas {
+    right: 18px;
+    left: unset;
+}
+body.rtl#admin .app-summary .search-bar > input {
+    padding-right: 45px;
+    padding-left: initial;
+}
+@media (max-width: 650px) {
+    body.rtl#admin .app-summary .search-bar > input {
+        padding-right: 25px;
+    }
+    body.rtl#admin .app-summary .search-bar > .fas {
+        right: 5px;
+    }
+}
+@media (max-width: 400px) {
+    body.rtl .app-summary .fas.fa-cloud-arrow-up, 
+    body.rtl .app-summary .fas.fa-cloud-arrow-down {
+        margin-right: 5px;
+        margin-left: 0px;
+    }
+}
+body.rtl#admin ul#admin-nav,
+body.rtl#admin #publishedUnpublishedAppSection,
+body.rtl#admin #publishedUnpublishedAppSection .datalist-body-content .table-wrapper > .cards.row {
+    direction: rtl;
+}
+body.rtl#admin #publishedUnpublishedAppSection ul.published-unpublished-apps {
+    padding-right: 0px !important;
+    padding-left: 0px;
+}
+body.rtl #publishedUnpublishedAppSection:has(li[data-container="publishedSection"].active) #publishedAppViewList, 
+body.rtl #publishedUnpublishedAppSection:has(li[data-container="unpublishedSection"].active) #unpublishedAppViewList {
+    padding-right: 40px;
+    padding-left: 0px !important;
+}
+body.rtl#admin #publishedUnpublishedAppSection .datalist-body-content .cards.row > * .card > .card-body > .column_version {
+    left: initial;
+    right: calc(50% + 32px + 5px);
+}
+body.rtl#admin .InformationTileComponent .float-right {
+    text-align: left !important;
+}
+@media (max-width: 576px) {
+    body.rtl #publishedUnpublishedAppSection:has(li[data-container="publishedSection"].active) #publishedAppViewList, 
+    body.rtl #publishedUnpublishedAppSection:has(li[data-container="unpublishedSection"].active) #unpublishedAppViewList {
+        padding-right: 0px;
+    }
 }
 
 #designApp{
@@ -562,43 +1609,17 @@ body#home #home_column .row .p-2{
     color: var(--jgt-tpgh-colorTextDescription) !important;
     font-size: 1rem !important;
 }
-#design_app .card .column_name {
-    font-size: 17px;
-    font-weight: 600;
-    color: var(--jgt-tpgh-colorTextHeading);
-}
 #dataList_list_newTemplate div.ph_columns.column_1.column_body.column_desc.body_column_1.card-text.mb-2 > p:nth-child(1){
     display: none;
 }
 #design_app .card .column_desc {
     max-height:65px;
     overflow-y: auto;
-}
-#design_app .card .card-body .card-actions {
-    position: absolute;
-    bottom: 0;
-    display: flex;
-    width: 100%;
-    gap: 10px;
-}
-#design_app .card .card-body .card-actions a{
-    flex: 1 1 100%;
-    height: 40px;
-    display: inline-flex !important;
-    flex-direction: row;
-    justify-content: center;
-    align-items: center;
-    gap: 8px;
-    padding: 10px 32px !important;
-    object-fit: contain;
-    border-radius: 16px !important;
-    margin: 0 !important;
-    font-size: 16px;
-}
-#design_app #newTemplate.main-body-content {
-    padding: 0 !important;
-    position: relative;
-    box-shadow: none;
+    margin-bottom: 16px !important;
+
+    overflow-y: auto;
+    scrollbar-width: thin;
+    scrollbar-color: #808080 transparent;
 }
 #design_app .dataList#dataList_list_newTemplate .card {
     margin-top:0 !important;
@@ -662,7 +1683,7 @@ body#home .dataList#dataList_applist .appIcon {
 body#home .dataList#dataList_applist .appIcon .card-img-top {
     width: 100px !important;
     height: 100px !important;
-    border-radius: 9px !important;
+    border-radius: 18px !important;
     margin-bottom: 0px !important;
 }
 
@@ -673,6 +1694,7 @@ body#home .dataList#dataList_applist .appIcon .column_1,
     padding: 4px 12px !important;
     border-radius: 16px !important;
     color: #009265 !important;
+    font-size: 14px !important;
 }
 
 body#home .dataList#dataList_applist .appIcon .column_6,
@@ -698,11 +1720,12 @@ body#home .dataList .table-wrapper {
 
 body#home .dataList#dataList_applist .appIcon .column_2 {
     margin-bottom: 16px !important;
-    font-weight: 600 !important;
+    font-weight: 500 !important;
     font-family: "HindVadodara", sans-serif !important;
     color: #092E28 !important;
     margin-top: auto;
     margin-bottom: auto !important;
+    line-height: 24px !important;
 }
 
 body#home #dataList_applist .card-icon:hover .card-actions a.rowAction_0 {
@@ -1203,9 +2226,6 @@ body.dark-mode#templates #content .card-body{
 body.dark-mode .dataList#dataList_list_appList .column_0{
     color: var(--theme-sidebar-badge-text) !important;
 }
-body.dark-mode #dataList_list_appList .column_desc:after {
-    background-image: linear-gradient(to top, #1e1e2d, #ffffff00);
-}
 body.dark-mode #dataList_list_appList > form:nth-child(6) > div > div.cards.row > div > div > div > div.card-actions > a.ph_rowActions.rowAction_1.rowaction_body.body_rowAction_1.btn.btn-sm.btn-light.link_rowAction_1{
     background-color: var(--theme-secondary-button-bg) !important;
 }
@@ -1344,14 +2364,6 @@ body #sidebar .user-menu>li>a>small {
         max-width: 20%;
     }
 }
-@media (max-width: 1680px) {
-    #design_app .card .card-body .card-actions {
-        flex-direction: column;
-    }
-    #design_app .card .card-body .card-actions a{
-        margin: 0px !important;
-    }
-}
 
 @media (min-width: 1280px) {
     body #sidebar {
@@ -1394,6 +2406,9 @@ body #sidebar .user-menu>li>a>small {
     #sidebar #category-container {
         gap: 24px;
     }
+    body #sidebar .nav>li.active>a.menu-link>span:not(.badge) {
+        row-gap: 8px;
+    }
     body #sidebar .nav>li>a.menu-link>span:not(.badge) {
         display: flex;
         flex-direction: column;
@@ -1421,10 +2436,10 @@ body #sidebar .user-menu>li>a>small {
         padding: 0;
     }
     body #sidebar .nav>li.active.category>a>span>i {
-        position: unset;
         height: 32px;
         width: 32px;
         border-radius: 50%;
+        position: relative;
         background-color: var(--theme-sidebar-active-link-bg);
     }
     body #sidebar .nav li > a {
@@ -1623,9 +2638,12 @@ body#home #appHeader {
 }
 .appCenterLabel{
     color: #092E28;
-    font-size: 16px;
-    font-family: "HindVadodara", sans-serif;
-    font-weight: 600;
+    font-size: 18px;
+    font-family: "Commissioner", sans-serif;
+    font-weight: 500;
+    padding-bottom: 18px;
+    border-bottom: 1px solid #003A70;
+    width: fit-content;
 }
 .page-heading{
     padding-left: 0px;
@@ -1767,6 +2785,19 @@ body#home.rtl .more-action{
         font-size: 16px;
     }
 }
+body.adminBarShown div#page > ul#category-container {
+    bottom: 35px;
+    margin-top: calc(16px + 35px);
+}
+body .renew-banner .mobile-view {
+    display: none;
+}
+@media screen and (max-width: 680px), (device-width: 1024px) and (device-height: 600px) {
+    body.adminBarShown div#page > ul#category-container {
+        bottom: 45px;
+        margin-top: calc(16px + 45px);
+    }
+}
 @media (max-width: 1280px) {
     header.navbar .container-fluid > #header-link {
         text-align: left;
@@ -1774,6 +2805,9 @@ body#home.rtl .more-action{
     #sidebar,
     #sidebar-trigger {
         display: none;
+    }
+    ul#category-container li.category.first i::before {
+        -webkit-text-stroke-width: 2px;
     }
     #page {
         padding-left: 16px;
@@ -1814,6 +2848,10 @@ body#home.rtl .more-action{
     }
     div#page > ul#category-container > li.category > a > span > i {
         color: #39414A;
+    }
+    div#page > ul#category-container > li.category > a > span svg {
+        height: 26px;
+        margin: 5px 0px;
     }
     div#page > ul#category-container > li.category:not(.active) > a > span > i {
         font-size: 24px;
@@ -1878,6 +2916,38 @@ body#home.rtl .more-action{
         padding-inline: 40px;
     }
 }
+@media (max-width: 1100px) {
+    body .renew-banner .mobile-view {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        padding: 8px 14px;
+        font-size: 0.95rem;
+        font-weight: 600;
+        background-color: #E6F4EF;
+        color: #09583D;
+        border: 1px solid #CDE5D9;
+        border-radius: 999px;
+    }
+    body .renew-banner img {
+        display: none;
+    }
+}
+@media (min-width: 768px) and (max-width:1100px) {
+    body:not(.rtl) .renew-banner {
+        transform: translateX(-80%);
+    }
+}
+@media (max-width: 767.9px) {
+    body .renew-banner {
+        position: relative;
+        left: initial;
+        transform: initial;
+    }
+    ul#category-container li.category.first i::before {
+        -webkit-text-stroke-width: 1.6px;
+    }
+}
 @media (max-width: 991px) {
     .builder-style-67a8e69e-2285-4ee2-9e2d-e23dd82d65fd {
         padding-bottom: 16px !important;
@@ -1934,6 +3004,12 @@ body#home.rtl .more-action{
     div#page > ul#category-container > li.category.active > a > span > i {
         font-size: 18px;
         padding: 16px;
+    }
+    div#page > ul#category-container > li.category > a > span svg {
+        height: 20px;
+    }
+    div#page > ul#category-container > li.category > a > span svg {
+        margin: 4px 0px;
     }
     #lowCodeBannerDesktop,
     #lowCodeBannerTablet {
@@ -2059,8 +3135,11 @@ body#home.rtl .more-action{
     body#home .dataList#dataList_applist .appIcon .column_2 {
         font-size: 14px !important;
     }
-}
 
+    body:has(.renew-banner) #header-link {
+        display: none;
+    }
+}
 @media (max-width: 400px) { 
     body#home #home_column div#dataList_applist .row.cards {
         grid-template-columns: repeat(2, 1fr);
@@ -2068,6 +3147,18 @@ body#home.rtl .more-action{
 
     body#home #dataList_applist .card-icon:hover .card-actions a.rowAction_0 {
         right: 20px !important;
+    }
+    body#home #taskCounter > #viewTasks > span {
+        display: none;
+    }
+}
+
+@media (max-width: 330px) {
+    header.navbar .container-fluid > #header-link {
+        font-size: 12px;
+    }
+    header.navbar .container-fluid > img {
+        width: 50px;
     }
 }
 body.rtl #bannerLabel,
@@ -2079,7 +3170,6 @@ body.rtl#admin #content.page_content,
 body.rtl #header-link,
 body.rtl#home div.appListNav,   
 body.rtl#home #bannerSlideshow,
-body.rtl#home #home_column div#dataList_applist .row.cards,
 body.rtl #taskCounter > .taskReminder,
 body.rtl #taskCounter > #viewTasks {
     direction: ltr;
@@ -2089,6 +3179,7 @@ body.rtl#admin .InformationTileComponent{
 }
 body.rtl .InformationTileComponent .header-tag{
     text-align: left !important;
+    padding: 0px !important;
 }
 
 body.rtl  #pc-B2E40400A1B0460E2EAD915F31D05A40{
@@ -2118,9 +3209,6 @@ body.rtl #sidebar .user-menu>li>a>span{
 }
 body.sidebar-minimized.rtl:not(.horizontal_menu) #sidebar .user-menu>li>a>img {
     right: 8px;
-}
-body.rtl#admin .InformationTileComponent .float-right {
-    float: left !important;
 }
 body.rtl #navigation li.mm-profile.user-link small{
     float: none !important;

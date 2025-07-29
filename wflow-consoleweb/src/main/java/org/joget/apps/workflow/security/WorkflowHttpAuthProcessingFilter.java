@@ -139,7 +139,7 @@ public class WorkflowHttpAuthProcessingFilter extends UsernamePasswordAuthentica
             // request contains j_username, force authentication
             requiresAuth = true;
         } else if (us != null) {
-            if (us.getAuthenticateAllApi() && uri.startsWith("/web/json/") && (!uri.startsWith("/web/json/plugin") || uri.startsWith("/web/json/plugin/list")) && !uri.startsWith("/web/json/directory/user/sso") && !uri.startsWith("/web/json/workflow/currentUsername") && !uri.startsWith("/web/json/apps/published/userviews") && isAnonymous) {
+            if (us.getAuthenticateAllApi() && uri.startsWith("/web/json/") && (!uri.startsWith("/web/json/plugin") || uri.startsWith("/web/json/plugin/list")) && !uri.startsWith("/web/json/directory/user/sso") && !uri.startsWith("/web/json/workflow/currentUsername") && !uri.startsWith("/web/json/apps/published/userviews") && !uri.startsWith("/web/json/apps/unpublished/userviews") && isAnonymous) {
                 // authenticateAllApi flag is true, so force authentication for all json calls except for plugin, sso, and published userview calls
                 requiresAuth = true;
             } else if (us.getForceSessionTimeout() && !isAnonymous) {
@@ -149,7 +149,7 @@ public class WorkflowHttpAuthProcessingFilter extends UsernamePasswordAuthentica
         }
         
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        if (!requiresAuth && (!isAnonymous || (isAnonymous && auth != null)) && !uri.startsWith("/web/ulogin") && !uri.startsWith("/web/login") && (!uri.startsWith("/web/json/plugin") || uri.startsWith("/web/json/plugin/list")) && !uri.startsWith("/web/json/directory/user/sso") && !uri.startsWith("/web/json/workflow/currentUsername") && !uri.startsWith("/web/json/apps/published/userviews")) {
+        if (!requiresAuth && (!isAnonymous || (isAnonymous && auth != null)) && !uri.startsWith("/web/ulogin") && !uri.startsWith("/web/login") && (!uri.startsWith("/web/json/plugin") || uri.startsWith("/web/json/plugin/list")) && !uri.startsWith("/web/json/directory/user/sso") && !uri.startsWith("/web/json/workflow/currentUsername") && !uri.startsWith("/web/json/apps/published/userviews") && !uri.startsWith("/web/json/apps/unpublished/userviews")) {
             User user = workflowUserManager.getCurrentUser();
             if (user == null || user.getActive() == 0) {
                 requiresAuth = true;
