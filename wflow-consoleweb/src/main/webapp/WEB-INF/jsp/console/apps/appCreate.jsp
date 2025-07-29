@@ -106,6 +106,11 @@
             .pluginConfigEditor .property-editor-container a.btn:not([class^=chosen]) {
                 background-color: #d8d8d8;
             }
+            @media (max-width: 767px) {
+                .type-icon li {
+                    margin-bottom: 5px;
+                }
+            }
         </style>    
         <c:url var="url" value="" />
         <c:set var="currentUserName" value="<%= WorkflowUtil.getCurrentUsername() %>"/>
