@@ -784,7 +784,7 @@ body.rtl .property-input a.elementHelplink{
 }
 body.rtl .pluginConfig .builder-link a.openbuilder,
 body.rtl .pluginConfig .property-input a.elementHelplink{
-    left: 38.5vw;
+    left: 50px;
     top: 10px;
 }
 body.rtl .property-type-selectbox a.builderAddNew{
