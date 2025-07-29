@@ -1,6 +1,23 @@
 $(document).ready(function() {
     $("#sidebar-trigger").find("img#light-thumbnail").attr('src', UI.base + '/images/dx9AppCenter/thumbnail_bar.svg');
-    
+
+    setTimeout(function(){
+        if($(".systemAlertMessage.passwordExpired").length === 1 && $(".systemAlertMessage").length === 1) {
+            $("body").addClass("systemAlertPresent");
+        }
+
+        if ($(".systemAlertMessage.passwordExpired").length === 1) {
+            $("header.navbar .container-fluid > #help-container").after(`
+                <a class='renew-banner' target='_blank' href='https://www.jogetcloud.com/subscribe-on-demand.html'>
+                    <img class='desktop-view' src='`  + UI.base + `/images/dx9AppCenter/renewBanner.svg'>
+                    <div class='mobile-view'>
+                        <i class='fas fa-play'></i> Renew Now
+                    </div>
+                </a>
+            `);
+        }
+    }, 300)
+
     $("div#main #header-link").prepend("<img src='" + UI.base + "/images/dx9AppCenter/headerLogo.svg'>");
 
     setTimeout(function(){
@@ -46,10 +63,11 @@ $(document).ready(function() {
     })
 
     $(window).resize(function(){
-        // $("#content.page_content main").mCustomScrollbar('destroy');
         if ($(window).outerWidth() < 1280) {
             if ($("div#page > ul#category-container").length === 0) {
-                $("footer").after($("ul#category-container").clone());
+                var $cloneSidebar = $("ul#category-container").clone();
+                
+                $("footer").after($cloneSidebar);
 
                 $("div#page > ul#category-container > li.category").on("click", function() {
                     $(this).siblings("li.active").removeClass("active");
@@ -156,6 +174,153 @@ $(document).ready(function() {
                 $(this).parents(".data-row").attr('style', style);
             }); 
         }
+
+        if ($("body#design_app").length === 1) {
+            const $arrowContainer = $("body#design_app .design-app-arrows");
+
+            $("ul#nav > li").eq(0).addClass("active");
+            $("body#design_app").find("div#" + $("ul#nav > li.active").attr("data-target")).addClass("active");
+
+            $("ul#nav > li").off("click").on("click", function() {
+                $("body#design_app").find("div#" + $(this).parent().find("li.active").attr("data-target")).removeClass("active");
+                $(this).parent().find("li.active").removeClass("active");
+                
+                $(this).addClass("active");
+                $("body#design_app").find("div#" + $(this).attr("data-target")).addClass("active");
+
+                resetArrows($arrowContainer);
+            })
+
+            // Initialize the page View
+            $(".design-view-options > a#per-view").addClass("active");
+            $(".design-view-options > a:not('#view-templates')").off("click").on("click", function(){
+                $(".design-view-options > a.active").toggleClass("active");
+                $(this).toggleClass("active");
+            }) 
+
+            $("body#design_app #perPageView > .row > .col:first-child").addClass("show");
+
+            function resetArrows(arrowContainer) {
+                const $activeContainer = $(".ContainerComponent.active");
+
+                if ($activeContainer.length > 0) {
+                    const $pages = $activeContainer.children(':not(style)');
+                    const totalPages = $pages.length;
+                    const currentIndex = $pages.index($pages.filter(':not(.hide)').first());
+
+                    if (totalPages === 1 || $activeContainer.css('display') !== 'grid') {
+                        $(arrowContainer).find(".fas").addClass("disabled");
+                    } else {
+                        $(arrowContainer).find(".fas").removeClass("disabled");
+
+                        if (currentIndex === 0) {
+                            $(arrowContainer).find(".fas#left-arrow").addClass("disabled");
+                        }
+
+                        if (currentIndex === totalPages - 1) {
+                            $(arrowContainer).find(".fas#right-arrow").addClass("disabled");
+                        }
+                    }
+                }
+            }
+
+            const $leftArr = $arrowContainer.find("#left-arrow");
+            const $rightArr = $arrowContainer.find("#right-arrow");
+
+            $leftArr.off("click").on("click", function(){
+                const $activeContainer = $(".ContainerComponent.active");
+                const $pages = $activeContainer.children(':not(style)');
+                const currentIndex = $pages.index($pages.filter(':not(.hide)').first());
+
+                if (currentIndex > 0  && $pages.length !== 1) {
+                    $pages.eq(currentIndex).addClass('hide');
+                    $pages.eq(currentIndex - 1).removeClass('hide slide-right slide-left');
+                }
+
+                resetArrows($arrowContainer);
+            });
+
+            $rightArr.off("click").on("click", function(){
+
+                const $activeContainer = $(".ContainerComponent.active");
+                const $pages = $activeContainer.children(':not(style)');
+                const currentIndex = $pages.index($pages.filter(':not(.hide)').first());
+
+                if (currentIndex < $pages.length - 1 && $pages.length !== 1) {
+                    $pages.eq(currentIndex).addClass('hide');
+                    $pages.eq(currentIndex + 1).removeClass('hide slide-right slide-left');
+                }
+
+                resetArrows($arrowContainer);
+            });
+
+            resetArrows($arrowContainer);
+
+            // Nav Logic
+            $(window).resize(function(){
+                if ($(window).outerWidth() >= 991) {
+                    $(".ContainerComponent").each(function(){
+                        if ($(this).css('display') === 'grid' && !$(".design-app-arrows > #right-arrow").hasClass("disabled")) {
+                            $(this).children(':not(style)').not(':first-child').addClass("hide");
+                        }
+                    });
+                } else {
+                    $(".ContainerComponent.active > .ColumnsComponent").removeClass("hide");
+                }
+
+                resetArrows($arrowContainer);
+            });
+        }
+
+        if ($("body#admin").length === 1) {
+            $("ul#admin-nav > li").eq(0).addClass("active");
+            $("body#admin").find("div#" + $("ul#admin-nav > li.active").attr("data-target")).addClass("active");
+
+            $("ul#admin-nav > li").off("click").on("click", function() {
+                $("body#admin").find("div#" + $(this).parent().find("li.active").attr("data-target")).removeClass("active");
+                $(this).parent().find("li.active").removeClass("active");
+
+                $(this).addClass("active");
+                $("body#admin").find("div#" + $(this).attr("data-target")).addClass("active");
+            })
+
+            $("body#admin #users_section .filters > span.filter-cell:last-of-type input").off("click.filter").on("click.filter", function() {
+                localStorage.setItem("last-admin-tab", $(this).closest("#users_section").find("#user-tab-nav > li.active").attr('id'))
+            })
+            
+            $("ul#user-tab-nav > li").off("click").on("click", function() {
+                $(this).parent().find("li.active").removeClass("active");
+                $(this).addClass("active");
+            })
+
+            if(localStorage.getItem("last-admin-tab") !== null) {
+                const navId = localStorage.getItem("last-admin-tab");
+
+                $("ul#user-tab-nav > li#" + navId).click();
+                $("ul#admin-nav > li:last-of-type").click();
+
+                setTimeout(function(){
+                    localStorage.removeItem("last-admin-tab");
+                }, 500);
+            } else {
+                $("ul#user-tab-nav > li:first-of-type").click();
+            }
+
+            $(window).off("resize.filter").on("resize.filter", function(){
+                if ($(window).outerWidth() < 767) {
+                    const $createBtn = $("#users_section .filters a.btn");
+                    $createBtn.each(function(index, item){
+                        $(item).appendTo($(item).closest(".filter_form"))
+                    })
+                } else {
+                    const $createBtn = $("#users_section .filter_form > a.btn");
+                    $createBtn.each(function(index, item){
+                        $(item).appendTo($(item).closest(".filter_form").find(".filters"))
+                    })
+                }
+            })
+        }
+
         if ($('body#home').length === 1) {
             if ($('#dataList_applist .card-icon').length <= 0) {
                 if ($('.login_link').length === 1) {

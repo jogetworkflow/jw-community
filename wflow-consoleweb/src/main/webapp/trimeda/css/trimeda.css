@@ -3,6 +3,35 @@ html, body {
     height: 100%;
 }
 
+body .systemAlert {
+    margin-top: var(--header-height);
+    border-radius: 16px;
+    margin-bottom: 8px;
+    margin-right: 16px;
+}
+
+body.rtl .systemAlert {
+    margin-left: 16px;
+    margin-right: 0px;
+}
+
+body:has(.systemAlert):not(.embeded, .horizontal_menu) #content.page_content {
+    margin-top:0px !important;
+}
+
+@media (max-width: 1280px) {
+    body .systemAlert,
+    body.rtl .systemAlert {
+        margin-left: 16px;
+        margin-right: 16px;
+    }
+}
+@media (max-width: 766px) {
+    body .systemAlert {
+        margin-top: 0px;
+    }
+}
+
 body:not(.dark-mode) {
     --primary-text-color:var(--theme-font-color);
     --button-background:var(--theme-button-bg);
@@ -154,7 +183,7 @@ button.btn-danger,
 }
 
 h1, h2 {
-    font-family: "Commisioner", sans-serif;
+    font-family: "Commissioner", sans-serif;
     font-weight: 500;
     font-size: 21px;
     line-height: 1.33;
@@ -169,7 +198,7 @@ h6,
 .dataList span.pagelinks a, 
 .dataList span.pagelinks strong, 
 .dataList span.pagelinks > span {
-    font-family: "Commisioner", sans-serif;
+    font-family: "Commissioner", sans-serif;
     font-weight: 500;
     font-size: 18px;
     line-height: 1.4;

@@ -25,9 +25,12 @@ import org.joget.directory.model.service.DirectoryManager;
 import java.util.Enumeration;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import java.util.HashSet;
+import java.util.Set;
 import org.joget.apps.app.model.AppDefinition;
 import org.joget.apps.app.model.UserviewDefinition;
 import org.joget.apps.app.service.AppService;
+import org.joget.apps.app.service.AppServiceImpl;
 import org.joget.apps.app.service.AppUtil;
 import org.joget.commons.util.StringUtil;
 import org.joget.commons.util.TimeZoneUtil;
@@ -1061,21 +1064,53 @@ public class WorkflowJsonController {
         response.setStatus(HttpServletResponse.SC_NO_CONTENT);
     }
     
-    @RequestMapping("/json/apps/published/userviews")
-    public void publishedApps(Writer writer, @RequestParam(value = "callback", required = false) String callback, @RequestParam(value = "appId", required = false) String appId, @RequestParam(value = "appCenter", required = false) Boolean isAppCenter) throws JSONException, IOException {
-        Collection<AppDefinition> appDefinitionList = appService.getPublishedApps(appId);
+    @RequestMapping({"/json/apps/published/userviews", "/json/apps/unpublished", "/json/apps/published"})
+    public void publishedApps(Writer writer, HttpServletRequest request, @RequestParam(value = "callback", required = false) String callback, @RequestParam(value = "appId", required = false) String appId, @RequestParam(value = "appCenter", required = false) Boolean isAppCenter) throws JSONException, IOException {
+        String requestUri = request.getRequestURI();
+
+        boolean includeUnpublished = requestUri.contains("unpublished");
+        boolean includeMultipleUI = requestUri.contains("/userviews");
+
+        Collection<AppDefinition> appDefinitionList;
+        if (includeUnpublished) {
+            appDefinitionList = appService.getUnpublishedApps(appId);
+        } else {
+            appDefinitionList = appService.getPublishedApps(appId);
+        }
+        
+        Set<String> addedAppIds = new HashSet<>();
         JSONObject root = new JSONObject();
         JSONArray apps = new JSONArray();
         for (AppDefinition appDef: appDefinitionList) {
+            if (addedAppIds.contains(appDef.getAppId()) && includeUnpublished) {
+                continue; // Skip duplicate appId
+            }
+            addedAppIds.add(appDef.getAppId());
+            
             JSONObject app = new JSONObject();
             app.accumulate("id", appDef.getAppId());
             app.accumulate("name", StringUtil.stripAllHtmlTag(appDef.getName()));
             app.accumulate("version", appDef.getVersion());
             app.accumulate("editable", AppUtil.isAppEditableByCurrentUser(appDef));
             JSONArray userviews = new JSONArray();
-            for (UserviewDefinition userviewDef: appDef.getUserviewDefinitionList()) {
-                if (isAppCenter != null && isAppCenter &&
-                        (userviewDef.getJson().contains("\"hideThisUserviewInAppCenter\":\"true\"") || userviewDef.getJson().contains("\"hideThisUserviewInAppCenter\": \"true\""))) {
+            
+            int index = 0;
+            Collection<UserviewDefinition> userviewList = appDef.getUserviewDefinitionList();
+            boolean skip = false;
+            for (UserviewDefinition userviewDef: userviewList) {
+                index++;
+                
+                //For unpublished apps included, skip when a thumbnail is found, but if thumbnail is not found, skip until a thumbnail is found, or until it reaches the end
+                if ( (isAppCenter != null && isAppCenter &&
+                    (userviewDef.getJson().contains("\"hideThisUserviewInAppCenter\":\"true\"") || userviewDef.getJson().contains("\"hideThisUserviewInAppCenter\": \"true\""))) 
+                        || 
+                    (
+                        !includeMultipleUI
+                        && ((userviewDef.getThumbnail() == null
+                        || (userviewDef.getThumbnail() != null && userviewDef.getThumbnail().isEmpty()))
+                        && index != userviewList.size()))
+                        || skip
+                    ) {
                     continue;
                 }
                 
@@ -1088,6 +1123,10 @@ public class WorkflowJsonController {
                 userview.accumulate("url", url);
                 if (userviewDef.getThumbnail() != null && !userviewDef.getThumbnail().isEmpty()) {
                     userview.accumulate("imageUrl", userviewDef.getThumbnail());
+                    
+                    if (!includeMultipleUI) {
+                        skip = true;
+                    }
                 }
                 userview.accumulate("category", (userviewDef.getCategory() != null)?userviewDef.getCategory():"");
                 userviews.put(userview);
@@ -1098,7 +1137,7 @@ public class WorkflowJsonController {
         root.put("apps", apps);
         AppUtil.writeJson(writer, root, callback);
     }
-
+    
     @RequestMapping("/json/apps/published/processes")
     public void publishedProcesses(Writer writer, @RequestParam(value = "callback", required = false) String callback, @RequestParam(value = "appId", required = false) String appId) throws JSONException, IOException {
         // get list of published processes
