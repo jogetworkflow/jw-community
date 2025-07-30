@@ -29,6 +29,13 @@
     z-index: 2;
 }
 
+/* Fix for spreadsheet being blocked by subform-section sibling */
+.form-column>.form-cell>.subform-container>.subform-section:has(.spreadsheet), 
+.form-column>.subform-cell>.subform-container>.subform-section:has(.spreadsheet) {
+    z-index: 3;
+}
+/* End of Fix */
+
 .form-section-title,
 .subform-section-title {
     padding: 0 var(--jgt-form-headerPaddingInline);
@@ -1064,11 +1071,19 @@ body.rtl .selector_element .selector_items {
     font-family: sans-serif;
 }
 
-.spreadsheet_container,
-.spreadsheet {
+.spreadsheet_container:has(.handsontableInputHolder.ht_editor_visible),
+.spreadsheet_container > .spreadsheet {
     width: 100%;
     overflow: visible !important;
     color: inherit;
+}
+
+.spreadsheet_container {
+    overflow: hidden !important;
+}
+
+.handsontableInputHolder.ht_editor_visible {
+    overflow: hidden;
 }
 
 .spreadsheet_container.resize {
@@ -1130,7 +1145,6 @@ body.rtl .ht_clone_top_left_corner {
 }
 
 body.rtl .handsontableInputHolder textarea {
-    position: absolute;
     left: 0
 }
 
