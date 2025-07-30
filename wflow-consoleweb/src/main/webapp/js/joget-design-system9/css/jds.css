@@ -355,13 +355,6 @@ a:hover {
   text-decoration: underline;
 }
 
-/* href that are valid always underline */
-/* will also effect every <a> tag, should mark !important to override */
-a[href]:not([href="#"]):not([href=""]):not([class]) {
-  text-decoration: underline;
-}
-
-
 a:not([href]):not([class]), a:not([href]):not([class]):hover, a:not([href]){
   color: inherit;
   text-decoration: none;
@@ -3022,6 +3015,7 @@ textarea.form-control-lg {
   color: var(--jgt-btn-hover-color);
   background-color: var(--jgt-btn-hover-bg);
   border-color: var(--jgt-btn-hover-border-color);
+  text-decoration: none
 }
 .btn-check + .btn:hover {
   color: var(--jgt-btn-color);
@@ -3344,7 +3338,7 @@ textarea.form-control-lg {
   --jgt-btn-disabled-border-color: transparent;
   --jgt-btn-box-shadow: 0 0 0 #000;
   --jgt-btn-focus-shadow-rgb: 49, 132, 253;
-  text-decoration: underline;
+  text-decoration: none;
 }
 .btn-link:focus-visible {
   color: var(--jgt-btn-color);

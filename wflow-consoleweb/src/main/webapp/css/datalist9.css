@@ -379,6 +379,10 @@ body.rtl .dataList span.pagelinks:not(.rtl) .pc.last:before {
     margin: 10px 0;
 }
 
+.dataList .exportlinks a:hover {
+    text-decoration: none;
+}
+
 .dataList .select_checkbox label,
 .dataList .select_radio label {
     margin-bottom: 0;
