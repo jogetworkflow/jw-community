@@ -92,6 +92,13 @@ body.rtl .dataList .filters {
     width: auto;
     vertical-align: bottom !important;
 }
+/* Styling to make the datalist filters' height consistent in builder */
+body .dataList .filters .filter-cell > input,
+body .dataList .filters .filter-cell > select,
+body .dataList .filters .filter-cell > textarea {
+    height: 35px; /*Set a height so all the filters are consistent*/
+}
+/* End of Styling */
 .dataList .filters select option.label{
     font-size: 80%;
 }
@@ -588,6 +595,33 @@ body.rtl *:is(.dataList.size_sm > form > .table-wrapper > table.responsivetable,
 .multiselect-container .multiselect-filter>input.multiselect-search{
     padding-right: 5px;
 }
+body.rtl *:is(.multiselect-all, .multiselect-container .multiselect-group, .multiselect-container .multiselect-option) {
+    padding: .25rem .75rem .25rem .25rem;
+}
+body.rtl *:is(.filter-cell .multiselect-container .multiselect-all .form-check, .filter-cell .multiselect-container .multiselect-group .form-check, .filter-cell .multiselect-container .multiselect-option .form-check) {
+    float: right;
+    padding: 0 20px 0 5px;
+}
+body.rtl .form-check-input {
+    margin-right: -1.25rem;
+    margin-left: 0px;
+}
+body.rtl .filter-cell .multiselect-container.dropdown-menu input.multiselect-search {
+    margin-right: -1.625rem;
+    margin-left: 0px;
+    padding-left: 0px;
+    padding-right: 2rem;
+}
+body.rtl .multiselect-container .multiselect-filter>.fa-search {
+    padding-right: .75rem;
+    padding-left: 0px;
+}
+body.rtl span.multiselect-native-select .multiselect-container .form-check .form-check-label {
+    text-align: right;
+}
+body.rtl .filter-cell {
+    text-align: right;
+}
 @media (max-width: 767px) {
     .dataList .swipeActions > .rowActionsContainer {
         position: absolute;
@@ -673,12 +707,13 @@ body.rtl *:is(.dataList.size_sm > form > .table-wrapper > table.responsivetable,
     }
     .filter_form:not(.popup) .filters .filter-cell > input,
     .filter_form:not(.popup) .filters .filter-cell > select:not([name$='-ps']) {
-        width: 100%;
+        width: 100% !important;
     }
     .filter_form:not(.popup) .filters .filter-cell + .filter-cell {
         border-top: 1px solid #ddd;
     }
-    .filter_form:not(.popup) .filters .filter-cell input {
+    .filter_form:not(.popup) .filters .filter-cell input,
+    .filter_form:not(.popup) .filters .filter-cell .multiselect-container .multiselect-filter>.fa-search {
         margin-top: 5px;
     }
     .filter_form:not(.popup) .filters .filter-cell .mobile_label {

@@ -873,17 +873,58 @@ body.rtl *:is(.dataList.size_sm > form > .table-wrapper > table.responsivetable,
 }
 .btn-group .multiselect-container .multiselect-filter>.fa-search {
     padding-left: .5rem;
-    padding-bottom: .5rem;
+    padding-bottom: 0;
+}
+body.rtl .btn-group .multiselect-container .multiselect-filter>.fa-search {
+    padding-left: 0px;
+    padding-right: .5rem;
 }
 span.multiselect-native-select .multiselect-container .form-check .form-check-label {
     padding-left: 5px;
 }
+body.rtl span.multiselect-native-select .multiselect-container .form-check .form-check-label {
+    padding-right: 5px;
+    padding-left: 0px;
+    text-align: right;
+}
 body .filter_form:not(.popup) .filters .filter-cell .multiselect-container .multiselect-filter>input.multiselect-search {
     margin-top: 0;
-    margin-bottom: 1rem;
+    margin-bottom: 0;
+}
+body .dataList .filter-cell .multiselect-container button input {
+	position: absolute;
+    margin-top: .25rem;
+    margin-left: -1.5rem;
+}
+body:not(.rtl) .dataList .filter-cell .multiselect-container span.form-check {
+	float: left;
+}
+body.rtl .dataList .filter-cell .multiselect-container button input {
+    margin-right: -1.5rem;
+    margin-left: 0;
+}
+body.rtl *:is(.multiselect-container .multiselect-all, .multiselect-container .multiselect-group, .multiselect-container .multiselect-option) {
+    padding: .25rem .75rem .25rem .25rem;
+}
+body.rtl *:is(.filter-cell .multiselect-container .multiselect-all .form-check, .filter-cell .multiselect-container .multiselect-group .form-check, .filter-cell .multiselect-container .multiselect-option .form-check) {
+    float: right;
+    padding: 0 20px 0 5px;
+}
+body.rtl .form-check-input{
+    margin-right: -1.25rem;
+    margin-left: 0px;
+}
+body.rtl .filter-cell .multiselect-container.dropdown-menu input.multiselect-search {
+    margin-right: -1.625rem;
+    margin-left: 0px;
+    padding-left: 0px;
+    padding-right: 2rem;
 }
 #content span.multiselect-native-select button.custom-select.waves-effect {
     margin-bottom: 0px;
+}
+body.rtl .filter-cell {
+    text-align: right;
 }
 @media (max-width: 767px) {
     .dataList .swipeActions > .rowActionsContainer {
@@ -975,10 +1016,6 @@ body .filter_form:not(.popup) .filters .filter-cell .multiselect-container .mult
     .filter_form:not(.popup) .filters .filter-cell + .filter-cell {
         border-top: 1px solid #ddd;
     }
-    .filter_form:not(.popup) .filters .filter-cell input {
-        margin-top: 5px;
-        padding-right: 5px;
-    }
     .filter_form:not(.popup) .filters .filter-cell .mobile_label {
         display: block;
         font-size: 80%;
@@ -988,14 +1025,6 @@ body .filter_form:not(.popup) .filters .filter-cell .multiselect-container .mult
     .filter_form:not(.popup) .filters .filter-cell span[class*='label'],
     .filter_form:not(.popup) .filters .filter-cell span[class*='Label']{
         display: none;
-    }
-    .btn-group .multiselect-container .multiselect-filter>.fa-search {
-        padding-bottom: .5rem;
-    }
-    .multiselect-container .multiselect-all .form-check, 
-    .multiselect-container .multiselect-group .form-check, 
-    .multiselect-container .multiselect-option .form-check {
-        padding: 0 5px 0 15px !important;
     }
 }
 

@@ -2341,7 +2341,7 @@ body.rtl .accordion .card-header::after {
     bottom: -1px;
 }
 
-.dataList .filters input, .dataList .filters select, .dataList .filters textarea {
+.dataList .filters > .filter-cell > input, .dataList .filters > .filter-cell > select, .dataList .filters > .filter-cell > textarea {
     min-height: var(--datalist-filter-select-height);
     padding: var(--datalist-filter-select-padding);
     height: initial;
@@ -2525,6 +2525,15 @@ body.rtl .accordion .card-header::after {
        padding: var(--sidebar-category-dropdown-padding) 15px;
     }
 
+    span.multiselect-native-select,
+    span.multiselect-native-select > .btn-group,
+    .filter-cell .multiselect-container.dropdown-menu input.multiselect-search {
+        width: 100%;
+    }
+
+    .filter-cell .multiselect.dropdown-toggle {
+        padding: 8px 32px;
+    }
 
     .header-nav .user-link {
         display: block !important;
@@ -2774,11 +2783,20 @@ div#dataList_columnslist tbody span.row_action_inner > a > i {
 .filter-cell .multiselect-container.dropdown-menu input.form-check-input{
     min-height: unset !important;
     margin: 5px;
+    vertical-align: top !important;
 }
 .filter-cell .multiselect-container .multiselect-all .form-check, 
 .filter-cell .multiselect-container .multiselect-group .form-check, 
 .filter-cell .multiselect-container .multiselect-option .form-check{
     padding: 0px !important;
+}
+body :is(.multiselect-container .multiselect-all:focus, 
+.multiselect-container .multiselect-all:hover, 
+.multiselect-container .multiselect-group:focus, 
+.multiselect-container .multiselect-group:hover,
+.multiselect-container .multiselect-option:focus,
+.multiselect-container .multiselect-option:hover) {
+    background-color: var(--theme-sidebar-active-link-bg) !important;
 }
 
 @media screen and (max-width: 1278px) {
