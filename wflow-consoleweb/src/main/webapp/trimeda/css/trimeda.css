@@ -2397,7 +2397,7 @@ body.rtl .accordion .card-header::after {
     bottom: -1px;
 }
 
-.dataList .filters input, .dataList .filters select, .dataList .filters textarea {
+.dataList .filters > .filter-cell > input, .dataList .filters > .filter-cell > select, .dataList .filters > .filter-cell > textarea {
     min-height: var(--datalist-filter-select-height);
     padding: var(--datalist-filter-select-padding);
     height: initial;
@@ -2613,6 +2613,16 @@ body.rtl .accordion .card-header::after {
        padding: var(--sidebar-category-dropdown-padding) 15px;
     }
 
+    span.multiselect-native-select,
+    span.multiselect-native-select > .btn-group,
+    .filter-cell .multiselect-container.dropdown-menu input.multiselect-search {
+        width: 100%;
+    }
+
+    .filter-cell .multiselect.dropdown-toggle {
+        padding: 8px 32px;
+    }
+    
     span.multiselect-native-select,
     span.multiselect-native-select > .btn-group,
     .filter-cell .multiselect-container.dropdown-menu input.multiselect-search {
@@ -2855,7 +2865,7 @@ div#dataList_columnslist tbody span.row_action_inner > a > i {
 /* Option - Multiselct */
 .filter-cell .multiselect.dropdown-toggle{
     min-height: 40px;
-    padding: .375rem 1.75rem .375rem .75rem;
+    padding: .375rem .75rem .375rem .75rem;
 }
 .filter-cell .multiselect-container.dropdown-menu {
     background-color:var(--theme-content-background); 
@@ -2871,11 +2881,20 @@ div#dataList_columnslist tbody span.row_action_inner > a > i {
 .filter-cell .multiselect-container.dropdown-menu input.form-check-input{
     min-height: unset !important;
     margin: 5px;
+    vertical-align: top !important;
 }
 .filter-cell .multiselect-container .multiselect-all .form-check, 
 .filter-cell .multiselect-container .multiselect-group .form-check, 
 .filter-cell .multiselect-container .multiselect-option .form-check{
     padding: 0px !important;
+}
+body .multiselect-container .multiselect-all:focus, 
+body .multiselect-container .multiselect-all:hover, 
+body .multiselect-container .multiselect-group:focus, 
+body .multiselect-container .multiselect-group:hover,
+body .multiselect-container .multiselect-option:focus,
+body .multiselect-container .multiselect-option:hover {
+    background-color: var(--theme-sidebar-active-link-bg) !important;
 }
 
 @media screen and (max-width: 1278px) {

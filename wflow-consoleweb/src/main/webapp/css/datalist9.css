@@ -471,6 +471,34 @@ body.rtl .dataList span.pagelinks:not(.rtl) .pc.last:before {
     margin-bottom: 0;
 }
 
+body.rtl *:is(.multiselect-all, .multiselect-container .multiselect-group, .multiselect-container .multiselect-option) {
+    padding: .25rem .75rem .25rem .25rem;
+}
+body.rtl *:is(.filter-cell .multiselect-container .multiselect-all .form-check, .filter-cell .multiselect-container .multiselect-group .form-check, .filter-cell .multiselect-container .multiselect-option .form-check) {
+    float: right;
+    padding: 0 20px 0 5px !important;
+    width: 100%;
+}
+body.rtl .filter-cell .multiselect-container.dropdown-menu input.form-check-input {
+    margin-right: -1.25rem !important;
+    margin-left: 0px  !important;
+    float: none  !important;
+}
+body.rtl .filter-cell .multiselect-container.dropdown-menu input.multiselect-search {
+    margin-right: -1.625rem;
+    margin-left: 0px;
+    padding-left: 0px;
+    padding-right: 2rem;
+}
+body.rtl .multiselect-container .multiselect-filter>.fa-search {
+    padding-right: .75rem;
+    padding-left: 0px;
+}
+body.rtl span.multiselect-native-select .multiselect-container .form-check .form-check-label {
+    text-align: right;
+    margin-right: 5px;
+}
+
 .dataList .dropdown-menu a.dropdown-item:hover{
     background-color: var(--jgt-dd-controlItemBgHover) !important;;
 }
@@ -674,6 +702,10 @@ body.rtl .dataList span.pagelinks:not(.rtl) .pc.last:before {
     padding-right: 5px;
 }
 
+body.rtl .filter-cell {
+    text-align: right;
+}
+
 @media(max-width:767px) {
     .dataList .swipeActions>.rowActionsContainer {
         position: absolute;
@@ -772,7 +804,7 @@ body.rtl .dataList span.pagelinks:not(.rtl) .pc.last:before {
 
     .filter_form:not(.popup) .filters .filter-cell>input,
     .filter_form:not(.popup) .filters .filter-cell>select:not([name$='-ps']) {
-        width: 100%;
+        width: 100% !important;
     }
 
     .filter_form:not(.popup) .filters .filter-cell+.filter-cell {

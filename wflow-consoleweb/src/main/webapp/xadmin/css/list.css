@@ -286,11 +286,30 @@ body .dataList .select_checkbox label i {
     border-radius: 0.25rem;
     margin-top: 4px;
 }
-
+body.rtl .form-check-input {
+    float: unset;
+    margin-top: 0.5rem;
+}
 @media (max-width: 767px) {
     body .dataList .filters .filter-cell:last-child:after {
         position: relative !important;
         top: -2px !important;
         left: -29px !important;
+    }
+    body.rtl .dataList .filters .filter-cell:last-child:after {
+        top: 2px !important;
+        left: 25px !important;
+    }
+    body.rtl .filter-cell select:not([class^="ui-"]),
+    body.rtl .filter_form:not(.popup) .filters .filter-cell > input, 
+    body.rtl .filter_form:not(.popup) .filters .filter-cell > select:not([name$='-ps']) {
+        float: unset !important;
+    }
+    body.rtl .dataList .filter-cell,
+    body.rtl .filter_form:not(.popup) .filters .filter-cell {
+        text-align: right;
+    }
+    body.rtl .dataList .filters .filter-cell input[type=submit] {
+        float: right !important;
     }
 }
