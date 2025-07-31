@@ -2448,3 +2448,7 @@ body.rtl [class*=-selection].dropdown .dropdown-menu #dropdown-title {
 body.rtl [class*=-selection].dropdown .dropdown-menu li {
     text-align: right;
 }
+
+.signature-pad--actions select {
+    background-image: none !important;
+}
