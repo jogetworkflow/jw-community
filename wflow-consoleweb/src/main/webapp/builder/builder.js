@@ -2742,10 +2742,9 @@ _CustomBuilder = {
 
             //Set Mode
             codeeditor.setOption("mode", "application/json");
-            
-            //Make the replace appear
-            codeeditor.execCommand("replace");
-            
+    
+            setTimeout(() => codeeditor.refresh(), 0); // fix for render delay
+    
             //Set height
             $('#json_definition').find(".CodeMirror-advanced-dialog").css({display: 'none'})
             $("#json_definition").find(".CodeMirror").css({"height":"100%"});
@@ -2755,7 +2754,7 @@ _CustomBuilder = {
             if ($('body').attr('builder-theme') === "dark") {
                 codeeditor.setOption("theme", "ayu-mirage");
             }
-            
+    
             var textarea = $("#cbuilder-info").find('textarea[name="json"]').hide();
             $(textarea).on("change", function() {
                 if (!CustomBuilder.editorSilentChange) {
@@ -2791,10 +2790,11 @@ _CustomBuilder = {
             });
 
             $(view).data("editor", codeeditor);
-            
+    
         } else {
             var editor = $(view).data("editor");
             CustomBuilder.editorIsChange = false;
+            editor.refresh(); // add refresh here too
         }
     },
     
