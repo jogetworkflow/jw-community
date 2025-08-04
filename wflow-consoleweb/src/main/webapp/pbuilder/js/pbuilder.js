@@ -1834,36 +1834,7 @@ ProcessBuilder = {
             const node = ProcessBuilder.lf.getNodeDataById(nodeId);
             const nodeLane = ProcessBuilder.getActivityLane(nodeId);
             
-            //find a closest lane, then move the node to that lane if it is not in that lane
-            const targetLaneId = ProcessBuilder.getNodeLaneID(nodeId);
-            let newLane = null;
-            let graphData = ProcessBuilder.lf.getGraphData();
-            let lanes = graphData.nodes.filter(lane => lane.type === "lane");
-            lanes = lanes.sort((a, b) => b.y - a.y);
-
-            lanes.forEach(lane => { 
-                if (!newLane || node.y < lane.y + (lane.properties.height / 2)) {
-                    newLane = lane;
-                }
-            });
-
-            if (targetLaneId !== newLane.id) {
-                if (!newLane.children?.includes(nodeId)) {
-                    newLane.children.push(nodeId);
-                    ProcessBuilder.lf.updateAttributes(newLane.id, {
-                        children: new Set(newLane.children)
-                    });
-                }
-                
-                //remove from wrong target lane
-                if (targetLaneId) {
-                    const targeLFLane = ProcessBuilder.getLFLane(targetLaneId);
-                    const updatedChildren = targeLFLane.children.filter(node => node !== nodeId);
-                    ProcessBuilder.lf.updateAttributes(targeLFLane.id, {
-                        children: new Set(updatedChildren)
-                    });
-                }
-            }
+            ProcessBuilder.moveNodeToCorrectLane(nodeId, node)
 
             const currentLaneId = ProcessBuilder.getNodeLaneID(nodeId);
             if (currentLaneId !== `laneID_${nodeLane.properties.id}`) {
@@ -1915,7 +1886,11 @@ ProcessBuilder = {
                     ProcessBuilder.showContextMenu(sourceNode);
                     return false;
                 }
-                ProcessBuilder.addConnection(data, !ProcessBuilder.disableUpdate);
+                ProcessBuilder.addConnection(data);
+                
+                if (!ProcessBuilder.disableUpdate) {
+                    ProcessBuilder.adjustLane(true, true);
+                }
             }
         });
         
@@ -1968,44 +1943,49 @@ ProcessBuilder = {
         });
         
         // Handle for node and edge click
-        ProcessBuilder.lf.on('node:click,edge:click', (data, e) => {
-            var selectedNode = data;
-            if ($(data).length > 0) {
-                try {
-                    CustomBuilder.checkChangeBeforeCloseElementProperties(function (hasChange) {
-                        self.mousedown = true;
-                        if (hasChange) {
-                            self.mousedown = false;
-                        }
-                        if (self.mousedown) {
-                            CustomBuilder.Builder.selectNodeAndShowProperties(selectedNode, false, true);
-                        }
-                    });
-                } catch (err) { }
+        ProcessBuilder.lf.on('node:click,edge:click', (node, e) => {
+            if (node && node.data && node.data.id) {
+                ProcessBuilder.selectElementById(node.data.id);
+            }
+            return false;
+        });
+    },
+    
+    /**
+     * When move the node outside the land area, it does not assign to correct lane.
+     * THis method is used to correct it.
+     */
+    moveNodeToCorrectLane: function(nodeId, node) {
+        //find a closest lane, then move the node to that lane if it is not in that lane
+        const targetLaneId = ProcessBuilder.getNodeLaneID(nodeId);
+        let newLane = null;
+        let graphData = ProcessBuilder.lf.getGraphData();
+        let lanes = graphData.nodes.filter(lane => lane.type === "lane");
+        lanes = lanes.sort((a, b) => b.y - a.y);
 
-                if ($('body').hasClass('treeViewer-builder-view') || $('body').hasClass('xray-builder-view')) {
-                    var activeNodeId = selectedNode.data.properties.id;
-                    ProcessBuilder.selectActiveTreeItem(activeNodeId);
-                }
-            } else {
-                CustomBuilder.checkChangeBeforeCloseElementProperties(function (hasChange) {
-                    self.selectNode(false);
+        lanes.forEach(lane => { 
+            if (!newLane || node.y < lane.y + (lane.properties.height / 2)) {
+                newLane = lane;
+            }
+        });
+
+        if (targetLaneId !== newLane.id) {
+            if (!newLane.children?.includes(nodeId)) {
+                newLane.children.push(nodeId);
+                ProcessBuilder.lf.updateAttributes(newLane.id, {
+                    children: new Set(newLane.children)
                 });
             }
 
-            setTimeout(() => {
-                var self = CustomBuilder.Builder;
-                if ($('.element-properties .nav-tabs .nav-link.has-properties-errors').length > 0 && self.selectedEl) {
-                    if (self.selectedEl) {
-                        ProcessBuilder.selectElementById(self.selectedEl[0].data.properties.id);
-                        ProcessBuilder.lf.hideContextMenu();
-                    }
-                } else {
-                    self.selectedEl = $(data);
-                }
-            }, 100);
-            return false;
-        });
+            //remove from wrong target lane
+            if (targetLaneId) {
+                const targeLFLane = ProcessBuilder.getLFLane(targetLaneId);
+                const updatedChildren = targeLFLane.children.filter(node => node !== nodeId);
+                ProcessBuilder.lf.updateAttributes(targeLFLane.id, {
+                    children: new Set(updatedChildren)
+                });
+            }
+        }
     },
     
     /**
@@ -2041,8 +2021,7 @@ ProcessBuilder = {
         });
         
         ProcessBuilder.lf.addEdge({
-            id : ProcessBuilder.getTransitionId(node.id, newNode.id),
-            type: ((node.type === "bpmn:startEvent" || type === "bpmn:endEvent")?"bpmn:straightSequenceFlow":"bpmn:sequenceFlow"),
+            type: "bpmn:sequenceFlow",
             sourceNodeId: node.id,
             targetNodeId: newNode.id
         });
@@ -2052,14 +2031,6 @@ ProcessBuilder = {
         ProcessBuilder.lf.updateAttributes(targetLFLane.id, {
             children: new Set(targetLFLane.children)
         });
-        
-        // Add the new node to target lane
-        const targetLane = ProcessBuilder.getLane(targetLFLane.id);
-        const currentNode = ProcessBuilder.getActivity(newNode.id);
-        if (!targetLane.activities) {
-            targetLane.activities = [];
-        }
-        targetLane.activities.push(currentNode);
 
         ProcessBuilder.adjustLane(true, true);
 
@@ -2329,8 +2300,6 @@ ProcessBuilder = {
         
         graphData = ProcessBuilder.updateEdges(graphData);
         ProcessBuilder.updateNodePosition(graphData, addToUndo);
-        ProcessBuilder.lf.render(graphData);
-        ProcessBuilder.resizePool();
     },
 
     /*
@@ -2365,57 +2334,58 @@ ProcessBuilder = {
      */
     renderLFNode: function (data) {
         let nodeID = null;
+        
         if (ProcessBuilder.getNodeLaneID(data.id) === null && data.type !== 'lane') {
-            //if node place outside lane, it will get deleted
-            ProcessBuilder.lf.deleteElement(data.id);
-        } else {
-            var toolClass = null;
-            if (ProcessBuilder.draggingElementId !== null && ProcessBuilder.draggingElementId !== undefined && ProcessBuilder.draggingElementId.startsWith("Tool_")) {
-                toolClass = ProcessBuilder.draggingElementId.replace("Tool_", "");
-            }
-            ProcessBuilder.addElement(data, ProcessBuilder.updatePasteElement);
-            
-            var result;
-            if (data.type === 'lane') {
-                result = ProcessBuilder.getLane(ProcessBuilder.draggingElementId);
-            } else {
-                result = ProcessBuilder.getActivity(ProcessBuilder.draggingElementId);
-            }
-            
-            if (result) {
-                let label = result.properties.label;
-                // check if preset tool is added
-                if (toolClass !== null) {
-                    result.properties.tools = result.properties.tools || [];
-                    const newTool = [
-                        {
-                            "className": toolClass
-                        }
-                    ];
-                    result.properties.tools.push(...newTool);
-                    label = ProcessBuilder.availableTools[toolClass].label;
-                    result.properties.label = label;
-                }
+            //if node place outside lane, correct it
+            ProcessBuilder.moveNodeToCorrectLane(data.id, data);
+        }
+        
+        var toolClass = null;
+        if (ProcessBuilder.draggingElementId !== null && ProcessBuilder.draggingElementId !== undefined && ProcessBuilder.draggingElementId.startsWith("Tool_")) {
+            toolClass = ProcessBuilder.draggingElementId.replace("Tool_", "");
+        }
+        ProcessBuilder.addElement(data, ProcessBuilder.updatePasteElement);
 
-                ProcessBuilder.lf.setProperties(data.id, result.properties);
-                ProcessBuilder.lf.setProperties(data.id, { xpdlObj: result.xpdlObj });
-                ProcessBuilder.lf.updateText(data.id, label);
-                if (data.type === 'lane') {
-                    ProcessBuilder.lf.updateAttributes(data.id, { id: "laneID_" + result.properties.id });
-                } else {
-                    ProcessBuilder.lf.updateAttributes(data.id, { id: result.properties.id });
-                    
-                    //update the id in lane
-                    const targetLaneId = ProcessBuilder.getNodeLaneID(data.id);
-                    const targeLFLane = ProcessBuilder.getLFLane(targetLaneId);
-                    const updatedChildren = targeLFLane.children.filter(node => node !== data.id);
-                    updatedChildren.push(result.properties.id);
-                    ProcessBuilder.lf.updateAttributes(targetLaneId, {
-                        children: new Set(updatedChildren)
-                    });
-                }
-                nodeID = result.properties.id;
+        var result;
+        if (data.type === 'lane') {
+            result = ProcessBuilder.getLane(ProcessBuilder.draggingElementId);
+        } else {
+            result = ProcessBuilder.getActivity(ProcessBuilder.draggingElementId);
+        }
+
+        if (result) {
+            let label = result.properties.label;
+            // check if preset tool is added
+            if (toolClass !== null) {
+                result.properties.tools = result.properties.tools || [];
+                const newTool = [
+                    {
+                        "className": toolClass
+                    }
+                ];
+                result.properties.tools.push(...newTool);
+                label = ProcessBuilder.availableTools[toolClass].label;
+                result.properties.label = label;
             }
+
+            ProcessBuilder.lf.setProperties(data.id, result.properties);
+            ProcessBuilder.lf.setProperties(data.id, { xpdlObj: result.xpdlObj });
+            ProcessBuilder.lf.updateText(data.id, label);
+            if (data.type === 'lane') {
+                ProcessBuilder.lf.updateAttributes(data.id, { id: "laneID_" + result.properties.id });
+            } else {
+                ProcessBuilder.lf.updateAttributes(data.id, { id: result.properties.id });
+
+                //update the id in lane
+                const targetLaneId = ProcessBuilder.getNodeLaneID(data.id);
+                const targeLFLane = ProcessBuilder.getLFLane(targetLaneId);
+                const updatedChildren = targeLFLane.children.filter(node => node !== data.id);
+                updatedChildren.push(result.properties.id);
+                ProcessBuilder.lf.updateAttributes(targetLaneId, {
+                    children: new Set(updatedChildren)
+                });
+            }
+            nodeID = result.properties.id;
         }
         return nodeID;
     },
@@ -2585,7 +2555,6 @@ ProcessBuilder = {
                     setTimeout(function(){
                         if (ProcessBuilder.preSelect !== "") {
                             ProcessBuilder.selectElementById(ProcessBuilder.preSelect);
-                            self.selectNode(self.selectedEl);
                             ProcessBuilder.preSelect = "";
                         } else if (selectedEl) {
                             ProcessBuilder.selectElementById(selectedEl[0].data.id);
@@ -3082,7 +3051,8 @@ ProcessBuilder = {
 
                 obj.properties.id = obj.className;
                 logicFlowObj.id = obj.className;
-                
+                logicFlowObj.properties.id = obj.className;
+                        
                 for (var v in values) {
                     var attr = values[v].split("=");
                     if (attr[0] === "JaWE_GRAPH_PARTICIPANT_ID") {
@@ -3365,7 +3335,11 @@ ProcessBuilder = {
             } else {
                 delete xpdlProcess['DataFields'];
             }
-        
+            
+            //remove all start and end before update activities to regenerate
+            xpdlProcessesAttrs = xpdlProcessesAttrs.filter(item => (item['-Name'] !== "JaWE_GRAPH_START_OF_WORKFLOW" && item['-Name'] !== "JaWE_GRAPH_END_OF_WORKFLOW"));
+            ProcessBuilder.setArray(xpdlProcess, 'ExtendedAttributes', 'ExtendedAttribute', xpdlProcessesAttrs);
+            
             //update participants
             var order = "";
             var xpdlParticipants = ProcessBuilder.getArray(xpdl['Participants'], 'Participant');
@@ -4014,8 +3988,8 @@ ProcessBuilder = {
                         "-self-closing": "true"
                     };
                     activity.xpdlObj = xpdlObj;
-                    xpdlProcessesAttrs.push(xpdlObj);
                 }
+                xpdlProcessesAttrs.push(xpdlObj);
                 
                 var actElement = self.frameBody.find("#" + activity.properties.id);
                 var actId = "";
@@ -5267,39 +5241,31 @@ ProcessBuilder = {
     },
     
     // Find the index of an object in the array by matching the "-Id" property.
-    findObjectIndexById: function (arr, objToFind) {
+    findObjectIndexById: function (arr, id) {
         return arr.findIndex(function(item) {
-            return item["-Id"] === objToFind["-Id"];
+            return item["-Id"] === id;
         });
     },
     
     //Handling for node deleted
     removeNode : function (data) {
         data = data.properties;
-        if (data.xpdlObj !== undefined) {
-            //get process xpdl obj
-            var xpdlProcess = ProcessBuilder.currentProcessData.xpdlObj;
-            if (data.className !== "start" && data.className !== "end") {
-                var xpdlActivities = ProcessBuilder.getArray(xpdlProcess['Activities'], 'Activity');
-                var index = ProcessBuilder.findObjectIndexById(xpdlActivities, data.xpdlObj);
-                if (index !== -1) {
-                    xpdlActivities.splice(index, 1);
-                }
-                ProcessBuilder.setArray(xpdlProcess, 'Activities', 'Activity', xpdlActivities);
-            } else {
-                var xpdlProcessesAttrs = ProcessBuilder.getArray(xpdlProcess['ExtendedAttributes'], 'ExtendedAttribute');
-                var index = xpdlProcessesAttrs.findIndex(item => item["-Name"] === data.xpdlObj['-Name'] && item["-Value"] === data.xpdlObj['-Value']);
-                if (index !== -1) {
-                    xpdlProcessesAttrs.splice(index, 1);
-                }
-                ProcessBuilder.setArray(xpdlProcess, 'ExtendedAttributes', 'ExtendedAttribute', xpdlProcessesAttrs);
+        
+        //get process xpdl obj
+        var xpdlProcess = ProcessBuilder.currentProcessData.xpdlObj;
+        if (data.className !== "start" && data.className !== "end") {
+            var xpdlActivities = ProcessBuilder.getArray(xpdlProcess['Activities'], 'Activity');
+            var index = ProcessBuilder.findObjectIndexById(xpdlActivities, data.id);
+            if (index !== -1) {
+                xpdlActivities.splice(index, 1);
             }
-            if (data.mapping !== undefined) {
-                delete CustomBuilder.data['activityPlugins'][ProcessBuilder.currentProcessData.properties.id + "::" + data.id];
-            }
-            if (data.formMapping !== undefined) {
-                delete CustomBuilder.data['activityForms'][ProcessBuilder.currentProcessData.properties.id + "::" + data.id];
-            }
+            ProcessBuilder.setArray(xpdlProcess, 'Activities', 'Activity', xpdlActivities);
+        }
+        if (data.mapping !== undefined) {
+            delete CustomBuilder.data['activityPlugins'][ProcessBuilder.currentProcessData.properties.id + "::" + data.id];
+        }
+        if (data.formMapping !== undefined) {
+            delete CustomBuilder.data['activityForms'][ProcessBuilder.currentProcessData.properties.id + "::" + data.id];
         }
         
         var connSet =  ProcessBuilder.lf.getNodeOutgoingEdge(data.id);
@@ -5320,44 +5286,46 @@ ProcessBuilder = {
     },   
     
     //Handling for a connection event triggered 
-    addConnection : function(connection, update = true) {
+    addConnection : function(connection) {
         if (ProcessBuilder.currentProcessData !== undefined) {
             var source = connection.sourceNodeId;
             var target = connection.targetNodeId;
+            
+            ProcessBuilder.changeNodeId = true; //prevent the add edge event trigger again
+            
+            // Remove the old edge
+            ProcessBuilder.lf.deleteEdge(connection.id);
+
+            // Add a new edge with a proper id and type but same source and target
+            //change the id to joget style
+            connection.id = ProcessBuilder.getTransitionId(source, target);
+                
+            var sourceData = ProcessBuilder.lf.getNodeDataById(source);
+            var targetData = ProcessBuilder.lf.getNodeDataById(target);
+            var isStartEnd = (sourceData.properties.className === "start" || targetData.properties.className === "end");
+
+            connection.className = "transition";
+            connection.type = (isStartEnd?"bpmn:straightSequenceFlow":"bpmn:sequenceFlow");
+            connection.properties = {
+                className :'transition',
+                id: connection.id,
+                type : isStartEnd?"startend":"",
+                transitionStyle : "orthogonal",
+                from: source,
+                to: target
+            };
+            
+            ProcessBuilder.lf.addEdge(connection);
+            
+            ProcessBuilder.changeNodeId = false;
 
             ProcessBuilder.updateSourceTargetData(source, target);
             
-            // new connection
             var parentDataArray = ProcessBuilder.currentProcessData['transitions'];
-            var data = {
-                className :'transition',
-                properties : {
-                    className :'transition',
-                    id: connection.id,
-                    type : "",
-                    transitionStyle : "orthogonal"
-                }
-            };
-            parentDataArray.push(data);
-
-            var sourceData = ProcessBuilder.lf.getNodeDataById(source);
-            var targetData = ProcessBuilder.lf.getNodeDataById(target);
-            data.properties.from = sourceData.properties.id;
-            data.properties.to = targetData.properties.id;
-            if (sourceData.properties.className === "start" || targetData.properties.className === "end") {
-                data.properties.type = "startend";
-            } else {
-                if (data.properties.type === "startend") {
-                    data.properties.type = "";
-                }
-            }
+            parentDataArray.push(connection);
             
             //update to logicflow
-            ProcessBuilder.lf.setProperties(connection.id, data);
-                
-            if (update) {
-                CustomBuilder.update();
-            }
+            ProcessBuilder.lf.updateAttributes(connection.id, connection);
         }
     },
       
@@ -5438,16 +5406,14 @@ ProcessBuilder = {
         var parentDataArray = ProcessBuilder.currentProcessData['transitions'];
         
         var data = connection.properties;
-        if (data.xpdlObj !== undefined) {
-            //get process xpdl obj
-            var xpdlProcess = ProcessBuilder.currentProcessData.xpdlObj;
-            var xpdlTransitions = ProcessBuilder.getArray(xpdlProcess['Transitions'], 'Transition');
-            var index = ProcessBuilder.findObjectIndexById(xpdlTransitions, data.xpdlObj);
-            if (index !== -1) {
-                xpdlTransitions.splice(index, 1);
-            }
-            ProcessBuilder.setArray(xpdlProcess, 'Transitions', 'Transition', xpdlTransitions);
+        //get process xpdl obj
+        var xpdlProcess = ProcessBuilder.currentProcessData.xpdlObj;
+        var xpdlTransitions = ProcessBuilder.getArray(xpdlProcess['Transitions'], 'Transition');
+        var index = ProcessBuilder.findObjectIndexById(xpdlTransitions, data.id);
+        if (index !== -1) {
+            xpdlTransitions.splice(index, 1);
         }
+        ProcessBuilder.setArray(xpdlProcess, 'Transitions', 'Transition', xpdlTransitions);
         
         var index = $.inArray(data, parentDataArray);
         if (index !== -1) {
@@ -5590,7 +5556,6 @@ ProcessBuilder = {
         var graphData = ProcessBuilder.lf.getGraphData();
         graphData = ProcessBuilder.autoLayoutNodePosition(graphData);
         ProcessBuilder.renderLFWithAutoLayout(graphData, false);
-        ProcessBuilder.updateNodePosition(graphData);
         
         if (self.selectedEl && self.selectedEl && self.selectedEl[0].data) {
             ProcessBuilder.selectElementById(self.selectedEl[0].data.properties.id);
@@ -5664,6 +5629,11 @@ ProcessBuilder = {
                 }
             }
         });
+        
+        //required to render before calling update, so that the validate status is update correctly
+        ProcessBuilder.lf.render(graphData);
+        ProcessBuilder.resizePool();
+        
         ProcessBuilder.currentProcessData = processData;
         if (!ProcessBuilder.readonly) {
             CustomBuilder.update(addToUndo);
@@ -5673,21 +5643,38 @@ ProcessBuilder = {
     /*
      * Select logic flow node/edge with id
      */
-    selectElementById: function (id) {
+    selectElementById: function (id, showProperties = true) {
         if (id) {
-            ProcessBuilder.lf.selectElementById(id, false, false);
+            
+            var selectNode = function() {
+                ProcessBuilder.lf.selectElementById(id, false, false);
 
-            var nodeData = ProcessBuilder.getSelectedNode();
-            if (!nodeData) { 
-                if (id.includes("laneID_")) {
-                    nodeData = ProcessBuilder.getLFLane(id);
-                } else {
-                    //if not activity node, then try get transition
-                    nodeData = ProcessBuilder.getLFEdge(id);
+                var nodeData = ProcessBuilder.getSelectedNode();
+                if (!nodeData) { 
+                    if (id.includes("laneID_")) {
+                        nodeData = ProcessBuilder.getLFLane(id);
+                    } else {
+                        //if not activity node, then try get transition
+                        nodeData = ProcessBuilder.getLFEdge(id);
+                    }
                 }
-            }
-            if (nodeData) {
-                CustomBuilder.Builder.selectedEl = $({'data' : nodeData});
+                if (nodeData) {
+                    CustomBuilder.Builder.selectedEl = $({'data' : nodeData});
+                }
+            };
+            
+            if (showProperties) {
+                let self = CustomBuilder.Builder;
+                try {
+                    CustomBuilder.checkChangeBeforeCloseElementProperties(function (hasChange) {
+                        if (!hasChange) {
+                            selectNode();
+                            CustomBuilder.Builder.selectNodeAndShowProperties(CustomBuilder.Builder.selectedEl, false, true);
+                        }
+                    });
+                } catch (err) { }
+            } else {
+                selectNode();
             }
         }
     },
@@ -6154,7 +6141,7 @@ ProcessBuilder = {
                             || (toTransition[aid] === undefined && $.inArray(aid, starts) === -1)) {
                         activityInvalid = true;
                     }
-
+                    
                     if ($.inArray(aid, starts) !== -1 && toTransition[aid] !== undefined && toTransition[aid].length > 0) {
                         startInvalid = true;
                     }
@@ -7065,7 +7052,6 @@ ProcessBuilder = {
                 
                 //set the selected node
                 ProcessBuilder.selectElementById(id);
-                self.selectNode(self.selectedEl);
             });
             
             $(view).find('.search-container input').off("keyup");
@@ -8222,11 +8208,6 @@ ProcessBuilder = {
             }
             parentDataArray.splice(index, 0, elementObj);
         }
-
-        if (self.component.builderTemplate.afterAddElement !== undefined) {
-            self.component.builderTemplate.afterAddElement(elementObj, self.component);
-        }
-        self.renderElement(elementObj, self.dragElement, self.component, true, null, callback);
     },
             
     /**
@@ -8292,8 +8273,8 @@ ProcessBuilder = {
 
         $(container).off("click", "li.tree-viewer-item  label");
         $(container).on("click", "li.tree-viewer-item  label", function (e) {
-            let nodeData = $(this).parent().data("nodeData");
-            ProcessBuilder.selectElementById(nodeData.id);
+            let nodeData = $(this).parent().data("nodeData");            
+            ProcessBuilder.selectElementById(nodeData.id, true);   
         });
         return container;
     },
