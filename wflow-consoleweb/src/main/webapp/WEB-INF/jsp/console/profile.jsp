@@ -26,8 +26,8 @@
                     <span class="form-input"><c:out value="${user.username}"/></span>
                 </div>
                 <div class="form-row">
-                    <label for="field1"><fmt:message key="console.directory.user.common.label.firstName"/></label>
-                    <span class="form-input"><form:input path="firstName" cssErrorClass="form-input-error" /> *</span>
+                    <label for="field1"><fmt:message key="console.directory.user.common.label.firstName"/> <span class="mandatory">*</span></label>
+                    <span class="form-input"><form:input path="firstName" cssErrorClass="form-input-error" /></span>
                 </div>
                 <div class="form-row">
                     <label for="field1"><fmt:message key="console.directory.user.common.label.lastName"/></label>
@@ -85,8 +85,8 @@
             <fieldset>
                 <legend><fmt:message key="console.directory.user.common.label.authentication"/></legend>
                 <div class="form-row">
-                    <label for="field1"><fmt:message key="console.directory.user.common.label.oldPassword"/></label>
-                    <span class="form-input"><form:password path="oldPassword" cssErrorClass="form-input-error" autocomplete="off" /> *</span>
+                    <label for="field1"><fmt:message key="console.directory.user.common.label.oldPassword"/> <span class="mandatory">*</span></label>
+                    <span class="form-input"><form:password path="oldPassword" cssErrorClass="form-input-error" autocomplete="off" /></span>
                 </div>
             </fieldset>       
             ${userProfileFooter}    

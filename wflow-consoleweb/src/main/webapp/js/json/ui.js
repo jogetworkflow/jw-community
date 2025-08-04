@@ -303,7 +303,7 @@ UI = {
             multiple: multiple // Set the multiple parameter dynamically
         };
 
-        ConnectionManager.post('/jw/web/api/validateEmail', internalCallback, params);
+        ConnectionManager.post(UI.base + '/web/api/validateEmail', internalCallback, params);
 
         return false; // Prevent default behavior
     }
