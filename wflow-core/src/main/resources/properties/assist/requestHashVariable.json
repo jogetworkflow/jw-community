@@ -78,8 +78,8 @@
                 "label" : "@@assist.request.baseURL@@"
             },
             {
-                "value" : "#request.domainURL#",
-                "label" : "@@assist.request.domainURL@@"
+                "value" : "#request.appCenterVideo[videoNumber]#",
+                "label" : "@@assist.request.appcentervideo@@"
             }
         ]
     }

@@ -12,7 +12,7 @@ body .systemAlert {
 
 body.rtl .systemAlert {
     margin-left: 16px;
-    margin-right: 0px;
+    margin-right: 16px;
 }
 
 body:has(.systemAlert):not(.embeded, .horizontal_menu) #content.page_content {

@@ -3,11 +3,13 @@ package org.joget.apps.app.lib;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Collection;
-import jakarta.servlet.http.HttpServletRequest;
+
 import org.joget.apps.app.model.DefaultHashVariablePlugin;
 import org.joget.apps.app.service.AppUtil;
-import org.joget.commons.util.LogUtil;
+import org.joget.commons.util.ResourceBundleUtil;
 import org.joget.workflow.util.WorkflowUtil;
+
+import jakarta.servlet.http.HttpServletRequest;
 
 public class RequestHashVariable extends DefaultHashVariablePlugin {
     protected static Collection<String> list;
@@ -31,7 +33,14 @@ public class RequestHashVariable extends DefaultHashVariablePlugin {
             }
             
             if (isValid(syntax)) {
-                if (headerName != null) {
+                if (attribute.contains("appCenterVideo")) {
+                    char videoNo = attribute.charAt(attribute.length() - 1);
+                    if (Character.isDigit(videoNo)){
+                        return ResourceBundleUtil.getMessage("appcenter.video" + videoNo);
+                    }
+                    return null;
+                }
+                else if (headerName != null) {
                     String value = request.getHeader(headerName);
                     return (value != null)?value:"";
                 } else if ("domainURL".equalsIgnoreCase(attribute) || "baseURL".equalsIgnoreCase(attribute)) {
@@ -111,6 +120,13 @@ public class RequestHashVariable extends DefaultHashVariablePlugin {
             list.add(getPrefix() + ".servletPath");
             list.add(getPrefix() + ".baseURL");
             list.add(getPrefix() + ".domainURL");
+
+            list.add(getPrefix() + ".appCenterVideo1");
+            list.add(getPrefix() + ".appCenterVideo2");
+            list.add(getPrefix() + ".appCenterVideo3");
+            list.add(getPrefix() + ".appCenterVideo4");
+            list.add(getPrefix() + ".appCenterVideo5");
+            list.add(getPrefix() + ".appCenterVideo6");
         }
         return list;
     }

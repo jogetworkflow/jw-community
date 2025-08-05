@@ -635,7 +635,7 @@ body#design_app h3#contact_header {
     margin-bottom: 16px;
 }
 body#design_app div.ContainerComponent#joget_academy .row > .col:not(:has(.Link_Menu)) {
-    display: grid !important;
+    display: grid;
     grid-template-columns: auto 1fr; /* Each button takes its own width */
     grid-template-rows: auto auto 1fr;
 }
@@ -937,6 +937,16 @@ body#templates #content .card-body > .card-actions > a.link_rowAction_1 {
 
     font-size: 16px;
     font-weight: 500;
+}
+body#design_app #designAppSection .card.createAppCard {
+    height: 100%;
+}
+body#design_app .card.createAppCard .card-body {
+    display: flex;
+    flex-direction: column;
+}
+body#design_app #designAppSection .card.createAppCard .card-actions {
+    margin-top: auto;
 }
 body#design_app #newTemplate.main-body-content {
     background: transparent;
@@ -1989,6 +1999,9 @@ body#home div.appListNav > i.disabled{
         position: absolute;
         bottom: 0px;
     }
+    body.rtl:not(.horizontal_menu):not(#login) #page {
+        padding-right: 0px !important;
+    }
 }
 #content > main > div > div.d-flex.flex-lg-row-fluid.w-lg-50.bgi-size-cover.bgi-position-center.order-1.order-lg-2 > div > img:nth-child(2){
     width: 550px;
@@ -2010,6 +2023,7 @@ body#login #page #content main{
     padding-left: 0%;
     padding-right: 0%;
     height: 100%;
+    padding-bottom: 0px;
 }
 .w-lg-50 {
     width: 50%!important;
@@ -2075,6 +2089,7 @@ body#login #loginForm #j_username::placeholder, body#login #loginForm #j_passwor
 }
 #login #page{
     max-width: 100%;
+    padding-bottom: 0px;
 }
 body #content > main > div > div.d-flex.flex-lg-row-fluid.w-lg-50.bgi-size-cover.bgi-position-center.order-1.order-lg-2 > div > img:nth-child(2){
     max-width: 100%;
@@ -2425,6 +2440,12 @@ body #sidebar .user-menu>li>a>small {
     body.rtl:not(.horizontal_menu):not(.sidebar-minimized) #page {
         padding-right: 128px !important;
     }
+    body.rtl:not(.horizontal_menu):not(#login).sidebar-minimized #page {
+        padding-right: 0px !important;
+    }
+    body.rtl.sidebar-minimized #content.page_content {
+        margin-right: 16px;
+    }
     body.rtl:not(.horizontal_menu).sidebar-minimized #page {
         padding-right: 16px !important;
     }
@@ -2657,6 +2678,17 @@ body#home.rtl .more-action{
     right: unset;
     left: -5px;
 }
+
+.userProfile-body-content:has(.form-message) {
+    padding-top: 1rem !important;
+}
+.userProfile-body-content .form-message {
+    margin: 0px 15px;
+}
+.userProfile-body-content .form-errors {
+    margin-bottom: 1rem;
+}
+
 @media (min-width: 1280px) {
     body.rtl.sidebar-minimized #page {
         padding-right: 100px;
@@ -2670,14 +2702,17 @@ body#home.rtl .more-action{
     body #page {
         padding-bottom: 16px;
     }
+
+    body.adminBarShown #page {
+        padding-bottom: 46px;
+    }
 }
 @media (min-width: 1279px) and (max-width: 1279.9px) {
-    body.rtl:not(.horizontal_menu) #page {
-        padding-right: 0px !important;
-    }
-
     body.rtl #content.page_content {
         margin-right: 16px;
+    }
+    body.rtl:not(.horizontal_menu):not(#login) #page {
+        padding-right: 0px !important;
     }
 }
 @media (min-width: 768px) and (max-width: 1280px) {

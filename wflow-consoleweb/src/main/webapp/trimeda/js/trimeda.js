@@ -317,21 +317,23 @@ $(document).ready(function() {
         }
     });
 })
-AjaxUniversalTheme.initSidebar = function() {
-    if ($("#sidebar").length > 0) {
-        var sidebar = function() {
-            if ($("#sidebar").css("display") === "inline-block") {
-                if ($("#sidebar #navigation").hasClass("mCustomScrollbar")) {
-                    $("#sidebar #navigation").mCustomScrollbar("destroy");
+
+if (typeof AjaxUniversalTheme !== "undefined" && AjaxUniversalTheme) {
+    AjaxUniversalTheme.initSidebar = function() {
+        if ($("#sidebar").length > 0) {
+            var sidebar = function() {
+                if ($("#sidebar").css("display") === "inline-block") {
+                    if ($("#sidebar #navigation").hasClass("mCustomScrollbar")) {
+                        $("#sidebar #navigation").mCustomScrollbar("destroy");
+                    }
+                } else {
+                    AjaxUniversalTheme.scrollBar("#sidebar #navigation", "y");
                 }
-            } else {
-                AjaxUniversalTheme.scrollBar("#sidebar #navigation", "y");
-            }
-        };
-        sidebar();
-        $(window).resize(function() {
+            };
             sidebar();
-        });
-    }
+            $(window).resize(function() {
+                sidebar();
+            });
+        }
+    };
 }
-;
