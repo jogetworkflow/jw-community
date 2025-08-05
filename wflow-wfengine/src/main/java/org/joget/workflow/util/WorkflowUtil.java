@@ -8,7 +8,10 @@ import org.joget.commons.util.SetupManager;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashSet;
+import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.StringTokenizer;
@@ -48,7 +51,17 @@ public class WorkflowUtil implements ApplicationContextAware {
     public static final String ACTIVITY_DEF_ID_RUN_PROCESS = "runProcess";
     public static final String PROCESS_START_WHITE_LIST = "processStartWhiteList";
     static ApplicationContext appContext;
-
+    private static final int REQUEST_CACHE_MAP_SIZE;
+    
+    static {
+        int cacheSize = 200;
+        try {
+            cacheSize = Integer.parseInt(System.getProperty("wflow.requestCacheSize", "200"));
+        } catch (Exception e) {}
+        REQUEST_CACHE_MAP_SIZE = cacheSize;
+        LogUtil.info(WorkflowUtil.class.getName(), "Request cache size set to " + REQUEST_CACHE_MAP_SIZE);
+    }
+    
     /**
      * Utility method to retrieve the ApplicationContext of the system
      * @return 
@@ -424,25 +437,48 @@ public class WorkflowUtil implements ApplicationContextAware {
         }
     }
     
-    public static final String REQUEST_CACHE_KEY_PREFIX = "RequestCacheKey_";
+    public static final String REQUEST_CACHE_MAP = "REQUEST_CACHE_MAP";
     
     public static Object readRequestCache(String key) {
-        Object cachedObject = null;
-        HttpServletRequest request = WorkflowUtil.getHttpServletRequest();
-        if (request != null) {
-            String attributeName = REQUEST_CACHE_KEY_PREFIX + key;
-            cachedObject = request.getAttribute(attributeName);     
-        }
-        return cachedObject;
+        Map requestCache = getRequestCache();
+        return requestCache != null?requestCache.get(key):null;
     }
     
     public static void writeRequestCache(String key, Object value) {
         HttpServletRequest request = WorkflowUtil.getHttpServletRequest();
-        if (request != null) {
-            String attributeName = REQUEST_CACHE_KEY_PREFIX + key;
-            request.setAttribute(attributeName, value);  
-        }        
+        Map requestCache = getRequestCache();
+        
+        if (request != null && requestCache != null) {
+            if (requestCache.size() > REQUEST_CACHE_MAP_SIZE) {
+                //remove 1/4 the cache to reduce it chance to reach this synchronized
+                int toRemove = REQUEST_CACHE_MAP_SIZE / 4;
+                synchronized (requestCache) {
+                    Iterator<Map.Entry> iterator = requestCache.entrySet().iterator();
+                    for (int i = 0; i < toRemove && iterator.hasNext(); i++) {
+                        iterator.next();
+                        iterator.remove();
+                    }
+                }
+            }
+            
+            requestCache.put(key, value);
+            request.setAttribute(REQUEST_CACHE_MAP, requestCache);
+        }
     }
     
+    protected static Map getRequestCache() {
+        HttpServletRequest request = WorkflowUtil.getHttpServletRequest();
+        if (request != null) {
+            Map cacheMap = (Map) request.getAttribute(REQUEST_CACHE_MAP);
+            if (cacheMap == null) {
+                cacheMap = Collections.synchronizedMap(new LinkedHashMap());
+                request.setAttribute(REQUEST_CACHE_MAP, cacheMap);
+            }
+            
+            return cacheMap;
+        }
+        return null;
+    }
+
     
 }
