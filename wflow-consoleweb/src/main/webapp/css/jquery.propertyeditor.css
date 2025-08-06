@@ -478,6 +478,23 @@
 
 .property-input > span.icon .property-icon-picker .value_holder input {
     padding: 6px 10px;
+    display: inline-block;
+}
+
+.property-input > span.icon .property-icon-picker .value_holder input.text_value {
+    width: 60%;
+    min-width: 60%;
+    margin-right: 1%;
+}
+
+body.rtl .property-input > span.icon .property-icon-picker .value_holder input.text_value {
+    margin-right: 0;
+    margin-left: 1%;
+}
+
+.property-input > span.icon .property-icon-picker .value_holder input.color_value {
+    width: 39%;
+    min-width: 39%;
 }
 
 .property-input > span.icon .property-icon-picker .value_holder .color {
@@ -500,11 +517,32 @@
     text-shadow: 0 0 2px #000;
 }
 
+body.rtl .property-input > span.icon .property-icon-picker .value_holder i{
+    left: 15px;
+    right: unset;
+}
+
+.property-input > span.icon .property-icon-picker .value_holder i.removeIcon {
+    position: absolute;
+    left: 55%;
+    right: unset;
+}
+
+
+body.rtl .property-input > span.icon .property-icon-picker .value_holder i.removeIcon {
+    right: 55%;
+    left: unset;
+}
+
 .property-input > span.icon .property-icon-picker input.search {
     padding: 5px;
     height: 23px;
     font-size: 13px;
     color: gray;
+}
+
+body.rtl .property-input > span.icon .property-icon-picker input.search{
+    margin-top: 5px;
 }
 
 .property-input .default .label{

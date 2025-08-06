@@ -6934,11 +6934,10 @@ PropertyEditor.Type.IconTextField.prototype = {
                 
                 var i = $(icon);
                 if ($(i).find('.property-icon-picker').length === 0) {
-                    $(i).append('<div class="property-icon-picker"><div class="value_holder"><input class="color_value" type="text" placeholder="Color"/></input><input class="text_value" placeholder="Value" type="hidden"/><i class="fas fa-xmark remove-color" title="' + get_peditor_msg('peditor.remove.color') + '"></i></div><div><input class="search" placeholder="Search"/><ul></ul></div></div>');
+                    $(i).append('<div class="property-icon-picker"><div class="value_holder"><input class="text_value" placeholder="Value" readonly/><i class="fas fa-xmark removeIcon" title="' + get_peditor_msg('peditor.remove.icon') + '"></i><input class="color_value" type="text" placeholder="Color"/></input><i class="fas fa-xmark remove-color" title="' + get_peditor_msg('peditor.remove.color') + '"></i></div><div><input class="search" placeholder="Search"/><ul></ul></div></div>');
 
                     for (var set in field.icons) {
                         $(i).find("ul").append('<li class="iconset">'+set+'</li>');
-                        $(i).find("ul").append('<li class="removeIcon" title="' + get_peditor_msg('peditor.remove.icon') + '"><i class="fas fa-ban removeIcon" data-icon-picker-options=""></i></li>');
                         for (var property in field.icons[set]) {
                             $(i).find("ul").append('<li data-search-terms="'+field.icons[set][property]+'" title="' + property + '"><i class="'+property+'" data-icon-picker-options ></i></li>');
                         }
@@ -6968,12 +6967,14 @@ PropertyEditor.Type.IconTextField.prototype = {
                             $(i).find("input.color_value").val(color);
                             $(i).find(".value_holder .color").css("background", color);
                             initializeColorPicker(color);
-                            $('body')[0].style.setProperty('--icon-color', color);
+                            $(i).find(".property-icon-picker").css('--icon-color', color);
                         } else {
                             initializeColorPicker();
                         }
+                        $('.removeIcon').show();
                     } else {
                         initializeColorPicker();
+                        $('.removeIcon').hide();
                     }
                     
                     $(i).find("input.search").off("keyup");
@@ -6991,8 +6992,8 @@ PropertyEditor.Type.IconTextField.prototype = {
                 
                 $(i).addClass("open");
                 
-                $("body").off("click.icon-picker");
-                $("body").on("click.icon-picker", function (e) {
+                $("body").off("click.icon-picker touchend.icon-picker");
+                $("body").on("click.icon-picker touchend.icon-picker", function (e) {
                     const container = $(i).find(".property-icon-picker");
                     const target = $(e.target);
                     const iconSpan = $(i).find("span.value");
@@ -7004,10 +7005,11 @@ PropertyEditor.Type.IconTextField.prototype = {
                     // Click outside the picker
                     if (!container.is(target) && container.has(target).length === 0) {
                         if (target.closest(".cp-color-picker").length > 0) {
+                            $('.remove-color').show();
                             if (iconElement.length > 0) {
                                 iconElement.css("color", colorValue);
                             }
-                            this.style.setProperty('--icon-color', colorValue);
+                            $(i).find(".property-icon-picker").css('--icon-color', colorValue);
                         } else {
                             $(i).removeClass("open");
                             $("body").off("click.icon-picker");
@@ -7031,7 +7033,7 @@ PropertyEditor.Type.IconTextField.prototype = {
                         if (colorValue !== "") {
                             iconSpan.find("i").css("color", colorValue);
                         }
-
+                        $('.removeIcon').show();
                         $(i).removeClass("open");
                         $("body").off("click.icon-picker");
                         $("#" + this.id).trigger("change");
@@ -7040,11 +7042,14 @@ PropertyEditor.Type.IconTextField.prototype = {
                     
                     // Remove icon color
                     if (target.is("i.remove-color")) {
-                        colorInput.val('').css("background", '#fff').change();
+                        $(i).find("input.color_value").colorPicker('close');
                         iconElement.removeAttr('style');
-                        this.style.removeProperty('--icon-color');
+                        $(i).find(".property-icon-picker").css('--icon-color', '');
                         $('.remove-color').hide();
-                        return;
+                        setTimeout(function () {
+                            colorInput.val('').css("background", '#fff').change();
+                            return;
+                        }, 100);
                     }
                     
                     // Set default color on input
@@ -7061,7 +7066,8 @@ PropertyEditor.Type.IconTextField.prototype = {
                         iconElement.remove();
                         textInput.val("");
                         colorInput.val('').css("background", '#fff').change();
-                        this.style.removeProperty('--icon-color');
+                        $(i).find(".property-icon-picker").css('--icon-color', '');
+                        $('.removeIcon').hide();
                         $('.remove-color').hide();
                         return;
                     }
