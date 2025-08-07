@@ -295,8 +295,9 @@ public class PluginManager implements ApplicationContextAware {
             
             Bundle bundle = installBundle(file.toURI().toURL().toExternalForm());
             if (bundle != null) {
-                startBundle(bundle);
-                checkDependency(bundle);
+                if (startBundle(bundle)) {
+                    checkDependency(bundle);
+                }
                 LogUtil.info(PluginManager.class.getName(), "Installed plugin " + file.getName());
             }
         } catch (Exception e) {
@@ -377,7 +378,7 @@ public class PluginManager implements ApplicationContextAware {
             }
         }
     }
-
+   
     protected Bundle installBundle(String location) {
         try {
             BundleContext context = getOsgiContainer().getBundleContext();
@@ -642,8 +643,13 @@ public class PluginManager implements ApplicationContextAware {
     public Date lastClearedCache() {
         return getCache().getLastCleared();
     }
+    
+    protected boolean validateBundle(Bundle bundle) {
+        return true;
+    }
 
     protected boolean startBundle(Bundle bundle) {
+        boolean started;
         try {
             //bundle.update();
             bundle.start();
@@ -664,14 +670,16 @@ public class PluginManager implements ApplicationContextAware {
                     context.ungetService(sr);
                 }
             }
+            
+            started = validateBundle(bundle);
 
             // clear cache
             clearCache();
         } catch (Exception be) {
             LogUtil.error(PluginManager.class.getName(), be, "Failed bundle start for " + bundle + ": " + be.toString());
-            return true;
+            started = false;
         }
-        return false;
+        return started;
     }
     
     /**
@@ -975,8 +983,9 @@ public class PluginManager implements ApplicationContextAware {
             if (location != null && isValid) {
                 Bundle newBundle = installBundle(location);
                 if (newBundle != null) {
-                    startBundle(newBundle);
-                    checkDependency(newBundle);
+                    if (startBundle(newBundle)) {
+                        checkDependency(newBundle);
+                    }
                 } else {
                     //delete invalid file
                     try {
