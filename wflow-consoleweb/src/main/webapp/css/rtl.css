@@ -327,3 +327,10 @@ body.rtl .chosen-rtl.chosen-container:not(.chosen-with-drop) .chosen-drop{
         margin-left: 0;
     }
 }
+
+@media (min-width: 769px) {
+  body.popupBody.rtl form#createApp .form-row .form-input {
+    margin-left: 0;
+    width: calc(100% - 180px);
+  }
+}
