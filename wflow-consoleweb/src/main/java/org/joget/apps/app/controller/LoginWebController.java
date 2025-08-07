@@ -48,6 +48,9 @@ public class LoginWebController {
         String savedUrl = "";
         if (savedRequest != null) {
             savedUrl = savedRequest.getRedirectUrl();
+            
+            //remove continue param
+            savedUrl = StringUtil.removeParamFromUrl(savedUrl, "continue");
         } else if (request.getHeader("referer") != null) { //for userview logout
             savedUrl = request.getHeader("referer");
         }
