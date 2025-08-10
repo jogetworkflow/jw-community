@@ -87,7 +87,6 @@
                 "fitScreen" : "ProcessBuilder.fitScreen",
                 "autoLayout" : "ProcessBuilder.autoLayout",
                 "highlight" : "ProcessBuilder.highlight",
-                "previewForm" : "ProcessBuilder.previewForm",
                 "navigator" : "ProcessBuilder.navigator",
                 "xpdlViewInit" : "ProcessBuilder.xpdlViewInit",
                 "builderBeforeSave" : "ProcessBuilder.beforeSaveValidation",
