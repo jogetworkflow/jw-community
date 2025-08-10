@@ -209,8 +209,8 @@
                     <groupId>commons-io</groupId>
                 </exclusion>
                 <exclusion>
-                    <artifactId>org.apache.commons</artifactId>
-                    <groupId>commons-lang3</groupId>
+                    <artifactId>commons-lang3</artifactId>
+                    <groupId>org.apache.commons</groupId>
                 </exclusion>
             </exclusions>
         </dependency>

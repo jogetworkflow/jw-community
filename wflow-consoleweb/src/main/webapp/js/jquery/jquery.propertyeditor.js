@@ -10578,10 +10578,15 @@ PropertyEditor.Type.ElementMultiSelect.prototype = {
             $("#" + thisObj.id + "_input .error").removeClass("error");
             $("#" + thisObj.id + "_input .property-input-error").remove();
 
-            $("#" + thisObj.id + "_input  > div > .repeater-rows-container > .repeater-row").each(function(i){
-                var deffers = thisObj.validateRow($(this), value[i], errors, checkEncryption);
-                if (deffers !== null && deffers !== undefined && deffers.length > 0) {
-                    deferreds = $.merge(deferreds, deffers);
+            let i = 0; //for retrieve the data of the position which ignored empty selection
+            $("#" + thisObj.id + "_input  > div > .repeater-rows-container > .repeater-row").each(function(){
+                var field = $(this).find("> .inputs > .inputs-container > select");
+                if (field.val() !== "") { //check for non empty value selection
+                    var deffers = thisObj.validateRow($(this), value[i], errors, checkEncryption);
+                    if (deffers !== null && deffers !== undefined && deffers.length > 0) {
+                        deferreds = $.merge(deferreds, deffers);
+                    }
+                    i++;
                 }
             });
         }
@@ -10620,7 +10625,8 @@ PropertyEditor.Type.ElementMultiSelect.prototype = {
             var arr = [];
             $("#" + this.id + "_input  > div > .repeater-rows-container > .repeater-row").each(function(){
                 var temp = thisObj.getRow($(this), useDefault);
-                if (temp !== null) {
+                if (temp !== null 
+                        && !(temp.className === "" || Object.keys(temp.properties).length === 0)) { //make sure it is not empty selection before add it to data
                     arr.push(thisObj.getRow($(this), useDefault));
                 }
             });
@@ -10632,7 +10638,7 @@ PropertyEditor.Type.ElementMultiSelect.prototype = {
     },
     getRow: function(row, useDefault) {
         var thisObj = this;
-        var field = $(row).find("select");
+        var field = $(row).find("> .inputs > .inputs-container > select"); //more specify selection in case there is another select box under the element proeprties
         var id = $(field).attr("id");
         var anchor = $(this.editor).find(".anchor[anchorField=\"" + id + "\"]");
         
