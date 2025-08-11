@@ -2280,11 +2280,11 @@ body .ui-dialog .button_form.editor-panel-mode #main-body-header {
     border-radius: 0.25rem;
 }
 .editor-panel-mode i.assist_icon.input-left-control {
-    right: 65px;
+    right: 45px;
 }
 .rtl .editor-panel-mode i.assist_icon.input-left-control {
     right: unset;
-    left: 65px;
+    left: 45px;
 }
 
 /* property assistant */
