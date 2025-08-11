@@ -60,7 +60,7 @@ input[type=checkbox],input[type=radio] {
     }
 }
 
-body.rtl:not(.horizontal_menu):not(#login) #page{
+body.rtl:not(.horizontal_menu) #page{
     padding-right: 280px;
     padding-left: unset;
 }
@@ -1296,6 +1296,9 @@ body#login footer{
 }
 body#login #page{
     padding-left: 0;
+}
+body#login.rtl #page{
+    padding-right: 0 !important;
 }
 body#login {
     background-color: var(--theme-header, var(--header-default-bgcolor, #f8f9fd));
