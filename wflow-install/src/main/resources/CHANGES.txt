@@ -2,6 +2,31 @@ Joget DX COMMUNITY
 ====================
 For more information, please refer to https://community.joget.org
 
+8.2.3
+=====
+191cb99dc Fixed: wflow-core - Process Data Collector - Improve implementation for multi tenant security check. #1207 @8.2-SNAPSHOT
+36d087833 Fixed: wflow-plugin-base - Plugin Manager - Improve plugin validation. #1207 @8.2-SNAPSHOT
+8fd71e38c Fixed: wflow-plugin-base - Plugin - Missing packages for sending email. #1207 @8.2-SNAPSHOT
+82784af57 Fixed: wflow-commons - Security - Improve HostManager security check. #1207 @8.2-SNAPSHOT
+a4bc114cd Fixed: wflow-core - Service Worker - Fixed push notifications tool not working due to service worker error. T6360 #1102 @8.2-SNAPSHOT
+87ec7840c Fixed: wflow-wfengine - WorkflowManagerImpl - Return null if package not found. T6251 #1066 @8.2-SNAPSHOT
+7f0b6ebd9 Fixed: wflow-consoleweb - Property Editor - Fixed saving issue when one of the multi select tools is empty. #1020 @8.2-SNAPSHOT
+19c58334a Fixed: wflow-consoleweb - Property Editor - Fixed multi element select field ignore mandatory checking when there is no value selected. #1020 @8.2-SNAPSHOT
+e183c1651 Fixed: wflow-core - gson - Upgraded to version 2.13.1 for CVE-2025-53864. #1216 @8.2-SNAPSHOT
+dfca442a3 Fixed: wflow-wfengine - commons-lang3 - Upgraded to version 3.18.0 for CVE-2025-48924. #1216 @8.2-SNAPSHOT
+3c1ea5511 Fixed: wflow-consoleweb - pom.xml - Upgrade commons-fileupload to 1.6.0. #1147 @8.2-SNAPSHOT
+3fc3b6236 Fixed: jw-community - Security - Upgrade Apache Tomcat to 9.0.107. #1146 @8.2-SNAPSHOT
+3686f3803 Fixed: wflow-consoleweb - Checkbox/Radio - Fixed "HTML Content" checkbox in the Email Plugin tool is no visible. #1124 T6389. @8.2-SNAPSHOT
+0fda41441 Fixed: wflow-consoleweb - Builder - Redo stack is not clear correctly when new changes is add to undo. #1205 @8.2-SNAPSHOT
+2cd46e47f Fixed: wflow-consoleweb - App Composer - Not able to open Web Coding script editor after navigating to another App Composer #869 @8.2-SNAPSHOT
+2adc3f1ec Added: wflow-consoleweb - Prorperty ID - Added camel case suggestion to process builder property ID. #144 @8.2-SNAPSHOT
+a69248e86 Fixed : wflow-core - UI/Log Viewer - Fixed hardcoded references to "jw" path #1123. @8.2-SNAPSHOT
+6823cbf04 Fixed: wflow-consoleweb - MultiSelectElement - Fixed the issue where the 'Add Row' button was always visible it should now only appear on hover. @8.2-SNASPHOT
+b8758d548 Fixed: wflow-consoleweb -  Property Editor - Fixed extra width after the dropdown and first add row is partly blocked at the top. @8.2-SNAPSHOT
+a9c609f6d Fixed: wflow-consoleweb - Property Editor - Fixed styling issue for the multi select element. #997 @8.2-SNAPSHOT
+09e84251d Fixed: wflow-consoleweb - Util - Fixed TypeError when load X-Admin theme T6339 #1073 @8.2-SNAPSHOT
+d7af18b73 Fixed: wflow-consolweb - User Profile - Fixed the issue where the asterisk symbol for mandatory fields was positioned incorrectly. @8.2-SNAPSHOT
+
 8.2.2
 =====
 0c8609a78 Fixed: wflow-consoleweb - Date Picker - Incorrect styling in Trimeda theme. #465 @8.2-SNAPSHOT
