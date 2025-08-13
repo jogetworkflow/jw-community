@@ -44,18 +44,13 @@
     return cm.state.search || (cm.state.search = new SearchState());
   };
 
-  var queryCaseSensitive = function queryCaseSensitive(query, bool) {
-    //If case sensitive is true
-    if (bool){
-        return typeof query == "string" && query == query.toLowerCase();
-    }else {
-        return typeof query == "string";
-    }
-};
+  var queryCaseInsensitive = function queryCaseInsensitive(query) {
+    return typeof query == "string" && query == query.toLowerCase();
+  };
 
   var getSearchCursor = function getSearchCursor(cm, query, pos) {
     // Heuristic: if the query string is all lowercase, do a case insensitive search.
-    return cm.getSearchCursor(parseQuery(query), pos, queryCaseSensitive(query, false));
+    return cm.getSearchCursor(parseQuery(query), pos, queryCaseInsensitive(query, false));
   };
 
   var parseString = function parseString(string) {
@@ -84,18 +79,80 @@
   };
 
   var startSearch = function startSearch(cm, state, query) {
-    if (!query || query === '') return;
+    function clearSearchHighlights(cm) {
+      cm.operation(() => {
+        cm.getAllMarks().forEach(mark => {
+          if (mark.className === "cm-searching") {
+            mark.clear();
+          }
+        });
+      });
+    }
+
+    // Cancel previous highlighting run
+    const currentToken = {};
+    state.highlightToken = currentToken;
+
+    if (!query || query === '') {
+      clearSearchHighlights(cm);
+      if (state.annotate) {
+        state.annotate.clear();
+        state.annotate = null;
+      }
+      state.query = state.queryText = null;
+      return;
+    }
+
     state.queryText = query;
     state.query = parseQuery(query);
-    cm.removeOverlay(state.overlay, queryCaseSensitive(state.query, false));
-    state.overlay = searchOverlay(state.query, queryCaseSensitive(state.query, false));
-    cm.addOverlay(state.overlay);
+
+    clearSearchHighlights(cm);
+
+    // Lazy markText highlighting
+    const doc = cm.getDoc();
+    const totalLines = doc.lineCount();
+    const regex = state.query instanceof RegExp ? state.query : new RegExp(escapeRegex(state.query), "gi");
+
+    let currentLine = 0;
+    const chunkSize = 100;
+
+    function highlightChunk() {
+      if (state.highlightToken !== currentToken) return;
+
+      const endLine = Math.min(currentLine + chunkSize, totalLines);
+
+      cm.operation(() => {
+        for (let i = currentLine; i < endLine; i++) {
+          const line = doc.getLine(i);
+          let match;
+          while ((match = regex.exec(line)) !== null) {
+            cm.markText(
+              { line: i, ch: match.index },
+              { line: i, ch: match.index + match[0].length },
+              { className: "cm-searching" }
+            );
+          }
+        }
+      });
+
+      currentLine = endLine;
+      if (currentLine < totalLines) {
+        setTimeout(highlightChunk, 10);
+      }
+    }
+
+    function escapeRegex(str) {
+      return str.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+    }
+
+    highlightChunk();
+
     if (cm.showMatchesOnScrollbar) {
       if (state.annotate) {
         state.annotate.clear();
         state.annotate = null;
       }
-      state.annotate = cm.showMatchesOnScrollbar(state.query, queryCaseSensitive(state.query, false));
+      state.annotate = cm.showMatchesOnScrollbar(state.query, queryCaseInsensitive(state.query));
     }
   };
 
@@ -269,6 +326,7 @@
     if (!defaultText) {
       defaultText = '';
     }
+    let debounceTimeout = null;
     var behaviour = {
       value: defaultText,
       focus: true,
@@ -280,15 +338,24 @@
         if (!query) return;
         doSearch(cm, query, !!e.shiftKey);
       },
-      onInput: throttleSearch(function onInput(inputs, e) {
+      onInput: function onInput(inputs, e) {
         var query = inputs[0].value;
+        
+        if (debounceTimeout) {
+          clearTimeout(debounceTimeout);
+        }
+
         if (!query) {
           resetCount(cm);
           clearSearch(cm);
           return;
-        };
-        doSearch(cm, query, !!e.shiftKey, false);
-      }, 500)
+        }
+
+        cm.getWrapperElement().parentNode.querySelector('.CodeMirror-search-hint').innerHTML = "Searching";
+        debounceTimeout = setTimeout(function () {
+          doSearch(cm, query, !!e.shiftKey, false);
+        }, 500);
+      }
     };
     if (!!callback) {
       behaviour.callback = callback;
