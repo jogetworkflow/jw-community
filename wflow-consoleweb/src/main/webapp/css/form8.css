@@ -365,11 +365,18 @@ body input[readonly] {
     float: left;
     width: 70%;
 }
+body.rtl .form-container [class*=form-cell-value] {
+    padding: 6px 0px 10px 1px;   
+}
 .form-cell-value > label,
 .subform-cell-value > label{
     display: block;
     float: left;
     width: 50%;
+}
+body.rtl .form-cell-value > label, 
+body.rtl .subform-cell-value > label {
+    float: right;
 }
 @media screen and (max-width: 480px) {
     .form-container [class*=form-cell-value]{
@@ -601,12 +608,21 @@ body input.no-manual-input{
     right: -1px;
     max-height: 34px;
 }
+body.rtl .selector_element .selector_button, 
+body.rtl .selector_element .selector_button:hover {
+    left: 0px;
+    right: unset;
+}
 .selector_element .selector_button:hover{
     background-color: #ced4da;
 }
 .selector_element .selector_items {
     display: block;
     padding-right: 60px;
+}
+body.rtl .selector_element .selector_items {
+    padding-left: 60px;
+    padding-right: 0px;
 }
 .selector_element .selector_items .selector_item {
     display: inline-block;

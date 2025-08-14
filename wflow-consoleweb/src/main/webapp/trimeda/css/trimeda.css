@@ -1501,9 +1501,13 @@ div.ui-timepicker-div dl dd > * > select {
     background-size: 10.5px 6.47px !important;
 }
 
+body.rtl select {
+    background-position: left 24.55px center;
+}
+
 body.rtl div.ui-timepicker-div dl dd > * > select {
     background-size: 80.5px 6.47px !important;
-}select
+}
 
 .ContainerComponent {
     padding: 0;
@@ -1652,19 +1656,24 @@ textarea:focus, .chosen-container-multi .chosen-choices:focus, .selector_element
     padding-right: 80px;
 }
 
+body.rtl .selector_element .selector_items {
+    padding-right: 0px;
+    padding-left: 80px;
+}
+
 .selector_element .selector_button, 
 .selector_element .selector_button:hover {
     width: 80px;
     position: absolute;
     top: 50%;
     transform: translateY(-50%);
-    right: 0px;
+    right: 10px;
     background-color: #4b6eec;
 }
 
 body.rtl .selector_element .selector_button, 
 body.rtl .selector_element .selector_button:hover {
-    right: calc(100% - 80px);
+    right: calc(100% - 80px - 10px);
 }
 
 .selector_element .selector_items .selector_item, div.chosen-container ul.chosen-choices > li.search-choice {
