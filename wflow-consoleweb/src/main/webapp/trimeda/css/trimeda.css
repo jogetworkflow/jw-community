@@ -1245,6 +1245,11 @@ body #form-canvas .subform-section-title span {
     font-size: 18px;
 }
 
+body.popupBody {
+    background-color: var(--theme-content-background, #ffffffcc);
+    height: unset;
+}
+
 body.popupBody #form-canvas .form-container{
     padding-bottom: 80px;
 }

@@ -1756,7 +1756,7 @@ body[builder-theme] .property-editor-page-button-panel input[type=button].page-b
 body[builder-theme]#cbuilder .property-editor-page-button-panel input[type=button].page-button-prev,
 body[builder-theme] div.guider_content > div.guider_buttons > a:nth-child(1){
     border: 1px solid #d9d9d9;
-    background-color: #fff;
+    background-color: #fff !important;
     border-color: #d9d9d9;
     color: rgba(0,0,0,.88);
 }
@@ -1843,7 +1843,6 @@ body[builder-theme].popupBody .button-panel{
     right: 0;
     padding: 15px 30px;
     box-sizing: border-box;
-    padding-bottom: 0;
     border-top: 1px solid var(--theme-border-color-1);
     background-color: var(--theme-primary-color-1);
 }
@@ -1876,7 +1875,7 @@ body[builder-theme].popupBody .page-button-action input[type='button'],
 body[builder-theme].popupBody #generate-btn{
     float: right;
     margin-left: 4px;
-    height: 36px;
+    height: 36px !important;
 }
 body[builder-theme].popupBody #main-body-content{
     box-sizing: border-box;
@@ -2086,7 +2085,7 @@ body[builder-theme].popupBody #importPO .form-buttons{
 }
 body[builder-theme].popupBody .pluginConfig .property-editor-page-button-panel,
 body[builder-theme].popupBody .button-panel{
-    padding-bottom: 5px;
+    padding: 12px 30px;
 }
 body[builder-theme].popupBody #advancedView {
     padding: 5px 15px;
@@ -3677,6 +3676,60 @@ body[builder-theme='dark'].popupBody.builder-popup.dark-mode .chosen-container-m
 }
 body[builder-theme='dark'].popupBody.builder-popup.dark-mode .chosen-container .chosen-results li.highlighted{
     background-color: #0075ff;
+    color: #fff;
+}
+body[builder-theme].popupBody .selector_element .selector_items .selector_item a{
+    color:transparent;
+}
+body[builder-theme='dark'].popupBody.builder-popup.dark-mode .chosen-container-multi .chosen-choices li.search-choice,
+body[builder-theme='dark'].popupBody.builder-popup.dark-mode select:not([class^=ui]){
+    color: var(--theme-field-font-color);
+}
+body[builder-theme='dark'].popupBody.builder-popup.dark-mode .chosen-container .chosen-results li{
+    color: var(--theme-field-font-color);
+}
+body[builder-theme].popupBody .chosen-container-multi .chosen-drop .result-selected,
+body[builder-theme='dark'].popupBody.builder-popup.dark-mode .chosen-container .chosen-results li.result-selected{
+    color: #ccc;
+}
+body[builder-theme].popupBody .form-fileupload a.remove{
+    color: #ff828d;
+}
+body[builder-theme].popupBody .form-fileupload a.remove:hover{
+    color: #EA5858;
+    text-decoration: none;
+}
+body[builder-theme].popupBody .btn-outline-danger {
+    color: #dc3545;
+    padding: .25rem .5rem;
+    line-height: 1.5;
+    font-size: 13px;
+    border: 1px solid transparent;
+    border-radius: .2rem;
+    box-shadow: 0 0 2px rgb(0 0 0 / 20%), 0 4px 4px -2px rgb(0 0 0 / 20%);
+}
+body[builder-theme].popupBody .btn-outline-danger:hover{
+    color: #fff;
+}
+body[builder-theme].popupBody.builder-popup #main-body-content:has(#logviewer){
+    padding-top: 35px !important;
+}
+body[builder-theme].popupBody .tox .tox-statusbar__wordcount{
+    padding: 0;
+    margin-right: 0px;
+}
+body.rtl[builder-theme='dark'].popupBody .chosen-rtl .chosen-choices li.search-choice{
+    padding: 3px 5px 3px 19px;
+}
+body.rtl[builder-theme].popupBody input[type=checkbox]:checked::after,
+body.rtl[builder-theme].popupBody input[type=radio]:checked::after{
+    position: relative;
+}
+body.rtl[builder-theme].popupBody input[type=checkbox]:checked::after{
+    left: -6px;
+}
+body.rtl[builder-theme].popupBody input[type=radio]:checked::after{
+    left: -5px;
 }
 body[builder-theme='dark'] jmexpander{
     color: #808080;
@@ -3688,21 +3741,27 @@ body[builder-theme='dark'] jmexpander:hover{
 body[builder-theme] input[type=number].withUnitSlector:focus{
     position: relative;
 }
-body[builder-theme].rtl .flexigrid div.nBtn{
+body[builder-theme].rtl .flexigrid div.nBtn,
+body[system-theme].rtl .flexigrid div.nBtn{
     height: 42px !important;
     border-right: 1px solid var(--theme-border-color-1);
 }
-body[builder-theme].rtl .flexigrid div.hDiv table{
+body[builder-theme].rtl .flexigrid div.hDiv table,
+body[system-theme].rtl .flexigrid div.hDiv table{
     border-right: 0px;
     border-left: 1px solid transparent;
 }
 body[builder-theme].rtl .flexigrid div.hDiv th,
-body[builder-theme].rtl .flexigrid div.bDiv td{
+body[builder-theme].rtl .flexigrid div.bDiv td,
+body[system-theme].rtl .flexigrid div.hDiv th,
+body[system-theme].rtl .flexigrid div.bDiv td{
     border-right: 0px !important;
     border-left: 1px solid var(--theme-border-color-1) !important;
 }
 body[builder-theme='dark'].rtl .flexigrid div.nBtn.srtd,
-body[builder-theme='dark'].rtl .flexigrid div.nBtn{
+body[builder-theme='dark'].rtl .flexigrid div.nBtn,
+body[system-theme='dark'].rtl .flexigrid div.nBtn.srtd,
+body[system-theme='dark'].rtl .flexigrid div.nBtn{
     border-left: 0px;
     border-right: 1px solid var(--theme-primary-color-2);
 }
@@ -3713,6 +3772,20 @@ body[builder-theme].popupBody .multiPagedForm .page-nav-panel .nav_item button{
 }
 body[builder-theme].rtl.popupBody .selector_element .selector_button{
     margin-right: 0px;   
+}
+body[builder-theme='dark'].rtl .flexigrid div.bDiv tr.trSelected:hover td,
+body[builder-theme='dark'].rtl .flexigrid div.bDiv tr.trSelected:hover td.sorted,
+body[builder-theme='dark'].rtl .flexigrid div.bDiv tr.trOver.trSelected td.sorted, 
+body[builder-theme='dark'].rtl .flexigrid div.bDiv tr.trOver.trSelected td,
+body[builder-theme='dark'].rtl .flexigrid tr.trSelected td.sorted,
+body[builder-theme='dark'].rtl .flexigrid tr.trSelected td,
+body[system-theme='dark'].rtl .flexigrid div.bDiv tr.trSelected:hover td,
+body[system-theme='dark'].rtl .flexigrid div.bDiv tr.trSelected:hover td.sorted,
+body[system-theme='dark'].rtl .flexigrid div.bDiv tr.trOver.trSelected td.sorted,
+body[system-theme='dark'].rtl .flexigrid div.bDiv tr.trOver.trSelected td,
+body[system-theme='dark'].rtl .flexigrid tr.trSelected td.sorted,
+body[system-theme='dark'].rtl .flexigrid tr.trSelected td{
+    border-left: 1px solid var(--theme-border-color-1) !important;
 }
 body[builder-theme].rtl .editor-panel-mode .property-type-checkbox-truefalse .property-input .multiple_option label .hidden_label {
     padding-right: 20px;

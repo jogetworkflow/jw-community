@@ -37,13 +37,15 @@
         <script>
             UI.base = "${pageContext.request.contextPath}";
             <c:choose>
-                <c:when test="${!empty param.__a_}">
+                <c:when test="${!empty param.__a_ and !empty param.__u_}">
                     UI.userview_app_id = '<c:out value="${param.__a_}"/>';
                     UI.userview_id = '<c:out value="${param.__u_}"/>';
                     $(document).ready(function() {
                         UI.initThemeParams();
                         if (window.self !== window.top && $("#main-body-header").length > 0) {
-                            $("body.popupBody").css("padding-top", $("#main-body-header").outerHeight(true) + "px");
+                            if ($("#main-body-header").is(":visible")) {
+                                $("body.popupBody").css("padding-top", $("#main-body-header").outerHeight(true) + "px");
+                            }
                         }
                     });
                 </c:when>
@@ -61,7 +63,7 @@
         </script>
     </head>
     <body class="popupBody ${bodyCssClass}"
-    <c:if test="${empty param.__a_}">
+    <c:if test="${empty param.__a_ or empty param.__u_}">
         <c:choose>
             <c:when test="${not empty builderTheme}">
                 builder-theme="${systemTheme}"

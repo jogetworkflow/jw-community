@@ -2,7 +2,7 @@
 <jsp:useBean id="PropertyUtil" class="org.joget.plugin.property.service.PropertyUtil" scope="page"/>
 
 <c:choose>
-    <c:when test="${!empty param.__a_}">
+    <c:when test="${!empty param.__a_ and !empty param.__u_}">
         <commons:popupHeader bodyCssClass="pluginConfigPopup"/>
     </c:when>
     <c:otherwise>

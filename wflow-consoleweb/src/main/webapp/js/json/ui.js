@@ -411,7 +411,7 @@ PopupDialog.prototype = {
               newFrame.setAttribute("frameborder", "0");
               newFrame.setAttribute("width", "100%");
               if (UI.userview_app_id === undefined || UI.userview_app_id === '') {
-                  newFrame.setAttribute("height", this.height-20);
+                  newFrame.setAttribute("height", this.height);
               } else {
                   newFrame.setAttribute("height", this.height-10);
               }
@@ -460,7 +460,7 @@ PopupDialog.prototype = {
                 this.height = temHeight - 20;
             }
             if (UI.userview_app_id === undefined || UI.userview_app_id === '') {
-                newFrame.setAttribute("height", this.height-20);
+                newFrame.setAttribute("height", this.height);
             } else {
                 newFrame.setAttribute("height", this.height-10);
             }

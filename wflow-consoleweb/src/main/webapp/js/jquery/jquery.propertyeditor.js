@@ -1808,7 +1808,7 @@ PropertyEditor.Model.Editor.prototype = {
             if (this.options.adjustSize !== undefined) {
                 tempHeight = this.options.adjustSize(tempHeight);
             }
-            $(this.editor).css("height", (tempHeight - 25) + "px");
+            $(this.editor).css("height", tempHeight + "px");
             $(this.editor).find(".property-editor-property-container").css("height", (tempHeight - 139) + "px");
         }
     },
