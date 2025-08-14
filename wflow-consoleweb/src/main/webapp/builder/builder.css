@@ -1786,6 +1786,13 @@ body .ui-icon-closethick{
     height: 20px !important;
     color:#ccc !important;
 }
+body.rtl .ui-dialog-titlebar-close,
+body.rtl .ui-icon-closethick{
+    left: 15px;
+}
+body.rtl .ui-dialog-titlebar{
+    width: 100% !important;
+}
 body .ui-dialog-titlebar-close:hover,
 body .ui-icon-closethick:hover {
     color: #aaa !important;

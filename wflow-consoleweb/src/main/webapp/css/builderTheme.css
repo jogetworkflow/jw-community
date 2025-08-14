@@ -780,7 +780,7 @@ body[builder-theme] .ui-dialog-titlebar {
     border-bottom: 1px solid var(--theme-border-color-1);
 }
 body[builder-theme] .ui-dialog .ui-dialog-content {
-    padding: 25px !important;
+    padding-bottom: 0px !important;
 }
 body[builder-theme] .property_editor_app_resources .app_resources .name {
     font-size: 13px;
@@ -1829,7 +1829,7 @@ body[builder-theme] .ui-dialog-titlebar {
     top: 10px;
     right: 5px;
     height: 0 !important;
-    width: unset !important;
+    width: 100% !important;
     border-bottom: 0;
 }
 body[builder-theme].popupBody .form-buttons,
@@ -2220,6 +2220,11 @@ body[builder-theme] #generator_container div.list_content > a.advanced > i,
 body[builder-theme] #generator_container div.list_content > a.more > i{
     margin-right: 5px;
 }
+body[builder-theme].rtl #generator_container div.list_content > a.advanced > i,
+body[builder-theme].rtl #generator_container div.list_content > a.more > i{
+    margin-right: 0px;
+    margin-left: 5px;
+}
 body[builder-theme] .list_content {
     width: 90%;
 }
@@ -2228,10 +2233,16 @@ body[builder-theme] #generator_container .title{
     font-weight: 600;
     color: var(--theme-label-color-2);
 }
-body[builder-theme] .ui-dialog-titlebar-close:before, body[builder-theme] .ui-dialog-titlebar-close{
-    font-size: 20px;
+body[builder-theme] .ui-dialog-titlebar-close{
+    font-size: 20px !important;
     position: absolute;
-    top: -5px;
+    top: 15px !important;
+    padding: 0 !important;
+}
+body[builder-theme].rtl .ui-dialog-titlebar-close{
+    left: 20px !important;
+    top: 15px !important;
+    right: unset !important;
 }
 body[builder-theme] #generator_container .list_content .more_info{
     color: var(--theme-label-color-2);
