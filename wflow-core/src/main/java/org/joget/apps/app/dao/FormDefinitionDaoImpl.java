@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
+import org.json.JSONObject;
 import org.hibernate.query.Query;
 import org.joget.apps.app.model.AppDefinition;
 import org.joget.apps.app.model.FormDefinition;
@@ -149,6 +151,13 @@ public class FormDefinitionDaoImpl extends AbstractAppVersionedObjectDao<FormDef
             String commitMessage = "Update form " + object.getId();
             AppDevUtil.fileSave(object.getAppDefinition(), filename, json, commitMessage);
 
+            // save yaml
+            filename = "forms/" + object.getId() + ".yaml";
+            JSONObject jsonObj = new JSONObject(json);
+            Map<String, Object> map = jsonObj.toMap();
+            String yaml = AppDevUtil.mapToYamlString(map);
+            AppDevUtil.fileSave(object.getAppDefinition(), filename, yaml, "");
+
             // sync app plugins
             AppDevUtil.dirSyncAppPlugins(object.getAppDefinition());
         }
@@ -214,6 +223,13 @@ public class FormDefinitionDaoImpl extends AbstractAppVersionedObjectDao<FormDef
             String json = AppDevUtil.formatJson(formDef.getJson());
             String commitMessage = "Add form " + formDef.getId();
             AppDevUtil.fileSave(formDef.getAppDefinition(), filename, json, commitMessage);
+
+            // save yaml
+            filename = "forms/" + formDef.getId() + ".yaml";
+            JSONObject jsonObj = new JSONObject(json);
+            Map<String, Object> map = jsonObj.toMap();
+            String yaml = AppDevUtil.mapToYamlString(map);
+            AppDevUtil.fileSave(formDef.getAppDefinition(), filename, yaml, "");
 
             // sync app plugins
             AppDevUtil.dirSyncAppPlugins(formDef.getAppDefinition());

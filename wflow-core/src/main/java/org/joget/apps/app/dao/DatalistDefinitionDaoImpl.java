@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
+import org.json.JSONObject;
 import org.joget.apps.app.model.AppDefinition;
 import org.joget.apps.app.model.DatalistDefinition;
 import org.joget.apps.app.service.AppDevUtil;
@@ -112,6 +114,13 @@ public class DatalistDefinitionDaoImpl extends AbstractAppVersionedObjectDao<Dat
             String commitMessage = "Update list " + object.getId();
             AppDevUtil.fileSave(object.getAppDefinition(), filename, json, commitMessage);
 
+            // save yaml
+            filename = "lists/" + object.getId() + ".yaml";
+            JSONObject jsonObj = new JSONObject(json);
+            Map<String, Object> map = jsonObj.toMap();
+            String yaml = AppDevUtil.mapToYamlString(map);
+            AppDevUtil.fileSave(object.getAppDefinition(), filename, yaml, "");
+
             // sync app plugins
             AppDevUtil.dirSyncAppPlugins(object.getAppDefinition());
         }
@@ -161,6 +170,13 @@ public class DatalistDefinitionDaoImpl extends AbstractAppVersionedObjectDao<Dat
             String json = AppDevUtil.formatJson(datalistDef.getJson());
             String commitMessage = "Add list " + datalistDef.getId();
             AppDevUtil.fileSave(datalistDef.getAppDefinition(), filename, json, commitMessage);
+
+            // save yaml
+            filename = "lists/" + datalistDef.getId() + ".yaml";
+            JSONObject jsonObj = new JSONObject(json);
+            Map<String, Object> map = jsonObj.toMap();
+            String yaml = AppDevUtil.mapToYamlString(map);
+            AppDevUtil.fileSave(datalistDef.getAppDefinition(), filename, yaml, "");
 
             // sync app plugins
             AppDevUtil.dirSyncAppPlugins(datalistDef.getAppDefinition());

@@ -81,6 +81,10 @@ import org.simpleframework.xml.Serializer;
 import org.simpleframework.xml.core.Persister;
 import org.springframework.beans.BeansException;
 import org.springframework.util.ClassUtils;
+import org.yaml.snakeyaml.DumperOptions;
+import org.yaml.snakeyaml.Yaml;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.core.type.TypeReference;
 
 public class AppDevUtil {
 
@@ -104,6 +108,7 @@ public class AppDevUtil {
     static ThreadLocal backgroundSync = new ThreadLocal();
     
     private static final boolean GIT_DISABLED;
+    private static final ObjectMapper MAPPER = new ObjectMapper();
     private static Set<String> prevFileNames = null;
     private static int prevFileCount = -1;
     
@@ -1044,6 +1049,76 @@ public class AppDevUtil {
             }
         } catch (IOException | GitAPIException ex) {
             LogUtil.error(AppDevUtil.class.getName(), ex, ex.getMessage());
+        }
+    }
+
+    /**
+     * Converts Map to YAML string
+     * @param map
+     * @return YAML string in Block flowstyle
+     */
+    public static String mapToYamlString (Map<String, Object> map) {
+        try {
+            DumperOptions options = new DumperOptions();
+            options.setDefaultFlowStyle(DumperOptions.FlowStyle.BLOCK);
+            options.setPrettyFlow(true);
+
+            Yaml yaml = new Yaml(options);
+            return yaml.dump(map);
+        } catch (Exception e) {
+            LogUtil.error(AppDevUtil.class.getName(), e, "");
+        }
+
+        return "";
+    }
+
+    /**
+     * Converts escaped JSON string in 'pluginProperties' to Map
+     * @param obj
+     */
+    public static void processPluginProperties(Map<String, Object> obj) {
+        if (obj == null){ return; }
+
+        Object packageDefListObj = obj.get("packageDefinitionList");
+        if (!(packageDefListObj instanceof Map)){ return; }
+        Map<String, Object> packageDefList = (Map<String, Object>) packageDefListObj;
+
+        Object packageDefObj = packageDefList.get("packageDefinition");
+        if (!(packageDefObj instanceof Map)){ return; }
+        Map<String, Object> packageDef = (Map<String, Object>) packageDefObj;
+
+        Object pluginMapObj = packageDef.get("packageActivityPluginMap");
+        if (!(pluginMapObj instanceof Map)){ return; }
+        Map<String, Object> pluginMap = (Map<String, Object>) pluginMapObj;
+
+        Object entryObj = pluginMap.get("entry");
+        List<?> entryList = null;
+        if (entryObj instanceof List) {
+            entryList = (List<?>) entryObj;
+        } else if (entryObj instanceof Map) {
+            entryList = List.of(entryObj); // wrap single map in a list
+        } else {
+            return;
+        }
+
+        for (Object entryItem : entryList) {
+            if (!(entryItem instanceof Map)){ continue; }
+            Map<String, Object> entry = (Map<String, Object>) entryItem;
+
+            Object pluginObj = entry.get("packageActivityPlugin");
+            if (!(pluginObj instanceof Map)){ continue; }
+            Map<String, Object> plugin = (Map<String, Object>) pluginObj;
+
+            Object pluginPropsObj = plugin.get("pluginProperties");
+            if (!(pluginPropsObj instanceof String)){ continue; }
+            String pluginProps = (String) pluginPropsObj;
+
+            try {
+                Map<String, Object> parsed = MAPPER.readValue(pluginProps, new TypeReference<Map<String, Object>>(){});
+                plugin.put("pluginProperties", parsed);
+            } catch (Exception e) {
+                LogUtil.error(AppDevUtil.class.getName(), e, "");
+            }
         }
     }
 

@@ -5,6 +5,7 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 import net.sf.ehcache.Element;
+import java.util.Map;
 import org.joget.apps.app.model.AppDefinition;
 import org.joget.apps.app.model.BuilderDefinition;
 import org.joget.apps.app.model.CustomBuilder;
@@ -14,6 +15,7 @@ import org.joget.apps.app.service.CustomBuilderUtil;
 import org.joget.commons.util.DynamicDataSourceManager;
 import org.joget.commons.util.LogUtil;
 import org.joget.commons.util.SecurityUtil;
+import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 
 public class BuilderDefinitionDaoImpl extends AbstractAppVersionedObjectDao<BuilderDefinition> implements BuilderDefinitionDao  {
@@ -142,6 +144,13 @@ public class BuilderDefinitionDaoImpl extends AbstractAppVersionedObjectDao<Buil
             String commitMessage = "Update " + type + " " + id;
             AppDevUtil.fileSave(object.getAppDefinition(), filename, json, commitMessage);
 
+            // save yaml
+            filename = "builder/" + type + "/" + id + ".yaml";
+            JSONObject jsonObj = new JSONObject(json);
+            Map<String, Object> map = jsonObj.toMap();
+            String yaml  = AppDevUtil.mapToYamlString(map);
+            AppDevUtil.fileSave(object.getAppDefinition(), filename, yaml, "");
+
             // sync app plugins
             AppDevUtil.dirSyncAppPlugins(object.getAppDefinition());
         }
@@ -221,6 +230,13 @@ public class BuilderDefinitionDaoImpl extends AbstractAppVersionedObjectDao<Buil
             String json = AppDevUtil.formatJson(builderDef.getJson());
             String commitMessage = "Add " + builderDef.getType() + " " + builderDef.getId();
             AppDevUtil.fileSave(builderDef.getAppDefinition(), filename, json, commitMessage);
+
+            // save yaml
+            filename = "builder/" + builderDef.getType() + "/" + builderDef.getId() + ".yaml";
+            JSONObject jsonObj = new JSONObject(json);
+            Map<String, Object> map = jsonObj.toMap();
+            String yaml  = AppDevUtil.mapToYamlString(map);
+            AppDevUtil.fileSave(builderDef.getAppDefinition(), filename, yaml, "");
 
             // sync app plugins
             AppDevUtil.dirSyncAppPlugins(builderDef.getAppDefinition());

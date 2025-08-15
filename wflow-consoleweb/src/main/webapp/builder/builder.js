@@ -1243,6 +1243,35 @@ window._CustomBuilder = {
     getJson : function () {
         return CustomBuilder.json;
     },
+
+    /*
+     * Process multi-lines value to replace tabs and trailing space(s)
+     */
+    processMultiLines : function(prop) {
+
+        const normalize = (val) => {
+            if (typeof val === "string" && val !== "") {
+                if (val.includes('\t') || /[ ]+\n/g.test(val) || /\s+$/.test(val)) {
+                    return val
+                        .replaceAll("\t", "    ")
+                        .replaceAll(/[ ]+\n/g, "\n")
+                        .replace(/[ ]+$/g, "");
+                }
+                return val;
+            } else if (Array.isArray(val)) {
+                return val.map(normalize);
+            } else if (val && typeof val === "object") {
+                for (let k in val) {
+                    if (val.hasOwnProperty(k)) {
+                        val[k] = normalize(val[k]);
+                    }
+                }
+            }
+            return val;
+        }
+
+        normalize(prop);
+    },
     
     /*
      * Save JSON 
@@ -2059,6 +2088,7 @@ window._CustomBuilder = {
                 
                 var newPropertiesJson = JSON.encode(elementProperty);
                 if (oldPropertiesJson !== newPropertiesJson) {
+                    CustomBuilder.processMultiLines(elementProperty);
                     if ($(element).is('[data-cbuilder-style-id]')) {
                         var style = $(element).next('[data-cbuilder-style]');
                         $(element).append(style);
@@ -2756,7 +2786,102 @@ window._CustomBuilder = {
                     contextSize: null,
                     viewType: "1"
                 }));
+
+                // Identify multiline strings
+                const keyRegex = /^\s*"([^"]+)"\s*:/;
+                const valRegex = /\s*:\s*"([^"]*)"/;
+                let multilineIndex = [];
+                current.forEach((line, index) => {
+                    if (!line.match(keyRegex) || !line.match(valRegex)) {
+                        return;
+                    }
+                    if (line.match(valRegex)[1].includes('\\n')){
+                        multilineIndex.push(index);
+                    }
+                });
+                $("#diffoutput").data("multilineIndex", multilineIndex);
+
+                // Generate diff view for multiline strings
+                $("#diffoutput").on("click", "td.insert", function() {
+                    
+                    var multilineIndex = $("#diffoutput").data("multilineIndex")
+                    var index = $(this).closest('tr').find('th').eq(1).text().trim();
+                    var content = $(this).text();
+
+                    if (!multilineIndex.includes(index-1)) {
+                        return;
+                    }
+
+                    var currentRow = $(this).closest('tr');
+                    var nextRow = currentRow.next('.formatted-script');
+                    if (nextRow.length > 0) {
+                        nextRow.find('pre').slideUp(300, function() {
+                            nextRow.remove();
+                        });
+                        return;
+                    }
                 
+                    content = content.endsWith(',') ? content.slice(0, -1) : content;
+                    content = "{ " + content + " }";
+                    content = Object.values(JSON.parse(content))[0];
+
+                    var originalScript = currentRow.prev('tr').find('td.delete').text();
+                    var originalLines = "";
+                    if (originalScript !== "") {
+                        originalScript = originalScript.endsWith(',') ? originalScript.slice(0, -1) : originalScript;
+                        originalScript = "{ " + originalScript + " }";
+                        originalScript = Object.values(JSON.parse(originalScript))[0];
+                        originalLines = originalScript.split('\n');
+                    }
+                    
+                    var changedScript = content;
+                    var changedLines = changedScript.split('\n');
+                    var sm = new difflib.SequenceMatcher(originalLines, changedLines);
+                    var opcodes = sm.get_opcodes();
+
+                    var newRow = $('<tr class="formatted-script">');
+                    newRow.append('<th></th><th></th>');
+                    var formattedCell = $('<td colspan="1">');
+                    var pre = $('<pre>').css({
+                        'margin': 0,
+                        'background': '#f5f5f5',
+                        'padding': '0px',
+                        'display': 'none'
+                    });
+
+                    var formattedContent = diffview.buildView({
+                        baseTextLines: originalLines,
+                        newTextLines: changedLines,
+                        opcodes: opcodes,
+                        baseTextName: "",
+                        newTextName: "",
+                        contextSize: null,
+                        viewType: "1"
+                    });
+                
+                    pre.html(formattedContent);
+                    formattedCell.append(pre);
+                    newRow.append(formattedCell);
+                    currentRow.after(newRow);
+                    newRow.find('pre').slideDown(300);
+                });
+
+                // Identify cells with multiline strings
+                $("#diffoutput td.insert").each(function() {
+                    var content = $(this).text();
+                    if (content.includes('\\n')) {
+                        $(this).attr('data-content-type', 'script');
+                    }
+                });
+
+                // Trigger click on cells with multiline strings upon loading
+                $("#diffoutput td.insert").each(function() {
+                    var content = $(this).text();
+                    if (content.includes('\\n')) {
+                        $(this).trigger("click");
+                    }
+                });
+
                 //generate indicator
                 var totalRow = $("#diffoutput table tbody tr > td").length;
                 var totalHeight = $("#diffoutput table").outerHeight() + 20 + 55; //padding top & padding bottom

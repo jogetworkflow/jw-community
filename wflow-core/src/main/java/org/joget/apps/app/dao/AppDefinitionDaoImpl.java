@@ -13,6 +13,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
+import com.fasterxml.jackson.dataformat.xml.XmlMapper;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.filefilter.DirectoryFileFilter;
 import org.apache.commons.io.filefilter.FileFileFilter;
@@ -251,6 +252,18 @@ public class AppDefinitionDaoImpl extends AbstractVersionedObjectDao<AppDefiniti
             String commitMessage = "Update app definition " + appDef.getId();
             AppDevUtil.fileSave(appDef, filename, xml, commitMessage);
 
+            // save yaml
+            try {
+                filename = "appDefinition.yaml";
+                XmlMapper xmlMapper = new XmlMapper();
+                Map<String, Object> map = xmlMapper.readValue(xml, Map.class);
+                AppDevUtil.processPluginProperties(map);
+                String yaml = AppDevUtil.mapToYamlString(map);
+                AppDevUtil.fileSave(appDef, filename, yaml, "");
+            } catch (Exception e) {
+                LogUtil.error(getClass().getName(), e, "");
+            }
+
             // save or delete app config
             filename = "appConfig.xml";
             Properties gitProperties = AppDevUtil.getAppDevProperties(appDef);
@@ -288,6 +301,18 @@ public class AppDefinitionDaoImpl extends AbstractVersionedObjectDao<AppDefiniti
             String xml = AppDevUtil.getAppDefinitionXml(appDef);
             String commitMessage = "Update app definition " + appDef.getId();
             AppDevUtil.fileSave(appDef, filename, xml, commitMessage);
+
+            // save yaml
+            try {
+                filename = "appDefinition.yaml";
+                XmlMapper xmlMapper = new XmlMapper();
+                Map<String, Object> map = xmlMapper.readValue(xml, Map.class);
+                AppDevUtil.processPluginProperties(map);
+                String yaml = AppDevUtil.mapToYamlString(map);
+                AppDevUtil.fileSave(appDef, filename, yaml, "");
+            } catch (Exception e) {
+                LogUtil.error(getClass().getName(), e, "");
+            }
 
             // save or delete app config
             filename = "appConfig.xml";

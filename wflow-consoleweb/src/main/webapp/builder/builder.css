@@ -2412,6 +2412,29 @@ table.diff tbody th{
 #i18nView .builder-view-body{
     padding: 20px 20px 0px;
 }
+table.diff .insert[data-content-type="script"]:hover {
+    cursor: pointer;
+    color: blue;
+}
+.formatted-script.opening {
+    animation: slideDown 0.3s ease-out;
+}
+.formatted-script.closing {
+    animation: slideUp 0.3s ease-out;
+}
+td[colspan="1"] {
+    padding: 0px !important;
+}
+.formatted-script pre .delete {
+    background-color: #fedddd;
+    color: #d8000c;
+    text-decoration: line-through;
+}
+.formatted-script pre .insert {
+    background-color: #c9ffd8;
+    color: #267300;
+    font-weight: bold;
+}
 
 /* mode */
 div#builderModeOption {

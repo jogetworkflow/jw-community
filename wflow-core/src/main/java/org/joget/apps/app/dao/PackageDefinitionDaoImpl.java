@@ -7,6 +7,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Map;
+import com.fasterxml.jackson.dataformat.xml.XmlMapper;
 import org.hibernate.query.Query;
 import org.hibernate.Session;
 import org.joget.apps.app.model.AppDefinition;
@@ -85,6 +86,17 @@ public class PackageDefinitionDaoImpl extends AbstractVersionedObjectDao<Package
             String xml = AppDevUtil.getAppDefinitionXml(appDef);
             String commitMessage = "Update package " + appDef.getId();
             AppDevUtil.fileSave(appDef, filename, xml, commitMessage);
+
+            try {
+                filename = "appDefinition.yaml";
+                XmlMapper xmlMapper = new XmlMapper();
+                Map<String, Object> map = xmlMapper.readValue(xml, Map.class);
+                AppDevUtil.processPluginProperties(map);
+                String yaml = AppDevUtil.mapToYamlString(map);
+                AppDevUtil.fileSave(appDef, filename, yaml, "");
+            } catch (Exception e) {
+                LogUtil.error(getClass().getName(), e, "");
+            }
 
             // sync app plugins
             AppDevUtil.dirSyncAppPlugins(appDef);

@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
+import org.json.JSONObject;
 import org.joget.apps.app.model.AppDefinition;
 import org.joget.apps.app.model.UserviewDefinition;
 import org.joget.apps.app.service.AppDevUtil;
@@ -111,6 +113,13 @@ public class UserviewDefinitionDaoImpl extends AbstractAppVersionedObjectDao<Use
             String commitMessage = "Update userview " + object.getId();
             AppDevUtil.fileSave(object.getAppDefinition(), filename, json, commitMessage);
 
+            // save yaml
+            filename = "userviews/" + object.getId() + ".yaml";
+            JSONObject jsonObj = new JSONObject(json);
+            Map<String, Object> map = jsonObj.toMap();
+            String yaml = AppDevUtil.mapToYamlString(map);
+            AppDevUtil.fileSave(object.getAppDefinition(), filename, yaml, "");
+
             // sync app plugins
             AppDevUtil.dirSyncAppPlugins(object.getAppDefinition());
         }
@@ -160,6 +169,13 @@ public class UserviewDefinitionDaoImpl extends AbstractAppVersionedObjectDao<Use
             String json = AppDevUtil.formatJson(userviewDef.getJson());
             String commitMessage = "Add userview " + userviewDef.getId();
             AppDevUtil.fileSave(userviewDef.getAppDefinition(), filename, json, commitMessage);
+
+            // save yaml
+            filename = "userviews/" + userviewDef.getId() + ".yaml";
+            JSONObject jsonObj = new JSONObject(json);
+            Map<String, Object> map = jsonObj.toMap();
+            String yaml = AppDevUtil.mapToYamlString(map);
+            AppDevUtil.fileSave(userviewDef.getAppDefinition(), filename, yaml, "");
 
             // sync app plugins
             AppDevUtil.dirSyncAppPlugins(userviewDef.getAppDefinition());
