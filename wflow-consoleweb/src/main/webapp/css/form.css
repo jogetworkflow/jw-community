@@ -619,6 +619,7 @@ body.rtl #${elementParamName!}_multiPagedForm_${element.properties.elementUnique
 .multiPagedForm .page-nav-panel .nav_item.current button{
     font-weight: bold;
     color: #000;
+    display: block !important;
 }
 
 .multiPagedForm.tab .page-nav-panel .nav_item{
@@ -637,7 +638,7 @@ body.rtl #${elementParamName!}_multiPagedForm_${element.properties.elementUnique
 
 .rtl .multiPagedForm.wizard .page-nav-panel .nav_item {
     float: right;
-    padding-left:15px;
+    padding-left:0px;
     padding-right:auto;
 }
 
@@ -696,6 +697,11 @@ body.rtl #${elementParamName!}_multiPagedForm_${element.properties.elementUnique
     display:none;
 }
 
+.multiPagedForm .page-nav-panel ul {
+    overflow-x: auto;
+    overflow-y: hidden;
+}
+
 .mpf-container .subform-section{
     background:transparent;
 }
@@ -707,11 +713,13 @@ body.rtl #${elementParamName!}_multiPagedForm_${element.properties.elementUnique
 @media (max-width: 767px) {
     .multiPagedForm .page-nav-panel.bottom{
         display:block;
+        margin-top: 10px;
+        margin-bottom: 0px !important;
     }
     
     .multiPagedForm .page-nav-panel ul {
-        padding:0;
-        margin:0;
+        padding:0 !important;
+        margin:0 !important;
     }
     
     .multiPagedForm .page-button-panel,
@@ -749,8 +757,6 @@ body.rtl #${elementParamName!}_multiPagedForm_${element.properties.elementUnique
         float:none;
         display:block;
         width: 100%;
-        background: #f5f5f5;
-        border:#ddd solid 1px;
         padding:8px;
         margin:0;
         margin-bottom: 3px;

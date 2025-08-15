@@ -247,55 +247,6 @@ $(document).ready(function() {
                 }
             }, 150);
         }
-
-        var $navigationButtons = $('<div class="navigation-arrows-container"><div class="left-navigation-arrow"></div><div class="right-navigation-arrow"></div></div>');
-        if ($(".form-element.multiPagedForm > .page-nav-panel.top .navigation-arrows-container").length === 0) {
-            $(".form-element.multiPagedForm > .page-nav-panel.top > ul").after($navigationButtons);
-        } 
-
-
-        function checkScrollPosition($ul) {
-            let scrollLeft = $ul.scrollLeft();
-            let maxScrollLeft = $ul[0].scrollWidth - $ul[0].clientWidth;
-            if (scrollLeft <= 0) {
-                $ul.parent().find(".navigation-arrows-container > .left-navigation-arrow").addClass("disabled");
-            } else {
-                $ul.parent().find(".navigation-arrows-container > .left-navigation-arrow").removeClass("disabled");
-            }
-            if (Math.round(scrollLeft) >= Math.round(maxScrollLeft)) {
-                $ul.parent().find(".navigation-arrows-container > .right-navigation-arrow").addClass("disabled");
-            } else {
-                $ul.parent().find(".navigation-arrows-container > .right-navigation-arrow").removeClass("disabled");
-            }
-        }
-        $navigationButtons.find("div.left-navigation-arrow").on("click", function() {
-            let $ul = $(this).parent().prev("ul");
-            $ul.scrollLeft($ul.scrollLeft() - 100);
-            setTimeout(function() {
-                checkScrollPosition($ul);
-            }, 300);
-        });
-        $navigationButtons.find("div.right-navigation-arrow").on("click", function() {
-            let $ul = $(this).parent().prev("ul");
-            $ul.scrollLeft($ul.scrollLeft() + 100);
-            setTimeout(function() {
-                checkScrollPosition($ul);
-            }, 300);
-        });
-        $(".form-element.multiPagedForm > .page-nav-panel.top > ul").each(function() {
-            checkScrollPosition($(this));
-
-            var totalWidth = 0;
-            $(this).find("li").each(function(){
-                totalWidth += $(this).width();
-            })
-
-            if (totalWidth <= $(this).parent().width()) {
-                $(this).addClass("hideNavArrows")
-            } else {
-                $(this).removeClass("hideNavArrows")
-            }
-        });
     })
     $(window).on("page_loaded", function() {
         if ($("a.print-button").length > 0) {

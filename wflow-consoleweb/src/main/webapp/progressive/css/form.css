@@ -842,6 +842,12 @@ body .multiPagedForm.tab .page-nav-panel {
     margin-bottom: 10px; 
 }
 
+body .multiPagedForm.wizard .page-nav-panel.bottom,
+body .multiPagedForm.tab .page-nav-panel.bottom {
+    margin-bottom: 0px;
+    margin-top: 10px;
+}
+
 body .multiPagedForm.wizard .page-nav-panel ul,
 body .multiPagedForm.tab .page-nav-panel ul {
     list-style: none;
@@ -857,11 +863,6 @@ body .multiPagedForm.wizard .page-nav-panel ul li.nav_item,
 body .multiPagedForm.tab .page-nav-panel ul li.nav_item {
     position: relative;
     margin-right: 0px;
-}
-
-body .multiPagedForm.wizard .page-nav-panel ul li.nav_item.current,
-body .multiPagedForm.tab .page-nav-panel ul li.nav_item.current {
-    border-bottom: solid 2px;
 }
 
 body .multiPagedForm.wizard .page-nav-panel .nav_item.current button,
@@ -898,7 +899,7 @@ body.rtl .multiPagedForm.wizard .page-nav-panel .nav_item.current:after, body .m
     outline:0px;
 }
 
-@media (min-width: 768px){
+@media (min-width: 767px){
     body .multiPagedForm.wizard .page-nav-panel .nav_item {
         background: none;
         position: relative;
@@ -907,23 +908,29 @@ body.rtl .multiPagedForm.wizard .page-nav-panel .nav_item.current:after, body .m
     }
     body.rtl .multiPagedForm.wizard .page-nav-panel .nav_item {
         padding-right: auto;    
-        margin-right: auto;
+        margin-right: 0px;
         padding-left: 0;    
         margin-left: 7px;
     }
-    body .multiPagedForm.wizard .page-nav-panel .nav_item:before {
+    body .multiPagedForm.wizard .page-nav-panel .nav_item:not(:first-child):before {
         font: normal normal normal 14px/1 FontAwesome;
         content: "\f105";
         display: block;
         color: inherit;
         position: absolute;
-        top: 5px;
-        left: -6px;
+        transform: translateY(-50%);
+        top: 15px;
+        left: -2px;
         font-size: 18px;
     }
     body.rtl .multiPagedForm.wizard .page-nav-panel .nav_item:before {
         right: -6px;
-        left:auto;
+        left: auto;
+        transform: scaleX(-1);
+        top: 5px;
+    }
+    body .multiPagedForm.wizard .page-nav-panel ul{
+        padding: 0 5px;
     }
 }
 
@@ -941,16 +948,15 @@ body.rtl .multiPagedForm.wizard .page-nav-panel .nav_item.current:after, body .m
         border: #9E9E9E solid 2px;
     }
     body .multiPagedForm.wizard .page-nav-panel .nav_item.current, body .multiPagedForm.tab .page-nav-panel .nav_item.current {
-        border-bottom: 0;
-        border: 2px solid #727272;
+        border: none !important;
     }
     body .multiPagedForm.wizard .page-nav-panel .nav_item.current button:disabled, body .multiPagedForm.tab .page-nav-panel .nav_item.current button:disabled, body .multiPagedForm.wizard .page-nav-panel .nav_item.current button, body .multiPagedForm.tab .page-nav-panel .nav_item.current button {
         background: none;
     }
     body .multiPagedForm .page-container {
         border-radius: 0;
-        margin-bottom: -2px;
-        margin-top: -12px;
+        margin-bottom: 0px;
+        margin-top: 0px;
         border-top: 0;
         border: 2px solid #727272;
     }

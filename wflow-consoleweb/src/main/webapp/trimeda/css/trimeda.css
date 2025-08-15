@@ -1876,17 +1876,22 @@ body.mediumFontSize #form-canvas input + .numeric_field_controls > .numeric_fiel
     gap: 20px;
     border-bottom: none;
 }
-
-.form-element.multiPagedForm > .page-nav-panel.top > ul {
-    margin-bottom: 0;
-    display: flex;
-    overflow-x: auto;
-    white-space: nowrap;
-    scroll-behavior: smooth;
-    scrollbar-width: none;
-    -ms-overflow-style: none;
+@media (min-width: 768px) {
+    .form-element.multiPagedForm > .page-nav-panel.top > ul {
+        margin-bottom: 0;
+        display: flex;
+        overflow-x: auto;
+        white-space: nowrap;
+        scroll-behavior: smooth;
+        scrollbar-width: none;
+        -ms-overflow-style: none;
+    }
+    .multiPagedForm .page-nav-panel .nav_item.current button,
+    .multiPagedForm .page-nav-panel .nav_item button:hover,
+    .multiPagedForm .page-nav-panel .nav_item button > span:focus-visible {
+        border-color: transparent;
+    }
 }
-
 .form-element.multiPagedForm > .page-nav-panel.top > ul.hideNavArrows + div.navigation-arrows-container {
     display: none;
 }
@@ -1943,7 +1948,6 @@ body.mediumFontSize #form-canvas input + .numeric_field_controls > .numeric_fiel
 .multiPagedForm .page-nav-panel .nav_item button:hover,
 .multiPagedForm .page-nav-panel .nav_item button > span:focus-visible {
     color: var(--primary-text-color);
-    border: none;
     outline: none;
 }
 
@@ -1951,11 +1955,16 @@ body.mediumFontSize #form-canvas input + .numeric_field_controls > .numeric_fiel
     padding-bottom: 0px;
 }
 
-.multiPagedForm .page-nav-panel .nav_item.current button > span {
-    padding-bottom: 8px;
+@media (min-width: 769px) {
+  .multiPagedForm .page-nav-panel .nav_item.current button > span {
+    padding-bottom: 7px;
     border-bottom: 1px solid var(--primary-text-color);
+  }
 }
 
+.multiPagedForm.wizard .page-nav-panel .nav_item::before{
+    padding-top: 3px;
+}
 /* Date Picker */
 #ui-datepicker-div > *:not(table.ui-datepicker-calendar) {
     margin-left: 24px;
@@ -2469,7 +2478,6 @@ body.rtl .accordion .card-header::after {
     }
 
     .form-element.multiPagedForm > .page-nav-panel.top > ul {
-        flex-direction: column;
         width: 100%;
     }
     
