@@ -1179,6 +1179,8 @@ body.rtl .handsontable .htCore tr td:last-child {
 
 .multiPagedForm .page-nav-panel ul {
     padding: 0;
+    overflow-x: auto;
+    overflow-y: hidden;
 }
 
 .multiPagedForm .page-nav-panel ul,
@@ -1286,6 +1288,12 @@ body.rtl .handsontable .htCore tr td:last-child {
 }
 
 @media(min-width:768px) {
+    .multiPagedForm .page-nav-panel .nav_item button span {
+        display: block;
+        max-width: 250px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
     .multiPagedForm.wizard .page-nav-panel {
         text-align: center;
         margin-bottom: 5px;
@@ -1296,6 +1304,7 @@ body.rtl .handsontable .htCore tr td:last-child {
         display: inline-block;
         position: relative;
         padding: 0 15px;
+        padding-bottom: 8px;
         cursor: pointer;
     }
 
@@ -1324,6 +1333,11 @@ body.rtl .handsontable .htCore tr td:last-child {
         top: 15px;
         right: -2px;
     }
+    
+    body.rtl .multiPagedForm.wizard .page-nav-panel .nav_item::after {
+        left: -2px;
+        right: unset;
+    }
 
     .multiPagedForm.wizard .page-nav-panel .nav_item:last-child::after {
         display: none;
@@ -1337,6 +1351,11 @@ body.rtl .handsontable .htCore tr td:last-child {
         top: 15px;
         left: -2px;
     }
+    
+    body.rtl .multiPagedForm.wizard .page-nav-panel .nav_item button::after {
+        right: -2px;
+        left: unset;
+    }
 
     .multiPagedForm.wizard .page-nav-panel .nav_item:first-child button::after {
         display: none;
@@ -1346,6 +1365,10 @@ body.rtl .handsontable .htCore tr td:last-child {
         color: var(--jgt-wizard-colorTextLightSolid);
         box-shadow: none;
         background: var(--jgt-wizard-colorPrimary);
+    }
+    
+    .multiPagedForm .page-nav-panel .nav_item.current button {
+        white-space: nowrap;
     }
 }
 
@@ -1370,10 +1393,6 @@ body.rtl .handsontable .htCore tr td:last-child {
     float: right;
     padding-left: 15px;
     padding-right: auto;
-}
-
-.rtl .multiPagedForm.wizard .page-nav-panel button {
-    float: right;
 }
 
 @media(max-width:767px) {
@@ -1411,6 +1430,11 @@ body.rtl .handsontable .htCore tr td:last-child {
         display: block;
         background: none;
         padding-right: 0;
+        padding-left: 0;
+    }
+    
+    .multiPagedForm.wizard .page-nav-panel .nav_item button span{
+        line-height: unset;
     }
 
     .multiPagedForm.wizard .page-nav-panel .nav_item button,
@@ -1450,6 +1474,10 @@ body.rtl .handsontable .htCore tr td:last-child {
         -webkit-border-radius: 5px 5px 0px 0px;
         -khtml-border-radius: 5px 5px 0px 0px;
         border-radius: 5px 5px 0px 0px;
+    }
+    
+    .multiPagedForm .page-nav-panel .nav_item button{
+        height: unset;
     }
 
     .multiPagedForm .page-container {
