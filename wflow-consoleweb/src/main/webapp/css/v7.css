@@ -1165,9 +1165,9 @@ body .flexigrid .pReload.loading > span:before {
 
 /* resourceGrid */
 #resourcesGrid #file-list {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 16px;
+    display: grid;
+    gap: 39px;
+    grid-template-columns: repeat(6, 1fr);
 }
 
 /* help guide */

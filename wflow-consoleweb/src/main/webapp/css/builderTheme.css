@@ -3233,6 +3233,10 @@ body[builder-theme] #resources .sort-toggle-button {
     float: inline-end;
 }
 
+#JsonResourcesDataTable_ResourcesList-search > div {
+    display: inline-block;
+}
+
 body[builder-theme] #resources .view-toggle-group, 
 body[builder-theme] #resources .sort-toggle-group {
     display: inline-flex;
@@ -3245,10 +3249,6 @@ body[builder-theme] #resources .sort-toggle-group {
 body[builder-theme] #resources .sort-toggle-group {
     margin-left: 10px;
     float: inherit;
-}
-
-body[builder-theme] #resources .view-toggle-group {
-    float: right;
 }
 
 body[builder-theme] #resources .view-toggle-button, 
@@ -3472,43 +3472,37 @@ body[builder-theme] .file {
 }
 
 @media (min-width: 1441px) { 
-    body[builder-theme] #resourcesGrid [class*="col-"] {
-         flex: 0 1 31%;
-         max-width: 14%;
+    body[builder-theme] #resourcesGrid #file-list {
+        grid-template-columns: repeat(6, 1fr);
     }
 }
 
 @media (max-width: 1440px) { 
-    body[builder-theme] #resourcesGrid [class*="col-"] {
-         flex: 0 1 25%;
-         max-width: 17%;
+    body[builder-theme] #resourcesGrid #file-list {
+        grid-template-columns: repeat(5, 1fr);
     }
 }
 @media (max-width: 1138px) {
-    body[builder-theme] #resourcesGrid [class*="col-"] {
-        flex: 0 1 27%;
-        max-width: 21%;
+    body[builder-theme] #resourcesGrid #file-list {
+        grid-template-columns: repeat(4, 1fr);
     }
 }
 
 @media (max-width:980px) and (min-width: 832px){
-    body[builder-theme] #resourcesGrid [class*="col-"] {
-        flex: 0 1 29%;
-        max-width: 29%;
+    body[builder-theme] #resourcesGrid #file-list {
+        grid-template-columns: repeat(3, 1fr);
     }
 }
 
 @media only screen and (max-width: 850px) {
-    body[builder-theme] #resourcesGrid [class*="col-"] {
-        flex: 0 30 45%;
-        max-width: 44%;
+    body[builder-theme] #resourcesGrid #file-list {
+        grid-template-columns: repeat(2, 1fr);
     }
 }
 
 @media only screen and (max-width: 643px) {
-    body[builder-theme] #resourcesGrid [class*="col-"] {
-        flex: 0 30 100%;
-        max-width: 92%;
+    body[builder-theme] #resourcesGrid #file-list {
+        grid-template-columns: repeat(1, 1fr);
     }
     body[builder-theme] .file-manager .file .file-name {
         width: -webkit-fill-available;
@@ -3528,6 +3522,7 @@ body[builder-theme] .img-container{
 }
 body[builder-theme] .img-container.portrait {
     width: 123px;
+    height: 100px;
 }
 
 body[builder-theme] .img-container.landscape {
@@ -3539,9 +3534,7 @@ body[builder-theme] .img-container.square {
     width: auto; 
     height: 100px; 
 }
-body[builder-theme] #resourcesGrid [class*="col-"] {
-    padding-right: 30px;
-}
+
 body[builder-theme] .file a {
     text-decoration:none !important;
 }
@@ -3577,6 +3570,23 @@ body[builder-theme] .file-count {
     right: 30px;
     bottom: 10px;
 }
+
+body[builder-theme].rtl .file-count{
+    float: left;
+    right: unset;
+    left: 30px;
+}
+/*padding-left: 15px to prevent #sortFieldDropdown dropdown from clipping*/
+body[builder-theme].rtl #sortFieldDropdown{
+    padding-left: 15px;
+    padding-right: 12px;
+}
+
+body[builder-theme].rtl #resources .sort-toggle-group{
+    margin-left:0px;
+    margin-right:10px;
+}
+
 body[builder-theme] #resources .tooltip { 
     margin-left: 5px;
     margin-right: 5px;

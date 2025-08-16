@@ -83,7 +83,6 @@
                 </div>           
             `;
             $('#JsonResourcesDataTable_ResourcesList-search').append(htmlContent);
-            $('#JsonResourcesDataTable_ResourcesList-search').css('display', 'ruby');   
             
             $('#tooltipIcon').tooltipster({
                 content: $('<span><ui:msgEscJS key="console.app.resource.grid.label.tooltip"/></span>'),
@@ -246,15 +245,12 @@
                             .attr('alt', 'img')
                             .addClass('img-fluid img-container')
                             .on('error', function() {
-                                if (!$(this).data('fallback')) {
-                                    var fallbackSrc = file.image.replace('.webp', '.jpg'); 
-                                    $(this).attr('src', fallbackSrc).data('fallback', true);  
-                                } else {
-                                    imageDiv.removeClass('file-img').addClass('icon');
-                                    var iconClass = getIconClass(file.image);
-                                    var icon = $('<i>').addClass('fas fa-unlink');
-                                    imageDiv.append(icon); 
-                                }
+                                imageDiv.removeClass('file-img').addClass('icon');
+                                var iconClass = getIconClass(file.image);
+                                var icon = $('<i>').addClass('fas fa-unlink');
+                                imageDiv.append(icon);
+                                parent.window.CustomBuilder.showMessage(file.id + '<ui:msgEscJS key="console.app.message.display.error.toast.message"/>', "danger", false );
+                                console.error("Image can't be displayed");
                             })
                             .on('load', function() {
                                 var orientation = orientationDetection(this);
@@ -293,10 +289,28 @@
                         selectedIdsDiv.html("," + selectedRows.join(","));
                     });
 
-                    $(cardDiv).on('dblclick', function () {
+                    function openResourcePopup() {
                         var popupDialog = new PopupDialog(resourceUrl, "Resource Details");
                         popupDialog.init();
+                    }
+
+                    $(cardDiv).on('dblclick', function () {
+                        openResourcePopup();
                     });
+                    let lastTap = 0;
+
+                    $(cardDiv).on('touchend', function(e) {
+                        let now = Date.now();
+                        let delta = now - lastTap;
+
+                        if (delta < 300 && delta > 0) {
+                            e.preventDefault(); // Prevent zoom
+                            openResourcePopup();
+                        }
+
+                        lastTap = now;
+                    });
+
                 }
             });
         }

@@ -722,7 +722,7 @@ JsonTable.prototype = {
         var renderResourceFilePreview = function(row, prop) {
             var fileExtension = row[prop].split('.').pop().toLowerCase();
 
-            if (['jpg', 'jpeg', 'png', 'gif'].includes(fileExtension)) {
+            if (['jpg', 'jpeg', 'png', 'gif', 'bmp', 'webp'].includes(fileExtension)) {
                 return '<img src="' + UI.escapeHTML(row[prop]) + '" alt="Image" style="max-width: 100px; max-height: 63px;" />';
             } else if (fileExtension === 'zip') {
                 return '<i class="fa fa-file-archive-o" aria-hidden="true" style="font-size: 63px;"></i>';

@@ -1462,7 +1462,7 @@ PropertyEditor.Util = {
                     }
                 }
 
-                if (!resources[r].value.match(/.(jpg|jpeg|png|gif)$/i)) {
+                if (!resources[r].value.match(/.(jpg|jpeg|png|gif|bmp|webp)$/i)) {
                     ar_container.append("<li><div class=\"image\"><div class=\"ext\"><span>" + fileType.substring(1) + "</span></div></div><span class=\"name\">" + resources[r].value + "</span></li>");
                 } else {
                     ar_container.append("<li><div class=\"image\" style=\"background-image:url('" + resources[r].url + "');\"></div><span class=\"name\">" + resources[r].value + "</span></li>");
@@ -1529,7 +1529,7 @@ PropertyEditor.Util = {
                 $(file.previewElement).remove();
 
                 var fileType = resp.value.substring(resp.value.indexOf("."));
-                if (!resp.value.match(/.(jpg|jpeg|png|gif)$/i)) {
+                if (!resp.value.match(/.(jpg|jpeg|png|gif|bmp|webp)$/i)) {
                     ar_container.prepend("<li><div class=\"image\"><div class=\"ext\"><span>" + fileType.substring(1) + "</span></div></div><span class=\"name\">" + resp.value + "</span></li>");
                 } else {
                     ar_container.prepend("<li><div class=\"image\" style=\"background-image:url('" + resp.url + "');\"></div><span class=\"name\">" + resp.value + "</span></li>");
@@ -11362,7 +11362,7 @@ PropertyEditor.Type.Image.prototype = {
         }
 
         if (this.properties.allowType === undefined || this.properties.allowType === null || this.properties.allowType === "") {
-            this.properties.allowType = ".jpeg;.jpg;.gif;.png";
+            this.properties.allowType = ".jpeg;.jpg;.gif;.png;.bmp;.webp";
         }
 
         var style = imagesize;

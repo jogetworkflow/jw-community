@@ -3015,7 +3015,7 @@ public class ConsoleWebController {
             extension = resourceUrl.substring(resourceUrl.lastIndexOf(".") + 1);
         }
         
-        List<String> imageExtensions = Arrays.asList("jpg", "jpeg", "png", "gif", "bmp");
+        List<String> imageExtensions = Arrays.asList("jpg", "jpeg", "png", "gif", "bmp", "webp");
 
         if (imageExtensions.contains(extension.toLowerCase())) {
             return resourceUrl; 
