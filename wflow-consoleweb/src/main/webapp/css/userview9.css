@@ -96,10 +96,6 @@ body.rtl header.navbar .container-fluid{
     padding: 0px 60px 0px 0px;
 }
 
-body.rtl:not(.horizontal_menu) header.navbar .container-fluid {
-    padding: 0px 60px 0px 20px !important;
-}
-
 #header-logout-text {
     display: none;
 }
@@ -181,17 +177,17 @@ header.navbar .dropdown-menu {
 }
 
 @media (max-width: 430px){
-    /*57px width of user-link */
-    /*32px width of padding-right of .container-fluid */
+    /*37px width of profile image */
     header.navbar .dropdown-menu.notifications {
+        --notication-position: calc(-37px - var(--global-padding) * 2 - var(--global-headerPaddingInline));
         position: absolute;
-        right: calc(0vw - 57px - var(--global-headerPaddingInline)) !important;
+        right: var(--notication-position) !important;
         min-width: 100vw !important;
+        max-width: 100vw;
     }
-    /*57px width of user-link */
-    /*32px width of padding-left of .container-fluid */
+    
     body.rtl header.navbar .dropdown-menu.notifications {
-        left: calc(0vw - 57px - var(--global-headerPaddingInline)) !important;
+        left: var(--notication-position) !important;
         right: unset !important;
     }
 }
