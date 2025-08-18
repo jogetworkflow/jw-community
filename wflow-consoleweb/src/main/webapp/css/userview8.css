@@ -2235,3 +2235,9 @@ body.popupBody.builder-popup #main-body-header{
     box-sizing: border-box;
     z-index: 1000;
 }
+body.rtl form.form fieldset .form-row > label{
+    margin-left: 0px;
+}
+body.rtl form.form fieldset .form-row > .form-input{
+    margin-right: 0px;
+}

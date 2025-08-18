@@ -17,14 +17,14 @@ import org.springframework.web.context.request.ServletRequestAttributes;
  */
 @Service
 @Lazy
-public class HostManager implements ApplicationContextAware {
+public final class HostManager implements ApplicationContextAware {
 
     public static final String SYSTEM_PROPERTY_VIRTUALHOST = "wflow.virtualhost";
     public static final String REQUEST_HOST_INITIALIZED = "REQUEST_HOST_INITIALIZED";
 
-    protected static final ThreadLocal currentHost = new ThreadLocal();
-    protected static final ThreadLocal currentProfile = new InheritableThreadLocal();
-    protected static final ThreadLocal previousProfile = new ThreadLocal();
+    protected static final ThreadLocal currentHost = new HostThreadLocal();
+    protected static final ThreadLocal currentProfile = new HostInheritableThreadLocal();
+    protected static final ThreadLocal previousProfile = new HostThreadLocal();
     protected static String contextPath;
 
     /**
@@ -68,8 +68,8 @@ public class HostManager implements ApplicationContextAware {
                 }
             }
         }
-        currentProfile.set(profile);
         currentHost.remove();
+        currentProfile.set(profile);
     }
 
     /**
