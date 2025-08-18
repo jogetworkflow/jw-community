@@ -7756,6 +7756,15 @@ ProcessBuilder = {
             }
             
             ProcessBuilder.changeNodeId = false;
+        } else if (elementObj.className === "process" && nodeId !== $(element).attr("id").substring(8)) {
+            //update the pool id
+            const oldPoolId = "poolID_" + $(element).attr("id").substring(8);
+            const newPoolId = "poolID_" + ProcessBuilder.currentProcessData.properties.id;
+            
+            const poolModel = ProcessBuilder.lf.getNodeModelById(oldPoolId);
+            poolModel.id = newPoolId;
+            
+            ProcessBuilder.lf.updateAttributes(oldPoolId, poolModel);
         }
         
         if (elementObj.className === "transition") {
@@ -7781,8 +7790,8 @@ ProcessBuilder = {
             }
         }
         
-        if (elementObj.className == "process") {
-            $(element).attr("id", elementProperty.id);
+        if (elementObj.className === "process") {
+            $(element).attr("id", "process_" + elementProperty.id);
         } else {
             ProcessBuilder.updateLFData(element, elementObj, oldNodeId);
         }
