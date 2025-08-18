@@ -145,7 +145,7 @@ public class ConsoleWebPlugin extends ExtDefaultPlugin implements PluginWebSuppo
                 "\"></i>"
                 + "</div>"
                 + "<div class=\"clear\"></div>"
-                + "<script>$(window).on(\"load\", function() { $(\"#welcomeFrame\").attr(\"src\", \"https://www.joget.org/updates/DX8/welcome/?src=community\"); setTimeout(function() {$('iframe#welcomeFrame').css({'opacity': '0.0000001'})},100);});</script>";
+                + "<script>$(window).on(\"load\", function() { $(\"#welcomeFrame\").attr(\"src\", \"https://www.joget.org/updates/DX9/welcome/?src=community\"); setTimeout(function() {$('iframe#welcomeFrame').css({'opacity': '0.0000001'})},100);});</script>";
         return content;
     }
     
