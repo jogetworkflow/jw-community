@@ -6295,14 +6295,38 @@ PropertyEditor.Type.IconTextField.prototype = {
         
         var valueWithoutIcon = this.value;
         var icon= "";
-        var temp = $('<div>'+this.value+'</div>');
-        if ($(temp).find("> *:eq(0)").is("i")) {
-            var i = $(temp).find("> *:eq(0)");
-            var iClass = $(i).attr("class");
-            
-            if (iClass !== "") {
-                icon = $('<div></div>').append(i).html();
-                valueWithoutIcon = $(temp).html().trim();
+        // Extract icon picker icon only if explicitly marked
+        if (typeof this.value === "string") {
+            var matchPicker = this.value.match(/^\s*(<i\b[^>]*\bdata-pe-icon\s*=\s*["']true["'][^>]*><\/i>)\s*/i);
+            if (matchPicker) {
+                icon = matchPicker[1].trim();
+                valueWithoutIcon = this.value.replace(matchPicker[0], "").trim();
+            } else {
+                var temp = $('<div>' + this.value + '</div>');
+                var first = temp.find('> *:eq(0)');
+                // Preserve manual icon HTML inline
+                if (first.is('i')) {
+                    var manualMarker = (first.attr('aria-label') || '').toLowerCase();
+                    // If marked as manual icon, preserve as-is
+                    if (manualMarker === 'pe-manual' || first.hasClass('pe-icon-manual')) {
+                        if (manualMarker === 'pe-manual') {
+                            first.removeAttr('aria-label');
+                        }
+                        if (first.hasClass('pe-icon-manual')) {
+                            first.removeClass('pe-icon-manual');
+                        }
+                        valueWithoutIcon = UI.htmlDecode(temp.html()).trim();
+                    }
+                    // Else treat as picker icon
+                    // Maintain already existing DX8 picker behavior
+                    else {
+                        var iClass = first.attr('class');
+                        if (iClass !== undefined && iClass !== null && iClass !== "") {
+                            icon = $('<div></div>').append(first).html();
+                            valueWithoutIcon = UI.htmlDecode(temp.html()).trim();
+                        }
+                    }
+                }
             }
         }
         

@@ -54,6 +54,14 @@ UI = {
         }
         return stripped;
    },
+   htmlDecode: function(string) {
+       if (string === undefined || string === null) {
+           return "";
+       }
+       var textarea = document.createElement('textarea');
+       textarea.innerHTML = String(string);
+       return textarea.value;
+   },
    userviewThemeParams: function () {
       var params = ''; 
       if (UI.userview_app_id != undefined && UI.userview_app_id != '') {
