@@ -251,7 +251,7 @@ header.navbar .dropdown-menu a span.time {
 }
 
 .rtl header.navbar .dropdown-menu a span.time {
-    left: 20px;
+    left: 0px;
     right: auto;
 }
 
