@@ -7272,8 +7272,10 @@ _CustomBuilder.Builder = {
                 $("#node-details-toggle").find("input").off("click");
                 $("#node-details-toggle").find("input").on("click", function () {
                     if ($("#details-toggle-single").is(":checked")) {
+                        $("body").addClass("show-node-details-single");
                         self.frameBody.addClass("show-node-details-single");
                     } else {
+                        $("body").removeClass("show-node-details-single");
                         self.frameBody.removeClass("show-node-details-single");
                     }
                     self._updateBoxes();
@@ -7295,8 +7297,10 @@ _CustomBuilder.Builder = {
                 $("#node-details-toggle").find("label").removeClass("active");
                 $(this).parent().addClass('active');
                 if ($("#details-toggle-single").is(":checked")) {
+                    $("body").addClass("show-node-details-single");
                     self.frameBody.addClass("show-node-details-single");
                 } else {
+                    $("body").removeClass("show-node-details-single");
                     self.frameBody.removeClass("show-node-details-single");
                 }
                 self._updateBoxes();
@@ -7418,6 +7422,11 @@ _CustomBuilder.Builder = {
     
     adjustNodeAdditional : function(target) {
         var self = CustomBuilder.Builder;
+        
+        if (CustomBuilder.Builder.options.callbacks["adjustNodeAdditional"] !== undefined && CustomBuilder.Builder.options.callbacks["adjustNodeAdditional"] !== "") {
+            CustomBuilder.callback(CustomBuilder.Builder.options.callbacks["adjustNodeAdditional"], [target]);
+            return;
+        }
         
         //check if negative margin top
         if ($(target).css("margin-top").indexOf("-") !== -1) {

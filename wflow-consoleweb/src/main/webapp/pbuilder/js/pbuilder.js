@@ -52,6 +52,7 @@ ProcessBuilder = {
                 "changeNodeAddtionalTarget" : "ProcessBuilder.changeNodeAddtionalTarget",
                 "modifyShowPropertiesData" : "ProcessBuilder.modifyShowPropertiesData",
                 "parseDataToComponent" : "ProcessBuilder.parseDataToComponent",
+                "adjustNodeAdditional" : "ProcessBuilder.adjustNodeAdditional" //set to dummy value, so the default implementation is not run for this builder
             }
         }, function() {
             $("#builder_canvas").before('<div id="process-selector"></div>');
@@ -3506,6 +3507,9 @@ ProcessBuilder = {
         }
         
         ProcessBuilder.validate();
+        
+        //to update the advanced view when changed
+        $(CustomBuilder.Builder.iframe).trigger("change.builder");
     },
     
     /*
@@ -5660,6 +5664,14 @@ ProcessBuilder = {
                 }
                 if (nodeData) {
                     CustomBuilder.Builder.selectedEl = $({'data' : nodeData});
+                    
+                    //to make selected for tree viewer & xray viewer
+                    if ($(".treeRightPanel .tree-container").length > 0) {
+                        let nodeId = id.replace('laneID_', ''); //remove the lane prefix if having it
+                        
+                        $(".treeRightPanel .tree-container .active").removeClass("active");
+                        $(".treeRightPanel .tree-container [data-cbuilder-node-id='"+nodeId+"']").addClass("active");
+                    }
                 }
             };
             
