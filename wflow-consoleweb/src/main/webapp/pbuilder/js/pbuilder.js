@@ -5513,16 +5513,20 @@ ProcessBuilder = {
      * Update zoom label
      */
     updateZoomLabel: function() {
+        $("#zoom-minus, #zoom-plus").prop("disabled", false);
+        
         var self = CustomBuilder.Builder;
         var strIn = self.zoom - 0.1;
         var strOut = self.zoom + 0.1;
         if (strIn < 0.4) {
             strIn = get_cbuilder_msg('pbuilder.label.disabled');
+            $("#zoom-minus").prop("disabled", true);
         } else {
             strIn = Math.round(strIn * 100) + "%";
         }
         if (strOut > 1.6) {
             strOut = get_cbuilder_msg('pbuilder.label.disabled');
+            $("#zoom-plus").prop("disabled", true);
         } else {
             strOut = Math.round(strOut * 100) + "%";
         }
@@ -5534,6 +5538,10 @@ ProcessBuilder = {
      * Reset Zoom
      */
     fitScreen: function(){
+        var self = CustomBuilder.Builder;
+        self.setZoom("");
+        ProcessBuilder.updateZoomLabel();
+        
         ProcessBuilder.lf.resetZoom();
         ProcessBuilder.recenter();
     },
@@ -5552,7 +5560,7 @@ ProcessBuilder = {
     },
 
     /*
-     * Reset Zoom
+     * Auto layout the whole process design
      */
     autoLayout: function () {
         var self = CustomBuilder.Builder;
