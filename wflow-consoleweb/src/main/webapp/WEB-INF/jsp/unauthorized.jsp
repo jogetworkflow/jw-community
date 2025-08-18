@@ -12,9 +12,14 @@
 
 <style>
     #main {
-        width: 90%;
+        width: 99%;
         margin: auto;
         float: none;
+        visibility: visible;
+        padding-top: 10px;
+    }
+    div#content-container {
+        padding-right: 0px;
     }
 </style>
 
