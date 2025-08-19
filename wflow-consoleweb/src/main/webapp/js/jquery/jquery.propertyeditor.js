@@ -1780,10 +1780,13 @@ PropertyEditor.Model.Editor.prototype = {
                 var pageLine = $(pageContainer).offset().top + ($(pageContainer).height() * 0.3);
                 var currentOffset = $(pageContainer).find('.current').offset().top;
                 var nextOffset = currentOffset + $(pageContainer).find('.current').height();
-                if (nextOffset < pageLine) {
-                    $thisObject.nextPage(false, false);
-                } else if (currentOffset > pageLine) {
-                    $thisObject.prevPage(false, false);
+                // If there is no active chosen-container
+                if ($(pageContainer).find('.chosen-container-active').length === 0) {
+                    if (nextOffset < pageLine) {
+                        $thisObject.nextPage(false, false);
+                    } else if (currentOffset > pageLine) {
+                        $thisObject.prevPage(false, false);
+                    }
                 }
             }
         });
