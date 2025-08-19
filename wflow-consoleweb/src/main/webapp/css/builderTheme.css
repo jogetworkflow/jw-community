@@ -1125,6 +1125,9 @@ body[builder-theme] .chosen-container-single .chosen-search input[type="text"] {
 body[builder-theme] .page-button-navigation{
     float: left;
 }
+body[builder-theme].rtl .page-button-navigation{
+    float: right;
+}
 body[builder-theme] .editor-panel-mode .element-pages > .property-editor-page:not(.collapsed):nth-child(2) ~ .property-editor-page > .property-editor-page-title{
     background: var(--theme-primary-color-3);
     border: 1px solid var(--theme-border-color-1);
@@ -1877,6 +1880,12 @@ body[builder-theme].popupBody #generate-btn{
     margin-left: 4px;
     height: 36px !important;
 }
+body[builder-theme].popupBody.rtl .form-buttons input[type='button'],
+body[builder-theme].popupBody.rtl .form-buttons input[type='submit'],
+body[builder-theme].popupBody.rtl .page-button-action input[type='button'],
+body[builder-theme].popupBody.rtl #generate-btn{
+    float: left;
+}
 body[builder-theme].popupBody #main-body-content{
     box-sizing: border-box;
 }
@@ -1898,6 +1907,9 @@ body[builder-theme] .page-button-navigation + .page-button-action{
 }
 body[builder-theme].popupBody .pluginConfig .single-page .property-editor-pages{
     height: calc(100vh - 159px) !important;
+}
+body[builder-theme].rtl .page-button-navigation + .page-button-action{
+    float: left;
 }
 body[builder-theme] .i18n_table tr td textarea {
     padding: 5px 10px;
