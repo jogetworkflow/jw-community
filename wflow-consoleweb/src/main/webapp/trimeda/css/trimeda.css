@@ -1434,7 +1434,7 @@ div.chosen-container ul.chosen-choices  > li.search-choice > a {
 
 .chosen-container.chosen-with-drop .chosen-drop,
 #ui-datepicker-div {
-    top: calc(100% + 8px);
+    top: calc(100% + var(--form-label-spacing));
     padding: 8px 16px;
     border-radius: 8px;
     box-shadow: 2px 4px 10px 0px #2A6AA405;
@@ -2181,7 +2181,7 @@ body.rtl .accordion .card-header::after {
     }
 
     .form-cell > label.label {
-        margin-bottom: 8px;
+        margin-bottom: var(--form-label-spacing);
     }
 
     .numeric_field_controls {
@@ -2452,6 +2452,42 @@ footer {
     }
 }
 /* End of Sidebar Styling */
+
+/* Text Field with Icon Styling */
+.form-cell > label.label.withIcon > i,
+.subform-cell > label.label.withIcon > i,
+.label-left.form-cell > label.label.withIcon > i,
+.label-left.subform-cell > label.label.withIcon > i {
+    height: var(--input-min-height);
+    border-bottom-left-radius: 16px;
+    border-top-left-radius: 16px;
+}
+
+body.rtl *:is(.form-cell > label.label.withIcon > i,
+.subform-cell > label.label.withIcon > i,
+.label-left.form-cell > label.label.withIcon > i,
+.label-left.subform-cell > label.label.withIcon > i) {
+    border-radius: 0px 16px 16px 0px;
+}
+
+.label-top.form-cell > label.label.withIcon > i,
+.label-top.subform-cell > label.label.withIcon > i,
+.label-top .form-cell:not(.label-left) > label.label.withIcon > i, 
+.label-top .subform-cell:not(.label-left) > label.label.withIcon > i {
+    top: calc(100% + var(--form-label-spacing))
+}
+
+@media (max-width: 767px) {
+    .form-cell > label.label.withIcon > i,
+    .subform-cell > label.label.withIcon > i,
+    .label-left.form-cell > label.label.withIcon > i,
+    .label-left.subform-cell > label.label.withIcon > i,
+    body.rtl .form-cell > label.label.withIcon > i,
+    body.rtl .subform-cell > label.label.withIcon > i {
+        top: calc(100% + var(--form-label-spacing));
+    }
+}
+/* End of Text Field with Icon Styling */
 
 /* RTL Related Stylings */
 body.rtl header.navbar .header-nav {
