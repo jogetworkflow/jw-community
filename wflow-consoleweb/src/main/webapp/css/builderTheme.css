@@ -2903,7 +2903,7 @@ body[builder-theme='dark'] input.page-button-prev,
 body[builder-theme='dark'] .property-editor-page-button-panel input[type=button].page-button-cancel,
 body[builder-theme='dark']#cbuilder .property-editor-page-button-panel input[type=button].page-button-prev{
     border: 1px solid #d9d9d9;
-    background-color: #141414;
+    background-color: #141414 !important;
     border-color: #424242;
     color: rgba(255, 255, 255, 0.85);
 }
