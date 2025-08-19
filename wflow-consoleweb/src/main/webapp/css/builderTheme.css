@@ -1094,6 +1094,9 @@ body[builder-theme] .chosen-container-single .chosen-search input[type="text"] {
 body[builder-theme] .page-button-navigation{
     float: left;
 }
+body[builder-theme].rtl .page-button-navigation{
+    float: right;
+}
 body[builder-theme] .editor-panel-mode .element-pages > .property-editor-page:not(.collapsed):nth-child(2) ~ .property-editor-page > .property-editor-page-title{
     background: var(--theme-primary-color-3);
     border: 1px solid var(--theme-border-color-1);
@@ -1788,6 +1791,12 @@ body[builder-theme].popupBody #generate-btn{
     margin-left: 4px;
     height: 36px;
 }
+body[builder-theme].popupBody.rtl .form-buttons input[type='button'],
+body[builder-theme].popupBody.rtl .form-buttons input[type='submit'],
+body[builder-theme].popupBody.rtl .page-button-action input[type='button'],
+body[builder-theme].popupBody.rtl #generate-btn{
+    float: left;
+}
 body[builder-theme].popupBody #main-body-content{
     height: calc(100% - 90px) !important;
 }
@@ -1808,6 +1817,9 @@ body[builder-theme].popupBody .single-page .property-editor-pages > .property-ed
 }
 body[builder-theme] .page-button-navigation + .page-button-action{
     float: right;
+}
+body[builder-theme].rtl .page-button-navigation + .page-button-action{
+    float: left;
 }
 body[builder-theme].popupBody .pluginConfig .property-editor-container {
     height: calc(100% - 0px) !important;
