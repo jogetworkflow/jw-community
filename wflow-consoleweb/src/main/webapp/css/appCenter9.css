@@ -1352,7 +1352,13 @@ body#admin #users_section .filter_form a.btn {
     border-radius: 16px !important;
     padding: 2px 12px !important;
     margin-left: 10px;
-    margin-bottom: 10px;
+}
+body#admin #users_section .filters > span.filter-cell:last-of-type, 
+body#admin #users_section .filter_form a.btn {
+    margin-bottom: 10px !important;
+}
+body#admin #users_section .filters > span.filter-cell:last-of-type input {
+    margin-bottom: 0px !important;
 }
 body#admin #users_section .filter_form a.btn {
     background-color: #009265;
@@ -1944,7 +1950,8 @@ body#home div.appListNav > i.disabled{
     .main-wrapper {
         text-align: center !important;
     }
-    .CDesc {
+    .CDesc,
+    body.rtl div#community .CDesc {
         text-align: center !important;
     }
     .social-btns .btn{
