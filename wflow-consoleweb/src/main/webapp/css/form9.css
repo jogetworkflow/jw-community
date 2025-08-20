@@ -1747,22 +1747,22 @@ body.rtl .label-top .subform-cell:not(.label-left) > label.label > i{
     .subform-cell > label.label > i,
     .label-left.form-cell > label.label > i,
     .label-left.subform-cell > label.label > i{
-        bottom: -35px;
+        bottom: unset;
         right: unset;
-        top: unset;
+        top: calc(100% + var(--jgt-form-marginBottom));
     }
     body.rtl .form-cell > label.label > i,
     body.rtl .subform-cell > label.label > i{
-        bottom: -35px;
+        bottom: unset;
         right: 0;
-        top: unset;
+        top: calc(100% + var(--jgt-form-marginBottom));
     }
 }
 .label-top.form-cell > label.label > i,
 .label-top.subform-cell > label.label > i{
-    bottom: -35px;
+    bottom: unset;
     right: unset;
-    top: unset;
+    top: calc(100% + var(--jgt-form-marginBottom));
 }
 body.rtl .label-top.form-cell > label.label > i,
 body.rtl .label-top.subform-cell > label.label > i{
