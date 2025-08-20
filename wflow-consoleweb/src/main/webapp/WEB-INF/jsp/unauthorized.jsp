@@ -13,8 +13,12 @@
 <style>
     #main {
         width: 90%;
-        margin: auto;
+        margin: auto !important;
         float: none;
+    }
+    body:not(#login) #footer {
+        margin-left: 0px !important;
+        margin-right: 0px !important;
     }
 </style>
 
