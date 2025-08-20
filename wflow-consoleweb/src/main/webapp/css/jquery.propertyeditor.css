@@ -2462,7 +2462,7 @@ body .ui-dialog .button_form.editor-panel-mode #main-body-header {
 }
 body:not(.right-panel-mode-window) .property-editor-container.narrow.wider .assist_icon{
     right: auto;
-    left: 54%;
+    left: 100%;
 }
 .property-editor-container.narrow.wider .property-grid .assist_icon{
     left: 92%;
@@ -2851,7 +2851,7 @@ body:not([builder-theme]).pluginConfigPopup #main-body-header{
 }
 body.rtl:not(.right-panel-mode-window) .property-editor-container.narrow.wider .assist_icon{
     left: auto;
-    right: 54%;
+    right: 100%;
 }
 .rtl .editor-panel-mode.narrow:not(.wider) .property-input > table.grid .property-type-grid-action-column{
     text-align: left;
