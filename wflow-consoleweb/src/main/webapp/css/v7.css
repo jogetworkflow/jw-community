@@ -1167,7 +1167,7 @@ body .flexigrid .pReload.loading > span:before {
 #resourcesGrid #file-list {
     display: grid;
     gap: 39px;
-    grid-template-columns: repeat(6, 1fr);
+    grid-template-columns: repeat(6, minmax(0, 1fr));
 }
 
 /* help guide */
