@@ -1418,6 +1418,9 @@ body#admin #users_section span.value > span.description {
     body#templates input {
         width: 100% !important;
     }
+    body#design_app div.ContainerComponent#community h3 {
+        text-align: center !important;
+    }
 }
 @media (max-width: 400px) {
     body#admin div.user-heading .header-tag .description {
