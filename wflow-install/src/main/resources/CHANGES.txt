@@ -2,6 +2,16 @@ Joget DX COMMUNITY
 ====================
 For more information, please refer to https://community.joget.org
 
+8.2.4
+=====
+9680df5ab Fixed: wflow-wfengine - Monitor > Archive Process - Migrating completed process data to archive process data causing OutOfMemoryError. #1238 @8.2-SNAPSHOT
+686008c78 Fixed: jw-community - Security - Upgrade Apache Tomcat to 9.0.108 CVE-2025-48989. #1279 @8.2-SNAPSHOT
+178254421 Added: wflow-plugin-base - Plugin - Exporting license package. @8.2-SNAPSHOT
+74a59ea15 Fixed: wflow-consoleweb - Fixed password label position is misaligned RTL Mode. #982 @8.2-SNAPSHOT
+7763ee80b Fixed: wflow-consoleweb - Fixed guide icon is misaligned in RTL Mode. #982 @8.2-SNAPSHOT
+4dcc2c072 Fixed: wflow-consoleweb - Theme - Fixed element help link is not properly positioned. #982  @8.2-SNAPSHOT
+290ad9f69 Fixed: wflow-consolweb - Theme - Fixed Send test email popup missing padding in light and dark theme. #982  @8.2-SNASPHOT
+
 8.2.3
 =====
 191cb99dc Fixed: wflow-core - Process Data Collector - Improve implementation for multi tenant security check. #1207 @8.2-SNAPSHOT
