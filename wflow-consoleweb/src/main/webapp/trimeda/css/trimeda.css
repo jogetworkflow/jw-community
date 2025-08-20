@@ -1317,6 +1317,7 @@ body.rtl div.ui-timepicker-div dl dd > * > select {
 
 .form-cell > label.label, .subform-cell > label.label {
     color: var(--theme-link);
+    margin-bottom: var(--form-label-spacing);
 }
 
 .label-top.form-cell > label.label, 
@@ -1533,6 +1534,10 @@ input[type=radio] {
 
 input[type=hidden] + .form-cell, .form-cell + .form-cell, .subform-cell + .subform-cell, .form-cell + .subform-cell, .subform-cell + .form-cell {
     margin-top: 32px;
+}
+
+.label-top .numeric_field_controls {
+    right: 24.55px;
 }
 
 .numeric_field_controls {
@@ -2171,8 +2176,40 @@ body.rtl .accordion .card-header::after {
     }
 }
 
+@media screen and (min-width: 767px) {
+    .label-top.form-container .label-left.form-cell .numeric_field_controls {
+        top: 8px;
+    }
+
+    body.compact-mode .label-top.form-container .label-left.form-cell .numeric_field_controls {
+        top: 4px;
+    }
+}
+
 @media screen and (max-width: 767px) {
-    #header-info > #header-name > .logo, #header-message, .header-nav .user-link {
+    body.compact-mode.rtl.horizontal_menu #sidebar .nav:not(.user-menu) > li > a {
+       padding: var(--sidebar-category-dropdown-padding) 15px;
+    }
+
+    .label-top.form-container .label-left.form-cell .numeric_field_controls {
+        top: 48px;
+    }
+
+    body.compact-mode .label-top.form-container .label-left.form-cell .numeric_field_controls {
+        top: 40px;
+    }
+    
+    span.multiselect-native-select,
+    span.multiselect-native-select > .btn-group,
+    .filter-cell .multiselect-container.dropdown-menu input.multiselect-search {
+        width: 100%;
+    }
+
+    .filter-cell .multiselect.dropdown-toggle {
+        padding: 8px 32px;
+    }
+
+    .header-nav .user-link {
         display: block !important;
     }
     
