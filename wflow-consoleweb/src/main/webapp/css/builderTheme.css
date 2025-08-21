@@ -1896,6 +1896,9 @@ body[builder-theme].popupBody.builder-popup #main-body-content {
 body[builder-theme].popupBody div.property-editor-page-button-panel > div.page-button-action > input.page-button-save{
     float: right;
 }
+body[builder-theme].rtl.popupBody div.property-editor-page-button-panel > div.page-button-action > input.page-button-save{
+    float: left;
+}
 body[builder-theme].popupBody .pluginConfig .compress i, body[builder-theme].popupBody .pluginConfig .expand i {
     margin-top: 4px;
 }
