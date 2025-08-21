@@ -492,7 +492,7 @@ body .close-icon:after {
 }
 .close-icon {
     position: absolute;
-    padding: 2.25rem;
+    padding: 2.04rem 2.25rem;
     left: 0;
     right: 0;
 }
@@ -508,7 +508,7 @@ body.rtl .close-icon:after {
 
 body .hasDatepicker + a, body .hasDatepicker + img {
     position: absolute;
-    padding: 8px 5px;
+    padding: 4px 5px;
     right: 0;
     display: inline-block;
 }
