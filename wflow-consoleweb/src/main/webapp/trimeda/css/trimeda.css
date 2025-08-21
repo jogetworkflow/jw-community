@@ -2067,6 +2067,14 @@ body.rtl .accordion .card-header::after {
     width: 40px !important;
 }
 
+@media (max-width: 374px) {
+    .dataList span.pagelinks a,
+    .dataList span.pagelinks strong,
+    .dataList span.pagelinks > span {
+        min-width: 30px !important;
+    }
+}
+
 .dataList .pagelinks .pc {
     font-size: 20px;
 }
