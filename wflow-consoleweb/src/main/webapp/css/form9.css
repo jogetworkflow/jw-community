@@ -1714,7 +1714,7 @@ body.rtl .numeric_field_control {left:10px; right:auto;}
 body.rtl .form-cell > label.label > i,
 body.rtl .subform-cell > label.label > i{
     border-radius: 0 0.25rem 0.25rem 0;
-    left: -51px;
+    left: -50px;
     right: unset;
 }
 .form-cell > label.label:has(i) + *:not(.ui-screen-hidden),
@@ -1733,14 +1733,14 @@ body.rtl .subform-cell > label.label:has(i) + .ui-screen-hidden + *{
 .label-top .form-cell:not(.label-left) > label.label > i,
 .label-top .subform-cell:not(.label-left) > label.label > i{
    right: unset;
-   bottom: -31px;
-   top: unset;
-   left: 1px;
+   bottom: unset;
+   top: calc(100% + var(--jgt-form-marginBottom));
+   left: 0px;
 }
 body.rtl .label-top .form-cell:not(.label-left) > label.label > i,
 body.rtl .label-top .subform-cell:not(.label-left) > label.label > i{
     left:unset;
-    right: 1px;
+    right: 0px;
 }
 @media (max-width: 768px){
     .form-cell > label.label > i,
