@@ -2109,6 +2109,12 @@ body.rtl .ui-datepicker .ui-datepicker-next {
     color: #FFF;
 }
 
+div#page:has(.time_only.no-manual-input.hasDatepicker.focus) ~ div div.ui-timepicker-div {
+    display: block;
+    border-top: none !important;
+    margin-top: 0px;
+}
+
 div#ui-datepicker-div:has(div.ui-timepicker-div) table.ui-datepicker-calendar:not(:has(td > a.ui-state-active)) + div.ui-timepicker-div {
     display: none;
 }
