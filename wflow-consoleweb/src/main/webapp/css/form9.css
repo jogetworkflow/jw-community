@@ -538,6 +538,14 @@ div.pq-grid * {
     float: right;
 }
 
+.form-cell > label.label + input:has(+ .numeric_field_controls) {
+    padding-inline-end: 30px;
+}
+
+body.rtl .form-cell > label.label + input:has(+ .numeric_field_controls) {
+    padding-inline-start: var(--jgt-input-paddingInline);
+}
+
 .hasDatepicker+a,
 .hasDatepicker+a+a {
     position: absolute;
