@@ -18,6 +18,13 @@ body.rtl #form-canvas .form-cell label.label{
 #form-canvas textarea {
     font-size: 13px;
 }
+.form-cell > label.label + input:has(+ .numeric_field_controls) {
+    padding-right: 30px;
+}
+body.rtl .form-cell > label.label + input:has(+ .numeric_field_controls){
+    padding-left: 30px;
+    padding-right: 0px;
+}
 textarea{
     white-space: pre-wrap !important;
 }

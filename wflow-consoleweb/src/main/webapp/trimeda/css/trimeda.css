@@ -1236,6 +1236,15 @@ body.quickEditModeActive:not(.horizontal_menu) #sidebar #category-container {
     line-height: 14px;
 }
 
+.form-cell > label.label + input:has(+ .numeric_field_controls) {
+    padding-right: 40px !important;
+} 
+
+body.rtl .form-cell > label.label + input:has(+ .numeric_field_controls) {
+    padding-left: 40px !important;
+    padding-right: var(--input-padding) !important;
+}
+
 div.chosen-container.chosen-container-multi .chosen-choices {
     min-height: 56px !important;
     border: 1.5px solid var(--field-border-color) !important;
