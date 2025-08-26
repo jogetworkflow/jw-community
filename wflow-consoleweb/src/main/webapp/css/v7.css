@@ -1663,6 +1663,12 @@ span.dot_yellow{
 @media screen and (max-width:680px) {
     /* general */
 
+    /* Web Console */
+    body.rtl.webconsole div#footer {
+        margin-top: 0px !important;
+        margin-right: 0px !important;
+    }
+
     /* header */
     #home-link {
         max-width: 58%;
