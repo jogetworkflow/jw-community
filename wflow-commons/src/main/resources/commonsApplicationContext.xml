@@ -136,9 +136,13 @@
     <bean id="setupManager" class="org.joget.commons.util.SetupManager" depends-on="staticInitOfDynamicDataSourceManager">
         <property name="setupDao" ref="setupDao"/>
         <property name="setupManagerHelper" ref="setupManagerHelper"/>
-        <property name="cache">
-            <ref bean="setupManagerCache" />
-        </property>
+        <property name="cache" ref="setupManagerCacheWrapper"/>
+    </bean>
+
+    <bean id="setupManagerCacheWrapper" class="org.joget.commons.util.SetupManagerCache">
+        <property name="cacheManager" ref="cacheManager"/>
+        <property name="setupDao" ref="setupDao"/>
+        <property name="setupManagerHelper" ref="setupManagerHelper"/>
     </bean>
 
     <bean id="cacheManager" class="org.springframework.cache.ehcache.EhCacheManagerFactoryBean">
