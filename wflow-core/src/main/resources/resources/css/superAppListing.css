@@ -8,3 +8,6 @@
 .super-app-body .card-icon .super-app-action > i.selectApp {color: #007bff;}
 .super-app-body .card-icon .super-app-action > i.removeApp {color: #dc3545;}
 .super-app-body[data-super_app_mode="edit"] .card-actions {display: none !important;}
+.super-app-body .card-icon{position: relative; }
+body.rtl .super-app-header{text-align: left !important;}
+body.rtl .super-app-body .card-icon .super-app-action > i {right: auto;left: 15px !important;}

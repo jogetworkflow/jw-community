@@ -134,8 +134,9 @@ div#dataList_simplelist div.list-group .list-group-item  div.rowActions > a,
 div#dataList_columnslist div.dropdown > a,
 div#dataList_columnslist tbody span.row_action_inner > a,
 #content .page-button-panel .page-button-prev.btn.button,
-#content .page-button-panel .page-button-next.btn.button {
-    height: 40px;
+#content .page-button-panel .page-button-next.btn.button,
+.dataList .row_action a:not(.btn), .super-app-header .btn.saveChanges {
+    min-height: var(--button-secondary-height);
     flex-grow: 0;
     display: inline-flex !important;
     flex-direction: row;

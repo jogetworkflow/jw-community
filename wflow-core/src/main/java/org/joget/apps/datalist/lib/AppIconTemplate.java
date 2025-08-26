@@ -155,12 +155,12 @@ public class AppIconTemplate extends SimpleCardTemplate {
                 //add button
                 result += "<div class=\"super-app-header\" style=\"text-align:right;\">";
                 if ("edit".equals(mode)) {
-                    result += "<a class=\"btn btn-primary saveChanges\" data-ajax-content-placeholder=\"dashboard\">"+ResourceBundleUtil.getMessage("datalist.appIconTemplate.save")+"</a> <a class=\"btn btn-secondary cancelChanges\" data-ajax-content-placeholder=\"dashboard\">"+ResourceBundleUtil.getMessage("datalist.appIconTemplate.cancel")+"</a>"; 
+                    result += "<a href=\"javascript:void(0)\" class=\"btn btn-primary saveChanges\" data-ajax-content-placeholder=\"dashboard\">"+ResourceBundleUtil.getMessage("datalist.appIconTemplate.save")+"</a> <a href=\"javascript:void(0)\" class=\"btn btn-secondary cancelChanges\" data-ajax-content-placeholder=\"dashboard\">"+ResourceBundleUtil.getMessage("datalist.appIconTemplate.cancel")+"</a>"; 
                     
                     //enable selector to populate id
                     getDatalist().setCheckboxPosition(DataList.CHECKBOX_POSITION_LEFT);
                 } else {
-                    result += "<a class=\"btn btn-secondary manageApps\" data-ajax-content-placeholder=\"dashboard\">"+ResourceBundleUtil.getMessage("datalist.appIconTemplate.manageApps")+"</a>";
+                    result += "<a href=\"javascript:void(0)\" class=\"btn btn-secondary manageApps\" data-ajax-content-placeholder=\"dashboard\">"+ResourceBundleUtil.getMessage("datalist.appIconTemplate.manageApps")+"</a>";
                 }
                 result += "</div>";
             }
