@@ -4277,9 +4277,6 @@ public class ConsoleWebController {
                 setupManager.saveSetting(setting);
             }
         }
-
-        //clear all caches & update the settings
-        setupManager.clearCache();
         
         //only reset the locale when setting changed
         if (localeChanged) {
@@ -4621,7 +4618,6 @@ public class ConsoleWebController {
 
     @RequestMapping(value = "/console/setting/plugin/refresh", method = RequestMethod.POST)
     public void consoleSettingPluginRefresh(Writer writer) {
-        setupManager.clearCache();
         pluginManager.refresh();
     }
 

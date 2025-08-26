@@ -25,6 +25,17 @@
         </resources>
     </cache>
 
+    <!-- Cache for org.joget.cache.LONG_TERM_SETUP_CACHE (Eternal). Used by SetupManagerCache. -->
+    <cache alias="org.joget.cache.LONG_TERM_SETUP_CACHE">
+        <expiry>
+            <none/>
+        </expiry>
+        <resources>
+            <heap unit="entries">1000</heap>
+            <!-- No overflow to disk -->
+        </resources>
+    </cache>
+
     <!-- Cache for org.joget.cache.DATASOURCE_CACHE -->
     <cache alias="org.joget.cache.DATASOURCE_CACHE">
         <expiry>

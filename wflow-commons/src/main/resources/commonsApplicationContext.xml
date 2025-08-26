@@ -120,7 +120,13 @@
     <bean id="setupManager" class="org.joget.commons.util.SetupManager" depends-on="staticInitOfDynamicDataSourceManager" lazy-init="true">
         <property name="setupDao" ref="setupDao"/>
         <property name="setupManagerHelper" ref="setupManagerHelper"/>
+        <property name="cache" ref="setupManagerCacheWrapper"/>
+    </bean>
+
+    <bean id="setupManagerCacheWrapper" class="org.joget.commons.util.SetupManagerCache">
         <property name="cacheManager" ref="cacheManager"/>
+        <property name="setupDao" ref="setupDao"/>
+        <property name="setupManagerHelper" ref="setupManagerHelper"/>
     </bean>
 
     <bean id="cacheProvider" class="org.ehcache.jsr107.EhcacheCachingProvider" />
