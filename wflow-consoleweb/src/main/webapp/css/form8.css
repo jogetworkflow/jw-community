@@ -412,7 +412,9 @@ div.pq-grid * {
 .print-button {
     float: right;
 }
-
+body.rtl .print-button {
+    float: left;
+}
 /* chosen */
 
 

@@ -1368,6 +1368,11 @@ body.quickEditModeActive:not(.horizontal_menu) #sidebar #category-container {
 .print-button {
     font-size: 16px;
     line-height: 14px;
+    float: left;
+}
+
+body.rtl .print-button {
+    float: right;
 }
 
 .form-cell > label.label + input:has(+ .numeric_field_controls) {
