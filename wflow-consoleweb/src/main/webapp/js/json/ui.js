@@ -1178,10 +1178,6 @@ HelpGuide = {
                 HelpGuide.startGuide(helpDef);
             }
         });
-        
-        $(window).on("resize scroll", function() {
-            HelpGuide.reposition();
-        });
     },
     
     hide: function() {
@@ -1288,6 +1284,23 @@ HelpGuide = {
                 }, 500);
             }
         }
+        let resizeScrollTimer;
+
+        $(window).on("resize scroll", function () {
+            if (HelpGuide.isEnabled()) {
+                clearTimeout(resizeScrollTimer); // cancel any previous scheduled run
+                resizeScrollTimer = setTimeout(function () {
+                    try {
+                        var index = $(".guider:not([style*='display: none'])").index(".guider");
+
+                        var guider = guiders._guiders[helpDefObj[index].id];
+                        HelpGuide.guiderOnShow(guider, true);
+                    } catch (e) {
+                        console.error(e);
+                    }
+                }, 500); 
+            }
+        });
     },
     
     displayGuide: function(def, i, total) {
@@ -1300,72 +1313,7 @@ HelpGuide = {
                 def.steps = total;
                 
                 //auto adjust position
-                if (def.position !== undefined && def.position !== 0) {
-                    var atOffset = $(def.attachTo).offset();
-                    var atWidth = $(def.attachTo).outerWidth();
-                    var atHeight = $(def.attachTo).outerHeight();
-                    var scWidth = $(window).width();
-                    var scHeight = $(window).height();
-                    var wlimit = atOffset.left + atWidth + 400;
-                    var hlimit = atOffset.top + atHeight + 150;
-                    if (def.position >= 2 & def.position <= 4) { //right
-                        if (wlimit > scWidth) {
-                            if (atOffset.left - 400 < 0) {
-                                def.position = 0;
-                            } else {
-                                if (def.position === 2) {
-                                    def.position = 10;
-                                } else if (def.position === 3) {
-                                    def.position = 9;
-                                } else if (def.position === 4) {
-                                    def.position = 8;
-                                }
-                            }
-                        }
-                    } else if (def.position >= 8 & def.position <= 10) { //left
-                        if (atOffset.left - 400 < 0) {
-                            if (wlimit > scWidth) {
-                                def.position = 0;
-                            } else {
-                                if (def.position === 10) {
-                                    def.position = 2;
-                                } else if (def.position === 9) {
-                                    def.position = 3;
-                                } else if (def.position === 8) {
-                                    def.position = 4;
-                                }
-                            }
-                        }
-                    } else if (def.position >= 5 & def.position <= 7) { //bottom
-                        if (hlimit > scHeight) {
-                            if (atOffset.top - 150 < 0) {
-                                def.position = 0;
-                            } else {
-                                if (def.position === 5) {
-                                    def.position = 1;
-                                } else if (def.position === 6) {
-                                    def.position = 12;
-                                } else if (def.position === 7) {
-                                    def.position = 11;
-                                }
-                            }
-                        }
-                    } else { //top
-                        if (atOffset.top - 150 < 0) {
-                            if (hlimit > scHeight) {
-                                def.position = 0;
-                            } else {
-                                if (def.position === 1) {
-                                    def.position = 5;
-                                } else if (def.position === 12) {
-                                    def.position = 6;
-                                } else if (def.position === 11) {
-                                    def.position = 7;
-                                }
-                            }
-                        }
-                    }
-                }
+                HelpGuide.updatePosition(def);
                 
                 guider = guiders.createGuider(def);
                 if (def.show) {
@@ -1377,13 +1325,99 @@ HelpGuide = {
         }
     },
     
-    guiderOnShow : function(guider) {
-        if (guider.init === undefined) {
-            //add steps to guider
-            $(guider.elem).find('.guider_buttons').append('<spn class="steps">'+(guider.current+1)+'/'+guider.steps+'</span>')
-            guider.init = true;
+    guiderOnShow: function(guider) {
+        function setOverlay(guider) {
+            if ($('body .guider_hloverlay').length === 0) {
+                $('body').append('<div class="guider_hloverlay top"></div><div class="guider_hloverlay right"></div><div class="guider_hloverlay bottom"></div><div class="guider_hloverlay left"></div>');
+            }
+            
+            var $hl = $(guider.highlight);
+
+            var pad = 5;
+            var rect = $hl[0].getBoundingClientRect();
+
+            var left   = Math.round(rect.left - pad);
+            var top    = Math.round(rect.top - pad);
+            var right  = Math.round(rect.right + pad);
+            var bottom = Math.round(rect.bottom + pad);
+
+            var vw = $(window).outerWidth();
+            var vh = $(window).outerHeight();
+
+            var points = [
+                `0px 0px`,
+                `0px ${vh}px`,
+                `${left}px ${vh}px`,
+                // Coordinates of the highlighted element
+                `${left}px ${top}px`,
+                `${right}px ${top}px`,
+                `${right}px ${bottom}px`,
+                `${left}px ${bottom}px`,
+                // End of Coordinates
+                `${left}px ${vh}px`,
+                `${vw}px ${vh}px`,
+                `${vw}px 0px`
+            ];
+
+            var clip = `polygon(${points.join(', ')})`;
+
+            var $overlay = $('.guider_hloverlay');
+            if (!$overlay.length) $overlay = $('<div class="guider_hloverlay"></div>').appendTo('body');
+
+            $overlay.css({
+                position: 'fixed',
+                top: 0, left: 0,
+                width: '100%', height: '100%',
+                margin: 0, padding: 0,
+                background: '#0000003d',
+                '-webkit-clip-path': clip,
+                'clip-path': clip,
+                'clip-rule': 'evenodd'
+            });
+
+            $('body .guider_hloverlay').show();
         }
-        
+        function getScrollableAncestor(el) {
+            while (el && el !== document.body) {
+                const overflowY = window.getComputedStyle(el).overflowY;
+                if (overflowY === "auto" || overflowY === "scroll")
+                    return el;
+                el = el.parentElement;
+            }
+            return document.body;
+        }
+        const scrollableContainer = getScrollableAncestor($(guider.attachTo)[0]);
+        if (!$(scrollableContainer).is('body')) {
+            // Removed guider element and overlay from user's sight to wait for position update after change in screen width
+            $(guider.elem).css({
+                'top': '-1000px'
+            });
+            $('body .guider_hloverlay').css({
+                'top' : '-100000px'
+            })
+            
+            var $target = $(guider.attachTo);
+            var $container = $(scrollableContainer);
+            var targetOffset = $target.offset().top - $container.offset().top + $container.scrollTop();
+
+            // Center the target in the container
+            var scrollTo = targetOffset - ($container.height() / 2) + ($target.outerHeight() / 2);
+            
+            $container.animate({
+                scrollTop: scrollTo
+            }, 500, function() {
+                if (guider.highlight !== null && guider.highlight !== undefined && guider.highlight !== false) {
+                    setOverlay(guider);
+                } else {
+                    $('body .guider_hloverlay').hide();
+                }
+                
+                //Reposition for every change in position
+                HelpGuide.reposition();
+            });
+
+            return;
+        }
         if (guider.script !== undefined) {
             try {
                 var func = UI.getFunction(guider.script);
@@ -1394,37 +1428,106 @@ HelpGuide = {
                 console.error('Error executing help guide script:', err);
             }
         }
-        
         if (guider.highlight === undefined) {
             guider.highlight = guider.attachTo;
         }
-        
-        //if highlight
-        if (guider.highlight !== false) {
-            if ($('body .guider_hloverlay').length === 0) {
-                $('body').append('<div class="guider_hloverlay top"></div><div class="guider_hloverlay right"></div><div class="guider_hloverlay bottom"></div><div class="guider_hloverlay left"></div>');
-            }
-
-            var offset = $(guider.highlight).offset();
-            var width = $(guider.highlight).outerWidth();
-            var height = $(guider.highlight).outerHeight();
-            var pad = 5;
-            $('.guider_hloverlay.top').css({top:'0px', left: (offset.left-pad) + 'px', width: (width+pad+pad) + 'px', height: (offset.top - pad) + 'px'});
-            $('.guider_hloverlay.right').css({top:'0px', left: (offset.left+width+pad) + 'px', bottom: '0px', right: '0px'});
-            $('.guider_hloverlay.bottom').css({top:(offset.top+height+pad) + 'px', left: (offset.left-pad) + 'px', width: (width+pad+pad) + 'px', bottom: '0px'});
-            $('.guider_hloverlay.left').css({top:'0px', left: '0px', bottom: '0px', width: (offset.left-pad) + 'px'});
-
-            $('body .guider_hloverlay').show();
+        if ((guider.highlight !== null && guider.highlight !== undefined && guider.highlight !== false) && $(scrollableContainer).is('body')) {
+            setOverlay(guider);
         } else {
             $('body .guider_hloverlay').hide();
         }
+
+        HelpGuide.reposition();
     },
-    
+
+    updatePosition : function(def) {
+        if (def.position !== undefined && def.position !== 0) {
+            var atOffset = $(def.attachTo).offset();
+            var atWidth = $(def.attachTo).outerWidth();
+            var atHeight = $(def.attachTo).outerHeight();
+            var scWidth = $(window).width();
+            var scHeight = $(window).height();
+            var wlimit = atOffset.left + atWidth + 400;
+            var hlimit = atOffset.top + atHeight + 150;
+            if (def.position >= 2 & def.position <= 4) { //right
+                if (wlimit > scWidth) {
+                    if (atOffset.left - 400 < 0) {
+                        def.position = 0;
+                    } else {
+                        if (def.position === 2) {
+                            def.position = 10;
+                        } else if (def.position === 3) {
+                            def.position = 9;
+                        } else if (def.position === 4) {
+                            def.position = 8;
+                        }
+                    }
+                }
+            } else if (def.position >= 8 & def.position <= 10) { //left
+                if (atOffset.left - 400 < 0) {
+                    if (wlimit > scWidth) {
+                        def.position = 0;
+                    } else {
+                        if (def.position === 10) {
+                            def.position = 2;
+                        } else if (def.position === 9) {
+                            def.position = 3;
+                        } else if (def.position === 8) {
+                            def.position = 4;
+                        }
+                    }
+                }
+            } else if (def.position >= 5 & def.position <= 7) { //bottom
+                if (hlimit > scHeight) {
+                    if (atOffset.top - 150 < 0) {
+                        def.position = 0;
+                    } else {
+                        if (def.position === 5) {
+                            def.position = 1;
+                        } else if (def.position === 6) {
+                            def.position = 12;
+                        } else if (def.position === 7) {
+                            def.position = 11;
+                        }
+                    }
+                }
+            } else { //top
+                if (atOffset.top - 150 < 0) {
+                    if (hlimit > scHeight) {
+                        def.position = 0;
+                    } else {
+                        if (def.position === 1) {
+                            def.position = 5;
+                        } else if (def.position === 12) {
+                            def.position = 6;
+                        } else if (def.position === 11) {
+                            def.position = 7;
+                        }
+                    }
+                }
+            }
+        }
+    },
+
     reposition: function() {
         var g;
-        for(g in guiders._guiders) {
+        for (g in guiders._guiders) {
+            if (guiders._guiders[g] !== undefined){      
+                var def = guiders._guiders[g];  
+
+                HelpGuide.updatePosition(def);
+            }   
+            
+            // Update the arrow style
+            $(guiders._guiders[g].elem)
+            .find(".guider_arrow")
+            .removeClass(function(index, className) {
+                return (className.match(/(^|\s)guider_arrow_\S+/g) || []).join(' ');
+            }); //Remove existing arrow styling from guider
+            guiders._styleArrow(guiders._guiders[g]);
+            
             guiders._attach(guiders._guiders[g]);
-        }        
+        }
     }
 
 };
