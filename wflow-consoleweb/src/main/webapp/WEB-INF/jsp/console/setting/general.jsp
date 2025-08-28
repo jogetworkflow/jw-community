@@ -595,8 +595,12 @@
     function getLoginHash(username, password) {
         var callback = {
             success : function(o) {
-	            var o = eval("(" + o + ")");
-                $('#masterLoginHash').text(o.hash);
+                try {
+                    var o = JSON.parse(o);
+                    $('#masterLoginHash').text(o.hash);
+                } catch (e) {
+                    console.error("Encountered an error in the request: ", e);
+                }
             }
         }
         var params = "username=" + username + "&password=" + password;

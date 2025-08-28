@@ -126,34 +126,37 @@
             var testCallback = {
                 success : function(o){
                     connectionCount++;
-
-                    var obj = eval('(' + o + ')');
-                    if(obj.success == true){
-                        $('#testConnection #' + obj.datasource + 'TestConnection .connectionStatus').html('<span class="connection-ok"><ui:msgEscJS key="console.setting.datasource.label.connectionOk"/></span>');
-                        success[obj.datasource] = true;
-
-                        //check if all success
-                        var allSuccess = true;
-                        for(key in success){
-                            if(success[key] == false){
-                                allSuccess = false;
-                                break;
+                    try {
+                        var obj = JSON.parse(o);
+                        if(obj.success == true){
+                            $('#testConnection #' + obj.datasource + 'TestConnection .connectionStatus').html('<span class="connection-ok"><ui:msgEscJS key="console.setting.datasource.label.connectionOk"/></span>');
+                            success[obj.datasource] = true;
+    
+                            //check if all success
+                            var allSuccess = true;
+                            for(key in success){
+                                if(success[key] == false){
+                                    allSuccess = false;
+                                    break;
+                                }
                             }
-                        }
-
-                        if(allSuccess && connectionCount == datasources.length){
+    
+                            if(allSuccess && connectionCount == datasources.length){
+                                $('#saveDatasource').removeAttr('disabled');
+                                $('#saveDatasourceAsNew').removeAttr('disabled');
+    
+                                if(asNewProfile && asNewProfile == true)
+                                    saveAsNewProfile();
+                                else
+                                    $('#datasourceForm').submit();
+                            }
+                        }else{
+                            $('#testConnection #' + obj.datasource + 'TestConnection .connectionStatus').html('<span class="connection-fail"><ui:msgEscJS key="console.setting.datasource.label.connectionFail"/></span>');
                             $('#saveDatasource').removeAttr('disabled');
                             $('#saveDatasourceAsNew').removeAttr('disabled');
-
-                            if(asNewProfile && asNewProfile == true)
-                                saveAsNewProfile();
-                            else
-                                $('#datasourceForm').submit();
                         }
-                    }else{
-                        $('#testConnection #' + obj.datasource + 'TestConnection .connectionStatus').html('<span class="connection-fail"><ui:msgEscJS key="console.setting.datasource.label.connectionFail"/></span>');
-                        $('#saveDatasource').removeAttr('disabled');
-                        $('#saveDatasourceAsNew').removeAttr('disabled');
+                    } catch (e) {
+                        console.error("Encountered an error in the request: ", e);
                     }
                 }
             };

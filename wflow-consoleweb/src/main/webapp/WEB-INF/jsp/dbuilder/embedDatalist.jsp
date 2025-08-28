@@ -157,11 +157,15 @@
         function getSelectedData() {
             // find columns in datalist
             var columns = new Array();
-            var json = "(${json})";
-            var list = eval(json);
-            for (i=0; i<list.columns.length; i++) {
-                var column = list.columns[i];
-                columns.push(column);
+            var json = '${json}';
+            try {
+                var list = JSON.parse(json);
+                for (i=0; i<list.columns.length; i++) {
+                    var column = list.columns[i];
+                    columns.push(column);
+                }
+            } catch (e) {
+                console.error("Encountered an error in the request: ", e);
             }
             
             // get selected rows

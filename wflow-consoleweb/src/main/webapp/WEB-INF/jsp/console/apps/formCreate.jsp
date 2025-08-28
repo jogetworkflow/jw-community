@@ -107,10 +107,14 @@
             
             var loadTableNameData = {
                 success : function(response){
-                    var data = eval('(' + response + ')');
-                    $("#tableName").autocomplete({source : data.tableName, minLength : 0}).focus(function(){ 
-                        $(this).data("uiAutocomplete").search($(this).val());
-                    });
+                    try {
+                        var data = JSON.parse(response);
+                        $("#tableName").autocomplete({source : data.tableName, minLength : 0}).focus(function(){ 
+                            $(this).data("uiAutocomplete").search($(this).val());
+                        });
+                    } catch (e) {
+                        console.error("Encountered an error in the request: ", e);
+                    }
                 }
             }
             ConnectionManager.get('<c:out value="${pageContext.request.contextPath}/web/json/console/app/${appId}/${appVersion}/form/tableNameList"/>', loadTableNameData);

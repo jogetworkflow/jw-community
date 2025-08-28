@@ -334,13 +334,17 @@
             if (orgs[orgId] === undefined || orgs[orgId].departments === undefined) {
                 ConnectionManager.get('${pageContext.request.contextPath}/web/json/directory/admin/user/deptAndGrade/options', {
                     success : function(data) {
-                        var obj = eval('(' + data + ')');
-                        orgs[orgId] = obj;
-                        $('tr.row td.org select').each(function(){
-                            if ($(this).val() === orgId) {
-                                updateDepartmentOrGradeOption(this);
-                            }
-                        });
+                        try {
+                            var obj = JSON.parse(data);
+                            orgs[orgId] = obj;
+                            $('tr.row td.org select').each(function(){
+                                if ($(this).val() === orgId) {
+                                    updateDepartmentOrGradeOption(this);
+                                }
+                            });
+                        } catch (e) {
+                            console.error("Encountered an error in the request: ", e);
+                        }
                     }
                 }, 'rnd=' + new Date().valueOf().toString() + '&orgId='+orgId);
             }

@@ -390,7 +390,9 @@ public class DirectoryJsonController {
         Collection<Department> departments = null;
         Collection<Grade> grades = null;
 
-        if (orgId != null && orgId.trim().length() > 0) {
+        jsonObject.put("departments", new JSONArray());
+        jsonObject.put("grades", new JSONArray());
+        if (orgId != null && !orgId.trim().isEmpty()) {
             Map empty = new HashMap();
             empty.put("id", "");
             empty.put("prefix", "");
@@ -399,7 +401,6 @@ public class DirectoryJsonController {
             //JSONArray deptArray = new JSONArray();
             departments = getRecursiveDepartmentList(orgId);
             if (departments != null) {
-                jsonObject.put("departments", new JSONArray());
                 jsonObject.accumulate("departments", empty);
                 for (Department department : departments) {
                     Map data = new HashMap();
@@ -413,7 +414,6 @@ public class DirectoryJsonController {
             //JSONArray gradeArray = new JSONArray();
             grades = directoryManager.getGradesByOrganizationId(null, orgId, "name", false, null, null);
             if (grades != null) {
-                jsonObject.put("grades", new JSONArray());
                 jsonObject.accumulate("grades", empty);
                 for (Grade grade : grades) {
                     Map data = new HashMap();

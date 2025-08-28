@@ -4891,13 +4891,15 @@ ProcessBuilder = {
             success: function(response) {
                 if (response !== null && response !== undefined && response !== "") {
                     try {
-                        var data = eval(response);
+                        var data = response;
                         if (data !== null && data["Package"] !== undefined) {
                             CustomBuilder.data.xpdl["Package"] = data["Package"];
                             var json = JSON.encode(CustomBuilder.data);
                             CustomBuilder.loadJson(json, true); //update through loadJson addToUndo to make sure package id does not change.
                         }
-                    } catch (err) {}
+                    } catch (e) {
+                        console.log("Encountered an error in the request: ", e);
+                    }
                 }  
                 if (callback) {
                     callback();
