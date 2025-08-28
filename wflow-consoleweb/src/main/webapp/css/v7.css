@@ -1213,7 +1213,7 @@ a.guider_button:hover {
     display: block;
     position: absolute;
     top: 5px;
-    right: 115px;
+    right: 155px;
     z-index: 10001;
 }
 .marketplaceAppHeader{
@@ -1222,7 +1222,7 @@ a.guider_button:hover {
 }
 
 .marketplaceAppHeader #main-action-help > i{
-    left: calc(100% - 210px);
+    left: calc(100% - 145px);
     position: fixed;
     color: #727272;
 }

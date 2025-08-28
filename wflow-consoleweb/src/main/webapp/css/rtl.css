@@ -169,7 +169,10 @@ body.rtl .row-content dl dd {
 }
 body.rtl #installApp {
     right: auto;
-    left: 25px;
+    left: 140px;
+}
+body.rtl .marketplaceAppHeader #main-action-help > i{
+    right: calc(100% - 125px);
 }
 
 /* webconsole home */
