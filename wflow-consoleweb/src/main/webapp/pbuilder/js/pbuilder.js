@@ -2133,29 +2133,14 @@ ProcessBuilder = {
     },
     
     /**
-     * Renders the LogicFlow graph with optional auto-layout.
-     */
-    renderLFWithAutoLayout: function (graphData, enableAutoLayout, addToUndo = false) {
-        graphData = ProcessBuilder.updatePoolHeight(graphData);
-        ProcessBuilder.lf.render(graphData);
-        ProcessBuilder.resizePool();
-        ProcessBuilder.currentLFProcessData = ProcessBuilder.lf.getGraphData();
-        if (enableAutoLayout) {
-            ProcessBuilder.autoLayout();    
-        }
-        ProcessBuilder.adjustLane(true, addToUndo);
-        ProcessBuilder.recenter();
-    },
-    
-    /**
      * Renders the LogicFlow graph with the provided data.
      */
-    renderLFWithData: function (graphData) {
+    renderLFWithData: function (graphData, addToUndo = false) {
         graphData = ProcessBuilder.updatePoolHeight(graphData);
         ProcessBuilder.lf.render(graphData);
         ProcessBuilder.resizePool();
         ProcessBuilder.currentLFProcessData = ProcessBuilder.lf.getGraphData();
-        ProcessBuilder.adjustLane(true);
+        ProcessBuilder.adjustLane(true, addToUndo);
     },
     
     /**
@@ -2167,6 +2152,10 @@ ProcessBuilder = {
      */
     adjustLane: function (adjustNode, addToUndo = false) {
         let graphData = ProcessBuilder.lf.getGraphData();
+        
+        //before adjust the lane, make sure there is enough gap between the source & target node, adjust it if gap is very small
+        graphData = ProcessBuilder.adjustNodeGap(graphData);
+        
         let lanes = graphData.nodes.filter(lane => lane.type === "lane");
         let pool = graphData.nodes.filter(pool => pool.type === "pool");
         let poolHeight = 0;
@@ -2176,6 +2165,7 @@ ProcessBuilder = {
         let laneDefaultHeight = 216;
         let extraSpaceForLane = 64;
         let prevLaneYEnd;
+        let laneXStart;
         lanes = lanes.sort((a, b) => a.y - b.y);
         // Adjust the lane height and width
         lanes.forEach(lane => { 
@@ -2183,7 +2173,6 @@ ProcessBuilder = {
             let laneOriYStart = lane.y - (lane.properties.height / 2) + totalLaneHeightAdjusted;
             let laneYStart;
             let laneYEnd; 
-            let laneXStart;
             let laneXEnd;
             let totalLaneStartAdjusted = 0;
             
@@ -2301,6 +2290,63 @@ ProcessBuilder = {
         
         graphData = ProcessBuilder.updateEdges(graphData);
         ProcessBuilder.updateNodePosition(graphData, addToUndo);
+    },
+    
+    /*
+     * Make sure there is enough gap between the source & target node, adjust it if gap is very small
+     */
+    adjustNodeGap: function(graphData) {
+        graphData.edges.forEach(edge => {
+            let sameLane = graphData.nodes.find(node => node.type === 'lane' && node.children?.includes(edge.sourceNodeId) && node.children?.includes(edge.targetNodeId)) !== undefined;
+            
+            //check is in same lane
+            if (sameLane) {
+                let source = graphData.nodes.filter(node => node.id === edge.sourceNodeId)[0];
+                let target = graphData.nodes.filter(node => node.id === edge.targetNodeId)[0];
+            
+                const dx = Math.abs(target.x - source.x);
+                const dy = Math.abs(target.y - source.y);
+                const distance = Math.sqrt(dx * dx + dy * dy);
+
+                if (distance < 180) {
+                    let xAdding = 0;
+                    let yAdding = 0;
+                    let xBreakpoint = 0;
+                    let yBreakpoint = 0;
+
+                    const {x, y} = source,
+                    {x: x1, y: y1} = target;
+
+                    if (dx > dy) {
+                        xBreakpoint = Math.min(x, x1);
+                        xAdding = 180 - dx;
+                    } else {
+                        yBreakpoint = Math.min(y, y1);
+                        yAdding = 180 - dy;
+                    }
+
+                    //move the nodes 
+                    graphData.nodes.forEach(node => {
+                        if (!(node.type === "lane" || node.type === "pool")) {
+                            if (xAdding !== 0 && node.x > xBreakpoint) {
+                                node.x += xAdding;
+                                if (node.text) {
+                                    node.text.x += xAdding;
+                                }
+                            }
+                            if (yAdding !== 0 && node.y > yBreakpoint) {
+                                node.y += yAdding;
+                                if (node.text) {
+                                    node.text.y += yAdding;
+                                }
+                            }
+                        }
+                    });
+                }
+            }
+        });
+        
+        return graphData;
     },
 
     /*
@@ -2737,17 +2783,8 @@ ProcessBuilder = {
             };
         }
         
-        // check if auto layout is trigger before
         var xpdlProcessesAttrs = ProcessBuilder.getArray(xpdlProcess['ExtendedAttributes'], 'ExtendedAttribute');
-        for (var p = 0; p < xpdlProcessesAttrs.length; p++) {
-            if (xpdlProcessesAttrs[p]['-Name'] === "Auto_Layout") {
-                ProcessBuilder.currentProcessData.properties.autoLayout = false;
-                break;
-            } else {
-                ProcessBuilder.currentProcessData.properties.autoLayout = true;
-            }
-        }
-
+        
         let LFparticipant = [];
         for (var p = 0; p < xpdlProcessesAttrs.length; p++) {
             if (xpdlProcessesAttrs[p]['-Name'] === "JaWE_GRAPH_WORKFLOW_PARTICIPANT_ORDER") {
@@ -3194,12 +3231,12 @@ ProcessBuilder = {
             lfTransition.properties.condition = condition;
             lfTransition.properties.exceptionName = exceptionName;
             
-            var style = "orthogonal";
+            var style = "straight";
             var transitionConditions = "";
             var extendedAttributes = ProcessBuilder.getArray(xpdlTransitions[t]['ExtendedAttributes'], 'ExtendedAttribute');
             for (var i in extendedAttributes) {
-                if (extendedAttributes[i]['-Name'] === "JaWE_GRAPH_BREAK_POINTS") {
-                    style = "straight";
+                if (extendedAttributes[i]['-Name'] === "JaWE_GRAPH_BREAK_POINTS" && extendedAttributes[i]['-Value'] === "orthogonal") {
+                    style = "orthogonal";
                 } else if (extendedAttributes[i]['-Name'] === "PBUILDER_TRANSITION_CONDITIONS") {
                     transitionConditions = extendedAttributes[i]['-Value'];
                 }
@@ -3380,16 +3417,6 @@ ProcessBuilder = {
                     break;
                 }
             }
-            if (ProcessBuilder.currentProcessData.properties.autoLayout && xpdlProcessesAttrs.find(attr => attr['-Name'] === "Auto_Layout") === undefined) {
-                // New attribute to add
-                const newAttribute = {
-                    "-Name": "Auto_Layout",
-                    "-Value": "true",
-                    "-self-closing": "true"
-                };
-                // Add new attribute
-                xpdlProcessesAttrs.push(newAttribute);
-            }
 
             ProcessBuilder.setArray(xpdlProcess, 'ExtendedAttributes', 'ExtendedAttribute', xpdlProcessesAttrs);
             
@@ -3423,14 +3450,14 @@ ProcessBuilder = {
 
                 extendedAttribute.push({
                     "-Name": "JaWE_GRAPH_TRANSITION_STYLE",
-                    "-Value": "NO_ROUTING_STRAIGHT",
+                    "-Value": "NO_ROUTING_ORTHOGONAL",
                     "-self-closing": "true"
                 });
 
-                if (transition.properties.transitionStyle === 'straight') {
+                if (transition.properties.transitionStyle === 'orthogonal') {
                     extendedAttribute.push({
                         "-Name": "JaWE_GRAPH_BREAK_POINTS",
-                        "-Value": "straight",
+                        "-Value": "orthogonal",
                         "-self-closing": "true"
                     });
                 }
@@ -3672,7 +3699,9 @@ ProcessBuilder = {
                 formMapping.type = "SINGLE";
             }
             if (formMapping.type === "SINGLE") {
-                formMapping.formId = (activity.properties['mapping_act_formId'] !== undefined)?activity.properties['mapping_act_formId']:"";
+                if (activity.properties['mapping_act_formId'] !== undefined) {
+                    formMapping.formId = activity.properties['mapping_act_formId'];
+                }
                 formMapping.disableSaveAsDraft = (activity.properties['mapping_act_disableSaveAsDraft'] === "true");
                 
                 delete formMapping['formUrl'];
@@ -4010,7 +4039,7 @@ ProcessBuilder = {
                         actId = connSet[0].sourceNodeId;
                     }
                 }
-                xpdlObj['-Value'] = "JaWE_GRAPH_PARTICIPANT_ID="+participant.properties.id+",CONNECTING_ACTIVITY_ID="+actId+",X_OFFSET="+activity.x_offset+",Y_OFFSET="+activity.y_offset+",JaWE_GRAPH_TRANSITION_STYLE=NO_ROUTING_STRAIGHT,TYPE="+activity.className.toUpperCase()+"_DEFAULT";
+                xpdlObj['-Value'] = "JaWE_GRAPH_PARTICIPANT_ID="+participant.properties.id+",CONNECTING_ACTIVITY_ID="+actId+",X_OFFSET="+activity.x_offset+",Y_OFFSET="+activity.y_offset+",JaWE_GRAPH_TRANSITION_STYLE=NO_ROUTING_ORTHOGONAL,TYPE="+activity.className.toUpperCase()+"_DEFAULT";
             }
             
             ProcessBuilder.updateActivityMapping(activity);
@@ -4121,7 +4150,7 @@ ProcessBuilder = {
                     },
                     {
                         "-Name": "JaWE_GRAPH_START_OF_WORKFLOW",
-                        "-Value": "JaWE_GRAPH_PARTICIPANT_ID="+pid+",CONNECTING_ACTIVITY_ID=,X_OFFSET=75,Y_OFFSET=46,JaWE_GRAPH_TRANSITION_STYLE=NO_ROUTING_STRAIGHT,TYPE=START_DEFAULT",
+                        "-Value": "JaWE_GRAPH_PARTICIPANT_ID="+pid+",CONNECTING_ACTIVITY_ID=,X_OFFSET=75,Y_OFFSET=46,JaWE_GRAPH_TRANSITION_STYLE=NO_ROUTING_ORTHOGONAL,TYPE=START_DEFAULT",
                         "-self-closing": "true"
                     }
                 ]
@@ -4334,7 +4363,7 @@ ProcessBuilder = {
         self.triggerChange();
         
         let graphData = ProcessBuilder.lf.getGraphData();
-        ProcessBuilder.renderLFWithAutoLayout(graphData, null, true);
+        ProcessBuilder.renderLFWithData(graphData);
         window.location.hash = process['-Id'];
     },
     
@@ -5136,11 +5165,7 @@ ProcessBuilder = {
             element.html("");
             element.attr("data-cbuilder-uneditable", "").attr("data-cbuilder-participants", "");
             
-            if (ProcessBuilder.currentProcessData.properties.autoLayout) {
-                ProcessBuilder.renderLFWithAutoLayout(ProcessBuilder.currentLFProcessData, true);
-            } else {
-                ProcessBuilder.renderLFWithData(ProcessBuilder.currentLFProcessData);
-            }
+            ProcessBuilder.renderLFWithData(ProcessBuilder.currentLFProcessData);
             ProcessBuilder.recenter();
         }
     },
@@ -5564,10 +5589,10 @@ ProcessBuilder = {
      */
     autoLayout: function () {
         var self = CustomBuilder.Builder;
-        ProcessBuilder.lf.layout('bpmn:startEvent');
         var graphData = ProcessBuilder.lf.getGraphData();
         graphData = ProcessBuilder.autoLayoutNodePosition(graphData);
-        ProcessBuilder.renderLFWithAutoLayout(graphData, false);
+        ProcessBuilder.renderLFWithData(graphData, true);
+        ProcessBuilder.recenter();
         
         if (self.selectedEl && self.selectedEl && self.selectedEl[0].data) {
             ProcessBuilder.selectElementById(self.selectedEl[0].data.properties.id);
@@ -5575,42 +5600,77 @@ ProcessBuilder = {
     },
             
     autoLayoutNodePosition: function(graphData) {
+        const POSITION_TYPE = {
+            LEFT_TOP: -1,
+            LEFT: 0,
+            LEFT_BOTTOM: 1,
+            TOP: 2,
+            BOTTOM: 3,
+            RIGHT: 4,
+            RIGHT_TOP: 5,
+            RIGHT_BOTTOM: 6
+        };
+            
+        //make the source & target node of a transaction in same vertical or horizontal are align 
+        graphData.edges.forEach(edge => {
+            let source = graphData.nodes.filter(node => node.id === edge.sourceNodeId)[0];
+            let target = graphData.nodes.filter(node => node.id === edge.targetNodeId)[0];
+            
+            const positionType = ProcessBuilder.getRelativePosition(source, target);
+            
+            switch (positionType) {
+                // LEFT or RIGHT
+                case POSITION_TYPE.LEFT || POSITION_TYPE.RIGHT:
+                    var diff = Math.abs(source.y - target.y);
+                    var y = Math.min(source.y, target.y);
+                    if (diff > 40) { //prevent node stack together when move too much
+                        y += diff/2;
+                    }
+                    source.y = y;
+                    if (source.text) {
+                        source.text.y = y;
+                    }
+                    target.y = y;
+                    if (target.text) {
+                        target.text.y = y;
+                    }
+                    break
+                // TOP or BOTTOM
+                case POSITION_TYPE.TOP || POSITION_TYPE.BOTTOM:
+                    var diff = Math.abs(source.x - target.x);
+                    var x = Math.min(source.x, target.x);
+                    if (diff > 60) { //prevent node stack together when move too much
+                        x += diff/2;
+                    }
+                    source.x = x;
+                    if (source.text) {
+                        source.text.x = x;
+                    }
+                    target.x = x;
+                    if (target.text) {
+                        target.text.x = x;
+                    }
+                    break;
+                default:
+                    break;
+            }
+        });
+        
+        //proper align the node to grid
         let lanes = graphData.nodes.filter(lane => lane.type === "lane");
-        lanes = lanes.sort((a, b) => a.y - b.y);
         lanes.forEach(lane => { 
-            let row = 0;
             if (lane.children.length > 0) {
                 let childs = graphData.nodes.filter(node => lane.children.indexOf(node.id) !== -1);
-                childs = childs.sort((a, b) => a.x - b.x);
                 
-                childs.forEach(child => {
-                    var incoming = ProcessBuilder.lf.getNodeIncomingEdge(child.id);
-                    if (incoming.length > 0) {
-                        let processed = false;
-                        
-                        //check there is source node in same swimlane 
-                        for (var i in incoming) {
-                            if (incoming[i].length === 1 && lane.children.indexOf(incoming[i].sourceNodeId) !== -1) {
-                                let sourceNode = incoming[i].sourceNode;
-                                //make the y same with source node
-                                child.y = sourceNode.y;
-                                if (child.text) {
-                                    child.text.y = sourceNode.y;
-                                }
-                                break;
-                            }
-                        }
-                        
-                        if (!processed) {
-                            child.y += (100 * row);
-                            if (child.text) {
-                                child.text.y = child.y;
-                            }
-                            
-                            if (++row == 2) {
-                                row = 0;
-                            }
-                        }
+                childs.forEach(node => {
+                    var x = ProcessBuilder.snapToGrid(node.x, 60);
+                    var y = ProcessBuilder.snapToGrid(node.y, 40);
+                    
+                    node.x = x;
+                    node.y = y;
+                    if (node.text) {
+                        node.text.x = x;
+                        node.text.y = y;
                     }
                 });
             }
@@ -5853,8 +5913,8 @@ ProcessBuilder = {
         h = source.properties.height,
         w1 = target.properties.width,
         h1 = target.properties.height,
-        xGap = 30 + Math.max(w, w1) / 2,
-        yGap = 30 + Math.max(h, h1) / 2;
+        xGap = 50 + Math.max(w, w1) / 2,
+        yGap = 50 + Math.max(h, h1) / 2;
         
         // Determine the relative position of source with respect to target
         if (x < x1 - xGap)
@@ -5868,8 +5928,8 @@ ProcessBuilder = {
                     POSITION_TYPE.RIGHT;
 
         // If x coordinates are equal, determine if source is above or below the target
-        return y <= y1 ? POSITION_TYPE.TOP :
-                y > y1 ? POSITION_TYPE.BOTTOM :
+        return y <= y1 - yGap ? POSITION_TYPE.TOP :
+                y > y1 + yGap ? POSITION_TYPE.BOTTOM :
                 POSITION_TYPE.LEFT; // Default case if source and target overlap
     },
     
@@ -6020,8 +6080,8 @@ ProcessBuilder = {
      * get the node position based on grid, grid size is 20 
      * @returns {undefined}
      */               
-    snapToGrid : function(v) {
-        return 20 * Math.round(v / 20) || v;
+    snapToGrid : function(v, gridSize = 20) {
+        return gridSize * Math.round(v / gridSize) || v;
     },        
     
     /*
