@@ -2441,6 +2441,7 @@ _CustomBuilder = {
      */
     xrayViewInit : function(view) {
         CustomBuilder.treeViewerViewInit(view);
+        $(view).find(".panel-header .text-secondary").text(get_advtool_msg("adv.tool.X-ray.Viewer"));
         if ($("body").hasClass("default-builder")) {
             CustomBuilder.Builder.renderNodeAdditional('Xray');
         }
