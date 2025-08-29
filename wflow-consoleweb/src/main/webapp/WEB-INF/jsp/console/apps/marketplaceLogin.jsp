@@ -70,7 +70,7 @@
 
 <div class="content d-flex">
     <div class="login-form-wrapper">
-        <form id="loginForm" name="loginForm" action="" method="POST">
+        <form id="loginForm" name="loginForm" action="?" method="POST">
             <input type="hidden" name="type" value="<c:out value="${type}" />" />
             <input type="hidden" name="pluginType" value="<c:out value="${pluginType}" />" />
             <h1><ui:msgEscHTML key="appCenter.link.marketplace.login"/></h1>
