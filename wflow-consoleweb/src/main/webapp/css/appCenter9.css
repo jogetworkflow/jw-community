@@ -209,7 +209,7 @@ header.navbar li.dropdown.user-link > a > span.caret {
     margin-top: 60px;
 }
 body.rtl select:not([class^="ui-"]) {
-    background-position: right 5px center !important;
+    background-position: left 5px center !important;
 }
 #sidebar .nav > li.active:after {
     display: none !important;
