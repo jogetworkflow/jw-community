@@ -517,6 +517,34 @@ body:not(#home) main > ul.breadcrumb > li:not(:last-child) {
 #content main > *:nth-child(3) {
     margin-top: 0px !important;
 }
+/* Design Form Styling */
+form#createApp ul.type-icon input:checked + div i,
+form#createApp .type-icon li input:checked + div {
+    color: var(--theme-sidebar-active-icon) !important;
+}
+form#createApp .type-icon li input:checked + div {
+    border-color: var(--theme-sidebar-active-icon) !important;
+}
+form#createApp *:is(
+    input:not([type]):focus, input[type=text]:focus, input[type=password]:focus, input[type=email]:focus, input[type=url]:focus, input[type=time]:focus, input[type=date]:focus, input[type=datetime]:focus, input[type=datetime-local]:focus, input[type=tel]:focus, input[type=number]:focus, input[type=search]:focus, select:focus, textarea:focus, .chosen-container-multi .chosen-choices:focus, .selector_element:focus, .ui-timepicker-div select:focus, .ui-timepicker-div input:focus
+) {
+    border-color: var(--theme-sidebar-active-icon) !important;
+    outline-color: var(--theme-sidebar-active-icon) !important;
+}
+form#createApp *:is(
+    input:not([type]), input[type=text], input[type=password], input[type=email], input[type=url], input[type=time], input[type=date], input[type=datetime], input[type=datetime-local], input[type=tel], input[type=number], input[type=search], select, textarea, .ql-container.ql-bubble, .filter-cell .multiselect.dropdown-toggle
+) {
+    color: #09583D !important;
+}
+form#createApp .form-buttons .btn:first-of-type {
+    color: var(--jgt-btn-active-color);
+    background-color: var(--theme-sidebar-active-icon);
+}
+form#createApp .form-buttons .btn:last-of-type {
+    color: var(--jgt-btn-active-color);
+    background-color: #6c757d;
+}
+/* End of Styling */
 /* design app page styling */
 body#design_app .design-app-arrows > i.fas {
     cursor: pointer;
