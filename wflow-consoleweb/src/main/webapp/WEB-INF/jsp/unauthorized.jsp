@@ -12,14 +12,18 @@
 
 <style>
     #main {
-        width: 99%;
-        margin: auto;
+        width: 90%;
+        margin: auto !important;
         float: none;
         visibility: visible;
         padding-top: 10px;
     }
     div#content-container {
         padding-right: 0px;
+    }
+    body:not(#login) #footer {
+        margin-left: 0px !important;
+        margin-right: 0px !important;
     }
 </style>
 
