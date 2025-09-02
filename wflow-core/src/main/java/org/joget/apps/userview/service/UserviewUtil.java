@@ -49,6 +49,7 @@ import jakarta.servlet.http.HttpServletResponseWrapper;
 import jakarta.servlet.jsp.JspTagException;
 import java.io.File;
 import java.io.StringWriter;
+import org.joget.apps.app.service.AppDevUtil;
 
 /**
  * Utility methods used by userview for rendering
@@ -391,36 +392,7 @@ public class UserviewUtil implements ApplicationContextAware, ServletContextAwar
                 Collection<Plugin> pluginList = pluginManager.list(PwaOfflineResources.class);
 
                 if (pluginList != null && !pluginList.isEmpty()) {
-                    String concatAppDef = "";
-                    if (appDef.getFormDefinitionList() != null) {
-                        for (FormDefinition o : appDef.getFormDefinitionList()) {
-                            concatAppDef += o.getJson() + "~~~";
-                        }
-                    }
-                    if (appDef.getDatalistDefinitionList() != null) {
-                        for (DatalistDefinition o : appDef.getDatalistDefinitionList()) {
-                            concatAppDef += o.getJson() + "~~~";
-                        }
-                    }
-                    if (appDef.getUserviewDefinitionList() != null) {
-                        for (UserviewDefinition o : appDef.getUserviewDefinitionList()) {
-                            concatAppDef += o.getJson() + "~~~";
-                        }
-                    }
-                    if (appDef.getBuilderDefinitionList() != null) {
-                        for (BuilderDefinition o : appDef.getBuilderDefinitionList()) {
-                            concatAppDef += o.getJson() + "~~~";
-                        }
-                    }
-                    PackageDefinition packageDef = appDef.getPackageDefinition();
-                    if (packageDef != null) {
-                        if (packageDef.getPackageActivityPluginMap() != null) {
-                            for (PackageActivityPlugin o : packageDef.getPackageActivityPluginMap().values()) {
-                                concatAppDef += o.getPluginName() + "~~~";
-                                concatAppDef += o.getPluginProperties() + "~~~";
-                            }
-                        }
-                    }
+                    String concatAppDef = AppDevUtil.getConcatAppDef(appDef);
                     
                     // look for plugins used in any definition file
                     Set<String> temp = null;

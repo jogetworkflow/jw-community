@@ -94,6 +94,7 @@ public class AppDevUtil {
     public static final String ATTRIBUTE_GIT_COMMIT_REQUEST = "GIT_COMMIT_REQUEST";
     public static final String ATTRIBUTE_GIT_SYNC_APP = "GIT_SYNC_APP";
     public static final String PROPERTY_GIT_CONFIG_AUTO_SYNC = "gitConfigAutoSync";
+    private static final String CONCAT_APP_DEF = "CONCAT_APP_DEF";
     
     public static Map<String, Set<String>> workingPulls = new HashMap<String, Set<String>>();
     protected static Random random = new Random();
@@ -1481,30 +1482,7 @@ public class AppDevUtil {
             // copy plugins
             targetDir.mkdirs();
 
-            // combine all definitions into a string for matching
-            String concatAppDef = "";
-            if (appDef.getFormDefinitionList() != null) {
-                for (FormDefinition o : appDef.getFormDefinitionList()) {
-                    concatAppDef += o.getJson() + "~~~";
-                }
-            }
-            if (appDef.getDatalistDefinitionList() != null) {
-                for (DatalistDefinition o : appDef.getDatalistDefinitionList()) {
-                    concatAppDef += o.getJson() + "~~~";
-                }
-            }
-            if (appDef.getUserviewDefinitionList() != null) {
-                for (UserviewDefinition o : appDef.getUserviewDefinitionList()) {
-                    concatAppDef += o.getJson() + "~~~";
-                }
-            }
-            if (appDef.getBuilderDefinitionList() != null) {
-                for (BuilderDefinition o : appDef.getBuilderDefinitionList()) {
-                    concatAppDef += o.getJson() + "~~~";
-                }
-            }
-            concatAppDef += AppDevUtil.workingFileReadToString(appDef, "appDefinition.xml") + "~~~";
-            concatAppDef += AppDevUtil.workingFileReadToString(appDef, "appConfig.xml") + "~~~";
+            String concatAppDef = AppDevUtil.getConcatAppDef(appDef);
             
             // look for plugins used in any definition file
             for (Plugin plugin: pluginList) {
@@ -2113,45 +2091,62 @@ public class AppDevUtil {
     }
     
     public static String getConcatAppDef(AppDefinition appDef) {
-        // combine all definitions into a string for matching
-        String concatAppDef = "";
-        if (appDef.getFormDefinitionList() != null) {
-            for (FormDefinition o : appDef.getFormDefinitionList()) {
-                concatAppDef += o.getJson() + "~~~";
-            }
-        }
-        if (appDef.getDatalistDefinitionList() != null) {
-            for (DatalistDefinition o : appDef.getDatalistDefinitionList()) {
-                concatAppDef += o.getJson() + "~~~";
-            }
-        }
-        if (appDef.getUserviewDefinitionList() != null) {
-            for (UserviewDefinition o : appDef.getUserviewDefinitionList()) {
-                concatAppDef += o.getJson() + "~~~";
-            }
-        }
-        if (appDef.getBuilderDefinitionList() != null) {
-            for (BuilderDefinition o : appDef.getBuilderDefinitionList()) {
-                concatAppDef += o.getJson() + "~~~";
-            }
-        }
-        PackageDefinition packageDef = appDef.getPackageDefinition();
-        if (packageDef != null) {
-            if (packageDef.getPackageActivityPluginMap() != null) {
-                for (PackageActivityPlugin o : packageDef.getPackageActivityPluginMap().values()) {
-                    concatAppDef += o.getPluginName() + "~~~";
-                    concatAppDef += o.getPluginProperties() + "~~~";
-                }
-            }
-            if (packageDef.getPackageParticipantMap() != null) {
-                for (PackageParticipant o : packageDef.getPackageParticipantMap().values()) {
-                    concatAppDef += o.getValue() + "~~~";
-                    concatAppDef += o.getPluginProperties() + "~~~";
-                }
-            }
-        }
+        AppDefCache cache = (AppDefCache) AppUtil.getApplicationContext().getBean("appFluCache");
         
-        return concatAppDef;
+        String cacheKey = CONCAT_APP_DEF + ":" + appDef.getAppId() + ":" + appDef.getVersion().toString();
+        
+        String concatAppDefStr = (String) cache.getObject(cacheKey, appDef);
+        if (concatAppDefStr == null) {
+            // combine all definitions into a string for matching
+            StringBuilder concatAppDef = new StringBuilder();
+            if (appDef.getFormDefinitionList() != null) {
+                for (FormDefinition o : appDef.getFormDefinitionList()) {
+                    concatAppDef.append(o.getJson()).append("~~~");
+                }
+            }
+            if (appDef.getDatalistDefinitionList() != null) {
+                for (DatalistDefinition o : appDef.getDatalistDefinitionList()) {
+                    concatAppDef.append(o.getJson()).append("~~~");
+                }
+            }
+            if (appDef.getUserviewDefinitionList() != null) {
+                for (UserviewDefinition o : appDef.getUserviewDefinitionList()) {
+                    concatAppDef.append(o.getJson()).append("~~~");
+                }
+            }
+            if (appDef.getBuilderDefinitionList() != null) {
+                for (BuilderDefinition o : appDef.getBuilderDefinitionList()) {
+                    concatAppDef.append(o.getJson()).append("~~~");
+                }
+            }
+            PackageDefinition packageDef = appDef.getPackageDefinition();
+            if (packageDef != null) {
+                if (packageDef.getPackageActivityPluginMap() != null) {
+                    for (PackageActivityPlugin o : packageDef.getPackageActivityPluginMap().values()) {
+                        concatAppDef.append("\"className\":\"").append(o.getPluginName()).append("\"~~~");
+                        concatAppDef.append(o.getPluginProperties()).append("~~~");
+                    }
+                }
+                if (packageDef.getPackageParticipantMap() != null) {
+                    for (PackageParticipant o : packageDef.getPackageParticipantMap().values()) {
+                        if (o.getType() != null && PackageParticipant.TYPE_PLUGIN.equals(o.getType())) {
+                            concatAppDef.append("\"className\":\"").append(o.getValue()).append("\"~~~");
+                        } else {
+                            concatAppDef.append(o.getValue()).append("~~~");
+                        }
+                        concatAppDef.append(o.getPluginProperties()).append("~~~");
+                    }
+                }
+            }
+            
+            concatAppDefStr = concatAppDef.toString();
+            
+            cache.put(cacheKey, concatAppDefStr, appDef);
+            
+            return concatAppDefStr;
+        } else {
+            return concatAppDefStr;
+        }
     }
 
     /**
