@@ -25,7 +25,7 @@ body.rtl #header-links{
 
 /* footer */
 body.rtl:not(#login) #footer {
-    margin-right: 200px;
+    margin-right: 270px;
     margin-left: 0px;
 }
 
