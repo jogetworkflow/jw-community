@@ -1754,53 +1754,13 @@ public class AppUtil implements ApplicationContextAware {
     }
     
     public static List<String> findMissingPlugins(AppDefinition appDef) {
-        long start = System.nanoTime();
-        
         List<String> missingPlugins = new ArrayList<String>();
         
         if (appDef == null) {
             appDef = AppUtil.getCurrentAppDefinition();
         }
         
-        // combine all definitions into a string for matching
-        String concatAppDef = "";
-        if (appDef.getFormDefinitionList() != null) {
-            for (FormDefinition o : appDef.getFormDefinitionList()) {
-                concatAppDef += o.getJson() + "~~~";
-            }
-        }
-        if (appDef.getDatalistDefinitionList() != null) {
-            for (DatalistDefinition o : appDef.getDatalistDefinitionList()) {
-                concatAppDef += o.getJson() + "~~~";
-            }
-        }
-        if (appDef.getUserviewDefinitionList() != null) {
-            for (UserviewDefinition o : appDef.getUserviewDefinitionList()) {
-                concatAppDef += o.getJson() + "~~~";
-            }
-        }
-        if (appDef.getBuilderDefinitionList() != null) {
-            for (BuilderDefinition o : appDef.getBuilderDefinitionList()) {
-                concatAppDef += o.getJson() + "~~~";
-            }
-        }
-        PackageDefinition packageDef = appDef.getPackageDefinition();
-        if (packageDef != null) {
-            if (packageDef.getPackageActivityPluginMap() != null) {
-                for (PackageActivityPlugin o : packageDef.getPackageActivityPluginMap().values()) {
-                    concatAppDef += "\"className\":\"" + o.getPluginName() + "\"~~~";
-                    concatAppDef += o.getPluginProperties() + "~~~";
-                }
-            }
-            if (packageDef.getPackageParticipantMap() != null) {
-                for (PackageParticipant o : packageDef.getPackageParticipantMap().values()) {
-                    if (o.getType() != null && PackageParticipant.TYPE_PLUGIN.equals(o.getType())) {
-                        concatAppDef += "\"className\":\"" + o.getValue() + "\"~~~";
-                        concatAppDef += o.getPluginProperties() + "~~~";
-                    }
-                }
-            }
-        }
+        String concatAppDef = AppDevUtil.getConcatAppDef(appDef);
 
         // get plugins list
         PluginManager pluginManager = (PluginManager)AppUtil.getApplicationContext().getBean("pluginManager");

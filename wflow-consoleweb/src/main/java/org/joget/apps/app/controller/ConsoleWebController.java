@@ -3897,8 +3897,6 @@ public class ConsoleWebController {
         }
         map.addAttribute("properties", PropertyUtil.propertiesJsonLoadProcessing(properties));
         
-        AppUtil.findMissingPlugins(appDef);
-        
         ConsoleWebPlugin consoleWebPlugin = (ConsoleWebPlugin)pluginManager.getPlugin(ConsoleWebPlugin.class.getName());
 
         // get app info
