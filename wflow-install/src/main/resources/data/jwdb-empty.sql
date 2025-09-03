@@ -1,9 +1,9 @@
 /*M!999999\- enable the sandbox mode */ 
--- MariaDB dump 10.19-11.6.2-MariaDB, for osx10.20 (arm64)
+-- MariaDB dump 10.19-11.7.2-MariaDB, for osx10.20 (arm64)
 --
 -- Host: localhost    Database: jwdb
 -- ------------------------------------------------------
--- Server version	11.6.2-MariaDB
+-- Server version	11.7.2-MariaDB
 
 /*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
 /*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
@@ -21,7 +21,7 @@
 --
 
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
+/*!40101 SET character_set_client = utf8mb4 */;
 CREATE TABLE `SHKActivities` (
   `Id` varchar(100) NOT NULL,
   `ActivitySetDefinitionId` varchar(90) DEFAULT NULL,
@@ -74,7 +74,7 @@ UNLOCK TABLES;
 --
 
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
+/*!40101 SET character_set_client = utf8mb4 */;
 CREATE TABLE `SHKActivityData` (
   `Activity` decimal(19,0) NOT NULL,
   `VariableDefinitionId` varchar(100) NOT NULL,
@@ -112,7 +112,7 @@ UNLOCK TABLES;
 --
 
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
+/*!40101 SET character_set_client = utf8mb4 */;
 CREATE TABLE `SHKActivityDataBLOBs` (
   `ActivityDataWOB` decimal(19,0) NOT NULL,
   `VariableValue` mediumblob DEFAULT NULL,
@@ -139,7 +139,7 @@ UNLOCK TABLES;
 --
 
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
+/*!40101 SET character_set_client = utf8mb4 */;
 CREATE TABLE `SHKActivityDataWOB` (
   `Activity` decimal(19,0) NOT NULL,
   `VariableDefinitionId` varchar(100) NOT NULL,
@@ -176,7 +176,7 @@ UNLOCK TABLES;
 --
 
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
+/*!40101 SET character_set_client = utf8mb4 */;
 CREATE TABLE `SHKActivityStateEventAudits` (
   `KeyValue` varchar(30) NOT NULL,
   `Name` varchar(50) NOT NULL,
@@ -202,7 +202,7 @@ UNLOCK TABLES;
 --
 
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
+/*!40101 SET character_set_client = utf8mb4 */;
 CREATE TABLE `SHKActivityStates` (
   `KeyValue` varchar(30) NOT NULL,
   `Name` varchar(50) NOT NULL,
@@ -235,7 +235,7 @@ UNLOCK TABLES;
 --
 
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
+/*!40101 SET character_set_client = utf8mb4 */;
 CREATE TABLE `SHKAndJoinTable` (
   `Process` decimal(19,0) NOT NULL,
   `BlockActivity` decimal(19,0) DEFAULT NULL,
@@ -269,7 +269,7 @@ UNLOCK TABLES;
 --
 
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
+/*!40101 SET character_set_client = utf8mb4 */;
 CREATE TABLE `SHKAssignmentEventAudits` (
   `RecordedTime` bigint(20) NOT NULL,
   `RecordedTimeTZO` bigint(20) NOT NULL,
@@ -316,7 +316,7 @@ UNLOCK TABLES;
 --
 
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
+/*!40101 SET character_set_client = utf8mb4 */;
 CREATE TABLE `SHKAssignmentsTable` (
   `Activity` decimal(19,0) NOT NULL,
   `TheResource` decimal(19,0) NOT NULL,
@@ -357,7 +357,7 @@ UNLOCK TABLES;
 --
 
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
+/*!40101 SET character_set_client = utf8mb4 */;
 CREATE TABLE `SHKCounters` (
   `name` varchar(100) NOT NULL,
   `the_number` decimal(19,0) NOT NULL,
@@ -382,7 +382,7 @@ UNLOCK TABLES;
 --
 
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
+/*!40101 SET character_set_client = utf8mb4 */;
 CREATE TABLE `SHKCreateProcessEventAudits` (
   `RecordedTime` bigint(20) NOT NULL,
   `RecordedTimeTZO` bigint(20) NOT NULL,
@@ -429,7 +429,7 @@ UNLOCK TABLES;
 --
 
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
+/*!40101 SET character_set_client = utf8mb4 */;
 CREATE TABLE `SHKDataEventAudits` (
   `RecordedTime` bigint(20) NOT NULL,
   `RecordedTimeTZO` bigint(20) NOT NULL,
@@ -471,7 +471,7 @@ UNLOCK TABLES;
 --
 
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
+/*!40101 SET character_set_client = utf8mb4 */;
 CREATE TABLE `SHKDeadlines` (
   `Process` decimal(19,0) NOT NULL,
   `Activity` decimal(19,0) NOT NULL,
@@ -506,7 +506,7 @@ UNLOCK TABLES;
 --
 
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
+/*!40101 SET character_set_client = utf8mb4 */;
 CREATE TABLE `SHKEventTypes` (
   `KeyValue` varchar(30) NOT NULL,
   `Name` varchar(50) NOT NULL,
@@ -532,7 +532,7 @@ UNLOCK TABLES;
 --
 
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
+/*!40101 SET character_set_client = utf8mb4 */;
 CREATE TABLE `SHKGroupGroupTable` (
   `sub_gid` decimal(19,0) NOT NULL,
   `groupid` decimal(19,0) NOT NULL,
@@ -560,7 +560,7 @@ UNLOCK TABLES;
 --
 
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
+/*!40101 SET character_set_client = utf8mb4 */;
 CREATE TABLE `SHKGroupTable` (
   `groupid` varchar(100) NOT NULL,
   `description` varchar(254) DEFAULT NULL,
@@ -585,7 +585,7 @@ UNLOCK TABLES;
 --
 
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
+/*!40101 SET character_set_client = utf8mb4 */;
 CREATE TABLE `SHKGroupUser` (
   `USERNAME` varchar(100) NOT NULL,
   `oid` decimal(19,0) NOT NULL,
@@ -609,7 +609,7 @@ UNLOCK TABLES;
 --
 
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
+/*!40101 SET character_set_client = utf8mb4 */;
 CREATE TABLE `SHKGroupUserPackLevelPart` (
   `PARTICIPANTOID` decimal(19,0) NOT NULL,
   `USEROID` decimal(19,0) NOT NULL,
@@ -637,7 +637,7 @@ UNLOCK TABLES;
 --
 
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
+/*!40101 SET character_set_client = utf8mb4 */;
 CREATE TABLE `SHKGroupUserProcLevelPart` (
   `PARTICIPANTOID` decimal(19,0) NOT NULL,
   `USEROID` decimal(19,0) NOT NULL,
@@ -665,7 +665,7 @@ UNLOCK TABLES;
 --
 
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
+/*!40101 SET character_set_client = utf8mb4 */;
 CREATE TABLE `SHKNewEventAuditData` (
   `DataEventAudit` decimal(19,0) NOT NULL,
   `VariableDefinitionId` varchar(100) NOT NULL,
@@ -702,7 +702,7 @@ UNLOCK TABLES;
 --
 
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
+/*!40101 SET character_set_client = utf8mb4 */;
 CREATE TABLE `SHKNewEventAuditDataBLOBs` (
   `NewEventAuditDataWOB` decimal(19,0) NOT NULL,
   `VariableValue` mediumblob DEFAULT NULL,
@@ -729,7 +729,7 @@ UNLOCK TABLES;
 --
 
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
+/*!40101 SET character_set_client = utf8mb4 */;
 CREATE TABLE `SHKNewEventAuditDataWOB` (
   `DataEventAudit` decimal(19,0) NOT NULL,
   `VariableDefinitionId` varchar(100) NOT NULL,
@@ -765,7 +765,7 @@ UNLOCK TABLES;
 --
 
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
+/*!40101 SET character_set_client = utf8mb4 */;
 CREATE TABLE `SHKNextXPDLVersions` (
   `XPDLId` varchar(90) NOT NULL,
   `NextVersion` varchar(20) NOT NULL,
@@ -790,7 +790,7 @@ UNLOCK TABLES;
 --
 
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
+/*!40101 SET character_set_client = utf8mb4 */;
 CREATE TABLE `SHKNormalUser` (
   `USERNAME` varchar(100) NOT NULL,
   `oid` decimal(19,0) NOT NULL,
@@ -814,7 +814,7 @@ UNLOCK TABLES;
 --
 
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
+/*!40101 SET character_set_client = utf8mb4 */;
 CREATE TABLE `SHKOldEventAuditData` (
   `DataEventAudit` decimal(19,0) NOT NULL,
   `VariableDefinitionId` varchar(100) NOT NULL,
@@ -851,7 +851,7 @@ UNLOCK TABLES;
 --
 
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
+/*!40101 SET character_set_client = utf8mb4 */;
 CREATE TABLE `SHKOldEventAuditDataBLOBs` (
   `OldEventAuditDataWOB` decimal(19,0) NOT NULL,
   `VariableValue` mediumblob DEFAULT NULL,
@@ -878,7 +878,7 @@ UNLOCK TABLES;
 --
 
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
+/*!40101 SET character_set_client = utf8mb4 */;
 CREATE TABLE `SHKOldEventAuditDataWOB` (
   `DataEventAudit` decimal(19,0) NOT NULL,
   `VariableDefinitionId` varchar(100) NOT NULL,
@@ -914,7 +914,7 @@ UNLOCK TABLES;
 --
 
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
+/*!40101 SET character_set_client = utf8mb4 */;
 CREATE TABLE `SHKPackLevelParticipant` (
   `PARTICIPANT_ID` varchar(90) NOT NULL,
   `PACKAGEOID` decimal(19,0) NOT NULL,
@@ -941,7 +941,7 @@ UNLOCK TABLES;
 --
 
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
+/*!40101 SET character_set_client = utf8mb4 */;
 CREATE TABLE `SHKPackLevelXPDLApp` (
   `APPLICATION_ID` varchar(90) NOT NULL,
   `PACKAGEOID` decimal(19,0) NOT NULL,
@@ -968,7 +968,7 @@ UNLOCK TABLES;
 --
 
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
+/*!40101 SET character_set_client = utf8mb4 */;
 CREATE TABLE `SHKPackLevelXPDLAppTAAppDetUsr` (
   `XPDL_APPOID` decimal(19,0) NOT NULL,
   `TOOLAGENTOID` decimal(19,0) NOT NULL,
@@ -996,7 +996,7 @@ UNLOCK TABLES;
 --
 
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
+/*!40101 SET character_set_client = utf8mb4 */;
 CREATE TABLE `SHKPackLevelXPDLAppTAAppDetail` (
   `XPDL_APPOID` decimal(19,0) NOT NULL,
   `TOOLAGENTOID` decimal(19,0) NOT NULL,
@@ -1024,7 +1024,7 @@ UNLOCK TABLES;
 --
 
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
+/*!40101 SET character_set_client = utf8mb4 */;
 CREATE TABLE `SHKPackLevelXPDLAppTAAppUser` (
   `XPDL_APPOID` decimal(19,0) NOT NULL,
   `TOOLAGENTOID` decimal(19,0) NOT NULL,
@@ -1052,7 +1052,7 @@ UNLOCK TABLES;
 --
 
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
+/*!40101 SET character_set_client = utf8mb4 */;
 CREATE TABLE `SHKPackLevelXPDLAppToolAgntApp` (
   `XPDL_APPOID` decimal(19,0) NOT NULL,
   `TOOLAGENTOID` decimal(19,0) NOT NULL,
@@ -1080,7 +1080,7 @@ UNLOCK TABLES;
 --
 
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
+/*!40101 SET character_set_client = utf8mb4 */;
 CREATE TABLE `SHKProcLevelParticipant` (
   `PARTICIPANT_ID` varchar(90) NOT NULL,
   `PROCESSOID` decimal(19,0) NOT NULL,
@@ -1107,7 +1107,7 @@ UNLOCK TABLES;
 --
 
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
+/*!40101 SET character_set_client = utf8mb4 */;
 CREATE TABLE `SHKProcLevelXPDLApp` (
   `APPLICATION_ID` varchar(90) NOT NULL,
   `PROCESSOID` decimal(19,0) NOT NULL,
@@ -1134,7 +1134,7 @@ UNLOCK TABLES;
 --
 
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
+/*!40101 SET character_set_client = utf8mb4 */;
 CREATE TABLE `SHKProcLevelXPDLAppTAAppDetUsr` (
   `XPDL_APPOID` decimal(19,0) NOT NULL,
   `TOOLAGENTOID` decimal(19,0) NOT NULL,
@@ -1162,7 +1162,7 @@ UNLOCK TABLES;
 --
 
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
+/*!40101 SET character_set_client = utf8mb4 */;
 CREATE TABLE `SHKProcLevelXPDLAppTAAppDetail` (
   `XPDL_APPOID` decimal(19,0) NOT NULL,
   `TOOLAGENTOID` decimal(19,0) NOT NULL,
@@ -1190,7 +1190,7 @@ UNLOCK TABLES;
 --
 
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
+/*!40101 SET character_set_client = utf8mb4 */;
 CREATE TABLE `SHKProcLevelXPDLAppTAAppUser` (
   `XPDL_APPOID` decimal(19,0) NOT NULL,
   `TOOLAGENTOID` decimal(19,0) NOT NULL,
@@ -1218,7 +1218,7 @@ UNLOCK TABLES;
 --
 
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
+/*!40101 SET character_set_client = utf8mb4 */;
 CREATE TABLE `SHKProcLevelXPDLAppToolAgntApp` (
   `XPDL_APPOID` decimal(19,0) NOT NULL,
   `TOOLAGENTOID` decimal(19,0) NOT NULL,
@@ -1246,7 +1246,7 @@ UNLOCK TABLES;
 --
 
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
+/*!40101 SET character_set_client = utf8mb4 */;
 CREATE TABLE `SHKProcessData` (
   `Process` decimal(19,0) NOT NULL,
   `VariableDefinitionId` varchar(100) NOT NULL,
@@ -1283,7 +1283,7 @@ UNLOCK TABLES;
 --
 
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
+/*!40101 SET character_set_client = utf8mb4 */;
 CREATE TABLE `SHKProcessDataBLOBs` (
   `ProcessDataWOB` decimal(19,0) NOT NULL,
   `VariableValue` mediumblob DEFAULT NULL,
@@ -1310,7 +1310,7 @@ UNLOCK TABLES;
 --
 
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
+/*!40101 SET character_set_client = utf8mb4 */;
 CREATE TABLE `SHKProcessDataWOB` (
   `Process` decimal(19,0) NOT NULL,
   `VariableDefinitionId` varchar(100) NOT NULL,
@@ -1346,7 +1346,7 @@ UNLOCK TABLES;
 --
 
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
+/*!40101 SET character_set_client = utf8mb4 */;
 CREATE TABLE `SHKProcessDefinitions` (
   `Name` varchar(200) NOT NULL,
   `PackageId` varchar(90) NOT NULL,
@@ -1375,7 +1375,7 @@ UNLOCK TABLES;
 --
 
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
+/*!40101 SET character_set_client = utf8mb4 */;
 CREATE TABLE `SHKProcessRequesters` (
   `Id` varchar(100) NOT NULL,
   `ActivityRequester` decimal(19,0) DEFAULT NULL,
@@ -1405,7 +1405,7 @@ UNLOCK TABLES;
 --
 
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
+/*!40101 SET character_set_client = utf8mb4 */;
 CREATE TABLE `SHKProcessStateEventAudits` (
   `KeyValue` varchar(30) NOT NULL,
   `Name` varchar(50) NOT NULL,
@@ -1431,7 +1431,7 @@ UNLOCK TABLES;
 --
 
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
+/*!40101 SET character_set_client = utf8mb4 */;
 CREATE TABLE `SHKProcessStates` (
   `KeyValue` varchar(30) NOT NULL,
   `Name` varchar(50) NOT NULL,
@@ -1464,7 +1464,7 @@ UNLOCK TABLES;
 --
 
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
+/*!40101 SET character_set_client = utf8mb4 */;
 CREATE TABLE `SHKProcesses` (
   `SyncVersion` bigint(20) NOT NULL,
   `Id` varchar(100) NOT NULL,
@@ -1513,7 +1513,7 @@ UNLOCK TABLES;
 --
 
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
+/*!40101 SET character_set_client = utf8mb4 */;
 CREATE TABLE `SHKResourcesTable` (
   `Username` varchar(100) NOT NULL,
   `Name` varchar(100) DEFAULT NULL,
@@ -1538,7 +1538,7 @@ UNLOCK TABLES;
 --
 
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
+/*!40101 SET character_set_client = utf8mb4 */;
 CREATE TABLE `SHKStateEventAudits` (
   `RecordedTime` bigint(20) NOT NULL,
   `RecordedTimeTZO` bigint(20) NOT NULL,
@@ -1592,7 +1592,7 @@ UNLOCK TABLES;
 --
 
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
+/*!40101 SET character_set_client = utf8mb4 */;
 CREATE TABLE `SHKToolAgentApp` (
   `TOOL_AGENT_NAME` varchar(250) NOT NULL,
   `APP_NAME` varchar(90) NOT NULL,
@@ -1617,7 +1617,7 @@ UNLOCK TABLES;
 --
 
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
+/*!40101 SET character_set_client = utf8mb4 */;
 CREATE TABLE `SHKToolAgentAppDetail` (
   `APP_MODE` decimal(10,0) NOT NULL,
   `TOOLAGENT_APPOID` decimal(19,0) NOT NULL,
@@ -1644,7 +1644,7 @@ UNLOCK TABLES;
 --
 
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
+/*!40101 SET character_set_client = utf8mb4 */;
 CREATE TABLE `SHKToolAgentAppDetailUser` (
   `TOOLAGENT_APPOID` decimal(19,0) NOT NULL,
   `USEROID` decimal(19,0) NOT NULL,
@@ -1672,7 +1672,7 @@ UNLOCK TABLES;
 --
 
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
+/*!40101 SET character_set_client = utf8mb4 */;
 CREATE TABLE `SHKToolAgentAppUser` (
   `TOOLAGENT_APPOID` decimal(19,0) NOT NULL,
   `USEROID` decimal(19,0) NOT NULL,
@@ -1700,7 +1700,7 @@ UNLOCK TABLES;
 --
 
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
+/*!40101 SET character_set_client = utf8mb4 */;
 CREATE TABLE `SHKToolAgentUser` (
   `USERNAME` varchar(100) NOT NULL,
   `PWD` varchar(100) DEFAULT NULL,
@@ -1725,7 +1725,7 @@ UNLOCK TABLES;
 --
 
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
+/*!40101 SET character_set_client = utf8mb4 */;
 CREATE TABLE `SHKUserGroupTable` (
   `userid` decimal(19,0) NOT NULL,
   `groupid` decimal(19,0) NOT NULL,
@@ -1753,7 +1753,7 @@ UNLOCK TABLES;
 --
 
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
+/*!40101 SET character_set_client = utf8mb4 */;
 CREATE TABLE `SHKUserPackLevelPart` (
   `PARTICIPANTOID` decimal(19,0) NOT NULL,
   `USEROID` decimal(19,0) NOT NULL,
@@ -1781,7 +1781,7 @@ UNLOCK TABLES;
 --
 
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
+/*!40101 SET character_set_client = utf8mb4 */;
 CREATE TABLE `SHKUserProcLevelParticipant` (
   `PARTICIPANTOID` decimal(19,0) NOT NULL,
   `USEROID` decimal(19,0) NOT NULL,
@@ -1809,7 +1809,7 @@ UNLOCK TABLES;
 --
 
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
+/*!40101 SET character_set_client = utf8mb4 */;
 CREATE TABLE `SHKUserTable` (
   `userid` varchar(100) NOT NULL,
   `firstname` varchar(50) DEFAULT NULL,
@@ -1837,7 +1837,7 @@ UNLOCK TABLES;
 --
 
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
+/*!40101 SET character_set_client = utf8mb4 */;
 CREATE TABLE `SHKXPDLApplicationPackage` (
   `PACKAGE_ID` varchar(90) NOT NULL,
   `oid` decimal(19,0) NOT NULL,
@@ -1861,7 +1861,7 @@ UNLOCK TABLES;
 --
 
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
+/*!40101 SET character_set_client = utf8mb4 */;
 CREATE TABLE `SHKXPDLApplicationProcess` (
   `PROCESS_ID` varchar(90) NOT NULL,
   `PACKAGEOID` decimal(19,0) NOT NULL,
@@ -1888,7 +1888,7 @@ UNLOCK TABLES;
 --
 
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
+/*!40101 SET character_set_client = utf8mb4 */;
 CREATE TABLE `SHKXPDLData` (
   `XPDLContent` longblob DEFAULT NULL,
   `XPDLClassContent` longblob DEFAULT NULL,
@@ -1917,7 +1917,7 @@ UNLOCK TABLES;
 --
 
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
+/*!40101 SET character_set_client = utf8mb4 */;
 CREATE TABLE `SHKXPDLHistory` (
   `XPDLId` varchar(90) NOT NULL,
   `XPDLVersion` varchar(20) NOT NULL,
@@ -1945,7 +1945,7 @@ UNLOCK TABLES;
 --
 
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
+/*!40101 SET character_set_client = utf8mb4 */;
 CREATE TABLE `SHKXPDLHistoryData` (
   `XPDLContent` mediumblob NOT NULL,
   `XPDLClassContent` mediumblob NOT NULL,
@@ -1974,7 +1974,7 @@ UNLOCK TABLES;
 --
 
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
+/*!40101 SET character_set_client = utf8mb4 */;
 CREATE TABLE `SHKXPDLParticipantPackage` (
   `PACKAGE_ID` varchar(90) NOT NULL,
   `oid` decimal(19,0) NOT NULL,
@@ -1998,7 +1998,7 @@ UNLOCK TABLES;
 --
 
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
+/*!40101 SET character_set_client = utf8mb4 */;
 CREATE TABLE `SHKXPDLParticipantProcess` (
   `PROCESS_ID` varchar(90) NOT NULL,
   `PACKAGEOID` decimal(19,0) NOT NULL,
@@ -2025,7 +2025,7 @@ UNLOCK TABLES;
 --
 
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
+/*!40101 SET character_set_client = utf8mb4 */;
 CREATE TABLE `SHKXPDLReferences` (
   `ReferredXPDLId` varchar(90) NOT NULL,
   `ReferringXPDL` decimal(19,0) NOT NULL,
@@ -2053,7 +2053,7 @@ UNLOCK TABLES;
 --
 
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
+/*!40101 SET character_set_client = utf8mb4 */;
 CREATE TABLE `SHKXPDLS` (
   `XPDLId` varchar(90) NOT NULL,
   `XPDLVersion` varchar(20) NOT NULL,
@@ -2080,7 +2080,7 @@ UNLOCK TABLES;
 --
 
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
+/*!40101 SET character_set_client = utf8mb4 */;
 CREATE TABLE `app_app` (
   `appId` varchar(255) NOT NULL,
   `appVersion` bigint(20) NOT NULL,
@@ -2111,7 +2111,7 @@ UNLOCK TABLES;
 --
 
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
+/*!40101 SET character_set_client = utf8mb4 */;
 CREATE TABLE `app_builder` (
   `appId` varchar(255) NOT NULL,
   `appVersion` bigint(20) NOT NULL,
@@ -2143,7 +2143,7 @@ UNLOCK TABLES;
 --
 
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
+/*!40101 SET character_set_client = utf8mb4 */;
 CREATE TABLE `app_datalist` (
   `appId` varchar(255) NOT NULL,
   `appVersion` bigint(20) NOT NULL,
@@ -2174,7 +2174,7 @@ UNLOCK TABLES;
 --
 
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
+/*!40101 SET character_set_client = utf8mb4 */;
 CREATE TABLE `app_env_variable` (
   `appId` varchar(255) NOT NULL,
   `appVersion` bigint(20) NOT NULL,
@@ -2201,7 +2201,7 @@ UNLOCK TABLES;
 --
 
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
+/*!40101 SET character_set_client = utf8mb4 */;
 CREATE TABLE `app_fd` (
   `id` varchar(255) NOT NULL,
   `dateCreated` datetime DEFAULT NULL,
@@ -2224,7 +2224,7 @@ UNLOCK TABLES;
 --
 
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
+/*!40101 SET character_set_client = utf8mb4 */;
 CREATE TABLE `app_form` (
   `appId` varchar(255) NOT NULL,
   `appVersion` bigint(20) NOT NULL,
@@ -2256,7 +2256,7 @@ UNLOCK TABLES;
 --
 
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
+/*!40101 SET character_set_client = utf8mb4 */;
 CREATE TABLE `app_form_data_audit_trail` (
   `id` varchar(255) NOT NULL,
   `appId` varchar(255) DEFAULT NULL,
@@ -2285,7 +2285,7 @@ UNLOCK TABLES;
 --
 
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
+/*!40101 SET character_set_client = utf8mb4 */;
 CREATE TABLE `app_message` (
   `appId` varchar(255) NOT NULL,
   `appVersion` bigint(20) NOT NULL,
@@ -2313,7 +2313,7 @@ UNLOCK TABLES;
 --
 
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
+/*!40101 SET character_set_client = utf8mb4 */;
 CREATE TABLE `app_package` (
   `packageId` varchar(255) NOT NULL,
   `packageVersion` bigint(20) NOT NULL,
@@ -2342,7 +2342,7 @@ UNLOCK TABLES;
 --
 
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
+/*!40101 SET character_set_client = utf8mb4 */;
 CREATE TABLE `app_package_activity_form` (
   `processDefId` varchar(255) NOT NULL,
   `activityDefId` varchar(255) NOT NULL,
@@ -2375,7 +2375,7 @@ UNLOCK TABLES;
 --
 
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
+/*!40101 SET character_set_client = utf8mb4 */;
 CREATE TABLE `app_package_activity_plugin` (
   `processDefId` varchar(255) NOT NULL,
   `activityDefId` varchar(255) NOT NULL,
@@ -2383,7 +2383,7 @@ CREATE TABLE `app_package_activity_plugin` (
   `packageVersion` bigint(20) NOT NULL,
   `ouid` varchar(255) DEFAULT NULL,
   `pluginName` varchar(255) DEFAULT NULL,
-  `pluginProperties` text DEFAULT NULL,
+  `pluginProperties` longtext DEFAULT NULL,
   PRIMARY KEY (`processDefId`,`activityDefId`,`packageId`,`packageVersion`),
   KEY `FKADE8644C5F255BCC` (`packageId`,`packageVersion`),
   CONSTRAINT `FKADE8644C5F255BCC` FOREIGN KEY (`packageId`, `packageVersion`) REFERENCES `app_package` (`packageId`, `packageVersion`)
@@ -2404,7 +2404,7 @@ UNLOCK TABLES;
 --
 
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
+/*!40101 SET character_set_client = utf8mb4 */;
 CREATE TABLE `app_package_participant` (
   `processDefId` varchar(255) NOT NULL,
   `participantId` varchar(255) NOT NULL,
@@ -2413,7 +2413,7 @@ CREATE TABLE `app_package_participant` (
   `ouid` varchar(255) DEFAULT NULL,
   `type` varchar(255) DEFAULT NULL,
   `value` text DEFAULT NULL,
-  `pluginProperties` text DEFAULT NULL,
+  `pluginProperties` longtext DEFAULT NULL,
   PRIMARY KEY (`processDefId`,`participantId`,`packageId`,`packageVersion`),
   KEY `FK6D7BF59C5F255BCC` (`packageId`,`packageVersion`),
   CONSTRAINT `FK6D7BF59C5F255BCC` FOREIGN KEY (`packageId`, `packageVersion`) REFERENCES `app_package` (`packageId`, `packageVersion`)
@@ -2434,14 +2434,14 @@ UNLOCK TABLES;
 --
 
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
+/*!40101 SET character_set_client = utf8mb4 */;
 CREATE TABLE `app_plugin_default` (
   `appId` varchar(255) NOT NULL,
   `appVersion` bigint(20) NOT NULL,
   `id` varchar(255) NOT NULL,
   `pluginName` varchar(255) DEFAULT NULL,
   `pluginDescription` text DEFAULT NULL,
-  `pluginProperties` text DEFAULT NULL,
+  `pluginProperties` longtext DEFAULT NULL,
   PRIMARY KEY (`appId`,`appVersion`,`id`),
   KEY `FK7A835713462EF4C7` (`appId`,`appVersion`),
   CONSTRAINT `FK7A835713462EF4C7` FOREIGN KEY (`appId`, `appVersion`) REFERENCES `app_app` (`appId`, `appVersion`)
@@ -2462,7 +2462,7 @@ UNLOCK TABLES;
 --
 
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
+/*!40101 SET character_set_client = utf8mb4 */;
 CREATE TABLE `app_report_activity` (
   `uuid` varchar(255) NOT NULL,
   `activityDefId` varchar(255) DEFAULT NULL,
@@ -2488,7 +2488,7 @@ UNLOCK TABLES;
 --
 
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
+/*!40101 SET character_set_client = utf8mb4 */;
 CREATE TABLE `app_report_activity_instance` (
   `instanceId` varchar(255) NOT NULL,
   `performer` varchar(255) DEFAULT NULL,
@@ -2527,7 +2527,7 @@ UNLOCK TABLES;
 --
 
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
+/*!40101 SET character_set_client = utf8mb4 */;
 CREATE TABLE `app_report_app` (
   `uuid` varchar(255) NOT NULL,
   `appId` varchar(255) DEFAULT NULL,
@@ -2551,7 +2551,7 @@ UNLOCK TABLES;
 --
 
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
+/*!40101 SET character_set_client = utf8mb4 */;
 CREATE TABLE `app_report_package` (
   `uuid` varchar(255) NOT NULL,
   `packageId` varchar(255) DEFAULT NULL,
@@ -2578,7 +2578,7 @@ UNLOCK TABLES;
 --
 
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
+/*!40101 SET character_set_client = utf8mb4 */;
 CREATE TABLE `app_report_process` (
   `uuid` varchar(255) NOT NULL,
   `processDefId` varchar(255) DEFAULT NULL,
@@ -2604,7 +2604,7 @@ UNLOCK TABLES;
 --
 
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
+/*!40101 SET character_set_client = utf8mb4 */;
 CREATE TABLE `app_report_process_instance` (
   `instanceId` varchar(255) NOT NULL,
   `requester` varchar(255) DEFAULT NULL,
@@ -2635,7 +2635,7 @@ UNLOCK TABLES;
 --
 
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
+/*!40101 SET character_set_client = utf8mb4 */;
 CREATE TABLE `app_resource` (
   `appId` varchar(255) NOT NULL,
   `appVersion` bigint(20) NOT NULL,
@@ -2662,7 +2662,7 @@ UNLOCK TABLES;
 --
 
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
+/*!40101 SET character_set_client = utf8mb4 */;
 CREATE TABLE `app_userview` (
   `appId` varchar(255) NOT NULL,
   `appVersion` bigint(20) NOT NULL,
@@ -2693,7 +2693,7 @@ UNLOCK TABLES;
 --
 
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
+/*!40101 SET character_set_client = utf8mb4 */;
 CREATE TABLE `dir_department` (
   `id` varchar(255) NOT NULL,
   `name` varchar(255) DEFAULT NULL,
@@ -2725,7 +2725,7 @@ UNLOCK TABLES;
 --
 
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
+/*!40101 SET character_set_client = utf8mb4 */;
 CREATE TABLE `dir_employment` (
   `id` varchar(255) NOT NULL,
   `userId` varchar(255) DEFAULT NULL,
@@ -2762,7 +2762,7 @@ UNLOCK TABLES;
 --
 
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
+/*!40101 SET character_set_client = utf8mb4 */;
 CREATE TABLE `dir_employment_report_to` (
   `employmentId` varchar(255) NOT NULL,
   `reportToId` varchar(255) NOT NULL,
@@ -2789,7 +2789,7 @@ UNLOCK TABLES;
 --
 
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
+/*!40101 SET character_set_client = utf8mb4 */;
 CREATE TABLE `dir_grade` (
   `id` varchar(255) NOT NULL,
   `name` varchar(255) DEFAULT NULL,
@@ -2815,7 +2815,7 @@ UNLOCK TABLES;
 --
 
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
+/*!40101 SET character_set_client = utf8mb4 */;
 CREATE TABLE `dir_group` (
   `id` varchar(255) NOT NULL,
   `name` varchar(255) DEFAULT NULL,
@@ -2841,7 +2841,7 @@ UNLOCK TABLES;
 --
 
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
+/*!40101 SET character_set_client = utf8mb4 */;
 CREATE TABLE `dir_organization` (
   `id` varchar(255) NOT NULL,
   `name` varchar(255) DEFAULT NULL,
@@ -2867,7 +2867,7 @@ UNLOCK TABLES;
 --
 
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
+/*!40101 SET character_set_client = utf8mb4 */;
 CREATE TABLE `dir_role` (
   `id` varchar(255) NOT NULL,
   `name` varchar(255) DEFAULT NULL,
@@ -2895,7 +2895,7 @@ UNLOCK TABLES;
 --
 
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
+/*!40101 SET character_set_client = utf8mb4 */;
 CREATE TABLE `dir_user` (
   `id` varchar(255) NOT NULL,
   `username` varchar(255) DEFAULT NULL,
@@ -2926,7 +2926,7 @@ UNLOCK TABLES;
 --
 
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
+/*!40101 SET character_set_client = utf8mb4 */;
 CREATE TABLE `dir_user_extra` (
   `username` varchar(255) NOT NULL,
   `algorithm` varchar(255) DEFAULT NULL,
@@ -2955,7 +2955,7 @@ UNLOCK TABLES;
 --
 
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
+/*!40101 SET character_set_client = utf8mb4 */;
 CREATE TABLE `dir_user_group` (
   `groupId` varchar(255) NOT NULL,
   `userId` varchar(255) NOT NULL,
@@ -2981,7 +2981,7 @@ UNLOCK TABLES;
 --
 
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
+/*!40101 SET character_set_client = utf8mb4 */;
 CREATE TABLE `dir_user_meta` (
   `username` varchar(255) NOT NULL,
   `meta_key` varchar(255) NOT NULL,
@@ -3004,7 +3004,7 @@ UNLOCK TABLES;
 --
 
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
+/*!40101 SET character_set_client = utf8mb4 */;
 CREATE TABLE `dir_user_password_history` (
   `id` varchar(255) NOT NULL,
   `username` varchar(255) DEFAULT NULL,
@@ -3029,7 +3029,7 @@ UNLOCK TABLES;
 --
 
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
+/*!40101 SET character_set_client = utf8mb4 */;
 CREATE TABLE `dir_user_replacement` (
   `id` varchar(255) NOT NULL,
   `username` varchar(255) DEFAULT NULL,
@@ -3059,7 +3059,7 @@ UNLOCK TABLES;
 --
 
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
+/*!40101 SET character_set_client = utf8mb4 */;
 CREATE TABLE `dir_user_role` (
   `roleId` varchar(255) NOT NULL,
   `userId` varchar(255) NOT NULL,
@@ -3087,7 +3087,7 @@ UNLOCK TABLES;
 --
 
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
+/*!40101 SET character_set_client = utf8mb4 */;
 CREATE TABLE `objectid` (
   `nextoid` decimal(19,0) NOT NULL,
   PRIMARY KEY (`nextoid`)
@@ -3110,7 +3110,7 @@ UNLOCK TABLES;
 --
 
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
+/*!40101 SET character_set_client = utf8mb4 */;
 CREATE TABLE `wf_audit_trail` (
   `id` varchar(255) NOT NULL,
   `username` varchar(255) DEFAULT NULL,
@@ -3138,7 +3138,7 @@ UNLOCK TABLES;
 --
 
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
+/*!40101 SET character_set_client = utf8mb4 */;
 CREATE TABLE `wf_history_activity` (
   `activityId` varchar(255) NOT NULL,
   `activityName` varchar(255) DEFAULT NULL,
@@ -3175,7 +3175,7 @@ UNLOCK TABLES;
 --
 
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
+/*!40101 SET character_set_client = utf8mb4 */;
 CREATE TABLE `wf_history_process` (
   `processId` varchar(255) NOT NULL,
   `processName` varchar(255) DEFAULT NULL,
@@ -3209,7 +3209,7 @@ UNLOCK TABLES;
 --
 
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
+/*!40101 SET character_set_client = utf8mb4 */;
 CREATE TABLE `wf_process_link` (
   `processId` varchar(255) NOT NULL,
   `parentProcessId` varchar(255) DEFAULT NULL,
@@ -3233,7 +3233,7 @@ UNLOCK TABLES;
 --
 
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
+/*!40101 SET character_set_client = utf8mb4 */;
 CREATE TABLE `wf_process_link_history` (
   `processId` varchar(255) NOT NULL,
   `parentProcessId` varchar(255) DEFAULT NULL,
@@ -3256,7 +3256,7 @@ UNLOCK TABLES;
 --
 
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
+/*!40101 SET character_set_client = utf8mb4 */;
 CREATE TABLE `wf_report` (
   `activityInstanceId` varchar(255) NOT NULL,
   `processInstanceId` varchar(255) DEFAULT NULL,
@@ -3303,7 +3303,7 @@ UNLOCK TABLES;
 --
 
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
+/*!40101 SET character_set_client = utf8mb4 */;
 CREATE TABLE `wf_report_activity` (
   `activityDefId` varchar(255) NOT NULL,
   `activityName` varchar(255) DEFAULT NULL,
@@ -3327,7 +3327,7 @@ UNLOCK TABLES;
 --
 
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
+/*!40101 SET character_set_client = utf8mb4 */;
 CREATE TABLE `wf_report_package` (
   `packageId` varchar(255) NOT NULL,
   `packageName` varchar(255) DEFAULT NULL,
@@ -3349,7 +3349,7 @@ UNLOCK TABLES;
 --
 
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
+/*!40101 SET character_set_client = utf8mb4 */;
 CREATE TABLE `wf_report_process` (
   `processDefId` varchar(255) NOT NULL,
   `processName` varchar(255) DEFAULT NULL,
@@ -3372,7 +3372,7 @@ UNLOCK TABLES;
 --
 
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
+/*!40101 SET character_set_client = utf8mb4 */;
 CREATE TABLE `wf_resource_bundle_message` (
   `id` varchar(255) NOT NULL,
   `messageKey` varchar(255) DEFAULT NULL,
@@ -3396,7 +3396,7 @@ UNLOCK TABLES;
 --
 
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
+/*!40101 SET character_set_client = utf8mb4 */;
 CREATE TABLE `wf_setup` (
   `id` varchar(255) NOT NULL,
   `property` varchar(255) DEFAULT NULL,
@@ -3426,4 +3426,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*M!100616 SET NOTE_VERBOSITY=@OLD_NOTE_VERBOSITY */;
 
--- Dump completed on 2025-04-18 20:34:04
+-- Dump completed on 2025-09-03 14:56:29
