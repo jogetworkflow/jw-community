@@ -578,6 +578,11 @@ body.rtl .hasDatepicker+a+a {
     z-index: 1;
 }
 
+.label-top .hasDatepicker + a, .label-top .hasDatepicker + a + a {
+    bottom: 7px;
+    top: unset;
+}
+
 .datapicker-native.ui-screen-hidden.ios+.hasDatepicker+a+a {
     z-index: 4;
 }
