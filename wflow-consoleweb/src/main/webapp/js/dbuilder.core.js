@@ -2463,7 +2463,7 @@ DatalistBuilder = {
                         type: 'elementselect',
                         options_ajax : '[CONTEXT_PATH]/web/property/json/getElements?classname=org.joget.apps.datalist.model.DataListTemplate',
                         options_extra : [
-                            {value : '', label : get_cbuilder_msg('dbuilder.classicTable'), helplink :'https://dev.joget.org/community/display/DX8/Table+-+Classic'}
+                            {value : '', label : get_cbuilder_msg('dbuilder.classicTable'), helplink :'https://kb.joget.org/jw/web/userview/jdocs/docs/DX9/table---classic'}
                         ],
                         url : '[CONTEXT_PATH]/web/property/json' + CustomBuilder.appPath + '/getPropertyOptions'
                     },
