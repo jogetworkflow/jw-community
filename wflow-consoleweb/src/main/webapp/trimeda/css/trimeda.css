@@ -1347,11 +1347,11 @@ body.rtl ul.breadcrumb > li > span.separator {
 }
 
 #content main > .main-body-content,
-#content main > *:not(.category-label-header, .breadcrumb, .quickEdit) {
+#content main > *:not(.category-label-header, .breadcrumb, .quickEdit, .form-errors) {
     margin: 36px 47px 0px 47px;
 }
 
-#content main > *:not(.category-label-header, .breadcrumb, .quickEdit) {
+#content main > *:not(.category-label-header, .breadcrumb, .quickEdit, .form-errors) {
     margin-top: var(--content-margin) !important;
     margin-left: 47px !important;
     margin-bottom: 0px !important;
@@ -1368,6 +1368,11 @@ footer {
 #content main {
     padding-top: var(--breadcrumb-spacing);
     padding-bottom: var(--breadcrumb-spacing);
+}
+
+body#login #content main {
+    padding-top: 0px;
+    padding-bottom: 0px
 }
 
 .form-section {
@@ -2458,7 +2463,7 @@ body.rtl .accordion .card-header::after {
 }
 
 @media screen and (max-width: 768px) { 
-    #content main > *:not(.category-label-header, .breadcrumb, .quickEdit) {
+    #content main > *:not(.category-label-header, .breadcrumb, .quickEdit, .form-errors) {
         margin-top: 16px !important;
         margin-left: 0px !important;
         margin-bottom: 0px !important;
