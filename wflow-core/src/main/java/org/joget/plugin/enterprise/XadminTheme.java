@@ -238,6 +238,7 @@ public class XadminTheme extends UniversalTheme {
     public String getHeader(Map<String, Object> data) {
         if (isIndex()) {
             data.put("header_menus", getHeaderMenus(data));
+            data.put("header_inner_after", getPropertyString("subheader"));
             if (!getPropertyString("logo").isEmpty()) {
                 data.put("header_name_inner_before", "<img class=\"logo\" alt=\"logo\" src=\""+getPropertyString("logo")+"\" />");
             }

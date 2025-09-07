@@ -20,6 +20,8 @@ ${header_before!}
     ${header_message_before!}
     ${header_menus!}
     ${header_message_after!}
-    ${header_inner_after!}
+    <div class="subHeader">
+        ${header_inner_after!}
+    </div>
 </div>
 ${header_after!}

@@ -299,6 +299,13 @@
         developer_mode : 'advanced'
     },
     {
+        name : 'subheader',
+        label : '@@theme.universal.subHeader@@',
+        type : 'codeeditor',
+        mode : 'html',
+        developer_mode : 'advanced'
+    },
+    {
         name: 'disableHelpGuide',
         label: '@@theme.universal.disableHelpGuide@@',
         type: 'checkbox',

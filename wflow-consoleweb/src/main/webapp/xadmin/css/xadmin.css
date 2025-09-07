@@ -71,6 +71,12 @@ body{
 .container .logo a{
     background-color: rgba(0,0,0,0);
 }
+.container .subHeader {
+    float: left;
+    margin-top: 15px;
+    margin-left: 15px;
+    color: #fff;
+}
 .container .logo a{
     float: left;
     font-size: 18px;
