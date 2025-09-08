@@ -1462,6 +1462,9 @@ body.rtl .property-input > span.icon > span > span.dropdown{
 .pluginConfig .builder-link a.openbuilder, .pluginConfig .property-input a.elementHelplink{
     top: 10px;
 }
+.pluginConfig .property-input a.elementHelplink {
+    font-size: 13px;
+}
 .property-type-selectbox a.builderAddNew{
     position: absolute;
     top: -20px;
