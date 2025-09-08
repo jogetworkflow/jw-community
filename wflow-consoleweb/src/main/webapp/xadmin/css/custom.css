@@ -6014,12 +6014,17 @@ body.rtl .form-row {
     margin-left: auto;
 }
 
+.dataList .actions {
+    width: 100%;
+}
+
 body.rtl td,
 body.rtl .subform-section-title,
 body.rtl .grid,
 body.rtl .grid-stack-item-header h4,
-body.rtl .dataList .filters,
 body.rtl .pagebanner,
+body .dataList .filters,
+.dataList .actions.right,
 body.rtl .dataList .actions.left,
 body.rtl .print-button:before,
 body.rtl form#profile,
@@ -6027,7 +6032,9 @@ body.rtl .subform-cell {
     text-align: right;
 }
 
-body.rtl .dataList div.exportlinks {
+body.rtl .dataList div.exportlinks,
+body.rtl .dataList .filters,
+.dataList .actions.left {
     float: left;
 }
 

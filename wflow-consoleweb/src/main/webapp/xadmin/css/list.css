@@ -20,7 +20,7 @@
 }
 
 body .dataList .filters {
-    text-align: left;
+    text-align: right;
 }
 body .dataList .filters .filter-cell{
     padding-left: 0px;
