@@ -2250,7 +2250,7 @@ CREATE TABLE `app_package_activity_plugin` (
   `packageVersion` bigint(20) NOT NULL,
   `ouid` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `pluginName` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `pluginProperties` text COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `pluginProperties` longtext COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   PRIMARY KEY (`processDefId`,`activityDefId`,`packageId`,`packageVersion`),
   KEY `FKADE8644C5F255BCC` (`packageId`,`packageVersion`),
   CONSTRAINT `FKADE8644C5F255BCC` FOREIGN KEY (`packageId`, `packageVersion`) REFERENCES `app_package` (`packageId`, `packageVersion`)
@@ -2278,7 +2278,7 @@ CREATE TABLE `app_package_participant` (
   `ouid` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `type` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `value` text COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `pluginProperties` text COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `pluginProperties` longtext COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   PRIMARY KEY (`processDefId`,`participantId`,`packageId`,`packageVersion`),
   KEY `FK6D7BF59C5F255BCC` (`packageId`,`packageVersion`),
   CONSTRAINT `FK6D7BF59C5F255BCC` FOREIGN KEY (`packageId`, `packageVersion`) REFERENCES `app_package` (`packageId`, `packageVersion`)
@@ -2304,7 +2304,7 @@ CREATE TABLE `app_plugin_default` (
   `id` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
   `pluginName` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `pluginDescription` text COLLATE utf8mb4_unicode_ci DEFAULT NULL,
-  `pluginProperties` text COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `pluginProperties` longtext COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   PRIMARY KEY (`appId`,`appVersion`,`id`),
   KEY `FK7A835713462EF4C7` (`appId`,`appVersion`),
   CONSTRAINT `FK7A835713462EF4C7` FOREIGN KEY (`appId`, `appVersion`) REFERENCES `app_app` (`appId`, `appVersion`)
