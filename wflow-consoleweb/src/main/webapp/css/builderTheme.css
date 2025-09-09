@@ -2514,6 +2514,12 @@ body[builder-theme='dark'] .permission-table .unauthorized {
     background: transparent;
     color: var(--theme-label-color-1);
 }
+body[builder-theme='dark'] .permission_view .permission_rules .add_permission{
+    color: rgba(var(--jgt-link-color-rgb), var(--jgt-link-opacity, 1));
+}
+body[builder-theme='dark'] .permission_view .permission-table .permission-plugin i.la-edit{
+    color: rgba(var(--jgt-link-color-rgb), var(--jgt-link-opacity, 1));
+}
 body[builder-theme='dark'] .permission-table th.export, .permission-table td.export{
     background: transparent;
     color: var(--theme-label-color-1);
