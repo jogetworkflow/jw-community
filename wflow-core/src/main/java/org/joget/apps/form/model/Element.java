@@ -319,19 +319,13 @@ public abstract class Element extends ExtDefaultPlugin implements PropertyEditab
             "form.form-container  ." + styleClass + " > label.label",
             "form.form-container  ." + styleClass + " > label.label + *:not(.ui-screen-hidden):not(div.form-clear), "+
                 "form.form-container  ." + styleClass + " > label.label + .ui-screen-hidden + *, "+
-                "form.form-container  ." + styleClass + " > label.label + div.form-clear + *, "+
-                "form.form-container  ." + styleClass + " .form-cell-value > label, "+
-                "form.form-container  ." + styleClass + " .form-cell-value > label > i, "+
-                "form.form-container  ." + styleClass + " select option "
+                "form.form-container  ." + styleClass + " > label.label + div.form-clear + * "
         };
         String[] cssHoverClass = new String[] {
             "form.form-container  ." + styleClass + ":hover > label.label",
             "form.form-container  ." + styleClass + ":hover > label.label + *:not(.ui-screen-hidden):not(div.form-clear), "+
                 "form.form-container  ." + styleClass + ":hover > label.label + .ui-screen-hidden + *, "+
-                "form.form-container  ." + styleClass + ":hover > label.label + div.form-clear + *, "+
-                "form.form-container  ." + styleClass + ":hover .form-cell-value > label, "+
-                "form.form-container  ." + styleClass + ":hover .form-cell-value > label > i, "+
-                "form.form-container  ." + styleClass + ":hover select option "
+                "form.form-container  ." + styleClass + ":hover > label.label + div.form-clear + * "
         };
 
         for (int i=0; i < keys.length; i++) {
@@ -411,12 +405,10 @@ public abstract class Element extends ExtDefaultPlugin implements PropertyEditab
         if (!builderStyles.isEmpty()) {
             if (this instanceof Form) {
                 int index = html.lastIndexOf("</form>");
-                html = html.substring(0, index) + "<style id=\""+styleClass+"\">" + "." + styleClass + " label," + "." + styleClass + " i, " + "form.form-container ." + styleClass + " input, " + "form.form-container ." + styleClass + " textarea, " +  "form.form-container ." + styleClass + " select, " + "form.form-container ." + styleClass + " select option, " + builderStyles + "</style></form>";
-           
+                html = html.substring(0, index) + "<style id=\""+styleClass+"\">" + builderStyles + "</style></form>";           
             } else {
                 int index = html.lastIndexOf("</div>");
-                html = html.substring(0, index) + "<style id=\""+styleClass+"\">" + "." + styleClass + " label," + "." + styleClass + " i, " + "form.form-container ." + styleClass + " input, " +  "form.form-container ." + styleClass + " textarea, " + "form.form-container ." + styleClass + " select, " + "form.form-container ." + styleClass + " select option, " + builderStyles + "</style></div>";
-             
+                html = html.substring(0, index) + "<style id=\""+styleClass+"\">" + builderStyles + "</style></div>";             
             }
         }
 
