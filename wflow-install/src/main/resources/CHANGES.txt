@@ -4,6 +4,7 @@ For more information, please refer to https://community.joget.org
 
 9.0.0
 =====
+25f9c7570 Fixed: wflow-consoleweb - DX8 Trimeda Theme - Fixed DX8 Trimeda Horizontal Menu UI Issues #1000 @9.0-SNAPSHOT
 4c28b6c92 Modified: wflow-consoleweb - i18n - Modified some of the KB helplink references to use DX9 docs instead of DX8. #1285 @9.0-SNAPSHOT
 cb9a90f16 Modified: wflow-install - Installer - Update sql & database files. #1337  @9.0-SNAPSHOT
 11eb77479 Fixed: wflow-consoleweb - Builder - Added error fallback, so it wont load infinitely #1183 @8.2-SNAPSHOT
