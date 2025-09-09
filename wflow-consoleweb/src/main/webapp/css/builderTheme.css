@@ -1125,7 +1125,7 @@ body[builder-theme] .property-type-selectbox a.builderAddNew {
     color: var(--theme-primary-color-4);
 }
 body[builder-theme] .property-editor-container a:not([class^=chosen]) {
-    opacity: 1;
+    opacity: 0.6;
 }
 body[builder-theme] .editor-panel-mode.narrow:not(.wider) .property-input > table.grid tr:not(.grid_model) {
     border: 1px solid var(--theme-border-color-1);

@@ -773,7 +773,12 @@ td.error .chosen-container, td.error input {
     top: -21px;
     position: absolute;
     left: -51px;
-    padding: 6px 10px 2px 12px;
+    padding: 4px 10px 4px 12px;
+    height: 31px;
+}
+body:not([builder-theme]) .property-editor-container input.image:focus + .file-picker-actions .choosefile:hover {
+    height: 29px;
+    top: -20px;
 }
 body.rtl .property-editor-container input.image + .file-picker-actions .choosefile {
     left: -9px;
@@ -900,6 +905,7 @@ body.rtl .property-input > span.icon > span > span.dropdown{
     position: absolute;
     left: -60px;
     top: -14px;
+    cursor: pointer;
 }
 .rtl .property-editor-container .property-type-file input.image + .file-picker-actions .clearfile {
     left: unset;
