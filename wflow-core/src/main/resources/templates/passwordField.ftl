@@ -10,8 +10,8 @@
             .password-strength-text { min-height: 24px; padding-top: 5px; }
         </style>
     </#if>
-    <label field-tooltip="${elementParamName!}" class="label" for="${elementParamName!}">${element.properties.label} <span class="form-cell-validator">${decoration}</span><#if error??> <span class="form-error-message">${error}</span></#if></label>
-    <#if (element.properties.readonly! == 'true' && element.properties.readonlyLabel! == 'true') >
+    <label field-tooltip="${elementParamName!}" class="label${classIdentifier!}" for="${elementParamName!}_${element.properties.elementUniqueKey!}">${element.properties.label} <span class="form-cell-validator">${decoration}</span><#if error??> <span class="form-error-message">${error}</span></#if></label>
+    <#if (element.properties.readonly! == 'true' && element.properties.readonlyLabel! == 'true')>
         <span>*************</span>
         <input id="${elementParamName!}" name="${elementParamName!}" type="hidden" value="${value!?html}" />
     <#else>

@@ -1,6 +1,7 @@
 package org.joget.apps.form.lib;
 
 import java.util.Map;
+
 import org.joget.apps.app.service.AppUtil;
 import org.joget.apps.form.model.Element;
 import org.joget.apps.form.model.FormBuilderPalette;
@@ -43,6 +44,9 @@ public class PasswordField extends Element implements FormBuilderPaletteElement 
         }
         
         dataModel.put("value", value);
+
+        // Check if icon is present, and if so, add to the dataModel
+        checkIfIconIsPresent(dataModel);
 
         String html = FormUtil.generateElementHtml(this, formData, template, dataModel);
         return html;

@@ -89,6 +89,9 @@ public class DatePicker extends Element implements FormBuilderPaletteElement, Pw
         dataModel.put("isBE", isBE());
         dataModel.put("isRTL", AppUtil.isRTL());
 
+        // Check if icon is present, and if so, add to the dataModel
+        checkIfIconIsPresent(dataModel);
+
         String html = FormUtil.generateElementHtml(this, formData, template, dataModel);
         return html;
     }

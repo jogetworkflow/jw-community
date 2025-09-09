@@ -805,12 +805,12 @@ body.popupBody.dark-mode #section-actions .form-cell, body.popupBody.dark-mode .
 body.dark-mode #sidebar .nav > li > ul {
     background: var(--theme-background);
 }
-body.dark-mode .form-cell > label.label > i,
-body.dark-mode .subform-cell > label.label > i{
+body.dark-mode .form-cell > label.label.withIcon > i,
+body.dark-mode .subform-cell > label.label.withIcon > i{
     background: var(--theme-border-color);
 }
-body.dark-mode .form-cell > label.label:has(+ input:focus) > i,
-body.dark-mode .subform-cell > label.label:has(+ input:focus) > i,
+body.dark-mode .form-cell:has(input:focus-visible) > label.label.withIcon > i,
+body.dark-mode .subform-cell:has(input:focus-visible) > label.label.withIcon > i,
 body.dark-mode .form-cell > label.label:has(+ select:focus) > i,
 body.dark-mode .subform-cell > label.label:has(+ select:focus) > i{
     border: 1px solid var(--theme-border-color);

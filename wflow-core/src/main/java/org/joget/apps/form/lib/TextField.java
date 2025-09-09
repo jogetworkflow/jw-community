@@ -61,6 +61,8 @@ public class TextField extends Element implements FormBuilderPaletteElement {
             dataModel.put("validator", properties.get("type"));
         }
         
+        // Check if icon is present, and if so, add to the dataModel
+        checkIfIconIsPresent(dataModel);
 
         String html = FormUtil.generateElementHtml(this, formData, template, dataModel);
         return html;

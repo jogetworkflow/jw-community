@@ -69,7 +69,7 @@
     });
 </script>
 </#if>
-    <label field-tooltip="${elementParamName!}" class="label" for="${elementParamName!}_${element.properties.elementUniqueKey!}">${element.properties.label} <span class="form-cell-validator">${decoration}</span><#if element.properties.showUserTimeZone! == 'true' && userTimeZone?? && !(element.properties.readonly! == 'true' && element.properties.readonlyLabel! == 'true') ><br/><span>(${userTimeZone!?html})</span></#if><#if error??> <span class="form-error-message">${error}</span></#if></label>
+    <label field-tooltip="${elementParamName!}" class="label${classIdentifier!}" for="${elementParamName!}_${element.properties.elementUniqueKey!}">${element.properties.label} <span class="form-cell-validator">${decoration}</span><#if element.properties.showUserTimeZone! == 'true' && userTimeZone?? && !(element.properties.readonly! == 'true' && element.properties.readonlyLabel! == 'true') ><br/><span>(${userTimeZone!?html})</span></#if><#if error??> <span class="form-error-message">${error}</span></#if></label>
     <#if (element.properties.readonly! == 'true' && element.properties.readonlyLabel! == 'true') >
         <span>${value!?html} <#if element.properties.showUserTimeZone! == 'true' && userTimeZone??>(${userTimeZone!?html})</#if></span>
         <input id="${elementParamName!}" name="${elementParamName!}" type="hidden" value="${value!?html}" />

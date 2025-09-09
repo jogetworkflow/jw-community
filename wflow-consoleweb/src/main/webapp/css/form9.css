@@ -1552,11 +1552,7 @@ body.rtl .handsontable .htCore tr td:last-child {
 @media(max-width:768px) {
 
     .form-cell>label.label,
-    .subform-cell>label.label,
-    .form-cell>label.label+*:not(.ui-screen-hidden),
-    .subform-cell>label.label+*:not(.ui-screen-hidden),
-    .form-cell>label.label+.ui-screen-hidden+*,
-    .subform-cell>label.label+.ui-screen-hidden+* {
+    .subform-cell>label.label {
         white-space: normal;
         position: relative;
         width: 100%;
@@ -1576,6 +1572,11 @@ body.rtl .handsontable .htCore tr td:last-child {
     .rtl .form-cell>label.label,
     .rtl .subform-cell>label.label {
         float: unset;
+    }
+
+    body.rtl .form-cell>label.label, 
+    body.rtl .subform-cell>label.label {
+        text-align: right !important;
     }
 
     .hasDatepicker+a {
@@ -1698,10 +1699,10 @@ body.rtl .numeric_field_control {left:10px; right:auto;}
     body.compact-mode .numeric_field_controls {top:auto; bottom: 32px;}
     body.rtl .numeric_field_controls {left: 25px; right: auto;}
 }
-.form-cell > label.label > i,
-.subform-cell > label.label > i,
-.label-left.form-cell > label.label > i,
-.label-left.subform-cell > label.label > i{
+.form-cell > label.label.withIcon > i,
+.subform-cell > label.label.withIcon > i,
+.label-left.form-cell > label.label.withIcon > i,
+.label-left.subform-cell > label.label.withIcon > i{
     position: absolute;
     color: var(--jgt-input-colorIcon);
     background: var(--jgt-input-colorBorder);
@@ -1709,93 +1710,117 @@ body.rtl .numeric_field_control {left:10px; right:auto;}
     z-index: 1;
     border-radius: calc(var(--jgt-input-borderRadius) - 1px) 0 0 calc(var(--jgt-input-borderRadius) - 1px);
     width: 35px;
-    height: calc(var(--jgt-input-controlHeight) - 2px);
+    height: var(--jgt-input-controlHeight);
     right: -51px;
-    top: 1px;
+    top: 0px;
     display: flex;
     justify-content: center;
     align-items: center;
 }
-body.rtl .form-cell > label.label > i,
-body.rtl .subform-cell > label.label > i{
+/* Fix for passworod field padding */
+.form-cell > label.label + .password-container,
+.subform-cell > label.label > i + .password-container,
+.label-left.form-cell > label.label > i + .password-container,
+.label-left.subform-cell > label.label > i + .password-container {
+    padding: 0px !important;
+}
+
+.form-cell > label.label.withIcon + .password-container > .password-wrapper input,
+.subform-cell > label.label.withIcon > i + .password-container > .password-wrapper input,
+.label-left.form-cell > label.label.withIcon > i + .password-container > .password-wrapper input,
+.label-left.subform-cell > label.label.withIcon > i + .password-container > .password-wrapper input {
+    padding: 0px !important;
+    padding-left: 40px !important;
+}
+
+body.rtl *:is(.form-cell > label.label.withIcon + .password-container > .password-wrapper input,
+.subform-cell > label..withIcon > i + .password-container > .password-wrapper input,
+.label-left.form-cell > label.label.withIcon > i + .password-container > .password-wrapper input,
+.label-left.subform-cell > label.label.withIcon > i + .password-container > .password-wrapper input) {
+    padding-left: 0 !important;
+    padding-right: 40px !important;
+}
+/* End of Fix */
+body.rtl .form-cell > label.label.withIcon > i,
+body.rtl .subform-cell > label.label.withIcon > i{
     border-radius: 0 0.25rem 0.25rem 0;
     left: -50px;
     right: unset;
 }
-.form-cell > label.label:has(i) + *:not(.ui-screen-hidden),
-.subform-cell > label.label:has(i) + *:not(.ui-screen-hidden),
-.form-cell > label.label:has(i) + .ui-screen-hidden + *,
-.subform-cell > label.label:has(i) + .ui-screen-hidden + *{
+.form-cell > label.label.withIcon + *:not(.ui-screen-hidden),
+.subform-cell > label.label.withIcon + *:not(.ui-screen-hidden),
+.form-cell > label.label.withIcon + .ui-screen-hidden + *,
+.subform-cell > label.label.withIcon + .ui-screen-hidden + *{
     padding-left: 45px;
 }   
-body.rtl .form-cell > label.label:has(i) + *:not(.ui-screen-hidden),
-body.rtl .subform-cell > label.label:has(i) + *:not(.ui-screen-hidden),
-body.rtl .form-cell > label.label:has(i) + .ui-screen-hidden + *,
-body.rtl .subform-cell > label.label:has(i) + .ui-screen-hidden + *{
+body.rtl .form-cell > label.label.withIcon + *:not(.ui-screen-hidden),
+body.rtl .subform-cell > label.label.withIcon + *:not(.ui-screen-hidden),
+body.rtl .form-cell > label.label.withIcon + .ui-screen-hidden + *,
+body.rtl .subform-cell > label.label.withIcon + .ui-screen-hidden + *{
     padding-right: 45px;
     padding-left: 12px;
 }
-.label-top .form-cell:not(.label-left) > label.label > i,
-.label-top .subform-cell:not(.label-left) > label.label > i{
+.label-top .form-cell:not(.label-left) > label.label.withIcon > i,
+.label-top .subform-cell:not(.label-left) > label.label.withIcon > i{
    right: unset;
    bottom: unset;
    top: calc(100% + var(--jgt-form-marginBottom));
    left: 0px;
 }
-body.rtl .label-top .form-cell:not(.label-left) > label.label > i,
-body.rtl .label-top .subform-cell:not(.label-left) > label.label > i{
+body.rtl .label-top .form-cell:not(.label-left) > label.label.withIcon > i,
+body.rtl .label-top .subform-cell:not(.label-left) > label.label.withIcon > i{
     left:unset;
     right: 0px;
 }
 @media (max-width: 768px){
-    .form-cell > label.label > i,
-    .subform-cell > label.label > i,
-    .label-left.form-cell > label.label > i,
-    .label-left.subform-cell > label.label > i{
+    .form-cell > label.label.withIcon > i,
+    .subform-cell > label.label.withIcon > i,
+    .label-left.form-cell > label.label.withIcon > i,
+    .label-left.subform-cell > label.label.withIcon > i{
         bottom: unset;
         right: unset;
         top: calc(100% + var(--jgt-form-marginBottom));
     }
-    body.rtl .form-cell > label.label > i,
-    body.rtl .subform-cell > label.label > i{
+    body.rtl .form-cell > label.label.withIcon > i,
+    body.rtl .subform-cell > label.label.withIcon > i{
         bottom: unset;
         right: 0;
         top: calc(100% + var(--jgt-form-marginBottom));
     }
 }
-.label-top.form-cell > label.label > i,
-.label-top.subform-cell > label.label > i{
+.label-top.form-cell > label.label.withIcon > i,
+.label-top.subform-cell > label.label.withIcon > i{
     bottom: unset;
     right: unset;
     top: calc(100% + var(--jgt-form-marginBottom));
 }
-body.rtl .label-top.form-cell > label.label > i,
-body.rtl .label-top.subform-cell > label.label > i{
+body.rtl .label-top.form-cell > label.label.withIcon > i,
+body.rtl .label-top.subform-cell > label.label.withIcon > i{
     left: unset;
 }
-.mediumFontSize .label-top .form-cell:not(.label-left) > label.label > i,
-.mediumFontSize .label-top .subform-cell:not(.label-left) > label.label > i,
-.mediumFontSize .label-top.form-cell > label.label > i,
-.mediumFontSize .label-top.subform-cell > label.label > i{
+.mediumFontSize .label-top .form-cell:not(.label-left) > label.label.withIcon > i,
+.mediumFontSize .label-top .subform-cell:not(.label-left) > label.label.withIcon > i,
+.mediumFontSize .label-top.form-cell > label.label.withIcon > i,
+.mediumFontSize .label-top.subform-cell > label.label.withIcon > i{
     bottom: -39.5px;
 }
-.largeFontSize .label-top .form-cell:not(.label-left) > label.label > i,
-.largeFontSize .label-top .subform-cell:not(.label-left) > label.label > i,
-.largeFontSize .label-top.form-cell > label.label > i,
-.largeFontSize .label-top.subform-cell > label.label > i{
+.largeFontSize .label-top .form-cell:not(.label-left) > label.label.withIcon > i,
+.largeFontSize .label-top .subform-cell:not(.label-left) > label.label.withIcon > i,
+.largeFontSize .label-top.form-cell > label.label.withIcon > i,
+.largeFontSize .label-top.subform-cell > label.label.withIcon > i{
     bottom: -44px;
 }
 @media (max-width: 768px){
-    .mediumFontSize .form-cell > label.label > i,
-    .mediumFontSize .subform-cell > label.label > i,
-    .mediumFontSize .label-left.form-cell > label.label > i,
-    .mediumFontSize .label-left.subform-cell > label.label > i{
+    .mediumFontSize .form-cell > label.label.withIcon > i,
+    .mediumFontSize .subform-cell > label.label.withIcon > i,
+    .mediumFontSize .label-left.form-cell > label.label.withIcon > i,
+    .mediumFontSize .label-left.subform-cell > label.label.withIcon > i{
         bottom: -39.5px;
     }   
-    .largeFontSize .form-cell > label.label > i,
-    .largeFontSize .subform-cell > label.label > i,
-    .largeFontSize .label-left.form-cell > label.label > i,
-    .largeFontSize .label-left.subform-cell > label.label > i{
+    .largeFontSize .form-cell > label.label.withIcon > i,
+    .largeFontSize .subform-cell > label.label.withIcon > i,
+    .largeFontSize .label-left.form-cell > label.label.withIcon > i,
+    .largeFontSize .label-left.subform-cell > label.label.withIcon > i{
         bottom: -44px;
     }
 }

@@ -6867,8 +6867,16 @@ PropertyEditor.Type.IconTextField.prototype = {
         var data = new Object();
         var value = $('[name=' + this.id + ']:not(.hidden)').val();
         var icon = $('[name=' + this.id + ']:not(.hidden)').prev("span.icon");
+
+        data["iconIncluded"] = false;
+
         if (icon.length > 0) {
             var iconValue = icon.find(".value").html();
+
+            if(iconValue !== "") {
+                data["iconIncluded"] = true;
+            }
+
             if (this.properties.iconOnly !== undefined && this.properties.iconOnly === "true") {
                 value = iconValue;
             } else {

@@ -990,10 +990,10 @@ body .grid-action-header, body td.grid-action-cell {
     border-bottom: 1px solid #727272;
     box-shadow: 0 1px 0 0 #727272;
 }
-.form-cell > label.label > i,
-.subform-cell > label.label > i,
-.label-left.form-cell > label.label > i,
-.label-left.subform-cell > label.label > i{
+.form-cell > label.label.withIcon > i,
+.subform-cell > label.label.withIcon > i,
+.label-left.form-cell > label.label.withIcon > i,
+.label-left.subform-cell > label.label.withIcon > i{
     border-bottom: 1px solid #555;
 }
 .form-cell > label.label:has(+ input:focus-visible) > i,

@@ -1128,66 +1128,66 @@ body.rtl form.label-left .form-cell.label-top > label{
     float:none;
 }
 
-body #form-canvas .form-cell label.label:has(i), body #form-canvas .subform-cell label.label:has(i) {
+body #form-canvas .form-cell label.label.withIcon, body #form-canvas .subform-cell label.label.withIcon {
     position: relative;
 }
-.form-cell > label.label > i,
-.subform-cell > label.label > i,
-.label-left.form-cell > label.label > i,
-.label-left.subform-cell > label.label > i{
+.form-cell > label.label.withIcon > i,
+.subform-cell > label.label.withIcon > i,
+.label-left.form-cell > label.label.withIcon > i,
+.label-left.subform-cell > label.label.withIcon > i{
     border: 1px solid #e6e6e6;
     border-radius: 2px 0 0 2px;
     transition: all 0.3s;
 }
-body.rtl .form-cell > label.label > i,
-body.rtl .subform-cell > label.label > i,
-body.rtl .label-left.form-cell > label.label > i,
-body.rtl .label-left.subform-cell > label.label > i{
+body.rtl .form-cell > label.label.withIcon > i,
+body.rtl .subform-cell > label.label.withIcon > i,
+body.rtl .label-left.form-cell > label.label.withIcon > i,
+body.rtl .label-left.subform-cell > label.label.withIcon > i{
     border-radius: 0 2px 2px 0;
 }
-.label-top.form-cell > label.label > i,
-.label-top.subform-cell > label.label > i{
+.label-top.form-cell > label.label.withIcon > i,
+.label-top.subform-cell > label.label.withIcon > i{
     bottom: -36px;
 }
-.label-top .form-cell:not(.label-left) > label.label > i,
-.label-top .subform-cell:not(.label-left) > label.label > i{
+.label-top .form-cell:not(.label-left) > label.label.withIcon > i,
+.label-top .subform-cell:not(.label-left) > label.label.withIcon > i{
    bottom: -36px;
 }
-.form-cell > label.label:has(+ input:focus) > i,
-.subform-cell > label.label:has(+ input:focus) > i,
+.form-cell:has(input:focus-visible) > label.label.withIcon > i,
+.subform-cell:has(input:focus-visible) > label.label.withIcon > i,
 .form-cell > label.label:has(+ select:focus) > i,
 .subform-cell > label.label:has(+ select:focus) > i{
     border-top-color: rgb(26, 35, 126);
     border-bottom-color: rgb(26, 35, 126);
     border-left-color: rgb(26, 35, 126);
 }
-body.rtl .form-cell > label.label:has(+ input:focus) > i,
-body.rtl .subform-cell > label.label:has(+ input:focus) > i,
+body.rtl .form-cell:has(input:focus-visible) > label.label.withIcon > i,
+body.rtl .subform-cell:has(input:focus-visible) > label.label.withIcon > i,
 body.rtl .form-cell > label.label:has(+ select:focus) > i,
 body.rtl .subform-cell > label.label:has(+ select:focus) > i{
     border-right-color: rgb(26, 35, 126);
     border-left-color: #e6e6e6;
 }
 @media (max-width: 480px) {
-    .form-cell > label.label > i,
-    .subform-cell > label.label > i,
-    .label-left.form-cell > label.label > i,
-    .label-left.subform-cell > label.label > i{
+    .form-cell > label.label.withIcon > i,
+    .subform-cell > label.label.withIcon > i,
+    .label-left.form-cell > label.label.withIcon > i,
+    .label-left.subform-cell > label.label.withIcon > i{
         right: unset;
-        top: unset;
-        bottom: -36px;
+        top: 100%;
+        bottom: unset;
     }
-    body.rtl .form-cell > label.label > i,
-    body.rtl .subform-cell > label.label > i {
+    body.rtl .form-cell > label.label.withIcon > i,
+    body.rtl .subform-cell > label.label.withIcon > i {
         left: unset;
         right: 0;
     }
 }
 @media (min-width: 480px){
-    .form-cell:not(.label-top) > label.label:has(i) + *:not(.ui-screen-hidden),
-    .subform-cell:not(.label-top) > label.label:has(i) + *:not(.ui-screen-hidden),
-    .form-cell:not(.label-top) > label.label:has(i) + .ui-screen-hidden + *,
-    .subform-cell:not(.label-top) > label.label:has(i) + .ui-screen-hidden + *{
+    .form-cell:not(.label-top) > label.label.withIcon + *:not(.ui-screen-hidden),
+    .subform-cell:not(.label-top) > label.label.withIcon + *:not(.ui-screen-hidden),
+    .form-cell:not(.label-top) > label.label.withIcon + .ui-screen-hidden + *,
+    .subform-cell:not(.label-top) > label.label.withIcon + .ui-screen-hidden + *{
         width: 50%;
     }
 }

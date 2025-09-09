@@ -164,6 +164,9 @@ public class SelectBox extends Element implements FormBuilderPaletteElement, For
         Collection<Map> optionMap = getOptionMap(formData);
         dataModel.put("options", optionMap);
 
+        // Check if icon is present, and if so, add to the dataModel
+        checkIfIconIsPresent(dataModel);
+
         String html = FormUtil.generateElementHtml(this, formData, template, dataModel);
         return html;
     }
