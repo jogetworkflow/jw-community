@@ -2415,6 +2415,27 @@ body[builder-theme='dark'] .permission-table th.export, .permission-table td.exp
     background: transparent;
     color: var(--theme-label-color-1);
 }
+body[builder-theme='dark'] .permission_view .permission_rule{
+    color: #ffff;
+}
+body[builder-theme='dark'] .permission-table .has-child .element-meta i.la-minus-square{
+    color: var(--theme-label-color-1);
+}
+body[builder-theme='dark'] .permission_view .permission_rule:hover:not(.active) {
+    background: var(--theme-primary-color-3);
+}
+body[builder-theme='dark'] .permission-table .element-meta .element-label {
+    color: var(--theme-label-color-1);
+}
+body[builder-theme='dark'] .permission-table .element-meta .element-icon .image {
+    filter: brightness(0) invert(0.7);
+}
+body[builder-theme='dark'] #components_comphead_Page-Components_list .image {
+    filter: brightness(0) invert(0.7);
+}
+body[builder-theme='dark'] #components_comphead_Page-Components_list .image[style*='.gif'] {
+    filter: none;
+}
 body[builder-theme='dark'] #tableUsageView h5 #desc-tab .tableName {
     color: var(--theme-label-color-2);
 }
