@@ -44,6 +44,16 @@ UI = {
             return (div.textContent || div.innerText || "");
         } 
    },
+   stripHtmlRelaxed: function(c) {
+        if (c == null || c == undefined) {
+            return '';
+        }
+        var stripped = UI.stripHtmlTags(c);
+        if (c.length > stripped.length) {
+            return '';
+        }
+        return stripped;
+   },
    userviewThemeParams: function () {
       var params = ''; 
       if (UI.userview_app_id != undefined && UI.userview_app_id != '') {
