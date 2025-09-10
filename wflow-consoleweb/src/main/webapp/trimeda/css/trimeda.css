@@ -37,8 +37,8 @@ body {
 
     --breadcrumb-spacing: 32px;
 
-    --input-padding : 16px;
-    --input-min-height: 56px;
+    --input-padding: 8px;
+    --input-min-height: 42px;
 
     --content-margin: 16px;
     --content-horizontal-page-padding: 20px;
@@ -81,8 +81,8 @@ body.compact-mode {
 
     --breadcrumb-spacing: 16px;
 
-    --input-padding : 8px 12px;
-    --input-min-height: 44px;
+    --input-padding: 8px;
+    --input-min-height: 36px;
     
     --content-margin: 0px;
     --content-horizontal-page-padding: 0px;
@@ -1486,29 +1486,22 @@ select, textarea, .ql-container.ql-bubble,
     border: 1.5px solid var(--field-border-color);
     border-radius: 16px;
     min-height: var(--input-min-height);
+    height: calc(1em + 0.75rem + 2px);
 }
 
-body.compact-mode .numeric_field_controls {
-    top: 4px;
-}
-
-body.compact-mode .label-top .numeric_field_controls {
-    top: 32px;
-}
-
-body.rtl.compact-mode .label-top .numeric_field_controls {
-    top: 40px;
+textarea {
+    height: auto;
 }
 
 body.compact-mode .hasDatepicker + a,
 body.compact-mode .hasDatepicker + a + a {
-    top: 10px;
+    top: 7px;
 }
 
 body.compact-mode .label-top .hasDatepicker + a, 
 body.compact-mode .label-top .hasDatepicker + a + a {
     top: unset;
-    bottom: 11px;
+    bottom: 6px;
 }
 
 input:not([type]):focus, input[type=text]:focus, input[type=password]:focus, 
@@ -1556,8 +1549,8 @@ textarea:focus, .chosen-container-multi .chosen-choices:focus, .selector_element
     width: 80px;
     position: absolute;
     top: 50%;
-    transform: translate(-50%, -50%);
-    right: -31px;
+    transform: translateY(-50%);
+    right: 0px;
     background-color: #4b6eec;
 }
 
@@ -1682,18 +1675,51 @@ input[type=hidden] + .form-cell, .form-cell + .form-cell, .subform-cell + .subfo
     margin-top: var(--form-cell-spacing);
 }
 
-.numeric_field_controls {
-    top: 8px;
+/* Numeric Controls Position */
+.numeric_field_control {
+    position: unset;
+}
+
+.numeric_field_controls,
+body.compact-mode .numeric_field_controls,
+body.compact-mode .label-top .numeric_field_controls {
+    display: flex;
+    flex-direction: column;
+    transform: translateY(-50%);
+}
+
+.numeric_field_controls,
+body.compact-mode .numeric_field_controls {
+    top: 50%;
+}
+
+.label-top .numeric_field_controls,
+body.compact-mode .label-top .numeric_field_controls {
+    top: unset;
+    bottom: calc(0% - 4px);
+}
+
+.numeric_field_controls,
+.label-top .numeric_field_controls {
     right: 24.55px;
 }
 
-body.rtl .numeric_field_controls {
+body.rtl *:is(
+    .numeric_field_controls,
+    .label-top .numeric_field_controls
+) {
     left: 24.55px;
     right: unset;
 }
 
-.label-top .numeric_field_controls {
-    top: 37px;
+.numeric_field_control.numeric_field_control_decr {
+    margin-top: -5px;
+}
+/* End of Numeric Controls Position Styling */
+
+body.largeFontSize #form-canvas input + .numeric_field_controls > .numeric_field_control,
+body.mediumFontSize #form-canvas input + .numeric_field_controls > .numeric_field_control {
+    line-height: 15px !important;
 }
 
 .form-element.multiPagedForm > .page-nav-panel.top {
@@ -1842,13 +1868,20 @@ body.rtl #ui-datepicker-div > table.ui-datepicker-calendar > tbody > tr > td:las
     display: flex;
     align-items: center;
     justify-content: center;
-    top: 16px;
+    top: 10px;
     right: 1.5em;
 }
 
 .label-top .hasDatepicker + a, 
 .label-top .hasDatepicker + a + a {
-    bottom: 15px;
+    bottom: 10px !important;
+}
+
+body.compact-mode *:is(
+    .label-top .hasDatepicker + a, 
+    .label-top .hasDatepicker + a + a
+) {
+    bottom: 6px !important;
 }
 
 .dataList .filters {
@@ -2337,15 +2370,27 @@ body.rtl .accordion .card-header::after {
         display: none;
     }
 
+    body.compact-mode .numeric_field_controls,
+    body.compact-mode .label-top .numeric_field_controls {
+        bottom: unset;
+    }
+
     body.compact-mode .numeric_field_controls {
-        top: unset;
-        bottom: 40px;
+        top: calc(50% + 18px);
+    }
+
+    body.compact-mode .label-top .numeric_field_controls {
+        top: calc(50% + 12px);
+    }
+
+    body.rtl.compact-mode .label-top .numeric_field_controls {
+        top: calc(50% + 16px);
     }
 
     body.compact-mode .hasDatepicker + a, 
     body.compact-mode .hasDatepicker + a + a {
         top: unset;
-        bottom: 11px;
+        bottom: 7px;
     }
 
     .form-cell > label.label {
@@ -2353,14 +2398,26 @@ body.rtl .accordion .card-header::after {
     }
 
     .numeric_field_controls {
-        top: auto;
-        bottom: 48px;
+        top: calc(50% + 18px);
+    }
+
+    body.rtl .label-top .numeric_field_controls {
+        top: calc(50% + 16px);
+    }
+
+    body .label-top .numeric_field_controls {
+        top: calc(50% + 12px);
+    }
+
+    .numeric_field_controls,
+    .label-top .numeric_field_controls {
+        bottom: unset;
     }
 
     .dropdown-menu {
         min-width: 10rem !important;
     }
-    
+
     .hasDatepicker + a, .hasDatepicker + a + a {
         top: 58%;
     }
