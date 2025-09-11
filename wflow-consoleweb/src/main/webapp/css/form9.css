@@ -1136,6 +1136,13 @@ body.rtl .handsontable .htCore tr td:last-child {
     border-top: 1px solid #ced4da !important;
 }
 
+@media print {
+    .spreadsheet_container, .spreadsheet {
+        overflow: hidden !important;
+        width: 100% !important;
+    }
+}
+
 .calculationField_value {
     color: var(--jgt-input-colorText);
     font-size: var(--jgt-input-inputFontSize);
