@@ -208,7 +208,9 @@ I18nEditor = {
             $(container).find("tbody tr:not(.addnew)").each(function(i, tr){
                 var key = $(tr).find("td.label textarea").val() + "_" + locale;
                 $(tr).find("td."+id).html('<textarea></textarea>');
-                $(tr).find("td."+id+" textarea").attr("rel", key.toLowerCase());
+                var $ta = $(tr).find("td."+id+" textarea");
+                $ta.attr("rel", key.toLowerCase());
+                $ta.data("original", "");
             });
             $.ajax({
                 url: options.contextPath + '/web/json/console/app/'+options.appId+'/'+options.appVersion+'/message/list',
@@ -221,9 +223,11 @@ I18nEditor = {
                         for (var i in response.data) {
                             var message = response.data[i];
                             var mid = message.id.replace(new RegExp('"', 'g'), "\\\"").toLowerCase();
-                            var field = $(container).find('td.'+id+' textarea[rel="'+mid+'"]');
-                            if ($(field).attr("rel") === message.id.toLowerCase()) {
-                                $(field).val(message.message);
+                            var $field = $(container).find('td.'+id+' textarea[rel="'+mid+'"]');
+                            if ($field.attr("rel") === message.id.toLowerCase()) {
+                                var v = message.message || "";
+                                $field.val(v);
+                                $field.data("original", v);
                             }
                         }
                     }
@@ -236,14 +240,18 @@ I18nEditor = {
         $(button).after('<i class="las la-spinner la-2x la-spin" style="color:#000;opacity:0.3"></i>');
         var data = [];
         $(container).find('td.'+id+' textarea').each(function(){
-            var id = $(this).attr("rel");
-            var key = $(this).closest("tr").find("td.label textarea").val();
-            var val = $(this).val();
-            data.push({
-                id : id,
-                key : key,
-                value : val
-            });
+            var $ta = $(this);
+            var id = $ta.attr("rel");
+            var key = $ta.closest("tr").find("td.label textarea").val();
+            var val = ($ta.val() || "");
+            var orig = ($ta.data("original") || "");
+            if (val !== orig) {
+                data.push({ 
+                    id : id, 
+                    key : key, 
+                    value : val 
+                });
+            }
         });
         $.ajax({
             type: "POST",
@@ -256,6 +264,12 @@ I18nEditor = {
         }).done(function() {
             $(button).next().remove();
             $(button).after('<span style="color:green;"> '+get_advtool_msg('i18n.editor.saved')+'</span>');
+            for (var i=0;i<data.length;i++){
+                var rel = data[i].id.toLowerCase();
+                $(container).find('td.'+id+' textarea[rel="'+rel+'"]').each(function(){
+                    $(this).data("original", $(this).val() || "");
+                });
+            }
         }).fail(function() {
             $(button).next().remove();
             $(button).after('<span style="color:red;"> '+get_advtool_msg('i18n.editor.error')+'</span>');

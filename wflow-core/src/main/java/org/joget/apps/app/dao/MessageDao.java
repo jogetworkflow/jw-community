@@ -18,4 +18,6 @@ public interface MessageDao extends AppVersionedObjectDao<Message> {
     public Collection<String> getLocaleList(AppDefinition appDefinition);
     
     public Collection<String> getKeyList(AppDefinition appDefinition);
+
+    public boolean batchedBulkChange(AppDefinition appDefinition, String locale, Map<String, String> changes);
 }
