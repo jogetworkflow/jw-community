@@ -955,6 +955,34 @@ body.rtl #sidebar .nav > li > ul > li:not(:last-child){
     } 
 }
 
+/* Fix media spacing print */
+@media print {
+    body.rtl:not(.horizontal_menu) #page,
+    body:not(.horizontal_menu) #page {
+        padding-right: 0px !important
+    }
+
+    #content.page_content,
+    body.rtl #content.page_content {
+        margin-right: 16px;
+        margin-left: 16px;
+        margin-top: 16px !important;
+    }
+
+    html, body {
+        margin: 0;
+        padding: 0;
+    }
+
+    #sidebar {
+        display: none !important;
+    }
+
+    body {
+        height: auto !important;
+    }
+}
+
 /* Header */
 header.navbar {
     box-shadow: none;

@@ -900,7 +900,12 @@ body.rtl .handsontable .htCore tr td:last-child {
 .spreadsheet .handsontable.ht_clone_top_left_corner table.htCore th{
     border-top: 1px solid #ced4da !important;
 } 
-
+@media print {
+    .spreadsheet_container, .spreadsheet {
+        overflow: hidden !important;
+        width: 100% !important;
+    }
+}
 
 .ht_editor_visible .ht_master .wtHolder{
     max-width: fit-content;

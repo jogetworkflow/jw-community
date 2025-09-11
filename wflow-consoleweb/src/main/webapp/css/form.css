@@ -912,6 +912,12 @@ body.rtl .form-edit-btn{
 .form-edit-btn.bottom{
     bottom:30px;
 }
+@media print {
+    .spreadsheet_container, .spreadsheet {
+        overflow: hidden !important;
+        width: 100% !important;
+    }
+}
 
 /* process enhancement comments*/
 .comments_thread .comment {
