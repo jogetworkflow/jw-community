@@ -269,9 +269,9 @@ div#dataList_columnslist tbody span.row_action_inner > a {
 div.grid button.delete_btn,
 button.btn-danger {
     background-color: var(--danger-button-background-color) !important;
-    padding: 8px 16px !important;
+    padding: var(--button-secondary-padding) !important;
     border-radius: 16px !important;
-    min-height: 32px;
+    min-height: var(--button-secondary-height);
     color: #FFF !important;
 }
 
@@ -1381,6 +1381,11 @@ div.chosen-container.chosen-container-multi .chosen-choices li.search-field {
     min-height: fit-content !important;
 }
 
+body.compact-mode div.chosen-container.chosen-container-multi .chosen-choices li.search-field {
+    max-height: 30px !important;
+    min-height: unset !important;
+}
+
 div.chosen-container.chosen-container-multi .chosen-choices:has(.search-choice) li.search-field {
     padding: var(--selector-padding) 0px var(--selector-padding) 0px !important;
     margin: 6px 5px 0 0!important;
@@ -1489,6 +1494,15 @@ select, textarea, .ql-container.ql-bubble,
     height: calc(1em + 0.75rem + 2px);
 }
 
+body.compact-mode *:is(input:not([type]), input[type=text], input[type=password], input[type=email],
+input[type=url], input[type=time], input[type=date], input[type=datetime],
+input[type=datetime-local], input[type=tel], input[type=number], input[type=search],
+select, textarea, .ql-container.ql-bubble,
+.filter-cell .multiselect.dropdown-toggle, div.chosen-container.chosen-container-multi .chosen-choices) {
+    padding-top: 4px !important;
+    padding-bottom: 4px !important;
+}
+
 textarea {
     height: auto;
 }
@@ -1552,6 +1566,11 @@ textarea:focus, .chosen-container-multi .chosen-choices:focus, .selector_element
     transform: translateY(-50%);
     right: 0px;
     background-color: #4b6eec;
+}
+
+body.rtl .selector_element .selector_button, 
+body.rtl .selector_element .selector_button:hover {
+    right: calc(100% - 80px);
 }
 
 .selector_element .selector_items .selector_item,
