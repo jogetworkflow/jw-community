@@ -1376,6 +1376,15 @@ div.chosen-container.chosen-container-multi .chosen-choices {
     border-radius: 16px;
 }
 
+div.chosen-container ul.chosen-choices  > li.search-choice {
+    margin-bottom: 6px;
+}
+
+body.compact-mode div.chosen-container ul.chosen-choices  > li.search-choice {
+    margin-bottom: 3px;
+    margin-top: 3px;
+}
+
 div.chosen-container.chosen-container-multi .chosen-choices li.search-field {
     padding: 0px !important;
     min-height: fit-content !important;
