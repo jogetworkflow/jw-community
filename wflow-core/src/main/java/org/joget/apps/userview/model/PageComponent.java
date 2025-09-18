@@ -5,9 +5,9 @@ import java.util.Collection;
 import java.util.Map;
 import org.joget.apps.app.service.AppPluginUtil;
 import org.joget.apps.userview.service.UserviewCache;
+import org.joget.apps.util.DefaultPropertyValuesCache;
 import org.joget.commons.util.StringUtil;
 import org.joget.commons.util.UuidGenerator;
-import org.joget.plugin.property.service.PropertyUtil;
 
 public abstract class PageComponent extends ExtElement {
 
@@ -198,11 +198,7 @@ public abstract class PageComponent extends ExtElement {
     }
     
     public String getDefaultPropertyValues() {
-        String options = getPropertyOptions();
-        if (options != null && !options.isEmpty()) {
-            return PropertyUtil.getDefaultPropertyValues(options);
-        }
-        return "";
+        return DefaultPropertyValuesCache.getDefaultPropertyValues(this);
     }
     
     public boolean isUiMenu() {

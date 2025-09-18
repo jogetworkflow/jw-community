@@ -201,4 +201,15 @@
         </resources>
     </cache>
 
+    <!-- Cache for Default Property Values -->
+    <cache alias="org.joget.cache.DEFAULT_PROPERTY_VALUES_CACHE">
+        <expiry>
+            <ttl unit="seconds">3600</ttl>
+        </expiry>
+        <resources>
+            <heap unit="entries">1000</heap>
+            <!-- No overflow to disk -->
+        </resources>
+    </cache>
+
 </config>
