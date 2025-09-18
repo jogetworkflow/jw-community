@@ -359,6 +359,8 @@ AjaxComponent = {
                 } else {
                     document.location.href = url;
                 }
+            } else if (!response.ok) {
+                throw new Error(response.status);
             }
             
             const disposition = response.headers.get('Content-Disposition');
