@@ -124,5 +124,13 @@
             timeToIdleSeconds="3600"
             timeToLiveSeconds="3600"
             diskPersistent="false"/>
-    
+
+    <!-- Cache for Default Property Values -->
+     <cache name="org.joget.cache.DEFAULT_PROPERTY_VALUES_CACHE"
+       maxElementsInMemory="1000"
+       eternal="false"
+       overflowToDisk="false"
+       timeToIdleSeconds="3600"
+       timeToLiveSeconds="3600"
+       diskPersistent="false"/>
 </ehcache>

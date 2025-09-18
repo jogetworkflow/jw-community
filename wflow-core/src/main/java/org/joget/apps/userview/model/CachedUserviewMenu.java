@@ -1,13 +1,11 @@
 package org.joget.apps.userview.model;
 
 import java.util.Collection;
-import java.util.Date;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 import org.joget.apps.app.service.AppUtil;
 import org.joget.apps.userview.service.UserviewCache;
-import org.joget.plugin.base.PluginManager;
+import org.joget.apps.util.DefaultPropertyValuesCache;
 import org.joget.plugin.base.PluginProperty;
 import org.joget.plugin.property.service.PropertyUtil;
 import org.osgi.framework.BundleContext;
@@ -15,8 +13,6 @@ import org.osgi.framework.BundleContext;
 public class CachedUserviewMenu extends UserviewMenu {
 
     private UserviewMenu delegate;
-    private static Map<String, String> defaultPropertyValues = new HashMap<String, String>();
-    private static Date lastClearCache = null;
 
     public CachedUserviewMenu() {
     }
@@ -438,18 +434,7 @@ public class CachedUserviewMenu extends UserviewMenu {
     }
     
     public String getDefaultPropertyValues(){
-        PluginManager pluginManager = (PluginManager) AppUtil.getApplicationContext().getBean("pluginManager");
-        Date lastCleared = pluginManager.lastClearedCache();
-        
-        if (lastClearCache == null || lastClearCache.before(lastCleared)) {
-            CachedUserviewMenu.defaultPropertyValues.clear();
-            lastClearCache = lastCleared;
-        }
-        
-        if (!CachedUserviewMenu.defaultPropertyValues.containsKey(getClassName()+":"+getVersion()+":"+AppUtil.getAppLocale())) {
-            CachedUserviewMenu.defaultPropertyValues.put(getClassName()+":"+getVersion()+":"+AppUtil.getAppLocale(), PropertyUtil.getDefaultPropertyValues(getPropertyOptions()));
-        }
-        return CachedUserviewMenu.defaultPropertyValues.get(getClassName()+":"+getVersion()+":"+AppUtil.getAppLocale());
+        return DefaultPropertyValuesCache.getDefaultPropertyValues(delegate);
     }
     
     @Override

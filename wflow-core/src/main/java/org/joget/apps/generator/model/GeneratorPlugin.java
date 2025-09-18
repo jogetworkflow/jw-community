@@ -68,6 +68,7 @@ public abstract class GeneratorPlugin extends ExtDefaultPlugin implements Proper
      * @return 
      */
     public String getDefaultPropertyValues(){
+        // bypassing DefaultPropertyValues cache as subsequent generations should not use cached values
         return PropertyUtil.getDefaultPropertyValues(getPropertyOptions());
     }
 

@@ -7,13 +7,12 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 import org.joget.apps.app.service.AppPluginUtil;
-import org.joget.apps.app.service.AppUtil;
 import org.joget.apps.form.service.FormService;
 import org.joget.apps.form.service.FormUtil;
 import org.joget.apps.userview.model.Permission;
+import org.joget.apps.util.DefaultPropertyValuesCache;
 import org.joget.plugin.base.ExtDefaultPlugin;
 import org.joget.plugin.property.model.PropertyEditable;
-import org.joget.plugin.property.service.PropertyUtil;
 
 /**
  * A base abstract class to develop a Form Field Element plugin. 
@@ -29,7 +28,6 @@ public abstract class Element extends ExtDefaultPlugin implements PropertyEditab
     private FormLoadBinder optionsBinder;
     private FormStoreBinder storeBinder;
     private Validator validator;
-    private static Map<String, String> defaultPropertyValues = new HashMap<String, String>();
     protected Map<FormData, Boolean> isAuthorizeSet = new HashMap<FormData, Boolean>();
     protected Map<FormData, Boolean> isReadonlySet = new HashMap<FormData, Boolean>();
     protected Map<FormData, Boolean> isHiddenSet = new HashMap<FormData, Boolean>();
@@ -513,10 +511,7 @@ public abstract class Element extends ExtDefaultPlugin implements PropertyEditab
      * @return 
      */
     public String getDefaultPropertyValues(){
-        if (!Element.defaultPropertyValues.containsKey(getClassName()+":"+getVersion()+":"+AppUtil.getAppLocale())) {
-            Element.defaultPropertyValues.put(getClassName()+":"+getVersion()+":"+AppUtil.getAppLocale(), PropertyUtil.getDefaultPropertyValues(getPropertyOptions()));
-        }
-        return Element.defaultPropertyValues.get(getClassName()+":"+getVersion()+":"+AppUtil.getAppLocale());
+        return DefaultPropertyValuesCache.getDefaultPropertyValues(this);
     }
     
     /**

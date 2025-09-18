@@ -175,5 +175,10 @@
     
     <bean id="fileManager" class="org.joget.commons.util.FileManager" depends-on="setupManager">
     </bean>
+
+    <bean id="defaultPropertyValuesCache" class="org.springframework.cache.ehcache.EhCacheFactoryBean">
+        <property name="cacheManager" ref="cacheManager"/>
+        <property name="cacheName" value="org.joget.cache.DEFAULT_PROPERTY_VALUES_CACHE"/>
+    </bean>
     
 </beans>
