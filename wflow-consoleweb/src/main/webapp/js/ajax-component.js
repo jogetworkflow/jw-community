@@ -30,9 +30,9 @@ AjaxComponent = {
     initContent : function(element) {
         //call to support old version bootstrap attribute for dropdown, slider etc
         if (typeof jdsLegacyAttributeMigration === "function") {
-            jdsLegacyAttributeMigration(); 
+            jdsLegacyAttributeMigration();
         }
-        
+
         AjaxComponent.overrideLinkEvent(element);
         setTimeout(function(){
             AjaxComponent.overrideCollapseElement(element);
@@ -51,8 +51,12 @@ AjaxComponent = {
      * Override the link behaviour
      */
     overrideLinkEvent : function(element) {
+        const $element = $(element);
+        const $body = $('body');
+        const ajaxCustomCallback = $body.data('ajaxLinkEventCustomCallback');
+        const ajaxCustomErrorCallback = $body.data('ajaxLinkEventCustomErrorCallback');
         setTimeout(function(){
-            $(element).on("click", 'a[href]:not(.off_ajax,[href^="#"])', function(e){
+            $element.on("click", 'a[href]:not(.off_ajax,[href^="#"])', function(e){
                 var a = $(this);
                 var href = $(a).attr("href");
                 var target = $(a).attr("target");
@@ -62,7 +66,7 @@ AjaxComponent = {
                     e.preventDefault();
                     e.stopPropagation();
                     e.stopImmediatePropagation();
-                    AjaxComponent.call($(a), href, "GET", null);
+                    AjaxComponent.call($(a), href, "GET", null, ajaxCustomCallback, ajaxCustomErrorCallback);
                     return false;
                 }
                 return true;
@@ -73,8 +77,12 @@ AjaxComponent = {
     /*
      * Override the datalist button behaviour
      */
-    overrideDatalistButtonEvent : function(element) {  
-        $(element).find(".dataList button[data-href]:not(.off_ajax)").each(function(){
+    overrideDatalistButtonEvent : function(element) {
+        const $element = $(element);
+        const $body = $('body');
+        const ajaxCustomCallback = $body.data('ajaxDatalistButtonEventCustomCallback');
+        const ajaxCustomErrorCallback = $body.data('ajaxDatalistButtonEventCustomErrorCallback');
+        $element.find(".dataList button[data-href]:not(.off_ajax)").each(function(){
             var btn = $(this);
             var url = $(btn).data("href");
             var target = $(btn).data("target");
@@ -89,10 +97,10 @@ AjaxComponent = {
                     e.preventDefault();
                     e.stopPropagation();
                     e.stopImmediatePropagation();
-                    
+
                     var callAction = function() {
                         if (typeof PwaUtil === 'undefined' || PwaUtil.isOnline !== false) {
-                            AjaxComponent.call($(btn), url, "GET", null);
+                            AjaxComponent.call($(btn), url, "GET", null, ajaxCustomCallback, ajaxCustomErrorCallback);
                         } else {
                             if (target === "" || target.toLowerCase() === "_self" || target.toLowerCase() === "_top") {
                                 window.top.location = url;
@@ -105,7 +113,7 @@ AjaxComponent = {
                             }
                         }
                     };
-                    
+
                     if (confirmMsg === "" || confirmMsg === null || confirmMsg === undefined) {
                         callAction();
                     }else{
@@ -115,7 +123,7 @@ AjaxComponent = {
                             }, {
                                 confirmButtonClass: 'dialog-btn-primary',
                             }
-                        );                    
+                        );
                     }
                     return false;
                 });
@@ -123,8 +131,8 @@ AjaxComponent = {
         });
 
         //remove pagination if only 1 page
-        if ($(element).find(".dataList .pagelinks a").length === 0) {
-            $(element).find(".dataList .pagelinks").css("visibility", "hidden");
+        if ($element.find(".dataList .pagelinks a").length === 0) {
+            $element.find(".dataList .pagelinks").css("visibility", "hidden");
         }
     },
     
@@ -132,7 +140,11 @@ AjaxComponent = {
      * Override the button behaviour
      */
     overrideButtonEvent : function(element) {
-        $(element).find("button[onclick]:not(.off_ajax), input[type=button][onclick]:not(.off_ajax)").each(function(){
+        const $element = $(element);
+        const $body = $('body');
+        const ajaxCustomCallback = $body.data('ajaxButtonEventCustomCallback');
+        const ajaxCustomErrorCallback = $body.data('ajaxButtonEventCustomErrorCallback');
+        $element.find("button[onclick]:not(.off_ajax), input[type=button][onclick]:not(.off_ajax)").each(function(){
             if (typeof PwaUtil === 'undefined' || PwaUtil.isOnline !== false) {
                 var btn = $(this);
                 var onclick = $(btn).attr("onclick");
@@ -156,11 +168,11 @@ AjaxComponent = {
                             e.stopPropagation();
                             e.stopImmediatePropagation();
                             if (confirmMsg === "" || confirmMsg === null || confirmMsg === undefined) {
-                                AjaxComponent.call($(btn), url, "GET", null);
+                                AjaxComponent.call($(btn), url, "GET", null, ajaxCustomCallback, ajaxCustomErrorCallback);
                             }else{
                                 UI.confirm(confirmMsg,
                                     () => {
-                                        AjaxComponent.call($(btn), url, "GET", null);
+                                        AjaxComponent.call($(btn), url, "GET", null, ajaxCustomCallback, ajaxCustomErrorCallback);
                                     }, {
                                         confirmButtonClass: 'dialog-btn-primary',
                                     }
@@ -191,8 +203,19 @@ AjaxComponent = {
      * Override the form submission behaviour
      */
     overrideFormEvent : function(element) {
-        $(element).find("form:not(.off_ajax)").off("submit");
-        $(element).find("form:not(.off_ajax)").on("submit", function(e){
+        let ajaxCustomCallback, ajaxCustomErrorCallback;
+        const $body = $('body');
+        const $formElement = $(element).find("form:not(.off_ajax)");
+        const hasList = $formElement.find('.table-wrapper').length > 0;
+        if (hasList) {
+            ajaxCustomCallback = $body.data('ajaxDatalistButtonEventCustomCallback');
+            ajaxCustomErrorCallback = $body.data('ajaxDatalistButtonEventCustomErrorCallback');
+        } else {
+            ajaxCustomCallback = $body.data('ajaxFormEventCustomCallback')
+            ajaxCustomErrorCallback = $body.data('ajaxFormEventCustomErrorCallback');
+        }
+        $formElement.off("submit");
+        $formElement.on("submit", function(e){
             if (typeof PwaUtil === 'undefined' || PwaUtil.isOnline !== false) {
                 e.preventDefault();
                 e.stopPropagation();
@@ -231,7 +254,7 @@ AjaxComponent = {
                         url = window.location.href;
                     }
                     $.unblockUI();
-                    AjaxComponent.call($(form), url, "POST", formData);
+                    AjaxComponent.call($(form), url, "POST", formData, ajaxCustomCallback, ajaxCustomErrorCallback);
                 }
                 
                 return false;
@@ -438,7 +461,7 @@ AjaxComponent = {
                     //handle userview redirection with alert
                     if (data.indexOf("<div") === -1) {
                         var part = AjaxComponent.getMsgAndRedirectUrl(data);
-                        
+
                         var handler = function() {
                             if (part[1] !== null && part[1] !== undefined) { //if there is URL
                                 if (part[2] === null) { //if no target window, use current window
@@ -468,17 +491,20 @@ AjaxComponent = {
                                     part[3] = true; //if the target is parent or top, always close popup if exist
                                 }
                             }
-                            if (part[3] === true && parent.PopupDialog) { 
+                            if (part[3] === true && parent.PopupDialog) {
+                                if (customCallback) {
+                                    customCallback(element, url, formData);
+                                }
                                 parent.PopupDialog.closeDialog();
                             }
                         };
-                        
+
                         if (part[0] !== "") {
                             UI.alertBlock(part[0], handler);
                         } else {
                             handler();
                         }
-                        
+
                         return;
                     }
                 }
@@ -489,7 +515,7 @@ AjaxComponent = {
                     AjaxComponent.callback(contentConatiner, data, url);
                 }
                 if (customCallback){
-                    customCallback();
+                    customCallback(element, url, formData);
                 }
                 
                 setTimeout(function(){
@@ -504,16 +530,22 @@ AjaxComponent = {
             }
         })
         .catch(function (error) {
-            if (!isAjaxComponent && window['AjaxUniversalTheme'] !== undefined) {
-                window['AjaxUniversalTheme'].errorCallback(error);
-            } else {
-                AjaxComponent.errorCallback(element, error);
-            }
-            if (customErrorCallback){
-                customErrorCallback();
-            }
-            $(contentConatiner).removeClass("ajaxloading");
-            $(contentConatiner).removeAttr("data-content-placeholder");
+            const msg = 'theme.ajaxUniversalTheme.ajax.error.failedToLoad';
+            UI.loadMsg([msg], function(messages) {
+                error = new Error(messages[msg], {cause: error});
+                if (customErrorCallback) {
+                    customErrorCallback(error, element, url, formData);
+                } else {
+                    const ajaxUniversalTheme = window['AjaxUniversalTheme'];
+                    if (!isAjaxComponent && ajaxUniversalTheme !== undefined) {
+                        ajaxUniversalTheme.errorCallback(error);
+                    } else {
+                        AjaxComponent.errorCallback(element, error);
+                    }
+                }
+                $(contentConatiner).removeClass("ajaxloading");
+                $(contentConatiner).removeAttr("data-content-placeholder");
+            })
         });
     },
     

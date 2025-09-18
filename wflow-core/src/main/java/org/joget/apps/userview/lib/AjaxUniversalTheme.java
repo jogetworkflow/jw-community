@@ -17,6 +17,19 @@ import org.joget.workflow.util.WorkflowUtil;
 
 public class AjaxUniversalTheme extends UniversalTheme implements SupportBuilderColorConfig {
     protected Boolean isAjaxContent = null;
+    protected static final Map<String, String> AJAX_EVENT_CALLBACKS = new HashMap<>();
+    protected static final Map<String, String> AJAX_EVENT_ERROR_CALLBACKS = new HashMap<>();
+    static {
+        AJAX_EVENT_CALLBACKS.put("ajaxLinkEventCustomCallback", null);
+        AJAX_EVENT_CALLBACKS.put("ajaxDatalistButtonEventCustomCallback", null);
+        AJAX_EVENT_CALLBACKS.put("ajaxButtonEventCustomCallback", null);
+        AJAX_EVENT_CALLBACKS.put("ajaxFormEventCustomCallback", "element, url, formData");
+
+        AJAX_EVENT_ERROR_CALLBACKS.put("ajaxLinkEventCustomErrorCallback", null);
+        AJAX_EVENT_ERROR_CALLBACKS.put("ajaxDatalistButtonEventCustomErrorCallback", null);
+        AJAX_EVENT_ERROR_CALLBACKS.put("ajaxButtonEventCustomErrorCallback", null);
+        AJAX_EVENT_ERROR_CALLBACKS.put("ajaxFormEventCustomErrorCallback", "error, element, url, formData");
+    };
     
     @Override
     public String getName() {
@@ -116,6 +129,8 @@ public class AjaxUniversalTheme extends UniversalTheme implements SupportBuilder
                                 "$(\"body\").addClass(density + \"-mode\");\n" +
                                 "</script>\n");
             }
+            // custom ajax callbacks as described in ajaxUniversalTheme.json and AjaxComponent.override*Event functions
+            addCustomAjaxCallbacks(data);
             return UserviewUtil.getTemplate(this, data, "/templates/userview/layout.ftl");
         }
     }
@@ -619,5 +634,26 @@ public class AjaxUniversalTheme extends UniversalTheme implements SupportBuilder
                 + "<li>";
     }
     
-    
+    protected void addCustomAjaxCallbacks(Map<String, Object> data) {
+        for (Map.Entry<String, String> entry : AJAX_EVENT_CALLBACKS.entrySet()) {
+            String key = entry.getKey();
+            String params = entry.getValue() == null ? "element, url" : entry.getValue();
+            String script = getPropertyString(key).trim();
+            if (!script.isEmpty()) {
+                data.compute("body_inner_before", (k, v) ->
+                        (v == null) ? script : v + "<script>$('body').data('" + key + "', function(" + params + ") { " + script + " });</script>\n"
+                );
+            }
+        }
+        for (Map.Entry<String, String> entry : AJAX_EVENT_ERROR_CALLBACKS.entrySet()) {
+            String key = entry.getKey();
+            String params = entry.getValue() == null ? "error, element, url" : entry.getValue();
+            String script = getPropertyString(key).trim();
+            if (!script.isEmpty()) {
+                data.compute("body_inner_before", (k, v) ->
+                        (v == null) ? script : v + "<script>$('body').data('" + key + "', function(" + params + ") { " + script + " });</script>\n"
+                );
+            }
+        }
+    }
 }

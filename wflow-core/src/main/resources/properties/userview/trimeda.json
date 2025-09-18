@@ -444,6 +444,80 @@
     }]
 },
 {
+    "title": "@@theme.ajaxUniversalTheme.ajax.page@@",
+    "properties": [
+      {
+        "label": "@@theme.ajaxUniversalTheme.ajax.header@@",
+        "description": "@@theme.ajaxUniversalTheme.ajax.header.desc@@",
+        "type": "header"
+      },
+      {
+        "name": "ajaxLinkEventCustomCallback",
+        "label": "@@theme.ajaxUniversalTheme.ajax.linkEvent.customCallback@@",
+        "description": "@@theme.ajaxUniversalTheme.ajax.default.customCallback.desc@@",
+        "type": "codeeditor",
+        "required": "false",
+        "mode": "javascript"
+      },
+      {
+        "name": "ajaxLinkEventCustomErrorCallback",
+        "label": "@@theme.ajaxUniversalTheme.ajax.linkEvent.customErrorCallback@@",
+        "description": "@@theme.ajaxUniversalTheme.ajax.default.customErrorCallback.desc@@",
+        "type": "codeeditor",
+        "required": "false",
+        "mode": "javascript"
+      },
+      {
+        "name": "ajaxDatalistButtonEventCustomCallback",
+        "label": "@@theme.ajaxUniversalTheme.ajax.datalistButtonEvent.customCallback@@",
+        "description": "@@theme.ajaxUniversalTheme.ajax.default.customCallback.desc@@",
+        "type": "codeeditor",
+        "required": "false",
+        "mode": "javascript"
+      },
+      {
+        "name": "ajaxDatalistButtonEventCustomErrorCallback",
+        "label": "@@theme.ajaxUniversalTheme.ajax.datalistButtonEvent.customErrorCallback@@",
+        "description": "@@theme.ajaxUniversalTheme.ajax.default.customErrorCallback.desc@@",
+        "type": "codeeditor",
+        "required": "false",
+        "mode": "javascript"
+      },
+      {
+        "name": "ajaxButtonEventCustomCallback",
+        "label": "@@theme.ajaxUniversalTheme.ajax.buttonEvent.customCallback@@",
+        "description": "@@theme.ajaxUniversalTheme.ajax.default.customCallback.desc@@",
+        "type": "codeeditor",
+        "required": "false",
+        "mode": "javascript"
+      },
+      {
+        "name": "ajaxButtonEventCustomErrorCallback",
+        "label": "@@theme.ajaxUniversalTheme.ajax.buttonEvent.customErrorCallback@@",
+        "description": "@@theme.ajaxUniversalTheme.ajax.default.customErrorCallback.desc@@",
+        "type": "codeeditor",
+        "required": "false",
+        "mode": "javascript"
+      },
+      {
+        "name": "ajaxFormEventCustomCallback",
+        "label": "@@theme.ajaxUniversalTheme.ajax.formEvent.customCallback@@",
+        "description": "@@theme.ajaxUniversalTheme.ajax.formEvent.customCallback.desc@@",
+        "type": "codeeditor",
+        "required": "false",
+        "mode": "javascript"
+      },
+      {
+        "name": "ajaxFormEventCustomErrorCallback",
+        "label": "@@theme.ajaxUniversalTheme.ajax.formEvent.customErrorCallback@@",
+        "description": "@@theme.ajaxUniversalTheme.ajax.formEvent.customErrorCallback.desc@@",
+        "type": "codeeditor",
+        "required": "false",
+        "mode": "javascript"
+      }
+    ]
+},
+{
     title : '@@pwa.settings@@',
     properties : [
     {
