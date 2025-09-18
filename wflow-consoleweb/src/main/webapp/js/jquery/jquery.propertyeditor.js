@@ -225,6 +225,14 @@ PropertyEditor.Popup = {
 
 /* Utility Functions */
 PropertyEditor.Util = {
+    /**
+     * Column name limit is based on the lowest of Postgres, MySQL, MariaDB, Oracle >12.2, SQL Server
+     *
+     * Currently based on Postgres default of 63: https://www.postgresql.org/docs/current/sql-syntax-lexical.html#SQL-SYNTAX-IDENTIFIERS.
+     *
+     * So, set 60 as the lower bound to take into account of c_ prefix.
+     */
+    databaseColumnNameLimit: 60,
     resources: {},
     cachedAjaxCalls: {},
     timeCachedAjaxCalls: {},
@@ -1559,6 +1567,30 @@ PropertyEditor.Util = {
         } else {
             callback();
         }
+    },
+    addFieldWarning: function($target, text) {
+        const $warnings = $target.find('.property-editor-warning');
+        let hasWarning = false;
+        $warnings.each(function() {
+            if (this.innerHTML === text) {
+                hasWarning = true;
+                return false; // break
+            }
+        });
+        if (!hasWarning) {
+            return $target.append(PropertyEditor.Util.getFieldWarningHtml(text));
+        }
+        return $target;
+    },
+    removeFieldWarning: function($target, text) {
+        const $warnings = $target.find('.property-editor-warning');
+        $warnings.filter(function() {
+            return $(this).text() === text;
+        }).remove();
+        return $target;
+    },
+    getFieldWarningHtml: function(text) {
+        return `<div class="property-editor-warning">${text}</div>`
     }
 };
 
@@ -2807,7 +2839,7 @@ PropertyEditor.Model.Type.prototype = {
         if (this.properties.js_validation !== undefined && this.properties.js_validation !== '') {
             var func = PropertyEditor.Util.getFunction(this.properties.js_validation);
             if ($.isFunction(func)) {
-                var errorMsg = func(this.properties.name, value);
+                var errorMsg = func(this.properties.name, value, wrapper);
 
                 if (errorMsg !== null && errorMsg !== "") {
                     var obj2 = new Object();
@@ -2954,8 +2986,33 @@ PropertyEditor.Model.Type.prototype = {
         }
         
         html += this.renderDefault();
+        html += this.renderFieldWarnings();
         html += '</div>';
         return html;
+    },
+    renderFieldWarnings: function() {
+        // some databases may have different column name lengths
+        let value = "";
+        const checkIdLength = this.properties.checkIdLength !== undefined && this.properties.checkIdLength.toLowerCase() === 'true';
+        if (checkIdLength) {
+            // bind oninput event
+            const script =
+                `$('#${this.id}').on('input', function() {
+                    const text = get_cbuilder_msg('cbuilder.warn.idLength');
+                    if (this.value.length > PropertyEditor.Util.databaseColumnNameLimit) {
+                        PropertyEditor.Util.addFieldWarning($('#${this.id}_input'), text);
+                    } else {
+                        PropertyEditor.Util.removeFieldWarning($('#${this.id}_input'), text);
+                    }
+                });`
+            // add label now
+            if (this.properties.name === 'id' && this.value.length > PropertyEditor.Util.databaseColumnNameLimit) {
+                const text = get_cbuilder_msg('cbuilder.warn.idLength');
+                value += PropertyEditor.Util.getFieldWarningHtml(text);
+            }
+            value += `<script>${script}</script>`;
+        }
+        return value;
     },
     renderField: function() {
         return "";

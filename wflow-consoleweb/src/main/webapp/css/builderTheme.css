@@ -1284,7 +1284,7 @@ body[builder-theme].rtl .property-editor-container input.image + .file-picker-ac
     top:7px;
 }
 body[builder-theme].rtl .property-editor-container input.image + .file-picker-actions .choosefile {
-    top: 1px;
+    top: -1px;
     left: -9px;
     border-left: 0px;
     border-right: 1px solid var(--theme-border-color-1);

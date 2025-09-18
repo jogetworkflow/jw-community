@@ -46,6 +46,7 @@ import org.apache.commons.collections.map.ListOrderedMap;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.StringUtils;
 import org.eclipse.jgit.api.errors.GitAPIException;
+import org.hibernate.exception.SQLGrammarException;
 import org.hibernate.proxy.HibernateProxy;
 import org.joget.apps.app.dao.AppDefinitionDao;
 import org.joget.apps.app.dao.AppResourceDao;
@@ -3013,37 +3014,34 @@ public class AppServiceImpl implements AppService {
             appDefinitionDao.saveOrUpdate(newAppDef);
 
             if (appDef.getFormDefinitionList() != null) {
-                Set<String> tables = new HashSet<String>();
-                Collection<String> importedForms = new ArrayList<String>();
+                Collection<String> importedForms = new ArrayList<>();
                 for (FormDefinition o : appDef.getFormDefinitionList()) {
                     FormUtil.validateDefinitionIdWithJson(o);
                     o.setAppDefinition(newAppDef);
                     formDefinitionDao.add(o);
-                    tables.add(o.getTableName());
                     importedForms.add(o.getId());
                     formDataDao.clearFormTableCache(o.getTableName());
-                }
 
-                String currentTable = "";
-                try {
-                    for (String table : tables) {
-                        currentTable = table;
+                    String currentTable = o.getTableName();
+                    try {
                         // initialize db table by making a dummy load
                         String dummyKey = "xyz123";
-                        formDataDao.loadWithoutTransaction(table, table, dummyKey);
-                        LogUtil.debug(getClass().getName(), "Initialized form table " + table);
+                        formDataDao.loadWithoutTransaction(currentTable, currentTable, dummyKey);
+                        LogUtil.debug(getClass().getName(), "Initialized form table " + currentTable);
+                    } catch (Exception e) {
+                        //error creating form data table, rollback
+                        for (String formId : importedForms) {
+                            formDefinitionDao.delete(formId, newAppDef);
+                        }
+                        appDefinitionDao.delete(newAppDef);
+                        String errorMessage = "";
+                        if (currentTable.length() > 20) {
+                            errorMessage = ": " + ResourceBundleUtil.getMessage("form.form.invalidId");
+                        } else if (e instanceof SQLGrammarException) {
+                            errorMessage = "- possible cause: column name too long";
+                        }
+                        throw new ImportAppException(ResourceBundleUtil.getMessage("console.app.import.error.createTable", new Object[]{currentTable, errorMessage}), e);
                     }
-                } catch (Exception e) {
-                    //error creating form data table, rollback
-                    for (String formId : importedForms) {
-                        formDefinitionDao.delete(formId, newAppDef);
-                    }
-                    appDefinitionDao.delete(newAppDef);
-                    String errorMessage = "";
-                    if (currentTable.length() > 20) {
-                        errorMessage = ": " + ResourceBundleUtil.getMessage("form.form.invalidId");
-                    }
-                    throw new ImportAppException(ResourceBundleUtil.getMessage("console.app.import.error.createTable", new Object[]{currentTable, errorMessage}), e);
                 }
                 LogUtil.info(getClass().getName(), "Imported form definitions : " + appDef.getFormDefinitionList().size());        
             }
