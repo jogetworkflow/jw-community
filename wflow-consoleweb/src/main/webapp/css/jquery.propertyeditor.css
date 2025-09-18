@@ -814,11 +814,9 @@ td.error .chosen-container, td.error input {
     padding: 6px 10px 2px 12px;
 }
 body.rtl .property-editor-container input.image + .file-picker-actions .choosefile {
-    top: -16px;
     left: -9px;
 }
 body.rtl .image-placeholder{
-    float: right;
     clear: right;
     margin-right: 0px;
 }
@@ -870,7 +868,6 @@ body.rtl .property-editor-container input[type=search],
 body.rtl .property-editor-container input[type=file],
 body.rtl .property-editor-container .property-input select,
 body.rtl .property-editor-container .property-input textarea{
-    float: right;
     text-align: right;
 }
 body.rtl .property-input .withPrefix{
@@ -2887,4 +2884,7 @@ body.rtl:not(.right-panel-mode-window) .property-editor-container.narrow.wider .
 .rtl .property-editor-container:not(.editor-panel-mode) .pebutton.addrow{
     float: right;
     clear: right;
+}
+.property-editor-warning {
+    color: #cb6000;
 }

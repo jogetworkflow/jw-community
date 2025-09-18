@@ -46,7 +46,10 @@ import jakarta.servlet.http.HttpServletRequest;
 import org.apache.commons.collections.map.ListOrderedMap;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.StringUtils;
+import org.eclipse.jgit.api.Git;
+import org.eclipse.jgit.api.ResetCommand;
 import org.eclipse.jgit.api.errors.GitAPIException;
+import org.hibernate.exception.SQLGrammarException;
 import org.hibernate.proxy.HibernateProxy;
 import org.joget.apps.app.dao.*;
 import org.joget.apps.app.model.AbstractAppVersionedObject;
@@ -2990,13 +2993,11 @@ public class AppServiceImpl implements AppService {
 
             // ----- Form Definitions -----
             if (appDef.getFormDefinitionList() != null) {
-                Collection<FormDefinition> importedForms = new ArrayList<>();
                 Collection<FormDefinition> formDefinitions = appDef.getFormDefinitionList();
                 for (FormDefinition o : formDefinitions) {
                     FormUtil.validateDefinitionIdWithJson(o);
                     String tableName = o.getTableName();
                     o.setAppDefinition(newAppDef);
-                    importedForms.add(o);
                     // try saving file in git
                     FormDefinitionDaoImpl.addToGit(o);
                     // clear cache
@@ -3285,10 +3286,38 @@ public class AppServiceImpl implements AppService {
                 // ignore
             } catch (Exception e) {
                 //error creating form data table, rollback
-                appDefinitionDao.delete(newAppDef);
                 String errorMessage = "";
+                ImportAppException importAppException = null;
+                try {
+                    // do git reset to prevent GitRequestFilter from committing the staged changes
+                    GitCommitHelper gch = AppDevUtil.getGitCommitHelper(newAppDef);
+                    Git git = gch.getGit();
+                    git.reset().setMode(ResetCommand.ResetType.HARD).setRef("HEAD").call();
+                    gch.setCommitMessage(null);
+                } catch (Exception gitResetException) {
+                    errorMessage = "Failed to rollback, unable to reset Git; ";
+                } finally {
+                    // always attempt to delete the imported appDef
+                    try {
+                        // refresh AppDefinition object to prevent using entity from another session
+                        AppDefinition toDelete = newAppDef;
+                        Collection<AppDefinition> appDefinitions = appDefinitionDao.findByVersion(newAppDef.getId(), newAppDef.getAppId(), newAppDef.getVersion(), newAppDef.getName(), null, null, null, null);
+                        if (!appDefinitions.isEmpty()) {
+                            toDelete = appDefinitions.iterator().next();
+                        }
+                        appDefinitionDao.delete(toDelete);
+                    } catch (Exception deleteAppDefException) {
+                        errorMessage += "Failed to rollback, unable to delete AppDefinition";
+                        importAppException = new ImportAppException(ResourceBundleUtil.getMessage("console.app.import.error.createTable", new Object[]{currentTable, errorMessage}), deleteAppDefException);
+                    }
+                    if (importAppException != null) {
+                        throw importAppException;
+                    }
+                }
                 if (currentTable.length() > 20) {
                     errorMessage = ": " + ResourceBundleUtil.getMessage("form.form.invalidId");
+                } else if (e instanceof SQLGrammarException) {
+                    errorMessage = "- possible cause: column name too long";
                 }
                 throw new ImportAppException(ResourceBundleUtil.getMessage("console.app.import.error.createTable", new Object[]{currentTable, errorMessage}), e);
             }

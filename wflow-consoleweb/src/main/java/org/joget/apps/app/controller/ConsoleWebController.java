@@ -1958,6 +1958,7 @@ public class ConsoleWebController {
             }
         } catch (ImportAppException e) {
             errors.add(e.getMessage());
+            LogUtil.error(getClass().getName(), e, "Unable to import app");
         }
 
         if (appDef == null || !errors.isEmpty()) {

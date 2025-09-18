@@ -107,6 +107,7 @@ FormBuilder = {
                         if (propertyOptions[i].properties[j].name === "id" && propertyOptions[i].properties[j].js_validation === undefined) {
                             propertyOptions[i].properties[j].js_validation = 'FormBuilder.validateFieldId';
                             propertyOptions[i].properties[j].id_suggestion = "label";
+                            propertyOptions[i].properties[j].checkIdLength = "true";
                             found++;
                             idPos = j;
                         }
@@ -1432,11 +1433,17 @@ FormBuilder = {
     /*
      * Utility method to validate the field id to prevent having the same with reserve keywords
      */
-    validateFieldId: function(name, value) {
-        if ($.inArray(value, ["appId","appVersion","version","userviewId","menuId","key","embed"]) >= 0) {
+    validateFieldId: function(name, value, $target) {
+//        change value to lower case
+        let inputValue = value.toLowerCase();
+        if ($.inArray(inputValue, ["appid","appversion","version","userviewid","menuid","key","embed","primarykey"]) >= 0) {
             return get_cbuilder_msg("fbuilder.reserveIds");
         }
-        return null;    
+        if ($target && value.length > PropertyEditor.Util.databaseColumnNameLimit) {
+            const text = get_cbuilder_msg('cbuilder.warn.idLength');
+            PropertyEditor.Util.addFieldWarning($target, text);
+        }
+        return null;
     },
     
     /*
