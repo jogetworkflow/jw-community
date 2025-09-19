@@ -387,24 +387,60 @@ public abstract class Element extends ExtDefaultPlugin implements PropertyEditab
         }
 
         if (!cssClass.isEmpty() || !attrs.get("attr").isEmpty()) {
-            int index = findClassAttrIndex(html);
-            String remainingHtml = html.substring(index); //remaining html after class index
-            int closingQuoteIndex = remainingHtml.indexOf("\"", 7); //find closing quote afer class="
-            
-            // Insert attrs.get("attr") first.
-            html = html.substring(0, index) + attrs.get("attr") + " ";
-            
-            //adding css class before closing quote of the class attr
-            html += remainingHtml.substring(0, closingQuoteIndex) + " " + cssClass + remainingHtml.substring(closingQuoteIndex);
+            if (this instanceof Form) {
+                // SAFER: Preserve <form class="form-container"> for subforms
+                int index = findClassAttrIndex(html);
+                if (index != -1) {
+                    String remaining = html.substring(index);
+
+                    // Locate the opening quote of the class attribute (supports " or ')
+                    int qStart = remaining.indexOf("\"");
+                    if (qStart == -1) qStart = remaining.indexOf("'");
+                    if (qStart != -1) {
+                        char qChar = remaining.charAt(qStart);
+                        int qEnd = remaining.indexOf(qChar, qStart + 1);
+
+                        if (qEnd != -1) {
+                            StringBuilder sb = new StringBuilder();
+
+                            // Preserve everything before the class attribute
+                            sb.append(html, 0, index);
+
+                            // Insert additional attributes before the class
+                            String extra = attrs.get("attr");
+                            if (extra != null && !extra.trim().isEmpty()) {
+                                sb.append(extra).append(" ");
+                            }
+
+                            // Rebuild the class attribute with existing + new classes
+                            String existing = remaining.substring(qStart + 1, qEnd).trim();
+                            sb.append("class=").append(qChar);
+                            if (!existing.isEmpty()) sb.append(existing).append(" ");
+                            if (!cssClass.trim().isEmpty()) sb.append(cssClass);
+                            sb.append(qChar);
+
+                            // Append the rest of the HTML unchanged
+                            sb.append(remaining.substring(qEnd + 1));
+                            html = sb.toString();
+                        }
+                    }
+                }
+            } else {
+                // Regex only for NON-form elements
+                html = html.replaceFirst("(class=(['\"]))(.*?)\\2",
+                    attrs.get("attr") + " $1$3 " + cssClass + "$2");
+            }
         }
 
         if (!builderStyles.isEmpty()) {
             if (this instanceof Form) {
                 int index = html.lastIndexOf("</form>");
-                html = html.substring(0, index) + "<style id=\""+styleClass+"\">" + builderStyles + "</style></form>";
+                html = html.substring(0, index) + "<style id=\""+styleClass+"\">" + "." + styleClass + " label," + "." + styleClass + " i, " + "form.form-container ." + styleClass + " input, " + "form.form-container ." + styleClass + " textarea, " +  "form.form-container ." + styleClass + " select, " + "form.form-container ." + styleClass + " select option, " + builderStyles + "</style></form>";
+           
             } else {
                 int index = html.lastIndexOf("</div>");
-                html = html.substring(0, index) + "<style id=\""+styleClass+"\">" + builderStyles + "</style></div>";
+                html = html.substring(0, index) + "<style id=\""+styleClass+"\">" + "." + styleClass + " label," + "." + styleClass + " i, " + "form.form-container ." + styleClass + " input, " +  "form.form-container ." + styleClass + " textarea, " + "form.form-container ." + styleClass + " select, " + "form.form-container ." + styleClass + " select option, " + builderStyles + "</style></div>";
+             
             }
         }
 
