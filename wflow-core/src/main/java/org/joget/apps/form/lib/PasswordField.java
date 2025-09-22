@@ -37,6 +37,10 @@ public class PasswordField extends Element implements FormBuilderPaletteElement 
         // set value
         String value = FormUtil.getElementPropertyValue(this, formData);
         String binderValue = getBinderValue(formData);
+
+        if (formData != null && FormUtil.isFormSubmitted(this, formData) && value != null && !value.isEmpty()) {
+            value = SECURE_VALUE;
+        }
         
         if (value != null && !value.isEmpty() && (value.equals(binderValue) || (binderValue != null && value.equals(SecurityUtil.decrypt(binderValue))))) {
             value = SECURE_VALUE;
@@ -55,14 +59,11 @@ public class PasswordField extends Element implements FormBuilderPaletteElement 
             String value = formData.getRequestParameter(id);
             if (value != null) {
                 if (value.equals(SECURE_VALUE)) {
-                    value = getBinderValue(formData);
-                    
-                    if (value != null) {
-                        value = SecurityUtil.decrypt(value);
-                        formData.addRequestParameterValues(id, new String[]{value});
-                    } else {
-                        formData.addRequestParameterValues(id, new String[]{""});
-                    }
+                    String persisted = getBinderValue(formData);
+                    if (persisted != null && !persisted.isEmpty()) {
+                        String plain = SecurityUtil.decrypt(persisted);
+                        formData.addRequestParameterValues(id, new String[]{plain});
+                    } 
                 }
             }
         }
@@ -80,16 +81,11 @@ public class PasswordField extends Element implements FormBuilderPaletteElement 
             String value = FormUtil.getElementPropertyValue(this, formData);
             if (value != null) {
                 if (value.equals(SECURE_VALUE)) {
-                    value = getPropertyString(FormUtil.PROPERTY_VALUE);
-                    // load from binder if available
-                    if (formData != null) {
-                        String binderValue = formData.getLoadBinderDataProperty(this, id);
-                        if (binderValue != null) {
-                            value = binderValue;
-                        }
-                    } else {
-                        value = SecurityUtil.encrypt(value);
+                    String binderValue = (formData != null) ? formData.getLoadBinderDataProperty(this, id) : null;
+                    if (binderValue == null || binderValue.isEmpty()) {
+                        return null; 
                     }
+                    value = binderValue;
                 } else {
                     value = SecurityUtil.encrypt(value);
                 }
