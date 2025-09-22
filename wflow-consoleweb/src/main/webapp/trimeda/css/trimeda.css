@@ -2115,14 +2115,6 @@ div#page:has(.time_only.no-manual-input.hasDatepicker.focus) ~ div div.ui-timepi
     margin-top: 0px;
 }
 
-div#ui-datepicker-div:has(div.ui-timepicker-div) table.ui-datepicker-calendar:not(:has(td > a.ui-state-active)) + div.ui-timepicker-div {
-    display: none;
-}
-
-div#ui-datepicker-div:has(div.ui-timepicker-div) table.ui-datepicker-calendar:has(td > a.ui-state-active) + div.ui-timepicker-div {
-    display: block;
-}
-
 div.ui-timepicker-div dl {
     display: grid;
     column-gap: 8px;
@@ -2212,10 +2204,6 @@ div.ui-timepicker-div dl dd > * > select {
 
 body.rtl #ui-datepicker-div .ui-timepicker-div.ui-timepicker-rtl dl dd {
     margin: 0 0px 10px 41%;
-}
-
-div#ui-datepicker-div:has(div.ui-timepicker-div) table.ui-datepicker-calendar:has(td > a.ui-state-active) tbody tr:not(:has(td > a.ui-state-active)) {
-    display: none;
 }
 
 div#ui-datepicker-div:has(div.ui-timepicker-div) table.ui-datepicker-calendar:has(td > a.ui-state-active):hover tbody tr:not(:has(td > a.ui-state-active)) {
