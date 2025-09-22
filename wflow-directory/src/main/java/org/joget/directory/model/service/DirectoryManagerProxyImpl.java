@@ -3,7 +3,6 @@ package org.joget.directory.model.service;
 import java.util.ArrayList;
 import org.joget.directory.ext.DirectoryManagerAuthenticatorImpl;
 import org.joget.commons.spring.model.Setting;
-import org.joget.commons.util.CsvUtil;
 import org.joget.commons.util.LogUtil;
 import org.joget.commons.util.SetupManager;
 import org.joget.directory.model.Department;
@@ -122,14 +121,9 @@ public class DirectoryManagerProxyImpl implements ExtDirectoryManager {
                     
                     if (propertySetting != null && propertySetting.getValue() != null && propertySetting.getValue().trim().length() > 0) {
                         String properties = propertySetting.getValue();
-                        if (!(directoryManagerPlugin instanceof PropertyEditable)) {
-                            properties = StringUtil.decryptContent(properties);
-                            propertyMap = CsvUtil.getPluginPropertyMap(properties);
-                        } else {
-                            //the encypted password is not more escaped json syntax due to HashVariableSupportedMap changes. Manually escape it here before parsing to JSON object
-                            properties = StringUtil.decryptAndEscapeContent(properties, StringUtil.TYPE_JSON);
-                            propertyMap = PropertyUtil.getPropertiesValueFromJson(properties);
-                        }
+                        //the encypted password is not more escaped json syntax due to HashVariableSupportedMap changes. Manually escape it here before parsing to JSON object
+                        properties = StringUtil.decryptAndEscapeContent(properties, StringUtil.TYPE_JSON);
+                        propertyMap = PropertyUtil.getPropertiesValueFromJson(properties);
                     }
 
                     LogUtil.debug(getClass().getName(), "DirectoryManager Plugin Found: " + className);
