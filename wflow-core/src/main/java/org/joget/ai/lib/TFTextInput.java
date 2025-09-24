@@ -2,6 +2,7 @@ package org.joget.ai.lib;
 
 import java.io.IOException;
 import java.util.Map;
+
 import org.joget.ai.TensorFlowInput;
 import org.joget.ai.TensorFlowUtil;
 import org.joget.apps.app.service.AppPluginUtil;
@@ -46,7 +47,7 @@ public class TFTextInput implements TensorFlowInput {
         
         String html = "<select name=\"datatype\" class=\"input_datatype small\"></select><span class=\"label\">"+typeLabel+"</span>";
         html += "<div><input name=\"text\" class=\"input_text full required\" placeholder=\""+label+"\"/><span class=\"label\">"+label+"</span></div>";
-        html += "<div><input name=\"dict\" class=\"input_dict half required\" placeholder=\""+dictionaryLabel+"\"/><span class=\"label\">"+dictionaryLabel+"</span> <a class=\"choosefile btn button small\">"+chooseFileLabel+"</a> <a class=\"clearfile btn button small\">"+clearFileLabel+"</a></div>";
+        html += "<div><input name=\"dict\" class=\"input_dict half required\" placeholder=\""+dictionaryLabel+"\"/><span class=\"label\">"+dictionaryLabel+"</span> <div class='actions'><a class=\"choosefile btn button small\">"+chooseFileLabel+"</a> <a class=\"clearfile btn button small\">"+clearFileLabel+"</a></div></div>";
         html += "<div><input name=\"maxlength\" class=\"input_maxlength half required\" placeholder=\""+maxlengthLabel+"\"/><span class=\"label\">"+maxlengthLabel+"</span><label><input name=\"fillback\" class=\"input_fillback truefalse\" type=\"checkbox\" value=\"true\"/> "+fillBackLabel+"<label></div>";
         
         return html;

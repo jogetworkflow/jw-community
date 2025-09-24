@@ -130,6 +130,18 @@ body[builder-theme] .builder-title .icon{
     font-size: 22px;
     padding: 5px 0px;
 }
+body[builder-theme='dark'] .pewrapper a ul {
+    background-color: var(--theme-primary-color-3);
+    color: var(--theme-label-color-1);
+    border-color: var(--theme-border-color-1);
+}
+body[builder-theme='dark'] .pewrapper a ul,
+body[builder-theme='dark'] .pewrapper a ul li {
+    border-color: var(--theme-border-color-1);
+}
+body[builder-theme='dark'] .pewrapper a ul li:hover {
+    background-color: var(--theme-link-color-1)
+}
 body[builder-theme] .builder-type ul li > a {
     color: var(--theme-label-color-1);
     border-radius: 3px;
@@ -862,6 +874,20 @@ body[builder-theme] .property-input textarea{
     border: 1px solid var(--theme-border-color-1);
     outline: none;
 }
+body[builder-theme] input:-webkit-autofill,
+body[builder-theme] textarea:-webkit-autofill,
+body[builder-theme] input:-webkit-autofill:focus,
+body[builder-theme] textarea:-webkit-autofill:focus,
+body[builder-theme] input:-webkit-autofill:hover,
+body[builder-theme] textarea:-webkit-autofill:hover,
+body[builder-theme] input:-webkit-autofill:active,
+body[builder-theme] textarea:-webkit-autofill:active {
+    background-color: var(--theme-primary-color-1) !important;
+    transition: background-color 5000s ease-in-out 0s !important;
+    box-shadow: none !important;
+    color: var(--theme-input-color-1) !important;
+    -webkit-text-fill-color: var(--theme-input-color-1) !important;
+}
 body[builder-theme] .chosen-container{
     font-size: 14px;
 }
@@ -1200,6 +1226,14 @@ body[builder-theme].rtl .ͼ2 .cm-gutters.cm-gutters-before{
     border-left-width: 1px;
     border-right-width: 0;
 }
+body[builder-theme]  .tfiowrapper div.actions,
+body[builder-theme] .tfiowrapper div.actions:last-child {
+    border: none;
+}
+body[builder-theme].rtl  .tfiowrapper div.actions,
+body[builder-theme].rtl .tfiowrapper div.actions:last-child {
+    border: none;
+}
 body[builder-theme] .chosen-container-multi .chosen-choices {
     font-size: 13px;
 }
@@ -1315,6 +1349,11 @@ body[builder-theme].rtl .property-editor-container input.image + .file-picker-ac
 }
 body[builder-theme].rtl .property-editor-container.editor-panel-mode input.image + .file-picker-actions .choosefile {
     left: 43px;
+}
+body[builder-theme] .property-editor-container .button {
+    background-color: var(--theme-primary-color-3);
+    color: var(--theme-label-color-2);
+    border: 1px solid var(--theme-border-color-1);
 }
 body[builder-theme] .editor-panel-mode .repeater-row > .inputs > .inputs-container > div > .element-pages {
     margin: 15px 0px;

@@ -79,7 +79,7 @@ public class TFFileBytesInput implements TensorFlowInput {
         String emptyLabel = ResourceBundleUtil.getMessage("app.simpletfai.retrieveFromUrl");
         String sourceLabel = ResourceBundleUtil.getMessage("app.simpletfai.source");
         
-        String html = "<div><select name=\"form\" class=\"input_form quarter\"><option value=\"\">"+emptyLabel+"</option></select><span class=\"label\">"+sourceLabel+"</span><input name=\"image\" class=\"input_image half required\" placeholder=\""+label+"\"/><span class=\"label\">"+label+"</span></div>";
+        String html = "<div><select name=\"form\" class=\"input_form quarter\"><option value=\"\">"+emptyLabel+"</option></select><span class=\"label\">"+sourceLabel+"</span><div><input name=\"image\" class=\"input_image half required\" placeholder=\""+label+"\"/><span class=\"label\">"+label+"</span></div></div>";
         return html;
     }
 

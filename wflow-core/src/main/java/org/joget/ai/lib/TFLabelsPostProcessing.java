@@ -2,6 +2,7 @@ package org.joget.ai.lib;
 
 import java.io.IOException;
 import java.util.Map;
+
 import org.joget.ai.TensorFlowPostProcessing;
 import org.joget.ai.TensorFlowUtil;
 import org.joget.apps.app.service.AppPluginUtil;
@@ -63,9 +64,9 @@ public class TFLabelsPostProcessing implements TensorFlowPostProcessing {
         String clearFileLabel = ResourceBundleUtil.getMessage("peditor.clear");
         String variableNameLabel = ResourceBundleUtil.getMessage("app.simpletfai.variableName");
         
-        String html = "<input name=\"threshold\" class=\"post_threshold small required\" placeholder=\""+thresholdLabel+"\"/><span class=\"label\">"+thresholdLabel+"</span>";
+        String html = "<div><input name=\"threshold\" class=\"post_threshold small required\" placeholder=\""+thresholdLabel+"\"/><span class=\"label\">"+thresholdLabel+"</span></div>";
         html += "<label><input name=\"toplabel\" class=\"post_toplabel truefalse\" type=\"checkbox\" value=\"true\"/> "+toplabelLabel+"</label>";
-        html += "<div><input name=\"labels\" class=\"post_labels half required\" placeholder=\""+labelsFileLabel+"\"/><span class=\"label\">"+labelsFileLabel+"</span> <a class=\"choosefile btn button small\">"+chooseFileLabel+"</a> <a class=\"clearfile btn button small\">"+clearFileLabel+"</a></div>";
+        html += "<div><input name=\"labels\" class=\"post_labels half required\" placeholder=\""+labelsFileLabel+"\"/><span class=\"label\">"+labelsFileLabel+"</span> <div class='actions'><a class=\"choosefile btn button small\">"+chooseFileLabel+"</a> <a class=\"clearfile btn button small\">"+clearFileLabel+"</a></div></div>";
         html += "<div><select name=\"variable\" class=\"post_variable half required\"><option value=\"\">"+variableNameLabel+"</option></select><span class=\"label\">"+variableNameLabel+"</span></div>";
         
         return html;

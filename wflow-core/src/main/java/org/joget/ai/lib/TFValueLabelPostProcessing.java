@@ -3,6 +3,7 @@ package org.joget.ai.lib;
 import java.io.IOException;
 import java.util.List;
 import java.util.Map;
+
 import org.joget.ai.TensorFlowPostProcessing;
 import org.joget.ai.TensorFlowUtil;
 import org.joget.apps.app.service.AppPluginUtil;
@@ -69,9 +70,9 @@ public class TFValueLabelPostProcessing implements TensorFlowPostProcessing {
         String thresholdLabel = ResourceBundleUtil.getMessage("app.simpletfai.scoreThreshold");
         
         String html = "<label><input name=\"unique\" class=\"post_unique truefalse\" type=\"checkbox\" value=\"true\"/> "+uniqueLabel+"</label>";
-        html += "<div><input name=\"labels\" class=\"post_labels half required\" placeholder=\""+labelsFileLabel+"\"/><span class=\"label\">"+labelsFileLabel+"</span> <a class=\"choosefile btn button small\">"+chooseFileLabel+"</a> <a class=\"clearfile btn button small\">"+clearFileLabel+"</a></div>";
+        html += "<div><input name=\"labels\" class=\"post_labels half required\" placeholder=\""+labelsFileLabel+"\"/><span class=\"label\">"+labelsFileLabel+"</span> <div class='actions'><a class=\"choosefile btn button small\">"+chooseFileLabel+"</a> <a class=\"clearfile btn button small\">"+clearFileLabel+"</a></div></div>";
         html += "<div><select name=\"variable\" class=\"post_variable half required\"><option value=\"\">"+variableNameLabel+"</option></select><span class=\"label\">"+variableNameLabel+"</span><select name=\"variable2\" class=\"post_variable half\"><option value=\"\">"+numberLabel+"</option></select><span class=\"label\">"+numberLabel+"</span></div>";
-        html += "<div><select name=\"variable3\" class=\"post_variable half\"><option value=\"\">"+scoreLabel+"</option></select><span class=\"label\">"+scoreLabel+"</span><input name=\"threshold\" class=\"post_threshold falf\" placeholder=\""+thresholdLabel+"\"/><span class=\"label\">"+thresholdLabel+"</span></div>";
+        html += "<div><select name=\"variable3\" class=\"post_variable half\"><option value=\"\">"+scoreLabel+"</option></select><span class=\"label\">"+scoreLabel+"</span><div><input name=\"threshold\" class=\"post_threshold falf\" placeholder=\""+thresholdLabel+"\"/><span class=\"label\">"+thresholdLabel+"</span></div></div>";
         return html;
     }
 

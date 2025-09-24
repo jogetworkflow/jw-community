@@ -97,11 +97,11 @@ public class TFImageInput implements TensorFlowInput {
         String typeLabel = ResourceBundleUtil.getMessage("app.simpletfai.type");
         
         String html = "<select name=\"datatype\" class=\"input_datatype small\"></select><span class=\"label\">"+typeLabel+"</span>";
-        html += "<div><select name=\"form\" class=\"input_form quarter\"><option value=\"\">"+emptyLabel+"</option></select><span class=\"label\">"+sourceLabel+"</span><input name=\"image\" class=\"input_image half required\" placeholder=\""+label+"\"/><span class=\"label\">"+label+"</span></div>";
-        html += "<div><input name=\"width\" class=\"input_width small\" placeholder=\""+widthLabel+"\"/><span class=\"label\">"+widthLabel+"</span>";
-        html += "<input name=\"height\" class=\"input_height small\" placeholder=\""+heightLabel+"\"/><span class=\"label\">"+heightLabel+"</span>";
-        html += "<input name=\"mean\" class=\"input_mean small\" placeholder=\""+meanLabel+"\"/><span class=\"label\">"+meanLabel+"</span>";
-        html += "<input name=\"scale\" class=\"input_scale small\" placeholder=\""+scaleLabel+"\"/><span class=\"label\">"+scaleLabel+"</span></div>";
+        html += "<div><select name=\"form\" class=\"input_form quarter\"><option value=\"\">"+emptyLabel+"</option></select><span class=\"label\">"+sourceLabel+"</span><div><input name=\"image\" class=\"input_image half required\" placeholder=\""+label+"\"/><span class=\"label\">"+label+"</span></div></div>";
+        html += "<div><input name=\"width\" class=\"input_width small\" placeholder=\""+widthLabel+"\"/><span class=\"label\">"+widthLabel+"</span></div>";
+        html += "<div><input name=\"height\" class=\"input_height small\" placeholder=\""+heightLabel+"\"/><span class=\"label\">"+heightLabel+"</span></div>";
+        html += "<div><input name=\"mean\" class=\"input_mean small\" placeholder=\""+meanLabel+"\"/><span class=\"label\">"+meanLabel+"</span></div>";
+        html += "<div><input name=\"scale\" class=\"input_scale small\" placeholder=\""+scaleLabel+"\"/><span class=\"label\">"+scaleLabel+"</span></div>";
         
         return html;
     }
