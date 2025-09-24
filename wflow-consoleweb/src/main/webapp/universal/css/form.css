@@ -488,11 +488,10 @@ body .editor-cell select:not([class^="ui-"]):focus{
 
 body .close-icon:after {
     right: 28px;
-    bottom: 20px;
+    bottom: -21px;
 }
 .close-icon {
     position: absolute;
-    padding: 2.04rem 2.25rem;
     left: 0;
     right: 0;
 }
