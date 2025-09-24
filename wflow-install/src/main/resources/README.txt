@@ -4,7 +4,7 @@ For an introduction to Joget DX, please refer to https://community.joget.org
 
 UPGRADING
 =========
-For details on upgrading from previous releases, please refer to https://www.joget.org/updates/upgrade
+For details on upgrading from previous releases, please refer to https://www.joget.org/updates/DX9/upgrade
 
 
 Prerequisites:

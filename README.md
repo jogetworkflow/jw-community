@@ -47,9 +47,9 @@ Follow us for the latest news and updates
 
 ## Building from Source
 
-To build from source, please refer to [Build Source Code](https://dev.joget.org/community/display/DX7/Joget+Open+Source).
+To build from source, please refer to [Build Source Code](https://kb.joget.org/jw/web/userview/jdocs/docs/DX9/joget-open-source).
 
 
 ## Contributing
 
-Joget is an open source project and if you would like to contribute, please refer to [How to Contribute](https://dev.joget.org/community/display/DX7/How-to+Contribute).
+Joget is an open source project and if you would like to contribute, please refer to [How to Contribute](https://kb.joget.org/jw/web/userview/jdocs/docs/DX9/how-to-contribute).

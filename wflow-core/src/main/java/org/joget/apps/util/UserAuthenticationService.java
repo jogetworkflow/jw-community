@@ -64,7 +64,7 @@ public final class UserAuthenticationService {
      *
      * @param user the user to be logged in
      * @return true if successfully logged in; false otherwise
-     * @see <a href="https://dev.joget.org/community/display/DX8/Single+Sign+On+-+SSO#SingleSignOnSSO-LoginanUserProgrammatically">
+     * @see <a href="https://kb.joget.org/jw/web/userview/jdocs/docs/DX9/single-sign-on---sso#SingleSignOnSSO-LoginanUserProgrammatically">
      * Joget KB: Single Sign On - SSO
      * </a>
      */
