@@ -495,10 +495,6 @@ body .close-icon:after {
     left: 0;
     right: 0;
 }
-body .editor-celll .close-icon:after {
-    top:16px;
-    bottom: unset;
-}
 body.rtl .close-icon:after {
     left: 28px;
     right: unset;
