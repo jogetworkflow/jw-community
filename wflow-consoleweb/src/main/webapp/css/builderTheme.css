@@ -2418,7 +2418,8 @@ body[builder-theme='dark'] .permission-table th.export, .permission-table td.exp
 body[builder-theme='dark'] .permission_view .permission_rule{
     color: #ffff;
 }
-body[builder-theme='dark'] .permission-table .has-child .element-meta i.la-minus-square{
+body[builder-theme='dark'] .permission-table .has-child .element-meta i.la-minus-square,
+body[builder-theme='dark'] .permission-table .has-child .element-meta i.la-plus-square{
     color: var(--theme-label-color-1);
 }
 body[builder-theme='dark'] .permission_view .permission_rule:hover:not(.active) {
