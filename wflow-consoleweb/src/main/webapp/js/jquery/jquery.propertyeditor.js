@@ -9980,7 +9980,7 @@ PropertyEditor.Type.CodeEditor.prototype = {
           });
 
         thisObj.codeeditor.execCommand("replace");
-        $('#' + thisObj.id).find(".CodeMirror-advanced-dialog").css({display: 'none'})
+        $('#' + thisObj.id).find(".CodeMirror-advanced-dialog").css({display: 'none'});
 
         if (this.properties.mode !== undefined && this.properties.mode !== "") {
             if (this.properties.mode === "html"){

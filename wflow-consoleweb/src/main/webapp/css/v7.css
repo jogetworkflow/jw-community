@@ -8,13 +8,13 @@
     --console-button-danger-bg: #dc3545;
     --console-button-danger-bg-hover: #c82333;
 }
-html[system-theme='light'], body[system-theme='light'] {
+html[system-theme='light'], body[system-theme='light'], body[builder-theme='light'] {
     --console-border-color: #ced4da;
     --console-main-background-color: #f6f7fb;
     --console-secondary-background-color: #FFF;
     --console-default-font-color:  rgba(0, 0, 0, 0.88);
 }
-html[system-theme='dark'], body[system-theme='dark']{
+html[system-theme='dark'], body[system-theme='dark'], body[builder-theme='dark'] {
     --console-border-color: #444e57;
     --console-main-background-color: #1f1f1f;
     --console-secondary-background-color: #121212;
@@ -26,7 +26,7 @@ html {
     background: #f6f7fb;
     height: 100%;
 }
-html[system-theme='dark'] {
+html[system-theme='dark'], html[builder-theme='dark'] {
     background: #1f1f1f;
 }
 body{

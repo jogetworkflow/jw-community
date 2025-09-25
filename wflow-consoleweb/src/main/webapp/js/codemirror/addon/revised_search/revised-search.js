@@ -13,7 +13,7 @@
 
   var replaceDialog = `<button id="collapse-button" type="button" class="btn btn-light" style="height:100%;position:absolute;top:0;width:18px;padding:0"><i class="fas fa-chevron-down"></i></button> <div class="row find" style="margin-top:2px;display: block;align-items: center;flex-wrap:nowrap;flex-direction:column;height: 28px;"> <div class="find-part"> <div id="find-input"> <input id="CodeMirror-find-field" type="text" class="CodeMirror-search-field" placeholder="Find" style="flex: 1;"/> </div> <div class="find-actions"><button type="button" class="btn btn-light" title="Find Previous"><i class="fas fa-arrow-up"></i></button> <button type="button" class="btn btn-light" title="Find Next"><i class="fas fa-arrow-down"></i></button> <button type="button" class="btn btn-light" id="closeDialogButton" title="Close"><i class="fa fa-times"></i></button> </div> </div> <span class="CodeMirror-search-hint" style="font-size: 10px; color: #888; font-weight:400">(Use /re/ syntax for regexp search)</span> </div> <div class="row replace" style="align-items: center;flex-flow: column;height: 28px;display: none;top:41px;margin-top:0px"> <div class="find-part"> <div id="find-input"> <input id="CodeMirror-replace-field" type="text" class="CodeMirror-search-field" placeholder="Replace" style="flex:1"/> </div> <div class="find-actions"> <button type="button" class="btn btn-light" title="Replace"><i class="fas fa-reply"></i></button> <button type="button" class="btn btn-light" title="Replace All"><i class="fas fa-reply-all"></i></button> </div> </div> </div>`; 
   
-  var findDialog = `<div style="display: flex; align-items: center; width:100%;"> <div class="height:100%;"> <button class="btn btn-light" style="margin-right: 5px;height:100%">></button> </div> <div class="row find" style="display: flex; align-items: center;flex-wrap:nowrap;flex-direction:column;height:50px"> <div class="find-part" style="display:flex;font-size:12px"> <div id="find-input" style="position:relative;display:flex;flex:1;"> <input id="CodeMirror-find-field" type="text" class="CodeMirror-search-field" placeholder="Find" style="flex: 1;"/> </div> <div class="find-actions"> <span class="CodeMirror-search-count" style="font-weight: bold;min-width:120px;">0/0</span> <button class="btn btn-light" style="margin-right: 5px;"><i class="fa-solid fa-arrow-up"></i></button> <button class="btn btn-light" style="margin-right: 5px;"><i class="fa-solid fa-arrow-down"></i></button> <button class="btn btn-light"><i class="fa fa-times"></i></button> </div> </div> <span class="CodeMirror-search-hint" style="font-size: 0.9em; color: #888;">(Use /re/ syntax for regexp search)</span> </div> </div> `; 
+  var findDialog = `<div style="display:flex;align-items:center;width:100%;"><div class="row find" style="display:flex;align-items:center;flex-wrap:nowrap;flex-direction:column;height:50px;margin:6px 2px;"><div class="find-part" style="display:flex;font-size:12px;"><div id="find-input" style="position:relative;display:flex;flex:1;"><input id="CodeMirror-find-field" type="text" class="CodeMirror-search-field" placeholder="Find" style="flex:1;"></div><div class="find-actions" style="min-width: 145px;"><span class="CodeMirror-search-count" style="font-weight:bold;min-width:20px;">0/0</span><button class="btn btn-light" style="margin-right:5px;padding:0px !important;"><i class="fa-solid fa-arrow-up"></i></button><button class="btn btn-light" style="margin-right:5px;padding:0px !important;"><i class="fa-solid fa-arrow-down"></i></button><button class="btn btn-light" style="padding:0px !important;"><i class="fa fa-times"></i></button></div></div><span class="CodeMirror-search-hint" style="font-size:9px;color:#888;margin-top:2px;">(Use /re/ syntax for regexp search)</span></div></div>`;
     
   var numMatches = 0;
   var searchOverlay = function searchOverlay(query, caseInsensitive) {
@@ -348,6 +348,13 @@
         if (!query) {
           resetCount(cm);
           clearSearch(cm);
+          cm.operation(() => {
+            cm.getAllMarks().forEach(mark => {
+              if (mark.className === "cm-searching") {
+                  mark.clear();
+              }
+            });
+          });
           return;
         }
 
@@ -393,14 +400,13 @@
   };
 
   CodeMirror.commands.find = function (cm) {
-    if (cm.getOption("readOnly")) return;
     clearSearch(cm);
     var state = getSearchState(cm);
     var query = cm.getSelection() || getSearchState(cm).lastQuery;
     var closeDialog = cm.openAdvancedDialog(findDialog, {
       shrinkEditor: true,
       inputBehaviours: [getFindBehaviour(cm, query)],
-      buttonBehaviours: [getReplaceBtnBehaviour(cm), getFindPrevBtnBehaviour(cm), getFindNextBtnBehaviour(cm), closeBtnBehaviour(cm)],
+      buttonBehaviours: [getFindPrevBtnBehaviour(cm), getFindNextBtnBehaviour(cm), closeBtnBehaviour(cm)],
       onClose: function onClose() {
         closeSearchCallback(cm, state);
       }

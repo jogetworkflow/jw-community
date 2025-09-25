@@ -584,8 +584,8 @@ AppBuilder = {
                         });
                         
                         //show details in popup dialog with edit link
-                        var aceEditor;
-                        var aceField;
+                        var codeEditor;
+                        var codeEditorField;
                         var showDetail = function(detailLink) {
                             var frameBody = $($("iframe#overview_data_more_detail")[0].contentWindow.document).find("body");
                             
@@ -596,7 +596,7 @@ AppBuilder = {
                             
                             //edit link
                             var pathLink = $(detailLink).prev().attr("href");
-                            $(frameBody).find("#main-body-header").append(' <a class="btn edit_link" style="margin:0px 15px;padding:5px 10px; font-size:70%; vertical-align: middle; line-height: normal;"><i class="fas fa-pencil-square-o" aria-hidden="true"></i> '+get_cbuilder_msg('ubuilder.edit')+'</a>');
+                            $(frameBody).find("#main-body-header").append(' <a class="btn edit_link" style="margin:0px 15px;padding:5px 10px; font-size:70%; vertical-align: middle; line-height: normal;"><i class="fas fa-pen-to-square" aria-hidden="true"></i> '+get_cbuilder_msg('ubuilder.edit')+'</a>');
                             $(frameBody).find("#main-body-header .edit_link").on("click", function(){
                                 CustomBuilder.ajaxRenderBuilder(pathLink);
                                 return false;
@@ -610,22 +610,62 @@ AppBuilder = {
                             $(frameBody).find("#main-body-content").css("height", (height - 53) + "px");
                             
                             //create code editor to show code
-                            $(frameBody).find("#main-body-content").html('<pre id="code_detail" class="ace_editor" style="width:100%; height:100%"></pre>');
-                            aceField = aceEditor.edit("code_detail");
-                            aceField.getSession().setTabSize(4);
-                            if (CustomBuilder.systemTheme === 'dark') { //support builder theme
-                                aceField.setTheme("ace/theme/vibrant_ink");
-                            } else {
-                                aceField.setTheme("ace/theme/textmate");
-                            }
-                            aceField.setReadOnly(true);
-                            aceField.setAutoScrollEditorIntoView(true);
+                            $(frameBody).find("#main-body-content").html('<div id="code_detail" name="code_detail" class="code-editor" style="width:100%; height:100%"></pre>');
+
+                            var $codeDetail = $(frameBody).find("#main-body-content #code_detail");
+
+                            codeEditorField = CodeMirror($codeDetail[0], {
+                                lineNumbers: true,
+                                mode: "text",
+                                matchBrackets: true,
+                                theme: "default",
+                                autoRefresh:true,
+                                gutters: ["CodeMirror-lint-markers", "CodeMirror-linenumbers", "CodeMirror-foldgutter"],
+                                lint: true,
+                                historyEventDelay: 100,
+                                autoCloseTags: true,
+                                autoCloseBrackets: true,
+                                foldGutter: true,
+                                lint: true,
+                                mode: "htmlmixed",
+                                lineWrapping: true,
+                                readOnly: true,
+                                highlightSelectionMatches: {annotateScrollbar: true, minChars: 1},
+                                extraKeys: {
+                                    "Ctrl-F": function(cm) {
+                                        cm.execCommand("find")
+                                        $codeDetail.find(".CodeMirror-advanced-dialog").css({display: 'block'})
+                                        var offsetTop = "0px"
+                                        if ($("body #top-panel").length > 0){
+                                            offsetTop = $("body #top-panel").outerHeight() + "px"
+                                        }
+                                        
+                                        $codeDetail.find(".CodeMirror-advanced-dialog").draggable()
+                                    },
+                                    "Ctrl-=": function(cm) {
+                                        cm.increaseFontSize();
+                                    },
+                                    "Ctrl--": function(cm) {
+                                        cm.decreaseFontSize();
+                                    },
+                                    "Ctrl-/": function(cm) {
+                                        cm.toggleComment();
+                                    }
+                                }
+                            });
                             
+                            $codeDetail.find("> .CodeMirror").css({height: "100%"});
+                            $(codeEditorField.getWrapperElement()).css("min-height", "100%");
+
+                            $codeDetail.find(".CodeMirror-advanced-dialog").css({display: 'none'});
+
+                            if (CustomBuilder.systemTheme === 'dark') { //support builder theme
+                                codeEditorField.setOption("theme", "ayu-mirage");
+                            }
+                                                        
                             //update content
                             var content = $(detailLink).find(".more_detail_content").text();
-                            aceField.setValue(content, -1);
-                            aceField.resize();
-                            aceField.renderer.updateFull();
+                            codeEditorField.setValue(content);
                             
                             //show the popup
                             JPopup.dialogboxes["overview_data_more_detail"].show();
@@ -644,16 +684,16 @@ AppBuilder = {
                                         $(frameBody).find("#main-body-content").css("padding", "0px");
                                         
                                         //wait for ace editor available
-                                        while (!aceEditor) {
-                                            aceEditor = $("iframe#overview_data_more_detail")[0].contentWindow.ace;
+                                        while (!codeEditor) {
+                                            codeEditor = $("iframe#overview_data_more_detail")[0].contentWindow.CodeMirror;
                                         }
                                         
                                         showDetail(detailLink);
                                     });
                                 } else {
-                                    // Reinitializing aceEditor here to prevent error when navigating to another App Composer and opening script editor ...
-                                    // ... as aceEditor is redeclared and becomes undefined when builders are initialized
-                                    aceEditor = $("iframe#overview_data_more_detail")[0].contentWindow.ace;
+                                    // Reinitializing codeEditor here to prevent error when navigating to another App Composer and opening script editor ...
+                                    // ... as codeEditor is redeclared and becomes undefined when builders are initialized
+                                    codeEditor = $("iframe#overview_data_more_detail")[0].contentWindow.CodeMirror;
                                     showDetail(detailLink);
                                 }
                             });
