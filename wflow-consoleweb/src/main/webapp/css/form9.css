@@ -370,6 +370,10 @@ textarea,
     border-radius:0 var(--jgt-input-borderRadius) var(--jgt-input-borderRadius) 0 !important;
 }
 
+body.rtl .selector_button {
+    border-radius: var(--jgt-input-borderRadius) 0 0 var(--jgt-input-borderRadius) !important;
+}
+
 input:not([type]):focus:not([disabled]):not([readonly]),
 input[type=text]:focus:not([disabled]):not([readonly]),
 input[type=password]:focus:not([disabled]):not([readonly]),
@@ -762,6 +766,12 @@ body input.no-manual-input {
     right: -1px;
 }
 
+body.rtl .selector_element .selector_button, 
+body.rtl .selector_element .selector_button:hover {
+    left: -1px;
+    right: unset;
+}
+
 .selector_element .selector_button:hover {
     background-color: #ced4da;
 }
@@ -769,6 +779,11 @@ body input.no-manual-input {
 .selector_element .selector_items {
     display: block;
     padding-right: 60px;
+}
+
+body.rtl .selector_element .selector_items {
+    padding-left: 60px;
+    padding-right: 0px;
 }
 
 .selector_element .selector_items .selector_item {
