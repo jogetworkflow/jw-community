@@ -80,6 +80,10 @@
             {
                 "value" : "#request.appCenterVideo[videoNumber]#",
                 "label" : "@@assist.request.appcentervideo@@"
+            },
+            {
+                "value" : "#request.appCenterBanner[linkNumber]#",
+                "label" : "@@assist.request.appcenterbanner@@"
             }
         ]
     }

@@ -39,6 +39,11 @@ public class RequestHashVariable extends DefaultHashVariablePlugin {
                         return ResourceBundleUtil.getMessage("appcenter.video" + videoNo);
                     }
                     return null;
+                } else if (attribute.contains("appCenterBanner")) {
+                    char linkNo = attribute.charAt(attribute.length() - 1);
+                    if (Character.isDigit(linkNo)){
+                        return ResourceBundleUtil.getMessage("appcenter.banner" + linkNo);
+                    }
                 }
                 else if (headerName != null) {
                     String value = request.getHeader(headerName);
@@ -127,6 +132,11 @@ public class RequestHashVariable extends DefaultHashVariablePlugin {
             list.add(getPrefix() + ".appCenterVideo4");
             list.add(getPrefix() + ".appCenterVideo5");
             list.add(getPrefix() + ".appCenterVideo6");
+
+            list.add(getPrefix() + ".appCenterBanner1");
+            list.add(getPrefix() + ".appCenterBanner2");
+            list.add(getPrefix() + ".appCenterBanner3");
+            list.add(getPrefix() + ".appCenterBanner4");
         }
         return list;
     }
