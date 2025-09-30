@@ -840,14 +840,13 @@ body.rtl #sidebar .nav > li > ul > li:not(:last-child){
         width: initial;
     }
 
-    body.horizontal_menu #content.page_content {
-        padding: var(--content-horizontal-page-padding);
+    body.horizontal_menu #header-name, body.horizontal_menu #header-info {
+        display: inline-flex;
+        align-items: center;
     }
 
-    body.horizontal_menu #header-name,
-    body.horizontal_menu #header-info {
-        display:inline-flex;
-        align-items: center;
+    body.horizontal_menu #content.page_content {
+        padding: var(--content-horizontal-page-padding);
     }
 }
 /* End of Horizontal Menu Below */
