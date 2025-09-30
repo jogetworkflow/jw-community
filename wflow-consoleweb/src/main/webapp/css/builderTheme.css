@@ -2779,6 +2779,14 @@ body[builder-theme='dark'] .item_usages_container .usage_category h3 {
 body[builder-theme='dark'] .item_usages_container .usage_category {
     border: 1px solid var(--theme-border-color-1);
 }
+body[builder-theme='dark'] .item_usages_container pre{
+    background:  var(--theme-primary-color-3);
+    color: var(--theme-label-color-1);
+    border: 1px solid var(--theme-border-color-1);
+}
+body[builder-theme='dark'] .item_usages_container pre .keyword_highlight {
+    color: #212529;
+}
 body[builder-theme='dark'] .chosen-container-multi .chosen-choices {
     background-color: var(--theme-primary-color-1);
     border-color: var(--theme-border-color-1);
