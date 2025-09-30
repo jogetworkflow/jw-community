@@ -14,7 +14,7 @@
 
     <script type="text/javascript" src="${pageContext.request.contextPath}/wro/common.preload.js?build=<fmt:message key="build.number"/>"></script>
     <script type="text/javascript" src="${pageContext.request.contextPath}/wro/common.js?build=<fmt:message key="build.number"/>"></script>
-    <script>loadCSS("${pageContext.request.contextPath}/wro/common.css")</script>
+    <script>loadCSS("${pageContext.request.contextPath}/wro/common.css?build=<fmt:message key='build.number'/>")</script>
 
     <c:set var="jsonUiInRequest" scope="request" value="true"/>
     

@@ -14,7 +14,7 @@
     <head>
         <jsp:include page="/WEB-INF/jsp/includes/scripts.jsp" />
 
-        <link href="${pageContext.request.contextPath}/wro/common.css" rel="stylesheet" />
+        <link href="${pageContext.request.contextPath}/wro/common.css?build=<fmt:message key="build.number"/>" rel="stylesheet" />
         <link href="${pageContext.request.contextPath}/wro/jds.min.css" rel="stylesheet" />
         <link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/css/form.css" rel="stylesheet" />
         <script src="${pageContext.request.contextPath}/wro/common.preload.js"></script>

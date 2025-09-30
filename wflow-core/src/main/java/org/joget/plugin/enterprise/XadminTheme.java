@@ -775,7 +775,7 @@ public class XadminTheme extends UniversalTheme {
         Set<String> urls = new HashSet<String>();
         String contextPath = AppUtil.getRequestContextPath();
         String bn = ResourceBundleUtil.getMessage("build.number");
-        urls.add(contextPath + "/wro/common.css");
+        urls.add(contextPath + "/wro/common.css?build=" + bn);
         urls.add(contextPath + "/wro/xadmin.min.css");
         urls.add(contextPath + "/xadmin/css/font.css");
         urls.add(contextPath + "/js/fontawesome6/css/all.min.css");
