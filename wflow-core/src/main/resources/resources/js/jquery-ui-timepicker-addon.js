@@ -1908,7 +1908,7 @@
 			// Datepicker will override our date when we call _base_optionDatepicker when
 			// calling minDate/maxDate, so we will first grab the value, call
 			// _base_optionDatepicker, then set our value back.
-			if(min || max){
+			if((inst.settings.datePickerType === 'dateTime') && (inst.input.val() !== '')){
 				$target = $(target);
 				oldVal = $target.datetimepicker('getDate');
 				ret = this._base_optionDatepicker.call($.datepicker, target, name_clone || name, value);

@@ -5,6 +5,28 @@ UI = {
    userview_id: '',
    locale: '',
    theme: '',
+
+    getFunction: function(name) {
+        try {
+            if ($.isFunction(name)) {
+                return name;
+            }
+            var parts = name.split(".");
+            var func = null;
+            if (parts[0] !== undefined && parts[0] !== "") {
+                func = window[parts[0]];
+            }
+            if (parts.length > 1) {
+                for (var i = 1; i < parts.length; i++) {
+                    func = func[parts[i]];
+                }
+            }
+
+            return func;
+        } catch (err) {};
+        return null;
+    },
+
    escapeHTML: function(c) {
       if (c == null || c == undefined) {
           return '';
@@ -262,8 +284,12 @@ UI = {
                     
                     ConnectionManager.post(UI.base + '/web/userview/'+UI.userview_app_id+'/appI18nMessages', {
                         success : function(data) {
-                            UI.messages = $.extend(UI.messages, eval('['+data+']')[0]);
-                            
+                            try {
+                                var parsedData = JSON.parse(data);
+                                UI.messages = $.extend(UI.messages, parsedData);
+                            } catch (error) {
+                                console.error('Failed to parse i18n messages:', error);
+                            }
                             var callbacks = UI.messagesCalls[callKey];
                             delete UI.messagesCalls[callKey];
                             
@@ -306,6 +332,25 @@ UI = {
         ConnectionManager.post(UI.base + '/web/api/validateEmail', internalCallback, params);
 
         return false; // Prevent default behavior
+    },
+    isValidInput: function(input) {
+        // XSS and security patterns
+        const COMMON_XSS_PATTERNS = /<[^>]*>|javascript:|data:|vbscript:|&#x?[0-9a-fA-F]+;|%[0-9a-fA-F]{2}|\bon\w+\s*=/i;
+        
+        // Valid input pattern - allows alphanumeric, spaces, and specific special characters
+        const VALID_PATTERN = /^[a-zA-Z0-9 ._'\-]+$/;
+        
+        // Patterns for consecutive special characters and start/end validation
+        const CONSECUTIVE_SPECIALS = /[._'\-]{2,}/;
+        const START_END_SPECIALS = /^[._'\-]|[._'\-]$/;
+
+        if (input === null || input === "") return true;
+        if (COMMON_XSS_PATTERNS.test(input)) return false;
+        if (!VALID_PATTERN.test(input)) return false;
+        if (CONSECUTIVE_SPECIALS.test(input)) return false;
+        if (START_END_SPECIALS.test(input.trim())) return false;
+        
+        return true;
     }
 };
 
@@ -803,11 +848,14 @@ JsonTable.prototype = {
                 if (name == command) {
                     var callback = thisObject.buttons[i].callback;
                     var selectedRows = thisObject.getSelectedRows();
-                    var functionCall = callback + "(selectedRows)";
-                    //alert(command + ": " + thisObject.getSelectedRows() + "; " + functionCall);
-                    var result = eval(functionCall);
-                    //alert(result);
-                    return result;
+                    var func = UI.getFunction(callback);
+                    if(func && $.isFunction(func)){
+                        var result = func(selectedRows);
+                        return result;
+                    }else{
+                        console.error('Invalid button callback function');
+                        return false;
+                    }
                 }
             }
         }
@@ -1259,15 +1307,41 @@ HelpGuide = {
         });
 
     },
+
+    processHelpDefinition: function(helpDefObj) {
+        for (var i = 0; i < helpDefObj.length; i++) {
+            var guide = helpDefObj[i];
+            if (guide.buttons && Array.isArray(guide.buttons)) {
+                for (var j = 0; j < guide.buttons.length; j++) {
+                    var button = guide.buttons[j];
+                    if (button.onclick && typeof button.onclick === 'string') {
+                        // Convert string to function reference
+                        var func = UI.getFunction(button.onclick);
+                        if (func && $.isFunction(func)) {
+                            button.onclick = func;
+                        } else {
+                            console.error('Invalid button onclick function: ' + button.onclick);
+                            delete button.onclick;
+                        }
+                    }
+                }
+            }
+        }
+        return helpDefObj;
+    },
     
     startGuide: function(helpJson) {
         // eval definition
         var helpDefObj;
         if (helpJson != "") {
             try {
-                helpDefObj = eval(helpJson);
+                helpDefObj = JSON.parse(helpJson);
+                // Process the parsed JSON to convert onclick strings to functions
+                if (helpDefObj && helpDefObj.length > 0) {
+                    helpDefObj = HelpGuide.processHelpDefinition(helpDefObj);
+                }
             } catch (e) {
-                //alert(e);
+                console.error('Failed to parse help guide JSON:', e);
             }
         }
         if (helpDefObj == null) {
@@ -1390,8 +1464,13 @@ HelpGuide = {
         
         if (guider.script !== undefined) {
             try {
-                eval(guider.script);
-            } catch (err) {}
+                var func = UI.getFunction(guider.script);
+                if(func && $.isFunction(func)){
+                    func();
+                }
+            } catch (err) {
+                console.error('Error executing help guide script:', err);
+            }
         }
         
         if (guider.highlight === undefined) {

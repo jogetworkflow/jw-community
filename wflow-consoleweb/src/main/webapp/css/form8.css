@@ -1551,9 +1551,12 @@ body.rtl .subform-cell > label.label{
 }
 .form-cell > label.label + input:has(+ .numeric_field_controls ){
     display: inline-block;
+    padding-right: 30px;
 }
 body.rtl .form-cell > label.label + input:has(+ .numeric_field_controls){
     float: none;
+    padding-left: 30px;
+    padding-right: 12px;
 }
 .label-top.form-cell > label.label + input[size] + .numeric_field_controls,
 form.label-top .form-cell > label.label + input[size] + .numeric_field_controls{

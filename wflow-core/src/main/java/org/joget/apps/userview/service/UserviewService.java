@@ -7,6 +7,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
+import java.util.Properties;
 import java.util.Set;
 import java.util.StringTokenizer;
 import jakarta.servlet.http.HttpServletRequest;
@@ -31,6 +32,8 @@ import org.joget.apps.userview.model.Permission;
 import org.joget.apps.userview.model.UserviewSetting;
 import org.joget.apps.userview.model.UserviewTheme;
 import org.joget.commons.spring.model.Setting;
+import org.joget.commons.util.DynamicDataSource;
+import org.joget.commons.util.DynamicDataSourceManager;
 import org.joget.commons.util.LogUtil;
 import org.joget.commons.util.ResourceBundleUtil;
 import org.joget.commons.util.SetupManager;
@@ -797,7 +800,7 @@ public class UserviewService {
     public String saveUserviewPages(String json, String userviewId, AppDefinition appDef) {
         try {
             Set<String> menuIds = new HashSet<>();
-            
+
             JSONObject userviewObj = new JSONObject(json);
             JSONArray categoriesArray = userviewObj.getJSONArray("categories");
             for (int i = 0; i < categoriesArray.length(); i++) {
@@ -808,32 +811,44 @@ public class UserviewService {
                     savePageDefinition(menuObj, userviewId, appDef, menuIds);
                 }
             }
+
+            // Detect DB driver from DynamicDataSourceManager
+            Properties properties = DynamicDataSourceManager.getProperties();
+            String driver = properties.getProperty("workflow" + DynamicDataSource.DRIVER);
             
             //clear removed page definition, find the page definition description is userview id and it is not appear in the found menu ids
             StringBuilder condition = new StringBuilder();
-            condition.append("AND e.type = ? AND e.description = ?");
+            condition.append("AND e.type = ? ");
+
+            if ("oracle.jdbc.driver.OracleDriver".equals(driver)) {
+                condition.append("AND TO_CHAR(e.description) = ?");
+            } else {
+                // MySQL, MSSQL, etc.
+                condition.append("AND e.description = ?");
+            }
+
             Collection<Object> params = new ArrayList<>();
             params.add("INTERNAL_USERVIEW_PAGE");
             params.add(userviewId);
-            
+
             if (!menuIds.isEmpty()) {
                 condition.append(" AND e.id NOT IN ?");
                 params.add(menuIds);
             }
-            
+
             Collection<BuilderDefinition> removed = builderDefinitionDao.find(condition.toString(), params.toArray(), appDef, null, null, null, null);
-            
+
             if (removed != null && !removed.isEmpty()) {
                 for (BuilderDefinition d : removed) {
                     builderDefinitionDao.delete(d);
                 }
             }
-            
+
             json = userviewObj.toString(0);
         } catch (Exception e) {
             LogUtil.error(UserviewService.class.getName(), e, "");
         }
-        
+
         return json;
     }
     

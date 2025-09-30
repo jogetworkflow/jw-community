@@ -255,6 +255,8 @@
             var idMatch = /^[\.@0-9a-zA-Z_\+-]+$/.test($("#username").val());
             const firstName = $("#firstName").val();
             const lastName = $("#lastName").val();
+            const employeeCode = $("#employeeCode").val();
+            const employeeRole = $("#employeeRole").val();
             
             if(!idMatch){
                 if(!idMatch){
@@ -267,7 +269,7 @@
             if(firstName == ""){
                 alertString += '<ui:msgEscJS key="User.firstName[not.blank]"/>';
                 valid = false;
-            } else if (containsXss(firstName) || containsXss(lastName)) {
+            } else if (!UI.isValidInput(firstName) || !UI.isValidInput(lastName)) {
                 alertString += '<ui:msgEscJS key="console.directory.user.error.label.nameInvalid"/>';
                 valid = false;
             }  
@@ -283,6 +285,22 @@
                     alertString += '\n';
                 }
                 alertString += '<ui:msgEscJS key="console.directory.user.error.label.passwordNotMatch"/>';
+                valid = false;
+            }
+
+            if (!UI.isValidInput(employeeCode)) {
+                if(alertString != ""){
+                    alertString += '\n';
+                }
+                alertString += '<ui:msgEscJS key="console.directory.user.error.label.employeeCodeInvalid"/>';
+                valid = false;
+            }
+
+            if (!UI.isValidInput(employeeRole)) {
+                if(alertString != ""){
+                    alertString += '\n';
+                }
+                alertString += '<ui:msgEscJS key="console.directory.user.error.label.jobTitleInvalid"/>';
                 valid = false;
             }
             
@@ -334,13 +352,17 @@
             if (orgs[orgId] === undefined || orgs[orgId].departments === undefined) {
                 ConnectionManager.get('${pageContext.request.contextPath}/web/json/directory/admin/user/deptAndGrade/options', {
                     success : function(data) {
-                        var obj = eval('(' + data + ')');
-                        orgs[orgId] = obj;
-                        $('tr.row td.org select').each(function(){
-                            if ($(this).val() === orgId) {
-                                updateDepartmentOrGradeOption(this);
-                            }
-                        });
+                        try {
+                            var obj = JSON.parse(data);
+                            orgs[orgId] = obj;
+                            $('tr.row td.org select').each(function(){
+                                if ($(this).val() === orgId) {
+                                    updateDepartmentOrGradeOption(this);
+                                }
+                            });
+                        } catch (e) {
+                            console.error("Encountered an error in the request: ", e);
+                        }
                     }
                 }, 'rnd=' + new Date().valueOf().toString() + '&orgId='+orgId);
             }
@@ -372,12 +394,7 @@
                 }
                 $(field).val(dvalue);
             }
-        }
-        
-        function containsXss(input) {
-            const pattern = /<[^>]*>|(javascript:)|(&#x?[0-9a-fA-F]+;)|(%[0-9a-fA-F]{2})/gi;
-            return pattern.test(input);        
-        }    
+        }  
 
         function closeDialog() {
             if (parent && parent.PopupDialog.closeDialog) {

@@ -2,6 +2,11 @@ package org.joget.apps.form.lib;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.text.DateFormatSymbols;
+import java.time.chrono.ThaiBuddhistChronology;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeFormatterBuilder;
+import java.time.temporal.TemporalAccessor;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.HashSet;
@@ -110,31 +115,45 @@ public class DatePicker extends Element implements FormBuilderPaletteElement, Pw
                 if (value != null && !value.equals(binderValue)) {
                     try {
                         String displayFormat = getJavaDateFormat(getFormat());
+                        String dataFormat = getPropertyString("dataFormat");
                         if (!displayFormat.equals(getPropertyString("dataFormat"))) {
                             String timeformat = "";
                             if ("dateTime".equalsIgnoreCase(getPropertyString("datePickerType"))
                                     || "utcdateTime".equalsIgnoreCase(getPropertyString("datePickerType"))) {
                                 timeformat = " " + getTimeFormat();
                             }
-                            
-                            SimpleDateFormat data = null;
-                            SimpleDateFormat display = new SimpleDateFormat(displayFormat + timeformat);
-                            if ("utcdateTime".equalsIgnoreCase(getPropertyString("datePickerType"))) {
-                                data = new SimpleDateFormat(UTC_DATEFORMAT);
-                                if (FormUtil.PROPERTY_DATE_CREATED.equals(id) || FormUtil.PROPERTY_DATE_MODIFIED.equals(id)) {
-                                    data.setTimeZone(TimeZone.getDefault());
-                                } else {
-                                    data.setTimeZone(TimeZone.getTimeZone("UTC"));
-                                }
-                                display.setTimeZone(getUserTZ());
+
+                            if (isBE() && !"utcdateTime".equalsIgnoreCase(getPropertyString("datePickerType"))) {
+                                DateTimeFormatter inputFormatter = new DateTimeFormatterBuilder()
+                                        .parseCaseInsensitive()
+                                        .appendPattern(displayFormat + timeformat)
+                                        .toFormatter(Locale.ENGLISH)
+                                        .withChronology(ThaiBuddhistChronology.INSTANCE);
+                                TemporalAccessor parsed = inputFormatter.parse(value);
+                                DateTimeFormatter outputFormatter = DateTimeFormatter.ofPattern(dataFormat + timeformat, Locale.ENGLISH)
+                                        .withChronology(ThaiBuddhistChronology.INSTANCE);
+                                value = outputFormatter.format(parsed);
+
                             } else {
-                                data = new SimpleDateFormat(getPropertyString("dataFormat") + timeformat);
+                                SimpleDateFormat data = null;
+                                SimpleDateFormat display = new SimpleDateFormat(displayFormat + timeformat);
+                                if ("utcdateTime".equalsIgnoreCase(getPropertyString("datePickerType"))) {
+                                    data = new SimpleDateFormat(UTC_DATEFORMAT);
+                                    if (FormUtil.PROPERTY_DATE_CREATED.equals(id) || FormUtil.PROPERTY_DATE_MODIFIED.equals(id)) {
+                                        data.setTimeZone(TimeZone.getDefault());
+                                    } else {
+                                        data.setTimeZone(TimeZone.getTimeZone("UTC"));
+                                    }
+                                    display.setTimeZone(getUserTZ());
+                                } else {
+                                    data = new SimpleDateFormat(dataFormat + timeformat);
+                                }
+                                Date date = display.parse(value);
+                                if ("utcdateTime".equalsIgnoreCase(getPropertyString("datePickerType")) && isBE()) {
+                                    date = convertThaiYearToGregorianYear(date);
+                                }
+                                value = data.format(date);
                             }
-                            Date date = display.parse(value);
-                            if ("utcdateTime".equalsIgnoreCase(getPropertyString("datePickerType")) && isBE()) {
-                                date = convertThaiYearToGregorianYear(date);
-                            }
-                            value = data.format(date);
                         }
                     } catch (Exception e) {}
                 }
@@ -275,11 +294,14 @@ public class DatePicker extends Element implements FormBuilderPaletteElement, Pw
                
         if (value != null && !value.isEmpty()) {
             String displayFormat = getJavaDateFormat(getFormat());
+            Locale currentLocale = LocaleContextHolder.getLocale();
+            Locale tagLocale = Locale.forLanguageTag("th-TH");
+            boolean isThaiLocale = tagLocale.equals(currentLocale);
             
             String timeformat = getTimeFormat();
             if ("timeOnly".equalsIgnoreCase(getPropertyString("datePickerType"))) {
                 displayFormat = timeformat;
-            } else if ("dateTime".equalsIgnoreCase(getPropertyString("datePickerType"))) {
+            } else if ("dateTime".equalsIgnoreCase(getPropertyString("datePickerType")) || "utcdateTime".equalsIgnoreCase(getPropertyString("datePickerType"))) {
                 displayFormat = displayFormat + " " + timeformat;
             }
             
@@ -292,7 +314,12 @@ public class DatePicker extends Element implements FormBuilderPaletteElement, Pw
 
             if (getPropertyString("disableWeekends").equals("true")) {
                 try {
-                    SimpleDateFormat display = new SimpleDateFormat(displayFormat);
+                    SimpleDateFormat display;
+                    if (isThaiLocale) {
+                        display = new SimpleDateFormat(displayFormat, new Locale("th", "TH", "TH"));
+                    } else {
+                        display = new SimpleDateFormat(displayFormat);
+                    }
                     Date date = display.parse(value);
                     Calendar calendar = Calendar.getInstance();
                     calendar.setTime(date);
@@ -348,14 +375,32 @@ public class DatePicker extends Element implements FormBuilderPaletteElement, Pw
             
             String type = getPropertyString("currentDateAs");
             if (!type.isEmpty()) {
-                String formattedCompare = TimeZoneUtil.convertToTimeZone(new Date(), null, displayFormat);               
-                Locale currentLocale = LocaleContextHolder.getLocale();
-                if (!Locale.ENGLISH.getLanguage().equals(currentLocale.getLanguage())) {
+                String formattedCompare = TimeZoneUtil.convertToTimeZone(new Date(), null, displayFormat);
+
+                if (!Locale.ENGLISH.getLanguage().equals(currentLocale.getLanguage()) && !isThaiLocale) {
                     try {
                         SimpleDateFormat localeDateFormat = new SimpleDateFormat(displayFormat, currentLocale);
                         SimpleDateFormat englishDateFormat = new SimpleDateFormat(displayFormat, Locale.ENGLISH);
                         Date date = localeDateFormat.parse(formattedCompare);                  
                         formattedCompare = englishDateFormat.format(date);
+                    } catch (Exception e) {
+                        LogUtil.error(DatePicker.class.getName(), e, e.getMessage());
+                    }
+                }
+                if ("dateTime".equalsIgnoreCase(getPropertyString("datePickerType")) && isThaiLocale) {
+                    try {
+                        DateFormatSymbols thaiSymbols = DateFormatSymbols.getInstance(tagLocale);
+                        SimpleDateFormat thaiFormat = new SimpleDateFormat(displayFormat, tagLocale);
+                        thaiFormat.setDateFormatSymbols(thaiSymbols);
+
+                        Date parsedDate = thaiFormat.parse(formattedCompare);
+
+                        DateFormatSymbols englishSymbols = DateFormatSymbols.getInstance(Locale.ENGLISH);
+                        SimpleDateFormat thaiWithEnglishAmPm = new SimpleDateFormat(displayFormat, tagLocale);
+                        // Overwrite the Thai ก่อนเที่ยง/หลังเที่ยง markers with AM/PM
+                        thaiWithEnglishAmPm.setDateFormatSymbols(englishSymbols);
+
+                        formattedCompare = thaiWithEnglishAmPm.format(parsedDate);
                     } catch (Exception e) {
                         LogUtil.error(DatePicker.class.getName(), e, e.getMessage());
                     }

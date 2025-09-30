@@ -1127,6 +1127,9 @@ body.rtl .form-edit-btn{
 body.rtl form.label-left .form-cell.label-top > label{
     float:none;
 }
+body.rtl .form-cell > label.label + input:has(+ .numeric_field_controls){
+    padding-right: 10px;
+}
 
 body #form-canvas .form-cell label.label.withIcon, body #form-canvas .subform-cell label.label.withIcon {
     position: relative;

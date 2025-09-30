@@ -228,6 +228,78 @@ public class MessageDaoImpl extends AbstractAppVersionedObjectDao<Message> imple
         }
         
         return result;
-    }    
+    }   
     
+    @Override
+    public boolean batchedBulkChange (AppDefinition appDef, String locale, Map<String, String> changes) {
+        try {
+            if (changes == null || changes.isEmpty()){
+                return true;
+            }
+
+            final Session s = findSession();
+            boolean hasChange = false;
+            int countSinceFlush = 0;
+
+            for (Map.Entry<String, String> e : changes.entrySet()) {
+                final String key = e.getKey();
+                final String value = e.getValue();
+                final boolean isDelete = (value == null || value.isEmpty());
+                final String id = key + "_" + locale;
+                Message existingMessage = loadById(id, appDef);
+                if (isDelete) {
+                    if (existingMessage != null) {
+                        if (appDef.getMessageList() != null) {
+                            for (java.util.Iterator<Message> it = appDef.getMessageList().iterator(); it.hasNext();) {
+                                if (id.equals(it.next().getId())) { 
+                                    it.remove(); 
+                                    break; 
+                                }
+                            }
+                        }
+                        existingMessage.setAppDefinition(null);
+                        s.delete(getEntityName(), existingMessage);
+                        hasChange = true; countSinceFlush++;
+                    }
+                } else if (existingMessage == null){
+                    Message m = new Message();
+                    m.setAppDefinition(appDef);
+                    m.setMessageKey(key);
+                    m.setLocale(locale);
+                    m.setMessage(value);
+                    s.save(getEntityName(), m);
+                    if (appDef.getMessageList() != null) {
+                        appDef.getMessageList().add(m);
+                    }
+                    hasChange = true; countSinceFlush++;
+                } else if (!value.equals(existingMessage.getMessage())) {
+                    existingMessage.setMessage(value);
+                    hasChange = true; countSinceFlush++;
+                }
+
+                if (countSinceFlush > 0 && (countSinceFlush % 50 == 0)) {
+                    s.flush();
+                    s.clear();
+                }
+            }
+
+            if (hasChange) {
+                s.flush();
+                String cacheKey = getCacheKey(locale, appDef.getAppId(), appDef.getVersion().toString());
+                cache.remove(cacheKey, appDef);
+                appDefinitionDao.updateDateModified(appDef);
+                if (!AppDevUtil.isGitDisabled()) {
+                    AppDefinition refreshed = appService.loadAppDefinition(appDef.getAppId(), appDef.getVersion().toString());
+                    String filename = "appDefinition.xml";
+                    String xml = AppDevUtil.getAppDefinitionXml(refreshed);
+                    String commitMessage = "Update app definition " + refreshed.getId();
+                    AppDevUtil.fileSave(refreshed, filename, xml, commitMessage);
+                }
+            }
+            return true;
+        } catch (Exception e) {
+            LogUtil.error(getClass().getName(), e, "");
+            return false;
+        }
+    }
 }

@@ -1292,6 +1292,15 @@ body.quickEditModeActive:not(.horizontal_menu) #sidebar #category-container {
     line-height: 14px;
 }
 
+.form-cell > label.label + input:has(+ .numeric_field_controls) {
+    padding-right: 40px !important;
+} 
+
+body.rtl .form-cell > label.label + input:has(+ .numeric_field_controls) {
+    padding-left: 40px !important;
+    padding-right: var(--input-padding) !important;
+}
+
 div.chosen-container.chosen-container-multi .chosen-choices {
     min-height: 56px !important;
     border: 1.5px solid var(--field-border-color) !important;
@@ -1300,10 +1309,30 @@ div.chosen-container.chosen-container-multi .chosen-choices {
     border-radius: 16px;
 }
 
-div.chosen-container.chosen-container-multi .chosen-choices li.search-field,
+div.chosen-container.chosen-container-multi .chosen-choices li.search-field {
+    padding: 0px !important;
+    min-height: fit-content !important;
+}
+
+div.chosen-container.chosen-container-multi .chosen-choices:has(.search-choice) li.search-field {
+    padding: var(--selector-padding) 0px var(--selector-padding) 0px !important;
+    margin: 6px 5px 0 0!important;
+    
+}
+
+body.rtl div.chosen-container.chosen-container-multi .chosen-choices:has(.search-choice) li.search-field {
+    margin: 3px 5px 3px 0 !important;
+    padding: var(--selector-padding) 0px var(--selector-padding) 0px !important;
+}
+
 div.chosen-container.chosen-container-multi .chosen-choices li.search-field > input {
-    min-height: 0px !important;
-    height: 0px !important;
+    margin: 0px !important;
+    min-height: fit-content;
+    max-width: 100%;
+}
+
+div.chosen-container.chosen-container-multi .chosen-choices li.search-field {
+    max-width: calc(100%);
 }
 
 h2.category-label-header {

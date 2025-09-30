@@ -96,7 +96,7 @@
             </div>
         </form:form>
     </div>
-
+    
     <script type="text/javascript">
 
         function validateField(){
@@ -108,7 +108,7 @@
             if(firstName == ""){
                 alertString += '<ui:msgEscJS key="User.firstName[not.blank]"/>';
                 valid = false;
-            } else if (containsXss(firstName) || containsXss(lastName)) {
+            } else if (!UI.isValidInput(firstName) || !UI.isValidInput(lastName)) {
                 alertString += '<ui:msgEscJS key="console.directory.user.error.label.nameInvalid"/>';
                 valid = false;
             }  
@@ -145,9 +145,5 @@
             return false;
         }
         
-        function containsXss(input) {
-            const pattern = /<[^>]*>|(javascript:)|(&#x?[0-9a-fA-F]+;)|(%[0-9a-fA-F]{2})/gi;
-            return pattern.test(input);        
-        }
     </script>
 <commons:popupFooter />

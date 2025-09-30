@@ -1128,10 +1128,13 @@ public class ConsoleWebController {
                     employment = new Employment();
                 }
             }
+            
+            String sanitizedEmployeeCode = StringUtil.stripAllHtmlTag(StringUtil.unescapeString(employeeCode, StringUtil.TYPE_HTML, null));
+            String sanitizedEmployeeRole = StringUtil.stripAllHtmlTag(StringUtil.unescapeString(employeeRole, StringUtil.TYPE_HTML, null));
 
             employment.setUserId(user.getId());
-            employment.setEmployeeCode(employeeCode);
-            employment.setRole(employeeRole);
+            employment.setEmployeeCode(sanitizedEmployeeCode);
+            employment.setRole(sanitizedEmployeeRole);
             DateFormat df = new SimpleDateFormat("yyyy-MM-dd");
             try {
                 if (employeeStartDate != null && employeeStartDate.trim().length() > 0) {
@@ -2563,37 +2566,23 @@ public class ConsoleWebController {
         return "console/apps/resources";
     }
     
+    @Transactional
     @RequestMapping(value = "/json/console/app/(*:appId)/(~:version)/message/submit", method = RequestMethod.POST)
     public void consoleAppMessageJsonSubmit(HttpServletResponse response, @RequestParam String appId, @RequestParam(required = false) String version, @RequestParam String data, @RequestParam String locale) throws IOException {
         try {
             AppDefinition appDef = appService.getAppDefinition(appId, version);
 
             JSONArray array = new JSONArray(data);
+            Map<String,String> changes = new LinkedHashMap<String,String>(array.length());
             for (int i = 0; i < array.length(); i++) {
                 JSONObject obj = (JSONObject) array.get(i);
-                String key = obj.get("key").toString();
-                String id = key + "_" + locale;
-                String value = obj.get("value").toString();
-
-                // check exist
-                Message m = messageDao.loadById(id, appDef);
-                if (m != null) {
-                    if (value == null || (value != null && value.isEmpty())) {
-                        messageDao.delete(id, appDef);
-                    } else {
-                        m.setMessage(value);
-                        messageDao.update(m);
-                    }
-                } else if (value != null && !value.isEmpty()) {
-                    m = new Message();
-                    m.setAppDefinition(appDef);
-                    m.setId(id);
-                    m.setLocale(locale);
-                    m.setMessageKey(key);
-                    m.setMessage(value);
-                    messageDao.add(m);
+                String key = obj.optString("key", "");
+                String value = obj.isNull("value") ? "" : obj.optString("value", "");
+                if (key != null && !key.isEmpty()) {
+                    changes.put(key, value);
                 }
             }
+            messageDao.batchedBulkChange(appDef, locale, changes);
         } catch (Exception e) {
             response.sendError(HttpServletResponse.SC_BAD_REQUEST, e.getLocalizedMessage());
         }
