@@ -171,10 +171,10 @@
             var form = document.createElement("form");
 
             form.method = "POST";
-            form.action = replaceUrlParam(savedRequest.url, 'OWASP_CSRFTOKEN', ConnectionManager.tokenValue);
+            form.action = replaceUrlParam(savedRequest.url, 'OWASP-CSRFTOKEN', ConnectionManager.tokenValue);
 
             for(var key in savedRequest.payload){
-                if(key === 'OWASP_CSRFTOKEN'){
+                if(key === 'OWASP-CSRFTOKEN'){
                     createInput(form, key, ConnectionManager.tokenValue);
                 }else{
 

@@ -2168,7 +2168,7 @@ UserviewBuilder = {
             menuId = "";
         }
         
-        $('#cbuilder-preview [name=OWASP_CSRFTOKEN]').val(ConnectionManager.tokenValue);
+        $('#cbuilder-preview [name=OWASP-CSRFTOKEN]').val(ConnectionManager.tokenValue);
         $('#cbuilder-preview').attr("action", CustomBuilder.previewUrl + menuId);
         $('#cbuilder-preview').attr("target", "preview-iframe");
         $('#cbuilder-preview').submit();
@@ -2312,7 +2312,7 @@ UserviewBuilder = {
             }
         }
         
-        $('#cbuilder-preview [name=OWASP_CSRFTOKEN]').val(ConnectionManager.tokenValue);
+        $('#cbuilder-preview [name=OWASP-CSRFTOKEN]').val(ConnectionManager.tokenValue);
         $('#cbuilder-preview').attr("action", CustomBuilder.previewUrl + menuId);
         $('#cbuilder-preview').attr("target", "preview-screenshot-iframe");
         $('#cbuilder-preview').submit();

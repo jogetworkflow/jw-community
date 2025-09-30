@@ -156,7 +156,7 @@ public class UserviewCache {
      * @return 
      */
     public static String getComponentId(UserviewMenu userviewMenu, String menuId, String currentPageMenuId) {
-        String componentId = WorkflowUtil.getHttpServletRequest().getHeader("__ajax_component");
+        String componentId = WorkflowUtil.getHttpServletRequest().getHeader("ajax-component");
         if (componentId == null && !menuId.equals(currentPageMenuId)) {
             componentId = "pc-" + userviewMenu.getPropertyString("id");
             if (!userviewMenu.getPropertyString("customId").isEmpty()) {

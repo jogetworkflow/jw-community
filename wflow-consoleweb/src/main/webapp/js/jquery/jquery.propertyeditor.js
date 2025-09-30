@@ -9465,7 +9465,7 @@ PropertyEditor.Type.ElementSelect.prototype = {
             data: "value=" + encodeURIComponent(value),
             dataType: "text",
             headers: {
-                call_reference : thisObj.properties.options_ajax
+                "call-reference" : thisObj.properties.options_ajax
             },
             success: function(response) {
                 if (response !== null && response !== undefined && response !== "") {
@@ -10067,7 +10067,7 @@ PropertyEditor.Type.ElementMultiSelect.prototype = {
             data: "value=" + encodeURIComponent(value),
             dataType: "text",
             headers: {
-                call_reference : thisObj.properties.options_ajax
+                "call-reference" : thisObj.properties.options_ajax
             },
             success: function(response) {
                 if (response !== null && !((typeof response) === "undefined") && response !== "") {

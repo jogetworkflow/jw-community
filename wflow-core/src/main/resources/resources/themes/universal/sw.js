@@ -225,7 +225,7 @@ self.addEventListener('fetch', function (event) {
                                     resolve(offlineResponse);
                                 }else{
                                     if (template && template !== "") {
-                                        var isAjaxTheme = event.request.headers.get('__ajax_theme_loading');
+                                        var isAjaxTheme = event.request.headers.get('ajax-theme-loading');
                                         if (isAjaxTheme === undefined || isAjaxTheme === null) {
                                             var responseText = await response.clone().text();
                                             var menuStartIndex = responseText.indexOf("ajaxtheme_loading_menus");
@@ -526,7 +526,7 @@ function sendFormDataToServer(savedRequest){
                         continue;
                     }
 
-                    if(key === 'OWASP_CSRFTOKEN'){
+                    if(key === 'OWASP-CSRFTOKEN'){
                         //ignore
                     }else{
                         //check if File array
@@ -540,7 +540,7 @@ function sendFormDataToServer(savedRequest){
                         }
                     }
                 }
-                formDataObj.append('OWASP_CSRFTOKEN', json.tokenValue);
+                formDataObj.append('OWASP-CSRFTOKEN', json.tokenValue);
 
                 fetch(requestUrl, {
                     headers: {

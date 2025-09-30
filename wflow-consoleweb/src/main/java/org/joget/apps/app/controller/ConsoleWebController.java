@@ -4126,7 +4126,7 @@ public class ConsoleWebController {
             String paramName = (String) e.nextElement();
             String paramValue = request.getParameter(paramName);
             
-            if ("OWASP_CSRFTOKEN".equals(paramName)) {
+            if ("OWASP-CSRFTOKEN".equals(paramName)) {
                 continue;
             }
 

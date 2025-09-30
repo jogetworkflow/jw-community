@@ -302,7 +302,7 @@ public class AjaxUniversalTheme extends UniversalTheme implements SupportBuilder
     
     protected boolean isAjaxContent(Map<String, Object> data) {
         if (isAjaxContent == null) {
-            isAjaxContent = "true".equalsIgnoreCase(WorkflowUtil.getHttpServletRequest().getHeader("__ajax_theme_loading"));
+            isAjaxContent = "true".equalsIgnoreCase(WorkflowUtil.getHttpServletRequest().getHeader("ajax-theme-loading"));
         }
         return isAjaxContent;
     }

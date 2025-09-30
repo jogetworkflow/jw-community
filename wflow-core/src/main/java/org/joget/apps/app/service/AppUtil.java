@@ -2179,7 +2179,7 @@ public class AppUtil implements ApplicationContextAware {
             }
             url = url.replaceFirst("^"+request.getContextPath(), "");
             
-            boolean isAjaxThemeLoading = "true".equalsIgnoreCase(request.getHeader("__ajax_theme_loading"));
+            boolean isAjaxThemeLoading = "true".equalsIgnoreCase(request.getHeader("ajax-theme-loading"));
             
             Map<String, Boolean> urlMatchResult = new HashMap<>();
             AntPathMatcher matcher = new AntPathMatcher();

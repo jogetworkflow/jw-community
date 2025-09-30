@@ -6,7 +6,7 @@ AjaxMenusCount = {
         if ($("[data-ajaxmenucount]").length > 0) {
             var headers = new Headers();
             headers.append(ConnectionManager.tokenName, ConnectionManager.tokenValue);
-            headers.append("__ajax_menu_count", "true");
+            headers.append("ajax-menu-count", "true");
             
             var args = {
                 method : "GET",
@@ -23,9 +23,9 @@ AjaxMenusCount = {
             
             //add a param to prevent it override cache
             if (url.indexOf("?") === -1) {
-                url += "?__ajax_menu_count=1";
+                url += "?ajax-menu-count=1";
             } else {
-                url += "&__ajax_menu_count=1";
+                url += "&ajax-menu-count=1";
             }
         
             fetch(url, args)
