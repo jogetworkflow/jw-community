@@ -735,6 +735,7 @@ body[builder-theme]#cbuilder #element-select-box {
 body[builder-theme] .item_usages_container .item a {
     font-weight: 500;
     font-size: 16px;
+    color: #0d6efd;
 }
 body[builder-theme] .search-container .form-control .element-properties .search .form-control, 
 body[builder-theme]#cbuilder .drag-elements > .header .search .form-control {
