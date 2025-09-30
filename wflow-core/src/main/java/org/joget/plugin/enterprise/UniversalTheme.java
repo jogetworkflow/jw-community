@@ -244,7 +244,7 @@ public class UniversalTheme extends UserviewV5Theme implements UserviewPwaTheme,
         String contextPath = AppUtil.getRequestContextPath();
         String pathName = getPathName();
         String bn = ResourceBundleUtil.getMessage("build.number");
-        urls.add(contextPath + "/wro/common.css");
+        urls.add(contextPath + "/wro/common.css?build=" + bn);
         urls.add(contextPath + "/wro/" + pathName + ".preload.min.css");
         urls.add(contextPath + "/wro/" + pathName + ".min.css");
         urls.add(contextPath + "/wro/common.preload.js?build=" + bn);

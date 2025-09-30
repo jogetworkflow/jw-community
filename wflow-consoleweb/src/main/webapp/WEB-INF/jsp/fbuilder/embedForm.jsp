@@ -7,7 +7,7 @@
 
 <commons:popupHeader /> 
     <c:if test="${isQuickEditEnabled && isAdmin}">    
-        <script src="${pageContext.request.contextPath}/js/adminBar.js"></script>
+        <script src="${pageContext.request.contextPath}/js/adminBar.js?build=<fmt:message key="build.number"/>"></script>
         <script>
             AdminBar.cookiePath = '${pageContext.request.contextPath}/';
         </script>  

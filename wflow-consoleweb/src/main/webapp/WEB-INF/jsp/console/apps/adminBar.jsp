@@ -59,7 +59,7 @@
             <i class="fas fa-pencil-alt"></i>
         </div>    
             
-        <script src="${pageContext.request.contextPath}/js/adminBar.js"></script>
+        <script src="${pageContext.request.contextPath}/js/adminBar.js?build=<fmt:message key="build.number"/>"></script>
         <script>
             AdminBar.cookiePath = '${pageContext.request.contextPath}/';
             <c:if test="${param.webConsole == 'true'}">
