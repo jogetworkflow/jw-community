@@ -642,7 +642,7 @@ body[builder-theme] .tree ol li.tree-viewer-item label > span {
 body[builder-theme] .tree ol li input + ol:before, 
 body[builder-theme] .tree ol li label:before, 
 body[builder-theme] .tree ol li input:checked + ol:before {
-    color: #000;
+    color: var(--theme-link-color-1);
 }
 body[builder-theme]#cbuilder .nav-tabs .nav-item .nav-link > i {
     display: none;
@@ -653,8 +653,11 @@ body[builder-theme] #treeViewerView .builder-view-body, body[builder-theme] #xra
 body[builder-theme] .tree ol li label {
     font-size: 14px;
     padding-left: 35px;
+    z-index: 1;
 }
-body[builder-theme] .tree ol li:hover {
+body[builder-theme] .tree ol li:hover,
+body[builder-theme] .tree ol li label:hover::before,
+body[builder-theme] .tree ol li:hover label:before{  
     color: #000;
 }
 body[builder-theme] #builder-menu ul.app_tools li:has( a.active-view) {
@@ -2378,10 +2381,15 @@ body[builder-theme='dark']#cbuilder #top-panel .btn-group .btn.active-view{
 body[builder-theme='dark'] .builder-view {
     background: var(--theme-primary-color-1);
 }
-body[builder-theme='dark'] .tree ol li {
+body[builder-theme='dark'] .tree ol li,
+body[builder-theme='dark'] .tree ol li input + ol:before, 
+body[builder-theme='dark'] .tree ol li label:before, 
+body[builder-theme='dark'] .tree ol li input:checked + ol:before{
     color: var(--theme-input-color-1);
 }
-body[builder-theme='dark'] .tree ol li:hover {
+body[builder-theme='dark'] .tree ol li:hover,
+body[builder-theme='dark'] .tree ol li label:hover::before,
+body[builder-theme='dark'] .tree ol li:hover label:before{
     color: #fff;
 }
 body[builder-theme='dark'] .permission-table tbody tr.support-plugin,
