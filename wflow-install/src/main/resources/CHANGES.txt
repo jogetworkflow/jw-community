@@ -2,6 +2,43 @@ Joget DX COMMUNITY
 ====================
 For more information, please refer to https://community.joget.org
 
+8.2.5
+=====
+4a5ee9bb4 Fixed: wflow-core - Message - fixed slow saving when large amount of labels in app messages T6621 T6681 #1329 @8.2-SNAPSHOT
+aa41c678d Fixed: wflow-core - File Upload - Delete actual file during overwrite or removal #859 @8.2-SNAPSHOT
+352dfe5b3 Modified: wflow-core - Form Data - Added wrapper method to support duplicate parameter values #859 @8.2-SNAPSHOT
+ee39ab613 Fixed: wflow-core - Image Formatter - Fixed edited image is not applied in list when actual file is deleted. @8.2-SNAPSHOT
+6fcb02219 Fixed: wflow-consoleweb - Priority Menu - Add error handling to ResizeObserver. #1036 @8.2-SNAPSHOT
+50fbcdb4f Fixed: wflow-core - Date Picker - Time validation does not work for Datetime UTC. #1121 @8.2-SNAPSHOT
+c30c556da Fixed: wflow-wfengine - Process - Process fails to terminate after subflow deadline timeout. T6736 #1370 @8.2-SNAPSHOT
+ae6435943 Fixed: wflow-consoleweb - Tooltip - Fixed tooltip being placed at wrong field #1215 T6531. @8.2-SNAPSHOT
+f39febef7 Fixed: wflow-core - Import App - Fixed: wflow-core - Import App - Fixed app import error caused by empty in env variable #1086 T6352. @8.2-SNAPSHOT
+dd25a5944 Fixed: wflow-consoleweb - Property Editor – Test Connection button visibility issue when options binder section is collapsed #1132 @8.2-SNAPSHOT
+2e146c570 Fixed: wflow-core - App Composer - Slow performance issue on finding missing plugins and export app. #1322 #1330 T6621 @8.2-SNAPSHOT
+aa9504e65 Fixed: wflow-consoleweb - webapp - Usage of eval in js and jsp #1293 @8.2-SNAPSHOT
+edddf1aba Fixed: wflow-consoleweb - DX8 Trimeda Theme - Fixed an issue where input is not visible #1229 @8.2-SNAPSHOT
+64181a5e3 Fixed: wflow-core - UI Builder - Fixed database compatibility issue when saving UI Builder #1298 T6626. @8.2-SNAPSHOT
+8280e49ee Fixed: wflow-core - pom.xml - Upgrade Bouncy Castle to 1.82. #1382 @8.2-SNAPSHOT
+b85f9b0ac Fixed: wflow-core - Date Hash Variable - Readonly field displays GE format date. #575 T4987 T4420 @8.2-SNAPSHOT
+9490a17cc Fixed: wflow-core - Date Picker - Days of date saved into DB wrongly. #575 T4987 T4420 @8.2-SNAPSHOT
+ea00e5c5f Fixed: wflow-core - Date Picker - On disabled weekends setting, picking weekdays returning error upon submission. #575 T4987 T4420 @8.2-SNAPSHOT
+98c06ec70 Fixed: wflow-consoleweb - Date Picker - Date field not showing BE for past and future years. #575 T4987 T4420 @8.2-SNAPSHOT
+3cc6ca939 Fixed: wflow-consoleweb - Date Picker - Year selector not changing with user input. #575 T4987 T4420 @8.2-SNAPSHOT
+308c64983 Fixed: wflow-consoleweb - Date Picker - Thai datepicker displays the days of the week incorrectly. T4987 T4420 @8.2-SNAPSHOT
+c8196b628 Fixed: wflow-consoleweb - Form - Added padding for input with numeric controls #1300 @8.2-SNAPSHOT
+9090b356f Fixed: wflow-consoleweb - Profile - Fixed XSS check issues for profile fields. Added input validation and appropriate alert message with i18n translations. #1117 @8.2-SNAPSHOT
+9d0217bd8 Fixed: wflow-commons - SetupManagerCache - Cache empty rows to prevent excessive DB queries. #1234 @8.2-SNAPSHOT
+11eb77479 Fixed: wflow-consoleweb - Builder - Added error fallback, so it wont load infinitely #1183 @8.2-SNAPSHOT
+894f12405 Modified: wflow-consoleweb - jwdb-mysql - Updated pluginProperties datatype to longtext #1217 T6524 @8.2-SNAPSHOT
+e246a4e60 Fixed: wflow-consoleweb - Marketplace - fixed install button overlay issue and help icon misalignment in rtl mode #1107 @8.2-SNAPSHOT
+9e61aae3f Fixed: wflow-consoleweb - Builder Theme - Fixed button save/generate position is not float to left in RTL view. #1264 @8.2-SNAPSHOT
+1739ce658 Fixed: wflow-consoleweb - Property - Fixed when scrolling the property page with chosen container opened the page would snap back to the top of the page. #1264 @8.2-SNAPSHOT
+ebceca543 Fixed: wflow-consoleweb - Builder Theme - Fixed popup body button action not having RTL styling. #1264 @8.2-SNAPSHOT
+a9dfad40a Fixed: wflow-consoleweb - Datalist - Fixed an issue where clicking on the filter under mobile will only open the last filter @8.2-SNAPSHOT
+55a429c5f Fixed: wflow-consoleweb - Unauthorized page - Fixed page having unnecessary margin left/right and logo misalignment issue during small screen. #1288 @8.2-SNAPSHOT
+8fb055495 Modified: wflow-consoleweb - Monitor - set default order by descending date and date column as sortable. #1011 @8.2-SNAPSHOT
+963bd33ad Fixed:  wflow-consoleweb - Builders - Add "X-ray Viewer" to the header of X-ray advanced tools. #1260 @8.2-SNAPSHOT
+
 8.2.4
 =====
 9680df5ab Fixed: wflow-wfengine - Monitor > Archive Process - Migrating completed process data to archive process data causing OutOfMemoryError. #1238 @8.2-SNAPSHOT
