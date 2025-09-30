@@ -1433,13 +1433,15 @@ FormBuilder = {
     /*
      * Utility method to validate the field id to prevent having the same with reserve keywords
      */
-    validateFieldId: function(name, value, $target) {
+    validateFieldId: function(name, value, $target, obj) {
 //        change value to lower case
         let inputValue = value.toLowerCase();
         if ($.inArray(inputValue, ["appid","appversion","version","userviewid","menuid","key","embed","primarykey"]) >= 0) {
             return get_cbuilder_msg("fbuilder.reserveIds");
         }
-        if ($target && value.length > PropertyEditor.Util.databaseColumnNameLimit) {
+        const checkIdLength = obj && obj.properties.checkIdLength !== undefined && obj.properties.checkIdLength.toLowerCase() === 'true'
+            && obj.editorObject.element.id === 'element-properties-tab'; // only true if in properties panel
+        if (checkIdLength && $target && value.length > PropertyEditor.Util.databaseColumnNameLimit) {
             const text = get_cbuilder_msg('cbuilder.warn.idLength');
             PropertyEditor.Util.addFieldWarning($target, text);
         }
