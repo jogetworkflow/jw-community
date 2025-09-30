@@ -2880,7 +2880,7 @@ PropertyEditor.Model.Type.prototype = {
         if (this.properties.js_validation !== undefined && this.properties.js_validation !== '') {
             var func = PropertyEditor.Util.getFunction(this.properties.js_validation);
             if ($.isFunction(func)) {
-                var errorMsg = func(this.properties.name, value, wrapper);
+                var errorMsg = func(this.properties.name, value, wrapper, this);
 
                 if (errorMsg !== null && errorMsg !== "") {
                     var obj2 = new Object();
@@ -3034,7 +3034,8 @@ PropertyEditor.Model.Type.prototype = {
     renderFieldWarnings: function() {
         // some databases may have different column name lengths
         let value = "";
-        const checkIdLength = this.properties.checkIdLength !== undefined && this.properties.checkIdLength.toLowerCase() === 'true';
+        const checkIdLength = this.properties.checkIdLength !== undefined && this.properties.checkIdLength.toLowerCase() === 'true'
+            && this.editorObject.element.id === 'element-properties-tab'; // only true if in properties panel
         if (checkIdLength) {
             // bind oninput event
             const script =
