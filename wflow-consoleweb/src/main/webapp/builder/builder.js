@@ -4375,12 +4375,12 @@ _CustomBuilder.Builder = {
         if (propertiesPath.indexOf('style-') !== -1) {
             //show styling tab
             setTimeout(function(){
-                $("#style-properties-tab-link a").trigger("click");
+                new bootstrap.Tab($('#style-properties-tab-link a')[0]).show();
             }, 1);
         } else {
             //show properties tab
             setTimeout(function(){
-                $("#element-properties-tab-link a").trigger("click");
+                new bootstrap.Tab($('#element-properties-tab-link a')[0]).show();
             }, 1);
         }
         

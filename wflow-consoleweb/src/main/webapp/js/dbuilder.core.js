@@ -2056,7 +2056,7 @@ DatalistBuilder = {
                 $("#right-panel #element-properties-tab").find(".property-editor-container").remove();
                 
                 builder.editStyles(CustomBuilder.data, builder.frameBody.find(".dataList"), CustomBuilder.data, builder.parseDataToComponent(CustomBuilder.data));
-                $("#style-properties-tab-link a").trigger("click");
+                new bootstrap.Tab($('#style-properties-tab-link a')[0]).show();
                 
                 return false;
             });
@@ -3385,12 +3385,12 @@ DatalistBuilder = {
         if (propertiesPath.indexOf('style-') !== -1) {
             //show styling tab
             setTimeout(function(){
-                $("#style-properties-tab-link a").trigger("click");
+                new bootstrap.Tab($('#style-properties-tab-link a')[0]).show();
             }, 1);
         } else {
             //show properties tab
             setTimeout(function(){
-                $("#element-properties-tab-link a").trigger("click");
+                new bootstrap.Tab($('#element-properties-tab-link a')[0]).show();
             }, 1);
         }
         

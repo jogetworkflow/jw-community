@@ -367,7 +367,7 @@ FormBuilder = {
         $("#right-panel #element-properties-tab").find(".property-editor-container").remove();
 
         builder.editStyles(CustomBuilder.data.properties, builder.frameBody.find("form"), CustomBuilder.data, builder.parseDataToComponent(CustomBuilder.data));
-        $("#style-properties-tab-link a").trigger("click");
+        new bootstrap.Tab($('#style-properties-tab-link a')[0]).show();
     },
     
     /*

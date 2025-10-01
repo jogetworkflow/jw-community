@@ -8002,7 +8002,7 @@ ProcessBuilder = {
             
             //show properties tab
             setTimeout(function(){
-                $("#element-properties-tab-link a").trigger("click");
+                new bootstrap.Tab($('#element-properties-tab-link a')[0]).show();
             }, 1);
 
         } else { //it is mapping
@@ -8020,7 +8020,7 @@ ProcessBuilder = {
             
             //show mapping tab
             setTimeout(function(){
-                $("#style-properties-tab-link a").trigger("click");
+                new bootstrap.Tab($('#style-properties-tab-link a')[0]).show();
             }, 1);
         }
         
