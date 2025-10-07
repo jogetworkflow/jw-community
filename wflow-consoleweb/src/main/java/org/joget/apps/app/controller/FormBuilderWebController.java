@@ -168,6 +168,9 @@ public class FormBuilderWebController {
         formDef.setJson(PropertyUtil.propertiesJsonStoreProcessing(formDef.getJson(), json));
         formDef.setDescription(form.getPropertyString("description"));
 
+        // ensure JSON ID is equal to definition ID
+        FormUtil.validateDefinitionIdWithJson(formDef);
+
         // update
         boolean success = formDefinitionDao.update(formDef);
         formDataDao.clearFormCache(form);

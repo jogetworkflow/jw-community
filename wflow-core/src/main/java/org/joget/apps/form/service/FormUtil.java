@@ -14,6 +14,8 @@ import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
+import java.util.Optional;
 import java.util.Set;
 import java.util.Stack;
 import java.util.StringTokenizer;
@@ -2725,5 +2727,26 @@ public class FormUtil implements ApplicationContextAware {
             }
         }
         return true;
+    }
+
+    /**
+     * Ensures that the JSON's ID is equal to the definition's ID.
+     *
+     * <p>If not equal, updates the JSON with the definition's ID.
+     *
+     * @param definition the object to validate
+     */
+    public static void validateDefinitionIdWithJson(FormDefinition definition) {
+        Objects.requireNonNull(definition, "FormDefinition cannot be null");
+        Objects.requireNonNull(definition.getJson(), "FormDefinition JSON cannot be null");
+
+        JSONObject jsonObject = new JSONObject(definition.getJson());
+        JSONObject properties = Optional.ofNullable(jsonObject.optJSONObject("properties"))
+                .orElseGet(JSONObject::new);
+
+        properties.put("id", definition.getId());
+        jsonObject.put("properties", properties);
+
+        definition.setJson(jsonObject.toString());
     }
 }
