@@ -70,6 +70,7 @@ import org.joget.apps.app.model.PluginDefaultProperties;
 import org.joget.apps.app.model.ProcessFormModifier;
 import org.joget.apps.app.model.StartProcessFormModifier;
 import org.joget.apps.app.model.UserviewDefinition;
+import org.joget.apps.datalist.service.DataListUtil;
 import org.joget.apps.form.dao.FormDataDao;
 import org.joget.apps.form.dao.FormDataDaoImpl;
 import org.joget.apps.form.lib.LinkButton;
@@ -84,6 +85,7 @@ import org.joget.apps.form.service.FormService;
 import org.joget.apps.form.service.FormUtil;
 import org.joget.apps.userview.model.UserviewSetting;
 import org.joget.apps.userview.service.UserviewService;
+import org.joget.apps.userview.service.UserviewUtil;
 import org.joget.apps.workflow.lib.AssignmentCompleteButton;
 import org.joget.commons.util.DynamicDataSourceManager;
 import org.joget.commons.util.FileManager;
@@ -2993,8 +2995,9 @@ public class AppServiceImpl implements AppService {
             if (appDef.getFormDefinitionList() != null) {
                 Collection<FormDefinition> formDefinitions = appDef.getFormDefinitionList();
                 for (FormDefinition o : formDefinitions) {
-                    String tableName = o.getTableName();
                     o.setAppDefinition(newAppDef);
+                    FormUtil.validateDefinitionIdWithJsonForImport(o);
+                    String tableName = o.getTableName();
                     // try saving file in git
                     FormDefinitionDaoImpl.addToGit(o);
                     // clear cache
@@ -3013,6 +3016,7 @@ public class AppServiceImpl implements AppService {
             if (appDef.getDatalistDefinitionList() != null) {
                 Collection<DatalistDefinition> datalistDefinitions = appDef.getDatalistDefinitionList();
                 for (DatalistDefinition o : datalistDefinitions) {
+                    DataListUtil.validateDefinitionIdWithJson(o);
                     o.setAppDefinition(newAppDef);
                     LogUtil.debug(getClass().getName(), "Added list " + o.getId());
                     // try saving file in git
@@ -3026,6 +3030,7 @@ public class AppServiceImpl implements AppService {
             if (appDef.getUserviewDefinitionList() != null) {
                 Collection<UserviewDefinition> userviewDefinitions = appDef.getUserviewDefinitionList();
                 for (UserviewDefinition o : userviewDefinitions) {
+                    UserviewUtil.validateDefinitionIdWithJson(o);
                     String name = "";
                     if (o.getName() != null) {
                         name = StringUtil.stripAllHtmlTag(o.getName());
@@ -3053,6 +3058,7 @@ public class AppServiceImpl implements AppService {
             if (appDef.getBuilderDefinitionList() != null) {
                 Collection<BuilderDefinition> builderDefinitions = appDef.getBuilderDefinitionList();
                 for (BuilderDefinition o : builderDefinitions) {
+                    CustomBuilderUtil.validateDefinitionIdWithJson(o);
                     o.setAppDefinition(newAppDef);
 
                     if (CustomFormDataTableUtil.TYPE.equals(o.getType())) {
