@@ -1,12 +1,10 @@
 package org.joget.apps.app.controller;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.io.Writer;
 import java.net.URLEncoder;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -225,6 +223,9 @@ public class FormBuilderWebController {
         formDef.setTableName(form.getPropertyString("tableName"));
         formDef.setJson(PropertyUtil.propertiesJsonStoreProcessing(formDef.getJson(), json));
         formDef.setDescription(form.getPropertyString("description"));
+
+        // ensure JSON ID is equal to definition ID
+        FormUtil.validateDefinitionIdWithJson(formDef);
 
         // update
         boolean success = formDefinitionDao.update(formDef);
