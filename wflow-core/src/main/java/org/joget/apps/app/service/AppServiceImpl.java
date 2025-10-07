@@ -76,6 +76,7 @@ import org.joget.apps.app.model.PluginDefaultProperties;
 import org.joget.apps.app.model.ProcessFormModifier;
 import org.joget.apps.app.model.StartProcessFormModifier;
 import org.joget.apps.app.model.UserviewDefinition;
+import org.joget.apps.datalist.service.DataListUtil;
 import org.joget.apps.form.dao.FormDataDao;
 import org.joget.apps.form.dao.FormDataDaoImpl;
 import org.joget.apps.form.lib.LinkButton;
@@ -98,6 +99,7 @@ import org.joget.apps.form.service.FormService;
 import org.joget.apps.form.service.FormUtil;
 import org.joget.apps.userview.model.UserviewSetting;
 import org.joget.apps.userview.service.UserviewService;
+import org.joget.apps.userview.service.UserviewUtil;
 import org.joget.apps.workflow.lib.AssignmentCompleteButton;
 import org.joget.commons.util.DynamicDataSourceManager;
 import org.joget.commons.util.FileManager;
@@ -539,10 +541,10 @@ public class AppServiceImpl implements AppService {
         String activityDefId = assignment.getActivityDefId();
         Form form = null;
         AppDefinition appDef = null;
-        
+
         final String key = activityId.intern();
         synchronized (key) {
-        
+
             // get and submit mapped form
             PackageActivityForm paf = retrieveMappedForm(appId, version, processDefId, activityDefId);
             if (paf != null) {
@@ -1154,7 +1156,7 @@ public class AppServiceImpl implements AppService {
                 appDef == null || //there is no appDef in thread
                 !appDef.getId().equals(appId) || //different appDef in thread
                 (versionLong != null && versionLong == -1l && !appDef.isPublished()) || //required published version but appDef in thread is not
-                (versionLong != null && !appDef.getVersion().equals(versionLong))) { //required version not match 
+                (versionLong != null && !appDef.getVersion().equals(versionLong))) { //required version not match
             // no matching app in thread, load from DAO
             appDef = loadAppDefinition(appId, version);
         }
@@ -1388,7 +1390,7 @@ public class AppServiceImpl implements AppService {
     @Transactional
     public Collection<String> createAppDefinitionFromTemplate(AppDefinition appDefinition, String templateId, String tablePrefix) {
         Collection<String> errors = new ArrayList<String>();
-        
+
         // check for duplicate
         String appId = appDefinition.getId();
         AppDefinition appDef = appDefinitionDao.loadById(appId);
@@ -1406,7 +1408,7 @@ public class AppServiceImpl implements AppService {
         }
         return errors;
     }
-    
+
     /**
      * Create a new app definition from template
      * @param appDefinition
@@ -1445,7 +1447,7 @@ public class AppServiceImpl implements AppService {
                 
                 //find template
                 byte[] templateConfig = getTemplateConfigFromZip(zip);
-        
+
                 //for backward compatible
                 Map<String, String> replacement = new LinkedHashMap<String, String>();
                 replacement.put("<!--disableSaveAsDraft>", "<disableSaveAsDraft>");
@@ -1458,7 +1460,7 @@ public class AppServiceImpl implements AppService {
                 replacement.put("</resourceList-->", "</resourceList>");
                 replacement.put("<!--builderDefinitionList>", "<builderDefinitionList>");
                 replacement.put("</builderDefinitionList-->", "</builderDefinitionList>");
-                
+
                 appData = StringUtil.searchAndReplaceByteContent(appData, replacement);
 
                 RegistryMatcher m = new RegistryMatcher();
@@ -1477,20 +1479,20 @@ public class AppServiceImpl implements AppService {
                 } else {
                     appData = StringUtil.searchAndReplaceFirstByteContent(appData, replacement);
                 }
-                
+
                 replacement = new LinkedHashMap<String, String>();
                 replacement.put("<appId>"+zipApp.getAppId()+"</appId>", "<appId>"+appDefinition.getAppId()+"</appId>");
                 replacement.put("/app/"+zipApp.getAppId()+"/", "/app/"+appDefinition.getAppId()+"/");
                 replacement.put("/userview/"+zipApp.getAppId()+"/", "/userview/"+appDefinition.getAppId()+"/");
                 replacement.put("app_fd_" + zipApp.getAppId() + "_pd", "app_fd_" + appDefinition.getAppId() + "_pd"); //for process enhancement process data table
-                
+
                 String prefix = findCommonTablePrefix(zipApp);
                 
                 Map<String, String> templateReplace = new LinkedHashMap<String, String>();
                 if (templateConfig != null) {
                     retrieveTemplateReplaceMap(replacement, templateReplace, prefix, tablePrefix, new JSONObject(new String(templateConfig, "UTF-8")));
                 }
-                
+
                 //replace table prefix
                 if (tablePrefix != null && !tablePrefix.isEmpty()) {
                     replacement.put("app_fd_" + prefix, "app_fd_" + tablePrefix);
@@ -1504,21 +1506,21 @@ public class AppServiceImpl implements AppService {
                 } else {
                     appData = StringUtil.searchAndReplaceByteContent(appData, replacement, 5, null); // start after name tag of appDefinition
                 }
-                
+
                 Map<String, String> replace = new HashMap<String, String>();
                 replace.put("Id=\""+zipApp.getAppId()+"\"", "Id=\""+appDefinition.getAppId()+"\"");
                 replace.put("id=\""+zipApp.getAppId()+"\"", "id=\""+appDefinition.getAppId()+"\"");
                 replace.put("Name=\""+StringUtil.escapeString(zipApp.getName(), StringUtil.TYPE_XML+";"+StringUtil.TYPE_XML)+"\"", "Name=\""+StringUtil.escapeString(appDefinition.getName(), StringUtil.TYPE_XML+";"+StringUtil.TYPE_XML)+"\"");
                 replace.put("name=\""+StringUtil.escapeString(zipApp.getName(), StringUtil.TYPE_XML+";"+StringUtil.TYPE_XML)+"\"", "name=\""+StringUtil.escapeString(appDefinition.getName(), StringUtil.TYPE_XML+";"+StringUtil.TYPE_XML)+"\"");
                 xpdl = StringUtil.searchAndReplaceFirstByteContent(xpdl, replace);
-                
+
                 if (!templateReplace.isEmpty()) {
                     xpdl = StringUtil.searchAndReplaceByteContent(xpdl, templateReplace, 3, null); //should not replace package id & name
                 }
-                
+
                 AppDefinition tempAppDef = serializer.read(AppDefinition.class, new ByteArrayInputStream(appData), false);
                 AppDefinition newAppDef = importAppDefinition(tempAppDef, 1L, xpdl);
-            
+
                 AppResourceUtil.importFromZip(newAppDef.getAppId(), newAppDef.getVersion().toString(), zip);
                 importPlugins(zip);
                 importFormData(zip);
@@ -1725,7 +1727,7 @@ public class AppServiceImpl implements AppService {
 
             // save app def
             appDefinitionDao.saveOrUpdate(newAppDef);
-            
+
             return newAppDef;
         } catch (Exception e) {
             LogUtil.error(AppServiceImpl.class.getName(), e, appId);
@@ -2650,7 +2652,7 @@ public class AppServiceImpl implements AppService {
             
             //handle AppImportExportAwarePlugin
             handleAppImportExportAwarePluginsDuringImport(newAppDef, zip);
-            
+
             return newAppDef;
         } catch (ImportAppException e) {
             throw e;
@@ -3015,6 +3017,7 @@ public class AppServiceImpl implements AppService {
                 Collection<String> importedForms = new ArrayList<>();
                 for (FormDefinition o : appDef.getFormDefinitionList()) {
                     o.setAppDefinition(newAppDef);
+                    FormUtil.validateDefinitionIdWithJsonForImport(o);
                     formDefinitionDao.add(o);
                     importedForms.add(o.getId());
                     formDataDao.clearFormTableCache(o.getTableName());
@@ -3045,6 +3048,7 @@ public class AppServiceImpl implements AppService {
 
             if (appDef.getDatalistDefinitionList() != null) {
                 for (DatalistDefinition o : appDef.getDatalistDefinitionList()) {
+                    DataListUtil.validateDefinitionIdWithJson(o);
                     o.setAppDefinition(newAppDef);
                     datalistDefinitionDao.add(o);
                     LogUtil.debug(getClass().getName(), "Added list " + o.getId());
@@ -3054,6 +3058,7 @@ public class AppServiceImpl implements AppService {
 
             if (appDef.getUserviewDefinitionList() != null) {
                 for (UserviewDefinition o : appDef.getUserviewDefinitionList()) {
+                    UserviewUtil.validateDefinitionIdWithJson(o);
                     String name = "";
                     if (o.getName() != null) {
                         name = StringUtil.stripAllHtmlTag(o.getName());
@@ -3078,6 +3083,7 @@ public class AppServiceImpl implements AppService {
 
             if (appDef.getBuilderDefinitionList() != null) {
                 for (BuilderDefinition o : appDef.getBuilderDefinitionList()) {
+                    CustomBuilderUtil.validateDefinitionIdWithJson(o);
                     o.setAppDefinition(newAppDef);
                     builderDefinitionDao.add(o);
 
@@ -3269,7 +3275,7 @@ public class AppServiceImpl implements AppService {
             AppDevUtil.setImportApp(null);
         }
     }
-    
+
     private void prepareAndAddEnvironmentVariable(EnvironmentVariable o, AppDefinition newAppDef) {
         if (o.getValue() == null) {
             o.setValue("");
@@ -3623,7 +3629,7 @@ public class AppServiceImpl implements AppService {
             AppUtil.setCurrentAppDefinition(orgAppDef);
         }
         return resultAppDefinitionList;
-    }    
+    }
     
     /**
      * Retrieve list of published processes available to the current user

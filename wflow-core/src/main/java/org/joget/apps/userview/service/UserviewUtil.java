@@ -527,4 +527,42 @@ public class UserviewUtil implements ApplicationContextAware, ServletContextAwar
             urls.add(href);
         }
     }
+
+    /**
+     * Ensures that the JSON's ID is equal to the definition's ID.
+     *
+     * <p>If not equal, updates the JSON with the definition's ID.
+     *
+     * @param definition the object to validate
+     */
+    public static void validateDefinitionIdWithJson(UserviewDefinition definition) {
+        Objects.requireNonNull(definition, "UserviewDefinition cannot be null");
+        Objects.requireNonNull(definition.getJson(), "UserviewDefinition JSON cannot be null");
+
+        JSONObject jsonObject = new JSONObject(definition.getJson());
+        JSONObject properties = getOrCreateJSONObject(jsonObject, "properties");
+        properties.put("id", definition.getId());
+
+        JSONObject setting = getOrCreateJSONObject(jsonObject, "setting");
+        JSONObject settingProperties = getOrCreateJSONObject(setting, "properties");
+        settingProperties.put("userviewId", definition.getId());
+
+        definition.setJson(jsonObject.toString());
+    }
+
+    /**
+     * Returns the child JSONObject for the given key, creating and attaching a new one if absent.
+     *
+     * @param parent JSONObject to operate on
+     * @param key    the key to access
+     * @return the JSONObject associated with the key
+     */
+    private static JSONObject getOrCreateJSONObject(JSONObject parent, String key) {
+        JSONObject value = parent.optJSONObject(key);
+        if (value == null) {
+            value = new JSONObject();
+            parent.put(key, value);
+        }
+        return value;
+    }
 }
