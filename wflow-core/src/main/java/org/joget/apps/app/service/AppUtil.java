@@ -45,7 +45,6 @@ import net.fortuna.ical4j.model.property.Version;
 import net.fortuna.ical4j.util.FixedUidGenerator;
 import net.fortuna.ical4j.util.MapTimeZoneCache;
 import net.fortuna.ical4j.util.UidGenerator;
-import org.apache.commons.collections4.map.LRUMap;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.mail.EmailAttachment;
 import org.apache.commons.mail.EmailException;
@@ -1297,69 +1296,33 @@ public class AppUtil implements ApplicationContextAware {
      * @return
      */
     public static String replaceAppMessage(String label) {
-        String result = label;
         Map<String, String> appMessages = getAppMessageFromStore();
-        if (appMessages != null) {
-            String text = StringUtil.stripAllHtmlTag(label);
-            String messageKey = text; //text.replace(" ", "_");
-            if (appMessages.containsKey(messageKey)) {
-                String translated = appMessages.get(messageKey);
-                result = result.replace(text, translated);
-            }
+        if (appMessages == null) {
+            return label;
         }
-        return result;
+
+        String messageKey = StringUtil.stripAllHtmlTag(label);
+        String i18nMessageKey = "#i18n." + messageKey + "#";
+        String translated;
+        if (appMessages.containsKey(messageKey)) {
+            translated = appMessages.get(messageKey);
+        } else if (appMessages.containsKey(i18nMessageKey)) {
+            translated = appMessages.get(i18nMessageKey);
+        } else {
+            return label;
+        }
+        return label.replace(messageKey, translated);
     }
     
-    // static pattern so that cpu intensive compile is only done once
-    static Pattern appMessagePattern = Pattern.compile("((((['\"])label\\4\\s*:\\s*\\4)((?:\\\\\\4|(?:(?!\\4).))+)\\4)|(#i18n\\.([^#]+)#))");    
-    
-    // least recently used (LRU) cache to hold final content containing replaced messages
-    static Map<String, String> appMessageCache = Collections.synchronizedMap(new LRUMap<>(200));
-    
     /**
-     * Replace all app-specific message in content
+     * Replace all app-specific messages in content
      *
-     * @param label
-     * @return
+     * @param content JSON string
+     * @param escapeType text escape method for the value during replacement
+     * @return replaced JSON string
      */
     public static String replaceAppMessages(String content, String escapeType) {
-        Map<String, String> appMessages = getAppMessageFromStore();
-        if (appMessages != null) {
-            // lookup from LRU cache
-            String appMessageContent = appMessages.toString() + "::" + content + "::" + escapeType;
-            String cacheKey = StringUtil.md5Base16Utf8(appMessageContent); // hash to minimize memory usage
-            String cachedContent = appMessageCache.get(cacheKey);
-            if (cachedContent != null) {
-                return cachedContent;
-            }
-            
-            Matcher matcher = appMessagePattern.matcher(content);
-            String key = "", match = "";
-            while (matcher.find()) {
-                match = matcher.group();
-                key = matcher.group(5);
-                if (match.startsWith("#i18n.")) {
-                    key = matcher.group(7);
-                }
-                if (escapeType != null) {
-                    key = StringUtil.unescapeString(key, escapeType, null);
-                }
-                if (appMessages.containsKey(key)) {
-                    String translated = appMessages.get(key);
-                    if (escapeType != null) {
-                        translated = StringUtil.escapeString(translated, escapeType, null);
-                    }
-                    if (!match.startsWith("#i18n.")) {
-                        content = content.replaceAll(StringUtil.escapeRegex(match) , StringUtil.escapeRegex(matcher.group(3) + translated + matcher.group(4)));
-                    } else {
-                        content = content.replaceAll(StringUtil.escapeRegex(match) , StringUtil.escapeRegex(translated));
-                    }
-                }
-            }
-            // save into cache
-            appMessageCache.put(cacheKey, content);
-        }
-        return content;
+        return AppMessageReplacer.replaceAppMessages(content, escapeType);
     }
 
     private static final ThreadLocal threadLocalAppMessages = new ThreadLocal();
