@@ -190,6 +190,12 @@ body:not(#login) #footer {
     padding: 20px;
     text-align: center;
     font-size: 12px;
+    padding-bottom: 40px;
+}
+@media screen and (max-width: 680px),(device-width:1024px) and (device-height:600px) {
+    #footer {
+        padding-bottom: 50px;
+    }
 }
 
 /* siderbar */
