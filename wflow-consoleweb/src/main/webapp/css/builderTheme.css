@@ -2412,11 +2412,11 @@ body[builder-theme='dark'] .permission-table .element-meta .element-id {
     font-size: 70%;
 }
 body[builder-theme='dark'] .permission-table .authorized {
-    background: transparent;
+    background: #263026;
     color: var(--theme-label-color-1);
 }
 body[builder-theme='dark'] .permission-table .unauthorized {
-    background: transparent;
+    background: #2e2626;
     color: var(--theme-label-color-1);
 }
 body[builder-theme='dark'] .permission-table th.export, .permission-table td.export{
