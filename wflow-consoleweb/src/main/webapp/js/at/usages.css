@@ -7,7 +7,7 @@
 .item_usages_container .items {padding-left: 20px; list-style: none; font-size: 13px;}
 .item_usages_container .item a {text-decoration: none; font-weight: bold;}
 .item_usages_container .item + .item {margin-top: 10px;}
-.item_usages_container .item a.found_toggle {display: inline-block; margin-left: 5px; cursor: pointer;}
+.item_usages_container .item a.found_toggle {display: inline-block; margin-left: 5px; cursor: pointer;color: var(--theme-label-color-1, #333);}
 .item_usages_container pre { background: #efefef; border: 1px solid #ddd; padding: 3px; margin: 3px 0; width: 800px; display: block; font-family: monospace; white-space: pre; font-size: 12px;}
 .item_usages_container pre .keyword_highlight {background: yellow;}
 #delete_usage_check {height:500px; background: #fff; padding:20px;}
