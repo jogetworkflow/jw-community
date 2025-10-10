@@ -3013,8 +3013,8 @@ ProcessBuilder = {
                 var subflow = act['Implementation']['SubFlow'];
                 obj.properties.subflowId = subflow['-Id'];
                 obj.properties.execution = subflow['-Execution'];
-                logicFlowObj.properties.deadlines = subflow['-Id'];
-                logicFlowObj.properties.deadlines = subflow['-Execution'];
+                logicFlowObj.properties.subflowId = subflow['-Id'];
+                logicFlowObj.properties.execution = subflow['-Execution'];
                 
                 if (subflow['ActualParameters'] !== undefined) {
                     var actualParameters = new Array();
@@ -8706,6 +8706,7 @@ ProcessBuilder = {
                 xpdlObj: data.xpdlObj
             };
         }
+        console.log(data);
         return data;
     },
             
