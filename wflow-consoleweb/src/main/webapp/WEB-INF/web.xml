@@ -135,6 +135,15 @@
         <url-pattern>/*</url-pattern>
     </filter-mapping>
     <filter>
+        <filter-name>CSRFTokenFilter</filter-name>
+        <filter-class>org.joget.apps.app.web.CSRFTokenFilter</filter-class>
+        <async-supported>true</async-supported>
+    </filter>
+    <filter-mapping>
+        <filter-name>CSRFTokenFilter</filter-name>
+        <url-pattern>/*</url-pattern>
+    </filter-mapping>
+    <filter>
         <filter-name>CSRFGuardLogin</filter-name>
         <filter-class>org.owasp.csrfguard.CsrfGuardFilter</filter-class>
         <async-supported>true</async-supported>

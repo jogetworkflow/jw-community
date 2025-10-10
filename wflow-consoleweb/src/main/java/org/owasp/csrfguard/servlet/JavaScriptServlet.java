@@ -195,7 +195,7 @@ public final class JavaScriptServlet extends HttpServlet {
 
                 try {
                     response.setContentType("text/plain");
-                    response.getWriter().write(SecurityUtil.getCsrfTokenName() + ":" + SecurityUtil.getCsrfTokenValue(request));
+                    response.getWriter().write("OWASP_CSRFTOKEN" + ":" + SecurityUtil.getCsrfTokenValue(request));
                 } catch (Exception e) {
                     LogUtil.error(JavaScriptServlet.class.getName(), e, "");
                 }
