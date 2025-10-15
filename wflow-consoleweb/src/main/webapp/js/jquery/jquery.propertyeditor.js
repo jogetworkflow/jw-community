@@ -11130,10 +11130,21 @@ PropertyAssistant = {
                 PropertyAssistant.currentCaretPosition = PropertyAssistant.doGetCaretPosition(field[0]);
                 PropertyAssistant.showDialog();
             });
+
+            // Each focus increments a generation counter. The focusout cleanup checks this
+            // before running — if focus moved to another assisted field, the counter will have
+            // advanced and the stale timeout will abort instead of removing the new icon.
+            var cleanupGen = ($(element).data("assistGen") || 0) + 1;
+            $(element).data("assistGen", cleanupGen);
             
             $(field).off("focusout.assit");
             $(field).on("focusout.assit", function() {
+                var myGen = cleanupGen;
                 setTimeout(function(){
+                    // Abort if a newer focus event has already taken over
+                    if ($(element).data("assistGen") !== myGen) {
+                        return;
+                    }
                     $(field).off("focusout.assit");
                     $(container).find(".assist_icon").remove();
                     
@@ -11449,8 +11460,16 @@ PropertyAssistant = {
         var value = $(temp).text();
         if (value.trim() !== "") {
             if ($(PropertyAssistant.currentField).hasClass("ace_text-input") || $(PropertyAssistant.currentField).hasClass("ace_editor")) {
-                var id = $(PropertyAssistant.currentField).closest(".ace_editor").attr("id");
-                var codeeditor = ace.edit(id);
+                var $editor = $(PropertyAssistant.currentField).closest(".ace_editor");
+                var id = $editor.attr("id");
+                var codeeditor;
+                if (id != null) {
+                   //id exist, use id
+                    codeeditor = ace.edit(id);
+                } else {
+                    // id not exist, use DOM element
+                    codeeditor = ace.edit($editor[0]);
+                }
                 var old = codeeditor.getValue();
                 if (old !== "") {
                     value = " " + value;
@@ -12034,8 +12053,16 @@ PropertyAssistant = {
      */
     doGetCaretPosition : function(oField) {
         if ($(PropertyAssistant.currentField).hasClass("ace_text-input") || $(PropertyAssistant.currentField).hasClass("ace_editor")) {
-            var id = $(PropertyAssistant.currentField).closest(".ace_editor").attr("id");
-            var codeeditor = ace.edit(id);
+            var $editor = $(PropertyAssistant.currentField).closest(".ace_editor");
+            var id = $editor.attr("id");
+            var codeeditor;
+            if (id != null) {
+                   //id exist, use id
+                codeeditor = ace.edit(id);
+            } else {
+                 // id not exist, use DOM element
+                codeeditor = ace.edit($editor[0]);
+            }
             return codeeditor.getCursorPosition();
         } else {
             // Initialize

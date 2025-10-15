@@ -2311,7 +2311,7 @@ window._CustomBuilder = {
         } else if (CustomBuilder[currentView+"ViewBeforeClosed"] !== undefined) {
             CustomBuilder[currentView+"ViewBeforeClosed"]($("#"+currentView+"View.builder-view .builder-view-body"));
         }
-        $("body").removeClass(currentView+"-builder-view");
+        $("body").removeClass(currentView+"-builder-view property-view");
         $("body").removeClass("hide-tool");
         $("body").removeClass("view-control");
         $("[data-cbuilder-view]").removeClass("active-view active");
@@ -2354,6 +2354,9 @@ window._CustomBuilder = {
             $("#"+view+"View.builder-view").show();
             $(viewDiv).find('.builder-view-body').trigger("builder-view-show");
             $("body").addClass(view+"-builder-view");
+            if (view === "properties" || view === "dataBinder") {
+                $("body").addClass("property-view");
+            }
         }
     },
     
