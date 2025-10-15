@@ -12222,7 +12222,18 @@ PropertyAssistant = {
             if (!(e.ctrlKey && e.altKey)) {
                 keys[e.which] = true;
                 if (keys[17] === true && keys[16] === true && keys[18] !== true && keys[51] === true) {
-                    var field = $(element).find(":focus");
+                    
+                    //Use CodeMirror-focused
+                    var cm = $(".CodeMirror-focused").closest(".code-editor");
+                    var field;
+                
+                    if (cm.length > 0) {
+                        // for CodeMirror
+                        field = cm;
+                    } else {
+                        // for normal text area
+                        field = $(element).find(":focus");
+                    }
                     if ($(field).length > 0) {
                         PropertyAssistant.currentField = field[0];
                         PropertyAssistant.currentCaretPosition = PropertyAssistant.doGetCaretPosition(field[0]);

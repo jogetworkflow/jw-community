@@ -1744,6 +1744,132 @@ body .ui-dialog .button_form.editor-panel-mode #main-body-header {
     left: 0;
     top: 0;
 }
+/* tablet styles */
+@media screen and (max-width: 1500px) {
+    /* assist_icon position for screen width below 1024px */
+    .property-view .property-editor-container input:not([type]) ~ .assist_icon,
+    .property-view .property-editor-container input[type=text] ~ .assist_icon,
+    .property-view .property-editor-container input[type=password] ~ .assist_icon,
+    .property-view .property-editor-container input[type=email] ~ .assist_icon,
+    .property-view .property-editor-container input[type=url] ~ .assist_icon,
+    .property-view .property-editor-container input[type=time] ~ .assist_icon,
+    .property-view .property-editor-container input[type=date] ~ .assist_icon,
+    .property-view .property-editor-container input[type=datetime] ~ .assist_icon,
+    .property-view .property-editor-container input[type=datetime-local] ~ .assist_icon,
+    .property-view .property-editor-container input[type=tel] ~ .assist_icon,
+    .property-view .property-editor-container input[type=number] ~ .assist_icon,
+    .property-view .property-editor-container input[type=search] ~ .assist_icon,
+    .property-view .property-editor-container input[type=file] ~ .assist_icon,
+    .property-view .property-editor-container select:not([class^=ui]) ~ .assist_icon {
+        left: 51.5%;
+    }
+    .property-view .property-editor-container textarea ~ .assist_icon {
+        left: 92.5%;
+    }
+    .property-view .property-input > table tr td input ~ .assist_icon.assist_icon {
+        left: 75.5%;
+    }
+    .property-view [property-name="userMenu"] .property-input > table tr td input ~ .assist_icon {
+        left: 78.5%;
+    }
+    body.rtl.property-view [property-name="userMenu"] .property-input > table tr td input ~ .assist_icon.assist_icon {
+        left: unset !important;
+        right: 78.5% !important;
+    }
+    body.rtl.property-view .property-editor-container input:not([type]) ~ .assist_icon,
+    body.rtl.property-view .property-editor-container input[type=text] ~ .assist_icon,
+    body.rtl.property-view .property-editor-container input[type=password] ~ .assist_icon,
+    body.rtl.property-view .property-editor-container input[type=email] ~ .assist_icon,
+    body.rtl.property-view .property-editor-container input[type=url] ~ .assist_icon,
+    body.rtl.property-view .property-editor-container input[type=time] ~ .assist_icon,
+    body.rtl.property-view .property-editor-container input[type=date] ~ .assist_icon,
+    body.rtl.property-view .property-editor-container input[type=datetime] ~ .assist_icon,
+    body.rtl.property-view .property-editor-container input[type=datetime-local] ~ .assist_icon,
+    body.rtl.property-view .property-editor-container input[type=tel] ~ .assist_icon,
+    body.rtl.property-view .property-editor-container input[type=number] ~ .assist_icon,
+    body.rtl.property-view .property-editor-container input[type=search] ~ .assist_icon,
+    body.rtl.property-view .property-editor-container input[type=file] ~ .assist_icon,
+    body.rtl.property-view .property-editor-container select:not([class^=ui]) ~ .assist_icon {
+        right: 51.5% !important;
+        left: unset !important;
+    }
+    body.rtl.property-view .property-editor-container textarea ~ .assist_icon {
+        right: 92.5% !important;
+        left: unset !important;
+    }
+    body.rtl.property-view .property-input > table tr td input ~ .assist_icon.assist_icon {
+        right: 75.5% !important;
+    }
+    .property-view .property-input:has(.file-picker-actions) .assist_icon {
+        right: 51%;
+    }
+    body.rtl.property-view .property-input:has(.file-picker-actions) .assist_icon {
+        left: 51% !important;
+    }
+}
+/* tablet styles */
+@media screen and (max-width: 1024px) {
+    /* assist_icon position for screen width below 1024px */
+    .property-view .property-editor-container input:not([type]) ~ .assist_icon,
+    .property-view .property-editor-container input[type=text] ~ .assist_icon,
+    .property-view .property-editor-container input[type=password] ~ .assist_icon,
+    .property-view .property-editor-container input[type=email] ~ .assist_icon,
+    .property-view .property-editor-container input[type=url] ~ .assist_icon,
+    .property-view .property-editor-container input[type=time] ~ .assist_icon,
+    .property-view .property-editor-container input[type=date] ~ .assist_icon,
+    .property-view .property-editor-container input[type=datetime] ~ .assist_icon,
+    .property-view .property-editor-container input[type=datetime-local] ~ .assist_icon,
+    .property-view .property-editor-container input[type=tel] ~ .assist_icon,
+    .property-view .property-editor-container input[type=number] ~ .assist_icon,
+    .property-view .property-editor-container input[type=search] ~ .assist_icon,
+    .property-view .property-editor-container input[type=file] ~ .assist_icon,
+    .property-view .property-editor-container select:not([class^=ui]) ~ .assist_icon {
+        left: 57%;
+    }
+    .property-view .property-editor-container textarea ~ .assist_icon {
+        left: 91%;
+    }
+    .property-view .property-input > table tr td input ~ .assist_icon.assist_icon {
+        left: 75%;
+    }
+    .property-view [property-name="userMenu"] .property-input > table tr td input ~ .assist_icon {
+        left: 78%;
+    }
+    body.rtl.property-view [property-name="userMenu"] .property-input > table tr td input ~ .assist_icon.assist_icon {
+        left: unset !important;
+        right: 78% !important;
+    }
+    body.rtl.property-view .property-editor-container input:not([type]) ~ .assist_icon,
+    body.rtl.property-view .property-editor-container input[type=text] ~ .assist_icon,
+    body.rtl.property-view .property-editor-container input[type=password] ~ .assist_icon,
+    body.rtl.property-view .property-editor-container input[type=email] ~ .assist_icon,
+    body.rtl.property-view .property-editor-container input[type=url] ~ .assist_icon,
+    body.rtl.property-view .property-editor-container input[type=time] ~ .assist_icon,
+    body.rtl.property-view .property-editor-container input[type=date] ~ .assist_icon,
+    body.rtl.property-view .property-editor-container input[type=datetime] ~ .assist_icon,
+    body.rtl.property-view .property-editor-container input[type=datetime-local] ~ .assist_icon,
+    body.rtl.property-view .property-editor-container input[type=tel] ~ .assist_icon,
+    body.rtl.property-view .property-editor-container input[type=number] ~ .assist_icon,
+    body.rtl.property-view .property-editor-container input[type=search] ~ .assist_icon,
+    body.rtl.property-view .property-editor-container input[type=file] ~ .assist_icon,
+    body.rtl.property-view .property-editor-container select:not([class^=ui]) ~ .assist_icon {
+        right: 57% !important;
+        left: unset !important;
+    }
+    body.rtl.property-view .property-editor-container textarea ~ .assist_icon {
+        right: 91% !important;
+        left: unset !important;
+    }
+    body.rtl.property-view .property-input > table tr td input ~ .assist_icon.assist_icon {
+        right: 75% !important;
+    }
+    .property-view .property-input:has(.file-picker-actions) .assist_icon {
+        right: 43%;
+    }
+    body.rtl.property-view .property-input:has(.file-picker-actions) .assist_icon {
+        left: 43% !important;
+    }
+}
 /* mobile styles */
 @media screen and (max-width:680px) {
     .property-label-container {
@@ -2461,10 +2587,6 @@ body .ui-dialog .button_form.editor-panel-mode #main-body-header {
 .assist_icon:hover {
     opacity: 1;
 }
-body:not(.right-panel-mode-window) .property-editor-container.narrow.wider .assist_icon{
-    right: auto;
-    left: 100%;
-}
 .property-editor-container.narrow.wider .property-grid .assist_icon{
     left: 92%;
 }
@@ -2849,10 +2971,6 @@ body:not([builder-theme]).pluginConfigPopup #main-body-header{
 }
 .editor-panel-mode:not(.wider) .property-grid .chosen-container-single .chosen-single{
     margin-right: 0;
-}
-body.rtl:not(.right-panel-mode-window) .property-editor-container.narrow.wider .assist_icon{
-    left: auto;
-    right: 100%;
 }
 .rtl .editor-panel-mode.narrow:not(.wider) .property-input > table.grid .property-type-grid-action-column{
     text-align: left;
