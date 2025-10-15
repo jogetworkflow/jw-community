@@ -1085,9 +1085,11 @@
                 if (props.id !== CustomBuilder.id) {
                     props.id = CustomBuilder.id; //reset it
                 }
-            }
-        
-            CustomBuilder.update(addToUndo);
+            } 
+            
+            var json = JSON.encode(CustomBuilder.data);
+            CustomBuilder.updateJson(json, addToUndo);
+            CustomBuilder.updatePasteIcons();
         } else {
             CustomBuilder.json = json;
         }
