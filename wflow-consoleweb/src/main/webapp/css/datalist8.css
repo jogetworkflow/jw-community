@@ -627,6 +627,8 @@ body.rtl .filter-cell .multiselect-container.dropdown-menu input.form-check-inpu
     margin-right: -1.25rem !important;
     margin-left: 0px  !important;
     float: none  !important;
+    margin-right: -1.25rem;
+    margin-left: 0px;
 }
 body.rtl .filter-cell .multiselect-container.dropdown-menu input.multiselect-search {
     margin-right: -1.625rem;
