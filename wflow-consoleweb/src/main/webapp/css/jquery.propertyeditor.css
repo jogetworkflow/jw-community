@@ -761,10 +761,12 @@ td.error .chosen-container, td.error input {
 }
 body.rtl .property-editor-container input.image + .file-picker-actions .choosefile {
     left: -9px;
+    top: -14px;
 }
 body.rtl .image-placeholder{
     clear: right;
     margin-right: 0px;
+    float: right;
 }
 body.rtl .property-editor-container input[type=text].image{
     padding-left: 45px;
@@ -815,6 +817,7 @@ body.rtl .property-editor-container input[type=file],
 body.rtl .property-editor-container .property-input select,
 body.rtl .property-editor-container .property-input textarea{
     text-align: right;
+    float: right;
 }
 body.rtl .property-input .withPrefix{
     display: unset !important;

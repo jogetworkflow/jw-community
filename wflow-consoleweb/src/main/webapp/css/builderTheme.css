@@ -1279,6 +1279,7 @@ body[builder-theme] .property-editor-container input.image + .file-picker-action
     padding: 3px 9px 3px 12px;
     top: -2px;
     position: relative;
+    height: 30px;
 }
 body[builder-theme] .property-editor-container input.image + .file-picker-actions .clearfile{
     top:4px;
@@ -1287,7 +1288,7 @@ body[builder-theme].rtl .property-editor-container input.image + .file-picker-ac
     top:7px;
 }
 body[builder-theme].rtl .property-editor-container input.image + .file-picker-actions .choosefile {
-    top: -1px;
+    top: 1px;
     left: -9px;
     border-left: 0px;
     border-right: 1px solid var(--theme-border-color-1);
