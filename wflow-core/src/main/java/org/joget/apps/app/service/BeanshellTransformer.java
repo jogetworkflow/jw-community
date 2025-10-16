@@ -9,17 +9,13 @@ import org.eclipse.transformer.action.impl.JavaActionImpl;
 import org.eclipse.transformer.action.impl.SelectionRuleImpl;
 import org.eclipse.transformer.action.impl.SignatureRuleImpl;
 import org.eclipse.transformer.jakarta.JakartaTransform;
-import org.joget.commons.util.DynamicDataSource;
 import org.joget.commons.util.DynamicDataSourceManager;
 import org.joget.commons.util.LogUtil;
-import org.joget.commons.util.SetupManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.cache.Cache;
-import java.io.BufferedReader;
 import java.io.InputStream;
-import java.io.StringReader;
 import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
 import java.util.*;
@@ -48,7 +44,10 @@ public class BeanshellTransformer {
             renames.forEach((key, value) -> {
                 String javaxPackage = key.toString();
                 String jakartaPackage = value.toString();
-                jakartaPackages.put(javaxPackage, jakartaPackage);
+                
+                if (!(javaxPackage.startsWith("javax.mail"))) {
+                    jakartaPackages.put(javaxPackage, jakartaPackage);
+                }
             });
 
             // Create Java source transformer. Might be NOP logger, should be fine.

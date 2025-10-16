@@ -19,5 +19,7 @@ public class JogetPluginMigration extends Migration {
         } catch (Exception e) {
             LogUtil.error(JogetPluginMigration.class.getName(), e, "");
         }
+        
+        this.setEESpecProfile(JogetEESpecProfiles.JOGET);
     }
 }
