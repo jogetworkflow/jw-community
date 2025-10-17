@@ -73,6 +73,8 @@ a#quickEditMode:not(.off) > label.adminbar-control-label.button {
     width: 22px;
     text-align: center;
     box-sizing: content-box;
+    font-size: 16px;
+    line-height: 24px;
 }
 
 body.rtl #adminControl {
@@ -193,6 +195,8 @@ body.rtl #adminBarButtons {
     height: 30px;
     box-sizing: border-box;
     cursor: pointer;
+    white-space: nowrap;
+    overflow: hidden;
 }
 
 #quickEditModeOption > div > a {
@@ -741,6 +745,8 @@ body.quickEditModeActive .analyzer-page {
     border: 1px solid #CFD8DC;
     padding: 2px 10px;
     display: inline-block !important;
+    white-space: nowrap;
+    overflow: auto;
 }
 
 #adminBar .analyzer-page span {
@@ -851,32 +857,38 @@ body.fixiosframe.stop-scrolling {
 }
 
 #adminBar #environmentName {
-    background: #ff6100;
-    position: absolute;
+    background: #e6f4ff;
     right: 0;
     bottom: 0;
-    padding: 5px 60px;
-    font-weight: bold;
-    color: #fff;
-    font-size: 18px;
-    font-family: arial;
-    line-height: 20px;
+    padding: 0px 12px;
+    font-weight: 500;
+    font-size: 14px;
+    color: #0958d9;
     transition: all 0.6s linear;
+    border: 1px solid #91caff;
+    border-radius: 3px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 200px;
+    margin: 0 10px;
 }
 
-html.adminBarShown #adminBar #environmentName {
-    bottom: 35px;
+body.webconsole:not(.rtl) #adminBar{
+    margin-right: 10px;
+}
+
+body.webconsole.rtl #adminBar{
+    margin-left: 10px;
 }
 
 @media only screen and (max-width: 768px),(device-width:1024px) and (device-height:1366px) {
     #adminBar #environmentName {
-		width: auto !important;
+        width: auto !important;
         max-width:calc(100vw - 285px);
-        height: 45px;
         padding: 0px 6px 0 6px;
         font-size: 15px;
         word-wrap: break-word;
-        line-height: 30px;
         vertical-align: middle;
         width: 150px;
     }
@@ -906,13 +918,9 @@ body.rtl #adminBar.adminBarInactive #environmentName {
 }
 
 @media screen and (min-width: 681px) and (max-width: 768px) {
-	#adminBar .analyzer-page {
-		height: 27px;
-	}
-
-	#adminBar .analyzer-page > span {
-		line-height: 10px;
-	}
+    #adminBar .analyzer-page > span {
+        line-height: 10px;
+    }
 }
 
 @media screen and (max-width: 680px) {
@@ -974,24 +982,35 @@ body.rtl #adminBar.adminBarInactive #environmentName {
 
     #adminBar #environmentName {
         max-width: calc(100vw - 285px);
-		width: auto;
-        height: auto;
+	width: auto;
+        height: 26px;
         padding: 0px 3px 0 3px;
-        color: #fff;
-        font-size: 11px;
+        font-size: 12px;
         word-wrap: break-word;
-        line-height: 14px;
+        line-height: 26px;
         vertical-align: middle;
-		bottom: 45px !important;
+	bottom: 45px !important;
     }
 
-	body.rtl #adminBar.adminBarInactive #environmentName {
-		left: 0;
-	}
+    body.rtl #adminBar.adminBarInactive #environmentName {
+        left: 0;
+    }
 
     #adminBar #environmentName span {
         display: block;
         position: relative;
+    }
+}
+
+@media screen and (max-width: 450px) {
+    body:not(.webconsole) #adminBar #environmentName {
+        display: none;
+    }
+}
+
+@media screen and (max-width: 380px) {
+    body.webconsole #adminBar #environmentName {
+        display: none;
     }
 }
 

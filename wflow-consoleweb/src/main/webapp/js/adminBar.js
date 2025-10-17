@@ -387,7 +387,7 @@ $(window).on("load", function() {
         var parentAdminBar = $("#adminBar", parent.document);
         if (environmentName !== "") {
             if ($(parentAdminBar).find("#environmentName").length === 0) {
-                $(parentAdminBar).append('<span id="environmentName">'+environmentName+'</span>');
+                $(parentAdminBar).append('<span id="environmentName" title="'+environmentName+'">'+environmentName+'</span>');
             } else {
                 $(parentAdminBar).find("#environmentName").text(environmentName);
             }
