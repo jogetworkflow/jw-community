@@ -57,10 +57,7 @@ import org.joget.apps.app.lib.CircularReferencedHashVariableException;
 import org.joget.apps.app.lib.EmailTool;
 import org.joget.apps.app.lib.HashVariableRecursionDepthException;
 import org.joget.apps.app.model.AppDefinition;
-import org.joget.apps.app.model.BuilderDefinition;
 import org.joget.apps.app.model.CreateAppOption;
-import org.joget.apps.app.model.DatalistDefinition;
-import org.joget.apps.app.model.FormDefinition;
 import org.joget.apps.app.model.HashVariablePlugin;
 import org.joget.apps.app.model.Message;
 import org.joget.apps.app.model.PackageActivityForm;
@@ -69,7 +66,6 @@ import org.joget.apps.app.model.PackageDefinition;
 import org.joget.apps.app.model.PackageParticipant;
 import org.joget.apps.app.model.PluginDefaultProperties;
 import org.joget.apps.app.model.UserReplacement;
-import org.joget.apps.app.model.UserviewDefinition;
 import org.joget.apps.form.lib.DefaultFormBinder;
 import org.joget.apps.form.model.Element;
 import org.joget.apps.form.model.Form;
@@ -2288,21 +2284,13 @@ public class AppUtil implements ApplicationContextAware {
     
     protected static void populateActivityPlugin(JSONObject o, PackageActivityPlugin p) throws JSONException {
         o.put("className", p.getPluginName());
-        if (p.getPluginProperties() != null && !p.getPluginProperties().isEmpty()) {
-            o.put("properties", new JSONObject(p.getPluginProperties()));
-        } else {
-            o.put("properties", new JSONObject());
-        }
+        o.put("properties", PropertyUtil.parsePluginProperties(p.getPluginProperties()));
     }
     
     protected static void populateParticipant(JSONObject o, PackageParticipant p) throws JSONException {
         o.put("type", p.getType());
         o.put("value", p.getValue());
-        if (p.getPluginProperties() != null && !p.getPluginProperties().isEmpty()) {
-            o.put("properties", new JSONObject(p.getPluginProperties()));
-        } else {
-            o.put("properties", new JSONObject());
-        }
+        o.put("properties", PropertyUtil.parsePluginProperties(p.getPluginProperties()));
     }
     
     /**

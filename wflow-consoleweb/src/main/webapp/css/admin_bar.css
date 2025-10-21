@@ -422,7 +422,6 @@ body.rtl .quickOverlayButton {
     z-index: 10000;
     border: none;
     box-shadow: #666 1px 1px 2px 1px;
-    min-width: 780px;
     background: #f6f7fb;
     transition: all 0.2s ease-in-out;
     transform-origin: bottom right;

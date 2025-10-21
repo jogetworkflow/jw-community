@@ -1279,6 +1279,18 @@ body.rtl .calculationField_value {
         width:100% !important;
     }
 }
+
+@media screen and (min-width: 767px) {
+    .label-top.form-container .label-left.form-cell .hasDatepicker + a{
+        top: 0.563rem;
+        bottom: unset;
+    }   
+    
+    .label-top.form-container .label-left.form-cell .hasDatepicker + a + a{
+        top: 0.625rem;
+    }
+}
+
 @media screen and (max-width: 39.9375em) {
     .grid table td,
     .grid table tr.grid-row + tr.grid-row {

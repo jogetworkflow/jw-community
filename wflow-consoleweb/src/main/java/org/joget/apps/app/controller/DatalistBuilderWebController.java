@@ -64,6 +64,7 @@ import org.joget.apps.datalist.model.DataListDisplayColumn;
 import org.joget.apps.datalist.model.DataListDisplayColumnProxy;
 import org.joget.commons.util.SetupManager;
 import org.springframework.context.annotation.Lazy;
+import org.joget.apps.form.model.AutoCaseHandleCapable;
 
 @Controller
 @Lazy
@@ -111,6 +112,25 @@ public class DatalistBuilderWebController {
         } else {
             // get JSON from form definition
             listJson = datalist.getJson();
+        }
+        
+        try {
+            JSONObject obj = new JSONObject(listJson);
+            JSONObject binder = obj.optJSONObject("binder");
+            JSONObject props = binder.optJSONObject("properties");
+
+            // Check if autoCaseHandle is enabled in the binder's properties
+            if (props != null && "true".equalsIgnoreCase(props.optString("autoCaseHandle"))) {
+                // Retrieve the plugin instance by class name
+                PluginManager pm = (PluginManager) AppUtil.getApplicationContext().getBean("pluginManager");
+                Plugin plugin = pm.getPlugin(binder.optString("className"));
+                // If the plugin supports auto-case handling, process the JSON
+                if (plugin instanceof AutoCaseHandleCapable) {
+                    listJson = ((AutoCaseHandleCapable) plugin).autoCaseHandleEnabled(obj);
+                }
+            }
+        } catch (Exception e) {
+            LogUtil.error(DatalistBuilderWebController.class.getName(), e, "");
         }
 
         map.addAttribute("id", id);

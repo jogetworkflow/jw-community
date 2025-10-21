@@ -2306,6 +2306,20 @@ body.rtl .accordion .card-header::after {
     }
 }
 
+@media screen and (min-width: 767px) {
+    .label-top.form-container .label-left.form-cell .hasDatepicker + a,
+    .label-top.form-container .label-left.form-cell .hasDatepicker + a + a {
+        top: 17px;
+        bottom: unset;
+    }
+    
+    body.compact-mode .label-top.form-container .label-left.form-cell .hasDatepicker + a,
+    body.compact-mode .label-top.form-container .label-left.form-cell .hasDatepicker + a + a{
+        top: 12px;
+        bottom: unset;
+    }
+}
+
 /* List Template */
 /* App Icon */
 .dataList#dataList_appIcon div.appIcon > .column_0 {

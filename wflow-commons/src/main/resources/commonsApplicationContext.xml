@@ -194,5 +194,5 @@
     <bean id="inMemoryCacheManager" class="org.joget.commons.cache.NoInMemoryCacheManager" lazy-init="true">
         <qualifier value="default"/>
     </bean>
-    
+
 </beans>

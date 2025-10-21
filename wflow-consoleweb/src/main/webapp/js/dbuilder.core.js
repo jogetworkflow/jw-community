@@ -1071,6 +1071,7 @@ DatalistBuilder = {
                             key = $(selectedEl).parent().attr("data-placeholder-key");
                             prefix = key;
                         }
+                        let currentTemplate = "";
                         if (CustomBuilder.data.template && CustomBuilder.data.template.className) {
                             currentTemplate = CustomBuilder.data.template.className;
                         }

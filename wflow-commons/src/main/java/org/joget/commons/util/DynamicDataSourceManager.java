@@ -157,12 +157,14 @@ public class DynamicDataSourceManager {
     }
     
     public static String getCurrentProfile() {
-        Properties properties = getProfileProperties();
+        // look for profile or hostname set by HostManager in thread
+        String currentProfile = HostManager.getCurrentProfile();
         
-        if (properties != null) {
-            // look for profile or hostname set by HostManager in thread
-            String currentProfile = HostManager.getCurrentProfile();
-            if (currentProfile == null || currentProfile.trim().length() == 0) {
+        if (currentProfile == null || currentProfile.trim().length() == 0) {
+            Properties properties = getProfileProperties(); 
+
+            if (properties != null) {
+                
                 String hostname = HostManager.getCurrentHost();
                 if (hostname != null && hostname.trim().length() > 0) {
                     currentProfile = properties.getProperty(hostname);
@@ -174,17 +176,20 @@ public class DynamicDataSourceManager {
                         currentProfile = properties.getProperty(contextPath);
                     }
                 }
-            }
 
-            if (currentProfile == null || currentProfile.trim().length() == 0) {
-                // default profile
-                currentProfile = properties.getProperty(CURRENT_PROFILE_KEY);
-            }
+                if (currentProfile == null || currentProfile.trim().length() == 0) {
+                    // default profile
+                    currentProfile = properties.getProperty(CURRENT_PROFILE_KEY);
+                }
 
-            // set profile in thread
-            HostManager.setCurrentProfile(currentProfile);
+                // set profile in thread
+                HostManager.setCurrentProfile(currentProfile);
+                return currentProfile;
+            }
+        } else {
             return currentProfile;
         }
+        
         return null;
     }
 

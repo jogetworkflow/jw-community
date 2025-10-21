@@ -694,7 +694,7 @@ body.largeFontSize .hasDatepicker + a + a {
     right: 0;
 }
 body input.hasDatepicker {
-    width: 60%;
+    width: 50%;
 }
 body.rtl .hasDatepicker + a, body.rtl .hasDatepicker + a + a {
     right: unset;
@@ -1198,7 +1198,14 @@ body.rtl .subform-cell > label.label:has(+ select:focus) > i{
 body #form-canvas .label-top .label {
     text-align: left;
 }
-body #form-canvas .label-top .hasDatepicker {
+.label-top.form-cell > label.label + .hasDatepicker,
+.label-top.subform-cell > label.label + .hasDatepicker,
+.label-top.form-cell > label.label + .ui-screen-hidden + .hasDatepicker,
+.label-top.subform-cell > label.label + .ui-screen-hidden + .hasDatepicker,
+form.label-top .form-cell:not(.label-left) > label.label + .hasDatepicker,
+form.label-top .subform-cell:not(.label-left) > label.label + .hasDatepicker,
+form.label-top .form-cell:not(.label-left) > label.label + .ui-screen-hidden + .hasDatepicker,
+form.label-top .subform-cell:not(.label-left) > label.label + .ui-screen-hidden + .hasDatepicker {
     width: calc(100% - 42px);
 }
 

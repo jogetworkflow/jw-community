@@ -1,5 +1,6 @@
 package org.joget.plugin.property.service;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -9,11 +10,14 @@ import java.util.Map;
 import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import org.joget.commons.util.CsvUtil;
 import org.joget.commons.util.LogUtil;
 import org.joget.commons.util.SecurityUtil;
 import org.joget.commons.util.StringUtil;
 import org.joget.plugin.base.HashVariableSupportedMap;
+import org.joget.plugin.base.Plugin;
 import org.joget.plugin.base.PluginManager;
+import org.joget.plugin.base.PluginProperty;
 import org.joget.plugin.property.model.PropertyEditable;
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -128,7 +132,86 @@ public class PropertyUtil implements ApplicationContextAware {
         
         return isVisible;
     };
+    
+    /**
+     * Used to parse and make sure the properties values are in JSON format,
+     * if it is in CSV format, convert it to JSON format
+     * 
+     * @param pluginProperties
+     * @return 
+     */
+    public static JSONObject parsePluginProperties(String pluginProperties) {
+        if (pluginProperties == null || pluginProperties.isEmpty()) {
+            return new JSONObject();
+        }
+        // Try parsing as JSON first
+        try {
+            return new JSONObject(pluginProperties);
+        } catch (JSONException jsonException) {
+            // Backward compatible: try parsing as CSV because it's an old plugin configuration format which some plugins still uses
+            if (pluginProperties.contains(",")) {
+                try {
+                    Map propertyMap = CsvUtil.getPluginPropertyMap(pluginProperties);
+                    return new JSONObject(propertyMap);
+                } catch (IOException e) {
+                    //ignore this
+                }
+            }
+        }
+        // If both parsing attempts fail, return empty JSON
+        return new JSONObject();
+    }
+    
+    /**
+     * Return the converted plugin properties options in JSON format.
+     * 
+     * Used for old plugin that still using getPluginProperties method to provide plugin
+     * configuration options and didn't implement PropertyEditable
+     * 
+     * @return
+     */
+    public static String getConvertedPropertyOptions(Plugin plugin) {
+        try {
+            PluginProperty[] properties = plugin.getPluginProperties();
 
+            if (properties != null && properties.length > 0) {
+                JSONArray propsArr = new JSONArray();
+                for (PluginProperty p : properties) {
+                    JSONObject pObj = new JSONObject();
+                    pObj.put("name", p.getName());
+                    pObj.put("label", p.getLabel());
+                    pObj.put("type", p.getType());
+                    pObj.put("value", p.getValue());
+                    
+                    String[] options = p.getOptions();
+                    if (options != null) {
+                        JSONArray optionsArr = new JSONArray();
+                        for (String o : options) {
+                            JSONObject oObj = new JSONObject();
+                            oObj.put("value", o);
+                            oObj.put("label", o);
+                            optionsArr.put(oObj);
+                        }
+                        pObj.put("options", optionsArr);
+                    }
+                    propsArr.put(pObj);
+                }   
+                JSONObject pageObj = new JSONObject();
+                pageObj.put("title", plugin.getI18nLabel());
+                pageObj.put("properties", propsArr);
+                
+                JSONArray propetiesArr = new JSONArray();
+                propetiesArr.put(pageObj);
+                
+                return propetiesArr.toString();
+            }
+        } catch (Exception e) {
+            LogUtil.error(plugin.getClass().getName(), e, "fail to backward compatible this plugin");
+        }
+        
+        return "";
+    }
+    
     /**
      * Parses the Plugin Properties Options values (JSON format) into a properties
      * map
@@ -138,11 +221,27 @@ public class PropertyUtil implements ApplicationContextAware {
     public static Map<String, Object> getPropertiesValueFromJson(String json) {
         try {
             if (json != null) {
-                json = json.replaceAll("\n","\\\\n").replaceAll("\r","\\\\r");
-                JSONObject obj = new JSONObject(json);
+                String newJson = json.replaceAll("\n","\\\\n").replaceAll("\r","\\\\r");
+                JSONObject obj = new JSONObject(newJson);
                 return getProperties(obj);
             }
         } catch (Exception e) {
+            //fallback handle for CSV data
+            if (json != null && json.contains(",")) {
+                try {
+                    Map<String, Object> properties = new HashMap<String, Object>();
+                    
+                    Map propertyMap = CsvUtil.getPluginPropertyMap(json);
+                    if (propertyMap != null && !propertyMap.isEmpty()) {
+                        properties.putAll(propertyMap);
+                    }
+                    return properties;
+                } catch (IOException ex) {
+                    //ignore
+                }
+            }
+            
+            //log the error if can't handle with CSV
             LogUtil.error(PropertyUtil.class.getName(), e, e.getMessage());
         }
         return new HashMap<String, Object>();

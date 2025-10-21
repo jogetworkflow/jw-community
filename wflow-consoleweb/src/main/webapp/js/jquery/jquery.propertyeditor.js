@@ -7692,7 +7692,7 @@ PropertyEditor.Type.SelectBox.prototype = {
             }
             $.each(this.properties.options, function(i, option) {
                 var selected = "";
-                if (value === option.value) {
+                if (value === option.value || (!selected && option.selected)) {
                     selected = " selected";
                 }
                 html += '<option value="' + PropertyEditor.Util.escapeHtmlTag(option.value) + '"' + selected + '>' + PropertyEditor.Util.escapeHtmlTag(option.label) + '</option>';
@@ -8639,7 +8639,11 @@ PropertyEditor.Type.Grid.prototype = {
                 });
 
                 var html = "";
-                $.each(options, function(i, option) {
+                var selectedValue = "";
+                $.each(options, function (i, option) {
+                    if (option.selected) {
+                        selectedValue = option.value;
+                    }
                     html += '<option value="' + PropertyEditor.Util.escapeHtmlTag(option.value) + '">' + PropertyEditor.Util.escapeHtmlTag(option.label) + '</option>';
                 });
                 var change = false;
@@ -8674,7 +8678,11 @@ PropertyEditor.Type.Grid.prototype = {
                     }
 
                     if ($(this).hasClass("initFullWidthChosen")) {
-                        $(this).val(val);
+                        if (selectedValue) {
+                            $(this).val(selectedValue);
+                        } else {
+                            $(this).val(val);
+                        }
                         $(this).trigger("chosen:updated");
                     }
                     if ($(this).val() !== val) {

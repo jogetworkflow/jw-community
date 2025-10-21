@@ -239,7 +239,9 @@ body.compact-mode #sidebar .nav > li > a.menu-link > span.badge{
 @media screen and (min-width: 768px) {
     /*default mode for S,M,L Font Size*/
     body.compact-mode .hasDatepicker + a,
-    body.compact-mode .hasDatepicker + a + a {
+    body.compact-mode .hasDatepicker + a + a,
+    body.compact-mode .label-top.form-container .label-left.form-cell .hasDatepicker + a,
+    body.compact-mode .label-top.form-container .label-left.form-cell .hasDatepicker + a + a{
         top: 0.3rem;
     }
 
