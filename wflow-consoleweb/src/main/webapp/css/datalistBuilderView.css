@@ -519,7 +519,7 @@ body.rtl .filter-cell .hasDatepicker + a + a{
 .dataList .filter-cell .ui-autocomplete li{
     line-height: normal;
 }
-.dataList .actions.right{
+.dataList .actions.right,
 body.rtl .dataList .actions.left{
     text-align:right;
 }
