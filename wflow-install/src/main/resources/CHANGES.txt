@@ -2,6 +2,70 @@ Joget DX COMMUNITY
 ====================
 For more information, please refer to https://community.joget.org
 
+9.0.1
+=====
+3358b0a54 Fixed: wflow-consoleweb - Grid Properties - Fixed action icons visibility issues in light and dark theme. #1197 @8.2-SNAPSHOT
+0a811094e Fixed: wflow-plugin-base - Plugin - Adding missing packages for OSGI plugin usage. #1417 @9.0-SNAPSHOT
+78ba607e1 Fixed: wflow-consoleweb - Datalist Filters - Fixed position issue in RTL #1317 @8.2-SNAPSHOT
+5bf77c3c7 Fixed: wflow-core - Plugin - Wrong implementation of default property values cache. #1242 @8.2-SNAPSHOT
+94c1d54aa Fixed: wflow-consoleweb - Date Picker - Clear button in Advanced Grid not aligned in Progressive and Universal themes. #1225 T6543 @8.2-SNAPSHOT
+7d99933f2 Fixed: wflow-consoleweb - Date Picker - Previous value cleared when editing in Progressive and Universal theme. #1225 T6543 @8.2-SNAPSHOT
+a19458708 Fixed: jw-community - Plugin - Handle legacy plugins properties. #1045 T6307 @8.2-SNAPSHOT
+3f9c0f69a Fixed: wflow-consoleweb - i18n - Changed old links to point to new kb for dx9 #1384 @9.0-SNAPSHOT
+0b1f4bd12 Fixed: wflow-consoleweb - Guider - Fix guider not responsive #1318 @8.2-SNAPSHOT
+45832fe9d Fixed: wflow-consoleweb - Process Builder - Subflow can't edit due to execution value set wrongly. #1387 @9.0-SNAPSHOT
+cfb8745ba Modified: wflow-core - AjaxComponent - Throw error if response status not OK during call. T6478 #1157 @8.2-SNAPSHOT
+008b1fc0a Fixed: wflow-wfengine - Workflow - Failed to recover stuck route & subflow during startup. #1033 @8.2-SNAPSHOT
+ff5c63678 Fixed: wflow-consoleweb - Admin Bar - Removed min-width #1327 @8.2-SNAPSHOT
+666d75bf3 Fixed: wflow-core - Style - Fixes issue where default style did not reflect correctly when set. #1094 T6364. @8.2-SNAPSHOT
+655d7ae99 Fixed: wflow-core - Form Builder - Property editor select box field not populated after applying styling to field in sub form. #1094 T6364 @8.2-SNAPSHOT
+f3991c993 Fixed: wflow-core - Import App - Improved form definition import error handling. #1249 T6570 @9.0-SNAPSHOT
+59bfb8874 Fixed: wflow-consoleweb - Property Editor - Only check ID length in property editor panel. #1249 T6570 @8.2-SNAPSHOT
+f5714b2fd Fixed: wflow-core - Import App - Improved form definition import error handling. #1249 T6570 @8.2-SNAPSHOT
+0e855e4e8 Fixed: wflow-consoleweb - UserviewWebController - Quick Edit uses wrong builder link when builder JSON has different ID. #1401 @9.0-SNAPSHOT
+03b984ec3 Fixed: wflow-core - DataListMenu - Quick Edit uses wrong builder link when builder JSON has different ID. #1401 @9.0-SNAPSHOT
+9214f0b54 Fixed: wflow-core - AppService - Ensure builder JSON and definition ID are equal during import. #1401 @8.2-SNAPSHOT
+5111229a5 Fixed: wflow-consoleweb - UserviewWebController - Quick Edit uses wrong builder link when builder JSON has different ID. #1401 @8.2-SNAPSHOT
+7a4d509bd Fixed: wflow-core - DataListMenu - Quick Edit uses wrong builder link when builder JSON has different ID. #1401 @8.2-SNAPSHOT
+bd6eb93a4 Fixed: wflow-consoleweb - builders - Fixed default styling show blanks configuration when opened. #1402 @9.0-SNAPSHOT
+bf33a77ed Fixed: wflow-consoleweb - List builder - Fixed default styling show blanks configuration. #1402 @8.2-SNAPSHOT
+05eb8f751 Fixed: wflow-consoleweb - common.css & adminBar.js - Fixed CSS Stylesheet & JS not being updated #1397 T6750 @9.0-SNAPSHOT
+400760073 Fixed: wflow-consoleweb/wflow-core - common.css & adminBar.js - Fixed CSS Stylesheet & JS not being updated #1397 T6750 @8.2-SNAPSHOT
+9d504a639 Fixed: wflow-core - Date picker - Fixed Date picker field layout breaks when using Field Label "Top" issue. #994 @8.2-SNAPSHOT
+f64f74698 Fixed: wflow-consoleweb - Date Picker - Fixed Date Picker Field width issue in X-Admin Theme. #994 @8.2-SNAPSHOT
+cb9fc5f2f Fixed: wflow-consoleweb - DatePicker - Fixed DatePicker Icon Position issues when using multiple layers of Field Label Position Styling. #994 @8.2-SNAPSHOT
+a0e8c87e9 Modified: wflow-consoleweb - List - Support auto handle Oracle uppercase. #1106 @8.0-SNAPSHOT
+ffe5dd639 Modified: wflow-install - Joget Logo - Update Joget Logo to latest in windows installer. #1359 @9.0-SNAPSHOT
+867f1f2d7 Modified: wflow-consoleweb - Roles - Modified MSSQL database setup script to a new correct role #1380 T6750. @9.0-SNAPSHOT
+f7b776432 Fixed: wflow-shark - Roles -  Ensure App Creator and System Manager roles are created by default after migration #1380 T6750. @9.0-SNAPSHOT
+b9ae0020a Fixed: wflow-commons - Performance - Reduce unnecessarily retrieve cache when retrieve current profile. #1210 @8.2-SNAPSHOT
+4a5ee9bb4 Fixed: wflow-core - Message - fixed slow saving when large amount of labels in app messages T6621 T6681 #1329 @8.2-SNAPSHOT
+aa41c678d Fixed: wflow-core - File Upload - Delete actual file during overwrite or removal #859 @8.2-SNAPSHOT
+352dfe5b3 Modified: wflow-core - Form Data - Added wrapper method to support duplicate parameter values #859 @8.2-SNAPSHOT
+ee39ab613 Fixed: wflow-core - Image Formatter - Fixed edited image is not applied in list when actual file is deleted. @8.2-SNAPSHOT
+6fcb02219 Fixed: wflow-consoleweb - Priority Menu - Add error handling to ResizeObserver. #1036 @8.2-SNAPSHOT
+50fbcdb4f Fixed: wflow-core - Date Picker - Time validation does not work for Datetime UTC. #1121 @8.2-SNAPSHOT
+c30c556da Fixed: wflow-wfengine - Process - Process fails to terminate after subflow deadline timeout. T6736 #1370 @8.2-SNAPSHOT
+ae6435943 Fixed: wflow-consoleweb - Tooltip - Fixed tooltip being placed at wrong field #1215 T6531. @8.2-SNAPSHOT
+f39febef7 Fixed: wflow-core - Import App - Fixed app import error caused by empty in env variable #1086 T6352. @8.2-SNAPSHOT
+dd25a5944 Fixed: wflow-consoleweb - Property Editor – Test Connection button visibility issue when options binder section is collapsed #1132 @8.2-SNAPSHOT
+2e146c570 Fixed: wflow-core - App Composer - Slow performance issue on finding missing plugins and export app. #1322 #1330 T6621 @8.2-SNAPSHOT
+aa9504e65 Fixed: wflow-consoleweb - webapp - Usage of eval in js and jsp #1293 @8.2-SNAPSHOT
+edddf1aba Fixed: wflow-consoleweb - DX8 Trimeda Theme - Fixed an issue where input is not visible #1229 @8.2-SNAPSHOT
+64181a5e3 Fixed: wflow-core - UI Builder - Fixed database compatibility issue when saving UI Builder #1298 T6626. @8.2-SNAPSHOT
+8280e49ee Fixed: wflow-core - pom.xml - Upgrade Bouncy Castle to 1.82. #1382 @8.2-SNAPSHOT
+b85f9b0ac Fixed: wflow-core - Date Hash Variable - Readonly field displays GE format date. #575 T4987 T4420 @8.2-SNAPSHOT
+9490a17cc Fixed: wflow-core - Date Picker - Days of date saved into DB wrongly. #575 T4987 T4420 @8.2-SNAPSHOT
+ea00e5c5f Fixed: wflow-core - Date Picker - On disabled weekends setting, picking weekdays returning error upon submission. #575 T4987 T4420 @8.2-SNAPSHOT
+98c06ec70 Fixed: wflow-consoleweb - Date Picker - Date field not showing BE for past and future years. #575 T4987 T4420 @8.2-SNAPSHOT
+3cc6ca939 Fixed: wflow-consoleweb - Date Picker - Year selector not changing with user input. #575 T4987 T4420 @8.2-SNAPSHOT
+308c64983 Fixed: wflow-consoleweb - Date Picker - Thai datepicker displays the days of the week incorrectly. T4987 T4420 @8.2-SNAPSHOT
+d355372dd Fixed: wflow-consoleweb - DX9 Form - Fixed input overlapping with numeric controls #1300 @9.0-SNAPSHOT
+c8196b628 Fixed: wflow-consoleweb - Form - Added padding for input with numeric controls #1300 @8.2-SNAPSHOT
+9090b356f Fixed: wflow-consoleweb - Profile - Fixed XSS check issues for profile fields. Added input validation and appropriate alert message with i18n translations. #1117 @8.2-SNAPSHOT
+ceaf6885a Fixed: wflow-commons - SetupManager - Changed caching method to long term cache. #1234 T6555 @9.0-SNAPSHOT
+9d0217bd8 Fixed: wflow-commons - SetupManagerCache - Cache empty rows to prevent excessive DB queries. #1234 @8.2-SNAPSHOT
+
 9.0.0
 =====
 25f9c7570 Fixed: wflow-consoleweb - DX8 Trimeda Theme - Fixed DX8 Trimeda Horizontal Menu UI Issues #1000 @9.0-SNAPSHOT
