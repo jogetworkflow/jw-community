@@ -1225,9 +1225,12 @@ body[builder-theme] .single-page .property-editor-nav .property-editor-page-step
 }
 body[builder-theme] .property-input > table tr th.property-type-grid-action-column, body[builder-theme] .property-input > table tr td.property-type-grid-action-column{
     border: 0;
+}
+body[builder-theme] .property-input > table tr th.property-type-grid-action-column a,
+body[builder-theme] .property-input > table tr td.property-type-grid-action-column a{
     visibility: hidden;
 }
-body[builder-theme] .property-input > table tr:hover th.property-type-grid-action-column, body[builder-theme] .property-input > table tr:hover  td.property-type-grid-action-column{
+body[builder-theme] .property-input > table tr:hover th.property-type-grid-action-column, body[builder-theme] .property-input > table tr:hover  td.property-type-grid-action-column a{
     visibility: visible;
 }
 body[builder-theme] .editor-panel-mode .property-editor-page:not(.collapsed) .property-editor-page-title:after{
