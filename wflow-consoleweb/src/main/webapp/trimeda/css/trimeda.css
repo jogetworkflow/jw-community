@@ -37,7 +37,7 @@ body {
 
     --breadcrumb-spacing: 32px;
 
-    --input-padding: 8px;
+    --input-padding: 12px;
     --input-min-height: 42px;
 
     --content-margin: 16px;
@@ -81,7 +81,7 @@ body.compact-mode {
 
     --breadcrumb-spacing: 16px;
 
-    --input-padding: 8px;
+    --input-padding: 12px;
     --input-min-height: 36px;
     
     --content-margin: 0px;
@@ -1380,6 +1380,11 @@ div.chosen-container ul.chosen-choices  > li.search-choice {
     margin-bottom: 6px;
 }
 
+body.mediumFontSize.compact-mode #form-canvas div.chosen-container ul.chosen-choices  > li.search-choice,
+body.largeFontSize.compact-mode #form-canvas div.chosen-container ul.chosen-choices  > li.search-choice {
+    line-height: 24px !important;
+}
+
 body.compact-mode div.chosen-container ul.chosen-choices  > li.search-choice {
     margin-bottom: 3px;
     margin-top: 3px;
@@ -1508,6 +1513,16 @@ input[type=url], input[type=time], input[type=date], input[type=datetime],
 input[type=datetime-local], input[type=tel], input[type=number], input[type=search],
 select, textarea, .ql-container.ql-bubble,
 .filter-cell .multiselect.dropdown-toggle, div.chosen-container.chosen-container-multi .chosen-choices) {
+    padding-top: 4px !important;
+    padding-bottom: 4px !important;
+}
+
+body:not(.compact-mode) select {
+    padding-top: 8px !important;
+    padding-bottom: 8px !important;
+}
+
+body.compact-mode select {
     padding-top: 4px !important;
     padding-bottom: 4px !important;
 }
@@ -1723,13 +1738,13 @@ body.compact-mode .numeric_field_controls {
 
 .label-top .numeric_field_controls,
 body.compact-mode .label-top .numeric_field_controls {
-    top: unset;
-    bottom: calc(0% - 4px);
+    top: unset !important;
+    bottom: calc(0% - 4px) !important;
 }
 
 .numeric_field_controls,
 .label-top .numeric_field_controls {
-    right: 24.55px;
+    right: 24.55px !important;
 }
 
 body.rtl *:is(
