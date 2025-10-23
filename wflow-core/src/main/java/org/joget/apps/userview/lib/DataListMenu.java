@@ -165,7 +165,6 @@ public class DataListMenu extends UserviewMenu implements PwaOfflineValidation {
 
             if (datalistDefinition != null) {
                 cacheDataList = dataListService.fromJson(datalistDefinition.getJson());
-                cacheDataList.setId(datalistDefinition.getId());
 
                 if (getPropertyString(Userview.USERVIEW_KEY_NAME) != null && getPropertyString(Userview.USERVIEW_KEY_NAME).trim().length() > 0) {
                     cacheDataList.addBinderProperty(Userview.USERVIEW_KEY_NAME, getPropertyString(Userview.USERVIEW_KEY_NAME));
