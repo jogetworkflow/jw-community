@@ -26,6 +26,7 @@ import org.joget.apps.userview.model.ExtElement;
 import org.joget.apps.userview.model.PageComponent;
 import org.joget.apps.userview.model.SupportBuilderColorConfig;
 import org.joget.apps.userview.model.Userview;
+import org.joget.apps.userview.model.UserviewBuilderPalette;
 import org.joget.apps.userview.model.UserviewCategory;
 import org.joget.apps.userview.model.UserviewMenu;
 import org.joget.apps.userview.model.UserviewPage;
@@ -257,9 +258,6 @@ public class UserviewBuilderWebController {
         
         json = userviewService.saveUserviewPages(processedJson, userviewId, appDef);
         userview.setJson(json);
-
-        // ensure JSON ID is equal to definition ID
-        UserviewUtil.validateDefinitionIdWithJson(userview);
 
         boolean success = userviewDefinitionDao.update(userview);
         jsonObject.put("success", success);

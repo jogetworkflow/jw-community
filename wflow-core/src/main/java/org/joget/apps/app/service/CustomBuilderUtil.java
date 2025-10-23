@@ -3,9 +3,6 @@ package org.joget.apps.app.service;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Objects;
-import java.util.Optional;
-
 import jakarta.servlet.http.HttpServletRequest;
 import org.joget.apps.app.model.BuilderDefinition;
 import org.joget.apps.app.model.CustomBuilder;
@@ -161,26 +158,5 @@ public class CustomBuilderUtil {
             LogUtil.error(CustomBuilderUtil.class.getName(), e, permissionObjJson);
         }
         return isAuthorize;
-    }
-
-    /**
-     * Ensures that the JSON's ID is equal to the definition's ID.
-     *
-     * <p>If not equal, updates the JSON with the definition's ID.
-     *
-     * @param definition the object to validate
-     */
-    public static void validateDefinitionIdWithJson(BuilderDefinition definition) {
-        Objects.requireNonNull(definition, "BuilderDefinition cannot be null");
-        Objects.requireNonNull(definition.getJson(), "BuilderDefinition JSON cannot be null");
-
-        JSONObject jsonObject = new JSONObject(definition.getJson());
-        JSONObject properties = Optional.ofNullable(jsonObject.optJSONObject("properties"))
-                .orElseGet(JSONObject::new);
-
-        properties.put("id", definition.getId());
-        jsonObject.put("properties", properties);
-
-        definition.setJson(jsonObject.toString());
     }
 }

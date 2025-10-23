@@ -1,17 +1,14 @@
 package org.joget.apps.datalist.service;
 
 import org.joget.apps.app.model.AppDefinition;
-import org.joget.apps.app.model.DatalistDefinition;
 import org.joget.apps.datalist.lib.StaleCacheDataListBinder;
 import org.joget.apps.datalist.model.DataListBinder;
 import org.joget.apps.datalist.model.DataListBinderDefault;
 import org.joget.apps.datalist.model.DataListFilterQueryObject;
 import org.joget.apps.datalist.model.DataListInboxBinder;
-import org.json.JSONObject;
 
 import java.util.HashSet;
 import java.util.Map;
-import java.util.Objects;
 import java.util.Set;
 
 public class DataListUtil {
@@ -125,22 +122,5 @@ public class DataListUtil {
             hash = o.hashCode();
         }
         return hash;
-    }
-
-    /**
-     * Ensures that the JSON's ID is equal to the definition's ID.
-     *
-     * <p>If not equal, updates the JSON with the definition's ID.
-     *
-     * @param definition the object to validate
-     */
-    public static void validateDefinitionIdWithJson(DatalistDefinition definition) {
-        Objects.requireNonNull(definition, "DatalistDefinition cannot be null");
-        Objects.requireNonNull(definition.getJson(), "DatalistDefinition JSON cannot be null");
-
-        JSONObject jsonObject = new JSONObject(definition.getJson());
-        jsonObject.put("id", definition.getId());
-
-        definition.setJson(jsonObject.toString());
     }
 }
