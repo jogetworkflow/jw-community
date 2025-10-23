@@ -39,6 +39,7 @@ import org.joget.commons.util.SetupManager;
 import org.joget.commons.util.StringUtil;
 import org.joget.plugin.base.Plugin;
 import org.joget.plugin.base.PluginManager;
+import org.joget.plugin.enterprise.UniversalTheme;
 import org.joget.plugin.property.model.PropertyEditable;
 import org.joget.plugin.property.service.PropertyUtil;
 import org.json.JSONArray;
@@ -182,9 +183,6 @@ public class UserviewBuilderWebController {
         
         json = userviewService.saveUserviewPages(processedJson, userviewId, appDef);
         userview.setJson(json);
-
-        // ensure JSON ID is equal to definition ID
-        UserviewUtil.validateDefinitionIdWithJson(userview);
 
         boolean success = userviewDefinitionDao.update(userview);
         jsonObject.put("success", success);

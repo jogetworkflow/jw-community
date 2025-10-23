@@ -4,6 +4,7 @@ import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.io.Writer;
 import java.net.URLEncoder;
+import java.sql.Connection;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -36,7 +37,6 @@ import org.joget.apps.datalist.model.DataListFilterType;
 import org.joget.apps.datalist.model.DataListTemplate;
 import org.joget.apps.datalist.service.DataListDecorator;
 import org.joget.apps.datalist.service.DataListService;
-import org.joget.apps.datalist.service.DataListUtil;
 import org.joget.apps.datalist.service.JsonUtil;
 import org.joget.apps.ext.ConsoleWebPlugin;
 import org.joget.apps.form.service.FormUtil;
@@ -163,9 +163,6 @@ public class DatalistBuilderWebController {
         datalist.setName(dlist.getName());
         datalist.setDescription(dlist.getDescription());
         datalist.setJson(PropertyUtil.propertiesJsonStoreProcessing(datalist.getJson(), json));
-
-        // ensure JSON ID is equal to definition ID
-        DataListUtil.validateDefinitionIdWithJson(datalist);
 
         boolean success = datalistDefinitionDao.update(datalist);
         JSONObject jsonObject = new JSONObject();
