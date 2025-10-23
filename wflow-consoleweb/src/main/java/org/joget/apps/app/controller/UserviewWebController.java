@@ -111,8 +111,9 @@ public class UserviewWebController {
         if (userview != null) {
             String json = userview.getJson();
             Userview userviewObject = userviewService.createUserview(json, menuId, false, request.getContextPath(), request.getParameterMap(), key, embed);
-            userviewObject.setProperty("id", userview.getId());
-            UserviewThemeProcesser processer = new UserviewThemeProcesser(userviewObject, request);
+            UserviewThemeProcesser processer;
+            UserviewTheme theme = userviewObject.getSetting().getTheme();
+            processer = new UserviewThemeProcesser(userviewObject, request);
             map.addAttribute("userview", userviewObject);
             map.addAttribute("processer", processer);
             String view = processer.getView();
