@@ -177,6 +177,11 @@ public class PropertyJsonController {
         } else if (plugin != null) {
             json = PropertyUtil.getConvertedPropertyOptions(plugin);
         }
+        
+        //make sure the json is valid format, regression of 1e093147
+        if (json == null || json.isEmpty()) {
+            json = "[]";
+        }
 
         writer.write(json);
     }
