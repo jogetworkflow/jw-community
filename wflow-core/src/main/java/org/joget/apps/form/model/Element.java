@@ -433,12 +433,10 @@ public abstract class Element extends ExtDefaultPlugin implements PropertyEditab
         if (!builderStyles.isEmpty()) {
             if (this instanceof Form) {
                 int index = html.lastIndexOf("</form>");
-                html = html.substring(0, index) + "<style id=\""+styleClass+"\">" + "." + styleClass + " label," + "." + styleClass + " i, " + "form.form-container ." + styleClass + " input, " + "form.form-container ." + styleClass + " textarea, " +  "form.form-container ." + styleClass + " select, " + "form.form-container ." + styleClass + " select option, " + builderStyles + "</style></form>";
-           
+                html = html.substring(0, index) + "<style id=\""+styleClass+"\">" + builderStyles + "</style></form>";
             } else {
                 int index = html.lastIndexOf("</div>");
-                html = html.substring(0, index) + "<style id=\""+styleClass+"\">" + "." + styleClass + " label," + "." + styleClass + " i, " + "form.form-container ." + styleClass + " input, " +  "form.form-container ." + styleClass + " textarea, " + "form.form-container ." + styleClass + " select, " + "form.form-container ." + styleClass + " select option, " + builderStyles + "</style></div>";
-             
+                html = html.substring(0, index) + "<style id=\""+styleClass+"\">" + builderStyles + "</style></div>";
             }
         }
 
