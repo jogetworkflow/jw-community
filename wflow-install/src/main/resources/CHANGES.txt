@@ -22,11 +22,6 @@ ff5c63678 Fixed: wflow-consoleweb - Admin Bar - Removed min-width #1327 @8.2-SNA
 f3991c993 Fixed: wflow-core - Import App - Improved form definition import error handling. #1249 T6570 @9.0-SNAPSHOT
 59bfb8874 Fixed: wflow-consoleweb - Property Editor - Only check ID length in property editor panel. #1249 T6570 @8.2-SNAPSHOT
 f5714b2fd Fixed: wflow-core - Import App - Improved form definition import error handling. #1249 T6570 @8.2-SNAPSHOT
-0e855e4e8 Fixed: wflow-consoleweb - UserviewWebController - Quick Edit uses wrong builder link when builder JSON has different ID. #1401 @9.0-SNAPSHOT
-03b984ec3 Fixed: wflow-core - DataListMenu - Quick Edit uses wrong builder link when builder JSON has different ID. #1401 @9.0-SNAPSHOT
-9214f0b54 Fixed: wflow-core - AppService - Ensure builder JSON and definition ID are equal during import. #1401 @8.2-SNAPSHOT
-5111229a5 Fixed: wflow-consoleweb - UserviewWebController - Quick Edit uses wrong builder link when builder JSON has different ID. #1401 @8.2-SNAPSHOT
-7a4d509bd Fixed: wflow-core - DataListMenu - Quick Edit uses wrong builder link when builder JSON has different ID. #1401 @8.2-SNAPSHOT
 bd6eb93a4 Fixed: wflow-consoleweb - builders - Fixed default styling show blanks configuration when opened. #1402 @9.0-SNAPSHOT
 bf33a77ed Fixed: wflow-consoleweb - List builder - Fixed default styling show blanks configuration. #1402 @8.2-SNAPSHOT
 05eb8f751 Fixed: wflow-consoleweb - common.css & adminBar.js - Fixed CSS Stylesheet & JS not being updated #1397 T6750 @9.0-SNAPSHOT
