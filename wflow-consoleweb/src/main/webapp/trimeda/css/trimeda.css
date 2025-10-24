@@ -37,7 +37,8 @@ body {
 
     --breadcrumb-spacing: 32px;
 
-    --input-padding: 12px;
+    --input-padding-x: 12px;
+    --input-padding-y: 8px;
     --input-min-height: 42px;
 
     --content-margin: 16px;
@@ -81,7 +82,8 @@ body.compact-mode {
 
     --breadcrumb-spacing: 16px;
 
-    --input-padding: 12px;
+    --input-padding-x: 12px;
+    --input-padding-y: 4px;
     --input-min-height: 36px;
     
     --content-margin: 0px;
@@ -102,7 +104,7 @@ body.compact-mode {
     --datalist-filter-select-height: 32px;
     --datalist-filter-select-padding: 4px 32px;
 
-    --selector-padding: 2px;
+    --selector-padding: 3px;
     --checkbox-gap: 8px;
 }
 
@@ -1365,19 +1367,37 @@ body.quickEditModeActive:not(.horizontal_menu) #sidebar #category-container {
 
 body.rtl .form-cell > label.label + input:has(+ .numeric_field_controls) {
     padding-left: 40px !important;
-    padding-right: var(--input-padding) !important;
+    padding-right: var(--input-padding-x) !important;
 }
 
-div.chosen-container.chosen-container-multi .chosen-choices {
+div.chosen-container {
+    padding: 0px;
+}
+
+div.chosen-container .chosen-choices {
     min-height: var(--input-min-height) !important;
     border: 1.5px solid var(--field-border-color) !important;
     color: var(--primary-text-color) !important;
-    padding: var(--input-padding) !important;
+    padding: var(--input-padding-y) var(--input-padding-y);
     border-radius: 16px;
+
+    display: flex;
+    flex-direction: row;
+    row-gap: 3px;
+    column-gap: 3px;
+    flex-wrap: wrap;    
 }
 
 div.chosen-container ul.chosen-choices  > li.search-choice {
-    margin-bottom: 6px;
+    margin: 0px !important;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+div.chosen-container ul.chosen-choices  > li.search-choice > a.search-choice-close,
+div.chosen-container ul.chosen-choices  > li.search-choice > a.search-choice-close::after {
+    position: unset
 }
 
 body.mediumFontSize.compact-mode #form-canvas div.chosen-container ul.chosen-choices  > li.search-choice,
@@ -1414,6 +1434,7 @@ body.rtl div.chosen-container.chosen-container-multi .chosen-choices:has(.search
 div.chosen-container.chosen-container-multi .chosen-choices li.search-field > input {
     margin: 0px !important;
     min-height: fit-content;
+    padding: 0px !important;
     max-width: 100%;
 }
 
@@ -1499,7 +1520,7 @@ input[type=url], input[type=time], input[type=date], input[type=datetime],
 input[type=datetime-local], input[type=tel], input[type=number], input[type=search], 
 select, textarea, .ql-container.ql-bubble,
 .filter-cell .multiselect.dropdown-toggle{
-    padding: var(--input-padding);
+    padding: var(--input-padding-y) var(--input-padding-x);
     color: var(--primary-text-color);
     background-color: #fff;
     border: 1.5px solid var(--field-border-color);
@@ -1513,18 +1534,18 @@ input[type=url], input[type=time], input[type=date], input[type=datetime],
 input[type=datetime-local], input[type=tel], input[type=number], input[type=search],
 select, textarea, .ql-container.ql-bubble,
 .filter-cell .multiselect.dropdown-toggle, div.chosen-container.chosen-container-multi .chosen-choices) {
-    padding-top: 4px !important;
-    padding-bottom: 4px !important;
+    padding-top: var(--input-padding-y) !important;
+    padding-bottom: var(--input-padding-y) !important;
 }
 
 body:not(.compact-mode) select {
-    padding-top: 8px !important;
-    padding-bottom: 8px !important;
+    padding-top: var(--input-padding-y) !important;
+    padding-bottom: var(--input-padding-y) !important;
 }
 
 body.compact-mode select {
-    padding-top: 4px !important;
-    padding-bottom: 4px !important;
+    padding-top: var(--input-padding-y) !important;
+    padding-bottom: var(--input-padding-y) !important;
 }
 
 textarea {
@@ -1601,7 +1622,7 @@ body.rtl .selector_element .selector_button:hover {
 div.chosen-container ul.chosen-choices  > li.search-choice {
     background-color: var(--secondary-box-background-color);
     color: var(--primary-text-color);
-    padding: var(--selector-padding) 36px var(--selector-padding) 16px;
+    padding: var(--selector-padding) calc(var(--selector-padding) + 4px);
     border: 1px solid var(--field-border-color);
     border-radius: 16px;
 }
@@ -1752,7 +1773,7 @@ body.rtl *:is(
     .label-top .numeric_field_controls
 ) {
     left: 24.55px;
-    right: unset;
+    right: unset !important;
 }
 
 .numeric_field_control.numeric_field_control_decr {
@@ -2307,7 +2328,7 @@ body.rtl .accordion .card-header::after {
 }
 
 .dataList span.pagelinks {
-    padding: var(--input-padding, 16px 21px);
+    padding: var(--input-padding-x, 16px 21px);
     background-color: var(--secondary-box-background-color);
     border-radius: 16px;
     width: 100%;
