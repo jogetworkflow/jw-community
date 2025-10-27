@@ -41,6 +41,7 @@ var formUsername = null;
 var formUserviewAppId = null;
 var formPageTitle = null;
 var formData = null;
+var formUrl = null;
 
 var formDb = null;
 
@@ -139,7 +140,7 @@ self.addEventListener('install', function (event) {
                         caches.open(appCacheName)
                             .then(function (cache) {
                                 var promises = [];
-        
+
                                 urlsToCache.push(getPath() + '/_/pwaoffline');
                                 urlsToCache.push(getPath() + '/_/offline');
                                 promises.push(
@@ -158,7 +159,7 @@ self.addEventListener('install', function (event) {
                                         })
                                     })
                                 );
-        
+
                                 return Promise.all(promises);
                             })
                 cacheUserview();
@@ -170,12 +171,12 @@ self.addEventListener('install', function (event) {
 
 self.addEventListener('fetch', function (event) {
     //https://stackoverflow.com/questions/48463483/what-causes-a-failed-to-execute-fetch-on-serviceworkerglobalscope-only-if
-    let isFileUpload = event.request.method === 'POST' 
-            && event.request.headers.get('X-Requested-With') 
+    let isFileUpload = event.request.method === 'POST'
+            && event.request.headers.get('X-Requested-With')
             && event.request.headers.get('X-Requested-With').indexOf("XMLHttpRequest") !== -1; //for file upload progress bar
-    
-    if ((event.request.cache === 'only-if-cached' && event.request.mode !== 'same-origin') 
-            || isFileUpload) { 
+
+    if ((event.request.cache === 'only-if-cached' && event.request.mode !== 'same-origin')
+            || isFileUpload) {
         return;
     }
 
@@ -207,7 +208,8 @@ self.addEventListener('fetch', function (event) {
                 return response;
             })
             .catch(function () {
-                if(event.request.method === 'POST' && formData !== null){
+                const validUrl = verifyUrlHostname(fetchRequest.url);
+                if (validUrl && event.request.method === 'POST' && formData !== null && formUrl === fetchRequest.url) {
                     console.log('form POST failed, saving to indexedDB');
 
                     savePostRequest(event.request.clone().url, formUserviewAppId, formPageTitle, formData, formUsername);
@@ -469,7 +471,12 @@ function getCsrfToken(){
 }
 
 function savePostRequest(url, userviewAppId, title, payload, username) {
-    var request = getObjectStore(FORM_DB_STORE_NAME, 'readwrite').add({
+    if (!verifyUrlHostname(url)) {
+        const timestamp = new Date().toISOString();
+        console.error(`${timestamp} - Unable to save post request, URL contains invalid hostname`);
+        return;
+    }
+    const request = getObjectStore(FORM_DB_STORE_NAME, 'readwrite').add({
         url: url,
         userviewAppId: userviewAppId,
         username: username,
@@ -494,6 +501,14 @@ function sendFormDataToServer(savedRequest){
     console.log('sendFormDataToServer', savedRequest);
 
     return new Promise(function(resolve, reject) {
+        if (!verifyUrlHostname(savedRequest.url)) {
+            const timestamp = new Date().toISOString();
+            console.log(`${timestamp} - Deleting offline form data ID '${savedRequest.id}' because URL contains invalid hostname`);
+            getObjectStore(FORM_DB_STORE_NAME, 'readwrite').delete(savedRequest.id);
+            resolve();
+            return;
+        }
+
         if(savedRequest.status === STATUS_FORM_ERROR){
             reject();
             return;
@@ -722,6 +737,20 @@ function connectCacheDB(f, mode) {
     };
 }
 
+function verifyUrlHostname(url) {
+    if (url == null || url.trim() === '') {
+        return false;
+    }
+    try {
+        const parsed = url instanceof URL ? url : new URL(url);
+        return parsed.hostname === self.location.hostname;
+    } catch (e) {
+        const timestamp = new Date().toISOString();
+        console.error(`${timestamp} - Invalid URL provided: ${url}`, e);
+        return false;
+    }
+}
+
 self.addEventListener('message', function(event) {
     if (event.data.type === 'CURRENT_PAGE_URL') {
         currentPageUrlPromiseResolve(event.data.url); // Resolve the promise when message is received
@@ -745,6 +774,7 @@ self.addEventListener('message', function(event) {
         formData = event.data.formData;
         formUserviewAppId = event.data.formUserviewAppId;
         formUsername = event.data.formUsername;
+        formUrl = event.data.formUrl;
     }
 
     if (event.data.hasOwnProperty('serviceWorkerList')) {

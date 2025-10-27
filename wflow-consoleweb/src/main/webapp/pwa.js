@@ -131,13 +131,14 @@ PwaUtil = {
     },
 
     submitForm: function (form) {
-        var formData = $(form).serializeObject();
+        const $form = $(form);
+        var formData = $form.serializeObject();
 
-        var $submitButton = $(form).find('input[type=submit][clicked=true]');
+        var $submitButton = $form.find('input[type=submit][clicked=true]');
         formData[$submitButton.attr('name')] = $submitButton.val();
-        $(form).find('input[type=submit]').removeAttr("clicked");
+        $form.find('input[type=submit]').removeAttr("clicked");
 
-        $(form).find('input[type=file]').each(function (i, elm) {
+        $form.find('input[type=file]').each(function (i, elm) {
             var $elm = $(elm);
 
             var id = elm.id;
@@ -158,7 +159,8 @@ PwaUtil = {
             formData: formData,
             formPageTitle: $('title').text(),
             formUserviewAppId: UI.userview_app_id,
-            formUsername: PwaUtil.currentUsername
+            formUsername: PwaUtil.currentUsername,
+            formUrl: $form.prop('action')
         }
         navigator.serviceWorker && navigator.serviceWorker.controller && navigator.serviceWorker.controller.postMessage(msg);
     },
