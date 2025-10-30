@@ -1618,22 +1618,33 @@ body.rtl .selector_element .selector_button:hover {
     right: calc(100% - 80px);
 }
 
-.selector_element .selector_items .selector_item,
-div.chosen-container ul.chosen-choices  > li.search-choice {
+.selector_element .selector_items .selector_item, div.chosen-container ul.chosen-choices > li.search-choice {
     background-color: var(--secondary-box-background-color);
     color: var(--primary-text-color);
-    padding: var(--selector-padding) calc(var(--selector-padding) + 4px);
+    padding-inline: var(--selector-padding);
     border: 1px solid var(--field-border-color);
     border-radius: 16px;
+    
+    display: inline-flex;
+    align-items: center;
+    flex-direction: row-reverse;
+    column-gap: 5px;
 }
 
 div.chosen-container {
     font-size: 16px;
 }
 
-.selector_element .selector_items .selector_item a,
-div.chosen-container ul.chosen-choices  > li.search-choice > a {
-    right: 12px;
+.selector_element .selector_items .selector_item a, 
+div.chosen-container ul.chosen-choices > li.search-choice > a {
+    right: unset;
+    position: relative;
+}
+
+.selector_element .selector_items .selector_item a:after, 
+div.chosen-container ul.chosen-choices > li.search-choice > a:after {
+    top: 50%;
+    transform: translateY(-50%);
 }
 
 .chosen-container.chosen-with-drop .chosen-drop,
