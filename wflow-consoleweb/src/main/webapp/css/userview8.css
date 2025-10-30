@@ -1310,6 +1310,9 @@ body#login #page #content.page_content{
     height: 100vh;
     padding: 0;
 }
+body#login #page #content.page_content:has(#custom_login) .login-form-container{
+    display: none;
+}
 body#login #page #content main{
     position: unset;
 }

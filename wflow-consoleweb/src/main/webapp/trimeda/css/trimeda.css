@@ -2533,7 +2533,7 @@ body.rtl .accordion .card-header::after {
 }
 
 @media screen and (max-width: 768px) { 
-    #content main > *:not(.category-label-header, .breadcrumb, .quickEdit) {
+    #content main > *:not(.category-label-header, .breadcrumb, .quickEdit, .form-errors, .login-form-container) {
         margin-top: 16px !important;
         margin-left: 0px !important;
         margin-bottom: 0px !important;

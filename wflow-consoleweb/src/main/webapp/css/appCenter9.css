@@ -1688,6 +1688,7 @@ body.rtl#admin .InformationTileComponent .float-right {
 }
 body#login #page #content.page_content {
     padding: 0px !important;
+    height: 100vh;
 }
 body#login div.d-flex.flex-column.flex-lg-row-fluid.w-lg-50.p-10.order-2.order-lg-1 > div{
     margin-left: auto;
