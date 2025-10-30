@@ -407,6 +407,7 @@ body#home #home_column .row{
 
 body#login #page #content.page_content {
     padding: 0px !important;
+    height: 100vh;
 }
 body.rtl#login #page{
     padding-right: 0 !important;
@@ -590,7 +591,7 @@ label{
 }
 #content > main > div > div.d-flex.flex-column.flex-lg-row-fluid.w-lg-50.p-10.order-2.order-lg-1 > div > div{
     position: relative;
-    top: 23%;
+    top: 0% !important;
 }
 body#login #loginForm table td input[type='submit'] {
     background-color: #32ae93 !important;

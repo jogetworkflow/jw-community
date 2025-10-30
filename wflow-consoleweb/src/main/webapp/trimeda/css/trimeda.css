@@ -1347,11 +1347,11 @@ body.rtl ul.breadcrumb > li > span.separator {
 }
 
 #content main > .main-body-content,
-#content main > *:not(.category-label-header, .breadcrumb, .quickEdit, .form-errors) {
+#content main > *:not(.category-label-header, .breadcrumb, .quickEdit, .form-errors, .login-form-container) {
     margin: 36px 47px 0px 47px;
 }
 
-#content main > *:not(.category-label-header, .breadcrumb, .quickEdit, .form-errors) {
+#content main > *:not(.category-label-header, .breadcrumb, .quickEdit, .form-errors, .login-form-container) {
     margin-top: var(--content-margin) !important;
     margin-left: 47px !important;
     margin-bottom: 0px !important;

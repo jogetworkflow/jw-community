@@ -1298,24 +1298,33 @@ body#login {
     background-size: cover;
 }
 body#login #page #content.page_content{
-    height: 100vh;
+    height: 100%;
     padding: 0;
+    min-height: 100vh;
 }
 body#login #page #content main{
     position: unset;
 }
 body#login #loginForm {
     display: block;
-    top:45%;
-    left:50%;
-    transform: translate(-50%, -50%);
-    position: absolute;
+    position: relative;
     min-width: 25vw;
     background: #ffffffd9;
     padding: 50px;
     border-radius: 10px;
     box-shadow: 0px 10px 34px -15px rgb(0 0 0 / 24%);
     width: 25vw;
+}
+body#login main .form-errors {
+    margin-bottom: 0px;
+    z-index: 999;
+}
+body#login .login-form-container{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 90vh;
+    position: relative;
 }
 body#login table{
     width: 100%;
