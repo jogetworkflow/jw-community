@@ -338,6 +338,7 @@ window._CustomBuilder = {
             $("#builder_loader").css("color", data.builderColor);
             $("#builder_loader i.fa-stack-1x").attr("class", data.builderIcon + " fa-stack-1x");
             $("#save-btn").removeClass("unsaved");
+            $("#save-btn-toolbar").removeClass("unsaved");
             
             //remove all toast messages that not auto hided.
             $('.toast').each(function(){
@@ -421,6 +422,8 @@ window._CustomBuilder = {
                 $("#elements-tabs").next().find(" > :not(#components)").remove();
                 $("#top-panel .responsive-buttons").hide();
                 $("#builderToolbar .copypaste").hide();
+                //ensure the save button in builderToolbar is set to "display:none;" everytime builder switches or reset
+                $('#builderToolbar #save-btn-toolbar').closest('.save-group').hide();
                 $("#style-properties-tab-link").hide();
                 $("#style-properties-tab-link a").html('<i class="las la-palette"></i> <span>'+get_cbuilder_msg("cbuilder.styles") + '</span>');
                 
@@ -1224,11 +1227,13 @@ window._CustomBuilder = {
         
         //update save button
         $("#save-btn").removeClass("unsaved");
+        $("#save-btn-toolbar").removeClass("unsaved");
         if ($('body').attr("builder-theme") !== 'undefined' && $('body').attr("builder-theme") !== false) {
             CustomBuilder.Builder.updateSaveButtonStatus(false);
         }
         if (!CustomBuilder.isSaved()) {
             $("#save-btn").addClass("unsaved");
+            $("#save-btn-toolbar").addClass("unsaved");
         }
     },
     
@@ -1247,6 +1252,9 @@ window._CustomBuilder = {
             //update button text to saving, and add spinning icon
             $("#save-btn > span").text(get_cbuilder_msg('cbuilder.saving'));
             $("#save-btn > i").attr("class", "fas fa-spinner fa-spin");
+             //save button in edit page component
+            $("#save-btn-toolbar > span").text(get_cbuilder_msg('cbuilder.saving'));
+            $("#save-btn-toolbar > i").attr("class", "fas fa-spinner fa-spin");
         }
         var proceedSave = true;
         
@@ -1310,6 +1318,7 @@ window._CustomBuilder = {
                     var d = JSON.decode(data);
                     if(d.success == true){
                         $("#save-btn").removeClass("unsaved");
+                        $("#save-btn-toolbar").removeClass("unsaved");
                         CustomBuilder.savedJson = json;
                         $('#cbuilder-json-original').val(d.data);
                         CustomBuilder.updateSaveStatus("0");
@@ -1341,6 +1350,7 @@ window._CustomBuilder = {
 
                     setTimeout(function(){
                         $("#save-btn").removeAttr("disabled");
+                        $("#save-btn-toolbar").removeAttr("disabled");
                         if (typeof $('body').attr("builder-theme") !== 'undefined' && $('body').attr("builder-theme") !== false) {
                             if(d.success === true){
                                 CustomBuilder.Builder.updateSaveButtonStatus(true);
@@ -1369,11 +1379,16 @@ window._CustomBuilder = {
                     if (typeof $('body').attr("builder-theme") !== 'undefined' && $('body').attr("builder-theme") !== false) {
                         // Re-enable the button if disabled
                         $("#save-btn").removeAttr("disabled");
+                        $("#save-btn-toolbar").removeAttr("disabled");
                         $("#loadingMessage").text("");
                         //revert back the button
                         $("#save-btn > i").removeClass("fas fa-spinner fa-spin");
                         $("#save-btn > span").text(get_cbuilder_msg('ubuilder.save'));
                         $("#save-btn > i").attr("class", "las la-cloud-upload-alt");
+                        //save button in edit page component
+                        $("#save-btn-toolbar > i").removeClass("fas fa-spinner fa-spin");
+                        $("#save-btn-toolbar > span").text(get_cbuilder_msg('ubuilder.save'));
+                        $("#save-btn-toolbar > i").attr("class", "las la-cloud-upload-alt");
 
                     }
                 }
@@ -1381,12 +1396,17 @@ window._CustomBuilder = {
         } else {
             setTimeout(function(){
                 $("#save-btn").removeAttr("disabled");
+                $("#save-btn-toolbar").removeAttr("disabled");
                 if (typeof $('body').attr("builder-theme") !== 'undefined' && $('body').attr("builder-theme") !== false) {
                     $("#loadingMessage").text("");
                     //revert back the button
                     $("#save-btn > i").removeClass("fas fa-spinner fa-spin");
                     $("#save-btn > span").text(get_cbuilder_msg('ubuilder.save'));
                     $("#save-btn > i").attr("class", "las la-cloud-upload-alt");
+                    //save button in edit page component
+                    $("#save-btn-toolbar > i").removeClass("fas fa-spinner fa-spin");
+                    $("#save-btn-toolbar > span").text(get_cbuilder_msg('ubuilder.save'));
+                    $("#save-btn-toolbar > i").attr("class", "las la-cloud-upload-alt");
                 }
             }, 1000);
         }
@@ -1449,8 +1469,10 @@ window._CustomBuilder = {
             
             if (CustomBuilder.isSaved()){
                 $("#save-btn").removeClass("unsaved");
+                $("#save-btn-toolbar").removeClass("unsaved");
             } else {
                 $("#save-btn").addClass("unsaved");
+                $("#save-btn-toolbar").addClass("unsaved");
             }
             CustomBuilder.Builder.updateSaveButtonStatus(false);
         }
@@ -1483,8 +1505,10 @@ window._CustomBuilder = {
             
             if (CustomBuilder.isSaved()){
                 $("#save-btn").removeClass("unsaved");
+                $("#save-btn-toolbar").removeClass("unsaved");
             } else {
                 $("#save-btn").addClass("unsaved");
+                $("#save-btn-toolbar").addClass("unsaved");
             }
             CustomBuilder.Builder.updateSaveButtonStatus(false);
         }
@@ -1778,6 +1802,7 @@ window._CustomBuilder = {
                         editor.options.saveCallback = function(container, properties) {
                             editor.options.orgSaveCallback(container, properties);
                             $("#save-btn").attr("disabled", "disabled");
+                            $("#save-btn-toolbar").attr("disabled", "disabled");
                             CustomBuilder.merge(CustomBuilder.save);
                         };
                     }
@@ -1786,16 +1811,19 @@ window._CustomBuilder = {
                     editor.options.orgSaveCallback = null;
                 } else {
                     $("#save-btn").attr("disabled", "disabled");
+                    $("#save-btn-toolbar").attr("disabled", "disabled");
                     CustomBuilder.merge(CustomBuilder.save);
                 }
             } else if ($("body").hasClass("property-editor-right-panel") && !$("body").hasClass("no-right-panel")) {
                 CustomBuilder.checkChangeBeforeCloseElementProperties(function(){
                     $("#save-btn").attr("disabled", "disabled");
+                    $("#save-btn-toolbar").attr("disabled", "disabled");
                     $("body").addClass("no-right-panel");
                     CustomBuilder.merge(CustomBuilder.save);
                 });
             } else {
                 $("#save-btn").attr("disabled", "disabled");
+                $("#save-btn-toolbar").attr("disabled", "disabled");
                 CustomBuilder.merge(CustomBuilder.save);
             }
         }
@@ -8339,15 +8367,26 @@ window._CustomBuilder.Builder = {
     updateSaveButtonStatus: function (saved) {
         const icon = $("#save-btn > i");
         const text = $("#save-btn > span");
+        //save button in edit page component
+        const iconToolbar = $("#save-btn-toolbar > i");
+        const textToolbar = $("#save-btn-toolbar > span");
 
         if (saved) {
             text.text(get_cbuilder_msg('cbuilder.saved'));
             icon.removeClass("las la-cloud-upload-alt").addClass("zmdi zmdi-check");
             icon.removeClass("fas fa-spinner fa-spin");
+
+            textToolbar.text(get_cbuilder_msg('cbuilder.saved'));
+            iconToolbar.removeClass("las la-cloud-upload-alt").addClass("zmdi zmdi-check");
+            iconToolbar.removeClass("fas fa-spinner fa-spin");
         } else {
             text.text(get_cbuilder_msg('ubuilder.save'));
             icon.removeClass("zmdi zmdi-check").addClass("las la-cloud-upload-alt");
             icon.removeClass("fas fa-spinner fa-spin");
+
+            textToolbar.text(get_cbuilder_msg('ubuilder.save'));
+            iconToolbar.removeClass("zmdi zmdi-check").addClass("las la-cloud-upload-alt");
+            iconToolbar.removeClass("fas fa-spinner fa-spin");
         }
     }
 }

@@ -785,6 +785,8 @@ UserviewBuilder = {
             
             //hide viewport buttons & set to desktop size
             $("#top-panel .responsive-buttons").hide();
+            //hide save button when not in page-component editor mode. This will set "display:none;"
+            $('#builderToolbar #save-btn-toolbar').closest('.save-group').hide();
             CustomBuilder.viewport("desktop");
             
             $(".components-list > li").show();
@@ -846,6 +848,8 @@ UserviewBuilder = {
     loadContentPage : function() {
         //show viewport buttons
         $("#top-panel .responsive-buttons").show();
+        //show save button on page-component editor mode
+        $('#builderToolbar #save-btn-toolbar').closest('.save-group').show();
             
         $("body").addClass("page-component-editor");
         $("#save-content-btn").removeClass("hasChange");

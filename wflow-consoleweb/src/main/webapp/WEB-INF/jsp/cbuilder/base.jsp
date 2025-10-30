@@ -190,7 +190,11 @@
                                 <label class="btn btn-secondary active" title="<fmt:message key="cbuilder.displayAll"/>"><input type="radio" name="details-toggle" value="all" id="details-toggle-all" autocomplete="off" checked> <i class="las la-layer-group"></i> </label>
                                 <label class="btn btn-secondary" title="<fmt:message key="cbuilder.displaySelected"/>"><input type="radio" name="details-toggle" value="single"  id="details-toggle-single" autocomplete="off"> <i class="las la-crosshairs"></i> </label>
                             </div>
-
+                            <div class="btn-group toolbar-group save-group me-3 float-end" style="display:none;" role="group">
+                                <button class="btn btn-primary btn-icon" id="save-btn-toolbar" data-cbuilder-action="mergeAndSave">
+                                    <i class="las la-cloud-upload-alt"></i> <span>Save</span>
+                                </button>
+                            </div>
                             <div class="btn-group toolbar-group me-3 light-tools responsive-buttons float-end" style="display:none;" role="group">
                                 <button id="mobile-view" data-view="mobile" class="btn btn-light"  title="<fmt:message key="cbuilder.mobileView"/>" data-cbuilder-action="viewport">
                                     <i class="la la-mobile-phone"></i>

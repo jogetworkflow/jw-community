@@ -1195,6 +1195,9 @@ div.section, .header > ol {
 body:not(.quick-nav-position-left) #builderToolbar {
     padding-right: 40px;
 }
+body.page-component-editor #builderToolbar {
+    padding-right: 85px;
+}
 .toolbar-group {
     border-radius: 5px;
 }
@@ -2485,6 +2488,9 @@ body.rtl div#builderModeOption:before {
 
 /* save btn*/
 #save-btn.unsaved {
+    animation: save-glowing 1300ms infinite;
+}
+#save-btn-toolbar.unsaved {
     animation: save-glowing 1300ms infinite;
 }
 @keyframes save-glowing {
