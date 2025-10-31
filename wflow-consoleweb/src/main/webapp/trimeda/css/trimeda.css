@@ -1395,11 +1395,6 @@ div.chosen-container ul.chosen-choices  > li.search-choice {
     gap: 5px;
 }
 
-div.chosen-container ul.chosen-choices  > li.search-choice > a.search-choice-close,
-div.chosen-container ul.chosen-choices  > li.search-choice > a.search-choice-close::after {
-    position: unset
-}
-
 body.mediumFontSize.compact-mode #form-canvas div.chosen-container ul.chosen-choices  > li.search-choice,
 body.largeFontSize.compact-mode #form-canvas div.chosen-container ul.chosen-choices  > li.search-choice {
     line-height: 24px !important;
@@ -1621,12 +1616,16 @@ body.rtl .selector_element .selector_button:hover {
 .selector_element .selector_items .selector_item, div.chosen-container ul.chosen-choices > li.search-choice {
     background-color: var(--secondary-box-background-color);
     color: var(--primary-text-color);
-    padding-inline: var(--selector-padding);
+    padding: var(--selector-padding) var(--selector-padding);
     border: 1px solid var(--field-border-color);
     border-radius: 16px;
-    
+
     display: inline-flex;
     align-items: center;
+    column-gap: 5px;
+}
+
+.selector_element .selector_items .selector_item {
     flex-direction: row-reverse;
     column-gap: 5px;
 }
@@ -1635,16 +1634,14 @@ div.chosen-container {
     font-size: 16px;
 }
 
-.selector_element .selector_items .selector_item a, 
-div.chosen-container ul.chosen-choices > li.search-choice > a {
-    right: unset;
-    position: relative;
+.selector_element .selector_items .selector_item a, .chosen-container-multi .chosen-choices li.search-choice .search-choice-close {
+    right: unset !important;
+    position: relative !important;
 }
 
-.selector_element .selector_items .selector_item a:after, 
-div.chosen-container ul.chosen-choices > li.search-choice > a:after {
-    top: 50%;
-    transform: translateY(-50%);
+.selector_element .selector_items .selector_item a:after, .chosen-container-multi .chosen-choices li.search-choice .search-choice-close:after {
+    top: 50% !important;
+    transform: translateY(-50%) !important;
 }
 
 .chosen-container.chosen-with-drop .chosen-drop,
