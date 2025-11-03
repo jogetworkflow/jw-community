@@ -1377,13 +1377,11 @@ HelpGuide = {
             if (HelpGuide.isEnabled()) {
                 clearTimeout(resizeScrollTimer); // cancel any previous scheduled run
                 resizeScrollTimer = setTimeout(function () {
-                    try {
-                        var index = $(".guider:not([style*='display: none'])").index(".guider");
+                    var index = $(".guider:not([style*='display: none'])").index(".guider");
 
+                    if (index !== -1 && helpDefObj[index] && guiders._guiders[helpDefObj[index].id]) {
                         var guider = guiders._guiders[helpDefObj[index].id];
                         HelpGuide.guiderOnShow(guider, true);
-                    } catch (e) {
-                        console.error(e);
                     }
                 }, 500); 
             }
