@@ -1319,6 +1319,10 @@ body.rtl:not(.horizontal_menu) #page {
     padding-right: calc(276 / 1440 * 100vw) !important;
 }
 
+body.rtl#login #page{
+    padding-right: 0px !important;
+}
+
 /* Breadcrumb */
 ul.breadcrumb {
     border-bottom: 1px solid var(--field-border-color);

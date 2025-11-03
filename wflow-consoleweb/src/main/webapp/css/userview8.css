@@ -65,6 +65,10 @@ body.rtl:not(.horizontal_menu) #page{
     padding-left: unset;
 }
 
+body.rtl#login #page{
+    padding-right: 0px !important;
+}
+
 /* header */
 header.navbar {
     background-color: var(--theme-header, var(--theme-color6, #fff));
