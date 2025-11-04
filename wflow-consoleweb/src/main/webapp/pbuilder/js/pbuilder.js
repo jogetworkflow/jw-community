@@ -2596,6 +2596,7 @@ ProcessBuilder = {
         if (id !== "" || $("#processes_list option").length > 0) {
             ProcessBuilder.generateProcessData(id);
             if (ProcessBuilder.currentProcessData !== undefined && ProcessBuilder.currentProcessData !== null && ProcessBuilder.currentProcessData.properties !== undefined) {
+                ProcessBuilder.updateAdvancedView();
                 CustomBuilder.Builder.load(ProcessBuilder.currentProcessData, function(){
                     ProcessBuilder.validate();
                     
@@ -2610,8 +2611,6 @@ ProcessBuilder = {
                             $("[data-cbuilder-view='"+ProcessBuilder.view+"']").trigger("click");
                         }
                     }, 500);
-                    
-                    ProcessBuilder.updateAdvancedView();
                 });
             }
         } else { //only redirect to `process1` when there is totally no process in package
