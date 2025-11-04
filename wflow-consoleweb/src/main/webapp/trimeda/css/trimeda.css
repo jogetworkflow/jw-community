@@ -2696,10 +2696,6 @@ div#dataList_columnslist tbody span.row_action_inner > a > i {
 }
 
 /* Advanced Grid */
-tr.pq-row-hidden {
-    display: none;
-}
-
 .grid.adgrid .editor-cell .hasDatepicker + a {
     top: 34px;
 }
