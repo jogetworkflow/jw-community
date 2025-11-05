@@ -4498,7 +4498,10 @@ public class ConsoleWebController {
                 properties = setupManager.getSettingValue(DirectoryUtil.IMPL_PROPERTIES);
             }
 
-            String propertiseValue = PropertyUtil.parsePluginProperties(properties).toString();
+            String propertiseValue = properties;
+            if (propertiseValue != null && !propertiseValue.isEmpty()) {
+                propertiseValue = PropertyUtil.parsePluginProperties(propertiseValue).toString();
+            }
             map.addAttribute("properties", PropertyUtil.propertiesJsonLoadProcessing(propertiseValue));
 
             if (plugin instanceof PropertyEditable) {
