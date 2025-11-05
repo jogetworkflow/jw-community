@@ -4,6 +4,7 @@ For more information, please refer to https://community.joget.org
 
 9.0.2
 =====
+44c741b20 Fixed: wflow-consoleweb - Regression of #1045 causing Directory Manager default properties does not populate. #1495 @8.2-SNAPSHOT
 daa343a0e Fixed: wflow-plugin-base/wflow-core - BeanShell/Plugin - Jakarta EE Migration wrongly migrated unnecessary packages. #1391 @9.0-SNAPSHOT
 c23a15c70 Modified: wflow-consoleweb/wflow-core - Added the banner links #1385 @9.0-SNAPSHOT
 ddd71cdb2 Fixed: wflow-consoleweb - Builder - Fixed tool editing with json definition tool does not get updated. #1436 @8.2-SNAPSHOT
