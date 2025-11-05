@@ -192,7 +192,7 @@ public class PropertyJsonController {
         Plugin plugin = (Plugin) pluginManager.getPlugin(value);
         if (plugin instanceof PropertyEditable) {
             PropertyEditable element = (PropertyEditable) plugin;
-            String callReference = request.getHeader("call_reference");
+            String callReference = request.getHeader("call-reference");
             if (callReference != null
                     && (callReference.contains("classname=org.joget.apps.form.model.FormLoadElementBinder")
                         || callReference.contains("classname=org.joget.apps.form.model.FormStoreElementBinder")
@@ -206,6 +206,11 @@ public class PropertyJsonController {
         } else if (plugin != null) {
             json = PropertyUtil.getConvertedPropertyOptions(plugin);
         }
+        
+        //make sure the json is valid format, regression of 1e093147
+        if (json == null || json.isEmpty()) {
+            json = "[]";
+        }
 
         writer.write(json);
     }
@@ -218,7 +223,7 @@ public class PropertyJsonController {
 
         getProperties(request, writer, value);      
     }
-    
+
     @RequestMapping("/property/json/(*:appId)/(~:version)/getDefaultProperties")
     public void getDefaultProperties(Writer writer, @RequestParam(value = "appId", required = true) String appId, @RequestParam(value = "version", required = false) String version, @RequestParam("value") String value, @RequestParam(value = "callback", required = false) String callback) throws IOException {
         String json = "";

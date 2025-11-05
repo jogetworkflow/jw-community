@@ -69,6 +69,23 @@ public class MarketplaceUtil {
      * @return 
      */
     public static JSONArray getList(String search, String type, String category, Boolean isNew, String sort, Boolean desc, Integer start, Integer rows) {
+        return getList(search, type, category, isNew, "", sort, desc, start, rows);
+    }
+    
+    /**
+     * Retrieve marketplace product list
+     * @param search
+     * @param type
+     * @param category
+     * @param isNew
+     * @param tag
+     * @param sort
+     * @param desc
+     * @param start
+     * @param rows
+     * @return 
+     */
+    public static JSONArray getList(String search, String type, String category, Boolean isNew, String tag, String sort, Boolean desc, Integer start, Integer rows) {
         update();
         
         try {
@@ -94,6 +111,10 @@ public class MarketplaceUtil {
                     }
                     
                     if (isNew != null && isNew && !"New".equals(obj.get("isNew").toString())) {
+                        continue;
+                    }
+                    
+                    if (tag != null && !tag.isEmpty() && !obj.getString("tag").toLowerCase().contains(tag.toLowerCase())) {
                         continue;
                     }
                     

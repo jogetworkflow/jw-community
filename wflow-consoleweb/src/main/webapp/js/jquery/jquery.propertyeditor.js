@@ -10558,7 +10558,7 @@ PropertyEditor.Type.ElementSelect.prototype = {
             data: "value=" + encodeURIComponent(value),
             dataType: "text",
             headers: {
-                call_reference : thisObj.properties.options_ajax
+                "call-reference" : thisObj.properties.options_ajax
             },
             success: function(response) {
                 if (response !== null && response !== undefined && response !== "") {
@@ -10709,7 +10709,7 @@ PropertyEditor.Type.ElementMultiSelect.prototype = {
             $("#" + this.id + "_input  > div > .repeater-rows-container > .repeater-row").each(function(){
                 var temp = thisObj.getRow($(this), useDefault);
                 if (temp !== null 
-                        && !(temp.className === "" || Object.keys(temp.properties).length === 0)) { //make sure it is not empty selection before add it to data
+                        && temp.className !== "") { //make sure it is not empty selection before add it to data
                     arr.push(thisObj.getRow($(this), useDefault));
                 }
             });
@@ -11173,7 +11173,7 @@ PropertyEditor.Type.ElementMultiSelect.prototype = {
             data: "value=" + encodeURIComponent(value),
             dataType: "text",
             headers: {
-                call_reference : thisObj.properties.options_ajax
+                "call-reference" : thisObj.properties.options_ajax
             },
             success: function(response) {
                 if (response !== null && !((typeof response) === "undefined") && response !== "") {

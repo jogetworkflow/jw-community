@@ -581,6 +581,13 @@ body.dark-mode .is-selected .pika-button {
     box-shadow: none;
 }
 
+body.dark-mode .ht_editor_visible .ht_master .wtHolder{
+    scrollbar-color: rgb(255 255 255 / 23%) var(--form-field-background);
+}
+
+body.dark-mode tr.pq-row-select td {
+    background-color: var(--form-field-background);
+}
 /* Advanced Grid */
 body.dark-mode .ui-state-default, body.dark-mode .ui-widget-content .ui-state-default, body.dark-mode .ui-widget-header .ui-state-default, body.dark-mode .ui-button, body.dark-mode .ui-button.ui-state-disabled:hover, body.dark-mode .ui-button.ui-state-disabled:active {
     background: var(--dark-secondary-button-bg-color);

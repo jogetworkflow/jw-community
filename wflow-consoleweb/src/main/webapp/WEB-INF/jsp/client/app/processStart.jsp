@@ -1,6 +1,17 @@
 <%@ include file="/WEB-INF/jsp/includes/taglibs.jsp" %>
+<%@ page import="org.joget.workflow.util.WorkflowUtil"%>
 
-<commons:popupHeader bodyCssClass=" builder-popup"/>
+<%
+    String theme = WorkflowUtil.getSystemSetupValue("systemTheme");
+    pageContext.setAttribute("theme", theme);
+%>
+
+<commons:popupHeader bodyCssClass=" builder-popup" builderTheme="${theme}"/>
+
+    <link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/css/v7.css?build=<fmt:message key="build.number"/>">
+    <c:if test="${not empty theme and theme ne 'classic'}">
+        <link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/css/builderTheme.css?build=<fmt:message key="build.number"/>" />
+    </c:if>
 
     <c:if test="${!empty param.css}">
         <link rel="stylesheet" type="text/css" href="<c:out value="${param.css}"/>">

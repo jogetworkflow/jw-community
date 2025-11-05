@@ -3722,7 +3722,7 @@ body[builder-theme='dark'].popupBody.builder-popup.dark-mode .chosen-container .
     color: #ccc;
 }
 body[builder-theme].popupBody .form-fileupload a.remove{
-    color: #ff828d;
+    color: #EA5858;
 }
 body[builder-theme].popupBody .form-fileupload a.remove:hover{
     color: #EA5858;
@@ -3798,6 +3798,9 @@ body[builder-theme].popupBody .multiPagedForm .page-nav-panel .nav_item button{
     box-shadow: none;
     border-bottom-left-radius: 0;
     border-bottom-right-radius: 0;
+}
+body[builder-theme].popupBody .selector_element .selector_button{
+    margin-right: 0px;   
 }
 body[builder-theme].rtl.popupBody .selector_element .selector_button{
     margin-right: 0px;   

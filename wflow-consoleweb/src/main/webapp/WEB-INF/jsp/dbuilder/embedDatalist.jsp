@@ -5,7 +5,12 @@
 <c:set var="isQuickEditEnabled" value="<%= AppUtil.isQuickEditEnabled() %>"/>
 <c:set var="isAdmin" value="<%= WorkflowUtil.isCurrentUserInRole(WorkflowUtil.ROLE_ADMIN) %>"/>
 
-<commons:popupHeader /> 
+<%
+    String theme = WorkflowUtil.getSystemSetupValue("systemTheme");
+    pageContext.setAttribute("theme", theme);
+%>
+
+<commons:popupHeader builderTheme="${theme}"  />
     <c:if test="${isQuickEditEnabled && isAdmin}">    
         <script src="${pageContext.request.contextPath}/js/adminBar.js?build=<fmt:message key="build.number"/>"></script>
         <script>

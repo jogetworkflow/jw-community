@@ -255,7 +255,7 @@ _CustomBuilder = {
         
         var headers = new Headers();
         headers.append(ConnectionManager.tokenName, ConnectionManager.tokenValue);
-        headers.append("_ajax-rendering", "true");
+        headers.append("ajax-rendering", "true");
         
         var args = {
             method : "GET",
@@ -1104,9 +1104,11 @@ _CustomBuilder = {
                 if (props.id !== CustomBuilder.id) {
                     props.id = CustomBuilder.id; //reset it
                 }
-            }
-        
-            CustomBuilder.update(addToUndo);
+            } 
+            
+            var json = JSON.encode(CustomBuilder.data);
+            CustomBuilder.updateJson(json, addToUndo);
+            CustomBuilder.updatePasteIcons();
         } else {
             CustomBuilder.json = json;
         }
@@ -2420,7 +2422,7 @@ _CustomBuilder = {
         var viewport = $(".responsive-buttons button.active").data("view");
 	$(view).closest(".builder-view").addClass(viewport);
         
-        $('#cbuilder-preview [name=OWASP_CSRFTOKEN]').val(ConnectionManager.tokenValue);
+        $('#cbuilder-preview [name=OWASP-CSRFTOKEN]').val(ConnectionManager.tokenValue);
         $('#cbuilder-preview').attr("action", CustomBuilder.previewUrl);
         $('#cbuilder-preview').attr("target", "preview-iframe");
         $('#cbuilder-preview').submit();

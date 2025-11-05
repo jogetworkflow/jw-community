@@ -136,7 +136,7 @@ public class UserviewThemeProcesser {
     public String getHtml() {
         HttpServletRequest request = WorkflowUtil.getHttpServletRequest();
         if (request != null) {
-            String componentId = WorkflowUtil.getHttpServletRequest().getHeader("__ajax_component");
+            String componentId = WorkflowUtil.getHttpServletRequest().getHeader("ajax-component");
             if (componentId != null) {
                 return getComponentHtml(componentId);
             }
@@ -206,7 +206,7 @@ public class UserviewThemeProcesser {
         }
         
         if (request != null) {
-            if("true".equalsIgnoreCase(request.getHeader("__ajax_menu_count"))) {
+            if("true".equalsIgnoreCase(request.getHeader("ajax-menu-count"))) {
                 return getAjaxMenusCount(data);
             }
         }

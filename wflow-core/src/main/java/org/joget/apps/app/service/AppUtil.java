@@ -1155,42 +1155,56 @@ public class AppUtil implements ApplicationContextAware {
                 uId = SecurityUtil.validateStringInput(uId);
 
                 if (!appId.isEmpty() && !uId.isEmpty()) {
-                    UserviewService userviewService = (UserviewService) appContext.getBean("userviewService");
-                    UserviewTheme theme = userviewService.getUserviewTheme(appId, uId);
+                    if ("_builder_dark_mode".equals(uId) || "_builder_light_mode".equals(uId) || "_builder_classic_mode".equals(uId) ) {
+                        String html = "<link rel=\"stylesheet\" href=\"" + request.getContextPath() + "/wro/ajaxuniversal.preload.min.css\"></link>\n";
+                        html += "<link rel=\"stylesheet\" href=\"" + request.getContextPath() + "/wro/ajaxuniversal.min.css\"></link>\n";
+                        if ("_builder_dark_mode".equals(uId)){
+                            html += "<link rel=\"stylesheet\" href=\"" + request.getContextPath() + "/wro/darkTheme.css\"></link>\n";
+                        }
+                        html += "<script src=\"" + request.getContextPath() + "/wro/ajaxuniversal.min.js\" defer></script>\n";
+                        return html;
+                    } else {
+                        UserviewService userviewService = (UserviewService) appContext.getBean("userviewService");
+                        UserviewTheme theme = userviewService.getUserviewTheme(appId, uId);
 
-                    if (theme != null) {
-                        if (theme instanceof UserviewV5Theme) {
-                            UserviewV5Theme v5Theme = (UserviewV5Theme) theme;
-                            Map<String, Object> data = new HashMap<String, Object>();
-                            data.put("params", request.getParameterMap());
-                            data.put("context_path", request.getContextPath());
-                            data.put("build_number", ResourceBundleUtil.getMessage("build.number"));
-                            data.put("right_to_left", isRTL());
-                            String locale = AppUtil.getAppLocale();
-                            data.put("locale", locale);
-                            data.put("is_popup_view", true);
+                        if (theme != null) {
+                            if (theme instanceof UserviewV5Theme) {
+                                UserviewV5Theme v5Theme = (UserviewV5Theme) theme;
+                                Map<String, Object> data = new HashMap<String, Object>();
+                                data.put("params", request.getParameterMap());
+                                data.put("context_path", request.getContextPath());
+                                data.put("build_number", ResourceBundleUtil.getMessage("build.number"));
+                                data.put("right_to_left", isRTL());
+                                String locale = AppUtil.getAppLocale();
+                                data.put("locale", locale);
+                                data.put("is_popup_view", true);
 
-                            String jsCssLib = v5Theme.getJsCssLib(data);
-                            String css = v5Theme.getCss(data);
-                            String js = v5Theme.getJs(data);
+                                String jsCssLib = v5Theme.getJsCssLib(data);
+                                String css = v5Theme.getCss(data);
+                                String js = v5Theme.getJs(data);
 
-                            String html = jsCssLib;
+                                String html = jsCssLib;
+                                
+                                if ("BUILDER_PREVIEW_DARK".equals(uId)){
+                                    html += "<link rel=\"stylesheet\" href=\"" + request.getContextPath() + "/wro/darkTheme.css\"></link>\n";
+                                }
 
-                            if (js != null && !js.isEmpty()) {
-                                html += "<script type=\"text/javascript\">\n" + js + "\n</script>";
+                                if (js != null && !js.isEmpty()) {
+                                    html += "<script type=\"text/javascript\">\n" + js + "\n</script>";
+                                }
+
+                                if (css != null && !css.isEmpty()) {
+                                    html += "<style type=\"text/css\">\n" + css + "\n</style>";
+                                }
+
+                                if (!(theme instanceof AjaxUniversalTheme)) {
+                                    html = "<link rel=\"stylesheet\" type=\"text/css\" href=\""+data.get("context_path").toString()+"/css/userview_popup.css?build="+data.get("build_number").toString()+"\">" + html;
+                                }
+
+                                return html;
+                            } else if (theme.getCss() != null) {
+                                return "<link href=\""+request.getContextPath()+"/wro/userview.min.css?build="+ResourceBundleUtil.getMessage("build.number")+"\" rel=\"stylesheet\" type=\"text/css\" />\n<style type=\"text/css\">\n" + theme.getCss() + "\n</style>";
                             }
-
-                            if (css != null && !css.isEmpty()) {
-                                html += "<style type=\"text/css\">\n" + css + "\n</style>";
-                            }
-                            
-                            if (!(theme instanceof AjaxUniversalTheme)) {
-                                html = "<link rel=\"stylesheet\" type=\"text/css\" href=\""+data.get("context_path").toString()+"/css/userview_popup.css?build="+data.get("build_number").toString()+"\">" + html;
-                            }
-
-                            return html;
-                        } else if (theme.getCss() != null) {
-                            return "<link href=\""+request.getContextPath()+"/wro/userview.min.css?build="+ResourceBundleUtil.getMessage("build.number")+"\" rel=\"stylesheet\" type=\"text/css\" />\n<style type=\"text/css\">\n" + theme.getCss() + "\n</style>";
                         }
                     }
                 }
@@ -2312,7 +2326,7 @@ public class AppUtil implements ApplicationContextAware {
             }
             url = url.replaceFirst("^"+request.getContextPath(), "");
             
-            boolean isAjaxThemeLoading = "true".equalsIgnoreCase(request.getHeader("__ajax_theme_loading"));
+            boolean isAjaxThemeLoading = "true".equalsIgnoreCase(request.getHeader("ajax-theme-loading"));
             
             Map<String, Boolean> urlMatchResult = new HashMap<>();
             AntPathMatcher matcher = new AntPathMatcher();

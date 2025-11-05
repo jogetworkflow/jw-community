@@ -100,7 +100,7 @@ public abstract class DataListTemplate extends ExtDefaultPlugin implements Prope
         }
         
         DefaultHref href = new DefaultHref(url);
-        href.removeParameter("OWASP_CSRFTOKEN");
+        href.removeParameter("OWASP-CSRFTOKEN");
         
         String pageNav = listHelper.getPageNavigationBar(href, getDatalist().getDataListEncodedParamName("p"));
         

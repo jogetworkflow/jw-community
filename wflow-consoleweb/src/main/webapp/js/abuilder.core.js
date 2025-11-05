@@ -53,6 +53,16 @@ AppBuilder = {
             
             if (!$(this).hasClass("disabled")) {
                 var url = CustomBuilder.contextPath + '/web/client/app' + CustomBuilder.appPath + '/process/' + $(this).closest(".item").attr("data-id");
+                if ($('body').attr('builder-theme') === undefined){
+                    url += "?__a_="+CustomBuilder.appId+"&__u_=_builder_classic_mode";
+                }
+                if ($('body').attr('builder-theme') === "light") {
+                    url += "?__a_="+CustomBuilder.appId+"&__u_=_builder_light_mode";
+                }
+                //dark mode
+                if ($('body').attr('builder-theme') === "dark") {
+                    url += "?__a_="+CustomBuilder.appId+"&__u_=_builder_dark_mode";
+                }
                 JPopup.show("runProcessDialog", url, {}, "");
             }
             return false;
@@ -802,6 +812,87 @@ AppBuilder = {
                         $('.item .overview_container .overview_data').hide();
                         var name = $("#builderElementName .title").text();
 
+                        var childs = [];
+
+                        //loop all builders
+                        $("#builders .builder-type").each(function(){
+                            if ($(this).find('.ul-wrapper ul li.item').length > 0) {
+                                var id = $(this).data("builder-type");
+                                var title = $(this).find('.builder-title').text();
+                                var color = $(this).find('.builder-title .icon').css("background-color");
+                                if (CustomBuilder.systemTheme === 'light' || CustomBuilder.systemTheme === 'dark') { //support builder theme
+                                    color = $(this).find('.builder-title .icon').css("color");
+                                }
+                                var icon = $(this).find('.builder-title .icon').html().replace('<i', '<i style="color:'+color+';"');
+
+                                var items = [];
+                                
+                                //loop items
+                                $(this).find('.ul-wrapper ul li.item').each(function(){
+                                    var item = $(this);
+                                    var itemId = id + "_" + $(this).data("id");
+                                    var itemTitle = $(this).find('.item-label').text();
+                                    var itemUrl = $(this).find('a.item-link').attr("href");
+                                    
+                                    var nodes = [];
+
+                                    //loop overview plugins
+                                    $("#builderToolbar .advanced-tools [data-overview]").each(function(){
+                                        var overviewId = itemId + $(this).attr("id");
+                                        var overviewClass = $(this).data("overview");
+                                        var overviewTitle = $(this).html() + " " + $(this).attr("title");
+                                        if ($(item).find('.overview_container .overview_data[data-tool="'+overviewClass+'"]').length > 0) {
+                                            var overviews = [];
+                                            
+                                            //loop overview data
+                                            var i = 0;
+                                            $(item).find('.overview_container .overview_data[data-tool="'+overviewClass+'"]').each(function(){
+                                                var dataLabel = $(this).find('a.path_link').html();
+                                                var dataUrl = $(this).find('a.path_link').attr("href");
+                                                
+                                                overviews.push({
+                                                    "id" : overviewId+"_"+i++,
+                                                    "topic" : '<a href="'+dataUrl+'">' + dataLabel + '</a>',
+                                                    "data" : {},
+                                                    "direction" : "right",
+                                                    "expanded" : false
+                                                });
+                                            });
+
+                                            nodes.push({
+                                                "id" : overviewId,
+                                                "topic" : overviewTitle,
+                                                "data" : {},
+                                                "direction" : "right",
+                                                "children" : overviews,
+                                                "expanded" : false
+                                            });
+                                        }
+                                    });
+
+                                    items.push({
+                                        "id" : itemId,
+                                        "topic" : icon + ' <a href="'+itemUrl+'">' + itemTitle + '</a>',
+                                        "data" : {},
+                                        "direction" : "right",
+                                        "children" : nodes,
+                                        "expanded" : false
+                                    });
+                                });
+
+                                var node = {
+                                    "id" : id,
+                                    "topic" : icon + title,
+                                    "data" : {},
+                                    "direction" : "right",
+                                    "children" : items,
+                                    "expanded" : false
+                                };
+                                
+                                childs.push(node);
+                            }
+                        });
+                        
                         var mind = {
                             "meta":{
                                 "name":CustomBuilder.appId,
@@ -809,8 +900,13 @@ AppBuilder = {
                                 "version":"0.2"
                             },
                             "format":"node_tree",
-                            "data":{"id":CustomBuilder.appId,"topic":name,"children":[]}
+                            "data":{
+                                "id" : CustomBuilder.appId,
+                                "topic" : name,
+                                "children" : childs
+                            }
                         };
+                        
                         var options = {                     
                             container:'jsmind_container',   
                             editable:true,                  
@@ -845,56 +941,6 @@ AppBuilder = {
                             jm.shoot();
                         });
                         $("#mmScreenshot").show();
-
-                        //loop all builders
-                        $("#builders .builder-type").each(function(){
-                            if ($(this).find('.ul-wrapper ul li.item').length > 0) {
-                                var id = $(this).data("builder-type");
-                                var title = $(this).find('.builder-title').text();
-                                var color = $(this).find('.builder-title .icon').css("background-color");
-                                if (CustomBuilder.systemTheme === 'light' || CustomBuilder.systemTheme === 'dark') { //support builder theme
-                                    color = $(this).find('.builder-title .icon').css("color");
-                                }
-                                var icon = $(this).find('.builder-title .icon').html().replace('<i', '<i style="color:'+color+';"');
-
-                                jm.add_node(CustomBuilder.appId, id, icon + title, {}, "right");
-
-                                //loop items
-                                $(this).find('.ul-wrapper ul li.item').each(function(){
-                                    var item = $(this);
-                                    var itemId = id + "_" + $(this).data("id");
-                                    var itemTitle = $(this).find('.item-label').text();
-                                    var itemUrl = $(this).find('a.item-link').attr("href");
-
-                                    jm.add_node(id, itemId, icon + ' <a href="'+itemUrl+'">' + itemTitle + '</a>', {}, "right");
-
-                                    //loop overview plugins
-                                    $("#builderToolbar .advanced-tools [data-overview]").each(function(){
-                                        var overviewId = itemId + $(this).attr("id");
-                                        var overviewClass = $(this).data("overview");
-                                        var overviewTitle = $(this).html() + " " + $(this).attr("title");
-                                        if ($(item).find('.overview_container .overview_data[data-tool="'+overviewClass+'"]').length > 0) {
-                                            jm.add_node(itemId, overviewId, overviewTitle, {}, "right");
-
-                                            //loop overview data
-                                            var i = 0;
-                                            $(item).find('.overview_container .overview_data[data-tool="'+overviewClass+'"]').each(function(){
-                                                var dataLabel = $(this).find('a.path_link').html();
-                                                var dataUrl = $(this).find('a.path_link').attr("href");
-                                                
-                                                jm.add_node(overviewId, overviewId+"_"+i++, '<a href="'+dataUrl+'">' + dataLabel + '</a>', {}, "right");
-                                            });
-
-                                            jm.collapse_node(overviewId);
-                                        }
-                                    });
-
-                                    jm.collapse_node(itemId);
-                                });
-
-                                jm.collapse_node(id);
-                            }
-                        });
 
                         //disable further editing
                         jm.disable_edit();

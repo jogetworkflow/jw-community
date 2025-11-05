@@ -595,7 +595,7 @@ body.rtl input.hasDatepicker {
     transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
 }
 .selector_element .selector_button, .selector_element .selector_button:hover{
-    height: 30px;
+    height: 100%;
     padding: 2px 12px !important;
     line-height: 1.5;
     color: #495057;
@@ -607,8 +607,8 @@ body.rtl input.hasDatepicker {
     box-shadow: none;
     font-size: inherit;
     position: absolute;
-    top: -1px;
     right: -1px;
+    max-height: 34px;
 }
 .selector_element .selector_button:hover{
     background-color: #ced4da;
@@ -666,10 +666,12 @@ body.rtl input.hasDatepicker {
     background-clip: padding-box;
 }
 .form-fileupload a.remove {
-    color: #f8d7da;
+    color: #EA5858;
+    cursor: pointer;
 }
 .form-fileupload a.remove:hover {
-    color: #dc3545;
+    color: #EA5858;
+    text-decoration: none;
 }
 .form-fileupload-value {
     list-style: none;
@@ -862,14 +864,10 @@ body.rtl input.hasDatepicker {
     display: none;  /* Safari and Chrome */
 }
 .handsontable .file_delete {
-    color: #dc3545;
+    color: #EA5858;
     display:inline-block; 
     margin:0 10px; 
     cursor:pointer;
-    opacity: 0.5;
-}
-.handsontable .file_delete:hover{
-    opacity: 1;
 }
 .handsontableInputHolder .handsontableEditor {
     height: auto !important; 
@@ -893,10 +891,6 @@ body.rtl .ht_clone_top_left_corner  {
     left: unset !important; 
     right:0;
 }
-body.rtl .handsontableInputHolder textarea {
-    position:absolute; 
-    left:0
-}
 body.rtl .handsontable .htCore tr th:last-child, 
 body.rtl .handsontable .htCore tr td:last-child {
     border-left-width:1px !important;
@@ -916,6 +910,11 @@ body.rtl .handsontable .htCore tr td:last-child {
     border-top: 1px solid #ced4da !important;
 } 
 
+
+.ht_editor_visible .ht_master .wtHolder{
+    max-width: fit-content;
+    overflow-x: hidden;
+}
 
 /* other */
 .calculationField_value {
@@ -1244,7 +1243,22 @@ body.rtl .calculationField_value {
     background-color: #6c757d;
     border-color: #6c757d;
 }
-
+body.rtl tr td.pq-grid-cell:last-of-type {
+    border-left: 1px solid #d0d0d0;
+}
+body.rtl .pq-grid td.pq-grid-col:last-of-type{
+    border-left: 1px solid #cfcfcf;
+}
+.grid.adgrid .pq-grid-number-col{
+    border-left: 1px solid transparent;
+}
+body.rtl .grid.adgrid .pq-grid-number-col{
+    border-right: 1px solid transparent;
+    border-left: 1px solid #cfcfcf;
+}
+.pq-grid-row{
+    border-left: 1px solid transparent;
+}
 @media screen and (max-width: 767px) {
     .form-cell > label.label,
     .subform-cell > label.label,
@@ -1744,4 +1758,11 @@ body.rtl ul.form-fileupload-value li .name{
 body.rtl .handsontable .filename_container .filename {
     direction: ltr;
     unicode-bidi: isolate;
+}
+body.rtl input.hasDatepicker {
+     direction: ltr;
+     text-align: right;
+}
+body.rtl .chosen-container-multi.chosen-rtl .chosen-choices li.search-choice{
+    margin: 6px 5px 0 0;
 }
