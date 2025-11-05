@@ -4,6 +4,7 @@ For more information, please refer to https://community.joget.org
 
 8.2.6
 =====
+44c741b20 Fixed: wflow-consoleweb - Regression of #1045 causing Directory Manager default properties does not populate. #1495 @8.2-SNAPSHOT
 ddd71cdb2 Fixed: wflow-consoleweb - Builder - Fixed tool editing with json definition tool does not get updated. #1436 @8.2-SNAPSHOT
 f87a0f39d Fixed: wflow-consoleweb - Trimeda - Fixed inconsistent styling with DX8 and DX9 #1000 @8.2-SNAPSHOT
 1350923e1 Fixed: wflow-consoleweb - DX8 Trimeda Theme - Fixed DX8 Trimeda Horizontal Menu UI Issues #1000 @8.2-SNAPSHOT
