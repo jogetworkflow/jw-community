@@ -1,5 +1,8 @@
-#preview .dataList {
+#preview .dataList *{
     pointer-events: none;
+}
+#preview .dataList .table-wrapper{
+    pointer-events: all;
 }
 .dataList:not(.unauthorized) {
     display: none;
