@@ -2,6 +2,42 @@ Joget DX COMMUNITY
 ====================
 For more information, please refer to https://community.joget.org
 
+9.0.2
+=====
+daa343a0e Fixed: wflow-plugin-base/wflow-core - BeanShell/Plugin - Jakarta EE Migration wrongly migrated unnecessary packages. #1391 @9.0-SNAPSHOT
+c23a15c70 Modified: wflow-consoleweb/wflow-core - Added the banner links #1385 @9.0-SNAPSHOT
+ddd71cdb2 Fixed: wflow-consoleweb - Builder - Fixed tool editing with json definition tool does not get updated. #1436 @8.2-SNAPSHOT
+f87a0f39d Fixed: wflow-consoleweb - Trimeda - Fixed inconsistent styling with DX8 and DX9 #1000 @8.2-SNAPSHOT
+1350923e1 Fixed: wflow-consoleweb - DX8 Trimeda Theme - Fixed DX8 Trimeda Horizontal Menu UI Issues #1000 @8.2-SNAPSHOT
+4a6b4854b Fixed: jw-community - Security - Upgrade Apache Tomcat to 11.0.13 CVE-2025-61795. #1472 @9.0-SNAPSHOT
+863db13e3 Fixed: wflow-consoleweb - WebSocket Plugin - Profile is not set correctly on multitenant environment. #1425 @8.2-SNAPSHOT
+0b4f3a8fa Modified: wflow-core - Marketplace - List API not able to filter by tag. #1437 @8.2-SNAPSHOT
+a21ced881 Fixed: wflow-core - AppDefinitionDaoImpl - Prevent SQL injection in sort parameter. #1399 @8.2-SNAPSHOT
+07d1d7664 Fixed: wflow-core - AbstractVersionedObjectDao - Prevent SQL injection in sort parameter. #1399 @8.2-SNAPSHOT
+bc39be9f4 Fixed: wflow-consoleweb - XAdmin - Removed .page styling #1338 @8.2-SNAPSHOT
+7ab3ad881 Fixed: wflow-consoleweb- Profile - fixed input validation method to allow different languages T6882 T6886 #1458 @8.2-SNAPSHOT
+9b28117a8 Fixed: wflow-consoleweb - Advanced Tool - Overview Map - Browser crashed rendering large app. T6808 #1411. @8.2-SNAPSHOT
+69366f61c Fixed: wflow-core - FormServiceImpl - Update cached load binder with store binder data after executing form actions. #1390 T6775 @8.2-SNAPSHOT
+d4f19d2cc Fixed: wflow-core - AppService - Ensure builder JSON and definition ID are equal during import. #1401 @8.2-SNAPSHOT
+ec3ba9aa2 Fixed: wflow-consoleweb - UserviewWebController - Quick Edit uses wrong builder link when builder JSON has different ID. #1401 @8.2-SNAPSHOT
+b41241a97 Fixed: wflow-core - DataListMenu - Quick Edit uses wrong builder link when builder JSON has different ID. #1401 @8.2-SNAPSHOT
+fb1f39d29 Fixed: wflow-consoleweb - Plugin - Regression of #1020. Empty properties can't save in multi elements select field. T6838 #1461 @8.2-SNAPSHOT
+a8026b6bf Fixed: wflow-consoleweb - Plugin - Regression of 1e093147. NPE when plugin option is null. T6838 #1461 @8.2-SNAPSHOT
+b17fc7fc0 Fixed: wflow-consoleweb - Process Builder - Run Process Form when Dark/Light theme is not handled, and messy form. #728 @8.2-SNAPSHOT
+beb33e633 Fixed: wflow-consoleweb - Form Element ID  - Missing "primaryKey" in the reserved ID list. #608 @8.2-SNAPSHOT
+aad901f09 Fixed: wflow-consoleweb - DX8 Trimeda - Fixed regression on the multiselect caused by the recent change #1006 @8.2-SNAPSHOT
+d42dc8288 Fixed: wflow-consoleweb - Multiselectbox  - Fixed remove button overlapping #1006 @8.2-SNAPSHOT
+ad56848da Fixed: wflow-consoleweb - Trimeda - Fixed and  Modified Stylings #1006 @8.2-SNAPSHOT
+acd3d7227 Fixed: wflow-consoleweb - Fixed UI issues in regards to compact #1006 @8.2-SNAPSHOT
+6c1065dd4 Fixed: wflow-consoleweb - Trimeda - Fixed Multi Select Box inconsistent spacing #1006 @8.2-SNAPSHOT
+c255ab81c Fixed: wflow-consoleweb - DX8 Trimeda - Fixed some compact mode issues  #1006 @8.2-SNAPSHOT
+05ee061ba Fixed: wflow-consoleweb - Modified the input minimum height, and fix issues due to changes #1006 @8.2-SNAPSHOT
+1be75b9d1 Fixed: wflow-consoleweb - DX8 Trimeda Theme - Fixed text going outside the button #1006 @8.2-SNAPSHOT
+9ac3f90ff Modified: wflow-consoleweb - DX8 Trimeda Compact Theme - Added compacted mode to Trimeda #1006 @8.2-SNAPSHOT
+6135f568b Fixed: wflow-consoleweb - Web Filter - Scripts that are currently using the old header name do not work as expected #639 @8.2-SNAPSHOT
+4c2397695 Modified: wflow-consoleweb - Request Headers - renamed headers to use hyphens instead of underscores #639 T5237 @8.2-SNAPSHOT
+cc0e8a2d1 Fixed: wflow-wfengine - Aspect - fixed numeric boolean comparison in user reassignment using postgresql T6821 #1416 @8.2-SNAPSHOT
+
 9.0.1
 =====
 3358b0a54 Fixed: wflow-consoleweb - Grid Properties - Fixed action icons visibility issues in light and dark theme. #1197 @8.2-SNAPSHOT
