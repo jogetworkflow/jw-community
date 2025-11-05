@@ -2,6 +2,62 @@ Joget DX COMMUNITY
 ====================
 For more information, please refer to https://community.joget.org
 
+8.2.6
+=====
+ddd71cdb2 Fixed: wflow-consoleweb - Builder - Fixed tool editing with json definition tool does not get updated. #1436 @8.2-SNAPSHOT
+f87a0f39d Fixed: wflow-consoleweb - Trimeda - Fixed inconsistent styling with DX8 and DX9 #1000 @8.2-SNAPSHOT
+1350923e1 Fixed: wflow-consoleweb - DX8 Trimeda Theme - Fixed DX8 Trimeda Horizontal Menu UI Issues #1000 @8.2-SNAPSHOT
+1cb078524 Fixed: jw-community - Security - Upgrade Apache Tomcat to 9.0.111 CVE-2025-61795. #1472 @8.2-SNAPSHOT
+863db13e3 Fixed: wflow-consoleweb - WebSocket Plugin - Profile is not set correctly on multitenant environment. #1425 @8.2-SNAPSHOT
+0b4f3a8fa Modified: wflow-core - Marketplace - List API not able to filter by tag. #1437 @8.2-SNAPSHOT
+a21ced881 Fixed: wflow-core - AppDefinitionDaoImpl - Prevent SQL injection in sort parameter. #1399 @8.2-SNAPSHOT
+07d1d7664 Fixed: wflow-core - AbstractVersionedObjectDao - Prevent SQL injection in sort parameter. #1399 @8.2-SNAPSHOT
+bc39be9f4 Fixed: wflow-consoleweb - XAdmin - Removed .page styling #1338 @8.2-SNAPSHOT
+7ab3ad881 Fixed: wflow-consoleweb- Profile - fixed input validation method to allow different languages T6882 T6886 #1458 @8.2-SNAPSHOT
+9b28117a8 Fixed: wflow-consoleweb - Advanced Tool - Overview Map - Browser crashed rendering large app. T6808 #1411. @8.2-SNAPSHOT
+69366f61c Fixed: wflow-core - FormServiceImpl - Update cached load binder with store binder data after executing form actions. #1390 T6775 @8.2-SNAPSHOT
+d4f19d2cc Fixed: wflow-core - AppService - Ensure builder JSON and definition ID are equal during import. #1401 @8.2-SNAPSHOT
+ec3ba9aa2 Fixed: wflow-consoleweb - UserviewWebController - Quick Edit uses wrong builder link when builder JSON has different ID. #1401 @8.2-SNAPSHOT
+b41241a97 Fixed: wflow-core - DataListMenu - Quick Edit uses wrong builder link when builder JSON has different ID. #1401 @8.2-SNAPSHOT
+fb1f39d29 Fixed: wflow-consoleweb - Plugin - Regression of #1020. Empty properties can't save in multi elements select field. T6838 #1461 @8.2-SNAPSHOT
+a8026b6bf Fixed: wflow-consoleweb - Plugin - Regression of 1e093147. NPE when plugin option is null. T6838 #1461 @8.2-SNAPSHOT
+b17fc7fc0 Fixed: wflow-consoleweb - Process Builder - Run Process Form when Dark/Light theme is not handled, and messy form. #728 @8.2-SNAPSHOT
+beb33e633 Fixed: wflow-consoleweb - Form Element ID  - Missing "primaryKey" in the reserved ID list. #608 @8.2-SNAPSHOT
+aad901f09 Fixed: wflow-consoleweb - DX8 Trimeda - Fixed regression on the multiselect caused by the recent change #1006 @8.2-SNAPSHOT
+d42dc8288 Fixed: wflow-consoleweb - Multiselectbox  - Fixed remove button overlapping #1006 @8.2-SNAPSHOT
+ad56848da Fixed: wflow-consoleweb - Trimeda - Fixed and  Modified Stylings #1006 @8.2-SNAPSHOT
+acd3d7227 Fixed: wflow-consoleweb - Fixed UI issues in regards to compact #1006 @8.2-SNAPSHOT
+6c1065dd4 Fixed: wflow-consoleweb - Trimeda - Fixed Multi Select Box inconsistent spacing #1006 @8.2-SNAPSHOT
+c255ab81c Fixed: wflow-consoleweb - DX8 Trimeda - Fixed some compact mode issues  #1006 @8.2-SNAPSHOT
+05ee061ba Fixed: wflow-consoleweb - Modified the input minimum height, and fix issues due to changes #1006 @8.2-SNAPSHOT
+1be75b9d1 Fixed: wflow-consoleweb - DX8 Trimeda Theme - Fixed text going outside the button #1006 @8.2-SNAPSHOT
+9ac3f90ff Modified: wflow-consoleweb - DX8 Trimeda Compact Theme - Added compacted mode to Trimeda #1006 @8.2-SNAPSHOT
+6135f568b Fixed: wflow-consoleweb - Web Filter - Scripts that are currently using the old header name do not work as expected #639 @8.2-SNAPSHOT
+4c2397695 Modified: wflow-consoleweb - Request Headers - renamed headers to use hyphens instead of underscores #639 T5237 @8.2-SNAPSHOT
+cc0e8a2d1 Fixed: wflow-wfengine - Aspect - fixed numeric boolean comparison in user reassignment using postgresql T6821 #1416 @8.2-SNAPSHOT
+54f97ce3e Fixed: wflow-core - Form - Merge error in 666d75bf. #1094 T6364 @8.2-SNAPSHOT
+3358b0a54 Fixed: wflow-consoleweb - Grid Properties - Fixed action icons visibility issues in light and dark theme. #1197 @8.2-SNAPSHOT
+78ba607e1 Fixed: wflow-consoleweb - Datalist Filters - Fixed position issue in RTL #1317 @8.2-SNAPSHOT
+5bf77c3c7 Fixed: wflow-core - Plugin - Wrong implementation of default property values cache. #1242 @8.2-SNAPSHOT
+94c1d54aa Fixed: wflow-consoleweb - Date Picker - Clear button in Advanced Grid not aligned in Progressive and Universal themes. #1225 T6543 @8.2-SNAPSHOT
+7d99933f2 Fixed: wflow-consoleweb - Date Picker - Previous value cleared when editing in Progressive and Universal theme. #1225 T6543 @8.2-SNAPSHOT
+a19458708 Fixed: jw-community - Plugin - Handle legacy plugins properties. #1045 T6307 @8.2-SNAPSHOT
+0b1f4bd12 Fixed: wflow-consoleweb - Guider - Fix guider not responsive #1318 @8.2-SNAPSHOT
+cfb8745ba Modified: wflow-core - AjaxComponent - Throw error if response status not OK during call. T6478 #1157 @8.2-SNAPSHOT
+008b1fc0a Fixed: wflow-wfengine - Workflow - Failed to recover stuck route & subflow during startup. #1033 @8.2-SNAPSHOT
+ff5c63678 Fixed: wflow-consoleweb - Admin Bar - Removed min-width #1327 @8.2-SNAPSHOT
+666d75bf3 Fixed: wflow-core - Style - Fixes issue where default style did not reflect correctly when set. #1094 T6364. @8.2-SNAPSHOT
+655d7ae99 Fixed: wflow-core - Form Builder - Property editor select box field not populated after applying styling to field in sub form. #1094 T6364 @8.2-SNAPSHOT
+59bfb8874 Fixed: wflow-consoleweb - Property Editor - Only check ID length in property editor panel. #1249 T6570 @8.2-SNAPSHOT
+f5714b2fd Fixed: wflow-core - Import App - Improved form definition import error handling. #1249 T6570 @8.2-SNAPSHOT
+bf33a77ed Fixed: wflow-consoleweb - List builder - Fixed default styling show blanks configuration. #1402 @8.2-SNAPSHOT
+400760073 Fixed: wflow-consoleweb/wflow-core - common.css & adminBar.js - Fixed CSS Stylesheet & JS not being updated #1397 T6750 @8.2-SNAPSHOT
+9d504a639 Fixed: wflow-core - Date picker - Fixed Date picker field layout breaks when using Field Label "Top" issue. #994 @8.2-SNAPSHOT
+f64f74698 Fixed: wflow-consoleweb - Date Picker - Fixed Date Picker Field width issue in X-Admin Theme. #994 @8.2-SNAPSHOT
+cb9fc5f2f Fixed: wflow-consoleweb - DatePicker - Fixed DatePicker Icon Position issues when using multiple layers of Field Label Position Styling. #994 @8.2-SNAPSHOT
+a0e8c87e9 Modified: wflow-consoleweb - List - Support auto handle Oracle uppercase. #1106 @8.0-SNAPSHOT
+b9ae0020a Fixed: wflow-commons - Performance - Reduce unnecessarily retrieve cache when retrieve current profile. #1210 @8.2-SNAPSHOT
+
 8.2.5
 =====
 4a5ee9bb4 Fixed: wflow-core - Message - fixed slow saving when large amount of labels in app messages T6621 T6681 #1329 @8.2-SNAPSHOT
