@@ -247,7 +247,13 @@ public class SetupManagerCache {
         element = cache.get(profile);
         ConcurrentMap<String, Setting> settingMap = (ConcurrentMap<String, Setting>) element.getObjectValue();
         String settingProperty = setting.getProperty();
-        settingMap.put(settingProperty, setting);
+
+        // FIX: Remove from cache if value is null (deleted)
+        if (setting.getValue() == null) {
+            settingMap.remove(settingProperty);
+        } else {
+            settingMap.put(settingProperty, setting);
+        }
 
         element = new Element(profile, settingMap);
         cache.put(element);
