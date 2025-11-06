@@ -11545,7 +11545,10 @@ PropertyEditor.Type.CssStyle.prototype = {
                 "letter-spacing" : {"field" : "unit", "label" : get_peditor_msg("style.letterSpacing"), "class" : "input1"},
                 "text-decoration-color" : {"field" : "color", "label" : get_peditor_msg("style.textDecorationColor"), "class" : "input1"},
                 "text-decoration-line" : {"field" : "text-decoration-line", "label" : get_peditor_msg("style.textDecoration"), "class" : "input2"},
-                "text-decoration-style" : {"field" : "text-decoration-style", "label" : get_peditor_msg("style.textDecorationStyle"), "class" : "input1"}
+                "text-decoration-style" : {"field" : "text-decoration-style", "label" : get_peditor_msg("style.textDecorationStyle"), "class" : "input1"},
+                "word-break" : {"field" : "word-break", "label" : get_peditor_msg("style.wordBreak"), "class" : "input1"},
+                "text-overflow" : {"field" : "text-overflow", "label" : get_peditor_msg("style.textOverflow"), "class" : "input1"},
+                "white-space" : {"field" : "white-space", "label" : get_peditor_msg("style.whiteSpace"), "class" : "input1"}
             }
         },
         "background" : {
@@ -11598,7 +11601,8 @@ PropertyEditor.Type.CssStyle.prototype = {
                 "left" : {"field" : "unit", "label" : get_peditor_msg("style.left"), "class" : "input1"},
                 "right" : {"field" : "unit", "label" : get_peditor_msg("style.right"), "class" : "input1"},
                 "bottom" : {"field" : "unit", "label" : get_peditor_msg("style.bottom"), "class" : "input1"},
-                "float" : {"field" : "float", "label" : get_peditor_msg("style.float"), "class" : "input1"}
+                "float" : {"field" : "float", "label" : get_peditor_msg("style.float"), "class" : "input1"},
+                "overflow" : {"field" : "overflow", "label" : get_peditor_msg("style.overflow"), "class" : "input1"}
             }
         },
         "size" : {
@@ -11724,6 +11728,49 @@ PropertyEditor.Type.CssStyle.prototype = {
                 {value : 'double', label : '&lt;span style="text-decoration-line:underline;text-decoration-style:double;"&gt;' + get_peditor_msg("style.double") + '&lt;/span&gt;'}
             ],
             html : 'true'
+        },
+        'word-break' : {
+            type : 'selectbox',
+            options : [
+                {value : '', label : get_peditor_msg("style.default")},
+                {value : 'auto-phrase', label : 'Auto-Phrase'},
+                {value : 'break-all', label : 'Break-All'},
+                {value : 'break-word', label : 'Break-Word'},
+                {value : 'keep-all', label : 'Keep-All'},
+                {value : 'normal', label : 'Normal'}
+            ]
+        },
+        'text-overflow' : {
+            type : 'selectbox',
+            options : [
+                {value : '', label : get_peditor_msg("style.default")},
+                {value : 'clip', label : 'Clip'},
+                {value : 'ellipsis', label : 'Ellipsis'}
+            ]
+        },
+        'white-space' : {
+            type : 'selectbox',
+            options : [
+                {value : '', label : get_peditor_msg("style.default")},
+                {value : 'break-spaces', label : 'Break-Spaces'},
+                {value : 'normal', label : 'Normal'},
+                {value : 'nowrap', label : 'No Wrap'},
+                {value : 'pre', label : 'Pre'},
+                {value : 'pre-line', label : 'Pre-Line'},
+                {value : 'pre-wrap', label : 'Pre-Wrap'}
+            ]
+        },
+        'overflow' : {
+            type : 'selectbox',
+            options : [
+                {value : '', label : get_peditor_msg("style.default")},
+                {value : 'auto', label : 'Auto'},
+                {value : 'clip', label : 'Clip'},
+                {value : 'hidden', label : 'Hidden'},
+                {value : 'overlay', label : 'Overlay'},
+                {value : 'scroll', label : 'Scroll'},
+                {value : 'visible', label : 'Visible'}
+            ]
         },
         'font-style' : {
             type : 'selectbox',
