@@ -1376,6 +1376,7 @@ body #form-canvas .subform-section-title span {
 
 body.popupBody {
     background-color: var(--theme-content-background, #ffffffcc);
+    height: unset;
 }
 
 body.popupBody #form-canvas .form-container{
