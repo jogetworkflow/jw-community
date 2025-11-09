@@ -25,6 +25,9 @@ import org.joget.workflow.model.WorkflowProcessResult;
 public interface WorkflowManager {
     public static String LATEST = "latest";
     public static final String ARCHIVE_SETTING = "archive_processing_status";
+    public static final String DELETE_ALL_COMPLETED_PREFIX = "delete_all_completed_processes_%";
+    public static final String DELETE_ALL_COMPLETED_SETTING = "delete_all_completed_processes_status";
+    public static final String DELETE_ALL_COMPLETED_PROGRESS_SETTING = "delete_all_completed_processes_progress";
 
     /**
      * Set the workflow variable based on an activity instance ID.
@@ -1117,6 +1120,11 @@ public interface WorkflowManager {
      * To migrate process data to history tables
      */
     public void internalMigrateProcessHistories();
+    
+    /**
+     * To batch delete completed process data
+     */
+    public void internalDeleteAllCompletedProcesses();
     
     /**
      * To set setting of inbox optimization

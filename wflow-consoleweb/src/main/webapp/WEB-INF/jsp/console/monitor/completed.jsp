@@ -15,7 +15,8 @@
 <div id="main">
     <c:choose>
         <c:when test="${mode == 'completed' && hasNonArchivedProcessData}">
-            <div id="main-title"><fmt:message key="console.header.submenu.label.completedProcesses"/></div>        </c:when>
+            <div id="main-title"><fmt:message key="console.header.submenu.label.completedProcesses"/></div>        
+        </c:when>
         <c:otherwise>
             <div id="main-title"><fmt:message key="console.header.submenu.label.archivedProcesses"/></div>
         </c:otherwise>
@@ -24,6 +25,9 @@
     <div id="main-action">
     </div>
     <div id="main-body">
+        <c:if test="${mode == 'completed'}">
+            <jsp:include page="deleteStatus.jsp" flush="true"/>  
+        </c:if>
         <c:if test="${mode == 'completed' && hasNonArchivedProcessData}">
             <div class="alert alert-warning">
                 <p><fmt:message key="console.monitoring.archiveProcessData"/></p>

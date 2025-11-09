@@ -2063,6 +2063,77 @@ public class AppUtil implements ApplicationContextAware {
     }
 
     /**
+     * Used to retrieve the delete all completed processes status percentage
+     * negative value = paused
+     * 0 = nothing running
+     * 100 = completed 
+     */
+    public static double getDeleteAllCompletedProcessesStatus() {
+        //not using setupManager due to the value is cached
+        SetupDao setupDao = (SetupDao) WorkflowUtil.getApplicationContext().getBean("setupDao");
+        Collection<Setting> result = setupDao.find("WHERE property like ?", new String[]{WorkflowManager.DELETE_ALL_COMPLETED_PREFIX}, null, null, null, null);
+        
+        if (!result.isEmpty()) {
+            Setting status = null;
+            Setting statusProgress = null;
+            
+            for (Setting s : result) {
+                if (s.getProperty().equals(WorkflowManager.DELETE_ALL_COMPLETED_SETTING)) {
+                    status = s;
+                } else if (s.getProperty().equals(WorkflowManager.DELETE_ALL_COMPLETED_PROGRESS_SETTING)) {
+                    statusProgress = s;
+                }
+            }
+            
+            if (status != null && statusProgress != null) {
+            
+                try {
+                    JSONObject statusProgressObj = new JSONObject(statusProgress.getValue());
+
+                    if (status.getValue().equals("COMPLETED")) {
+                        return 100;
+                    } else if (status.getValue().equals("ABORT")) {
+                        return 0;
+                    }
+
+                    //check the date to see if the delete thread is still running, assume it is stopped if no update for 15mins
+                    if (status.getValue().equals("STARTED")) {
+                        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+                        if ((new Date()).getTime() - sdf.parse(statusProgressObj.getString("lastRun")).getTime() > (15 * 60 * 1000)) {
+                            status.setValue("PAUSE");
+                            setupDao.saveOrUpdate(status);
+                        }
+                    }
+
+                    double percentage = 0;
+                    double total = statusProgressObj.getDouble("total");
+                    double completed = statusProgressObj.getDouble("completed");
+
+                    if (total > completed) {
+                        percentage = completed/total * 100;
+                    } else {
+                        percentage = 95;
+                    }
+
+                    if (percentage == 0) {
+                        percentage = 1;
+                    }
+
+                    if (status.getValue().equals("PAUSE")) {
+                        //make it negative value is the delete thread is not running
+                        percentage = percentage * -1;
+                    }
+
+                    return percentage;
+                } catch (Exception e) {
+                    LogUtil.error(AppUtil.class.getName(), e, "");
+                }
+            }
+        }
+        return 0;
+    }
+    
+    /**
      * Return a map of create app option plugins
      * 
      * @return

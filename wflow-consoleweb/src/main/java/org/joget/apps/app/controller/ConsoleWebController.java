@@ -5122,6 +5122,34 @@ public class ConsoleWebController {
         
         writer.write(Double.toString(AppUtil.getArchivedProcessStatus()));
     }
+    
+    @RequestMapping(value = "/json/console/monitor/completed/process/deleteAll/(*:mode)", method = RequestMethod.POST)
+    public void consoleMonitorCompletedProcessDeleteAll(Writer writer, @RequestParam("mode") String mode) throws IOException {
+        if ("resume".equals(mode) || "start".equals(mode)) {
+            workflowManager.internalDeleteAllCompletedProcesses();
+            
+            if ("start".equals(mode)) {
+                writer.write("1");
+                return;
+            }
+        } else if ("pause".equals(mode) || "abort".equals(mode)) {
+            //not using setupManager due to the value is cached
+            SetupDao setupDao = (SetupDao) WorkflowUtil.getApplicationContext().getBean("setupDao");
+            Collection<Setting> result = setupDao.find("WHERE property = ?", new String[]{WorkflowManager.DELETE_ALL_COMPLETED_SETTING}, null, null, null, null);
+            Setting status = (result.isEmpty()) ? null : result.iterator().next();
+           
+            if (status != null) {
+                status.setValue(mode.toUpperCase());
+                setupDao.saveOrUpdate(status);
+            }
+        } else if ("dismiss".equals(mode)) {
+            SetupDao setupDao = (SetupDao) WorkflowUtil.getApplicationContext().getBean("setupDao");
+            setupDao.delete(WorkflowManager.DELETE_ALL_COMPLETED_SETTING);
+            setupDao.delete(WorkflowManager.DELETE_ALL_COMPLETED_PROGRESS_SETTING);
+        }
+        
+        writer.write(Double.toString(AppUtil.getDeleteAllCompletedProcessesStatus()));
+    }
 
     @RequestMapping("/json/console/monitor/(*:mode)/list")
     public void consoleMonitorCompletedListJson(Writer writer, @RequestParam("mode") String mode, @RequestParam(value = "appId", required = false) String appId, @RequestParam(value = "processId", required = false) String processId, @RequestParam(value = "processName", required = false) String processName, @RequestParam(value = "version", required = false) String version, @RequestParam(value = "recordId", required = false) String recordId, @RequestParam(value = "requester", required = false) String requester, @RequestParam(value = "callback", required = false) String callback, @RequestParam(value = "sort", required = false) String sort, @RequestParam(value = "desc", required = false) Boolean desc, @RequestParam(value = "start", required = false) Integer start, @RequestParam(value = "rows", required = false) Integer rows) throws IOException, JSONException {

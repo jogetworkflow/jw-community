@@ -6819,6 +6819,203 @@ public class WorkflowManagerImpl implements SharkWorkflowManager {
         return Boolean.TRUE.equals(result); // Safe unboxing
     }
     
+    /**
+     * Start the delete all completed processes thread
+     */
+    @Override
+    public void internalDeleteAllCompletedProcesses() {
+        final SetupDao setupDao = (SetupDao) WorkflowUtil.getApplicationContext().getBean("setupDao");
+        Collection<Setting> result = setupDao.find("WHERE property = ?", new String[]{WorkflowManager.DELETE_ALL_COMPLETED_SETTING}, null, null, null, null);
+        final Setting status = (result.isEmpty()) ? null : result.iterator().next();
+
+        if (status == null || status.getValue().equals("PAUSE") || status.getValue().equals("ABORT")) {
+            //change pause to restarted again, using transactionTemplate so that the value write to db immediatly and available to retrieve again by internalDeleteAllCompletedProcesses.
+            if (status != null && (status.getValue().equals("PAUSE") || status.getValue().equals("ABORT"))) {
+                transactionTemplate.execute(new TransactionCallbackWithoutResult() {
+                    @Override
+                    public void doInTransactionWithoutResult(TransactionStatus transactionStatus) {
+                        if (status.getValue().equals("PAUSE")) {
+                            status.setValue("RESTART");
+                            setupDao.saveOrUpdate(status);
+                        } else {
+                            setupDao.delete(status);
+                            setupDao.delete(WorkflowManager.DELETE_ALL_COMPLETED_PROGRESS_SETTING);
+                        }
+                    }
+                });
+            }
+
+            LogUtil.info(WorkflowManagerImpl.class.getName(), "Delete all completed processes started.");
+
+            //run it in background with thread
+            Thread thread = new PluginThread(new Runnable() {
+
+                @Override
+                public void run() {
+                    boolean stop = false;
+                    while (!stop) { //continue to run delete if nothing stop it
+                        stop = internalBatchDeleteAllCompletedProcesses();
+                    }
+
+                    LogUtil.info(WorkflowManagerImpl.class.getName(), "Delete all completed processes stopped.");
+                }
+            });
+            thread.setDaemon(true);
+            thread.start();
+        } else {
+            LogUtil.info(WorkflowManagerImpl.class.getName(), "Delete all completed processes can't start due to there is already another thread running.");
+        }
+    }
+    
+    /**
+     * Run the archiving by batch of 10
+     * @return 
+     */
+    public boolean internalBatchDeleteAllCompletedProcesses() {
+        //processing the batch in a new transaction
+        Boolean result = transactionTemplate.execute(new TransactionCallback<Boolean>() {
+
+            @Override
+            public Boolean doInTransaction(TransactionStatus transactionStatus) {
+                SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+                SetupDao setupDao = (SetupDao) WorkflowUtil.getApplicationContext().getBean("setupDao");
+                WorkflowAssignmentDao assDao = (WorkflowAssignmentDao) WorkflowUtil.getApplicationContext().getBean("workflowAssignmentDao");
+                
+                //create a status in setting table to show progress
+                Collection<Setting> result = setupDao.find("WHERE property like ?", new String[]{WorkflowManager.DELETE_ALL_COMPLETED_PREFIX}, null, null, null, null);
+                
+                Setting status = null;
+                Setting statusProgress = null;
+
+                for (Setting s : result) {
+                    if (s.getProperty().equals(WorkflowManager.DELETE_ALL_COMPLETED_SETTING)) {
+                        status = s;
+                    } else if (s.getProperty().equals(WorkflowManager.DELETE_ALL_COMPLETED_PROGRESS_SETTING)) {
+                        statusProgress = s;
+                    }
+                }
+                
+                JSONObject statusProgressObj = null;
+                if (statusProgress == null) {
+                    statusProgress = new Setting();
+                    statusProgress.setProperty(WorkflowManager.DELETE_ALL_COMPLETED_PROGRESS_SETTING);
+                    
+                    statusProgressObj = new JSONObject();
+                    //get total completed process instances
+                    statusProgressObj.put("total", assDao.getProcessesSize(null, null, null, null, null, null, null, "closed"));
+                    statusProgressObj.put("completed", 0);
+                } else {
+                    try {
+                        statusProgressObj = new JSONObject(statusProgress.getValue());
+                    } catch (Exception e) {
+                        LogUtil.debug(WorkflowManagerImpl.class.getName(), "Fail to parse archive processing status.");
+                    }
+                }
+
+                if (statusProgressObj != null) {
+                    
+                    //change the status to STARTED
+                    if (status == null || "RESTART".equals(status.getValue())) {
+                        if (status == null) {
+                            status = new Setting();
+                            status.setProperty(WorkflowManager.DELETE_ALL_COMPLETED_SETTING);
+                        }
+                        
+                        status.setValue("STARTED");
+                        setupDao.saveOrUpdate(status);
+                        
+                        statusProgressObj.put("lastRun", sdf.format(new Date()));
+                        statusProgress.setValue(statusProgressObj.toString());
+                        setupDao.saveOrUpdate(statusProgress);
+                    }
+                   
+                    if ("STARTED".equals(status.getValue())) {
+                        
+                        SharkConnection sc = null;
+                        try {
+                            sc = connect();
+
+                            Shark shark = Shark.getInstance();
+                            WfProcessIterator pi = sc.get_iterator_process();
+                            ProcessFilterBuilder pieb = shark.getProcessFilterBuilder();
+                            WMSessionHandle sessionHandle = sc.getSessionHandle();
+                            ExecutionAdministration ea = shark.getExecutionAdministration();
+                            
+                            //retrieve 10 closed process instances
+                            WMFilter filter = new WMFilter();
+                            filter = pieb.addStateStartsWith(sessionHandle, "closed");
+                            filter = pieb.setOrderByCreatedTime(sessionHandle, filter, false);
+                            filter = pieb.setLimit(sessionHandle, filter, 10); //only return 10 per batch
+
+                            pi.set_query_expression(pieb.toIteratorExpression(sessionHandle, filter));
+                            WfProcess[] wfProcessList = pi.get_next_n_sequence(0);
+                            if (wfProcessList.length > 0) {
+                                Collection<String> pIds = new ArrayList<String>();
+                                
+                                for (int i = 0; i < wfProcessList.length; i++) {
+                                    pIds.add(wfProcessList[i].key());
+                                }
+
+                                //remove it 
+                                ea.deleteProcesses(sessionHandle, pIds.toArray(new String[0]));
+                                LogUtil.debug(WorkflowManagerImpl.class.getName(), "Deleted " + pIds.size() + " processes. " + pIds.toString());
+                                
+                                try {
+                                    statusProgressObj = new JSONObject(status.getValue());
+                                } catch (Exception e) {
+                                    LogUtil.debug(WorkflowManagerImpl.class.getName(), "Fail to parse archive processing status.");
+                                }
+                                
+                                statusProgressObj.put("completed", statusProgressObj.getInt("completed") + pIds.size());
+                                statusProgressObj.put("lastRun", sdf.format(new Date()));
+                                statusProgress.setValue(statusProgressObj.toString());
+                                
+                                setupDao.saveOrUpdate(statusProgress);
+                            } else {
+                                //completed
+                                status.setValue("COMPLETED");
+                                setupDao.saveOrUpdate(status);
+                                
+                                LogUtil.info(WorkflowManagerImpl.class.getName(), "Delete all completed processes completed.");
+                                return true;
+                            }
+                        } catch (Exception e) {
+                            LogUtil.error(WorkflowManagerImpl.class.getName(), e, "");
+                            
+                            try {
+                                //if there is error and already retry for 15mins, pause it
+                                if ((new Date()).getTime() - sdf.parse(statusProgressObj.getString("lastRun")).getTime() > (15 * 60 * 1000)) {
+                                    status.setValue("PAUSE");
+                                    setupDao.saveOrUpdate(status);
+                                    return true;
+                                }
+                            } catch (Exception ex) {
+                                LogUtil.error(WorkflowManagerImpl.class.getName(), ex, "");
+                            }
+                        } finally {
+                            try {
+                                disconnect(sc);
+                            } catch (Exception e) {
+                                LogUtil.error(getClass().getName(), e, "");
+                            }
+                        }
+                        return false; 
+                    } else if ("PAUSE".equals(status.getValue())) {
+                        LogUtil.info(WorkflowManagerImpl.class.getName(), "Delete all completed processes paused.");
+                    } else if ("ABORT".equals(status.getValue())) {
+                        //aborted, remove the setting for status tracking
+                        setupDao.delete(status);
+                        setupDao.delete(statusProgress);
+                        LogUtil.info(WorkflowManagerImpl.class.getName(), "Delete all completed processes aborted.");
+                    }
+                }
+                return true; //stop the thread
+            }
+        });
+         
+        return Boolean.TRUE.equals(result); // Safe unboxing
+    }
+    
     @Override
     public DataListInboxSetting processInboxSetting(DataListInboxSetting setting) {
         return setting;
