@@ -2447,7 +2447,7 @@ div#content-container {
 /* progress bar end */
 /* Toast for Admin Console */
 .toast.console {
-    position: absolute; 
+    position: fixed; 
     transform: translateX(-50%);
     height: fit-content;
     padding: 10px;
@@ -2458,6 +2458,12 @@ div#content-container {
     color: #000;
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05), 0 1px 3px rgba(0, 0, 0, 0.04);
     transition: opacity 0.5s ease-in-out;
+}
+.toast.console.error {
+    background: #f8d7da;
+}
+.toast.console.error #toast-icon {
+    color: var(--console-button-danger-bg);
 }
 .toast.console .toast-body {
     padding-right: 12px;

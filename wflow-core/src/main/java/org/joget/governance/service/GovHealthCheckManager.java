@@ -10,6 +10,8 @@ import com.google.gson.JsonPrimitive;
 import com.google.gson.JsonSerializationContext;
 import com.google.gson.JsonSerializer;
 import com.google.gson.reflect.TypeToken;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import java.io.File;
 import java.lang.reflect.Type;
 import java.text.SimpleDateFormat;
@@ -34,10 +36,14 @@ import org.joget.commons.spring.model.Setting;
 import org.joget.commons.util.DynamicDataSourceManager;
 import org.joget.commons.util.HostManager;
 import org.joget.commons.util.LogUtil;
+import org.joget.commons.util.ResourceBundleUtil;
 import org.joget.commons.util.ServerUtil;
 import org.joget.commons.util.SetupManager;
 import org.joget.commons.util.StringUtil;
 import org.joget.governance.model.GovHealthCheck;
+import org.joget.governance.model.GovHealthCheckAction;
+import org.joget.governance.model.GovHealthCheckActionProvider;
+import org.joget.governance.model.GovHealthCheckActionResult;
 import org.joget.governance.model.GovHealthCheckResult;
 import org.joget.governance.model.GovHealthCheckResult.Detail;
 import org.joget.governance.model.GovHealthCheckResult.Status;
@@ -47,6 +53,7 @@ import org.joget.plugin.base.PluginManager;
 import org.joget.plugin.base.ProfilePluginCache;
 import org.joget.plugin.property.model.PropertyEditable;
 import org.joget.plugin.property.service.PropertyUtil;
+import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler;
@@ -267,6 +274,91 @@ public class GovHealthCheckManager {
         }
         
         return getLastResultsJson();
+    }
+    
+    /**
+     * Find the action based on action id and plugin class and perform the action
+     * 
+     * @param pluginClass
+     * @param detail
+     * @param actionId
+     * @param request
+     * @param response
+     * @return null if the http response is handled by the action itself.
+     */
+    public String performAction(String pluginClass, String detail, String actionId, HttpServletRequest request, HttpServletResponse response) {
+        GovHealthCheck checker = (GovHealthCheck) pluginManager.getPlugin(pluginClass);
+        GovHealthCheckActionResult actionResult = null;
+        GovHealthCheckAction action = null;
+        
+        if (checker != null && checker instanceof GovHealthCheckActionProvider) {
+            GovHealthCheckActionProvider provider = (GovHealthCheckActionProvider) checker;
+            
+            //find the action
+            List<GovHealthCheckAction> actions = provider.getActions();
+            for (GovHealthCheckAction a : actions) {
+                if (a.getId().equals(actionId)) {
+                    action = a;
+                    break;
+                }
+            }
+        }
+        
+        if (action != null) {
+            actionResult = action.perform(pluginClass, detail, request, response);
+        } else { 
+            LogUtil.debug(GovHealthCheckAction.class.getName(), "No handler defined for action: " + actionId);
+            actionResult = GovHealthCheckActionResult.fail(false, ResourceBundleUtil.getMessage("console.governance.actionNotFound"));
+        }
+        
+        if (actionResult != null) {
+            JSONObject jsonResult = new JSONObject();
+            jsonResult.put("success", actionResult.isSuccess());
+            if (actionResult.getRedirectUrl() != null && !actionResult.getRedirectUrl().isEmpty()) {
+                jsonResult.put("redirectUrl", actionResult.getRedirectUrl());
+            }
+            if (actionResult.getMessage() != null && !actionResult.getMessage().isEmpty()) {
+                jsonResult.put("message", actionResult.getMessage());
+            }
+            
+            if (actionResult.isRemoveFromResult()) {
+                Map<String, GovHealthCheckResult> prevResults = getLastResults();
+                if (prevResults != null && prevResults.containsKey(pluginClass)) {
+                    GovHealthCheckResult result = prevResults.get(pluginClass);
+
+                    if (result != null && !result.getDetails().isEmpty()) {
+                        boolean allSuppressed = true;
+
+                        //remove the detail
+                        result.getDetails().removeIf(d -> detail.equals(StringUtil.stripAllHtmlTag(d.getDetail())));
+
+                        for (Detail d : result.getDetails()) {
+                            if (!d.getSuppressed()) {
+                                allSuppressed = false;
+                            }
+                        }
+
+                        if (allSuppressed) {
+                            result.setStatus(Status.PASS);
+                        }
+
+                        setLastResults(prevResults);
+                    }
+                }
+                
+                jsonResult.put("result", getLastResultsJson());
+            }
+            
+            return jsonResult.toString();
+        }
+        return null;
+    }
+    
+    public static List<GovHealthCheckAction> getActions(GovHealthCheck checker) {
+        if (checker instanceof GovHealthCheckActionProvider) {
+            return ((GovHealthCheckActionProvider) checker).getActions();
+        }
+        return null;
     }
     
     public void cleanData() {

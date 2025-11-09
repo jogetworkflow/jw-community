@@ -1,4 +1,5 @@
 <%@ include file="/WEB-INF/jsp/includes/taglibs.jsp" %>
+<%@ page import="org.joget.governance.service.GovHealthCheckManager"%>
 
 <commons:header />
 <script type="text/javascript" src="${pageContext.request.contextPath}/js/JSON.js"></script>
@@ -84,6 +85,14 @@
                                     <td class="name">
                                         <span class="plugin_label">${element.i18nLabel}</span>
                                         <span class="actions"><a class="deactivateBtn <c:if test="${element.properties.deactivated eq 'true'}">deactivated</c:if>"><span class="activate"><fmt:message key="console.governance.activate"/></span><span class="deactivate"><fmt:message key="console.governance.deactivate"/></span></a><c:if test="${element.configurable}"><a class="configBtn"><fmt:message key="console.governance.configure"/></a></c:if><c:if test="${!empty element.infoLink}"><a href="${element.infoLink}" target="_blank" rel="noopener"><i class="fas fa-question-circle"></i></a></c:if></span>
+                                        <c:set var="elementActionList" value="${GovHealthCheckManager.getActions(element)}"/>
+                                        <c:if test="${!empty elementActionList}">
+                                            <span class="detailActions" style="display:none">
+                                                <c:forEach items="${elementActionList}" var="elementAction" varStatus="actionLoop">
+                                                    <a data-id="${elementAction.id}" data-confirm="${elementAction.confirmMessage}" data-popup="${elementAction.popup}" class="btn btn-secondary btn-sm btn-action"><c:if test="${!empty elementAction.icon}"><i class="${elementAction.icon}"></i> </c:if>${elementAction.label}</a></a>
+                                                </c:forEach>
+                                            </span> 
+                                        </c:if>   
                                     </td>
                                     <td class="status"></td>
                                     <td class="timestamp"></td>

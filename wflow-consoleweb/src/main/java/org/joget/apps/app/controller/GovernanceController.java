@@ -5,6 +5,7 @@ import java.io.Writer;
 import java.util.Date;
 import java.util.Map;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import org.apache.commons.lang.StringEscapeUtils;
 import org.joget.commons.spring.model.Setting;
 import org.joget.commons.util.SecurityUtil;
@@ -143,6 +144,14 @@ public class GovernanceController {
     public void suppress(Writer writer, @RequestParam("pluginClass") String pluginClass, @RequestParam("detail") String detail) throws IOException, JSONException {
         String json = govHealthCheckManager.suppress(pluginClass, StringUtil.stripAllHtmlTag(detail));
         writer.write(json);
+    }
+    
+    @RequestMapping(value = "/governance/action", method = RequestMethod.POST)
+    public void performAction(Writer writer, HttpServletRequest request, HttpServletResponse response,  @RequestParam("pluginClass") String pluginClass, @RequestParam("detail") String detail, @RequestParam("actionId") String actionId) throws IOException, JSONException {
+        String json = govHealthCheckManager.performAction(pluginClass, StringUtil.stripAllHtmlTag(detail), actionId, request, response);
+        if (json != null) {
+            writer.write(json);
+        }
     }
     
     @RequestMapping(value = "/governance/deleteData", method = RequestMethod.POST)

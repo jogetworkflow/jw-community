@@ -47,6 +47,10 @@ GovernanceUtil = {
             $(this).parent().toggleClass("show");
         });
         
+        $('.governance_report table').on("click", "a.btn-action", function(){
+            GovernanceUtil.performAction($(this), $(this).closest("li"));
+        });
+        
         $('.governance_report table').on("click", "a.btn-suppress", function(){
             GovernanceUtil.suppress($(this).closest("li"));
         });
@@ -143,6 +147,71 @@ GovernanceUtil = {
                 confirmButtonLabel : GovernanceUtil.msg['suppress']
             }
         );
+    },
+    
+    performAction: function(action, item) {
+        GovernanceUtil.blockUI();
+        
+        var confirmMsg = $(action).data("confirm");
+        
+        if (confirmMsg === undefined || 
+                confirmMsg === "" ||
+                confirm(confirmMsg)) {
+            var pluginclass = $(item).closest("tr").attr("plugin-class");
+            
+            var isPopup = $(action).data("popup");
+            if (isPopup) {
+                var popup = new PopupDialog(UI.base+'/images/v3/cj.gif', "");
+                popup.show();
+                
+                var form = $('<form method="post" data-ajax="false" style="display:none;" target="jqueryDialogFrame" action="'+ UI.base + '/web/governance/action"></form>'); 
+                $(document.body).append(form); 
+
+                $(form).append("<input id=\""+ConnectionManager.tokenName+"\" name=\""+ConnectionManager.tokenName+"\" value=\""+ConnectionManager.tokenValue+"\">");
+                $(form).append("<input id=\"pluginClass\" name=\"pluginClass\" value=\""+UI.escapeHTML(pluginclass)+"\">");
+                $(form).append("<textarea id=\"detail\" name=\"detail\">"+$(item).find('.detail').html()+"</textarea>");
+                $(form).append("<input id=\"actionId\" name=\"actionId\" value=\""+UI.escapeHTML($(action).data("id"))+"\">");
+                
+                setTimeout(function() {
+                    $(form).submit();
+                    $(form).remove();
+                    $.unblockUI();
+                }, 120);
+            } else {
+                var scroll = $("html").scrollTop();
+                ConnectionManager.post(UI.base + "/web/governance/action", {
+                    success : function(data) {
+                        if (data !== null && data !== undefined && data !== "") {
+                            if (typeof data === 'string') {
+                                data = JSON.decode(data);
+                            }
+                        }
+                        
+                        if (data.message && data.redirectUrl) {
+                            alert(data.message);
+                        } else if (data.message) {
+                            UI.showConsoleToast(1, data.message, (data.success?"fas fa-circle-info":"fas fa-exclamation-circle"), 2000, $("div#main"), !data.success); 
+                        }
+                        
+                        if (data.redirectUrl) {
+                            document.location.href = data.redirectUrl;
+                        }
+                        
+                        if (data.result !== undefined) {
+                            GovernanceUtil.updateResult(data.result, scroll);
+                        }
+                        $.unblockUI();
+                    }
+                }, 
+                {
+                    pluginClass : pluginclass,
+                    detail : $(item).find('.detail').html(),
+                    actionId : $(action).data("id")
+                });
+            }
+        } else {
+            $.unblockUI(); //unblock the UI when cancel
+        }
     },
 
     cleanData: function() {
@@ -259,6 +328,10 @@ GovernanceUtil = {
                             link = UI.base + link;
                         }
                         $(li).append('<a href="'+link+'"  target="_blank" class="btn btn-secondary btn-sm">'+btnLabel+'</a>');
+                    }
+                    
+                    if ($(row).find(".detailActions").length > 0) {
+                        $(li).append($(row).find(".detailActions").html());
                     }
                     
                     if (rowResult.suppressable) {
