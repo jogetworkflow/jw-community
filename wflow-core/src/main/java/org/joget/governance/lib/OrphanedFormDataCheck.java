@@ -1,12 +1,16 @@
 package org.joget.governance.lib;
 
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import java.io.ByteArrayInputStream;
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
 import java.sql.ResultSet;
+import java.sql.Statement;
 import java.util.Collection;
 import java.util.Date;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 import javax.sql.DataSource;
 import javax.xml.xpath.XPath;
@@ -22,16 +26,22 @@ import org.joget.apps.app.model.FormDefinition;
 import org.joget.apps.app.service.AppService;
 import org.joget.apps.app.service.AppUtil;
 import org.joget.apps.app.service.RegexMatchesFunctionResolver;
+import org.joget.apps.form.dao.FormDataDao;
 import org.joget.apps.form.dao.FormDataDaoImpl;
 import org.joget.apps.form.service.CustomFormDataTableUtil;
 import org.joget.commons.util.LogUtil;
 import org.joget.commons.util.ResourceBundleUtil;
 import org.joget.governance.model.GovHealthCheckAbstract;
+import org.joget.governance.model.GovHealthCheckAction;
+import org.joget.governance.model.GovHealthCheckActionProvider;
+import org.joget.governance.model.GovHealthCheckActionResult;
 import org.joget.governance.model.GovHealthCheckResult;
 import org.w3c.dom.Document;
 import org.w3c.dom.NodeList;
 
-public class OrphanedFormDataCheck extends GovHealthCheckAbstract {
+public class OrphanedFormDataCheck extends GovHealthCheckAbstract implements GovHealthCheckActionProvider {
+    
+    private List<GovHealthCheckAction> actions;
     
     @Override
     public String getName() {
@@ -78,6 +88,20 @@ public class OrphanedFormDataCheck extends GovHealthCheckAbstract {
         GovHealthCheckResult result = new GovHealthCheckResult();
         result.setSuppressable(true);
         
+        Set<String> tables = getOrphanedTables();
+        
+        if (!tables.isEmpty()) {
+            result.setStatus(GovHealthCheckResult.Status.WARN);
+            String list = "<ol><li>" + FormDataDaoImpl.FORM_PREFIX_TABLE_NAME + StringUtils.join(tables, "</li><li>" + FormDataDaoImpl.FORM_PREFIX_TABLE_NAME) + "</li></ol>";
+            result.addDetail(ResourceBundleUtil.getMessage("orphanedFormDataCheck.warn", new String[]{list}));
+        } else {
+            result.setStatus(GovHealthCheckResult.Status.PASS);
+        }
+        
+        return result;
+    }
+    
+    protected Set<String> getOrphanedTables() {
         Set<String> tables = getTables();
         
         AppDefinitionDao appDefinitionDao = (AppDefinitionDao) AppUtil.getApplicationContext().getBean("appDefinitionDao");
@@ -148,15 +172,7 @@ public class OrphanedFormDataCheck extends GovHealthCheckAbstract {
             }
         }
         
-        if (!tables.isEmpty()) {
-            result.setStatus(GovHealthCheckResult.Status.WARN);
-            String list = "<ol><li>" + FormDataDaoImpl.FORM_PREFIX_TABLE_NAME + StringUtils.join(tables, "</li><li>" + FormDataDaoImpl.FORM_PREFIX_TABLE_NAME) + "</li></ol>";
-            result.addDetail(ResourceBundleUtil.getMessage("orphanedFormDataCheck.warn", new String[]{list}));
-        } else {
-            result.setStatus(GovHealthCheckResult.Status.PASS);
-        }
-        
-        return result;
+        return tables;
     }
     
     protected static void checkUsages(byte[] defXml, Set<String> tables, XPath xpath) {
@@ -246,5 +262,57 @@ public class OrphanedFormDataCheck extends GovHealthCheckAbstract {
         
         return tables;
     }
-    
+
+    @Override
+    public List<GovHealthCheckAction> getActions() {
+        if (actions == null) {
+            actions = List.of(
+                new GovHealthCheckAction("fixit", ResourceBundleUtil.getMessage("orphanedFormDataCheck.fixit"), "fa-solid fa-hammer", (GovHealthCheckAction action, String pluginClass, String detail, HttpServletRequest request, HttpServletResponse response) -> {
+                    Set<String> tables = getOrphanedTables();
+                    
+                    boolean hasError = false;
+                    
+                    try {
+                        FormDataDao formDataDao = (FormDataDao) AppUtil.getApplicationContext().getBean("formDataDao");
+                        DataSource ds = (DataSource) AppUtil.getApplicationContext().getBean("setupDataSource");
+                        Connection con = null;
+                        Statement statement = null;
+                        try {
+                            con = ds.getConnection();
+                            statement = con.createStatement();
+
+                            for (String t : tables) {
+                                LogUtil.info(OrphanedFormDataCheck.class.getName(), "Remove app_fd_" + t);
+                                
+                                try {
+                                    //delete tables
+                                    String sql = "DROP TABLE app_fd_" + t;
+                                    statement.execute(sql);
+
+                                    //delete hibernate mapping file & cache
+                                    formDataDao.clearFormTableCache(t);
+                                } catch (Exception ex) {
+                                    LogUtil.info(getClassName(), "Fail to drop table app_fd_" + t + " due to " + ex.getMessage());
+                                    hasError = true;
+                                }
+                            }
+                        } finally{
+                            statement.close();
+                            con.close();
+                        }
+                    } catch (Exception e) {
+                        hasError = true;
+                        LogUtil.error(getClassName(), e, "");
+                    }
+                    
+                    if (hasError) {
+                        return GovHealthCheckActionResult.fail(false, ResourceBundleUtil.getMessage("orphanedFormDataCheck.fixit.fail"));
+                    } else {
+                        return GovHealthCheckActionResult.success(true, ResourceBundleUtil.getMessage("orphanedFormDataCheck.fixit.success"));
+                    }
+                })
+            );
+        }
+        return actions;
+    }
 }
