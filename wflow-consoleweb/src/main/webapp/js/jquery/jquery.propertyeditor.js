@@ -2307,6 +2307,7 @@ PropertyEditor.Model.Page.prototype = {
             var editor = this.editor;
             var currentPage = $(editor).find(".property-page-show.current");
             var currentPageParentElementId = $(currentPage).attr("elementid");
+            var currentPageElementValue = $(currentPage).attr("elementvalue");
             if ($(currentPage).attr("parentelementid") !== undefined && $(currentPage).attr("parentelementid") !== "") {
                 currentPageParentElementId = $(currentPage).attr("parentelementid");
             }
@@ -2316,7 +2317,7 @@ PropertyEditor.Model.Page.prototype = {
             $(this.editor).find('.property-page-show').each(function(i) {
                 var pageId = $(this).attr("id");
                 var parentElementId = $(this).attr("elementid");
-                if ($(this).attr("parentelementid") !== undefined && $(this).attr("parentelementid") !== "") {
+                if ($(this).attr("parentelementid") !== undefined && $(this).attr("parentelementid") !== "" && ($(this).attr("parentelementid") !== currentPageParentElementId || $(this).attr("elementvalue") === currentPageElementValue)) {
                     parentElementId = $(this).attr("parentelementid");
                 }
 
@@ -9732,11 +9733,11 @@ PropertyEditor.Type.ElementMultiSelect.prototype = {
     },
     addRow : function(before, value, init, collapse) {
         var thisObj = this;
-        
+
         var row = $('<div class="repeater-row property-editor-property" style="margin-bottom:0px;"><div class="actions expand-compress property-label-container"><div class="property-label" style="display:none"></div><div class="num"></div></div><div class="actions sort"><i class="fas fa-arrows-alt"></i></div><div class="inputs"><div class="inputs-container"></div></div><div class="actions rowbuttons"><a class="addrow"><i class="fas fa-plus-circle"></i></a><a class="deleterow"><i class="fas fa-trash"></i></a></div></div>');
-        
+
         var cId = thisObj.id + "-" + ((new Date()).getTime()) + (Math.floor(Math.random() * 10000));
-        
+
         var valueString = "";
         if (value !== null && ((typeof value) === "string")) {
             var temp = value;
@@ -9747,7 +9748,7 @@ PropertyEditor.Type.ElementMultiSelect.prototype = {
             valueString = value.className;
         }
         var html = '<select id="' + cId + '" name="' + cId + '" data-value="'+PropertyEditor.Util.escapeHtmlTag(valueString)+'" class="initChosen">';
-        
+
         if (!((typeof thisObj.properties.options) === "undefined") && thisObj.properties.options !== null) {
             $.each(thisObj.properties.options, function(i, option) {
                 var selected = "";
@@ -9769,11 +9770,11 @@ PropertyEditor.Type.ElementMultiSelect.prototype = {
             });
         }
         html += '</select>';
-        
+
         html += " <a href=\"\" target=\"_blank\" class=\"elementHelplink\" style=\"display:none;\" ><i class=\"fas fa-question-circle\"></i></a>";
-        
+
         $(row).find(".inputs .inputs-container").append(html);
-        
+
         if ($(this.editor).hasClass("editor-panel-mode") || thisObj.options.editorPanelMode) {
             var initial = "";
             if (init === true && $("#" + this.id).closest(".element-pages, .property-type-repeater").length !== 0 && valueString !== "") {
@@ -9781,24 +9782,41 @@ PropertyEditor.Type.ElementMultiSelect.prototype = {
             }
             $(row).find(".inputs").append("<div class=\"element-pages\" style=\"display:none;\"><div class=\"anchor property-editor-page "+initial+"\" data-page=\""+thisObj.page.id+"\" anchorField=\""+cId+"\" style=\"display:none\"></div></div>");
         }
-        
+
         $(row).data("element", value);
-        
+
+        // Create the anchor element first
+        var newAnchor = $("<div class=\"anchor property-editor-page\" data-page=\""+thisObj.page.id+"\" anchorField=\""+cId+"\" style=\"display:none\"></div>");
+
         if (before !== null && !((typeof before) === "undefined") && !$(before).hasClass("pebutton")) {
-            $(before).closest(".repeater-row").before(row);
+            // Adding above an existing row - find the correct existing row and its anchor
+            var existingRow = $(before).closest(".repeater-row");
+            var existingSelectId = $(existingRow).find("select").attr("id");
+
+            // Insert the new row before the existing row
+            $(existingRow).before(row);
             
-            var bid = $(before).find("select").attr("id");
-            var beforeAnchor = $(thisObj.editor).find(".anchor[anchorField=\""+bid+"\"]");
-            $(beforeAnchor).before("<div class=\"anchor property-editor-page\" data-page=\""+thisObj.page.id+"\" anchorField=\""+cId+"\" style=\"display:none\"></div>");
+            // Find the anchor of the existing row and insert new anchor before it
+            var existingAnchor = $(thisObj.editor).find(".anchor[anchorField=\"" + existingSelectId + "\"]");
+            if ($(".anchor[anchorField='" + cId + "']").length === 0) {
+                if ($(existingAnchor).length > 0) {
+                    $(existingAnchor).before(newAnchor);
+                } else {
+                    // Insert before the main anchor if existing anchor not found
+                    var mainAnchor = $(thisObj.editor).find(".anchor[anchorField=\"" + thisObj.id + "\"]");
+                    $(mainAnchor).before(newAnchor);
+                }
+            }
         } else {
+            // Adding at the end (normal add row behavior)
             $("#" + thisObj.id + "_input").find(" > div > .repeater-rows-container").append(row);
-            
-            var beforeAnchor = $(thisObj.editor).find(".anchor[anchorField=\""+thisObj.id+"\"]");
-            $(beforeAnchor).before("<div class=\"anchor property-editor-page\" data-page=\""+thisObj.page.id+"\" anchorField=\""+cId+"\" style=\"display:none\"></div>");
+
+            var mainAnchor = $(thisObj.editor).find(".anchor[anchorField=\""+thisObj.id+"\"]");
+            $(mainAnchor).before(newAnchor);
         }
-        
+
         var field = $(row).find("#"+cId);
-        
+
         if (UI.rtl) {
             $(field).addClass("chosen-rtl");
         }
