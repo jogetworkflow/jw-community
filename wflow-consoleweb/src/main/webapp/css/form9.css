@@ -1095,6 +1095,11 @@ body input.no-manual-input {
     max-height: 230px;
 }
 
+.ht_editor_visible .ht_master .wtHolder{
+    max-width: fit-content;
+    overflow-x: hidden;
+}
+
 .form-cell .handsontable table td,
 .form-cell .handsontable table th,
 .subform-cell .handsontable table td,
