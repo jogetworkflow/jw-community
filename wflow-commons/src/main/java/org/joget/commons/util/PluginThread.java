@@ -38,6 +38,7 @@ import jakarta.servlet.http.HttpUpgradeHandler;
 import jakarta.servlet.http.Part;
 import java.util.concurrent.ConcurrentHashMap;
 import org.apache.commons.lang3.reflect.MethodUtils;
+import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 import sun.misc.Unsafe;
@@ -48,6 +49,7 @@ import sun.misc.Unsafe;
 public final class PluginThread extends Thread {
       
     private final String profile;
+    private final Locale currentLocale;
     private HttpServletRequest request;
     private HttpServletResponse response;
     private ServletRequestContext wildflyServletRequestContext; // for jboss eap and wildfly
@@ -117,7 +119,7 @@ public final class PluginThread extends Thread {
     public PluginThread(Runnable r) {
         super(r);
         ACTIVE_THREADS.put(this.getName(), this);
-                
+        currentLocale = LocaleContextHolder.getLocale();
         profile = DynamicDataSourceManager.getCurrentProfile();
         ServletRequestAttributes sra = null;
         try {
@@ -201,7 +203,8 @@ public final class PluginThread extends Thread {
     @Override
     public void run() {
         setProfile();
-        
+        // set locale for the current thread
+        LocaleContextHolder.setLocale(currentLocale);
         if (request != null) {
             RequestContextHolder.setRequestAttributes(new ServletRequestAttributes(request, response));
             
