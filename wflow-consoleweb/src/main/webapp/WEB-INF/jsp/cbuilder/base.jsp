@@ -248,10 +248,7 @@
                 <div id="right-panel-resize-block"></div>
                 <div id="right-panel">
                     <div id="right-panel-content" class="element-properties ">
-                        <button id="right-panel-window-move" title="<fmt:message key="cbuilder.moveWindow"/>" data-cbuilder-action="moveRightPanelWindow" data-cbuilder-on="mousedown touchstart" style="display:none">
-                            <i class="las la-arrows-alt"></i>
-                        </button>
-                        <div class="element-properties-header-actions">
+                        <div class="element-properties-header-actions" title="<fmt:message key="cbuilder.moveWindow"/>" data-cbuilder-action="moveRightPanelWindow" tooltip-position="mouse" data-cbuilder-on="mousedown touchstart">
                             <div class="float-start">
                                 <button id="cancel-properties-btn" title="<fmt:message key="cbuilder.close"/>" class="btn btn-link-secondary btn-sm" data-cbuilder-action="closePropertiesWindow">
                                     <i class="las la-times"></i>

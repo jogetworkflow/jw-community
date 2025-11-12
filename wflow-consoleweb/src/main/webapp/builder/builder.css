@@ -813,6 +813,17 @@ body.right-panel-resizing #right-panel-resize-block{
 .drag-elements-sidepane ul > li ol li[data-type] a {
     display: block; 
 }
+body.right-panel-mode-window .element-properties-header-actions{
+    width: 30%;
+    position: absolute;
+    top:0px;
+    right: 0px;
+    padding: 6px;
+    cursor: grab;
+}
+body.right-panel-mode-window .element-properties-header-actions:active {
+    cursor: grabbing;
+}
 .components-list li ol li{
     width: 89%;
     margin: 0% 5% 5% 5%;
@@ -1670,7 +1681,6 @@ body.quick-nav-position-left.max-property-editor #right-panel {
 #expand-all-props-btn,
 #collapse-all-props-btn,
 #cancel-properties-btn,
-#right-panel-window-move,
 .element-properties-header-actions .btn-link-secondary{
     font-size: 18px;
     line-height: 18px;
@@ -2529,17 +2539,6 @@ body.right-panel-mode-window #right-panel{
 }
 body.right-panel-mode-window #dock-properties-btn{
     display: inline-block !important;
-}
-body.right-panel-mode-window #right-panel-window-move{
-    position: absolute;
-    top: 8px;
-    left: 9px;
-    cursor: move;
-    display: block !important;
-    z-index: 10;
-    border: 0px;
-    background: transparent;
-    outline:none;
 }
 body.right-panel-mode-window .element-properties{
     background-color: #fff;

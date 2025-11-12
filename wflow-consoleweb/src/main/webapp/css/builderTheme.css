@@ -648,12 +648,6 @@ body[builder-theme].right-panel-mode-window #apply-btn {
     right: 25px;
     border-radius: 5px;
 }
-body[builder-theme].right-panel-mode-window #right-panel-window-move {
-    top: 0px;
-    left: 0px;
-    width: 50px;
-    height: 50px;
-}
 body[builder-theme] #right-panel-window-resize, body[builder-theme] #right-panel-window-resize:before, body[builder-theme] #right-panel-window-resize:after {
     background-image: radial-gradient(#666 40%, transparent 40%);
 }
@@ -1751,7 +1745,6 @@ body[builder-theme] .guider_button{
 body[builder-theme] #expand-all-props-btn, 
 body[builder-theme] #collapse-all-props-btn, 
 body[builder-theme] #cancel-properties-btn, 
-body[builder-theme] #right-panel-window-move, 
 body[builder-theme] .element-properties-header-actions .btn-link-secondary {
     padding: 2px;
     margin-right: unset;
@@ -2350,7 +2343,6 @@ body[builder-theme]#cbuilder #right-panel {
 body[builder-theme='dark'] #expand-all-props-btn, 
 body[builder-theme='dark'] #collapse-all-props-btn, 
 body[builder-theme='dark'] #cancel-properties-btn, 
-body[builder-theme='dark'] #right-panel-window-move, 
 body[builder-theme='dark'] .element-properties-header-actions .btn-link-secondary {
     color: var(--theme-label-color-2);
 }

@@ -636,10 +636,20 @@ window._CustomBuilder = {
                     }
                     var el = $(event.originalEvent.target).closest('[title]');
                     var position = el.attr('tooltip-position');
+
+                    if (position === "mouse" && !$("body").hasClass("right-panel-mode-window")) {
+                        $(ui.tooltip).hide();
+                        event.preventDefault();
+                        return false;
+                    }
+                    
                     if (position === "right") {
                         var offset = el.offset();
                         $(ui.tooltip).css("left", (offset.left + el.width() + 5) + "px");
                         $(ui.tooltip).css("top", (offset.top + 5) + "px");
+                    } else if (position === "mouse") {
+                        $(ui.tooltip).css("left", (event.clientX + 5) + "px");
+                        $(ui.tooltip).css("top", (event.clientY + 5) + "px");
                     }
                     
                     if (CustomBuilder.tooltipTimeout !== undefined && CustomBuilder.tooltipTimeout !== null) {
@@ -2322,16 +2332,48 @@ window._CustomBuilder = {
     /*
      * Move builder right panel window
      */
-    moveRightPanelWindow : function(event) {
+    moveRightPanelWindow: function(event) {
+        //Remove tooltip if present when the panel starts getting dragged
+        if($('.ui-tooltip').length > 0) {
+            $('.ui-tooltip').remove();
+        }
+
+        // Don't start drag if clicking on functional icons
+        if ($(event.target).closest('.float-left, .float-right').length > 0) {
+            return;
+        }
+
         var button = $(this);
         var panel = $("#right-panel");
         $(panel).addClass("resizing");
         $("body").addClass("right-panel-resizing");
-        
+
+        // Get initial panel position and cursor position
+        var initialTop = parseFloat(CustomBuilder.getBuilderSetting("right-panel-window-top")) || parseFloat($(panel).css("top")) || 0;
+        var initialLeft = parseFloat(CustomBuilder.getBuilderSetting("right-panel-window-left")) || parseFloat($(panel).css("left")) || 0;
+        var startX = event.clientX;
+        var startY = event.clientY;
+
+        if (event.type === "touchstart") {
+            startX = event.touches[0].clientX;
+            startY = event.touches[0].clientY;
+            if (event.touches[0].originalEvent) {
+                startX = event.touches[0].originalEvent.clientX;
+                startY = event.touches[0].originalEvent.clientY;
+            }
+        } else if (event.originalEvent) {
+            startX = event.originalEvent.clientX;
+            startY = event.originalEvent.clientY;
+        }
+
+        // Calculate the offset between cursor and panel's top-left corner
+        var offsetX = startX - initialLeft;
+        var offsetY = startY - initialTop;
+
         var stopMove = function() {
             $("body").off("mousemove.rpwmove touchmove.rpwmove");
             $("body").off("mouseup.rpwmove touchend.rpwmove");
-            
+
             if ($("body").hasClass("default-builder")) {
                 CustomBuilder.Builder.frameHtml.off("mousemove.rpwmove touchmove.rpwmove");
                 CustomBuilder.Builder.frameHtml.off("mouseup.rpwmove touchend.rpwmove");
@@ -2339,62 +2381,68 @@ window._CustomBuilder = {
             $(panel).removeClass("resizing");
             $("body").removeClass("right-panel-resizing");
         };
-        
+
         var move = function(e) {
             var x = e.clientX;
-            if (e.originalEvent) {
-                x = e.originalEvent.clientX;
-            }
+            var y = e.clientY;
+
             if (e.type === "touchmove") {
                 x = e.touches[0].clientX;
-                if (e.touches[0].originalEvent) {
-                    x= e.touches[0].originalEvent.clientX;
-                }
-            }
-            if (!$(e.currentTarget).is("#cbuilder")) {
-                x += $(CustomBuilder.Builder.iframe).offset().left;
-            }
-            if (x < 60) {
-                x = 60;
-            }
-            
-            var y = e.clientY;
-            if (e.originalEvent) {
-                y = e.originalEvent.clientY;
-            }
-            if (e.type === "touchmove") {
                 y = e.touches[0].clientY;
                 if (e.touches[0].originalEvent) {
-                    y= e.touches[0].originalEvent.clientY;
+                    x = e.touches[0].originalEvent.clientX;
+                    y = e.touches[0].originalEvent.clientY;
                 }
+            } else if (e.originalEvent) {
+                x = e.originalEvent.clientX;
+                y = e.originalEvent.clientY;
             }
+
             if (!$(e.currentTarget).is("#cbuilder")) {
+                x += $(CustomBuilder.Builder.iframe).offset().left;
                 y += $(CustomBuilder.Builder.iframe).offset().top;
             }
-            if (y < 60) {
-                y = 60;
+
+            // Calculate new position based on initial offset
+            var newLeft = x - offsetX;
+            var newTop = y - offsetY;
+
+            // Ensure the panel stays within the viewport
+            if ($("#cbuilder").length && (newTop - 5) < $("#cbuilder").height()) {
+                newTop = $("#cbuilder").height();
+            } else if (newTop < 0) {
+                newTop = 0;
+            } else if (newTop + $(e.target).closest("#right-panel").outerHeight() > $(window).outerHeight()) {
+                newTop = $(window).height() - $(e.target).closest("#right-panel").outerHeight();
             }
-            
-            var newTop = y - 20;
-            var newLeft = x - 20;
-            
+            if (newLeft < 0) {
+                newLeft = 0;
+            } else if (!$(e.target).is(".element-properties-header-actions")) {
+                if(newLeft + $((".element-properties-header-actions")).outerWidth() > $(window).outerWidth()){
+                    newLeft = $(window).outerWidth() - $((".element-properties-header-actions")).outerWidth();
+                }
+            } else if(newLeft + $(e.target).outerWidth() > $(window).outerWidth()) {
+                newLeft = $(window).width() - $(e.target).outerWidth();
+            }
+
+            // Update builder settings and adjust panel position
             CustomBuilder.setBuilderSetting("right-panel-window-top", newTop);
             CustomBuilder.setBuilderSetting("right-panel-window-left", newLeft);
-     
+
             CustomBuilder.adjustPropertyPanelSize();
         };
-        
+
         if ($("body").hasClass("default-builder")) {
             CustomBuilder.Builder.frameHtml.off("mousemove.rpwmove touchmove.rpwmove");
             CustomBuilder.Builder.frameHtml.off("mouseup.rpwmove touchend.rpwmove");
-            
+
             CustomBuilder.Builder.frameHtml.on("mousemove.rpwmove touchmove.rpwmove", move);
             CustomBuilder.Builder.frameHtml.on("mouseup.rpwmove touchend.rpwmove", stopMove);
         }
-        
+
         $("body").off("mousemove.rpwmove touchmove.rpwmove");
         $("body").off("mouseup.rpwmove touchend.rpwmove");
-        
+
         $("body").on("mousemove.rpwmove touchmove.rpwmove", move);
         $("body").on("mouseup.rpwmove touchend.rpwmove", stopMove);
     },
