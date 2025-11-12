@@ -497,7 +497,8 @@ body .subform-cell-value label{
     outline: 0;
 }
 body .select_checkbox label > [type="checkbox"] + i,
-body label > input[type=checkbox] + i{
+body label > input[type=checkbox] + i,
+body form.form-container .form-cell-value > label > input[type=checkbox] + i{
     display: inline-block;
     border: 1px solid #d2d2d2;
     border-radius: 2px;
@@ -506,13 +507,15 @@ body label > input[type=checkbox] + i{
     margin-right: 5px;
     position: relative;
     vertical-align: middle;
-    color:transparent;
+    color: transparent !important;
+    background-color: #fff !important;
 }
 body .select_checkbox label > [type="checkbox"]:checked + i,
-body label > input[type=checkbox]:checked + i{
+body label > input[type=checkbox]:checked + i,
+body form.form-container .form-cell-value > label > input[type=checkbox]:checked + i{
     border: 1px solid #5FB878;
     background: #5FB878;
-    color:#fff;
+    color: #fff !important;
 }
 body .select_checkbox label > [type="checkbox"] + i:after,
 body label > input[type=checkbox] + i:after {
