@@ -2004,7 +2004,12 @@ body.rtl #ui-datepicker-div > table.ui-datepicker-calendar > tbody > tr > td:las
 
 .grid.adgrid .editor-cell .hasDatepicker + a + a {
     right: 35px;
-    top: 35px;
+    top: 15px;
+}
+
+body.rtl .grid.adgrid .editor-cell .hasDatepicker + a + a {
+    left: 35px !important;
+    right: unset;
 }
 
 .hasDatepicker + a, .hasDatepicker + a + a {
@@ -2763,7 +2768,11 @@ div#dataList_columnslist tbody span.row_action_inner > a > i {
 
 /* Advanced Grid */
 .grid.adgrid .editor-cell .hasDatepicker + a {
-    top: 34px;
+    top: 15px;
+}
+body.rtl .grid.adgrid .editor-cell .hasDatepicker + a {
+    left: 8px;
+    right: unset;
 }
 
 /* Footer */

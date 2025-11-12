@@ -1313,6 +1313,14 @@ body.rtl .grid.adgrid .pq-grid-number-col{
 .pq-grid-row{
     border-left: 1px solid transparent;
 }
+body.rtl .grid.adgrid .editor-cell .hasDatepicker + a {
+    left: 8px !important;
+    right: unset;
+}
+body.rtl .grid.adgrid .editor-cell .hasDatepicker + a + a{
+    left: 30px;
+    right: unset;
+}
 @media screen and (max-width: 767px) {
     .form-cell > label.label,
     .subform-cell > label.label,

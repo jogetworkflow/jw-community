@@ -1042,6 +1042,14 @@ body .handsontable input, .handsontable textarea{
         left: -22px;
         top: 32px;
     }
+    body.rtl #form-canvas .adgrid .hasDatepicker + a {
+        left: 20px;
+        top: 6px;
+    }
+    body.rtl #form-canvas .adgrid .hasDatepicker + a + a:after {
+        left: -22px;
+        top: 6px;
+    }
 }
 
 .form-edit-btn{
