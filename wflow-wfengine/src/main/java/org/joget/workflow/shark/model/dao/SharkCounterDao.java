@@ -19,14 +19,15 @@ import org.joget.workflow.shark.model.SharkCounter;
  * table when update the next counter in clustering environment
  */
 public class SharkCounterDao extends AbstractSpringDao {
-    
+
     public static final String ENTITY_NAME = "SharkCounter";
-    private final static long CACHE_SIZE = 200;
+    private static final String SYSTEM_PROPERTY_SHARK_CACHE_SIZE = "wflow.sharkCacheSize";
+    private static final long DEFAULT_CACHE_SIZE = 1000;
 
     public SharkCounter getNext(String objectName, Long old) {
         int retryCount = 0;
         boolean retry = false;
-        
+
         SharkCounter temp = new SharkCounter();
         do {
             SessionFactory sf = super.getSessionFactory();
@@ -36,50 +37,52 @@ public class SharkCounterDao extends AbstractSpringDao {
                 session = sf.openSession();
                 session.setHibernateFlushMode(FlushMode.MANUAL);
                 transaction = session.beginTransaction();
-                
+
                 //find the counter by object name
                 Query find = session.createQuery("SELECT e FROM " + ENTITY_NAME + " e where name = ?1");
                 find.setParameter(1, objectName);
                 Collection<SharkCounter> result = (Collection<SharkCounter>) find.list();
-                
+
+                long cacheSize = SharkCounterDao.getCacheSize();
+
                 if (!result.isEmpty()) {
                     SharkCounter next = result.iterator().next();
-                    
+
                     //lock it for update
-                    session.refresh(ENTITY_NAME, next, new LockOptions(LockMode.PESSIMISTIC_WRITE));
-                    
+                    session.refresh(next, new LockOptions(LockMode.PESSIMISTIC_WRITE));
+
                     LogUtil.debug(SharkCounterDao.class.getName(), "Retrieved number is " + next.getNextNumber() + ", old number is " + old);
-                    
+
                     temp.setNextNumber(next.getNextNumber());
-                    temp.setMaxNumber(next.getNextNumber() + CACHE_SIZE);
-                    
+                    temp.setMaxNumber(next.getNextNumber() + cacheSize);
+
                     //update the next oid
                     next.setNextNumber(temp.getMaxNumber());
                     next.setVersion(next.getVersion() + 1);
-                    
+
                     session.update(ENTITY_NAME, next);
                     
                     session.flush();
                     transaction.commit();
                     
                     session.evict(next);
-                    
+
                     return temp;
                 } else {
                     temp.setName(objectName);
-                    temp.setNextNumber(1 + CACHE_SIZE);
+                    temp.setNextNumber(1 + cacheSize);
                     temp.setVersion(0);
                     temp.setOid(Math.abs(objectName.hashCode()) + 0l);
-                    
+
                     session.save(ENTITY_NAME, temp);
                     
                     session.flush();
                     transaction.commit();
                     
                     session.evict(temp);
-                    
+
                     temp.setNextNumber(1l);
-                    temp.setMaxNumber(1 + CACHE_SIZE);
+                    temp.setMaxNumber(1 + cacheSize);
                     return temp;
                 }
             } catch (Exception e) {
@@ -105,7 +108,21 @@ public class SharkCounterDao extends AbstractSpringDao {
                 }
             }
         } while (retry);
-        
+
         throw new ObjectIdAllocationError("Failed to allocate counter for " + objectName + ".");
+    }
+
+    public static long getCacheSize() {
+        // set cache size
+        long cacheSize = DEFAULT_CACHE_SIZE;
+        String cacheSizeStr = System.getProperty(SYSTEM_PROPERTY_SHARK_CACHE_SIZE);
+        if (cacheSizeStr != null) {
+            try {
+                cacheSize = Long.parseLong(cacheSizeStr);
+            } catch (NumberFormatException e) {
+                // ignore 
+            }
+        }
+        return cacheSize;
     }
 }
