@@ -5166,6 +5166,8 @@ ProcessBuilder = {
             
             ProcessBuilder.renderLFWithData(ProcessBuilder.currentLFProcessData);
             ProcessBuilder.recenter();
+            
+            callback(element);
         }
     },
             
@@ -7724,7 +7726,6 @@ ProcessBuilder = {
                 ProcessBuilder.navigator(true);
                 ProcessBuilder.lf.extension.miniMap.show();
                 ProcessBuilder.lf.extension.highlight.setEnable(true);
-                ProcessBuilder.refresh();
             });
         });
     },
