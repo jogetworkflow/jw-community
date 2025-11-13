@@ -1,6 +1,5 @@
-var version = "7.0.0";
 var cacheName = "jw-cache";
-var cache = cacheName + "-" + version;
+var cache = cacheName + "-7.0.0";
 var urlsToCache = [];
 const contextPath = new URL(self.registration.scope).pathname.replace(/\/$/, '');
 
