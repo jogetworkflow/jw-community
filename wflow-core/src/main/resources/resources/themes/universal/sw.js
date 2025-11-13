@@ -1,10 +1,9 @@
-var version = "7.0.0";
 var cacheName = "jw-cache";
 var contextPath = '%s';
 var appUserviewId = '%s';
 var userviewKey = '_';
 var homePageLink = '';
-var appCacheName = appUserviewId + "-" + version;
+var appCacheName = appUserviewId + "-7.0.0";
 const buildNumber = '%s';
 var urlsToCache = [
         contextPath + '/css/v7.css',
