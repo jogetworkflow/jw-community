@@ -171,7 +171,7 @@ public class ConsolePagePluginController {
                     addMenu(menus, "nav-monitor-log", "/web/console/monitor/logs", "<i class=\"fas fa-scroll\"></i>", ResourceBundleUtil.getMessage("console.header.submenu.label.logs"), 500);
                 addMenu(menus, "nav-monitor-slog", "/web/console/monitor/slogs", "<i class=\"fas fa-scroll\"></i>", ResourceBundleUtil.getMessage("console.log.mtitle"), 600);
                 addMenu(menus, "nav-governance", "/web/console/monitor/governance", "<i class=\"fas fa-check-circle\"></i>", ResourceBundleUtil.getMessage("console.governance.healthCheck"), 700);
-                if (APMUtil.isGlowrootAvailable())
+                if (AppUtil.isEnterprise())
                     addMenu(menus, "nav-monitor-apm", "/web/console/monitor/apm", "<i class=\"fas fa-tachometer-alt\"></i>", ResourceBundleUtil.getMessage("apm.performance"), 800);
                 break;   
             case "SETTINGS":
