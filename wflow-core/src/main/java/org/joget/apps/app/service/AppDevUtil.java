@@ -12,6 +12,7 @@ import java.nio.file.Files;
 import java.nio.file.NoSuchFileException;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 import javax.cache.Cache;
@@ -105,6 +106,8 @@ public class AppDevUtil {
     private static final boolean GIT_DISABLED;
     private static Set<String> prevFileNames = null;
     private static int prevFileCount = -1;
+    
+    private static final Map<String, Object> GIT_LOCKS = new ConcurrentHashMap<>();
     
     static {
         GIT_DISABLED = "true".equalsIgnoreCase(System.getProperty("git.disabled"));
@@ -943,6 +946,14 @@ public class AppDevUtil {
         return gitCommitHelper;  
     }
     
+    
+    /** 
+     * Returns a lock object per appId for serializing Git operations. 
+     */
+    public static Object getAppLock(String appId) {
+        return GIT_LOCKS.computeIfAbsent(appId, k -> new Object());
+    }
+    
     public static void fileSave(AppDefinition appDef, String path, String fileContents, String commitMessage) {
         HttpServletRequest request = WorkflowUtil.getHttpServletRequest();
         if (request == null) {
@@ -953,7 +964,7 @@ public class AppDevUtil {
         if (fileContents == null) {
             fileContents = "";
         }
-        
+
         path = SecurityUtil.normalizedFileName(path);
         fileContents = compatibleNewline(fileContents);
         
@@ -972,7 +983,7 @@ public class AppDevUtil {
                 AppDevUtil.gitCommit(appDef, git, gitCommitHelper.getWorkingDir(), "Initial commit for " + gitBranch);
                 AppDevUtil.gitRenameBranch(git, gitBranch);
             }
-    
+
             // check for content changes
             File file = new File(gitCommitHelper.getWorkingDir(), path);
             boolean toSave = true;
@@ -984,7 +995,7 @@ public class AppDevUtil {
             } catch(NoSuchFileException e) {
                 // ignore
             }
-             
+
             if (toSave) {
                 // save file contents
                 FileUtils.writeStringToFile(file, fileContents, "UTF-8");
@@ -1000,8 +1011,8 @@ public class AppDevUtil {
         } catch (IOException | GitAPIException ex) {
             LogUtil.error(AppDevUtil.class.getName(), ex, ex.getMessage());
         }
-    }    
-    
+    }
+
     public static void fileDelete(AppDefinition appDefinition, String path, String commitMessage) {
         HttpServletRequest request = WorkflowUtil.getHttpServletRequest();
         if (request == null) {

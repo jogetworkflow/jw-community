@@ -1,9 +1,11 @@
 package org.joget.apps.app.dao;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Properties;
+import org.eclipse.jgit.api.Git;
 import org.hibernate.LockMode;
 import org.hibernate.LockOptions;
 import org.hibernate.Session;
@@ -13,7 +15,10 @@ import org.joget.apps.app.model.AppDefinition;
 import org.joget.apps.app.model.EnvironmentVariable;
 import org.joget.apps.app.service.AppDevUtil;
 import org.joget.apps.app.service.AppService;
+import org.joget.apps.app.service.AppUtil;
 import org.joget.commons.util.LogUtil;
+import org.joget.directory.model.User;
+import org.joget.workflow.model.service.WorkflowUserManager;
 import org.springframework.beans.factory.annotation.Autowired;
 
 public class EnvironmentVariableDaoImpl extends AbstractAppVersionedObjectDao<EnvironmentVariable> implements EnvironmentVariableDao {
@@ -65,16 +70,72 @@ public class EnvironmentVariableDaoImpl extends AbstractAppVersionedObjectDao<En
     public boolean add(EnvironmentVariable object) {
         boolean result = super.add(object);
         appDefinitionDao.updateDateModified(object.getAppDefinition());
-        
+
         if (!AppDevUtil.isGitDisabled() && !AppDevUtil.isImportApp()) {
             AppDefinition appDef = appService.loadAppDefinition(object.getAppId(), object.getAppVersion().toString());
             Properties gitProperties = AppDevUtil.getAppDevProperties(appDef);
             String filename = "appConfig.xml";
-            boolean commitConfig = !Boolean.parseBoolean(gitProperties.getProperty(AppDevUtil.PROPERTY_GIT_CONFIG_EXCLUDE_COMMIT));
+            boolean commitConfig = !Boolean.parseBoolean(
+                gitProperties.getProperty(AppDevUtil.PROPERTY_GIT_CONFIG_EXCLUDE_COMMIT)
+            );
+
             if (commitConfig) {
-                String xml = AppDevUtil.getAppConfigXml(appDef);
-                String commitMessage =  "Update app config " + appDef.getId();
-                AppDevUtil.fileSave(appDef, filename, xml, commitMessage);
+                synchronized (AppDevUtil.getAppLock(appDef.getAppId())) {
+                    try {
+                        // Reload to get latest DB state
+                        AppDefinition freshAppDef = appService.loadAppDefinition(appDef.getAppId(), appDef.getVersion().toString());
+
+                        // Generate XML from current DB state
+                        String xml = AppDevUtil.getAppConfigXml(freshAppDef);
+                        String commitMessage = "Update app config " + freshAppDef.getId();
+
+                        // Save file
+                        AppDevUtil.fileSave(freshAppDef, filename, xml, commitMessage);
+
+                        // Commit and push immediately to local repo
+                        GitCommitHelper gitCommitHelper = AppDevUtil.getGitCommitHelper(freshAppDef);
+                        if (gitCommitHelper != null && gitCommitHelper.getCommitMessage() != null 
+                                && !gitCommitHelper.getCommitMessage().trim().isEmpty()) {
+
+                            Git git = gitCommitHelper.getGit();
+                            String username = "admin";
+                            String email = "";
+
+                            try {
+                                WorkflowUserManager wum = (WorkflowUserManager) AppUtil.getApplicationContext().getBean("workflowUserManager");
+                                User user = wum.getCurrentUser();
+                                if (user != null) {
+                                    username = user.getUsername();
+                                    email = user.getEmail();
+                                    if (email == null) {
+                                        email = "";
+                                    }
+                                }
+                            } catch (Exception e) {
+                                // Use default username
+                            }
+
+                            // Commit to working directory
+                            git.commit()
+                                .setAuthor(username, email)
+                                .setMessage(gitCommitHelper.getCommitMessage())
+                                .call();
+
+                            // Push to local repo
+                            Git localGit = gitCommitHelper.getLocalGit();
+                            File workingDir = gitCommitHelper.getWorkingDir();
+                            if (localGit != null && workingDir != null) {
+                                AppDevUtil.gitPushLocal(freshAppDef, git, workingDir);
+                            }
+
+                            // Clear commit message to prevent double-commit
+                            gitCommitHelper.setCommitMessage("");
+                        }
+
+                    } catch (Exception e) {
+                        LogUtil.error(getClass().getName(), e, "Error during git sync for add operation");
+                    }
+                }
             } else {
                 AppDevUtil.fileDelete(appDef, filename, null);
             }
@@ -82,26 +143,80 @@ public class EnvironmentVariableDaoImpl extends AbstractAppVersionedObjectDao<En
 
         return result;
     }
-    
+
     @Override
     public boolean update(EnvironmentVariable object) {
         boolean result = super.update(object);
         appDefinitionDao.updateDateModified(object.getAppDefinition());
-        
+
         if (!AppDevUtil.isGitDisabled()) {
             AppDefinition appDef = appService.loadAppDefinition(object.getAppId(), object.getAppVersion().toString());
             Properties gitProperties = AppDevUtil.getAppDevProperties(appDef);
             String filename = "appConfig.xml";
-            boolean commitConfig = !Boolean.parseBoolean(gitProperties.getProperty(AppDevUtil.PROPERTY_GIT_CONFIG_EXCLUDE_COMMIT));
+            boolean commitConfig = !Boolean.parseBoolean(
+                gitProperties.getProperty(AppDevUtil.PROPERTY_GIT_CONFIG_EXCLUDE_COMMIT)
+            );
+
             if (commitConfig) {
-                String xml = AppDevUtil.getAppConfigXml(appDef);
-                String commitMessage =  "Update app config " + appDef.getId();
-                AppDevUtil.fileSave(appDef, filename, xml, commitMessage);
-            } else {
-                AppDevUtil.fileDelete(appDef, filename, null);
+                synchronized (AppDevUtil.getAppLock(appDef.getAppId())) {
+                    try {
+                        // Reload to get latest DB state
+                        AppDefinition freshAppDef = appService.loadAppDefinition(appDef.getAppId(), appDef.getVersion().toString());
+
+                        // Generate XML from current DB state
+                        String xml = AppDevUtil.getAppConfigXml(freshAppDef);
+                        String commitMessage = "Update app config " + freshAppDef.getId();
+
+                        // Save file
+                        AppDevUtil.fileSave(freshAppDef, filename, xml, commitMessage);
+
+                        // Commit and push immediately to local repo
+                        GitCommitHelper gitCommitHelper = AppDevUtil.getGitCommitHelper(freshAppDef);
+                        if (gitCommitHelper != null && gitCommitHelper.getCommitMessage() != null 
+                                && !gitCommitHelper.getCommitMessage().trim().isEmpty()) {
+
+                            Git git = gitCommitHelper.getGit();
+                            String username = "admin";
+                            String email = "";
+
+                            try {
+                                WorkflowUserManager wum = (WorkflowUserManager) AppUtil.getApplicationContext().getBean("workflowUserManager");
+                                User user = wum.getCurrentUser();
+                                if (user != null) {
+                                    username = user.getUsername();
+                                    email = user.getEmail();
+                                    if (email == null) {
+                                        email = "";
+                                    }
+                                }
+                            } catch (Exception e) {
+                                // Use default username
+                            }
+
+                            // Commit to working directory
+                            git.commit()
+                                .setAuthor(username, email)
+                                .setMessage(gitCommitHelper.getCommitMessage())
+                                .call();
+
+                            // Push to local repo
+                            Git localGit = gitCommitHelper.getLocalGit();
+                            File workingDir = gitCommitHelper.getWorkingDir();
+                            if (localGit != null && workingDir != null) {
+                                AppDevUtil.gitPushLocal(freshAppDef, git, workingDir);
+                            }
+
+                            // Clear commit message to prevent double-commit
+                            gitCommitHelper.setCommitMessage("");
+                        }
+
+                    } catch (Exception e) {
+                        LogUtil.error(getClass().getName(), e, "Error during git sync for update operation");
+                    }
+                }
             }
         }
-        
+
         return result;
     }
     
