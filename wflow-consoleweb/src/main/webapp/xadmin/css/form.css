@@ -1013,6 +1013,27 @@ body #form-canvas .div.pq-grid-toolbar,
 body #form-canvas .pq-grid-bottom.ui-corner-bottom{
     padding: 5px 0px;
 }
+body.rtl .grid.adgrid .editor-cell .hasDatepicker + a {
+    left: 8px;
+    right: unset;
+}
+body.rtl .grid.adgrid .editor-cell .hasDatepicker + a + a {
+    left: 30px;
+    right: unset;
+}
+@media (max-width: 480px) {
+    .grid.adgrid .editor-cell .hasDatepicker + a + a {
+        right: 25px;
+    }
+    body.rtl #form-canvas .adgrid .hasDatepicker + a {
+        left: 5px !important;
+        top: 12px !important;
+    }
+    body.rtl .grid.adgrid .editor-cell .hasDatepicker + a + a {
+        left: 25px;
+        top: 12px;
+    }
+}
 
 /* spreadsheet */
 body #form-canvas .handsontable th {

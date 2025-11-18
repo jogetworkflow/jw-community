@@ -1608,6 +1608,14 @@ body.rtl .handsontable .htCore tr td:last-child {
     top: 14px;
 }
 
+body.rtl .grid.adgrid .editor-cell .hasDatepicker+a {
+    left: 8px;
+}
+
+body.rtl  .grid.adgrid .editor-cell .hasDatepicker+a+a {
+    left: 30px;
+}
+
 .grid.adgrid .editor-cell .actions-buttons {
     text-align: right;
     margin-top: 5px;
