@@ -3902,31 +3902,39 @@ public class AppServiceImpl implements AppService {
         if (appDef.getEnvironmentVariableList() != null) {
             for (EnvironmentVariable env : appDef.getEnvironmentVariableList()) {
                 if (env.getId().equals("table_prefix")) {
-                    prefix = env.getValue();
+                    if (env.getValue() != null) {
+                        prefix = env.getValue();
+                    }
                     break;
                 }
             }
         }
-        if (prefix.isEmpty()) {
-            List<String> tableNameList = (List<String>) formDefinitionDao.getTableNameList(appDef);
-            if (tableNameList != null && !tableNameList.isEmpty()) {
-                
-                String firstString = tableNameList.get(0);
-                int length = firstString.length();
-                
-                for (int i = 0; i < length; i++) {
-                    char c = firstString.charAt(i);
-                    for (int j = 1; j < tableNameList.size(); j++) {
-                        String compare = tableNameList.get(j);
-                        if (i >= compare.length() || compare.charAt(i) != c) {
-                            prefix = firstString.substring(0, i);
-                            break;
-                        }
-                    }
-                    if (!prefix.isEmpty()) {
-                        break; //prefix is already found
-                    }
-                }
+        
+        if (!prefix.isEmpty()) {
+            return prefix;
+        }
+
+        List<String> tableNameList = (List<String>) formDefinitionDao.getTableNameList(appDef);     
+        if (tableNameList == null || tableNameList.isEmpty() || tableNameList.size() == 1) {
+            return "";
+        }
+        
+        prefix = tableNameList.get(0);
+
+        for (int i = 1; i < tableNameList.size(); i++) {
+            String other = tableNameList.get(i);
+            int minLen = Math.min(prefix.length(), other.length());
+            int j = 0;
+
+            while (j < minLen && prefix.charAt(j) == other.charAt(j)) {
+                j++;
+            }
+
+            prefix = prefix.substring(0, j);
+
+            // Stop early when prefix is not the same
+            if (prefix.isEmpty()) {
+                break;
             }
         }
         return prefix;
