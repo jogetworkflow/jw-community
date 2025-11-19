@@ -1,7 +1,7 @@
 <%@ include file="/WEB-INF/jsp/includes/taglibs.jsp" %>
 
 <commons:popupHeader bodyCssClass=" builder-popup no-header" builderTheme="true"/>  
-<script type="text/javascript" src="${pageContext.request.contextPath}/js/tooltipster/js/tooltipster.bundle.min.js"></script>   
+<script type="text/javascript" src="${pageContext.request.contextPath}/js/tooltipster/js/tooltipster.bundle.min.js"></script>  
 <div id="main-body-content">
     <div id="resources">
         <div id="resources-container" class="list-view">           
@@ -389,24 +389,29 @@
         }
 
         function appResourceDelete(selectedList){
-            if (confirm('<ui:msgEscJS key="console.app.resource.delete.label.confirmation"/>')) {
-                parent.UI.blockUI();
-                var callback = {
-                    success : function() {
-                        filter(JsonResourcesDataTable, '&filter=', $('#JsonResourcesDataTable_searchCondition').val());
-                        JsonResourcesDataTable.clearSelectedRows();
-                        var gridContainer = $(".row");
-                        gridContainer.empty();  
-                        reloadResources();
-                        parent.UI.unblockUI();
+            UI.confirm('<ui:msgEscJS key="console.app.resource.delete.label.confirmation"/>', 
+                () => {
+                    parent.UI.blockUI();
+                    var callback = {
+                        success : function() {
+                            filter(JsonResourcesDataTable, '&filter=', $('#JsonResourcesDataTable_searchCondition').val());
+                            JsonResourcesDataTable.clearSelectedRows();
+                            var gridContainer = $(".row");
+                            gridContainer.empty();  
+                            reloadResources();
+                            parent.UI.unblockUI();
 
-                        selectedList.forEach(function(item){
-                            parent.window.CustomBuilder.showMessage(item + '<ui:msgEscJS key="console.app.message.delete.toast.message"/>', "success", true);
-                        })
+                            selectedList.forEach(function(item){
+                                parent.window.CustomBuilder.showMessage(item + '<ui:msgEscJS key="console.app.message.delete.toast.message"/>', "success");
+                            }) 
+                        }
                     }
+                    var request = ConnectionManager.post('${pageContext.request.contextPath}/web/console/app/<c:out value="${appId}"/>/${appVersion}/resource/delete', callback, 'ids='+selectedList);
+                },
+                {
+                    confirmButtonLabel : '<ui:msgEscJS key="console.setting.datasource.label.deleteProfile"/>'
                 }
-                var request = ConnectionManager.post('${pageContext.request.contextPath}/web/console/app/<c:out value="${appId}"/>/${appVersion}/resource/delete', callback, 'ids='+selectedList);
-            }
+            );         
         }
 
         function closeDialog() {

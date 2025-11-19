@@ -44,13 +44,16 @@
             var oversize = $("[name=description]").val().length > 255;
 
             if (!idMatch && oversize) {
-                alert('<ui:msgEscJS key="console.directory.grade.error.label.idInvalid"/>\n' + '<ui:msgEscJS key="console.directory.grade.error.label.descriptionLimit"/>');
+                UI.alert('<ul><li><ui:msgEscJS key="console.directory.grade.error.label.idInvalid"/></li><li><ui:msgEscJS key="console.directory.grade.error.label.descriptionLimit"/></li></ul>', {
+                    isHtml : true,
+                    icon: 'error'
+                });
                 $("#id").focus();
             } else if (!idMatch) {
-                alert('<ui:msgEscJS key="console.directory.grade.error.label.idInvalid"/>');
+                UI.alert('<ui:msgEscJS key="console.directory.grade.error.label.idInvalid"/>', {icon: 'error'});
                 $("#id").focus();
             } else if (oversize) {
-                alert('<ui:msgEscJS key="console.directory.grade.error.label.descriptionLimit"/>');
+                UI.alert('<ui:msgEscJS key="console.directory.grade.error.label.descriptionLimit"/>', {icon: 'error'});
             } else {
                 $("#createGrade").submit();
             }

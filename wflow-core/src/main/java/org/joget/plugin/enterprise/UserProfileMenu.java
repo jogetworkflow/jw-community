@@ -97,7 +97,7 @@ public class UserProfileMenu extends UserviewMenu {
             }
             menu += "function menu_" + getPropertyString("id") + "_showDialog(){\n";
             if ("true".equals(getRequestParameter("isPreview"))) {
-                menu += "alert('Feature disabled in Preview Mode.');\n";
+                menu += "UI.alert('Feature disabled in Preview Mode.');\n";
             } else {
                 menu += "menu_" + getPropertyString("id") + "Dialog.init();\n";
             }

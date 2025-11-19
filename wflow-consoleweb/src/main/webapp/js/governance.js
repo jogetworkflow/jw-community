@@ -85,72 +85,81 @@ GovernanceUtil = {
     }, 
 
     activate: function(pluginclass, link) {
-        GovernanceUtil.blockUI();
-        if (confirm(GovernanceUtil.msg['activateConfirm'])) {
-            ConnectionManager.post(UI.base + "/web/governance/activate", {
-                success : function(data) {
-                    $(link).removeClass("deactivated");
-                    $.unblockUI();
-                }
-            }, 
-            {
-                pluginClass : pluginclass
-            });
-        } else {
-            $.unblockUI(); //unblock the UI when cancel
-        }
+        UI.confirm(GovernanceUtil.msg['activateConfirm'],
+            () => {
+                GovernanceUtil.blockUI();
+                ConnectionManager.post(UI.base + "/web/governance/activate", {
+                    success : function(data) {
+                        $(link).removeClass("deactivated");
+                        $.unblockUI();
+                    }
+                }, 
+                {
+                    pluginClass : pluginclass
+                });
+            } , {
+                confirmButtonLabel : GovernanceUtil.msg['activate'],
+                confirmButtonClass : "console-primary"
+            }
+        );
     },
 
     deactivate: function(pluginclass, link) {
-        GovernanceUtil.blockUI();
-        if (confirm(GovernanceUtil.msg['deactivateConfirm'])) {
-            ConnectionManager.post(UI.base + "/web/governance/deactivate", {
-                success : function(data) {
-                    $(link).addClass("deactivated");
-                    $.unblockUI();
-                }
-            }, 
-            {
-                pluginClass : pluginclass
-            });
-        } else {
-            $.unblockUI(); //unblock the UI when cancel
-        }
+        UI.confirm(GovernanceUtil.msg['deactivateConfirm'],
+            () => {
+                GovernanceUtil.blockUI();
+                ConnectionManager.post(UI.base + "/web/governance/deactivate", {
+                    success : function(data) {
+                        $(link).addClass("deactivated");
+                        $.unblockUI();
+                    }
+                }, 
+                {
+                    pluginClass : pluginclass
+                });
+            } , {
+                confirmButtonLabel : GovernanceUtil.msg['deactivate']
+            }
+        );
     },
     
     suppress: function(item) {
-        GovernanceUtil.blockUI();
-        if (confirm(GovernanceUtil.msg['suppressConfirm'])) {
-            var pluginclass = $(item).closest("tr").attr("plugin-class");
-            var scroll = $("html").scrollTop();
-            ConnectionManager.post(UI.base + "/web/governance/suppress", {
-                success : function(data) {
-                    GovernanceUtil.updateResult(data, scroll);
-                    $.unblockUI();
-                }
-            }, 
-            {
-                pluginClass : pluginclass,
-                detail : $(item).find('.detail').html()
-            });
-        } else {
-            $.unblockUI(); //unblock the UI when cancel
-        }
+        UI.confirm(GovernanceUtil.msg['suppressConfirm'],
+            () => {
+                GovernanceUtil.blockUI();
+                var pluginclass = $(item).closest("tr").attr("plugin-class");
+                var scroll = $("html").scrollTop();
+                ConnectionManager.post(UI.base + "/web/governance/suppress", {
+                    success : function(data) {
+                        GovernanceUtil.updateResult(data, scroll);
+                        $.unblockUI();
+                    }
+                }, 
+                {
+                    pluginClass : pluginclass,
+                    detail : $(item).find('.detail').html()
+                });
+            } , {
+                confirmButtonLabel : GovernanceUtil.msg['suppress']
+            }
+        );
     },
 
     cleanData: function() {
-        GovernanceUtil.blockUI();
-        if (confirm(GovernanceUtil.msg['deleteConfirm'])) {
-            ConnectionManager.post(UI.base + "/web/governance/deleteData", {
-                success : function(data) {
-                    alert(GovernanceUtil.msg['dataDeleted']);
-                    GovernanceUtil.updateResult("{}");
-                    $.unblockUI();
-                }
-            });
-        } else {
-            $.unblockUI(); //unblock the UI when cancel
-        }
+        UI.confirm(GovernanceUtil.msg['deleteConfirm'],
+            () => {
+                GovernanceUtil.blockUI();
+                ConnectionManager.post(UI.base + "/web/governance/deleteData", {
+                    success : function(data) {
+                        UI.alert(GovernanceUtil.msg['dataDeleted'], {icon: "success"});
+                        GovernanceUtil.updateResult("{}");
+                        $.unblockUI();
+                    }
+                });
+            } , {
+                confirmButtonLabel : GovernanceUtil.msg['deleteData']
+            }
+        );
     },
 
     runCheckNow : function() {
@@ -170,7 +179,7 @@ GovernanceUtil = {
 
         ConnectionManager.post(UI.base + "/web/governance/updateInterval", {
             success : function(data) {
-                alert(GovernanceUtil.msg['intervalUpdated']);
+                UI.alert(GovernanceUtil.msg['intervalUpdated'], {icon: "success"});
                 $.unblockUI();
             }
         }, 

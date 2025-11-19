@@ -43,7 +43,7 @@
     body.rtl .form-row label, body.rtl .form-row .form-input{
         text-align: right;
     }
-</style>
+    </style>
 <#if element.properties.isPreview! == 'true' >
     <script>
         $(document).ready(function() {
@@ -59,7 +59,7 @@
     <#elseif element.properties.view! == 'redirect'>
         <script>
             <#if element.properties.message?? >
-                alert('${element.properties.message!}');
+                UI.alert('${element.properties.message!}');
             </#if>
             window.location = "${element.properties.redirectURL!}";
         </script>
@@ -207,24 +207,25 @@
         <script type="text/javascript">
             function validateField(){
                 var valid = true;
-                var alertString = "";
+                var alertStringList = "";
+
                 const firstName = $("#firstName").val();
                 const lastName = $("#lastName").val();
                 <#if element.properties.f_firstName! != 'hide'>
                     if(firstName == ""){
-                        alertString += '@@User.firstName[not.blank]@@';
-                        valid = false;
+                        var error = '@@User.firstName[not.blank]@@'
+                        alertStringList += '<li>' + error + '</li>';
+                        valid=false;              
                     } else if (!UI.isValidInput(firstName) || !UI.isValidInput(lastName)) {
-                        alertString += '@@console.directory.user.error.label.nameInvalid@@';
+                        var error = '@@console.directory.user.error.label.nameInvalid@@'
+                        alertStringList += '<li>' + error + '</li>';
                         valid = false;
                     }            
                 </#if>
                 <#if element.properties.f_password! != 'hide'>
                     if($("#password").val() != $("#confirmPassword").val()){
-                        if(alertString != ""){
-                            alertString += '\n';
-                        }
-                        alertString += '@@console.directory.user.error.label.passwordNotMatch@@';
+                        var error = '@@console.directory.user.error.label.passwordNotMatch@@';
+                        alertStringList += '<li>' + error + '</li>';
                         valid = false;
                     }
                 </#if>
@@ -233,10 +234,8 @@
                 <#if element.properties.f_email! != 'hide' && element.properties.f_email! != 'readonly'>
                     UI.validateEmail('#email', true, function(isValid) {
                         if (!isValid) {
-                            if (alertString != "") {
-                                alertString += '\n';
-                            }
-                            alertString += '@@app.edm.message.invalidEmailFormat@@';
+                            var error = '@@console.directory.user.error.label.invalidEmailFormat@@';
+                            alertStringList += '<li>' + error + '</li>';
                             valid = false;
                         }
 
@@ -244,15 +243,21 @@
                         if (valid) {
                             $("form#profile").submit();
                         }else{
-                            alert(alertString);
+                            UI.alert('<ul>' + alertStringList + '</ul>', {
+                                isHtml : true,
+                                icon: 'error'
+                            });                            
                         }
                     });
                 <#else>
                     // If email validation is not required, check validity before submitting
                     if (valid) {
                         $("form#profile").submit();
-                    } else {
-                        alert(alertString);
+                    }else{
+                        UI.alert('<ul>' + alertStringList + '</ul>', {
+                            isHtml : true,
+                            icon: 'error'
+                        });
                     }
                 </#if>
             }

@@ -89,7 +89,8 @@ AjaxComponent = {
                     e.preventDefault();
                     e.stopPropagation();
                     e.stopImmediatePropagation();
-                    if (confirmMsg === "" || confirmMsg === null || confirmMsg === undefined || confirm(confirmMsg)) {
+                    
+                    var callAction = function() {
                         if (typeof PwaUtil === 'undefined' || PwaUtil.isOnline !== false) {
                             AjaxComponent.call($(btn), url, "GET", null);
                         } else {
@@ -103,6 +104,18 @@ AjaxComponent = {
                                 }
                             }
                         }
+                    };
+                    
+                    if (confirmMsg === "" || confirmMsg === null || confirmMsg === undefined) {
+                        callAction();
+                    }else{
+                        UI.confirm(confirmMsg,
+                            () => {
+                                callAction();
+                            }, {
+                                confirmButtonClass: 'dialog-btn-primary',
+                            }
+                        );                    
                     }
                     return false;
                 });
@@ -142,8 +155,16 @@ AjaxComponent = {
                             e.preventDefault();
                             e.stopPropagation();
                             e.stopImmediatePropagation();
-                            if (confirmMsg === "" || confirmMsg === null || confirmMsg === undefined || confirm(confirmMsg)) {
+                            if (confirmMsg === "" || confirmMsg === null || confirmMsg === undefined) {
                                 AjaxComponent.call($(btn), url, "GET", null);
+                            }else{
+                                UI.confirm(confirmMsg,
+                                    () => {
+                                        AjaxComponent.call($(btn), url, "GET", null);
+                                    }, {
+                                        confirmButtonClass: 'dialog-btn-primary',
+                                    }
+                                );
                             }
                             return false;
                         });
@@ -417,40 +438,47 @@ AjaxComponent = {
                     //handle userview redirection with alert
                     if (data.indexOf("<div") === -1) {
                         var part = AjaxComponent.getMsgAndRedirectUrl(data);
-                        if (part[0] !== "") {
-                            alert(part[0]);
-                        }
-                        if (part[1] !== null && part[1] !== undefined) { //if there is URL
-                            if (part[2] === null) { //if no target window, use current window
-                                if (part[1] === "") { // it is a reload when url is empty
-                                    part[1] = document.location.href;
-                                }
-                                //if redirect url is not same with current userview page
-                                if (!AjaxComponent.isCurrentUserviewPage(part[1])) {
-                                    AjaxComponent.call($("#content.page_content"), part[1], "GET", null);
-                                } else {
-                                    AjaxComponent.triggerEvents(contentConatiner, url, method);
-                                    AjaxComponent.call(contentConatiner, part[1], "GET", null);
-                                }
-                            } else { //if target is top or parent window
-                                var win = part[2];
-                                if (part[1] === "") { // it is a reload when url is empty
-                                    part[1] = win.location.href;
-                                }
-                                if(win["AjaxComponent"]){ //use ajax component to reload/redirect if exist
-                                    if (part[1].indexOf("embed=false") !== -1) { //remove embed false url
-                                        part[1] = part[1].replace("embed=false", "");
+                        
+                        var handler = function() {
+                            if (part[1] !== null && part[1] !== undefined) { //if there is URL
+                                if (part[2] === null) { //if no target window, use current window
+                                    if (part[1] === "") { // it is a reload when url is empty
+                                        part[1] = document.location.href;
                                     }
-                                    win["AjaxComponent"].call($("#content.page_content", win["document"]), part[1], "GET", null);
-                                } else {
-                                    win.location.href = part[1];
+                                    //if redirect url is not same with current userview page
+                                    if (!AjaxComponent.isCurrentUserviewPage(part[1])) {
+                                        AjaxComponent.call($("#content.page_content"), part[1], "GET", null);
+                                    } else {
+                                        AjaxComponent.triggerEvents(contentConatiner, url, method);
+                                        AjaxComponent.call(contentConatiner, part[1], "GET", null);
+                                    }
+                                } else { //if target is top or parent window
+                                    var win = part[2];
+                                    if (part[1] === "") { // it is a reload when url is empty
+                                        part[1] = win.location.href;
+                                    }
+                                    if(win["AjaxComponent"]){ //use ajax component to reload/redirect if exist
+                                        if (part[1].indexOf("embed=false") !== -1) { //remove embed false url
+                                            part[1] = part[1].replace("embed=false", "");
+                                        }
+                                        win["AjaxComponent"].call($("#content.page_content", win["document"]), part[1], "GET", null);
+                                    } else {
+                                        win.location.href = part[1];
+                                    }
+                                    part[3] = true; //if the target is parent or top, always close popup if exist
                                 }
-                                part[3] = true; //if the target is parent or top, always close popup if exist
                             }
+                            if (part[3] === true && parent.PopupDialog) { 
+                                parent.PopupDialog.closeDialog();
+                            }
+                        };
+                        
+                        if (part[0] !== "") {
+                            UI.alertBlock(part[0], handler);
+                        } else {
+                            handler();
                         }
-                        if (part[3] === true && parent.PopupDialog) { 
-                            parent.PopupDialog.closeDialog();
-                        }
+                        
                         return;
                     }
                 }
@@ -936,29 +964,29 @@ AjaxComponent = {
      */
     getMsgAndRedirectUrl: function(content) {
         //get script
-        var index = content.indexOf("<script");
+        var index = content.lastIndexOf("<script");
         if (index !== -1) {
             content = content.substring(content.indexOf(">", index) + 1, content.indexOf("</script>", index));
         }
         
         //split the content to get alert message and redirect url
-        var part = content.indexOf(".location") > 0 ? content.split(".location") : content.split("location.");
+        var part = content.indexOf("//separator") > 0 ? content.split("//separator") : content.split("//separator");
         var regex = new RegExp(/(['"])((?:\\\1|(?:(?!\1).))+)\1/g); //regex to extract string between " or ' char
         var msg = "";
         var url = "";
         var target = null;
         var closePopup = false;
         if (content.indexOf("alert") !== -1) {
-            if (regex.test(part[0])) {
-                msg = part[0].match(regex)[0];
+            if (regex.test(part[1])) {
+                msg = part[1].match(regex)[0];
                 msg = msg.substring(1, msg.length - 1);
             }
         }
         if (content.indexOf(".location") === -1) { //if there is no redirection
             url = null;
         }
-        if (regex.test(part[1])) {
-            url = part[1].match(regex)[0];
+        if (regex.test(part[0])) {
+            url = part[0].match(regex)[0];
             url = url.substring(1, url.length - 1);
         }
         

@@ -117,9 +117,14 @@
             function ajaxRequestChangeSystemTheme(deviceTheme) {
                 var callback = {
                     success: function(response) {
-                        if (confirm(`<ui:msgEscJS key="general.label.deviceThemeSwitching"/>`)){
-                            location.reload(); 
-                        }
+                        UI.confirm('<ui:msgEscJS key="general.label.deviceThemeSwitching"/>' + deviceTheme + '<ui:msgEscJS key="general.label.deviceThemeSwitching2"/>',
+                            () => {
+                                location.reload();
+                            }, {
+                                confirmButtonLabel: '<ui:msgEscJS key="console.setting.plugin.common.label.reloadPlugin"/>',
+                                confirmButtonClass: 'dialog-btn-primary'
+                            }
+                        );                     
                     },
                     error: function(jqXHR, textStatus, errorThrown) {
                         console.error('Error updating theme:', jqXHR);

@@ -360,27 +360,29 @@ function loadScript(url, callback){
 var popupActionDialog = null;
 function dlPopupAction(element, message) {
     var url = $(element).attr("href");
-    var showPopup = true;
-    if (message != "") {
-        showPopup = confirm(message);
-    }
-    if (showPopup) {
+    
+    var showPopup = function() {
         if (popupActionDialog == null) {
             popupActionDialog = new PopupDialog(url);
         } else {
             popupActionDialog.src = url;
         }
         popupActionDialog.init();
+    };
+    
+    if (message !== "") {
+        UI.confirm(message,
+            () => {
+                showPopup();
+            }
+        );
+    } else {
+        showPopup();
     }
     return false;
 }
 function dlPostAction(element, message) {
-    var url = $(element).attr("href");
-    var showPopup = true;
-    if (message != "") {
-        showPopup = confirm(message);
-    }
-    if (showPopup) {
+    var post = function() {
         var  orgAction = $(element).closest("form").attr("action");
         $(element).closest("form").removeAttr("target");
         $(element).closest("form").find("input[type=checkbox]").removeAttr("checked");
@@ -389,7 +391,26 @@ function dlPostAction(element, message) {
 
         //reset the action
         $(element).closest("form").attr("action", orgAction);
+    };
+    
+    if (message !== "") {
+        UI.confirm(message,
+            () => {
+                post();
+            }
+        );
+    } else {
+        post();  
     }
+    return false;
+}
+function dlConfirm(element, message) {
+    var url = $(element).attr("href");
+    UI.confirm(message,
+        () => {
+             window.location.href = url;
+        }
+    );
     return false;
 }
 

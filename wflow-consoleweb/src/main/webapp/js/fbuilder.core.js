@@ -1150,7 +1150,7 @@ FormBuilder = {
                                 }
                             },
                             error: function() {
-                                alert(get_cbuilder_msg('fbuilder.indexFail'));
+                                UI.alert(get_cbuilder_msg('fbuilder.indexFail'), {icon: "error"});
                             },
                             complete: function() {
                                 $.unblockUI();
@@ -1216,11 +1216,15 @@ FormBuilder = {
                         var tableName = $(this).closest(".entity-container").data("tablename");
                         var field = $(this).closest(".field").data("field");
                         
-                        if (confirm(get_cbuilder_msg('fbuilder.indexFieldConfirm', [field]))) {
-                            var indexes = {}
-                            indexes[tableName] = [field];
-                            markIndexes(indexes);
-                        }
+                        UI.confirm(get_cbuilder_msg('fbuilder.indexFieldConfirm', [field]),
+                            () => {
+                                var indexes = {};
+                                indexes[tableName] = [field];
+                                markIndexes(indexes);
+                            } , {
+                                confirmButtonClass : "dialog-btn-primary"
+                            }
+                        );
                         
                         return false;
                     });

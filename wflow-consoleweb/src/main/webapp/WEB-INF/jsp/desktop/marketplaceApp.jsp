@@ -52,39 +52,44 @@
             $("#installApp").off("click");
             $("#installApp").on("click", function() {
                 var installUrl = "${pageContext.request.contextPath}/web/json/apps/install";
-                if (confirm('<ui:msgEscJS key="appCenter.label.confirmInstallation"/>')) {
-                    var installCallback = {
-                        success: function(data) {
-                            $("#installApp").html('<ui:msgEscJS key="appCenter.label.installApp"/>');
-                            $("#installApp").removeAttr("disabled");
-                            var app = JSON.parse(data);
-                            var appId = app.appId;
-                            if (appId && appId !== "") {
-                                alert('<ui:msgEscJS key="appCenter.label.appInstalled"/>');
-                                PopupDialog.closeDialog();                                
-                                parent.AppCenter.loadPublishedApps();
-                                parent.AdminBar.hideQuickOverlay();
-                            } if (app.pluginName) {
-                                alert('<ui:msgEscJS key="appCenter.label.appInstalled"/>');
-                            } else {
-                                alert('<ui:msgEscJS key="appCenter.label.appNotInstalled"/>');
+                UI.confirm('<ui:msgEscJS key="appCenter.label.confirmInstallation"/>',
+                    () => {
+                         var installCallback = {
+                            success: function(data) {
+                                $("#installApp").html('<ui:msgEscJS key="appCenter.label.installApp"/>');
+                                $("#installApp").removeAttr("disabled");
+                                var app = JSON.parse(data);
+                                var appId = app.appId;
+                                if (appId && appId !== "") {
+                                    UI.alert('<ui:msgEscJS key="appCenter.label.appInstalled"/>', {icon: "success"});
+                                    PopupDialog.closeDialog();                                
+                                    parent.AppCenter.loadPublishedApps();
+                                    parent.AdminBar.hideQuickOverlay();
+                                } if (app.pluginName) {
+                                    UI.alert('<ui:msgEscJS key="appCenter.label.appInstalled"/>', {icon: "success"});
+                                } else {
+                                    UI.alert('<ui:msgEscJS key="appCenter.label.appNotInstalled"/>', {icon: "error"});
+                                }
+                            },
+                            error: function(data) {
+                                $("#installApp").html('<ui:msgEscJS key="appCenter.label.installApp"/>');
+                                $("#installApp").removeAttr("disabled");
+                                UI.alert('<ui:msgEscJS key="appCenter.label.appNotInstalled"/>', {icon: "error"});
                             }
-                        },
-                        error: function(data) {
-                            $("#installApp").html('<ui:msgEscJS key="appCenter.label.installApp"/>');
-                            $("#installApp").removeAttr("disabled");
-                            alert('<ui:msgEscJS key="appCenter.label.appNotInstalled"/>');
-                        }
-                    };
-                    // show loading icon
-                    HelpGuide.hide();
-                    $("#installApp").html('<i class="icon-spinner icon-spin fas fa-spinner fa-spin"></i> <ui:msgEscJS key="appCenter.label.installingApp"/>');
-                    $("#installApp").attr("disabled", "disabled");
-        
-                    // invoke installation
-                    var installParams = "autoInstallUpdatePlugins=true&url=" + encodeURIComponent(downloadUrl);
-                    ConnectionManager.post(installUrl, installCallback, installParams);
-                }
+                        };
+                        // show loading icon
+                        HelpGuide.hide();
+                        $("#installApp").html('<i class="icon-spinner icon-spin fas fa-spinner fa-spin"></i> <ui:msgEscJS key="appCenter.label.installingApp"/>');
+                        $("#installApp").attr("disabled", "disabled");
+
+                        // invoke installation
+                        var installParams = "autoInstallUpdatePlugins=true&url=" + encodeURIComponent(downloadUrl);
+                        ConnectionManager.post(installUrl, installCallback, installParams);
+                    } , {
+                        confirmButtonLabel: '<ui:msgEscJS key="appCenter.label.installApp"/>',
+                        confirmButtonClass: 'dialog-btn-primary'
+                    }
+                );
             });
         };
         window.addEventListener('message', function(event) {

@@ -221,57 +221,73 @@
     }
 
     function onDelete(){
-         if (confirm('<ui:msgEscJS key="console.directory.org.delete.label.confirmation"/>')) {
-            UI.blockUI(); 
-            var callback = {
-                success : function() {
-                    document.location = '${pageContext.request.contextPath}/web/console/directory/orgs';
+        UI.confirm('<ui:msgEscJS key="console.directory.org.delete.label.confirmation"/>',
+            () => {
+                UI.blockUI(); 
+                var callback = {
+                    success : function() {
+                        document.location = '${pageContext.request.contextPath}/web/console/directory/orgs';
+                    }
                 }
+                var request = ConnectionManager.post('${pageContext.request.contextPath}/web/console/directory/org/delete', callback, 'ids=${organization.id}');
+
+                localStorage.setItem("selectedList", "${organization.id}");
+            } , {
+                confirmButtonLabel: '<ui:msgEscJS key="console.directory.org.delete.label"/>'
             }
-            var request = ConnectionManager.post('${pageContext.request.contextPath}/web/console/directory/org/delete', callback, 'ids=${organization.id}');
-        
-            localStorage.setItem("selectedList", "${organization.id}");
-        }
+        );
     }
 
     function deleteDepartment(selectedList){
-         if (confirm('<ui:msgEscJS key="console.directory.department.delete.label.confirmation"/>')) {
-            UI.blockUI(); 
-            var callback = {
-                success : function() {
-                    document.location = '${pageContext.request.contextPath}/web/console/directory/org/view/${organization.id}';
+        UI.confirm('<ui:msgEscJS key="console.directory.department.delete.label.confirmation"/>',
+            () => {
+                UI.blockUI(); 
+                var callback = {
+                    success : function() {
+                        document.location = '${pageContext.request.contextPath}/web/console/directory/org/view/${organization.id}';
+                    }
                 }
+                var request = ConnectionManager.post('${pageContext.request.contextPath}/web/console/directory/dept/delete', callback, 'ids='+selectedList);
+
+                localStorage.setItem("selectedList", selectedList);
+            } , {
+                confirmButtonLabel: '<ui:msgEscJS key="console.directory.department.delete.label"/>'
             }
-            var request = ConnectionManager.post('${pageContext.request.contextPath}/web/console/directory/dept/delete', callback, 'ids='+selectedList);
-            
-            localStorage.setItem("selectedList", selectedList);
-        }
+        );
     }
 
     function deleteGrade(selectedList){
-         if (confirm('<ui:msgEscJS key="console.directory.grade.delete.label.confirmation"/>')) {
-            UI.blockUI(); 
-            var callback = {
-                success : function() {
-                    document.location = '${pageContext.request.contextPath}/web/console/directory/org/view/${organization.id}';
+        UI.confirm('<ui:msgEscJS key="console.directory.grade.delete.label.confirmation"/>',
+            () => {
+                UI.blockUI(); 
+                var callback = {
+                    success : function() {
+                        document.location = '${pageContext.request.contextPath}/web/console/directory/org/view/${organization.id}';
+                    }
                 }
+                var request = ConnectionManager.post('${pageContext.request.contextPath}/web/console/directory/grade/delete', callback, 'ids='+selectedList);
+
+                localStorage.setItem("selectedList", selectedList);
+            } , {
+                confirmButtonLabel: '<ui:msgEscJS key="console.directory.grade.delete.label"/>'
             }
-            var request = ConnectionManager.post('${pageContext.request.contextPath}/web/console/directory/grade/delete', callback, 'ids='+selectedList);
-            
-            localStorage.setItem("selectedList", selectedList);
-        }
+        );
     }
 
     function unassignUsers(selectedList){
-         if (confirm('<ui:msgEscJS key="console.directory.org.user.unassign.label.confirmation"/>')) {
-            UI.blockUI(); 
-            var callback = {
-                success : function() {
-                    document.location = '${pageContext.request.contextPath}/web/console/directory/org/view/${organization.id}';
+        UI.confirm('<ui:msgEscJS key="console.directory.org.user.unassign.label.confirmation"/>',
+            () => {
+                UI.blockUI(); 
+                var callback = {
+                    success : function() {
+                        document.location = '${pageContext.request.contextPath}/web/console/directory/org/view/${organization.id}';
+                    }
                 }
+                var request = ConnectionManager.post('${pageContext.request.contextPath}/web/console/directory/org/${organization.id}/user/unassign', callback, 'ids='+selectedList);
+            } , {
+                confirmButtonLabel: '<ui:msgEscJS key="console.directory.org.user.unassign.label"/>'
             }
-            var request = ConnectionManager.post('${pageContext.request.contextPath}/web/console/directory/org/${organization.id}/user/unassign', callback, 'ids='+selectedList);
-        }
+        );
     }
 
     var org_filter = window.filter;

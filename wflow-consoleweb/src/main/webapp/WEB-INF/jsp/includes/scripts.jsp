@@ -17,6 +17,7 @@
 
     <script type="text/javascript" src="${pageContext.request.contextPath}/wro/common.preload.js?build=<fmt:message key="build.number"/>"></script>
     <script type="text/javascript" src="${pageContext.request.contextPath}/wro/common.js?build=<fmt:message key="build.number"/>"></script>
+    <script type="text/javascript" src="${pageContext.request.contextPath}/js/sweetAlert2/resources/sweetalert2.min.js" ></script>
     <script>loadCSS("${pageContext.request.contextPath}/wro/common.css?build=<fmt:message key='build.number'/>")</script>
 
     <c:set var="jsonUiInRequest" scope="request" value="true"/>
@@ -46,16 +47,21 @@
                 }
             });
         }
-    </script>   
-    
+    </script>
+   
     <script>
+     document.addEventListener('DOMContentLoaded', function() {
         ConnectionManager.tokenName = "<%= SecurityUtil.getCsrfTokenName() %>";
         ConnectionManager.tokenValue = "<%= SecurityUtil.getCsrfTokenValue(request) %>";
         JPopup.tokenName = "<%= SecurityUtil.getCsrfTokenName() %>";
         JPopup.tokenValue = "<%= SecurityUtil.getCsrfTokenValue(request) %>";
         UI.locale = "<c:out value="${lang}"/>";
         UI.theme = "<c:out value="${theme}"/>";
-        
+        UI.msg = {
+            "ok" : "<ui:msgEscJS key="general.method.label.ok"/>",
+            "cancel" : "<ui:msgEscJS key="general.method.label.cancel"/>"
+        };
+
         if(window.parent.UI.theme === ""){
             window.parent.UI.theme = "<c:out value="${theme}"/>";
         }
@@ -73,9 +79,15 @@
                 msg = "<ui:msgEscJS key="general.label.themeSwitching"/>";
             }
             
-            if (confirm(msg)) {
-                window.top.location.reload(true);
-            }
+            UI.confirm(msg, 
+                () => {
+                    window.top.location.reload(true);
+                },
+                {
+                    confirmButtonClass : 'dialog-btn-primary'
+                }
+            );
         }
+    })
     </script>
 </c:if>

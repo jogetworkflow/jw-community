@@ -46,16 +46,21 @@
         });
 
         function assignUsers(selectedIds){
-             if (confirm('<ui:msgEscJS key="console.directory.grade.user.assign.label.confirmation"/>')) {
-                UI.blockUI(); 
-                var callback = {
-                    success : function() {
-                        UI.unblockUI();
-                        parent.location.reload(true);
+            UI.confirm('<ui:msgEscJS key="console.directory.grade.user.assign.label.confirmation"/>',
+                () => {
+                    UI.blockUI(); 
+                    var callback = {
+                        success : function() {
+                            UI.unblockUI();
+                            parent.location.reload(true);
+                        }
                     }
+                    var request = ConnectionManager.post('<c:out value="${pageContext.request.contextPath}/web/console/directory/grade/${id}/user/assign/submit"/>', callback, 'ids='+ selectedIds);
+                } , {
+                    confirmButtonLabel : '<ui:msgEscJS key="console.directory.grade.user.assign.label"/>',
+                    confirmButtonClass : "console-primary"
                 }
-                var request = ConnectionManager.post('<c:out value="${pageContext.request.contextPath}/web/console/directory/grade/${id}/user/assign/submit"/>', callback, 'ids='+ selectedIds);
-            }
+            );
         }
 
         function closeDialog(dummy) {

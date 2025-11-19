@@ -934,8 +934,8 @@
                     }
                     
                     UI.loadMsg(['app.edm.message.invalidEmailFormat'], function(messages) {
-                        alert(messages['app.edm.message.invalidEmailFormat']);
-                    });
+                        UI.alert(messages['app.edm.message.invalidEmailFormat'], {icon: "error"});
+                    });  
                     valid = false;
                     UI.unblockUI();
                     

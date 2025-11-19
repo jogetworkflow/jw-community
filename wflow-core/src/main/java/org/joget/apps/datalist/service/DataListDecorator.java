@@ -281,7 +281,7 @@ public class DataListDecorator extends CheckboxTableDecorator {
                 }
                 if (confirmation != null && confirmation.trim().length() > 0) {
                     confirmation = StringUtil.stripAllHtmlTag(confirmation);
-                    confirmationString = " onclick=\"return confirm('" + StringUtil.escapeString(confirmation, StringUtil.TYPE_JAVASCIPT, null) + "')\"";
+                    confirmationString = " onclick=\"return dlConfirm(this, '" + StringUtil.escapeString(confirmation, StringUtil.TYPE_JAVASCIPT, null) + "')\"";
                 }
             }
             if (StringUtil.stripAllHtmlTag(text).isEmpty()) {

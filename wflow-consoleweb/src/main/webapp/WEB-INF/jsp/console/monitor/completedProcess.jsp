@@ -85,15 +85,19 @@
 
 <script>
     function removeProcessInstance(){
-         if (confirm('<ui:msgEscJS key="console.monitoring.common.label.removeProcess.confirm"/>')) {
-            UI.blockUI(); 
-            var callback = {
-                success : function() {
-                    document.location = '${pageContext.request.contextPath}/web/console/monitor/${mode}';
+        UI.confirm('<ui:msgEscJS key="console.monitoring.common.label.removeProcess.confirm"/>',
+            () => {
+                UI.blockUI(); 
+                var callback = {
+                    success : function() {
+                        document.location = '${pageContext.request.contextPath}/web/console/monitor/${mode}';
+                    }
                 }
+                var request = ConnectionManager.post('${pageContext.request.contextPath}/web/console/monitor/process/delete', callback, 'ids=${wfProcess.instanceId}');
+            }, {
+                confirmButtonLabel: '<ui:msgEscJS key="console.monitoring.common.label.removeInstance"/>'
             }
-            var request = ConnectionManager.post('${pageContext.request.contextPath}/web/console/monitor/process/delete', callback, 'ids=${wfProcess.instanceId}');
-        }
+        );
     }
 
     function viewGraph(){

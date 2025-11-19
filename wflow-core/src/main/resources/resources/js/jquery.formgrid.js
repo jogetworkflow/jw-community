@@ -101,20 +101,23 @@
         },
 
         deleteRow: function() {
-            if (confirm("Delete row?")) {
-                var row = $(this).parent().parent();
-                var table = row.parent();
-                row.remove();
+            let deleteRowMsg = messages['form.formgrid.deleteRow'];
+            UI.confirm(deleteRowMsg,
+                () => {
+                    var row = $(this).parent().parent();
+                    var table = row.parent();
+                    row.remove();
 
-                // reset input names
-                table.find(".grid-row").each(function(rowIndex, row) {
-                    methods.updateInput(row, rowIndex);
-                });
+                    // reset input names
+                    table.find(".grid-row").each(function(rowIndex, row) {
+                        methods.updateInput(row, rowIndex);
+                    });
 
-                // trigger change
-                var el = table.parent();
-                $(el).trigger("change");
-            }
+                    // trigger change
+                    var el = table.parent();
+                    $(el).trigger("change");       
+                }
+            );
             return false;
         }
 

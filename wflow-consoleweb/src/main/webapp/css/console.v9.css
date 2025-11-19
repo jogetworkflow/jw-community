@@ -216,7 +216,7 @@ button:before, .btn:before {
 button:focus, .btn:focus {
     background-color: transparent !important;
 }
-button:focus:not(:active), .btn:focus:not(:active) {
+button:focus:not(:active):not(.swal2-styled), .btn:focus:not(:active):not(.swal2-styled) {
     background-color: var(--primary-accent) !important;
     color: var(--button-font-color) !important;
 }

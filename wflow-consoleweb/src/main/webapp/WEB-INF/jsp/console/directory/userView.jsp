@@ -243,17 +243,22 @@
     }
 
     function onDelete(){
-         if (confirm('<ui:msgEscJS key="console.directory.user.delete.label.confirmation"/>')) {
-            UI.blockUI(); 
-            var callback = {
-                success : function() {
-                    document.location = '${pageContext.request.contextPath}/web/console/directory/users';
+        UI.confirm('<ui:msgEscJS key="console.directory.user.delete.label.confirmation"/>',
+            () => {
+                UI.blockUI(); 
+                var callback = {
+                    success : function() {
+                        document.location = '${pageContext.request.contextPath}/web/console/directory/users';
+                    }
                 }
+                var request = ConnectionManager.post('${pageContext.request.contextPath}/web/console/directory/user/delete', callback, 'ids=${userId}');
+
+                localStorage.setItem("selectedList", "${userId}");
+            }, {
+                confirmButtonLabel: '<ui:msgEscJS key="console.directory.user.delete.label"/>',
+                confirmButtonClass: 'dialog-btn-danger'
             }
-            var request = ConnectionManager.post('${pageContext.request.contextPath}/web/console/directory/user/delete', callback, 'ids=${userId}');
-        
-            localStorage.setItem("selectedList", "${userId}");
-        }
+        );
     }
 
     function assignGroups(dummy){
@@ -265,27 +270,35 @@
     }
     
     function unassignReportTo(){
-         if (confirm('<ui:msgEscJS key="console.directory.user.reportTo.unassign.label.confirmation"/>')) {
-            UI.blockUI(); 
-            var callback = {
-                success : function() {
-                    document.location = '${pageContext.request.contextPath}/web/console/directory/user/view/${userId}.';
+        UI.confirm('<ui:msgEscJS key="console.directory.user.reportTo.unassign.label.confirmation"/>',
+            () => {
+                UI.blockUI(); 
+                var callback = {
+                    success : function() {
+                        document.location = '${pageContext.request.contextPath}/web/console/directory/user/view/${userId}.';
+                    }
                 }
+                var request = ConnectionManager.post('${pageContext.request.contextPath}/web/console/directory/user/${userId}/reportTo/unassign', callback, '');
+            }, {
+                confirmButtonLabel: '<ui:msgEscJS key="console.directory.user.reportTo.unassign.label"/>'
             }
-            var request = ConnectionManager.post('${pageContext.request.contextPath}/web/console/directory/user/${userId}/reportTo/unassign', callback, '');
-        }
+        );
     }
 
     function unassignGroups(selectedIds){
-         if (confirm('<ui:msgEscJS key="console.directory.user.group.unassign.label.confirmation"/>')) {
-            UI.blockUI(); 
-            var callback = {
-                success : function() {
-                    document.location = '${pageContext.request.contextPath}/web/console/directory/user/view/${userId}.';
+        UI.confirm('<ui:msgEscJS key="console.directory.user.group.unassign.label.confirmation"/>',
+            () => {
+                UI.blockUI(); 
+                var callback = {
+                    success : function() {
+                        document.location = '${pageContext.request.contextPath}/web/console/directory/user/view/${userId}.';
+                    }
                 }
+                var request = ConnectionManager.post('${pageContext.request.contextPath}/web/console/directory/user/${userId}/group/unassign', callback, 'ids='+ selectedIds);
+            }, {
+                confirmButtonLabel: '<ui:msgEscJS key="console.directory.user.group.unassign.label"/>'
             }
-            var request = ConnectionManager.post('${pageContext.request.contextPath}/web/console/directory/user/${userId}/group/unassign', callback, 'ids='+ selectedIds);
-        }
+        );
     }
 </script>
 

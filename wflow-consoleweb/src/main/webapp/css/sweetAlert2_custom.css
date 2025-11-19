@@ -1,0 +1,102 @@
+/* SweetAlert Custom Class */
+:root{
+    --jgt-btn-colorPrimary: var(--jgt-link-color);
+    --jgt-btn-colorPrimaryHover: var(--jgt-link-hover-color);
+    --jgt-btn-defaultColor: var(--jgt-link-color);
+    --jgt-btn-defaultBg: transparent;
+    --jgt-btn-defaultBorderColor: var(--jgt-link-color);
+    --jgt-btn-defaultHoverColor: var(--jgt-link-color);
+    --jgt-btn-defaultHoverBg: var(--jgt-primary-bg-subtle);
+    --jgt-btn-defaultHoverBorderColor: var(--jgt-link-color);
+}
+
+.swal2-container {
+    z-index: 100001 !important;
+}
+.dialog-swal-popup{
+    background: var(--theme-content-background, var(--console-main-background-color, #fff));
+    color: var(--theme-font-color, var(--console-default-font-color));
+    padding: 30px;
+}
+.dialog-swal-popup .swal2-title{
+    font-size: 1.05rem;
+}
+.dialog-swal-popup .swal2-html-container{
+    font-size: 1.05rem;
+}
+.dialog-swal-popup .swal2-html-container ul{
+    text-align: left !important;
+    padding-left: 1.25em !important;
+}
+.dialog-swal-popup .swal2-html-container li{
+    list-style: disc !important;
+    margin-bottom: 6px !important;
+    font-size: 1rem;
+    text-align: left;
+}
+body.rtl .dialog-swal-popup .swal2-html-container li{
+    text-align: right;
+}
+.dialog-swal-popup .swal2-icon {
+    margin: auto;
+}
+.dialog-swal-popup .swal2-question{
+    color:#FFA800 !important;
+    border-color: #FFA800 !important;
+}
+.dialog-swal-popup .swal2-info{
+    color: #2196F3;
+    border-color: #2196F3;
+}
+.whiteSpace{
+    white-space: normal !important;
+}
+.dialog-swal-popup .swal2-actions button {
+    cursor: pointer;
+    color: #fff;
+    margin: 0 5px;
+    transition: color .15s ease-in-out, background-color .15s ease-in-out, border-color .15s ease-in-out, box-shadow .15s ease-in-out;
+    border-radius: var(--global-borderRadius, 5px);
+    border: 1px solid #009265;
+}
+@media screen and (max-width: 359px) {
+    .dialog-swal-popup .swal2-actions button {
+        margin-bottom: 5px;
+    }
+}
+.dialog-btn-primary, .dialog-btn-primary:focus{
+    color: var(--jgt-btn-primaryColor, #FFFFFF) !important;
+    background: var(--jgt-btn-colorPrimary, var(--console-button-primary-bg, #009265)) !important;
+    border-color: var(--jgt-btn-colorPrimary, var(--console-button-primary-bg, #009265)) !important;
+    box-shadow: var(--jgt-btn-primaryShadow);
+}
+.dialog-btn-primary:hover, .dialog-btn-primary:active{
+    color: var(--jgt-btn-primaryColor, #FFFFFF) !important;
+    background: var(--jgt-btn-colorPrimaryHover, var(--console-button-primary-bg-hover, #00A977)) !important;
+    border-color: var(--jgt-btn-colorPrimaryHover, var(--console-button-primary-bg-hover, #00A977)) !important;
+}
+.dialog-btn-danger, .dialog-btn-danger:focus{
+    color: var(--jgt-btn-dangerColor, #FFFFFF) !important;
+    background: var(--jgt-btn-colorError, var(--console-button-danger-bg, #dc3545)) !important;
+    border-color: var(--jgt-btn-colorError, var(--console-button-danger-bg, #dc3545)) !important;
+    box-shadow: var(--jgt-btn-dangerShadow);
+}
+.dialog-btn-danger:hover, .dialog-btn-danger:active{
+    color: var(--jgt-btn-dangerColor, #FFFFFF) !important;
+    background: var(--jgt-btn-colorErrorHover, var(--console-button-danger-bg-hover, #c82333)) !important;
+    border-color: var(--jgt-btn-colorErrorHover, var(--console-button-danger-bg-hover, #c82333)) !important;
+}
+.dialog-btn-tertiary, .dialog-btn-tertiary:focus{
+    color: var(--jgt-btn-defaultColor, var(--console-button-primary-bg, #009265)) !important;
+    background: var(--jgt-btn-defaultBg, transparent) !important;
+    border-color: var(--jgt-btn-defaultBorderColor, var(--console-button-primary-bg, #009265)) !important;
+    box-shadow: var(--jgt-btn-defaultShadow);
+}
+.dialog-btn-tertiary:hover, .dialog-btn-tertiary:active{
+    color: var(--jgt-btn-defaultHoverColor, var(--console-button-primary-bg, #009265)) !important;
+    background: var(--jgt-btn-defaultHoverBg, var(--console-button-tertiary-bg-hover, rgba(0, 146, 101, 0.1))) !important;
+    border-color: var(--jgt-btn-defaultHoverBorderColor, var(--console-button-primary-bg, #009265)) !important;
+}
+.swal2-actions button:before{
+    content: none !important;
+}

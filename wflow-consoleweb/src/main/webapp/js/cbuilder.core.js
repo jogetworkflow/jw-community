@@ -341,7 +341,7 @@ CustomBuilder = {
                 CustomBuilder.updateSaveStatus("0");
                 CustomBuilder.showMessage("");
             }else{
-                alert(get_cbuilder_msg('ubuilder.saveFailed'));
+                UI.alert(get_cbuilder_msg('ubuilder.saveFailed'));
             }
             CustomBuilder.showMessage("");
         }, "text");

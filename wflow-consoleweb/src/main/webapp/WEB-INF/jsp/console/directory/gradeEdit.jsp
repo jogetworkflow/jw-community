@@ -50,7 +50,7 @@
             if(valid){
                 $("#createGrade").submit();
             } else {
-                alert(alertString);
+                UI.alert(alertString, {icon: 'error'});
             }         
         }
         

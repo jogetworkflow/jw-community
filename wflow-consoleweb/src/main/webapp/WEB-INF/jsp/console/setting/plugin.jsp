@@ -221,62 +221,71 @@
     }
 
     function uninstall(selectedList){
-         if (confirm('<ui:msgEscJS key="console.setting.plugin.unintall.label.confirmation"/>')) {
-            UI.blockUI(); 
-            var callback = {
-                success : function() {
-                    document.location = '${pageContext.request.contextPath}/web/console/setting/plugin';
+        UI.confirm('<ui:msgEscJS key="console.setting.plugin.unintall.label.confirmation"/>',
+            () => {
+                UI.blockUI(); 
+                var callback = {
+                    success : function() {
+                        document.location = '${pageContext.request.contextPath}/web/console/setting/plugin';
+                    }
                 }
+                var request = ConnectionManager.post('${pageContext.request.contextPath}/web/console/setting/plugin/uninstall', callback, 'selectedPlugins='+selectedList);
+
+                localStorage.setItem('selectedList', $("div#installed tr > td > div.selectionTd input[type='checkbox']:checked").map(function() { return $(this).closest("tr").find("td:nth-child(2)").text(); }).get());
+            }, {
+                confirmButtonLabel: '<ui:msgEscJS key="console.setting.plugin.unintall.label"/>',
             }
-            var request = ConnectionManager.post('${pageContext.request.contextPath}/web/console/setting/plugin/uninstall', callback, 'selectedPlugins='+selectedList);
-           
-            localStorage.setItem('selectedList', $("div#installed tr > td > div.selectionTd input[type='checkbox']:checked").map(function() { return $(this).closest("tr").find("td:nth-child(2)").text(); }).get());
-        }
+        );
     }
     
     /* Update all selected plugin from marketplace */
     function update(selectedList){
-        if (confirm('<ui:msgEscJS key="cbuilder.seamless.marketplace.confirmPluginInstallation"/>')) {
-            UI.blockUI(); 
-            var installUrl = "${pageContext.request.contextPath}/web/json/apps/install";
-            
-            for (var i in selectedList) {
-                var deferreds = [];
+        UI.confirm('<ui:msgEscJS key="cbuilder.seamless.marketplace.confirmPluginInstallation"/>',
+            () => {
+                UI.blockUI(); 
+                var installUrl = "${pageContext.request.contextPath}/web/json/apps/install";
 
-                var temp = $.Deferred();
-                deferreds.push(temp);
-                var installCallback = {
-                    success: function (data) {
-                        temp.resolve();
-                    },
-                    error: function (data) {
-                        temp.resolve();
+                for (var i in selectedList) {
+                    var deferreds = [];
+
+                    var temp = $.Deferred();
+                    deferreds.push(temp);
+                    var installCallback = {
+                        success: function (data) {
+                            temp.resolve();
+                        },
+                        error: function (data) {
+                            temp.resolve();
+                        }
+                    };
+
+                    // invoke installation
+                    var installParams = "url=" + encodeURIComponent("<ui:msgEscJS key="appCenter.link.marketplace.url"/>/jw/web/json/plugin/org.joget.marketplace.ProtectedAppUpload/service?action=download&id=" + selectedList[i]);
+                    ConnectionManager.post(installUrl, installCallback, installParams);
+                }
+
+                var updateSelectedList = $("div#update tr > td > div.selectionTd input[type='checkbox']:checked").map(function() { return $(this).closest("tr").find("td:nth-child(2)").text(); }).get()
+
+                //reload the table after all plugin updated
+                $.when.apply($, deferreds).then(function(){
+                    UI.unblockUI(); 
+                    JsonDataTable1.refresh();
+                    JsonDataTable2.refresh();
+                    if (typeof window.JsonDataTable3 !== 'undefined') {
+                        JsonDataTable3.refresh();
                     }
-                };
 
-                // invoke installation
-                var installParams = "url=" + encodeURIComponent("<ui:msgEscJS key="appCenter.link.marketplace.url"/>/jw/web/json/plugin/org.joget.marketplace.ProtectedAppUpload/service?action=download&id=" + selectedList[i]);
-                ConnectionManager.post(installUrl, installCallback, installParams);
+                    if(updateSelectedList) {
+                        updateSelectedList.forEach(function(item, index){
+                            UI.showConsoleToast(index, item + '<ui:msgEscJS key="console.app.message.update.toast.message"/>', "fas fa-exclamation-circle", 2000, $("div#main")); 
+                        })
+                    }
+                });
+            }, {
+                confirmButtonLabel: '<ui:msgEscJS key="console.directory.employment.common.label.hod.yes"/>',
+                confirmButtonClass: 'dialog-btn-primary'
             }
-            
-            var updateSelectedList = $("div#update tr > td > div.selectionTd input[type='checkbox']:checked").map(function() { return $(this).closest("tr").find("td:nth-child(2)").text(); }).get()
-
-            //reload the table after all plugin updated
-            $.when.apply($, deferreds).then(function(){
-                UI.unblockUI(); 
-                JsonDataTable1.refresh();
-                JsonDataTable2.refresh();
-                if (typeof window.JsonDataTable3 !== 'undefined') {
-                    JsonDataTable3.refresh();
-                }
-                
-                if(updateSelectedList) {
-                    updateSelectedList.forEach(function(item, index){
-                        UI.showConsoleToast(index, item + '<ui:msgEscJS key="console.app.message.update.toast.message"/>', "fas fa-exclamation-circle", 2000, $("div#main")); 
-                    })
-                }
-            });
-        }
+        );
     }
     
     var org_filter = window.filter;

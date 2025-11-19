@@ -2134,7 +2134,7 @@ public class ConsoleWebController {
         if ((xpdlJson != null && !xpdlJson.isEmpty()) && (error == null || error.isEmpty())) {
             map.addAttribute("script", "parent.JPopup.hide(\"uploadXpdlDialog\");parent.ProcessBuilder.updateJsonFromUploadedXpdl(\""+StringUtil.escapeString(xpdlJson, StringUtil.TYPE_JAVASCIPT, null)+"\");");
         } else {
-            map.addAttribute("script", "parent.JPopup.hide(\"uploadXpdlDialog\");parent.alert(\""+StringUtil.escapeString(error, StringUtil.TYPE_JAVASCIPT, null)+"\");");
+            map.addAttribute("script", "parent.JPopup.hide(\"uploadXpdlDialog\");parent.UI.alert(\""+StringUtil.escapeString(error, StringUtil.TYPE_JAVASCIPT, null)+"\");");
         }
         
         return "console/apps/dialogClose";

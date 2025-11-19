@@ -251,8 +251,8 @@
         function validateField(){
             var valid = true;
             var originalAppId = UI.userview_app_id;
-            var alertString = "";
             var idMatch = /^[\.@0-9a-zA-Z_\+-]+$/.test($("#username").val());
+            var alertStringList = '';
             const firstName = $("#firstName").val();
             const lastName = $("#lastName").val();
             const employeeCode = $("#employeeCode").val();
@@ -260,62 +260,47 @@
             
             if(!idMatch){
                 if(!idMatch){
-                    alertString += '<ui:msgEscJS key="console.directory.user.error.label.usernameInvalid"/>';
+                    alertStringList += '<li>' + '<ui:msgEscJS key="console.directory.user.error.label.usernameInvalid"/>' + '</li>';
                     $("#username").focus();
                     valid = false;
                 }
             }
                                      
             if(firstName == ""){
-                alertString += '<ui:msgEscJS key="User.firstName[not.blank]"/>';
+                alertStringList += '<li>' + '<ui:msgEscJS key="User.firstName[not.blank]"/>' + '</li>';
                 valid = false;
             } else if (!UI.isValidInput(firstName) || !UI.isValidInput(lastName)) {
-                alertString += '<ui:msgEscJS key="console.directory.user.error.label.nameInvalid"/>';
+                alertStringList += '<li>' + '<ui:msgEscJS key="console.directory.user.error.label.nameInvalid"/>' + '</li>';
                 valid = false;
             }  
             
             if($("[name=password]").val() == "" || $("[name=confirmPassword]").val() == ""){
-                if(alertString != ""){
-                    alertString += '\n';
-                }
-                alertString += '<ui:msgEscJS key="console.directory.user.error.label.passwordNotEmpty"/>';
+                alertStringList += '<li>' + '<ui:msgEscJS key="console.directory.user.error.label.passwordNotEmpty"/>' + '</li>';
                 valid = false;
             }else if($("[name=password]").val() != $("[name=confirmPassword]").val()){
-                if(alertString != ""){
-                    alertString += '\n';
-                }
-                alertString += '<ui:msgEscJS key="console.directory.user.error.label.passwordNotMatch"/>';
+                alertStringList += '<li>' + '<ui:msgEscJS key="console.directory.user.error.label.passwordNotMatch"/>' + '</li>';
                 valid = false;
             }
 
             if (!UI.isValidInput(employeeCode)) {
-                if(alertString != ""){
-                    alertString += '\n';
-                }
-                alertString += '<ui:msgEscJS key="console.directory.user.error.label.employeeCodeInvalid"/>';
+                alertStringList += '<li>' + '<ui:msgEscJS key="console.directory.user.error.label.employeeCodeInvalid"/>' + '</li>';
                 valid = false;
             }
 
             if (!UI.isValidInput(employeeRole)) {
-                if(alertString != ""){
-                    alertString += '\n';
-                }
-                alertString += '<ui:msgEscJS key="console.directory.user.error.label.jobTitleInvalid"/>';
+                alertStringList += '<li>' + '<ui:msgEscJS key="console.directory.user.error.label.employeeCodeInvalid"/>' + '</li>';
                 valid = false;
             }
             
             UI.validateEmail('#email', true, function(isValid) {
                 if (!isValid) {
-                    if (alertString != "") {
-                        alertString += '\n';
-                    }
                     try {
                         if (UI.userview_app_id === '') {
                             UI.userview_app_id = 'appcenter';
                         }
 
                         UI.loadMsg(['app.edm.message.invalidEmailFormat'], function(messages) {
-                            alert(messages['app.edm.message.invalidEmailFormat']);
+                            UI.alert(messages['app.edm.message.invalidEmailFormat'], {icon: 'error'});
                         });
                         valid = false;
                         UI.unblockUI();
@@ -328,8 +313,11 @@
                 // Submit the form if everything is valid
                 if (valid) {
                     $("#createUser").submit();
-                } else if(alertString !== '') {
-                    alert(alertString);
+                } else if(alertStringList !== '') {
+                    UI.alert('<ul>' + alertStringList + '</ul>', {
+                        isHtml : true,
+                        icon: 'error'
+                    });       
                 }
             });
         }

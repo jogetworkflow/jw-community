@@ -59,12 +59,16 @@
         </form>
         <script>
             function startProcess(){
-                if(confirm('<ui:msgEscJS key="client.app.run.process.label.start.confirm"/>')){
-                    return true;
-                }
-                else {
-                    return false;
-                }
+                UI.confirm('<ui:msgEscJS key="client.app.run.process.label.start.confirm"/>', 
+                    () => {
+                        document.getElementById('processForm').submit();
+                    },
+                    {
+                        confirmButtonLabel : '<ui:msgEscJS key="client.app.run.process.label.start"/>',
+                        confirmButtonClass : 'dialog-btn-primary'
+                    }
+                ); 
+                return false;
             }
         </script>
     </c:when>

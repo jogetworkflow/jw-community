@@ -788,6 +788,7 @@ public class XadminTheme extends UniversalTheme {
         urls.add(contextPath + "/xadmin/lib/html5.min.js");
         urls.add(contextPath + "/xadmin/lib/respond.min.js");
         urls.add(contextPath + "/xadmin/css/login.css");
+        urls.add(contextPath + "/js/sweetAlert2/resources/sweetalert2.min.js");
         
         return urls;
     }

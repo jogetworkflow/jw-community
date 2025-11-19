@@ -32,15 +32,20 @@
             <script>
                 $(function(){
                     $("#enableArchive").on('click', function(){
-                        if (confirm('<ui:msgEscJS key="console.monitoring.enableArchive"/>')) {
-                            UI.blockUI(); 
-                            var callback = {
-                                success : function() {
-                                    document.location = '${pageContext.request.contextPath}/web/console/monitor/archived';
-                                }
-                            };
-                            var request = ConnectionManager.post('${pageContext.request.contextPath}/web/console/monitor/completed/process/archive', callback, '');
-                        }
+                        UI.confirm('<ui:msgEscJS key="console.monitoring.enableArchive"/>',
+                            () => {
+                                UI.blockUI(); 
+                                var callback = {
+                                    success : function() {
+                                        document.location = '${pageContext.request.contextPath}/web/console/monitor/archived';
+                                    }
+                                };
+                                var request = ConnectionManager.post('${pageContext.request.contextPath}/web/console/monitor/completed/process/archive', callback, '');
+                            }, {
+                                confirmButtonLabel: '<ui:msgEscJS key="console.monitoring.enable"/>',
+                                confirmButtonClass: 'dialog-btn-primary',
+                            }
+                        );
                     });
                 });
             </script>    
@@ -119,17 +124,21 @@
     };
 
     function removeProcessInstances(selectedList){
-        if (confirm('<ui:msgEscJS key="console.monitoring.common.label.removeProcess.confirm"/>')) {
-            UI.blockUI(); 
-            var callback = {
-                success : function() {
-                    document.location = '${pageContext.request.contextPath}/web/console/monitor/${mode}';
+        UI.confirm('<ui:msgEscJS key="console.monitoring.common.label.removeProcess.confirm"/>',
+            () => {
+                UI.blockUI(); 
+                var callback = {
+                    success : function() {
+                        document.location = '${pageContext.request.contextPath}/web/console/monitor/${mode}';
+                    }
                 }
+                var request = ConnectionManager.post('${pageContext.request.contextPath}/web/console/monitor/process/delete', callback, 'ids='+selectedList);
+
+                localStorage.setItem('selectedList', selectedList);            
+            }, {
+                confirmButtonLabel: '<ui:msgEscJS key="console.monitoring.common.label.removeInstance"/>'
             }
-            var request = ConnectionManager.post('${pageContext.request.contextPath}/web/console/monitor/process/delete', callback, 'ids='+selectedList);
-            
-            localStorage.setItem('selectedList', selectedList);            
-        }
+        );
     }
 
     Template.init("#menu-monitor", "#nav-monitor-${mode}");

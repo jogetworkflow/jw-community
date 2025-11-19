@@ -13,7 +13,7 @@ ProcessBuilder = {
         $("#save-btn").parent().after('<div class="btn-group me-1 float-end" style="margin-top:-16px;" role="group"><button class="btn btn-secondary btn-icon" id="launch-btn" title="'+get_cbuilder_msg("pbuilder.label.runProcess")+'"><i class="las la-play"></i> <span>'+get_cbuilder_msg("pbuilder.label.runProcess")+'</span></button></div>');
         $("#launch-btn").on("click", function(){
             if(!CustomBuilder.isSaved()){
-                alert(get_cbuilder_msg("cbuilder.pleaseSaveChangeToContinue"));
+                UI.alert(get_cbuilder_msg("cbuilder.pleaseSaveChangeToContinue"));
             } else {
                 var url = CustomBuilder.contextPath + '/web/client/app' + CustomBuilder.appPath + '/process/' + ProcessBuilder.currentProcessData.properties.id;
                 if ($('body').attr('builder-theme') === undefined){

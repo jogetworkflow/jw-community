@@ -84,17 +84,21 @@
     }
 
     function deleteOrganization(selectedList){
-         if (confirm('<ui:msgEscJS key="console.directory.org.delete.label.confirmation"/>')) {
-            UI.blockUI(); 
-            var callback = {
-                success : function() {
-                    document.location = '${pageContext.request.contextPath}/web/console/directory/orgs';
+        UI.confirm('<ui:msgEscJS key="console.directory.org.delete.label.confirmation"/>',
+            () => {
+                UI.blockUI(); 
+                var callback = {
+                    success : function() {
+                        document.location = '${pageContext.request.contextPath}/web/console/directory/orgs';
+                    }
                 }
+                var request = ConnectionManager.post('${pageContext.request.contextPath}/web/console/directory/org/delete', callback, 'ids='+selectedList);
+
+                localStorage.setItem('selectedList', selectedList);
+            } , {
+                confirmButtonLabel: '<ui:msgEscJS key="console.directory.org.delete.label"/>'
             }
-            var request = ConnectionManager.post('${pageContext.request.contextPath}/web/console/directory/org/delete', callback, 'ids='+selectedList);
-        
-            localStorage.setItem('selectedList', selectedList);
-        }
+        );
     }
 </script>
 

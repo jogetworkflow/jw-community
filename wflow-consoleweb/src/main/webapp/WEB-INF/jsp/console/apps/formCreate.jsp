@@ -1,7 +1,7 @@
 <%@ include file="/WEB-INF/jsp/includes/taglibs.jsp" %>
 
 <commons:popupHeader  bodyCssClass=" builder-popup" builderTheme="true"/>
-
+    
     <div id="main-body-header">
         <fmt:message key="console.form.create.label.title"/>
     </div>
@@ -129,26 +129,29 @@
             if(!idMatch || !tableNameMatch || tableName.length > 20){
                 var alertString = '';
                 if(!idMatch){
-                    alertString = '<ui:msgEscJS key="console.form.error.label.idInvalid"/>';
+                    alertString = '<li><ui:msgEscJS key="console.form.error.label.idInvalid"/></li>';
                     $("#id").focus();
                 }
                 if(!tableNameMatch){
                     if(alertString == ''){
-                        $("#tableName").focus();
+                    $("#tableName").focus();
                     }else{
                         alertString += "\n";
-                    }
-                    alertString += '<ui:msgEscJS key="console.form.error.label.tableNameInvalid"/>';
+                }
+                    alertString += '<li><ui:msgEscJS key="console.form.error.label.tableNameInvalid"/></li>';
                 }
                 if(tableName.length > 20){
                     if(alertString == ''){
-                        $("#tableName").focus();
+                    $("#tableName").focus();
                     }else{
                         alertString += "\n";
-                    }
-                    alertString += '<ui:msgEscJS key="form.form.invalidId"/>';
                 }
-                alert(alertString);
+                    alertString += '<li><ui:msgEscJS key="form.form.invalidId"/></li>';
+                }
+                UI.alert('<ul>' + alertString + '<ul>', {
+                    isHtml : true,
+                    icon: 'error'
+                });
             }else{
                 $("#createForm").submit();
             }

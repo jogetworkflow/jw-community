@@ -381,41 +381,43 @@ AppBuilder = {
      * Delete the selected item 
      */
     deleteItem : function(item) {
-        if (confirm(get_cbuilder_msg("abuilder.deleteConfirmation"))) {
-            var id = $(item).attr("data-id");
-            var type = $(item).attr("data-builder-type");
-            
-            Usages.delete(id, type, {
-                contextPath: CustomBuilder.contextPath,
-                appId: CustomBuilder.appId,
-                appVersion: CustomBuilder.appVersion,
-                id: id,
-                builder: type,
-                confirmMessage: get_advtool_msg('dependency.usage.confirmDelete'),
-                confirmLabel: get_advtool_msg('dependency.usage.confirmLabel'),
-                cancelLabel: get_advtool_msg('dependency.usage.cencelLabel')
-            }, function () {
-                var callback = {
-                    success: function () {
-                        //delete from admin bar menu too
-                        $(".menu-"+type + " ul li[data-id='"+id+"']").remove();
-                        
-                        $(item).remove();
-                        
-                        //delete tags
-                        Nav.deleteItem(id, type);
-                        
-                        CustomBuilder.showMessage($(item).attr("data-id") + get_cbuilder_msg('ubuilder.message.delete.toast.message'), "success", true);
-                    }
-                }
+        UI.confirm(get_cbuilder_msg("abuilder.deleteConfirmation"),
+            () => {
+                var id = $(item).attr("data-id");
+                var type = $(item).attr("data-builder-type");
                 
-                var urlType = type;
-                if (type !== "userview" && type !== "form" && type !== "datalist") {
-                    urlType = "cbuilder/" + type
-                }
-                ConnectionManager.post(CustomBuilder.contextPath+'/web/console/app'+CustomBuilder.appPath+'/'+urlType+'/delete', callback, 'ids=' + id);        
-            });
-        }
+                Usages.delete(id, type, {
+                    contextPath: CustomBuilder.contextPath,
+                    appId: CustomBuilder.appId,
+                    appVersion: CustomBuilder.appVersion,
+                    id: id,
+                    builder: type,
+                    confirmMessage: get_advtool_msg('dependency.usage.confirmDelete'),
+                    confirmLabel: get_advtool_msg('dependency.usage.confirmLabel'),
+                    cancelLabel: get_advtool_msg('dependency.usage.cencelLabel')
+                }, function () {
+                    var callback = {
+                        success: function () {
+                            //delete from admin bar menu too
+                            $(".menu-"+type + " ul li[data-id='"+id+"']").remove();
+                            
+                            $(item).remove();
+                            
+                            //delete tags
+                            Nav.deleteItem(id, type);
+                            
+                            CustomBuilder.showMessage($(item).attr("data-id") + get_cbuilder_msg('ubuilder.message.delete.toast.message'), "success", true);
+                        }
+                    }
+                    
+                    var urlType = type;
+                    if (type !== "userview" && type !== "form" && type !== "datalist") {
+                        urlType = "cbuilder/" + type
+                    }
+                    ConnectionManager.post(CustomBuilder.contextPath+'/web/console/app'+CustomBuilder.appPath+'/'+urlType+'/delete', callback, 'ids=' + id);        
+                });
+            }
+        );
     },
     
     /*
@@ -448,39 +450,47 @@ AppBuilder = {
      * Action implementation of top panel to publish the app
      */
     publishApp: function() {
-        if (confirm(AppBuilder.msg('publishConfirm'))) {
-            var callback = {
-                success : function(data) {
-                    try {
-                        data = JSON.parse(data);
-                    } catch (e) {
-                        CustomBuilder.showMessage(get_cbuilder_msg("abuilder.invalidServerResponse"), "danger", false)
-                        console.error("Unable to parse data as JSON");
-                        return;
+        UI.confirm(AppBuilder.msg('publishConfirm'),
+            () => {
+                var callback = {
+                    success : function(data) {
+                        try {
+                            data = JSON.parse(data);
+                        } catch (e) {
+                            CustomBuilder.showMessage(get_cbuilder_msg("abuilder.invalidServerResponse"), "danger", false)
+                            console.error("Unable to parse data as JSON");
+                            return; 
+                        }
+                        if (data.status) {
+                            AppBuilder.updatePublishButton(CustomBuilder.appVersion, false);
+                        } else {
+                            CustomBuilder.showMessage(get_cbuilder_msg("abuilder.appLimitExceeded"), "danger", false)
+                        }
                     }
-                    if (data.status) {
-                        AppBuilder.updatePublishButton(CustomBuilder.appVersion, false);
-                    } else {
-                        CustomBuilder.showMessage(get_cbuilder_msg("abuilder.appLimitExceeded"), "danger", false)
-                    }
-                }
-            };
-            ConnectionManager.post(CustomBuilder.contextPath+'/web/console/app'+CustomBuilder.appPath+'/publish', callback, '');
-        }
+                };
+                ConnectionManager.post(CustomBuilder.contextPath+'/web/console/app'+CustomBuilder.appPath+'/publish', callback, '');
+            }, {
+                confirmButtonClass: 'dialog-btn-primary',
+            }
+        );
     },
     
     /*
      * Action implementation of top panel to unpublish the app
      */
     unpublishApp: function() {
-        if (confirm(AppBuilder.msg('unpublishConfirm'))) {
-            var callback = {
-                success : function() {
-                    AppBuilder.updatePublishButton(CustomBuilder.appVersion, true);
-                }
-            };
-            ConnectionManager.post(CustomBuilder.contextPath+'/web/console/app'+CustomBuilder.appPath+'/unpublish', callback, '');
-        }
+        UI.confirm(AppBuilder.msg('unpublishConfirm'),
+            () => {
+                var callback = {
+                    success : function() {
+                        AppBuilder.updatePublishButton(CustomBuilder.appVersion, true);
+                    }
+                };
+                ConnectionManager.post(CustomBuilder.contextPath+'/web/console/app'+CustomBuilder.appPath+'/unpublish', callback, '');
+            }, {
+                confirmButtonClass: 'dialog-btn-primary',
+            }
+        );       
     },
     
     updatePublishButton: function(version, isUnpublish) {
@@ -973,36 +983,40 @@ AppBuilder = {
     downloadFromMarketplace : function(btn) {
         var container = $(btn).closest(".error");
         if ($(container).find(".marketplace-plugin").length > 0) {
-            if (confirm(get_cbuilder_msg('cbuilder.seamless.marketplace.confirmPluginInstallation'))) {
-                $(btn).prop("disabled", true).append(' <i class="las la-spinner la-spin" ></i>');
-                $(container).find(".marketplace-plugin").append(' <i class="las la-spinner la-spin" ></i>');
-                
-                var installUrl = CustomBuilder.contextPath + "/web/json/apps/install";
-                $(container).find(".marketplace-plugin").each(function(){
-                    var link = $(this);
+            UI.confirm(get_cbuilder_msg('cbuilder.seamless.marketplace.confirmPluginInstallation'),
+                () => {
+                    $(btn).prop("disabled", true).append(' <i class="las la-spinner la-spin" ></i>');
+                    $(container).find(".marketplace-plugin").append(' <i class="las la-spinner la-spin" ></i>');
                     
-                    var installCallback = {
-                        success: function (data) {
-                            CustomBuilder.showMessage(get_cbuilder_msg('cbuilder.seamless.marketplace.installed', [$(link).text()]), "success");
-                            $(link).parent().remove();
-                            if ($(container).find(".marketplace-plugin").length === 0) {
-                                $(btn).remove();
+                    var installUrl = CustomBuilder.contextPath + "/web/json/apps/install";
+                    $(container).find(".marketplace-plugin").each(function(){
+                        var link = $(this);
+                        
+                        var installCallback = {
+                            success: function (data) {
+                                CustomBuilder.showMessage(get_cbuilder_msg('cbuilder.seamless.marketplace.installed', [$(link).text()]), "success");
+                                $(link).parent().remove();
+                                if ($(container).find(".marketplace-plugin").length === 0) {
+                                    $(btn).remove();
+                                }
+                                if ($(container).find("ul li").length === 0) {
+                                    $(container).remove();
+                                }
+                            },
+                            error: function (data) {
+                                CustomBuilder.showMessage(get_cbuilder_msg('cbuilder.seamless.marketplace.fail', [$(link).text()]), "danger");
+                                $(link).find('i.la-spinner').remove();
                             }
-                            if ($(container).find("ul li").length === 0) {
-                                $(container).remove();
-                            }
-                        },
-                        error: function (data) {
-                            CustomBuilder.showMessage(get_cbuilder_msg('cbuilder.seamless.marketplace.fail', [$(link).text()]), "danger");
-                            $(link).find('i.la-spinner').remove();
-                        }
-                    };
+                        };
 
-                    // invoke installation
-                    var installParams = "url=" + encodeURIComponent(CustomBuilder.config.builder.options['marketplaceUrl']+"/jw/web/json/plugin/org.joget.marketplace.ProtectedAppUpload/service?action=download&id=" + link.data('id'));
-                    ConnectionManager.post(installUrl, installCallback, installParams);
-                });
-            }
+                        // invoke installation
+                        var installParams = "url=" + encodeURIComponent(CustomBuilder.config.builder.options['marketplaceUrl']+"/jw/web/json/plugin/org.joget.marketplace.ProtectedAppUpload/service?action=download&id=" + link.data('id'));
+                        ConnectionManager.post(installUrl, installCallback, installParams);
+                    }); 
+                }, {
+                    confirmButtonClass: 'dialog-btn-primary',
+                }
+            );             
         }
     }
 };

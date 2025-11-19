@@ -389,6 +389,7 @@ public class UserviewThemeProcesser {
         String bn = ResourceBundleUtil.getMessage("build.number");
         String html = "<script type=\"text/javascript\" src=\"" + cp + "/wro/common.preload.js?build=" + bn + "\"></script>\n"
                 + "<script type=\"text/javascript\" src=\"" + cp + "/wro/common.js?build=" + bn + "\" defer></script>\n"
+                + "<script type=\"text/javascript\" src=\"" + cp + "/js/sweetAlert2/resources/sweetalert2.min.js\" defer></script>\n"
                 + "<script>loadCSS(\"" + cp + "/wro/common.css?build=" + bn + "\")</script>\n"
                 + "<script type=\"text/javascript\">\n";
 
@@ -441,10 +442,12 @@ public class UserviewThemeProcesser {
         html += "UI.base = \"" + request.getContextPath() + "\";\n"
                 + "        UI.userview_app_id = '"+userview.getParamString("appId")+"';\n"
                 + "        UI.userview_id = '"+userview.getPropertyString("id")+"';\n"
-                + "        UI.locale = '"+AppUtil.getAppLocale()+"';\n";
+                + "        UI.locale = '"+AppUtil.getAppLocale()+"';\n"
+                + "        UI.msg = {'ok': '"+ResourceBundleUtil.getMessage("general.method.label.ok")+"', \n"
+                + "                  'cancel' : '"+ResourceBundleUtil.getMessage("general.method.label.cancel")+"'};\n";
 
         if (alertMessage != null && !alertMessage.isEmpty()) {
-            html += "alert(\"" + alertMessage + "\");\n";
+            html += "UI.alert(\"" + alertMessage + "\");\n";
         }
 
         html += "</script>\n";
@@ -776,10 +779,18 @@ public class UserviewThemeProcesser {
                 } else if (menuRedirectUrl.contains("SCRIPT_CLOSE_POPUP")) {
                     menuRedirectUrl = "SCRIPT_CLOSE_POPUP";
                 }
-                Map<String, String> data = new HashMap<String, String>();
+                Map<String, Object> data = new HashMap<String, Object>();
                 data.put("alertMessage", menuAlertMessage);
                 data.put("redirectUrl", menuRedirectUrl);
                 data.put("redirectParent", redirectParent);
+                data.put("context_path", request.getContextPath());
+                data.put("userview", userview);
+                data.put("home_page_link", request.getContextPath() + getHomePageLink());
+                data.put("is_login_page", isLoginPage);
+                data.put("embed", "true".equalsIgnoreCase(userview.getParamString("embed")));
+                data.put("base_link", request.getContextPath() + getBaseLink());
+                data.put("css", getCss(data)); // Retrieve CSS from theme
+                data.put("js_css_lib", getJsCssLib(data));
                 return UserviewUtil.getTemplate(getDefaultTheme(), data, "/templates/userview/redirect.ftl");
             } else {
                 alertMessage = menuAlertMessage;
@@ -824,7 +835,7 @@ public class UserviewThemeProcesser {
             }
             
             if (alertMessage != null && !alertMessage.isEmpty()) {
-                html = "<script>alert(\"" + StringUtil.escapeString(alertMessage, StringUtil.TYPE_JAVASCIPT, null) + "\");</script>" + html;
+                html = "<script>UI.alert(\"" + StringUtil.escapeString(alertMessage, StringUtil.TYPE_JAVASCIPT, null) + "\");</script>" + html;
             }
         }
         

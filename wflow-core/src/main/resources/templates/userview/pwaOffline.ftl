@@ -157,12 +157,14 @@
         }
 
         window.deleteForm = function(id){
-            if(confirm('@@pwa.offline.delete.confirm@@')){
-                var objectStoreRequest = getObjectStore(FORM_DB_STORE_NAME, 'readwrite').delete(id);
-                objectStoreRequest.onsuccess = function(event) {
-                    loadFormData();
-                };
-            }
+            UI.confirm('@@pwa.offline.delete.confirm@@',
+                () => {
+                    var objectStoreRequest = getObjectStore(FORM_DB_STORE_NAME, 'readwrite').delete(id);
+                    objectStoreRequest.onsuccess = function(event) {
+                        loadFormData();
+                    };
+                }
+            );
         }
 
         window.submitForm = function(id) {

@@ -54,7 +54,7 @@ public class AjaxUniversalTheme extends UniversalTheme implements SupportBuilder
         if (isAjaxContent(data)) {
             UserviewThemeProcesser processor = (UserviewThemeProcesser) data.get("processor");
             if (processor.getAlertMessage() != null && !processor.getAlertMessage().isEmpty()) {
-                data.put("userview_menu_alert", "<script>alert(\"" + StringUtil.escapeString(processor.getAlertMessage(), StringUtil.TYPE_JAVASCIPT, null) + "\");</script>");
+                data.put("userview_menu_alert", "<script>UI.alert(\"" + StringUtil.escapeString(processor.getAlertMessage(), StringUtil.TYPE_JAVASCIPT, null) + "\");</script>");
             }
             if (processor.getRedirectUrl() != null && !processor.getRedirectUrl().isEmpty() && !isCurrentUserviewUrl(processor.getRedirectUrl())) {
                 String redirectUrl = processor.getRedirectUrl(); //the redirect url from UserviewThemeProcesser.handleMenuResponse() usually without context path
@@ -241,6 +241,7 @@ public class AjaxUniversalTheme extends UniversalTheme implements SupportBuilder
         urls.add(contextPath + "/wro/ajaxuniversal.preload.min.js");
         urls.add(contextPath + "/wro/ajaxuniversal.min.js");
         urls.add(contextPath + "/universal/lib/responsive-switch.min.js");
+        urls.add(contextPath + "/js/sweetAlert2/resources/sweetalert2.min.js");
         
         return urls;
     }

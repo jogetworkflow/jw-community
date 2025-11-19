@@ -114,44 +114,49 @@
         
         /* Update all selected plugin from marketplace */
         function update(selectedList){
-             if (confirm('<ui:msgEscJS key="cbuilder.seamless.marketplace.confirmPluginInstallation"/>')) {
-                UI.blockUI(); 
-                var installUrl = "${pageContext.request.contextPath}/web/json/apps/install";
+            UI.confirm('<ui:msgEscJS key="cbuilder.seamless.marketplace.confirmPluginInstallation"/>',
+                () => {
+                    UI.blockUI(); 
+                    var installUrl = "${pageContext.request.contextPath}/web/json/apps/install";
 
-                for (var i in selectedList) {
-                    var deferreds = [];
+                    for (var i in selectedList) {
+                        var deferreds = [];
 
-                    var temp = $.Deferred();
-                    deferreds.push(temp);
-                    var installCallback = {
-                        success: function (data) {
-                            temp.resolve();
-                        },
-                        error: function (data) {
-                            temp.resolve();
-                        }
-                    };
+                        var temp = $.Deferred();
+                        deferreds.push(temp);
+                        var installCallback = {
+                            success: function (data) {
+                                temp.resolve();
+                            },
+                            error: function (data) {
+                                temp.resolve();
+                            }
+                        };
 
-                    // invoke installation
-                    var installParams = "url=" + encodeURIComponent("<ui:msgEscJS key="appCenter.link.marketplace.url"/>/jw/web/json/plugin/org.joget.marketplace.ProtectedAppUpload/service?action=download&id=" + selectedList[i]);
-                    ConnectionManager.post(installUrl, installCallback, installParams);
-                }
-
-                var updateSelectedList = $("div#update tr > td > div.selectionTd input[type='checkbox']:checked").map(function() { return $(this).closest("tr").find("td:nth-child(2)").text(); }).get()
-
-                //reload the table after all plugin updated
-                $.when.apply($, deferreds).then(function(){
-                    UI.unblockUI(); 
-                    JsonDataTable.refresh();
-                    JsonDataTable1.refresh();
-
-                    if(updateSelectedList) {
-                        updateSelectedList.forEach(function(item, index){
-                                parent.window.CustomBuilder.showMessage(item + '<ui:msgEscJS key="console.app.message.update.toast.message"/>', "success",true); 
-                        })
+                        // invoke installation
+                        var installParams = "url=" + encodeURIComponent("<ui:msgEscJS key="appCenter.link.marketplace.url"/>/jw/web/json/plugin/org.joget.marketplace.ProtectedAppUpload/service?action=download&id=" + selectedList[i]);
+                        ConnectionManager.post(installUrl, installCallback, installParams);
                     }
-                });
-            }
+
+                    var updateSelectedList = $("div#update tr > td > div.selectionTd input[type='checkbox']:checked").map(function() { return $(this).closest("tr").find("td:nth-child(2)").text(); }).get()
+
+                    //reload the table after all plugin updated
+                    $.when.apply($, deferreds).then(function(){
+                        UI.unblockUI(); 
+                        JsonDataTable.refresh();
+                        JsonDataTable1.refresh();
+
+                        if(updateSelectedList) {
+                            updateSelectedList.forEach(function(item, index){
+                                    parent.window.CustomBuilder.showMessage(item + '<ui:msgEscJS key="console.app.message.update.toast.message"/>', "success",true); 
+                            })
+                        }
+                    });
+                }, {
+                    confirmButtonLabel: '<ui:msgEscJS key="cbuilder.download"/>',
+                    confirmButtonClass: 'dialog-btn-primary'
+                }
+            );
         }
         
         function defaultPluginPropertiesCreate(){
@@ -160,23 +165,27 @@
         
         function pluginDefaultDelete(selectedList){
             var deleteSelectedList = $("div#pluginDefault tr > td > div.selectionTd input[type='checkbox']:checked").map(function() { return $(this).closest("tr").find("td:nth-child(2)").text(); }).get()
-            if (confirm('<ui:msgEscJS key="console.app.pluginDefault.delete.label.confirmation"/>')) {
-               parent.UI.blockUI();
-               var callback = {
-                   success : function() {
-                       reloadTable();
-                       JsonPluginDefaultDataTable.clearSelectedRows();
-                       parent.UI.unblockUI();
-                   }
-               }
-               var request = ConnectionManager.post('${pageContext.request.contextPath}/web/console/app/<c:out value="${appId}"/>/${appVersion}/pluginDefault/delete', callback, 'ids='+selectedList);
+            UI.confirm('<ui:msgEscJS key="console.app.pluginDefault.delete.label.confirmation"/>',
+                () => {
+                    parent.UI.blockUI();
+                    var callback = {
+                        success : function() {
+                            reloadTable();
+                            JsonPluginDefaultDataTable.clearSelectedRows();
+                            parent.UI.unblockUI();
+                        }
+                    }
+                    var request = ConnectionManager.post('${pageContext.request.contextPath}/web/console/app/<c:out value="${appId}"/>/${appVersion}/pluginDefault/delete', callback, 'ids='+selectedList);
 
-               if(deleteSelectedList) {
-                deleteSelectedList.forEach(function(item, index){
-                       parent.window.CustomBuilder.showMessage(item + '<ui:msgEscJS key="console.app.message.delete.toast.message"/>', "success",true); 
-                    })
+                    if(deleteSelectedList) {
+                     deleteSelectedList.forEach(function(item, index){
+                            parent.window.CustomBuilder.showMessage(item + '<ui:msgEscJS key="console.app.message.delete.toast.message"/>', "success",true); 
+                         })
+                     }
+                 }, {
+                    confirmButtonLabel: '<ui:msgEscJS key="console.setting.datasource.label.deleteProfile"/>',
                 }
-            }
+            );
         }
         function closeDialog() {
             pluginDefaultCreateDialog.close();

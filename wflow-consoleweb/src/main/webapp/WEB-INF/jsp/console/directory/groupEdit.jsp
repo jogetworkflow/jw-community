@@ -59,7 +59,7 @@
             if(valid){
                 $("#creategroup").submit();
             } else {
-                alert(alertString);
+                UI.alert(alertString, {icon: 'error'});
             }         
         }
 

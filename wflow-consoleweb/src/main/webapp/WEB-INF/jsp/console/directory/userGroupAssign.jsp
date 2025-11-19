@@ -59,15 +59,20 @@
         });
 
         function assignGroups(selectedIds){
-             if (confirm('<ui:msgEscJS key="console.directory.user.group.assign.label.confirmation"/>')) {
-                UI.blockUI(); 
-                var callback = {
-                    success : function() {
-                        parent.location.reload(true);
+            UI.confirm('<ui:msgEscJS key="console.directory.user.group.assign.label.confirmation"/>',
+                () => {
+                    UI.blockUI(); 
+                    var callback = {
+                        success : function() {
+                            parent.location.reload(true);
+                        }
                     }
+                    var request = ConnectionManager.post('<c:out value="${pageContext.request.contextPath}/web/console/directory/user/${id}/group/assign/submit"/>', callback, 'ids='+ selectedIds);
+                }, {
+                    confirmButtonLabel: '<ui:msgEscJS key="console.directory.user.group.assign.label"/>',
+                    confirmButtonClass: 'dialog-btn-primary',
                 }
-                var request = ConnectionManager.post('<c:out value="${pageContext.request.contextPath}/web/console/directory/user/${id}/group/assign/submit"/>', callback, 'ids='+ selectedIds);
-            }
+            );
         }
 
         function closeDialog(dummy) {

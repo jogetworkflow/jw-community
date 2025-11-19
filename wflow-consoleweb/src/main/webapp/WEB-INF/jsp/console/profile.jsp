@@ -101,42 +101,39 @@
 
         function validateField(){
             let valid = true;
-            let alertString = "";             
+            let alertStringList = '';            
             const firstName = $("#firstName").val();
             const lastName = $("#lastName").val();
     
             if(firstName == ""){
-                alertString += '<ui:msgEscJS key="User.firstName[not.blank]"/>';
+                alertStringList += '<li>' + '<ui:msgEscJS key="User.firstName[not.blank]"/>' + '</li>';
                 valid = false;
             } else if (!UI.isValidInput(firstName) || !UI.isValidInput(lastName)) {
-                alertString += '<ui:msgEscJS key="console.directory.user.error.label.nameInvalid"/>';
+                alertStringList += '<li>' + '<ui:msgEscJS key="console.directory.user.error.label.nameInvalid"/>' + '</li>';            
                 valid = false;
             }  
             
             if($("#password").val() != $("#confirmPassword").val()){
-                if(alertString != ""){
-                    alertString += '\n';
-                }
-                alertString += '<ui:msgEscJS key="console.directory.user.error.label.passwordNotMatch"/>';
+                alertStringList += '<li>' + '<ui:msgEscJS key="console.directory.user.error.label.passwordNotMatch"/>' + '</li>';
                 valid = false;
             }
             
             UI.validateEmail('#email', true, function(isValid) {
                 if (!isValid) {
-                    if (alertString != "") {
-                        alertString += '\n';
-                    }
-                    alertString += '<ui:msgEscJS key="console.directory.user.error.label.invalidEmailFormat"/>';
+                    alertStringList +=  '<li>' +'<ui:msgEscJS key="console.directory.user.error.label.invalidEmailFormat"/>' + '</li>';
                     valid = false;
                 }
 
                 if(valid){
                     $("#profile").submit();
                 }else{
-                    alert(alertString);
+                    UI.alert('<ul>' + alertStringList + '</ul>', {
+                        isHtml: true,
+                        icon: 'error'
+                    });              
                 }
             });
-        }
+        }         
          
         function closeDialog() {
             if (parent && parent.PopupDialog.closeDialog) {

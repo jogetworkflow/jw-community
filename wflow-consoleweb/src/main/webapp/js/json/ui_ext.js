@@ -4,7 +4,7 @@ JPopup = {
     dialogboxes : new Object(),
     isChanges : new Object(),
     msg : "Changes that you made may not be saved. Please click 'Cancel' button to stay or click 'OK' button to leave.",
-    
+
     create: function (id, title, width, height) {
         if (JPopup.dialogboxes[id] === undefined || JPopup.dialogboxes[id] === null) {
             if($("#"+id).length == 0){
@@ -104,8 +104,8 @@ JPopup = {
         }, 120);
     },
     
-    hide : function (id, check, after) {
-        if (check === undefined || !check || (check && JPopup.checkChangesAndConfirmHide(id))) {
+    hide : async function (id, check, after) {
+        if (check === undefined || !check || (check && await JPopup.checkChangesAndConfirmHide(id))) {
             JPopup.dialogboxes[id].orgHide(after);
             JPopup.isChanges[id] = '';
             return true;
@@ -113,9 +113,9 @@ JPopup = {
         return false;
     },
     
-    checkChangesAndConfirmHide : function(id) {
+    checkChangesAndConfirmHide : async function(id) {
         if (JPopup.isChanges[id] !== $('form:not(.filter_form)', $('iframe#'+id).contents()).serialize()) {
-            return confirm(JPopup.msg);
+            return await UI.asyncConfirm(JPopup.msg);
         }
         return true;
     },

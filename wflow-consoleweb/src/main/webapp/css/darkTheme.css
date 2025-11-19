@@ -948,3 +948,13 @@ body.dark-mode .chosen-choices li.search-field input[type="text"]:focus{
 body.dark-mode .ht_master .wtHolder{
     scrollbar-color: rgb(255 255 255 / 23%) var(--theme-background);
 }
+
+body.dark-mode .console-danger{
+    background: red !important;
+    transition: color .15s ease-in-out, background-color .15s ease-in-out, border-color .15s ease-in-out, box-shadow .15s ease-in-out;
+}
+
+body.dark-mode .dialog-swal-popup{
+    background: var(--theme-background);
+    color: var(--theme-font-color);
+}

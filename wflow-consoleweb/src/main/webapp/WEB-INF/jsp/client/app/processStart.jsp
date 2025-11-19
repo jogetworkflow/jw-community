@@ -62,13 +62,16 @@
         }
 
         function startProcess(){
-            if(confirm('<ui:msgEscJS key="client.app.run.process.label.start.confirm"/>')){
-                setTimeout(function() { $('#start').attr('disabled', 'disabled') }, 0);
-                return true;
-            }
-            else {
-                return false;
-            }
+            UI.confirm('<ui:msgEscJS key="client.app.run.process.label.start.confirm"/>',
+                () => {
+                    setTimeout(function() { $('#start').attr('disabled', 'disabled') }, 0);
+                    document.getElementById('processForm').submit();
+                }, {
+                    confirmButtonLabel: '<ui:msgEscJS key="client.app.run.process.label.start"/>',
+                    confirmButtonClass: 'dialog-btn-primary'
+                }
+            );
+            return false;
         }
 
         function showAdvancedInfo(){

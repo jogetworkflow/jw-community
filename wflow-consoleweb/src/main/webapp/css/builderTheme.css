@@ -3771,6 +3771,10 @@ body[builder-theme='dark'] jmexpander:hover{
 body[builder-theme] input[type=number].withUnitSlector:focus{
     position: relative;
 }
+body[builder-theme='dark'] .dialog-swal-popup{
+    background: var(--theme-primary-color-3);
+    color: var(--theme-label-color-1);
+}
 body[builder-theme].rtl .flexigrid div.nBtn,
 body[system-theme].rtl .flexigrid div.nBtn{
     height: 42px !important;

@@ -241,7 +241,7 @@
                     alertString = '<ui:msgEscJS key="console.app.error.label.idInvalid"/>';
                     $("#id").focus();
                 }
-                alert(alertString);
+                UI.alert(alertString);
             }else{
                 $("#createApp").submit();
             }

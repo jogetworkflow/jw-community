@@ -60,20 +60,22 @@ button#filter-btn {
 .console-secondary > i, .console-tertiary > i{
     margin-right: 5px;
 }
-.console-danger {
+.console-danger, .dialog-btn-danger, .dialog-btn-danger:focus{
     background: var(--console-button-danger-bg) !important;
 }
-.console-danger:hover, .console-danger:active, 
-.console-danger:hover, .console-danger:focus {
+.console-danger:hover, .console-danger:active, .console-danger:focus,
+.dialog-btn-danger:hover, .dialog-btn-danger:active{
     background: var(--console-button-danger-bg-hover) !important;
 }
-.console-primary {
+.console-primary, .dialog-btn-primary, .dialog-btn-primary:focus{
     background: var(--console-button-primary-bg) !important;
     color: #fff !important;
+    border-color: var(--console-button-primary-bg) !important;
 }
-.console-primary:hover, .console-primary:active, 
-.console-primary:hover, .console-primary:focus {
+.console-primary:hover, .console-primary:active, .console-primary:focus,
+.dialog-btn-primary:hover, .dialog-btn-primary:active {
     background: var(--console-button-primary-bg-hover) !important;
+    border-color: var(--console-button-primary-bg-hover) !important;
 }
 .console-secondary {
     background: var(--console-button-secondary-bg) !important;
@@ -82,15 +84,16 @@ button#filter-btn {
 .console-secondary:focus {
     background: var(--console-button-secondary-bg-hover) !important;
 }
-.console-tertiary {
+.console-tertiary, .dialog-btn-tertiary, .dialog-btn-tertiary:focus {
     background: transparent !important;
     color: var(--console-button-primary-bg) !important;
     border: 1px solid var(--console-button-primary-bg) !important;
 }
-.console-tertiary:hover, .console-tertiary:active, 
-.console-tertiary:focus {
+.console-tertiary:hover, .console-tertiary:active, .console-tertiary:focus,
+.dialog-btn-tertiary:hover, .dialog-btn-tertiary:active {
     background: var(--console-button-tertiary-bg-hover) !important;
     color: var(--console-button-primary-bg) !important;
+    border-color: var(--console-button-primary-bg) !important;
 }
 ul, li{
     margin:0;

@@ -201,41 +201,55 @@
     }
 
     function changeProfile(){
-        if(confirm('<ui:msgEscJS key="console.setting.datasource.label.switchProfileConfirm"/>')) {
-            UI.blockUI();
-            var param = "profileName=" + $('#profileList').val();
-            ConnectionManager.post("${pageContext.request.contextPath}/web/console/setting/profile/change", callback, param);
-        }
+        UI.confirm('<ui:msgEscJS key="console.setting.datasource.label.switchProfileConfirm"/>',
+            () => {
+                UI.blockUI();
+                var param = "profileName=" + $('#profileList').val();
+                ConnectionManager.post("${pageContext.request.contextPath}/web/console/setting/profile/change", callback, param);
+            }, {
+                confirmButtonLabel: '<ui:msgEscJS key="console.setting.datasource.label.switchProfile"/>',
+                confirmButtonClass: 'dialog-btn-primary',
+            }
+        );
     }
 
     function deleteProfile(){
-        if(confirm('<ui:msgEscJS key="console.setting.datasource.label.deleteProfileConfirm"/>')) {
-            var currentProfile = '<c:out value="${currentProfile}"/>';
-            if($('#profileList').val() == currentProfile)
-                alert('<ui:msgEscJS key="console.setting.datasource.label.deleteProfileInvalid"/>')
-            else{
-                UI.blockUI();
-                var param = "profileName=" + $('#profileList').val();
-                ConnectionManager.post("${pageContext.request.contextPath}/web/console/setting/profile/delete", callback, param);
+        UI.confirm('<ui:msgEscJS key="console.setting.datasource.label.deleteProfileConfirm"/>',
+            () => {
+                var currentProfile = '<c:out value="${currentProfile}"/>';
+                if($('#profileList').val() == currentProfile)
+                    UI.alert('<ui:msgEscJS key="console.setting.datasource.label.deleteProfileInvalid"/>', {icon: "error"});
+                else{
+                    UI.blockUI();
+                    var param = "profileName=" + $('#profileList').val();
+                    ConnectionManager.post("${pageContext.request.contextPath}/web/console/setting/profile/delete", callback, param);
+                }
+            }, {
+                confirmButtonLabel: '<ui:msgEscJS key="console.setting.datasource.label.deleteProfile"/>',
             }
-        }
+        );
     }
 
     function saveAsNewProfile(){
-        if(confirm('<ui:msgEscJS key="console.setting.datasource.label.saveAsProfileConfirm"/>')) {
-            var newProfileName = $('#newProfileName').val();
-            if(!/^[a-zA-Z0-9]+[a-zA-Z0-9 ]*$/.test(newProfileName)){
-                alert('<ui:msgEscJS key="console.setting.datasource.label.saveAsProfileInvalid"/>');
-                $('#newProfileName').focus();
-            }else if(newProfileName in arrayToObject(profileList)){
-                alert('<ui:msgEscJS key="console.setting.datasource.label.saveAsProfileExist"/>');
-                $('#newProfileName').focus();
-            }else{
-                UI.blockUI();
-                var param = $('#datasourceForm').serialize();
-                ConnectionManager.post("${pageContext.request.contextPath}/web/console/setting/profile/create", callback, param);
+        UI.confirm('<ui:msgEscJS key="console.setting.datasource.label.saveAsProfileConfirm"/>',
+            () => {
+                var newProfileName = $('#newProfileName').val();
+                if(!/^[a-zA-Z0-9]+[a-zA-Z0-9 ]*$/.test(newProfileName)){
+                    UI.alert('<ui:msgEscJS key="console.setting.datasource.label.saveAsProfileInvalid"/>', {icon: "error"});
+                    $('#newProfileName').focus();
+                }else if(newProfileName in arrayToObject(profileList)){
+                    UI.alert('<ui:msgEscJS key="console.setting.datasource.label.saveAsProfileExist"/>', {icon: "error"});
+                    $('#newProfileName').focus();
+                }else{
+                    UI.blockUI();
+                    var param = $('#datasourceForm').serialize();
+                    ConnectionManager.post("${pageContext.request.contextPath}/web/console/setting/profile/create", callback, param);
+                }
+            }, {
+                confirmButtonLabel: '<ui:msgEscJS key="general.method.label.save"/>',
+                confirmButtonClass: 'dialog-btn-primary'
             }
-        }
+        );
     }
 </script>
 

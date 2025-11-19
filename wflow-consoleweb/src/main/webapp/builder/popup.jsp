@@ -12,6 +12,7 @@
 
         <script type="text/javascript" src="${pageContext.request.contextPath}/wro/common.preload.js?build=<fmt:message key="build.number"/>"></script>
         <script type="text/javascript" src="${pageContext.request.contextPath}/wro/common.js?build=<fmt:message key="build.number"/>"></script>
+        <script type="text/javascript" src="${pageContext.request.contextPath}/js/sweetAlert2/resources/sweetalert2.min.js" ></script>
         <script>loadCSS("${pageContext.request.contextPath}/wro/common.css?build=<fmt:message key='build.number'/>")</script>
         <jsp:include page="/WEB-INF/jsp/includes/rtl.jsp" />
         <jsp:include page="/WEB-INF/jsp/console/plugin/library.jsp" />
@@ -38,6 +39,10 @@
             JPopup.tokenName = "<%= SecurityUtil.getCsrfTokenName() %>";
             JPopup.tokenValue = "<%= SecurityUtil.getCsrfTokenValue(request) %>";
             UI.locale = "<%= AppUtil.getAppLocale()%>";
+            UI.msg = {
+                "ok" : "<ui:msgEscJS key="general.method.label.ok"/>",
+                "cancel" : "<ui:msgEscJS key="general.method.label.cancel"/>"
+            };
         </script>
     </head>
     <body class="popupBody"<c:if test="${not empty builderTheme and builderTheme ne 'classic'}"> builder-theme="${builderTheme}"</c:if>>

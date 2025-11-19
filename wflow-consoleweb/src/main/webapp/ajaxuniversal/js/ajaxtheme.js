@@ -94,7 +94,7 @@ AjaxUniversalTheme = {
     },
     
     errorCallback : function(error) {
-        alert(error.message);
+        UI.alert(error.message, {icon: "error"});
     },
     
     renderAjaxContent : function(menus, content, title, homeBanner, injectedHtml) {

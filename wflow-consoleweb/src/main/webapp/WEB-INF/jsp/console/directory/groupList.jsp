@@ -97,18 +97,22 @@
         popupDialog.close();
     }
 
-    function deleteGroup(selectedList){        
-         if (confirm('<ui:msgEscJS key="console.directory.group.delete.label.confirmation"/>')) {
-            UI.blockUI(); 
-            var callback = {
-                success : function() {
-                    document.location = '${pageContext.request.contextPath}/web/console/directory/groups';
+    function deleteGroup(selectedList){  
+        UI.confirm('<ui:msgEscJS key="console.directory.group.delete.label.confirmation"/>',
+            () => {
+                UI.blockUI(); 
+                var callback = {
+                    success : function() {
+                        document.location = '${pageContext.request.contextPath}/web/console/directory/groups';
+                    }
                 }
+                var request = ConnectionManager.post('${pageContext.request.contextPath}/web/console/directory/group/delete', callback, 'ids='+selectedList);
+
+                localStorage.setItem('selectedList', selectedList);            
+            }, {
+                confirmButtonLabel: '<ui:msgEscJS key="console.directory.group.delete.label"/>'
             }
-            var request = ConnectionManager.post('${pageContext.request.contextPath}/web/console/directory/group/delete', callback, 'ids='+selectedList);
-            
-            localStorage.setItem('selectedList', selectedList);            
-        }
+        );
     }
 
     var org_filter = window.filter;

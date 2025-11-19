@@ -542,7 +542,7 @@ if (owaspCSRFGuardScriptHasLoaded !== true) {
                         console.debug('Received page tokens: ', pageTokens);
                         callback.call(this, pageTokens);
                     } else {
-                        alert(xhr.status + ': CSRF check failed');
+                        UI.alert(xhr.status + ': CSRF check failed');
                     }
                 }
             };
@@ -761,7 +761,7 @@ if (owaspCSRFGuardScriptHasLoaded !== true) {
                 });
             }
         } else {
-            alert('OWASP CSRFGuard JavaScript was included from within an unauthorized domain!');
+            UI.alert('OWASP CSRFGuard JavaScript was included from within an unauthorized domain!');
         }
     })();
 }

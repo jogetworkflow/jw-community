@@ -7,7 +7,7 @@
 
 <style>
     *,
-    *:after,
+    *:after,    
     *:before {
         box-sizing: border-box;
     }
@@ -370,38 +370,43 @@
     //install plugin in seamless marketplace
     function installPlugin(id) {
         var installUrl = "${pageContext.request.contextPath}/web/json/apps/install";
-        if (confirm('<ui:msgEscJS key="cbuilder.seamless.marketplace.confirmPluginInstallation"/>')) {
-            var installCallback = {
-                success: function (data) {
-                    setTimeout(function(){
+        UI.confirm('<ui:msgEscJS key="cbuilder.seamless.marketplace.confirmPluginInstallation"/>',
+            () => {
+                var installCallback = {
+                    success: function (data) {
+                        setTimeout(function(){
+                            $("[data-id='installplugin_" + id + "']").html('<ui:msgEscJS key="appCenter.label.installApp"/>');
+                            $("[data-id='installplugin_" + id + "']").removeAttr("disabled");
+                            var selectedValue = $('#pluginCategory').val();
+                            parent.CustomBuilder.Builder.reloadPaletteOrProperties(selectedValue);
+                            var app = JSON.parse(data);
+                            if (app.pluginName) {
+                                $("[data-id='installplugin_" + id + "']").closest(".card").removeClass("available").removeClass("update").addClass("installed")
+                                        .find(".currentVersion").remove();
+                                updateTabs();
+                                UI.alert('<ui:msgEscJS key="appCenter.label.appInstalled"/>', {icon: "success"});
+                            } else {
+                                UI.alert('<ui:msgEscJS key="appCenter.label.appNotInstalled"/>', {icon: "error"});
+                            }
+                        }, 5000); //delay for plugin to reload at backend
+                    },
+                    error: function (data) {
                         $("[data-id='installplugin_" + id + "']").html('<ui:msgEscJS key="appCenter.label.installApp"/>');
                         $("[data-id='installplugin_" + id + "']").removeAttr("disabled");
-                        var selectedValue = $('#pluginCategory').val();
-                        parent.CustomBuilder.Builder.reloadPaletteOrProperties(selectedValue);
-                        var app = JSON.parse(data);
-                        if (app.pluginName) {
-                            $("[data-id='installplugin_" + id + "']").closest(".card").removeClass("available").removeClass("update").addClass("installed")
-                                    .find(".currentVersion").remove();
-                            updateTabs();
-                            alert('<ui:msgEscJS key="appCenter.label.appInstalled"/>');
-                        } else {
-                            alert('<ui:msgEscJS key="appCenter.label.appNotInstalled"/>');
-                        }
-                    }, 5000); //delay for plugin to reload at backend
-                },
-                error: function (data) {
-                    $("[data-id='installplugin_" + id + "']").html('<ui:msgEscJS key="appCenter.label.installApp"/>');
-                    $("[data-id='installplugin_" + id + "']").removeAttr("disabled");
-                    alert('<ui:msgEscJS key="appCenter.label.appNotInstalled"/>');
-                }
-            };
-            $("[data-id='installplugin_" + id + "']").html('<i class="icon-spinner icon-spin fas fa-spinner fa-spin"></i><span class="installing"><ui:msgEscJS key="appCenter.label.installingApp"/></span>');
-            $("[data-id='installplugin_" + id + "']").attr("disabled", "disabled");
+                        UI.alert('<ui:msgEscJS key="appCenter.label.appNotInstalled"/>');
+                    }
+                };
+                $("[data-id='installplugin_" + id + "']").html('<i class="icon-spinner icon-spin fas fa-spinner fa-spin"></i><span class="installing"><ui:msgEscJS key="appCenter.label.installingApp"/></span>');
+                $("[data-id='installplugin_" + id + "']").attr("disabled", "disabled");
 
-            // invoke installation
-            var installParams = "url=" + encodeURIComponent("<ui:msgEscJS key="appCenter.link.marketplace.url"/>/jw/web/json/plugin/org.joget.marketplace.ProtectedAppUpload/service?action=download&id=" + id);
-            ConnectionManager.post(installUrl, installCallback, installParams);
-        }
+                // invoke installation
+                var installParams = "url=" + encodeURIComponent("<ui:msgEscJS key="appCenter.link.marketplace.url"/>/jw/web/json/plugin/org.joget.marketplace.ProtectedAppUpload/service?action=download&id=" + id);
+                ConnectionManager.post(installUrl, installCallback, installParams);               
+            }, {
+                confirmButtonLabel: '<ui:msgEscJS key="console.directory.employment.common.label.hod.yes"/>',
+                confirmButtonClass: 'dialog-btn-primary'
+            }
+        );    
     }
 
     //show plugins based on selected category
@@ -497,7 +502,7 @@
                 selectedCategory();
             },
             error: function (data) {
-                alert('Failed Getting plugin categories');
+                UI.alert('Failed Getting plugin categories');
             }
         });
     };
@@ -567,7 +572,7 @@
             },
             error: function (data) {
                 $('#plugin-container').removeClass('ajaxloading');
-                alert('Failed loading plugins');
+                UI.alert('Failed loading plugins');
             }
         });
     };

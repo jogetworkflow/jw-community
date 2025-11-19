@@ -20,6 +20,8 @@
         <css>/js/tablesaw/tablesaw.stackonly.css</css>
         <css>/js/chosen/chosen.css</css>
         <css>/js/tooltipster/css/tooltipster.bundle.min.css</css>
+        <css>/js/sweetAlert2/resources/sweetalert2.min.css</css>
+        <css>/css/sweetAlert2_custom.css</css>
         <js>/js/jquery/jquery.ui.touch-punch.js</js>
         <js>/js/jquery/flexigrid/flexigrid.js</js>
         <js>/js/jquery/md5/jquery.md5.js</js>

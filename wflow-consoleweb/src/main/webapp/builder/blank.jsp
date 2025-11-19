@@ -1,4 +1,5 @@
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
+<%@ include file="/WEB-INF/jsp/includes/taglibs.jsp" %>
 <%@ page import="org.joget.commons.util.SecurityUtil"%>
 
 <!DOCTYPE html>
@@ -16,6 +17,7 @@
         <link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/universal/lib/material-design-iconic-font/css/material-design-iconic-font.min.css" />
         <script src="${pageContext.request.contextPath}/wro/common.preload.js"></script>
         <script src="${pageContext.request.contextPath}/wro/common.js"></script>
+        <script type="text/javascript" src="${pageContext.request.contextPath}/js/sweetAlert2/resources/sweetalert2.min.js" ></script>
         <script src="${pageContext.request.contextPath}/wro/jds.min.js"></script>
         <script type="text/javascript" src="${pageContext.request.contextPath}/js/tiny_mce/js/tinymce/tinymce.min.js"></script>
         <style>
@@ -39,6 +41,10 @@
             ConnectionManager.tokenValue = "<%= SecurityUtil.getCsrfTokenValue(request) %>";
             JPopup.tokenName = "<%= SecurityUtil.getCsrfTokenName() %>";
             JPopup.tokenValue = "<%= SecurityUtil.getCsrfTokenValue(request) %>";
+            UI.msg = {
+                "ok" : "<ui:msgEscJS key="general.method.label.ok"/>",
+                "cancel" : "<ui:msgEscJS key="general.method.label.cancel"/>"
+            };
         </script>
     </head>
     <body>

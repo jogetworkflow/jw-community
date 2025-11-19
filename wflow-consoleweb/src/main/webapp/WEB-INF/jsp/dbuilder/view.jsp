@@ -21,6 +21,7 @@
         <script src="${pageContext.request.contextPath}/wro/common.js"></script>
         <script src="${pageContext.request.contextPath}/wro/jds.min.js"></script>
         <script type="text/javascript" src="${pageContext.request.contextPath}/js/json/formUtil.js" ></script>
+        <script type="text/javascript" src="${pageContext.request.contextPath}/js/sweetAlert2/resources/sweetalert2.min.js" ></script>
 
         <link rel="stylesheet" href="${pageContext.request.contextPath}/css/datalist8.css?build=<fmt:message key="build.number"/>" />
         <c:if test="${theme == 'dark'}">

@@ -25,7 +25,7 @@
                 <c:if test="${!empty actionResult}">
                     <c:if test="${!empty actionResult.message}">
                         <script>
-                            alert("<c:out value="${actionResult.message}"/>");
+                            UI.alert("<c:out value="${actionResult.message}"/>");
                         </script>
                     </c:if>
                     <c:choose>
@@ -306,6 +306,7 @@
 </div>
 
 <script>
+    //serialize all inputs into a query string
     DataListUtil = {
         submitForm: function(form) {
             var params = UrlUtil.serializeForm($(form));
@@ -326,8 +327,8 @@
                 var checked = $(this).is(":checked");
 
                 // sync left + right checkbox for the same row (same value)
-                $form
-                    .find("tbody .select_checkbox input[type='checkbox'][value='" + value + "']")
+                $(this).closest("tr")
+                    .find(".select_checkbox input[type='checkbox'][value='" + value + "']")
                     .prop("checked", checked);
 
                 // update ALL header checkboxes
@@ -340,7 +341,8 @@
 
                 $headers.prop("checked", allChecked);
             }
-        );
+        );       
+        //intercept form's submit
         $("#filters_${dataListId}").submit(function(e) {
             e.preventDefault();
             $("#filters_${dataListId}").removeClass("show");
@@ -350,14 +352,20 @@
             $("#filters_${dataListId}").toggleClass("show");
         });
         $(".exportlinks a").attr("target", "_blank"); //download in new page so that it won't block access
+
+        //button 'click' handler
         $("form[name='form_${dataListId}'] button").off("click");
-        $("form[name='form_${dataListId}'] button").on("click", function(){
+        $("form[name='form_${dataListId}'] button").on("click",  async function(e){
+            e.preventDefault();
             var target = $(this).data("target");
             var confirmation = $(this).data("confirmation");
             var href = $(this).data("href");
             var hrefParam = $(this).data("hrefparam");
+            var thisObj = $(this);
+            var thisForm = $(this).closest("form");
             
             if (target !== undefined && target.toLowerCase() !== "post" && href !== undefined && href !== "" && (hrefParam === undefined || hrefParam === "")) {
+                //do Action function
                 var doAction = function() {
                     if (target.toLowerCase() === "popup") {
                         if (popupActionDialog == null) {
@@ -387,9 +395,9 @@
                         }
                     }
                 };
-            
+                
                 if (confirmation !== undefined && confirmation !== null && confirmation !== "") {
-                    if (this, confirmation) {
+                    if (await showConfirm(this, confirmation)) {
                         doAction();
                     }
                 } else {
@@ -410,9 +418,9 @@
                     $("form[name='form_${dataListId}']").attr("target", "jqueryDialogFrame");
                     var submitForm = true;
                     if (confirmation !== undefined && confirmation !== null && confirmation !== "") {
-                        submitForm = showConfirm(this, confirmation);
+                        submitForm = await showConfirm(this, confirmation);
                     }
-                    if (submitForm) {
+                    if (submitForm) { 
                         popupActionDialog.init();
                         var name = $(this).attr("name");
                         var value = $(this).val();
@@ -427,13 +435,24 @@
                     $("form[name='form_${dataListId}']").attr("target", target);
                 }
                 if (confirmation !== undefined && confirmation !== null && confirmation !== "") {
-                    return showConfirm(this, confirmation);
+                    const submitForm = await showConfirm(this, confirmation);
+                    if (submitForm) {
+                        var name = $(thisObj).attr("name");
+                        var value = $(thisObj).val();
+                        var hiddenInput = $('<input name="'+name+'" value="'+value+'" class="temp_button_input"/>');
+                        thisForm.append(hiddenInput);
+                        thisObj.focus(); //to set document.activeElement used in ajax-component
+                        thisForm.submit();
+                        hiddenInput.remove();
+                    }
+                    return submitForm;
                 } else {
                     return true;
                 }
             }
         });
         
+
         if('${checkboxPosition}' !== 'no'){
             if('${selectionType}' === 'single'){
                 $("form[name='form_${dataListId}'] tbody .select_radio input[type='radio']").each(function() {
@@ -445,6 +464,7 @@
                 });
             }
         }
+
         if ($("#filters_${dataListId}").hasClass("filter_form")){
             let filtercells = $('#filters_${dataListId} .filter-cell:not(:has(.btn))');
             let allHidden = filtercells.length > 0 && filtercells.filter('.hidden-filter').length === filtercells.length;
@@ -462,12 +482,15 @@
         $form.find("thead .select_checkbox input[type=checkbox]").prop("checked", checked);
         $form.find("tbody .select_checkbox input[type=checkbox]").prop("checked", checked);
     }
-    function showConfirm(element, message) {
+
+    //rewrite to use the dialogues 
+    async function showConfirm(element, message) {
         var table = $(element).closest("form");
         if ($(table).find("input[type=checkbox][name|=d]:checked, input[type=radio][name|=d]:checked").length > 0) {
-            return confirm(message);
+            //if there is a "checked" option, ask the user
+            return UI.asyncConfirm(message);
         } else {
-            alert('<ui:msgEscJS key="dbuilder.alert.noRecordSelected"/>');
+            UI.alert('<ui:msgEscJS key="dbuilder.alert.noRecordSelected"/>');
             return false;
         }
     }

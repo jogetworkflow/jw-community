@@ -23,15 +23,22 @@
         }
 
         function savePropertiesFailed(container, returnedErrors){
-            var errorMsg = '<ui:msgEscJS key="console.plugin.label.youHaveFollowingErrors"/>:\n';
+            var errorMsg = '<ui:msgEscJS key="console.plugin.label.youHaveFollowingErrors"/>:';
+            let errorMsgList = ''; 
             for(key in returnedErrors){
                 if (returnedErrors[key].fieldName === undefined || returnedErrors[key].fieldName === "") {
-                    errorMsg += returnedErrors[key].message + '\n';
+                    const errors = returnedErrors[key].message ;
+                    errorMsgList += '<li>' + errors + '</li>';
                 } else {
-                    errorMsg += returnedErrors[key].fieldName + ' : ' + returnedErrors[key].message + '\n';
+                    const errors = returnedErrors[key].fieldName + ' : ' + returnedErrors[key].message;
+                    errorMsgList += '<li>' + errors + '</li>';
                 }
             }
-            alert(errorMsg);
+            UI.alert('<ul>' + errorMsgList + '</ul>', {
+                title: errorMsg,
+                icon: 'error',
+                isHtml: true
+            });
         }
 
         function cancel(container){

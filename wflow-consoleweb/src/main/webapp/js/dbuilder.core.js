@@ -2376,7 +2376,11 @@ DatalistBuilder = {
                     toggleStyleProperties(response, toggleStyle);
                 },
                 error: function() {
-                    window.alert("Template loading failed. Please try again.");
+                    UI.alert(get_cbuilder_msg('dbuilder.templateLoadingFailed'),
+                        {
+                            icon: 'error'
+                        }
+                    );
                 },
                 complete: function() {
                     wait.resolve();
@@ -2408,22 +2412,27 @@ DatalistBuilder = {
             
             if (CustomBuilder.data.template.className !== properties.template.className) {
                 //change of template, prompt to check for remove custom style
-                if (confirm("Detected changing template. Do you want to remove previous custom styling?")) {
-                    CustomBuilder.clearCustomStyling(CustomBuilder.data, function(name){
-                        return (name.indexOf("-style-") !== -1 && (
-                                    name.indexOf("action") === 0 ||
-                                    name.indexOf("rowAction") === 0 ||
-                                    name.indexOf("column") === 0 ||
-                                    name.indexOf("filter") === 0 ||
-                                    name.indexOf("card") === 0 ||
-                                    name.indexOf("link") === 0 ||
-                                    name.indexOf("header") === 0 ||
-                                    name.indexOf("list") === 0
-                                ));
-                    });
-                } else {
-                    toggleRowActionStyleProperties(CustomBuilder.data, properties);
-                }
+                UI.confirm(get_cbuilder_msg('dbuilder.templateChanged'),
+                    () => {
+                        CustomBuilder.clearCustomStyling(CustomBuilder.data, function(name){
+                            return (name.indexOf("-style-") !== -1 && (
+                                        name.indexOf("action") === 0 ||
+                                        name.indexOf("rowAction") === 0 ||
+                                        name.indexOf("column") === 0 ||
+                                        name.indexOf("filter") === 0 ||
+                                        name.indexOf("card") === 0 ||
+                                        name.indexOf("link") === 0 ||
+                                        name.indexOf("header") === 0 ||
+                                        name.indexOf("list") === 0
+                                    ));
+                        });
+                    }, {
+                        cancelCallback : () => {
+                            toggleRowActionStyleProperties(CustomBuilder.data, properties);
+                        },
+                        confirmButtonClass: 'dialog-btn-primary',
+                    }
+                );
             }
         }
 

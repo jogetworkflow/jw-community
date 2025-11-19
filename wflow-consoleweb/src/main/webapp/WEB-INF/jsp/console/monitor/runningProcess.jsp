@@ -87,14 +87,19 @@
 
 <script>
     function removeProcessInstance(){
-         if (confirm('<ui:msgEscJS key="console.monitoring.common.label.removeProcess.confirm"/>')) {
-            var callback = {
-                success : function() {
-                    document.location = '${pageContext.request.contextPath}/web/console/monitor/running';
+        UI.confirm('<ui:msgEscJS key="console.monitoring.common.label.removeProcess.confirm"/>', 
+            () => {
+                var callback = {
+                    success : function() {
+                        document.location = '${pageContext.request.contextPath}/web/console/monitor/running';
+                    }
                 }
+                var request = ConnectionManager.post('${pageContext.request.contextPath}/web/console/monitor/process/delete', callback, 'ids=${wfProcess.instanceId}');
+            },
+            {
+                confirmButtonLabel : '<ui:msgEscJS key="console.monitoring.common.label.removeInstance"/>'
             }
-            var request = ConnectionManager.post('${pageContext.request.contextPath}/web/console/monitor/process/delete', callback, 'ids=${wfProcess.instanceId}');
-        }
+        );       
     }
 
     function viewGraph(){
@@ -103,29 +108,40 @@
     }
 
     function abortProcessInstance(){
-        if (confirm('<ui:msgEscJS key="console.monitoring.running.label.abortProcess.confirm"/>')) {
-            var callback = {
-                success : function() {
-                    alert('<ui:msgEscJS key='console.monitoring.running.label.abortProcess.success'/>');
-                    document.location = '${pageContext.request.contextPath}/web/console/monitor/running';
+        UI.confirm('<ui:msgEscJS key="console.monitoring.running.label.abortProcess.confirm"/>', 
+            () => {
+                var callback = {
+                    success : function() {
+                        UI.alert('<ui:msgEscJS key='console.monitoring.running.label.abortProcess.success'/>', {icon: "success"});
+                        document.location = '${pageContext.request.contextPath}/web/console/monitor/running';
+                    }
                 }
+                var request = ConnectionManager.post('${pageContext.request.contextPath}/web/console/monitor/running/process/abort/${wfProcess.instanceId}', callback, '');
+            },
+            {
+                confirmButtonLabel : '<ui:msgEscJS key="console.monitoring.running.label.abortProcess"/>'
             }
-            var request = ConnectionManager.post('${pageContext.request.contextPath}/web/console/monitor/running/process/abort/${wfProcess.instanceId}', callback, '');
-        }
+        ); 
     }
 
     function reevaluateProcessInstance(){
-        if (confirm('<ui:msgEscJS key="console.monitoring.running.label.reevaluate.confirm"/>')) {
-            UI.blockUI();
-            var callback = {
-                success : function() {
-                    UI.unblockUI();
-                    alert('<ui:msgEscJS key='console.monitoring.running.label.reevaluate.success'/>');
-                    document.location.reload(true);
+        UI.confirm('<ui:msgEscJS key="console.monitoring.running.label.reevaluate.confirm"/>', 
+            () => {
+                UI.blockUI();
+                var callback = {
+                    success : function() {
+                        UI.unblockUI();
+                        UI.alert('<ui:msgEscJS key='console.monitoring.running.label.reevaluate.success'/>', {icon: "success"});
+                        document.location.reload(true);
+                    }
                 }
+                var request = ConnectionManager.post('${pageContext.request.contextPath}/web/console/monitor/running/process/reevaluate/${wfProcess.instanceId}', callback, '');
+            },
+            {
+                confirmButtonLabel : '<ui:msgEscJS key="console.monitoring.running.label.reevaluate"/>',
+                confirmButtonClass : 'dialog-btn-primary'
             }
-            var request = ConnectionManager.post('${pageContext.request.contextPath}/web/console/monitor/running/process/reevaluate/${wfProcess.instanceId}', callback, '');
-        }
+        ); 
     }
 
     Template.init("#menu-monitor", "#nav-monitor-running");

@@ -540,6 +540,10 @@ form#createApp .form-buttons .btn:first-of-type {
     color: var(--jgt-btn-active-color);
     background-color: var(--theme-sidebar-active-icon);
 }
+.dialog-btn-primary {
+    background: var(--theme-sidebar-active-icon) !important;
+    border: 1px solid var(--theme-sidebar-active-icon) !important;
+}
 form#createApp .form-buttons .btn:last-of-type {
     color: var(--jgt-btn-active-color);
     background-color: #6c757d;

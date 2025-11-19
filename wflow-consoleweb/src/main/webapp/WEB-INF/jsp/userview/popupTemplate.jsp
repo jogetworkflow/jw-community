@@ -20,6 +20,7 @@
         
         <script type="text/javascript" src="${pageContext.request.contextPath}/wro/common.preload.js?build=<fmt:message key="build.number"/>"></script>
         <script type="text/javascript" src="${pageContext.request.contextPath}/wro/common.js?build=<fmt:message key="build.number"/>"></script>
+        <script type="text/javascript" src="${pageContext.request.contextPath}/js/sweetAlert2/resources/sweetalert2.min.js" ></script>
         <script>loadCSS("${pageContext.request.contextPath}/wro/common.css?build=<fmt:message key='build.number'/>")</script>
     
         <script>
@@ -29,6 +30,10 @@
             JPopup.tokenName = "<%= SecurityUtil.getCsrfTokenName() %>";
             JPopup.tokenValue = "<%= SecurityUtil.getCsrfTokenValue(request) %>";
             UI.locale = "${appLocale}";
+            UI.msg = {
+                "ok" : "<ui:msgEscJS key="general.method.label.ok"/>",
+                "cancel" : "<ui:msgEscJS key="general.method.label.cancel"/>"
+            };
             
             <c:if test="${rightToLeft == 'true' || fn:startsWith(appLocale, 'ar') == true}">
                 UI.rtl = true;

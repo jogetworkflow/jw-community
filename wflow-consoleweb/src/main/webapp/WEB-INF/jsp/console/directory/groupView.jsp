@@ -105,29 +105,37 @@
     }
 
     function unassignUsers(selectedIds){
-         if (confirm('<ui:msgEscJS key="console.directory.group.user.unassign.label.confirmation"/>')) {
-            UI.blockUI(); 
-            var callback = {
-                success : function() {
-                    document.location = '${pageContext.request.contextPath}/web/console/directory/group/view/${group.id}';
+        UI.confirm('<ui:msgEscJS key="console.directory.group.user.unassign.label.confirmation"/>',
+            () => {
+                    UI.blockUI(); 
+                var callback = {
+                    success : function() {
+                        document.location = '${pageContext.request.contextPath}/web/console/directory/group/view/${group.id}';
+                    }
                 }
+                var request = ConnectionManager.post('${pageContext.request.contextPath}/web/console/directory/group/${group.id}/user/unassign', callback, 'ids='+ selectedIds);            
+            }, {
+                confirmButtonLabel: '<ui:msgEscJS key="console.directory.group.user.unassign.label"/>'
             }
-            var request = ConnectionManager.post('${pageContext.request.contextPath}/web/console/directory/group/${group.id}/user/unassign', callback, 'ids='+ selectedIds);            
-        }
+        );
     }
 
     function onDelete(){
-         if (confirm('<ui:msgEscJS key="console.directory.group.delete.label.confirmation"/>')) {
-            UI.blockUI(); 
-            var callback = {
-                success : function() {
-                    document.location = '${pageContext.request.contextPath}/web/console/directory/groups';
+        UI.confirm('<ui:msgEscJS key="console.directory.group.delete.label.confirmation"/>',
+            () => {
+                UI.blockUI(); 
+                var callback = {
+                    success : function() {
+                        document.location = '${pageContext.request.contextPath}/web/console/directory/groups';
+                    }
                 }
-            }
-            var request = ConnectionManager.post('${pageContext.request.contextPath}/web/console/directory/group/delete', callback, 'ids=${group.id}');
+                var request = ConnectionManager.post('${pageContext.request.contextPath}/web/console/directory/group/delete', callback, 'ids=${group.id}');
 
-            localStorage.setItem("selectedList", "${group.id}");
-        }
+                localStorage.setItem("selectedList", "${group.id}");
+            }, {
+                confirmButtonLabel: '<ui:msgEscJS key="console.directory.group.delete.label"/>'
+            }
+        );
     }
 </script>
 

@@ -55,31 +55,41 @@
 
                 //handle resume button event
                 $("#resumeArchive").on('click', function(){
-                    if (confirm('<ui:msgEscJS key="console.monitoring.resumeArchive"/>')) {
-                        UI.blockUI(); 
-                        var callback = {
-                            success : function(data) {
-                                updateProgress(data);
-                                UI.unblockUI(); 
-                            }
-                        };
-                        var request = ConnectionManager.post('${pageContext.request.contextPath}/web/json/console/monitor/completed/process/archive/resume', callback, '');
-                    }
+                    UI.confirm('<ui:msgEscJS key="console.monitoring.resumeArchive"/>',
+                        () => {
+                            UI.blockUI(); 
+                            var callback = {
+                                success : function(data) {
+                                    updateProgress(data);
+                                    UI.unblockUI(); 
+                                }
+                            };
+                            var request = ConnectionManager.post('${pageContext.request.contextPath}/web/json/console/monitor/completed/process/archive/resume', callback, '');
+                        }, {
+                            confirmButtonLabel: '<ui:msgEscJS key="console.monitoring.resume"/>',
+                            confirmButtonClass: 'dialog-btn-primary',
+                        }
+                    );
                     return false;
                 });
                 
                 //handle pause button event
                 $("#pauseArchive").on('click', function(){
-                    if (confirm('<ui:msgEscJS key="console.monitoring.pauseArchive"/>')) {
-                        UI.blockUI(); 
-                        var callback = {
-                            success : function(data) {
-                                updateProgress(data);
-                                UI.unblockUI(); 
-                            }
-                        };
-                        var request = ConnectionManager.post('${pageContext.request.contextPath}/web/json/console/monitor/completed/process/archive/pause', callback, '');
-                    }
+                    UI.confirm('<ui:msgEscJS key="console.monitoring.pauseArchive"/>',
+                        () => {
+                            UI.blockUI(); 
+                            var callback = {
+                                success : function(data) {
+                                    updateProgress(data);
+                                    UI.unblockUI(); 
+                                }
+                            };
+                            var request = ConnectionManager.post('${pageContext.request.contextPath}/web/json/console/monitor/completed/process/archive/pause', callback, '');
+                        }, {
+                            confirmButtonLabel: '<ui:msgEscJS key="console.monitoring.pause"/>',
+                            confirmButtonClass: 'dialog-btn-primary',
+                        }
+                    );
                     return false;
                 });
 

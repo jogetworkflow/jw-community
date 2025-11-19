@@ -144,7 +144,8 @@
                     var validateDateFrom = dateFrom.split("-")[2];
                     var validateDateTo = dateTo.split("-")[2];
 
-                    if(validateDateTo<validateDateFrom) alert('<ui:msgEscJS key="general.date.from.greater.than.to.exception"/>');
+                    if(validateDateTo<validateDateFrom) 
+                        UI.alert('<ui:msgEscJS key="general.date.from.greater.than.to.exception"/>');
                     else jsonTable.load(jsonTable.url + '&dateFrom='+dateFrom+'&dateTo='+dateTo);
                 }
             </script>
@@ -170,7 +171,7 @@
                     var selectedRows = ${var}.getSelectedRows();
                     <c:if test="${attributeMap[optional] != 'true'}">
                     if (!selectedRows || selectedRows.length === 0 || (selectedRows.length === 1 && selectedRows[0] === "")) {
-                        alert('<ui:msgEscJS key="dbuilder.alert.noRecordSelected"/>');
+                        UI.alert('<ui:msgEscJS key="dbuilder.alert.noRecordSelected"/>');
                         return;
                     }
                     </c:if>

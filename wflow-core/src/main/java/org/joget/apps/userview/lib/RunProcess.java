@@ -107,7 +107,7 @@ public class RunProcess extends UserviewMenu implements PluginWebSupport, PwaOff
             }
             menu += "function menu_" + escapedId + "_showDialog(){\n";
             if ("true".equals(getRequestParameter("isPreview"))) {
-                menu += "alert(\"" + ResourceBundleUtil.getMessage("userview.runprocess.showInPopupPreviewWarning") + "\");\n";
+                menu += "UI.alert(\"" + ResourceBundleUtil.getMessage("userview.runprocess.showInPopupPreviewWarning") + "\");\n";
             } else {
                 menu += "menu_" + escapedId + "Dialog.init();\n";
             }
@@ -139,7 +139,7 @@ public class RunProcess extends UserviewMenu implements PluginWebSupport, PwaOff
                 menu += "<script>"
                         + "function menu_" + escapedId + "_postForm() {";
                 if ("true".equals(getRequestParameter("isPreview"))) {
-                    menu += "alert(\"" + ResourceBundleUtil.getMessage("userview.runprocess.runProcessPreviewWarning") + "\");\n";
+                    menu += "UI.alert(\"" + ResourceBundleUtil.getMessage("userview.runprocess.runProcessPreviewWarning") + "\");\n";
                 } else {
                     menu += "$('#menu_" + escapedId + "_form').submit();\n";
                 }

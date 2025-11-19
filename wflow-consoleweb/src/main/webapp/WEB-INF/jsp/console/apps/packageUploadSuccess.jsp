@@ -31,7 +31,7 @@
             if (parent && parent.AdminBar.showQuickOverlay) {
                 parent.PopupDialog.closeDialog();
             }
-            alert('<ui:msgEscJS key="appCenter.label.appInstalled"/>');
+            UI.alert('<ui:msgEscJS key="appCenter.label.appInstalled"/>', {icon: "success"});
             top.location = '${pageContext.request.contextPath}/web/desktop';
         </c:if>
     </script>

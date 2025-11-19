@@ -5,6 +5,10 @@ UI = {
    userview_id: '',
    locale: '',
    theme: '',
+   msg: {
+       'ok' : 'OK',
+       'cancel' : 'Cancel'
+   },
 
     getFunction: function(name) {
         try {
@@ -360,6 +364,166 @@ UI = {
         if (START_END_SPECIALS.test(s)) return false;
         
         return true;
+    },
+    alert: function(text, 
+                args) {
+        UI.alertBlock(text, null, args);
+    },
+    alertBlock: function(text, 
+        callback,
+                { 
+                    isHtml = false, 
+                    icon = "info", 
+                    iconColor = null, 
+                    title = null, 
+                    buttonLabel = UI.msg['ok'], 
+                    buttonClass = "dialog-btn-primary" 
+                } = {}) {
+        var msgObj = {
+            icon: icon,
+            confirmButtonText: buttonLabel,
+            customClass: {
+                container: 'whiteSpace',
+                confirmButton: buttonClass,
+                popup: 'dialog-swal-popup dialog-swal-container'
+            },
+        };
+        
+        if (isHtml) {
+            msgObj.html = text;
+        } else {
+            msgObj.text = text;
+        }
+        
+        if (iconColor) {
+            msgObj.iconColor = iconColor;
+        }
+        
+        if (title) {
+            msgObj.title = title;
+        }
+        
+        Swal.fire(msgObj).then(() => {
+            if (typeof callback === "function") {
+                callback();
+            }
+            $("body").removeClass("swal2-shown"); //causing page can't scroll
+        });
+    },
+    confirm: function(text, 
+                      confirmCallback, 
+                      args) {
+        UI.asyncConfirm(text, args)
+                .then((result) => {
+            if (result) {
+                if (typeof confirmCallback === "function") {
+                    confirmCallback();
+                }
+            } else {
+                if (typeof args.cancelCallback === "function") {
+                    args.cancelCallback();
+                }
+            }
+        });
+    },
+    asyncConfirm: async function(text, 
+                  {
+                      isHtml = false, 
+                      icon = "question", 
+                      iconColor = "#ffc107", 
+                      title = null, 
+                      confirmButtonLabel = UI.msg['ok'], 
+                      cancelButtonLabel = UI.msg['cancel'], 
+                      confirmButtonClass = "dialog-btn-danger", 
+                      cancelButtonClass = "dialog-btn-tertiary"
+                  } = {}) {
+        var msgObj = {
+            icon: icon,
+            confirmButtonText: confirmButtonLabel,
+            cancelButtonText: cancelButtonLabel,
+            showCancelButton: true,
+            reverseButtons: true,
+            customClass: {
+                cancelButton: cancelButtonClass,
+                confirmButton: confirmButtonClass,
+                popup: 'dialog-swal-popup dialog-swal-container'
+            },
+        };
+        
+        if (isHtml) {
+            msgObj.html = text;
+        } else {
+            msgObj.text = text;
+        }
+        
+        if (iconColor) {
+            msgObj.iconColor = iconColor;
+        }
+        
+        if (title) {
+            msgObj.title = title;
+        }
+        
+        return Swal.fire(msgObj)
+            .then((result) => {
+                $("body").removeClass("swal2-shown"); //causing page can't scroll
+                return result.isConfirmed;
+            });             
+    },
+    prompt: function (text,
+        callback,
+        {
+            isHtml = false,
+            icon = "info",
+            iconColor = null,
+            title = null,
+            inputType = "text",
+            inputValue = "",
+            inputPlaceholder = "",
+            confirmButtonLabel = UI.msg['ok'],
+            cancelButtonLabel = UI.msg['cancel'],
+            confirmButtonClass = "dialog-btn-primary",
+            cancelButtonClass = "dialog-btn-tertiary"
+        } = {}) {
+        var msgObj = {
+            input: inputType,
+            inputValue: inputValue,
+            inputPlaceholder: inputPlaceholder,
+            icon: icon,
+            confirmButtonText: confirmButtonLabel,
+            cancelButtonText: cancelButtonLabel,
+            showCancelButton: true,
+            reverseButtons: true,
+            customClass: {
+                container: 'whiteSpace',
+                confirmButton: confirmButtonClass,
+                cancelButton: cancelButtonClass,
+                popup: 'dialog-swal-popup dialog-swal-container'
+            },
+        };
+
+        if (isHtml) {
+            msgObj.html = text;
+        } else {
+            msgObj.text = text;
+        }
+
+        if (iconColor) {
+            msgObj.iconColor = iconColor;
+        }
+
+        if (title) {
+            msgObj.title = title;
+        }
+
+        Swal.fire(msgObj).then((result) => {
+            if (result.isConfirmed) {
+                if (typeof callback === "function") {
+                    callback(result.value);
+                }
+            }
+            $("body").removeClass("swal2-shown"); //causing page can't scroll
+        });
     }
 };
 

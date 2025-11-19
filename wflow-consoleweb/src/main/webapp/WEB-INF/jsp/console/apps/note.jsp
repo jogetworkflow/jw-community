@@ -138,7 +138,7 @@
                         $("#versionsView", window.top.document).remove();
                     }
                 } else {
-                    alert("<ui:msgEscJS key="adv.tool.updated"/>");
+                    UI.alert("<ui:msgEscJS key="adv.tool.updated"/>", {icon: 'success'});
                 }
             }
         });

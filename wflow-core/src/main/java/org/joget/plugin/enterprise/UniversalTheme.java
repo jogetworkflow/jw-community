@@ -253,6 +253,7 @@ public class UniversalTheme extends UserviewV5Theme implements UserviewPwaTheme,
         urls.add(contextPath + "/wro/" + pathName + ".preload.min.js");
         urls.add(contextPath + "/wro/" + pathName + ".min.js");
         urls.add(contextPath + "/" + pathName +"/lib/responsive-switch.min.js");
+        urls.add(contextPath + "/js/sweetAlert2/resources/sweetalert2.min.js");
         
         return urls;
     }

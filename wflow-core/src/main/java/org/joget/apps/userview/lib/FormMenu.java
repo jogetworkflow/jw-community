@@ -100,7 +100,7 @@ public class FormMenu extends UserviewMenu implements PwaOfflineValidation {
             }
             menu += "function menu_" + getPropertyString("id") + "_showDialog(){\n";
             if ("true".equals(getRequestParameter("isPreview"))) {
-                menu += "alert('\\'Show in popup dialog?\\' feature disabled in Preview Mode.');\n";
+                menu += "UI.alert('\\'Show in popup dialog?\\' feature disabled in Preview Mode.');\n";
             } else {
                 menu += "menu_" + getPropertyString("id") + "Dialog.init();\n";
             }

@@ -209,7 +209,7 @@
                             window.addEventListener("unhandledrejection", function(event) {
                                 event.preventDefault();
                                 if (event.reason === "Invalid image loaded.") {
-                                    alert(croppingFailedErrMsg);
+                                    UI.alert(croppingFailedErrMsg, {icon: "error"});
                                     modal.style.display = "none";
                                     myDropzone.removeFile(file);
                                 }
@@ -230,7 +230,11 @@
                     $(file.previewElement).find("input").remove();
                     $(file.previewElement).find(".name").css("color" , "red");
                     $(file.previewElement).find("img").remove();
-                    $(file.previewElement).find(".error").text(resp.error.code + " " + resp.error.message);
+                    if (typeof resp === "string") {
+                        $(file.previewElement).find(".error").text(resp);
+                    } else {
+                        $(file.previewElement).find(".error").text(resp.error.code + " " + resp.error.message);
+                    }
                 });
                 
                 $(target).on("click", ".remove", function(){

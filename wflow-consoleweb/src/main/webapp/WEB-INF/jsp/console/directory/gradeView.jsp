@@ -118,27 +118,35 @@
     }
 
     function onDelete(){
-         if (confirm('<ui:msgEscJS key="console.directory.grade.delete.label.confirmation"/>')) {
-            UI.blockUI(); 
-            var callback = {
-                success : function() {
-                    document.location = '${pageContext.request.contextPath}/web/console/directory/org/view/${grade.organization.id}';
+        UI.confirm('<ui:msgEscJS key="console.directory.grade.delete.label.confirmation"/>',
+            () => {
+                UI.blockUI(); 
+                var callback = {
+                    success : function() {
+                        document.location = '${pageContext.request.contextPath}/web/console/directory/org/view/${grade.organization.id}';
+                    }
                 }
+                var request = ConnectionManager.post('${pageContext.request.contextPath}/web/console/directory/grade/delete', callback, 'ids=${grade.id}');
+            }, {
+                confirmButtonLabel: '<ui:msgEscJS key="console.directory.grade.delete.label"/>',
             }
-            var request = ConnectionManager.post('${pageContext.request.contextPath}/web/console/directory/grade/delete', callback, 'ids=${grade.id}');
-        }
+        );
     }
 
     function unassignUsers(selectedList){
-         if (confirm('<ui:msgEscJS key="console.directory.grade.user.unassign.label.confirmation"/>')) {
-            UI.blockUI(); 
-            var callback = {
-                success : function() {
-                    document.location = '${pageContext.request.contextPath}/web/console/directory/grade/view/${grade.id}';
+        UI.confirm('<ui:msgEscJS key="console.directory.grade.user.unassign.label.confirmation"/>',
+            () => {
+                UI.blockUI(); 
+                var callback = {
+                    success : function() {
+                        document.location = '${pageContext.request.contextPath}/web/console/directory/grade/view/${grade.id}';
+                    }
                 }
+                var request = ConnectionManager.post('${pageContext.request.contextPath}/web/console/directory/grade/${grade.id}/user/unassign', callback, 'ids='+selectedList);
+            }, {
+                confirmButtonLabel: '<ui:msgEscJS key="console.directory.grade.user.unassign.label"/>',
             }
-            var request = ConnectionManager.post('${pageContext.request.contextPath}/web/console/directory/grade/${grade.id}/user/unassign', callback, 'ids='+selectedList);
-        }
+        );
     }
 
     var org_filter = window.filter;

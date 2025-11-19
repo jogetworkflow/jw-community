@@ -72,16 +72,21 @@
         });
 
         function assignReportTo(selectedId){
-             if (confirm('<ui:msgEscJS key="console.directory.user.reportTo.assign.label.confirmation"/>')) {
-                UI.blockUI(); 
-                var callback = {
-                    success : function() {
-                        UI.unblockUI();
-                        parent.location.reload(true);
+            UI.confirm('<ui:msgEscJS key="console.directory.user.reportTo.assign.label.confirmation"/>',
+                () => {
+                    UI.blockUI(); 
+                    var callback = {
+                        success : function() {
+                            UI.unblockUI();
+                            parent.location.reload(true);
+                        }
                     }
+                    var request = ConnectionManager.post('<c:out value="${pageContext.request.contextPath}/web/console/directory/user/${id}/reportTo/assign/submit"/>', callback, 'userId='+ selectedId);
+                }, {
+                    confirmButtonLabel: '<ui:msgEscJS key="console.directory.user.reportTo.assign.label"/>',
+                    confirmButtonClass: 'dialog-btn-primary'
                 }
-                var request = ConnectionManager.post('<c:out value="${pageContext.request.contextPath}/web/console/directory/user/${id}/reportTo/assign/submit"/>', callback, 'userId='+ selectedId);
-            }
+            );
         }
 
         function closeDialog(dummy) {

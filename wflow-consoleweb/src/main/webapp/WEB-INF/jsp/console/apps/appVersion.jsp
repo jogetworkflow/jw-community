@@ -52,79 +52,103 @@
             }
 
             function newVersion(version){
-                if (confirm('<ui:msgEscJS key="console.app.version.label.newVersion.confirm"/>')) {
-                    showLoading();
-                    var callback = {
-                        success : function(data) {
-                            try {
-                                data = JSON.parse(data);
-                            } catch (e) {
-                                CustomBuilder.showMessage(get_cbuilder_msg("abuilder.invalidServerResponse"), "danger", false)
-                                console.error("Unable to parse data as JSON");
-                                return;
+                UI.confirm('<ui:msgEscJS key="console.app.version.label.newVersion.confirm"/>',
+                    () => {
+                        showLoading();
+                        var callback = {
+                            success : function(data) {
+                                try {
+                                    data = JSON.parse(data);
+                                } catch (e) {
+                                    CustomBuilder.showMessage(get_cbuilder_msg("abuilder.invalidServerResponse"), "danger", false)
+                                    console.error("Unable to parse data as JSON");
+                                    return;
+                                }
+                                parent.$.unblockUI();
+                                parent.CustomBuilder.ajaxRenderBuilder('${pageContext.request.contextPath}/web/console/app/<c:out value="${appId}"/>/'+data.appVersion+'/builders');
                             }
-                            parent.$.unblockUI();
-                            parent.CustomBuilder.ajaxRenderBuilder('${pageContext.request.contextPath}/web/console/app/<c:out value="${appId}"/>/'+data.appVersion+'/builders');
-                        }
-                    };
-                    ConnectionManager.post('${pageContext.request.contextPath}/web/console/app/<c:out value="${appId}"/>/version/new?version='+version, callback, '');
-                }
+                        };
+                        ConnectionManager.post('${pageContext.request.contextPath}/web/console/app/<c:out value="${appId}"/>/version/new?version='+version, callback, '');
+                    }, {
+                        confirmButonLabel: '<ui:msgEscJS key="general.method.label.create"/>',
+                        confirmButtonClass: 'dialog-btn-primary',
+                    }
+                );
             }
 
             function deleteVersion(version){
-                if (version != '' && confirm('<ui:msgEscJS key="console.app.delete.label.confirm"/>')) {
-                    showLoading();
-                    var callback = {
-                        success : function() {
-                            parent.$.unblockUI();
-                            document.location.reload(true);
-                            parent.window.CustomBuilder.showMessage("App Version " + version + '<ui:msgEscJS key="console.app.message.delete.toast.message"/>', "success", true);
+                if (version !== ''){
+                    UI.confirm('<ui:msgEscJS key="console.app.delete.label.confirm"/>',
+                        () => {
+                            showLoading();
+                            var callback = {
+                                success : function() {
+                                    parent.$.unblockUI();
+                                    document.location.reload(true);
+                                    parent.window.CustomBuilder.showMessage("App Version " + version + '<ui:msgEscJS key="console.app.message.delete.toast.message"/>', "success", true);
+                                }
+                            }
+                            ConnectionManager.post('${pageContext.request.contextPath}/web/console/app/<c:out value="${appId}"/>/'+ version +'/delete', callback, '');                    
+                        }, {
+                            confirmButonLabel: '<ui:msgEscJS key="fbuilder.delete"/>'
                         }
-                    }
-                    ConnectionManager.post('${pageContext.request.contextPath}/web/console/app/<c:out value="${appId}"/>/'+ version +'/delete', callback, '');                    
+                    );
                 }
             }
             
             function publishVersion(version){
-                if (version != '' && confirm('<ui:msgEscJS key="console.app.publish.label.confirm"/>')) {
-                    showLoading();
-                    var callback = {
-                        successd : function() {
-                            parent.$.unblockUI();
-                            parent.AppBuilder.updatePublishButton(version[0], false);
-                        },
-                        success : function(data) {
-                            const CustomBuilder = parent.CustomBuilder;
-                            const get_cbuilder_msg = parent.get_cbuilder_msg;
-                            try {
-                                data = JSON.parse(data);
-                            } catch (e) {
-                                CustomBuilder.showMessage(get_cbuilder_msg("abuilder.invalidServerResponse"), "danger", false)
-                                console.error("Unable to parse data as JSON");
-                                return;
+                if (version !== '') {
+                    UI.confirm('<ui:msgEscJS key="console.app.publish.label.confirm"/>',
+                        () => {
+                            showLoading();
+                            var callback = {
+                                successd : function() {
+                                    parent.$.unblockUI();
+                                    parent.AppBuilder.updatePublishButton(version[0], false);
+                                },
+                                success : function(data) {
+                                    const CustomBuilder = parent.CustomBuilder;
+                                    const get_cbuilder_msg = parent.get_cbuilder_msg;
+                                    try {
+                                        data = JSON.parse(data);
+                                    } catch (e) {
+                                        CustomBuilder.showMessage(get_cbuilder_msg("abuilder.invalidServerResponse"), "danger", false)
+                                        console.error("Unable to parse data as JSON");
+                                        return;
+                                    }
+                                    parent.$.unblockUI();
+                                    if (data.status) {
+                                        parent.AppBuilder.updatePublishButton(version[0], false);
+                                    } else {
+                                        CustomBuilder.showMessage(get_cbuilder_msg("abuilder.appLimitExceeded"), "danger", false)
+                                    }
+                                }
                             }
-                            parent.$.unblockUI();
-                            if (data.status) {
-                                parent.AppBuilder.updatePublishButton(version[0], false);
-                            } else {
-                                CustomBuilder.showMessage(get_cbuilder_msg("abuilder.appLimitExceeded"), "danger", false)
-                            }
+                            ConnectionManager.post('${pageContext.request.contextPath}/web/console/app/<c:out value="${appId}"/>/'+ version +'/publish', callback, '');
+                        }, {
+                            confirmButonLabel: '<ui:msgEscJS key="console.app.version.label.publish"/>',
+                            confirmButtonClass: 'dialog-btn-primary'
                         }
-                    }
-                    ConnectionManager.post('${pageContext.request.contextPath}/web/console/app/<c:out value="${appId}"/>/'+ version +'/publish', callback, '');
+                    );
                 }
             }
 
             function unpublishVersion(version){
-                if (version != '' && confirm('<ui:msgEscJS key="console.app.unpublish.label.confirm"/>')) {
-                    showLoading();
-                    var callback = {
-                        success : function() {
-                            parent.$.unblockUI();
-                            parent.AppBuilder.updatePublishButton(version[0], true);
+                if (version !== '') {
+                    UI.confirm('<ui:msgEscJS key="console.app.unpublish.label.confirm"/>',
+                        () => {
+                            showLoading();
+                            var callback = {
+                                success : function() {
+                                    parent.$.unblockUI();
+                                    parent.AppBuilder.updatePublishButton(version[0], true);
+                                }
+                            }
+                            ConnectionManager.post('${pageContext.request.contextPath}/web/console/app/<c:out value="${appId}"/>/'+ version +'/unpublish', callback, '');
+                        }, {
+                            confirmButonLabel: '<ui:msgEscJS key="console.app.version.label.unpublish"/>',
                         }
-                    }
-                    ConnectionManager.post('${pageContext.request.contextPath}/web/console/app/<c:out value="${appId}"/>/'+ version +'/unpublish', callback, '');
+                    );
                 }
             }
 

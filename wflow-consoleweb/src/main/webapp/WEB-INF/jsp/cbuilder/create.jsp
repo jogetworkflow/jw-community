@@ -110,7 +110,7 @@
                     alertString = '<ui:msgEscJS key="console.datalist.error.label.idInvalid"/>';
                     $("#id").focus();
                 }
-                alert(alertString);
+                UI.alert(alertString);
             }else{
                 $("#create${builder.objectName}").submit();
             }

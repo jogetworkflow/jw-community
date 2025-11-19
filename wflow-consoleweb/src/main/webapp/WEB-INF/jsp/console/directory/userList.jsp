@@ -99,17 +99,22 @@
     }
 
     function deleteUser(selectedList){
-         if (confirm('<ui:msgEscJS key="console.directory.user.delete.label.confirmation"/>')) {
-            UI.blockUI(); 
-            var callback = {
-                success : function() {
-                    document.location = '${pageContext.request.contextPath}/web/console/directory/users';
+        UI.confirm('<ui:msgEscJS key="console.directory.user.delete.label.confirmation"/>',
+            () => {
+                UI.blockUI(); 
+                var callback = {
+                    success : function() {
+                        document.location = '${pageContext.request.contextPath}/web/console/directory/users';
+                    }
                 }
+                var request = ConnectionManager.post('${pageContext.request.contextPath}/web/console/directory/user/delete', callback, 'ids='+selectedList);
+
+                localStorage.setItem('selectedList', selectedList);            
+            }, {
+                confirmButtonLabel: '<ui:msgEscJS key="console.directory.user.delete.label"/>',
+                confirmButtonClass: 'dialog-btn-danger'
             }
-            var request = ConnectionManager.post('${pageContext.request.contextPath}/web/console/directory/user/delete', callback, 'ids='+selectedList);
-        
-            localStorage.setItem('selectedList', selectedList);            
-        }
+        );
     }
 
     var org_filter = window.filter;

@@ -37,33 +37,33 @@ public class TestList {
         
         //normal row action link with label & confirmation
         link = DataListDecorator.generateLink(rowObj, href, "_self", "d-2234-checkbox_id", "id", "Label", "Are you sure?", "");
-        Assert.assertEquals(link, "<a href=\"?d-2234-checkbox_id=123456\" target=\"_self\" onclick=\"return confirm('Are you sure?')\" class=\"\">Label</a>");
-        
+        Assert.assertEquals(link, "<a href=\"?d-2234-checkbox_id=123456\" target=\"_self\" onclick=\"return dlConfirm(this, 'Are you sure?')\" class=\"\">Label</a>");
+
         //normal row action link with label & css class
         link = DataListDecorator.generateLink(rowObj, href, "_self", "d-2234-checkbox_id", "id", "Label", "", "btn-primary btn-sm");
         Assert.assertEquals(link, "<a href=\"?d-2234-checkbox_id=123456\" target=\"_self\" class=\"btn-primary btn-sm\">Label</a>");
         
         //normal row action link with label, confirmation & css class
         link = DataListDecorator.generateLink(rowObj, href, "_self", "d-2234-checkbox_id", "id", "Label", "Are you sure?", "btn-primary btn-sm");
-        Assert.assertEquals(link, "<a href=\"?d-2234-checkbox_id=123456\" target=\"_self\" onclick=\"return confirm('Are you sure?')\" class=\"btn-primary btn-sm\">Label</a>");
+        Assert.assertEquals(link, "<a href=\"?d-2234-checkbox_id=123456\" target=\"_self\" onclick=\"return dlConfirm(this, 'Are you sure?')\" class=\"btn-primary btn-sm\">Label</a>");
         
         //row action link with query string with label, confirmation & css class
         href= "?_listId=list_sublist&appVersion=1&_lid=f1&d-2234-ac=rowAction_1&d-2234-checkbox_id=5566";
         link = DataListDecorator.generateLink(rowObj, href, "_self", "d-2234-checkbox_id", "id", "Label", "Are you sure?", "btn-primary btn-sm");
-        Assert.assertEquals(link, "<a href=\"?_listId=list_sublist&amp;appVersion=1&amp;_lid=f1&amp;d-2234-ac=rowAction_1&amp;d-2234-checkbox_id=123456\" target=\"_self\" onclick=\"return confirm('Are you sure?')\" class=\"btn-primary btn-sm\">Label</a>");
+        Assert.assertEquals(link, "<a href=\"?_listId=list_sublist&amp;appVersion=1&amp;_lid=f1&amp;d-2234-ac=rowAction_1&amp;d-2234-checkbox_id=123456\" target=\"_self\" onclick=\"return dlConfirm(this, 'Are you sure?')\" class=\"btn-primary btn-sm\">Label</a>");
         
         //row action link with url & query string with label, confirmation & css class
         href= "testinglink?_listId=list_sublist&appVersion=1&_lid=f1&d-2234-ac=rowAction_1&d-2234-checkbox_id=5566";
         link = DataListDecorator.generateLink(rowObj, href, "_self", "d-2234-checkbox_id", "id", "Label", "Are you sure?", "btn-primary btn-sm");
-        Assert.assertEquals(link, "<a href=\"testinglink?_listId=list_sublist&amp;appVersion=1&amp;_lid=f1&amp;d-2234-ac=rowAction_1&amp;d-2234-checkbox_id=123456\" target=\"_self\" onclick=\"return confirm('Are you sure?')\" class=\"btn-primary btn-sm\">Label</a>");
-        
+        Assert.assertEquals(link, "<a href=\"testinglink?_listId=list_sublist&amp;appVersion=1&amp;_lid=f1&amp;d-2234-ac=rowAction_1&amp;d-2234-checkbox_id=123456\" target=\"_self\" onclick=\"return dlConfirm(this, 'Are you sure?')\" class=\"btn-primary btn-sm\">Label</a>");
+
         //multiple hrefParam
         link = DataListDecorator.generateLink(rowObj, href, "_self", "d-2234-checkbox_id;firstName;lastName", "id;firstName;lastName", "Label", "Are you sure?", "btn-primary btn-sm");
-        Assert.assertEquals(link, "<a href=\"testinglink?_listId=list_sublist&amp;firstName=Jessey&amp;lastName=Ho&amp;appVersion=1&amp;_lid=f1&amp;d-2234-ac=rowAction_1&amp;d-2234-checkbox_id=123456\" target=\"_self\" onclick=\"return confirm('Are you sure?')\" class=\"btn-primary btn-sm\">Label</a>");
+        Assert.assertEquals(link, "<a href=\"testinglink?_listId=list_sublist&amp;firstName=Jessey&amp;lastName=Ho&amp;appVersion=1&amp;_lid=f1&amp;d-2234-ac=rowAction_1&amp;d-2234-checkbox_id=123456\" target=\"_self\" onclick=\"return dlConfirm(this, 'Are you sure?')\" class=\"btn-primary btn-sm\">Label</a>");
         
         //variable support
         link = DataListDecorator.generateLink(rowObj, href, "_self", "d-2234-checkbox_id;custom", "id;{firstName} {lastName}", "Label", "Are you sure?", "btn-primary btn-sm");
-        Assert.assertEquals(link, "<a href=\"testinglink?_listId=list_sublist&amp;appVersion=1&amp;_lid=f1&amp;d-2234-ac=rowAction_1&amp;custom=Jessey+Ho&amp;d-2234-checkbox_id=123456\" target=\"_self\" onclick=\"return confirm('Are you sure?')\" class=\"btn-primary btn-sm\">Label</a>");
+        Assert.assertEquals(link, "<a href=\"testinglink?_listId=list_sublist&amp;appVersion=1&amp;_lid=f1&amp;d-2234-ac=rowAction_1&amp;custom=Jessey+Ho&amp;d-2234-checkbox_id=123456\" target=\"_self\" onclick=\"return dlConfirm(this, 'Are you sure?')\" class=\"btn-primary btn-sm\">Label</a>");
         
         //target is popup
         href= "testinglink?d-2234-ac=rowAction_1";

@@ -28,22 +28,25 @@
     const observer = new MutationObserver(function() {
         const defaultDmRow = $('table#pluginList tr#rowdefault');
         if (defaultDmRow.length > 0) {
-            defaultDmRow.on('click', function (e) {
-                if (confirm("<fmt:message key="console.setting.directory.label.changeToDefaultPluginConfirm"/>")) {
-                    const callback = {
-                        success: () => {
-                            if (parent !== self) {
-                                parent.location.reload();
-                            } else {
-                                location.reload();
-                            }
-                        },
-                        error: () => {
-                            alert('<fmt:message key="console.setting.directory.label.changeToDefaultError"/>');
-                        },
-                    };
-                    ConnectionManager.post('${pageContext.request.contextPath}/web/console/setting/directoryManagerImpl/config/submit', callback, {id: 'default'});
-                }
+            defaultDmRow.on('click', async function (e) {
+                UI.asyncConfirm('<fmt:message key="console.setting.directory.label.changeToDefaultPluginConfirm"/>')
+                    .then(isConfirmed => {
+                        if (isConfirmed) {
+                            const callback = {  
+                                success: () => {
+                                    if (parent !== self) {
+                                        parent.location.reload();
+                                    } else {
+                                        location.reload();
+                                    }
+                                },
+                                error: () => {
+                                    UI.alert('<fmt:message key="console.setting.directory.label.changeToDefaultError"/>');
+                                }
+                            };
+                            ConnectionManager.post('${pageContext.request.contextPath}/web/console/setting/directoryManagerImpl/config/submit', callback, {id: 'default'});
+                        }
+                    });
                 e.stopPropagation();
             });
             observer.disconnect();

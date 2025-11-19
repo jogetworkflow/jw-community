@@ -97,21 +97,25 @@
 
     function messageDelete(selectedList){
         var selectedTranslationList = $("tr > td > div.selectionTd input[type='checkbox']:checked").map(function() { return $(this).closest("tr").find("td:nth-child(2)").text(); }).get()
-         if (confirm('<ui:msgEscJS key="console.setting.message.delete.label.confirmation"/>')) {
-            UI.blockUI();
-            var callback = {
-                success : function() {
-                    UI.unblockUI();
-                    filter(JsonMessageDataTable, '', '');
-                    JsonMessageDataTable.clearSelectedRows();
+        UI.confirm('<ui:msgEscJS key="console.setting.message.delete.label.confirmation"/>',
+            () => {
+                UI.blockUI();
+                var callback = {
+                    success : function() {
+                        UI.unblockUI();
+                        filter(JsonMessageDataTable, '', '');
+                        JsonMessageDataTable.clearSelectedRows();
+                    }
                 }
-            }
-            var request = ConnectionManager.post('${pageContext.request.contextPath}/web/console/setting/message/delete', callback, 'ids='+selectedList);
+                var request = ConnectionManager.post('${pageContext.request.contextPath}/web/console/setting/message/delete', callback, 'ids='+selectedList);
 
-            selectedTranslationList.forEach(function(item, index){
-                UI.showConsoleToast(index, 'Key ' + item + '<ui:msgEscJS key="console.app.message.delete.toast.message"/>', "fas fa-exclamation-circle", 2000, $("div#main")); 
-            })
-        }
+                selectedTranslationList.forEach(function(item, index){
+                    UI.showConsoleToast(index, 'Key ' + item + '<ui:msgEscJS key="console.app.message.delete.toast.message"/>', "fas fa-exclamation-circle", 2000, $("div#main")); 
+                })
+            }, {
+                confirmButtonLabel: '<ui:msgEscJS key="console.setting.datasource.label.deleteProfile"/>'
+            }
+        );
     }
 
     var org_filter = window.filter;

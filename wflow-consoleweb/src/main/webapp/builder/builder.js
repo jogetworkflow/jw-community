@@ -203,7 +203,7 @@ window._CustomBuilder = {
         history.pushState({url: url}, "", url);
     },
     
-    ajaxRenderBuilder: function(url, skipPushState = false) {
+    ajaxRenderBuilder: async function(url, skipPushState = false) {
         HelpGuide.hide();
         
         $("#builder-quick-nav #builder-menu ul #appNotExist").hide();
@@ -226,9 +226,13 @@ window._CustomBuilder = {
             return;
         }
         
-        //check if there is unsave changes in current builder
-        if (!CustomBuilder.isSaved()) {
-            if (!confirm(get_cbuilder_msg('ubuilder.saveBeforeClose'))) {
+       
+        if (!CustomBuilder.isSaved()) {    
+            const result = await UI.asyncConfirm(get_cbuilder_msg('ubuilder.saveBeforeClose'), {
+                confirmButtonClass : 'dialog-btn-primary'    
+            });
+            //if user click "cancel", stay on the same/current page
+            if(!result){
                 return;
             }
         }
@@ -1993,7 +1997,7 @@ window._CustomBuilder = {
     /*
      * Check change before close the properties panel
      */
-    checkChangeBeforeCloseElementProperties : function(callback, abortCallback) {
+    checkChangeBeforeCloseElementProperties : async function(callback, abortCallback) {
         var hasChange = false;
         var isContinue = false;
         
@@ -2007,7 +2011,7 @@ window._CustomBuilder = {
         } else {
             isContinue = true;
         }
-        
+
         if (hasChange) {
             if (CustomBuilder.getBuilderSetting("autoApplyChanges")) {
                 CustomBuilder.applyElementProperties(function(){
@@ -2015,13 +2019,15 @@ window._CustomBuilder = {
                         callback(hasChange);
                     }
                 });
-            } else {
-                isContinue = confirm(get_cbuilder_msg("cbuilder.discardChanges"));
+            } else {    
+                const result = await UI.asyncConfirm(get_cbuilder_msg("cbuilder.discardChanges"));
+                
+                isContinue = result;
             }
         } else {
             isContinue = true;
         }
-        
+               
         if (isContinue && callback) {
             callback(hasChange);
         }else if (!isContinue && abortCallback) {
@@ -3160,6 +3166,53 @@ window._CustomBuilder = {
         CustomBuilder.checkChangeBeforeCloseElementProperties(function(){
             $("body").addClass("no-right-panel");
         });
+    },
+
+    /*
+     * Method to register outside click handler for right panel
+     */
+    registerOutsideClickHandler: function() {
+        // Unbind any existing handlers to prevent duplicates
+        $(document).off("mousedown.outsideClick touchstart.outsideClick");
+        if (CustomBuilder.Builder && CustomBuilder.Builder.frameDoc) {
+            $(CustomBuilder.Builder.frameDoc).off("mousedown.outsideClick touchstart.outsideClick");
+        }
+
+        // Handler for outside clicks
+        var handleClick = function(event) {
+            //Ignore for sweet alert click
+            if ($(event.target).closest('.swal2-container, .swal2-popup').length > 0) {
+                return;
+            }
+            // Ignore if the right panel is not in window mode or is hidden
+            if (!$("body").hasClass("right-panel-mode-window") || $("body").hasClass("no-right-panel")) {
+                return;
+            }
+
+            // Check if the click is outside the right panel
+            var $target = $(event.target);
+            if ($target.closest("#right-panel").length === 0) {
+                // Get the element in the builder canvas (if clicking within iframe)
+                var element = $target;
+                if (CustomBuilder.Builder && CustomBuilder.Builder.frameDoc && event.target.ownerDocument === CustomBuilder.Builder.frameDoc) {
+                    element = CustomBuilder.Builder.getElementsOnPosition(event.clientX, event.clientY, "[data-cbuilder-classname]");
+                }
+
+                if (element && $(element).is("[data-cbuilder-classname]") && !$(element).is("[data-cbuilder-uneditable]")) {
+                    // If the element is editable, select it and keep the popup open
+                    CustomBuilder.Builder.selectNodeAndShowProperties($(element), false, true);
+                } else {
+                    // If the element is non-editable or not a builder element, close the popup
+                    CustomBuilder.closePropertiesWindow();
+                }
+            }
+        };
+
+        // Bind the handler to document and iframe
+        $(document).on("mousedown.outsideClick touchstart.outsideClick", handleClick);
+        if (CustomBuilder.Builder && CustomBuilder.Builder.frameDoc) {
+            $(CustomBuilder.Builder.frameDoc).on("mousedown.outsideClick touchstart.outsideClick", handleClick);
+        }
     },
     
     /*

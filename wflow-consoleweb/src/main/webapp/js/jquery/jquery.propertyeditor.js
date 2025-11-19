@@ -1740,9 +1740,13 @@ PropertyEditor.Model.Editor.prototype = {
             $(this.editor).keydown(function(e) {
                 if (e.which === 27 && $(".property_editor_hashassit").length === 0) {
                     if (thisObject.isChange()) {
-                        if (confirm(get_peditor_msg('peditor.confirmClose'))) {
-                            thisObject.cancel();
-                        }
+                        UI.confirm(get_peditor_msg('peditor.confirmClose'),
+                            () => {
+                                thisObject.cancel();     
+                            }, {
+                                confirmButtonClass : 'dialog-btn-primary'
+                            }
+                        );
                     } else {
                         thisObject.cancel();
                     }
@@ -1959,14 +1963,16 @@ PropertyEditor.Model.Editor.prototype = {
         this.adjustSize();
     },
     alertValidationErrors: function(errors) {
-        var errorMsg = '';
+        let errorMsgList = '';
         for (key in errors) {
             if (errors[key].fieldName !== '' && errors[key].fieldName !== null) {
-                errorMsg += errors[key].fieldName + ' : ';
+                const errorMsg = errors[key].fieldName + ' : ';
+                errorMsgList += '<li>' + errorMsg + '</li>'; 
             }
-            errorMsg += errors[key].message + '\n';
+            const errorMsg = errors[key].message;
+            errorMsgList += '<li>' + errorMsg + '</li>'; 
         }
-        alert(errorMsg);
+        UI.alert('<ul>'+ errorMsgList+'</ul>', {isHtml : true, icon: 'error'});
     },
     isChange: function() {
         try {
@@ -2672,7 +2678,7 @@ PropertyEditor.Model.ButtonPanel.prototype = {
                     var r = $.parseJSON(response);
 
                     if (r.message !== undefined && r.message !== null) {
-                        alert(r.message);
+                        UI.alert(r.message, {icon: 'error'});
                     }
                 }
             });
@@ -2681,7 +2687,7 @@ PropertyEditor.Model.ButtonPanel.prototype = {
             if (callbackFunc !== null) {
                 var message = callbackFunc(data);
                 if (message !== undefined && message !== null) {
-                    alert(message);
+                    UI.alert(message, {icon: 'error'});
                 }
             }
         }

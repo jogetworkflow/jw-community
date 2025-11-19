@@ -9,6 +9,10 @@
         $(document).ready(function() {
             $(".grid_${element.properties.elementUniqueKey!}").formgrid();
         });
+
+        var messages = {
+            "form.formgrid.deleteRow": "@@form.formgrid.deleteMessage.value@@"
+        }
     </script>
 </#if>
 

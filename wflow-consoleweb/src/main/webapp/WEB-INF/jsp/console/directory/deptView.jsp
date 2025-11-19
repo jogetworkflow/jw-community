@@ -189,51 +189,67 @@
     }
 
     function onRemoveHOD(){
-        if (confirm('<ui:msgEscJS key="console.directory.department.hod.remove.label.confirmation"/>')) {
-            UI.blockUI();
-            var callback = {
-                success : function() {
-                    document.location = '${pageContext.request.contextPath}/web/console/directory/dept/view/${department.id}';
+        UI.confirm('<ui:msgEscJS key="console.directory.department.hod.remove.label.confirmation"/>',
+            () => {
+                UI.blockUI();
+                var callback = {
+                    success : function() {
+                        document.location = '${pageContext.request.contextPath}/web/console/directory/dept/view/${department.id}';
+                    }
                 }
+                var request = ConnectionManager.post('${pageContext.request.contextPath}/web/console/directory/dept/${department.id}/hod/remove', callback, 'userId=<c:if test="${!empty hod}">${hod.id}</c:if>');
+            }, {
+                confirmButtonLabel: '<ui:msgEscJS key="console.directory.department.hod.remove.label"/>'
             }
-            var request = ConnectionManager.post('${pageContext.request.contextPath}/web/console/directory/dept/${department.id}/hod/remove', callback, 'userId=<c:if test="${!empty hod}">${hod.id}</c:if>');
-        }
+        );
     }
 
     function onDelete(){
-        if (confirm('<ui:msgEscJS key="console.directory.department.delete.label.confirmation"/>')) {
-            UI.blockUI();
-            var callback = {
-                success : function() {
-                    document.location = '${pageContext.request.contextPath}/web/console/directory/org/view/${department.organization.id}';
+        UI.confirm('<ui:msgEscJS key="console.directory.department.delete.label.confirmation"/>',
+            () => {
+                UI.blockUI();
+                var callback = {
+                    success : function() {
+                        document.location = '${pageContext.request.contextPath}/web/console/directory/org/view/${department.organization.id}';
+                    }
                 }
+                var request = ConnectionManager.post('${pageContext.request.contextPath}/web/console/directory/dept/delete', callback, 'ids=${department.id}');
+            }, {
+                confirmButtonLabel: '<ui:msgEscJS key="console.directory.department.delete.label"/>'
             }
-            var request = ConnectionManager.post('${pageContext.request.contextPath}/web/console/directory/dept/delete', callback, 'ids=${department.id}');
-        }
+        );
     }
 
     function deleteDepartment(selectedList){
-        if (confirm('<ui:msgEscJS key="console.directory.department.delete.label.confirmation"/>')) {
-            UI.blockUI();
-            var callback = {
-                success : function() {
-                    document.location = '${pageContext.request.contextPath}/web/console/directory/dept/view/${department.id}';
+        UI.confirm('<ui:msgEscJS key="console.directory.department.delete.label.deleteSubDepartment"/>',
+            () => {
+                UI.blockUI();
+                var callback = {
+                    success : function() {
+                        document.location = '${pageContext.request.contextPath}/web/console/directory/org/view/${department.organization.id}';
+                    }
                 }
+                var request = ConnectionManager.post('${pageContext.request.contextPath}/web/console/directory/dept/delete', callback, 'ids=${department.id}');
+            }, {
+                confirmButtonLabel: '<ui:msgEscJS key="console.directory.department.delete.label.deleteSubDepartment"/>'
             }
-            var request = ConnectionManager.post('${pageContext.request.contextPath}/web/console/directory/dept/delete', callback, 'ids='+selectedList);
-        }
+        );
     }
 
     function unassignUsers(selectedList){
-         if (confirm('<ui:msgEscJS key="console.directory.department.user.unassign.label.confirmation"/>')) {
-            UI.blockUI(); 
-            var callback = {
-                success : function() {
-                    document.location = '${pageContext.request.contextPath}/web/console/directory/dept/view/${department.id}';
+        UI.confirm('<ui:msgEscJS key="console.directory.department.user.unassign.label.confirmation"/>',
+            () => {
+                UI.blockUI(); 
+                var callback = {
+                    success : function() {
+                        document.location = '${pageContext.request.contextPath}/web/console/directory/dept/view/${department.id}';
+                    }
                 }
+                var request = ConnectionManager.post('${pageContext.request.contextPath}/web/console/directory/dept/${department.id}/user/unassign', callback, 'ids='+selectedList);
+            }, {
+                confirmButtonLabel: '<ui:msgEscJS key="console.directory.department.user.unassign.label"/>'
             }
-            var request = ConnectionManager.post('${pageContext.request.contextPath}/web/console/directory/dept/${department.id}/user/unassign', callback, 'ids='+selectedList);
-        }
+        );
     }
 
     var org_filter = window.filter;
