@@ -832,15 +832,11 @@ body#login #page > footer {
     white-space: normal;
 }
 
-.badge {
-    max-width: 20%;
-}
-
 div.InformationTileComponent .badge {
     max-width: initial;
 }
 
-body.rtl .badge{
+body.rtl .badge.rowCount{
     float: left !important;
 }
 
