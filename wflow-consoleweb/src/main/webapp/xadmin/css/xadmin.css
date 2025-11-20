@@ -78,6 +78,7 @@ body{
     position: fixed;
     top: 40px;
     white-space: normal;
+    word-break: break-word;
     line-height: 1.7;
     z-index: 3;
     transition: opacity 0.2s;

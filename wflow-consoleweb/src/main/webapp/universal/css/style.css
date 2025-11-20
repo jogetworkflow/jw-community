@@ -127,6 +127,7 @@ div#header-name img {
     position: fixed;
     top: 50px;
     white-space: normal;
+    word-break: break-word;
     z-index: 1001;
     transition: opacity 0.2s;
     max-width: 280px;

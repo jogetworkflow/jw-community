@@ -417,6 +417,7 @@ body.rtl .sidebar_brand.no_logo #header-link {
     position: fixed;
     top: 50px;
     white-space: normal;
+    word-break: break-word;
     z-index: 800;
     transition: opacity 0.2s;
     max-width: 280px;
