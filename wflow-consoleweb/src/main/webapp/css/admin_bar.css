@@ -465,6 +465,10 @@ body.quickEditModeActive .analyzer-page {
     padding: 2px 10px;
     display: inline-block !important;
 }
+body.rtl #adminBar .analyzer-page{
+    float: right;
+    position: relative;
+}
 #adminBar .analyzer-page span{
     color: #37474F;
     font-size: 10px;
@@ -558,12 +562,19 @@ body.fixiosframe.stop-scrolling {
     background: #ff6100;
     position: absolute;
     right: 0;
-    padding: 5px 60px;
+    padding: 5px 60px 5px 10px;
     font-weight: bold;
     color: #fff;
-    font-size: 18px;
+    font-size: 14px;
     font-family: arial;
     line-height: 20px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    max-width: 300px;
+}
+#adminBar.adminBarActive #environmentName{
+    z-index: 501;
 }
 @media only screen and (max-width: 768px), (device-width: 1024px) and (device-height: 1366px) {
     #adminBar #environmentName {
@@ -576,10 +587,14 @@ body.fixiosframe.stop-scrolling {
         vertical-align: middle;
         width: 150px;
     }
+    body.rtl #adminBar #environmentName{
+        line-height: 20px;
+    }
 }
 body.rtl #adminBar #environmentName{
     right: unset;
     left:0;
+    padding: 5px 10px 5px 60px;
 }
 body.rtl #adminBar.adminBarInactive #environmentName{
     left:auto;
@@ -640,14 +655,20 @@ body.rtl #adminBar.adminBarInactive #environmentName{
         color: #fff;
         font-size: 11px;
         word-wrap: break-word;
-        line-height: 14px;
+        line-height: 45px;
         vertical-align: middle;
+        white-space: normal;
+    }
+    body.rtl #adminBar #environmentName{
+        line-height: 35px;
+        padding: 5px 10px 5px 38px;
     }
     #adminBar #environmentName span{
         display: block;
-        top: 50%;
         position: relative;
-        transform: translateY(-50%);
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
     }
 }
 iframe.iframeloading {
