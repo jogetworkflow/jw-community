@@ -2693,11 +2693,17 @@ body.rtl [class*="-selection"].dropdown .dropdown-menu i.zmdi-check {
     width: 220px;
 }
 
-li.user-link > a > i{
+/** Login Button **/
+li.user-link > a.jgt-login-button > i {
     padding-right: 5px;
 }
 
-body.rtl li.user-link > a > i{
+body.rtl li.user-link > a.jgt-login-button > i {
     padding-right: 0px;
     padding-left: 5px;
+}
+
+/** Profile Icon **/
+.user-link.dropdown .profile-item i.fa-circle-user {
+    font-size: 22px;
 }
