@@ -2051,10 +2051,12 @@ ProcessBuilder = {
                             }]
                         },{
                             key: 'deadlineLimit',
-                            label: get_cbuilder_msg("pbuilder.label.deadlineLimit")
+                            label: get_cbuilder_msg("pbuilder.label.deadlineLimit"),
+                            required: 'true'
                         },{
                             key: 'exceptionName',
-                            label: get_cbuilder_msg("pbuilder.label.exceptionName")
+                            label: get_cbuilder_msg("pbuilder.label.exceptionName"),
+                            required: 'true'
                         }]
                     }]
                 },{
