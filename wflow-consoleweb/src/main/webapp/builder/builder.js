@@ -1133,9 +1133,7 @@ window._CustomBuilder = {
         //update save button
         $("#save-btn").removeClass("unsaved");
         if ($('body').attr("builder-theme") !== 'undefined' && $('body').attr("builder-theme") !== false) {
-            $("#save-btn > span").text(get_cbuilder_msg('ubuilder.save'));
-            $("#save-btn > i").removeClass("zmdi zmdi-check");
-            $("#save-btn > i").addClass("las la-cloud-upload-alt");
+            CustomBuilder.Builder.updateSaveButtonStatus(false);
         }
         if (!CustomBuilder.isSaved()) {
             $("#save-btn").addClass("unsaved");
@@ -1242,9 +1240,7 @@ window._CustomBuilder = {
                         $("#save-btn").removeAttr("disabled");
                         if (typeof $('body').attr("builder-theme") !== 'undefined' && $('body').attr("builder-theme") !== false) {
                             if(d.success === true){
-                                $("#save-btn > span").text(get_cbuilder_msg('cbuilder.saved'));
-                                $("#save-btn > i").removeClass("las la-cloud-upload-alt");
-                                $("#save-btn > i").addClass("zmdi zmdi-check");
+                                CustomBuilder.Builder.updateSaveButtonStatus(true);
                             }
                             $("body").removeClass("initializing");
                             $("#loadingMessage").text("");
@@ -1332,8 +1328,13 @@ window._CustomBuilder = {
             if(CustomBuilder.undoStack.length === 0){
                 $('#undo-btn').addClass('disabled');
             }
-
-            CustomBuilder.updateSaveStatus("-");
+            
+            if (CustomBuilder.isSaved()){
+                $("#save-btn").removeClass("unsaved");
+            } else {
+                $("#save-btn").addClass("unsaved");
+            }
+            CustomBuilder.Builder.updateSaveButtonStatus(false);
         }
     },
 
@@ -1361,8 +1362,13 @@ window._CustomBuilder = {
             if(CustomBuilder.redoStack.length === 0){
                 $('#redo-btn').addClass('disabled');
             }
-
-            CustomBuilder.updateSaveStatus("+");
+            
+            if (CustomBuilder.isSaved()){
+                $("#save-btn").removeClass("unsaved");
+            } else {
+                $("#save-btn").addClass("unsaved");
+            }
+            CustomBuilder.Builder.updateSaveButtonStatus(false);
         }
     },
     
@@ -3520,9 +3526,7 @@ window._CustomBuilder = {
         $("#quick-nav-bar").removeClass("active");
         
         if (CustomBuilder.systemTheme === 'light' || CustomBuilder.systemTheme === 'dark') {
-            $("#save-btn > span").text(get_cbuilder_msg('ubuilder.save'));
-            $("#save-btn > i").removeClass("zmdi zmdi-check");
-            $("#save-btn > i").addClass("las la-cloud-upload-alt");
+            CustomBuilder.Builder.updateSaveButtonStatus(false);
             $('body').attr("builder-theme", CustomBuilder.systemTheme);
             var iframes = $('iframe');
             if (iframes.length > 0) {
@@ -7659,6 +7663,22 @@ window._CustomBuilder.Builder = {
             if (component !== null && component.builderTemplate.isPastable(data, component)) {
                 $("#paste-element-btn").removeClass("disabled");
             }
+        }
+    },
+    
+    /*
+     * Update the Save button icon and text when changes are saved or detected
+     */
+    updateSaveButtonStatus: function (saved) {
+        const icon = $("#save-btn > i");
+        const text = $("#save-btn > span");
+
+        if (saved) {
+            text.text(get_cbuilder_msg('cbuilder.saved'));
+            icon.removeClass("las la-cloud-upload-alt").addClass("zmdi zmdi-check");
+        } else {
+            text.text(get_cbuilder_msg('ubuilder.save'));
+            icon.removeClass("zmdi zmdi-check").addClass("las la-cloud-upload-alt");
         }
     }
 }
