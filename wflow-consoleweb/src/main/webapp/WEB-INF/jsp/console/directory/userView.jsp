@@ -18,19 +18,21 @@
     <div id="main-title"></div>
     <div id="main-action">
         <ul id="main-action-buttons">
-            <li><button class="console-primary" onclick="onEdit()"><fmt:message key="console.directory.user.edit.label"/></button></li>
-            <li><button class="console-danger" onclick="onDelete()"><fmt:message key="console.directory.user.delete.label"/></button></li>
-            <li><button class="console-tertiary" onclick="assignReportTo()"><fmt:message key="console.directory.user.reportTo.assign.label"/></button></li>
-            <c:forEach items="${user.employments}" var="e" >
-                <c:if test="${!empty e.employmentReportTo && !empty e.employmentReportTo.reportTo}">
-                    <li><button class="console-tertiary" onclick="unassignReportTo()"><fmt:message key="console.directory.user.reportTo.unassign.label"/></button></li>
-                </c:if>
-            </c:forEach>
-            <li><button class="console-tertiary" onclick="assignGroups()"><fmt:message key="console.directory.user.group.assign.label"/></button></li>
+            <c:if test="${!(isCustomDirectoryManager || user.readonly)}">
+                <li><button class="console-primary" onclick="onEdit()"><fmt:message key="console.directory.user.edit.label"/></button></li>
+                <li><button class="console-danger" onclick="onDelete()"><fmt:message key="console.directory.user.delete.label"/></button></li>
+                <li><button class="console-tertiary" onclick="assignReportTo()"><fmt:message key="console.directory.user.reportTo.assign.label"/></button></li>
+                <c:forEach items="${user.employments}" var="e" >
+                    <c:if test="${!empty e.employmentReportTo && !empty e.employmentReportTo.reportTo}">
+                        <li><button class="console-tertiary" onclick="unassignReportTo()"><fmt:message key="console.directory.user.reportTo.unassign.label"/></button></li>
+                    </c:if>
+                </c:forEach>
+                <li><button class="console-tertiary" onclick="assignGroups()"><fmt:message key="console.directory.user.group.assign.label"/></button></li>
+            </c:if>
+            <c:if test="${!empty addOnButtons}">
+                ${addOnButtons}
+            </c:if>
         </ul>
-        <c:if test="${!empty addOnButtons}">
-            ${addOnButtons}
-        </c:if>
     </div>
     <div id="main-body">
         <fieldset class="view">
@@ -61,7 +63,7 @@
             </div>
             <div class="form-row">
                 <label for="field1"><fmt:message key="console.directory.user.common.label.status"/></label>
-                <span class="form-input">
+                <span class="form-input status">
                     <c:choose>
                         <c:when test="${user.active == 1}">
                             <fmt:message key="console.directory.user.common.label.status.active"/>
@@ -222,7 +224,6 @@
         $("div#JsonDataTable_groupList-buttons button").eq(1).addClass("console-danger");
 
         <c:if test="${isCustomDirectoryManager || user.readonly}">
-            $('#main-action-buttons').remove();
             $('#JsonDataTable_groupList-buttons').remove();
         </c:if>
     });

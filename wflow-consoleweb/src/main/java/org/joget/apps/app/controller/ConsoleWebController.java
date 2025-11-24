@@ -79,6 +79,7 @@ import java.net.URLEncoder;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.*;
+import org.apache.http.HttpStatus;
 import org.eclipse.jgit.api.errors.GitAPIException;
 
 import static org.joget.apps.app.controller.UserviewWebController.isBackendLicense;
@@ -816,15 +817,46 @@ public class ConsoleWebController {
             }
             model.addAttribute("roles", roles);
             
+            StringBuilder addOnButtons = new StringBuilder();
             UserSecurity us = DirectoryUtil.getUserSecurity();
             if (us != null) {
-                model.addAttribute("addOnButtons", us.getUserDetailsButtons(user));
+                addOnButtons.append(us.getUserDetailsButtons(user));
             }
+            
+            //if user is readonly and it is store in user dao, add set active/inactive button
+            if (user.getReadonly() && userDao.getUserById(user.getId()) != null) {
+                Map data = new HashMap();
+                data.put("user", user);
+                //retrieve the button template. It is just using the AjaxUniversalTheme for retrieving, nothing related to the theme
+                addOnButtons.append(pluginManager.getPluginFreeMarkerTemplate(data, "org.joget.apps.userview.lib.AjaxUniversalTheme", "/templates/userActiveBtn.ftl", null));
+            }
+            model.addAttribute("addOnButtons", addOnButtons.toString());
         }
 
         model.addAttribute("isCustomDirectoryManager", DirectoryUtil.isCustomDirectoryManager());
 
         return "console/directory/userView";
+    }
+    
+    @RequestMapping(value = "/json/console/directory/user/status/(*:id)/toggle", method = RequestMethod.POST)
+    public void consoleUserToggleStatus(Writer writer, HttpServletResponse response, @RequestParam(value = "callback", required = false) String callback, @RequestParam("id") String id) throws IOException {
+        User user = userDao.getUser(id);
+        
+        if (user != null) {
+            if (user.getActive() == 1) {
+                user.setActive(0);
+            } else {
+                user.setActive(1);
+            }
+            userDao.updateUser(user);
+            
+            JSONObject result = new JSONObject();
+            result.put("active", user.getActive());
+            
+            AppUtil.writeJson(writer, result, callback);
+        } else {
+            response.sendError(HttpStatus.SC_NOT_FOUND);
+        }
     }
 
     @RequestMapping("/console/directory/user/edit/(*:id)")
