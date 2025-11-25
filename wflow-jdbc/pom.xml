@@ -42,7 +42,7 @@
         <dependency>
             <groupId>com.microsoft.sqlserver</groupId>
             <artifactId>mssql-jdbc</artifactId>
-            <version>9.4.0.jre8</version>
+            <version>10.2.4.jre8</version>
             <scope>runtime</scope>
         </dependency>
         <dependency>

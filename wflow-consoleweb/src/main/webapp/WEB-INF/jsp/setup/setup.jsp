@@ -144,6 +144,12 @@
                                         <input type="password" size="40" id="dbPassword" name="dbPassword" value="" autocomplete="off"/>
                                     </span>
                                 </div>
+                                <div class="form-row encryptTransport">
+                                    <label for="encryptTransport"><%= ResourceBundleUtil.getMessage("setup.datasource.label.dbEncryptTransport")%></label>
+                                    <span class="form-input checkbox">
+                                        <input type="checkbox" id="encryptTransport" name="encryptTransport" />
+                                    </span>
+                                </div>
                             </div>
                             <div id="jdbcSetup" class="main-row-content">
                                 <div class="form-row">
@@ -260,9 +266,10 @@
                     var jdbcFullUrl = (dbType !== "custom") ? $("#jdbcFullUrl").val(): "";
                     var jdbcUser = $("#jdbcUser").val();
                     var jdbcPassword = $("#jdbcPassword").val();
+                    var encryptTransport = $("#encryptTransport:checked").length > 0;
                     var sampleApps = $("#sampleApps:checked").length > 0;
                     var sampleUsers = $("#sampleUsers:checked").length > 0;
-                    var setupParams = "dbType=" + encodeURIComponent(dbType) + "&dbName=" + encodeURIComponent(dbName) + "&jdbcDriver=" + encodeURIComponent(jdbcDriver) + "&jdbcUrl=" + encodeURIComponent(jdbcUrl) + "&jdbcFullUrl=" + encodeURIComponent(jdbcFullUrl) + "&jdbcUser=" + encodeURIComponent(jdbcUser) + "&jdbcPassword=" + encodeURIComponent(jdbcPassword);
+                    var setupParams = "dbType=" + encodeURIComponent(dbType) + "&dbName=" + encodeURIComponent(dbName) + "&jdbcDriver=" + encodeURIComponent(jdbcDriver) + "&jdbcUrl=" + encodeURIComponent(jdbcUrl) + "&jdbcFullUrl=" + encodeURIComponent(jdbcFullUrl) + "&jdbcUser=" + encodeURIComponent(jdbcUser) + "&jdbcPassword=" + encodeURIComponent(jdbcPassword) + "&encryptTransport=" + encryptTransport;
                     if (sampleApps) {
                         setupParams += "&sampleApps=true";
                     }
@@ -279,6 +286,9 @@
                     var dbPort = $("#dbPort").val();
                     var dbUser = $("#dbUser").val();
                     var dbPassword = $("#dbPassword").val();
+
+                    const $encryptTransportDiv = $("div.form-row.encryptTransport");
+                    $encryptTransportDiv.hide();
                     if (dbType === "oracle") {
                         $("#jdbcSetup").hide();
                         $("#dbSetup").show();
@@ -292,6 +302,7 @@
                     } else if (dbType === "sqlserver") {
                         $("#jdbcSetup").hide();
                         $("#dbSetup").show();
+                        $("div.form-row.encryptTransport").show();
                         $("#jdbcDriver").val("com.microsoft.sqlserver.jdbc.SQLServerDriver");
                         if (Setup.currentDbType !== dbType) {
                             $("#dbPort").val("1433");

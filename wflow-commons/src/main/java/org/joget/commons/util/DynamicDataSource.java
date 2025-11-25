@@ -2,9 +2,11 @@ package org.joget.commons.util;
 
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.util.Collections;
 import java.util.Map;
 import java.util.Properties;
 import org.apache.commons.beanutils.BeanUtils;
+import org.apache.commons.collections.map.LRUMap;
 import org.apache.tomcat.jdbc.pool.XADataSource;
 
 public class DynamicDataSource extends XADataSource {
@@ -32,6 +34,8 @@ public class DynamicDataSource extends XADataSource {
         if (tempPassword == null) {
             tempPassword = "";
         }
+
+        tempUrl = convertSqlServerUrlWithEncryptParam(tempDriver, tempUrl);
 
         if (!getUrl().equals(tempUrl)) {
             //close old datasource
@@ -79,5 +83,28 @@ public class DynamicDataSource extends XADataSource {
 
     public void setDatasourceName(String datasourceName) {
         this.datasourceName = datasourceName;
+    }
+
+    private static final Map<String, String> lruJdbcUrlConvertMap = Collections.synchronizedMap(new LRUMap(100));
+
+    /**
+     * Add parameter encrypt=false for SQL Server if it does not have it set
+     * this is to preserve backwards compatibility due to upgrade from mssql-jdbc 9.4 -> 10.2.
+     * TODO: consider removing this in future major versions to enforce secure defaults
+     */
+    public static String convertSqlServerUrlWithEncryptParam(String driver, String url) {
+        if (lruJdbcUrlConvertMap.containsKey(url)) {
+            return lruJdbcUrlConvertMap.get(url);
+        }
+        String newUrl = url;
+        if ("com.microsoft.sqlserver.jdbc.SQLServerDriver".equals(driver) && url.startsWith("jdbc:sqlserver") && !url.contains("encrypt=")) {
+            LogUtil.warn(DynamicDataSource.class.getName(), "No encrypt parameter found in JDBC URL, assuming no encryption");
+            if (!url.endsWith(";")) {
+                newUrl += ";";
+            }
+            newUrl += "encrypt=false";
+            lruJdbcUrlConvertMap.put(url, newUrl);
+        }
+        return newUrl;
     }
 }
