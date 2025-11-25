@@ -5460,6 +5460,9 @@ body.rtl .sigPad,
 body.rtl .editor-cell select:not([class^=ui]){
     float: right !important;
 }
+body.rtl .handsontableInput {
+    float: none !important;
+}
 .x-admin-sm body {
     font-size: 12px;
 }
