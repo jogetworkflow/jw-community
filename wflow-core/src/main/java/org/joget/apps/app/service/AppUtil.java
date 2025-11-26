@@ -2289,7 +2289,7 @@ public class AppUtil implements ApplicationContextAware {
     
     protected static void populateParticipant(JSONObject o, PackageParticipant p) throws JSONException {
         o.put("type", p.getType());
-        o.put("value", p.getValue());
+        o.put("value", p.getValue() != null ? p.getValue() : "");
         o.put("properties", PropertyUtil.parsePluginProperties(p.getPluginProperties()));
     }
     
