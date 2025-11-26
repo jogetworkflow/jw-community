@@ -134,6 +134,8 @@ public class Dx8TrimedaTheme extends AjaxUniversalTheme {
                     url = data.get("context_path") + "/universal/user.png";
                 }
                 profileImageTag = "<img alt=\"profile\" width=\"30\" height=\"30\" src=\"" + url + "\" /> ";
+            } else if ("no".equals(getPropertyString("userImage"))) {
+                profileImageTag = "<i class=\"fas fa-user-circle\"></i>";
             }
 
             html += "<li class=\"user-link dropdown\">\n"

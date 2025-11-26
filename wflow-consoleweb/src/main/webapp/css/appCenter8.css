@@ -53,6 +53,16 @@ body#login #loginForm{
 #sidebar .user-menu > li > a > span {
     text-align:center !important;   
 }
+#sidebar .nav-tabs.user-menu .mm-profile.type-no > a > span:before{
+    position: relative;
+    left: 50%;
+    transform: translate(-50%, 0%);
+    top: unset;
+}
+body.rtl #sidebar .nav-tabs.user-menu .mm-profile.type-no > a > span:before{
+    transform: translate(50%, 0%);
+    right: 50%;
+}
 #sidebar .user-menu > li > a > img {
     margin-left: 39px;
     margin-top: 25px;
@@ -73,6 +83,7 @@ body.rtl #sidebar .nav > li > ul > li > a{
 }
 body.rtl #sidebar .nav > li > a > span:not(.badge), body.rtl #navigation li.mm-profile.user-link small {
     float: none !important;
+    text-align: center;
 }
 #sidebar .nav-tabs.user-menu {
     margin-top: 60px;

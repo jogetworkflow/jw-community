@@ -365,7 +365,7 @@ header.navbar .dropdown-menu.notifications > li.task > div.more-info > span.time
     text-decoration: unset;
 }
 
-.dropdown-menu > div.profile-item > div.menu-content > div.symbol > img.gravatar {
+.dropdown-menu > div.profile-item > div.menu-content > div.symbol > img {
     width: 34.89px;
     height: 34.89px;
     border-radius: 16px;
@@ -391,6 +391,13 @@ header.navbar .dropdown-menu.notifications > li.task > div.more-info > span.time
     outline: 15px solid transparent;
     outline-offset: -2px;
     box-shadow: 2px 4px 6px 2px #1CDEBA1A;
+}
+
+.dropdown-menu > div.profile-item > div.menu-content > div.symbol > i.fa-user-circle{
+    display: block;
+    font-size: 35px;
+    z-index: 2;
+    color: #fff;
 }
 
 .dropdown-menu > div.profile-item > div.separator {
@@ -1084,6 +1091,10 @@ header.navbar li.dropdown.user-link > a {
     display: flex;
     gap: 10px;
     align-items: center;
+}
+
+header.navbar li.dropdown.user-link > a > i.fa-user-circle {
+    font-size: 25px;
 }
 
 .dropdown-toggle::after {
