@@ -3,6 +3,8 @@ var AdminBar = {
     currentPageTitle: "",
     webConsole: false,
     builderMode: false,
+    hasAppComposerPerm: false,
+    hasSysPerm: false,
     setCookiePath: function(path) {
         AdminBar.cookiePath = path;
     },
@@ -225,7 +227,7 @@ var AdminBar = {
             }
             return false;
         });
-        if ((AdminBar.webConsole && !AdminBar.builderMode)) {
+        if (!AdminBar.hasAppComposerPerm) {
             $("#quickEditModeOption").hide();
             $("body").find('#spinner-container').remove();
           

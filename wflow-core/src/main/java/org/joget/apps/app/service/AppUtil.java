@@ -1027,43 +1027,29 @@ public class AppUtil implements ApplicationContextAware {
     }
 
     /**
-     * Checks system settings whether front-end quick edit is enabled.
+     * Checks permission whether front-end quick edit is enabled.
      * @return 
      */
     public static boolean isQuickEditEnabled() {
-        String settingValue = null;
         boolean isAdmin = false;
-        boolean isSystemManager = false;
-        boolean isAppCreator = false;
+        boolean isAppDesigner = false;
 
         // lookup cache in request
         HttpServletRequest request = WorkflowUtil.getHttpServletRequest();
-        if (request != null) {
-            settingValue = (String)request.getAttribute("disableAdminBar");
+        if (request != null && request.getAttribute("isAdmin") != null) {
             isAdmin = "true".equals(request.getAttribute("isAdmin"));
-            isSystemManager = "true".equals(request.getAttribute("isSystemManager"));
-            isAppCreator = "true".equals(request.getAttribute("isAppCreator"));
-        }
-        if (settingValue == null) {
-            // get from SetupManager
-            SetupManager setupManager = (SetupManager) AppUtil.getApplicationContext().getBean("setupManager");
-            settingValue = setupManager.getSettingValue("disableAdminBar");
-            if (settingValue == null) {
-                settingValue = "false";
-            }
+            isAppDesigner = "true".equals(request.getAttribute("isAppDesigner"));
+        } else {
             isAdmin = WorkflowUtil.isCurrentUserInRole(WorkflowUtil.ROLE_ADMIN);
-            isSystemManager = WorkflowUtil.isCurrentUserInRole(WorkflowUtil.ROLE_SYSTEM_MANAGER);
-            isAppCreator = WorkflowUtil.isCurrentUserInRole(WorkflowUtil.ROLE_APP_CREATOR);
-           
+            isAppDesigner = EnhancedWorkflowUserManager.isAppDesignerRole();
+            
             if (request != null) {
                 // cache value in request
-                request.setAttribute("disableAdminBar", settingValue);
                 request.setAttribute("isAdmin", Boolean.toString(isAdmin));
-                request.setAttribute("isSystemManager", Boolean.toString(isSystemManager));
-                request.setAttribute("isAppCreator", Boolean.toString(isAppCreator));
+                request.setAttribute("isAppDesigner", Boolean.toString(isAppDesigner));
             }
         }
-        boolean enabled = !"true".equals(settingValue) && !isSystemManager && (isAdmin || isAppCreator);
+        boolean enabled = isAdmin || isAppDesigner;
         return enabled;
     }
     
