@@ -149,12 +149,13 @@ public class UserProfileMenu extends UserviewMenu {
 
         ApplicationContext ac = AppUtil.getApplicationContext();
         WorkflowUserManager workflowUserManager = (WorkflowUserManager) ac.getBean("workflowUserManager");
-        UserDao userDao = (UserDao) ac.getBean("userDao");
         User user = submittedData;
         if (user == null) {
-            user = userDao.getUser(workflowUserManager.getCurrentUsername());
+            DirectoryManager dm = (DirectoryManager) ac.getBean("directoryManager");
+            //make sure the user is retrieve through the DM, just in case dir_user have same username created before switch DM.
+            user = dm.getUserByUsername(workflowUserManager.getCurrentUsername()); 
         }
-        if (user != null && user.getReadonly()) {
+        if (user == null || user.getReadonly()) {
             return;
         }
         setProperty("user", user);

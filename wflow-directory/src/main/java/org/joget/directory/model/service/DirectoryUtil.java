@@ -156,18 +156,20 @@ public class DirectoryUtil implements ApplicationContextAware {
     public static String getProfileFormFooter(User user) {
         StringBuilder sb = new StringBuilder();
 
-        // Get profile footer from IdP & MFA Manager
-        IdentityProviderManager identityProviderManager = IdpMfaUtil.getIdpManager();
-        MfaManager mfaManager = IdpMfaUtil.getMfaManager();
+        if (user != null) {
+            // Get profile footer from IdP & MFA Manager
+            IdentityProviderManager identityProviderManager = IdpMfaUtil.getIdpManager();
+            MfaManager mfaManager = IdpMfaUtil.getMfaManager();
 
-        if (identityProviderManager != null) {
-            String idpProfileFooter = identityProviderManager.getProfileFooterHtml(user);
-            sb.append(idpProfileFooter);
-        }
+            if (identityProviderManager != null) {
+                String idpProfileFooter = identityProviderManager.getProfileFooterHtml(user);
+                sb.append(idpProfileFooter);
+            }
 
-        if (mfaManager != null) {
-            String mfaProfileFooter = mfaManager.getProfileFooterHtml(user);
-            sb.append(mfaProfileFooter);
+            if (mfaManager != null) {
+                String mfaProfileFooter = mfaManager.getProfileFooterHtml(user);
+                sb.append(mfaProfileFooter);
+            }
         }
 
         return sb.toString();
