@@ -2907,13 +2907,11 @@ ProcessBuilder = {
                 y: Number(y)
             };
 
-            if (logicFlowType !== 'bpmn:exclusiveGateway') {
-                logicFlowObj.text = {
-                    x: Number(x),
-                    y: Number(y),
-                    value: act['-Name']
-                };
-            }
+            logicFlowObj.text = {
+                x: Number(x),
+                y: Number(y),
+                value: act['-Name']
+            };
             
             if (act['-Name'] !== undefined) {
                 obj.properties.label = act['-Name'];
@@ -8706,7 +8704,6 @@ ProcessBuilder = {
                 xpdlObj: data.xpdlObj
             };
         }
-        console.log(data);
         return data;
     },
             
