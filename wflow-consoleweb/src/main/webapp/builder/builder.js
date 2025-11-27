@@ -257,7 +257,9 @@ window._CustomBuilder = {
             $("#loadingMessage").text("");
         }
         $("body").addClass("initializing");
-        
+        //update the loading message once the initializing class is added
+        $("#loadingMessage").text(get_cbuilder_msg('cbuilder.loading.preparebuilder'));
+
         var headers = new Headers();
         headers.append(ConnectionManager.tokenName, ConnectionManager.tokenValue);
         headers.append("ajax-rendering", "true");
@@ -270,7 +272,6 @@ window._CustomBuilder = {
         
         PresenceUtil.message("leave");
         var redirect = false;
-        
         fetch(url, args)
         .then(function (response) {
             if (response.url.indexOf("/web/login") !== -1) {
@@ -298,13 +299,35 @@ window._CustomBuilder = {
             if (redirect) {
                 return;
             }
-            
+            //update loading message
+            //Wait 200ms so the message does not change too fast
+            setTimeout(function(){
+            $("#loadingMessage").text(get_cbuilder_msg('cbuilder.loading.loadingcontent'));
+            }, 200);
+
             $("#design-btn").trigger("click");
-    
+
             CustomBuilder.updatePresenceIndicator();
             
             data = eval("[" + data.trim() + "]")[0];
-            
+
+            //get the builder type from data.builderType
+            let builderType = data.builderType;
+
+            //retrieve text values from the .properties file
+            let loadingTip  = get_cbuilder_msg('cbuilder.loading.tip');
+            let moreInfo  = get_cbuilder_msg('cbuilder.loading.tip.moreinfo');
+            let randomTipMethod;
+
+            try {
+                randomTipMethod = CustomBuilder.getRandomTip(builderType);
+            } catch (error) {
+                console.log(error);
+            }
+
+            //insert loading tips generated randomly based on builders type
+            $("#loadingTip").html(`💡${loadingTip}: ${randomTipMethod.text} <a href="${randomTipMethod.link}" target="_blank">${moreInfo}</a>`).addClass("show");
+
             //to standardize formatting
             var jsonData = JSON.decode(data.builderDefJson);
             $("#cbuilder-json, #cbuilder-json-original, #cbuilder-json-current").val(JSON.encode(jsonData));
@@ -320,7 +343,7 @@ window._CustomBuilder = {
             $('.toast').each(function(){
                 $(this).toast("hide");
             });
-            
+
             if (CustomBuilder.builderType === data.builderType && CustomBuilder.systemTheme === data.systemTheme && CustomBuilder.builderType !== "app") {
                 CustomBuilder.id = data.id;
                 CustomBuilder.appId = data.appId;
@@ -333,8 +356,22 @@ window._CustomBuilder = {
                 CustomBuilder.redoStack = new Array();
                 CustomBuilder.saveChecker = 0;
                 CustomBuilder.systemTheme = data.systemTheme;
-            
-                $("body").removeClass("initializing");
+
+                //update loading message
+                //Wait 400ms so the message does not change too fasts
+                setTimeout(function(){
+                   $("#loadingMessage").text(get_cbuilder_msg('cbuilder.loading.builderloaded'));
+                }, 400);
+
+                //remove the initializing class and clear loading messages and tip after 1700ms
+                //the delay give some time to read the message and tip
+                setTimeout(function(){
+                    $("body").removeClass("initializing");
+                    //clear the text
+                    $("#loadingMessage").text("");
+                    $("#loadingTip").text("");
+                }, 1700);
+
                 if ($("body").hasClass("default-builder")) {
                     CustomBuilder.Builder.selectedEl = null;
                     CustomBuilder.Builder.highlightEl = null;
@@ -623,8 +660,30 @@ window._CustomBuilder = {
             
             CustomBuilder.builderFavIcon();
             CustomBuilder.updateBuilderBasedOnSettings();
-            
-            $("body").removeClass("initializing");
+
+            CustomBuilder.registerOutsideClickHandler();
+            // Add touch event delegation for header buttons
+            $(document).off("touchend.buttonTouch"); // Prevent duplicate bindings
+            $(document).on("touchend.buttonTouch", ".element-properties-header-actions .float-left [data-cbuilder-action], .element-properties-header-actions .float-right [data-cbuilder-action]", function(event) {
+                $(this).trigger("click"); // Trigger existing click handler
+                event.stopPropagation(); // Prevent header from handling touchend
+                event.preventDefault(); // Avoid default touch conflicts
+            });
+
+            //show the message after 400ms
+            setTimeout(function(){
+                $("#loadingMessage").text(get_cbuilder_msg('cbuilder.loading.builderloaded'));
+            }, 400);
+
+            //remove initializing class and clear messages and tip after 1700ms
+            //this delay ensures the user has time to read the message and tip
+            setTimeout(function(){
+                $("body").removeClass("initializing");
+                //clear the text
+                $("#loadingMessage").text("");
+                $("#loadingTip").removeClass("show").text("");
+            }, 1700);
+
             CustomBuilder.intBuilderMenu();
                  
             HelpGuide.clear();
@@ -1175,7 +1234,9 @@ window._CustomBuilder = {
      */
     save : function(){
         if (typeof $('body').attr("builder-theme") !== 'undefined' && $('body').attr("builder-theme") !== false) {
-            $("body").addClass("initializing");
+            //update button text to saving, and add spinning icon
+            $("#save-btn > span").text(get_cbuilder_msg('cbuilder.saving'));
+            $("#save-btn > i").attr("class", "fas fa-spinner fa-spin");
         }
         var proceedSave = true;
         
@@ -1274,10 +1335,9 @@ window._CustomBuilder = {
                             if(d.success === true){
                                 CustomBuilder.Builder.updateSaveButtonStatus(true);
                             }
-                            $("body").removeClass("initializing");
                             $("#loadingMessage").text("");
                         }
-                    }, 3000);
+                    }, 250);
                 },
                 error: function(xhr, status, error) {
                     let errorText = (UI.stripHtmlTags(xhr.responseText) || status || error);
@@ -1299,8 +1359,12 @@ window._CustomBuilder = {
                     if (typeof $('body').attr("builder-theme") !== 'undefined' && $('body').attr("builder-theme") !== false) {
                         // Re-enable the button if disabled
                         $("#save-btn").removeAttr("disabled");
-                        $("body").removeClass("initializing");
                         $("#loadingMessage").text("");
+                        //revert back the button
+                        $("#save-btn > i").removeClass("fas fa-spinner fa-spin");
+                        $("#save-btn > span").text(get_cbuilder_msg('ubuilder.save'));
+                        $("#save-btn > i").attr("class", "las la-cloud-upload-alt");
+
                     }
                 }
             });
@@ -1308,8 +1372,11 @@ window._CustomBuilder = {
             setTimeout(function(){
                 $("#save-btn").removeAttr("disabled");
                 if (typeof $('body').attr("builder-theme") !== 'undefined' && $('body').attr("builder-theme") !== false) {
-                    $("body").removeClass("initializing");
                     $("#loadingMessage").text("");
+                    //revert back the button
+                    $("#save-btn > i").removeClass("fas fa-spinner fa-spin");
+                    $("#save-btn > span").text(get_cbuilder_msg('ubuilder.save'));
+                    $("#save-btn > i").attr("class", "las la-cloud-upload-alt");
                 }
             }, 1000);
         }
@@ -3903,7 +3970,51 @@ window._CustomBuilder = {
         
         $("body").addClass("quick-nav-shown");
     },
-    
+    /*
+    * generate random tip based on the builder types
+    */
+    getRandomTip: function(builderType) {
+        //get total count of tips in builder. The count will be used for randomization.
+        const count = CustomBuilder.getTipCount(builderType);
+
+        //default tip
+        const defTip = get_cbuilder_msg('cbuilder.default.tip');
+        const defTipLink = get_cbuilder_msg('cbuilder.default.tip.link');
+
+        //return default tip if builder tip not exist
+        if (count < 1) {
+            return { text: defTip, link: defTipLink };
+        }
+
+        // choose random index
+        const index = Math.floor(Math.random() * count) + 1;
+        // build message keys
+        const textKey = `cbuilder.${builderType}.tip.${index}`;
+        const linkKey = `${textKey}.link`;
+
+        // retrieve translated text and link from .properties
+        const text = get_cbuilder_msg(textKey);
+        const link = get_cbuilder_msg(linkKey);
+
+        return { text: text || defTip, link: link || defTipLink };
+    },
+    /*
+    * calculate number of tips based on the builder type
+    */
+    getTipCount: function (builderType) {
+        let count = 0;
+        while (true) {
+            let key = `cbuilder.${builderType}.tip.${count + 1}`;
+            let text = get_cbuilder_msg(key);
+            // If text is empty or retrieve ??, assume no more tips
+            if (!text || text.startsWith("??")) {
+                //stop the loop
+                break;
+            }
+            count++;
+        }
+        return count;
+    },
     /*
      * stop previous Presence Indicator and start with new url
      */
@@ -8184,9 +8295,11 @@ window._CustomBuilder.Builder = {
         if (saved) {
             text.text(get_cbuilder_msg('cbuilder.saved'));
             icon.removeClass("las la-cloud-upload-alt").addClass("zmdi zmdi-check");
+            icon.removeClass("fas fa-spinner fa-spin");
         } else {
             text.text(get_cbuilder_msg('ubuilder.save'));
             icon.removeClass("zmdi zmdi-check").addClass("las la-cloud-upload-alt");
+            icon.removeClass("fas fa-spinner fa-spin");
         }
     }
 }

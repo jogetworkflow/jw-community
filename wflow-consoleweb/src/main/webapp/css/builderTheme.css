@@ -808,13 +808,56 @@ body[builder-theme] #builder_canvas .canvas-header {
     padding: 3px 30px 0 !important;
 }
 body[builder-theme] #loadingMessage {
-    position: relative;
+    position: absolute;
     font-size: 20px;
     font-weight: 500;
     top: 115%;
     left: 50%;
     transform: translate(-50%, -50%);
     text-align: center;
+    white-space: nowrap;
+}
+body[builder-theme] #loadingTip {
+    position: absolute;
+    top: 125%;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 15px;
+    color: #666;
+    text-align: center;
+    white-space: nowrap;
+    opacity: 0;
+    transition: opacity 0.4s;
+}
+body[builder-theme] #loadingTip.show {
+    opacity: 0.8;
+    pointer-events: auto;
+}
+body[builder-theme] #loadingTip::before {
+    font-size: 14px;
+}
+/* Light mode tips */
+body[builder-theme='light'] #loadingTip {
+    color: var(--theme-label-color-1);
+}
+body[builder-theme='light'] #loadingTip a {
+    color: #0a58ca;
+}
+body[builder-theme='light'] #loadingTip a:hover {
+    color: var(--theme-active-color-2);
+    text-decoration: underline;
+}
+
+/* Dark mode tips */
+body[builder-theme='dark'] #loadingTip {
+    color: var(--theme-label-color-2);
+}
+body[builder-theme='dark'] #loadingTip a {
+    color: #0a58ca;
+}
+body[builder-theme='dark'] #loadingTip a:hover {
+    color: var(--theme-active-color-2);
+    text-decoration: underline;
 }
 
 body[builder-theme] .permission_view .permission_rules {

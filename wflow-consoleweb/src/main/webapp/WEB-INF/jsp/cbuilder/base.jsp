@@ -95,6 +95,7 @@
                     <i class="las la-circle-notch fa-spin fa-stack-2x"></i>
                     <i class="<c:out value="${builderIcon}"/> fa-stack-1x"></i>
                     <div id="loadingMessage" class="loading-status"></div>
+                    <div id="loadingTip" class="loading-tip"></div>
                 </span>
                 <div id="top-panel">
                     <a id="builderIcon" class="reload" style="background-color:<c:out value="${builderColor}"/>;">

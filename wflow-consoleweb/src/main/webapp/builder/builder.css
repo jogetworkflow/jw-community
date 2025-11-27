@@ -2253,6 +2253,10 @@ body.quick-nav-position-left #quick-nav-bar.active #closeQuickNav{
     background-color: #cce5ff;
     border-color: #b8daff;
 }
+/* Set builder-message to right 70px if no right panel*/
+body.no-right-panel #builder-message{
+    right: 70px;
+}
 
 /* app ot exist*/
 #appNotExist {
