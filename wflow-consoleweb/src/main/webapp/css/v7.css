@@ -2056,6 +2056,12 @@ div#content-container {
         padding: 60px 25px 20px 25px;
     }
 
+    /* Web Console */
+    body.rtl.webconsole div#footer {
+        margin-top: 0px !important;
+        margin-right: 0px !important;
+    }
+
     /* header */
     #home-link {
         max-width: 58%;

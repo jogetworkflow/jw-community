@@ -719,7 +719,7 @@ public class UserviewThemeProcesser {
                     return customContent;
                 } else if (userview.getCurrent() != null) {
                     if (isQuickEditEnabled) {
-                        String label = ResourceBundleUtil.getMessage("adminBar.label.page") + ": " + userview.getCurrent().getPropertyString("label");
+                        String label = ResourceBundleUtil.getMessage("adminBar.label.page") + ": " + StringUtil.stripHtmlRelaxed(userview.getCurrent().getPropertyString("label"));
                         String url = request.getContextPath() + "/web/console/app/" + userview.getParamString("appId") + "/" + userview.getParamString("appVersion") + "/userview/builder/" + userview.getPropertyString("id") + "?menuId=" + userview.getCurrent().getPropertyString("id");
                         content += "<div class=\"quickEdit\" style=\"display: none\">\n";
                         content += "    <a href=\"" + url + "\" target=\"_blank\"><i class=\"fas fa-pencil-alt\"></i> " + label + "</a>\n";

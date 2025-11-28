@@ -6,6 +6,9 @@
 <%
     String theme = AppUtil.getSystemTheme();
     pageContext.setAttribute("theme", theme);
+    
+    String lang = AppUtil.getAppLocale();
+    pageContext.setAttribute("lang", lang);
 %>
 
 <c:if test="${!jsonUiInRequest}">
@@ -50,7 +53,7 @@
         ConnectionManager.tokenValue = "<%= SecurityUtil.getCsrfTokenValue(request) %>";
         JPopup.tokenName = "<%= SecurityUtil.getCsrfTokenName() %>";
         JPopup.tokenValue = "<%= SecurityUtil.getCsrfTokenValue(request) %>";
-        UI.locale = "<c:out value="${currentLocale}"/>";
+        UI.locale = "<c:out value="${lang}"/>";
         UI.theme = "<c:out value="${theme}"/>";
         
         if(window.parent.UI.theme === ""){

@@ -6174,6 +6174,12 @@ a.btn.disabled,fieldset:disabled a.btn {
     }
 }
 
+@media (min-width: 768px) {
+    body.horizontal_menu header.navbar {
+        overflow: hidden;
+    }
+}
+
 @media (max-width: 767px) {
     #loginForm table tbody tr:last-child a[href],
     #loginForm table tbody tr:last-child a.btn{

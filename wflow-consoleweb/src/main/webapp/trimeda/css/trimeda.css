@@ -840,6 +840,10 @@ body.rtl #sidebar .nav > li > ul > li:not(:last-child){
         margin: 0px 0px 0px 0px;
     }
 
+    body.horizontal_menu header.navbar {
+            overflow:visible;
+    }
+    
     body.horizontal_menu header.navbar .container-fluid {
         padding-left: 40px; 
     }
@@ -978,6 +982,34 @@ body.rtl #sidebar .nav > li > ul > li:not(:last-child){
     body.horizontal_menu.inline_menu header.navbar li.dropdown.user-link > a > span.caret, header.navbar li.dropdown.user-link > a::after {
         display: none !important;
     } 
+}
+
+/* Fix media spacing print */
+@media print {
+    body.rtl:not(.horizontal_menu) #page,
+    body:not(.horizontal_menu) #page {
+        padding-right: 0px !important
+    }
+
+    #content.page_content,
+    body.rtl #content.page_content {
+        margin-right: 16px;
+        margin-left: 16px;
+        margin-top: 16px !important;
+    }
+
+    html, body {
+        margin: 0;
+        padding: 0;
+    }
+
+    #sidebar {
+        display: none !important;
+    }
+
+    body {
+        height: auto !important;
+    }
 }
 
 /* Header */
@@ -1398,6 +1430,11 @@ body.quickEditModeActive:not(.horizontal_menu) #sidebar #category-container {
 .print-button {
     font-size: 16px;
     line-height: 14px;
+    float: left;
+}
+
+body.rtl .print-button {
+    float: right;
 }
 
 .form-cell > label.label + input:has(+ .numeric_field_controls) {

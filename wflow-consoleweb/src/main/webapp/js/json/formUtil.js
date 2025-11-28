@@ -293,13 +293,17 @@ FormUtil = {
                     label = $("label[field-tooltip='" + selector + "']");
                 } else if ($("form#"+ key.substring(0, key.indexOf(".")) +" .form-cell label[field-tooltip='" + subselector + "']").length > 0) {
                     label = $("form#"+ key.substring(0, key.indexOf(".")) +" .form-cell label[field-tooltip='" + subselector + "']");
-                } else if ($("[name='" + key + "']:not(form)").length > 0) {
-                    label = $("[name='" + key + "']:not(form)").closest(".subform-cell").find("label.label");
+                } else if ($("form#"+ key.substring(0, key.indexOf(".")) +" [name='" + subselector + "']").length > 0) {
+                    label = $("form#"+ key.substring(0, key.indexOf(".")) +" [name='" + subselector + "']").closest(".form-cell").find("label.label");
                 } else if ($("[name='" + selector + "']:not(form)").length > 0) {
                     label = $("[name='" + selector + "']:not(form)").closest(".subform-cell").find("label.label");
-                } else {
-                    label = $("[name='" + subselector + "']:not(form)").closest(".form-cell").find("label.label");
-                }
+                } //try postfix match
+                else if ($("label[field-tooltip$='_" + selector + "']").length > 0) { 
+                    label = $("label[field-tooltip$='_" + selector + "']");
+                } else if ($("[name$='_" + selector + "']:not(form)").length > 0) {
+                    label = $("[name$='_" + selector + "']:not(form)").closest(".subform-cell").find("label.label");
+                } 
+                
                 if (label !== null && label.find("i.tooltipstered").length === 0) {
                     $(label).append(" <i class=\"fieldtooltip fa fas fa-info-circle\"></i>");
                     $(label).find("i").tooltipster({

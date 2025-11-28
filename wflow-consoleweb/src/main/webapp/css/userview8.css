@@ -924,6 +924,7 @@ body.horizontal_menu #header-info{
 @media (min-width: 768px) {
     body.horizontal_menu header.navbar{
         position: relative;
+        overflow: hidden;
     }
     body.horizontal_menu #sidebar-trigger{
         display: none;
@@ -974,7 +975,6 @@ body.horizontal_menu #header-info{
     body.horizontal_menu #sidebar #navigation {
         height: auto;
         padding-top: 0;
-        overflow: visible;
     }
     body.horizontal_menu #sidebar .sidebar_brand,
     body.horizontal_menu #sidebar .user-menu{
