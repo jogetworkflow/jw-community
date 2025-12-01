@@ -8752,14 +8752,28 @@ PropertyEditor.Type.Grid.prototype = {
         $(currentRow).remove();
         grid.gridDisabledMoveAction(table);
     },
-    gridActionMoveUp: function(object) {
+    
+    gridActionMoveUp: function (object) {
         var grid = this;
         var currentRow = $(object).parent().parent();
         var prevRow = $(currentRow).prev();
+        var container = $(".property-editor-pages:visible");
+    
+        if (!container.length) return;
+    
+        var scrollTop = container.scrollTop();
+    
         if (prevRow.attr("id") !== "model") {
             $(currentRow).after(prevRow);
             grid.gridDisabledMoveAction($(currentRow).parent());
         }
+    
+        setTimeout(() => container.scrollTop(scrollTop), 0);
+    
+        requestAnimationFrame(() => {
+            container.scrollTop(scrollTop);
+            setTimeout(() => container.scrollTop(scrollTop), 80);
+        });
     },
     gridActionMoveDown: function(object) {
         var grid = this;
