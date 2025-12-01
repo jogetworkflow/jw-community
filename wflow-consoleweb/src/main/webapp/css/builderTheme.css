@@ -3811,3 +3811,16 @@ body[builder-theme].rtl .property-editor-container:not(.editor-panel-mode) .elem
 body[builder-theme].rtl .property-editor-container:not(.editor-panel-mode) .repeater-row .actions.rowbuttons{
     border-color: var(--theme-border-color-1);
 }
+
+/* Fix: Web Coding iframe dark theme CSS issue - forces light theme for popup body */
+body[builder-theme].popupBody {
+    --theme-primary-color-1: #ffffff;
+    --theme-primary-color-2: #F0F2F5;
+    --theme-primary-color-3: #F9F9F9;
+    --theme-border-color-1: #e6e6e6;
+    --theme-label-color-2: #252F4A;
+}
+
+body[builder-theme].popupBody * {
+    scrollbar-color: rgba(0, 0, 0, 0.3) #F0F2F5;
+}
