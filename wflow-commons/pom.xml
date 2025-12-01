@@ -192,6 +192,10 @@
                     <groupId>org.hibernate.orm</groupId>
                     <artifactId>hibernate-scan-jandex</artifactId>
                 </exclusion>
+                <exclusion>
+                    <groupId>org.glassfish.jaxb</groupId>
+                    <artifactId>jaxb-runtime</artifactId>
+                </exclusion>
             </exclusions>
         </dependency>
         <dependency>
