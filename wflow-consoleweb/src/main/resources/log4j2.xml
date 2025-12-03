@@ -54,11 +54,11 @@
         </Logger>        
         <Logger name="org.hibernate" level="error" additivity="true">
         </Logger>
-        <Logger name="org.hibernate.SQL" level="debug" additivity="true">
+        <Logger name="org.hibernate.SQL" level="error" additivity="true">
         </Logger>                
-        <Logger name="org.hibernate.cache" level="debug" additivity="true">
+        <Logger name="org.hibernate.cache" level="error" additivity="true">
         </Logger>
-        <Logger name="org.hibernate.event.internal" level="debug" additivity="true">
+        <Logger name="org.hibernate.event.internal" level="error" additivity="true">
         </Logger>        
         <Logger name="org.hibernate.event.internal.DefaultLoadEventListener" level="warn" additivity="true">
         </Logger>        
