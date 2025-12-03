@@ -12,8 +12,6 @@ import org.joget.apps.datalist.model.DataList;
 import org.joget.apps.datalist.model.DataListColumn;
 import org.joget.apps.datalist.model.DataListColumnFormatDefault;
 import org.joget.apps.datalist.service.DataListService;
-import org.joget.apps.form.model.Form;
-import org.joget.apps.form.model.FormData;
 import org.joget.apps.form.service.FileUtil;
 import org.joget.commons.util.FileManager;
 import org.joget.commons.util.LogUtil;
@@ -113,26 +111,29 @@ public class ImageFormatter extends DataListColumnFormatDefault{
                         }
 
                         // Add timestamp to the image URL to avoid caching issues
-                        String timestamp = String.valueOf(System.currentTimeMillis());
-                        String suffix = ".?";                      
-                            
-                        if (thumbnailExist) {
-                            suffix = FileManager.THUMBNAIL_EXT + suffix;
-                        }
-                        String imgPath = request.getContextPath() + "/web/client/app/" + appDef.getAppId() + "/" + appDef.getVersion().toString() + "/form/download/" + formDefId + "/" + id + "/" + encodedFileName + suffix + "timestamp=" + timestamp;
+                        String timestamp = ".?timestamp=" + String.valueOf(System.currentTimeMillis());
+                        String suffix = "";    
+                        
+                        String imgPath = request.getContextPath() + "/web/client/app/" + appDef.getAppId() + "/" + appDef.getVersion().toString() + "/form/download/" + formDefId + "/" + id + "/" + encodedFileName;
                       
                         if (!result.isEmpty()) {
                             result += " ";
                         }
                         
                         if(!fullsize.isEmpty()){
-                            result += "<a href=\""+imgPath+"\" target=\"_blank\" \"> "; 
+                            result += "<a href=\""+imgPath + timestamp + "\" target=\"_blank\" \"> "; 
                         }
+                          
+                        if (thumbnailExist) {
+                            suffix = FileManager.THUMBNAIL_EXT;
+                        }
+                        
+                        imgPath += suffix + timestamp;
                         
                         if(!height.isEmpty() && !width.isEmpty()){
                             result += "<div style=\"background-image:url('"+imgPath+"');"+style+"\" /></div>";  
                         }else{
-                            result += "<img src=\""+imgPath+"thumb.jpg.\" />";
+                            result += "<img src=\""+imgPath+"\" />";
                         }
                         
                         if(!fullsize.isEmpty()){
