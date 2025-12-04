@@ -288,6 +288,10 @@ public class ConsoleWebController {
 
     @RequestMapping("/console/directory/org/create")
     public String consoleOrgCreate(ModelMap model) {
+        if (DirectoryUtil.isCustomDirectoryManager()) {
+            return "error404";
+        }
+        
         model.addAttribute("organization", new Organization());
         return "console/directory/orgCreate";
     }
@@ -310,12 +314,20 @@ public class ConsoleWebController {
 
     @RequestMapping("/console/directory/org/edit/(*:id)")
     public String consoleOrgEdit(ModelMap model, @RequestParam("id") String id) {
+        if (DirectoryUtil.isCustomDirectoryManager()) {
+            return "error404";
+        }
+        
         model.addAttribute("organization", organizationDao.getOrganization(id));
         return "console/directory/orgEdit";
     }
 
     @RequestMapping(value = "/console/directory/org/submit/(*:action)", method = RequestMethod.POST)
     public String consoleOrgSubmit(ModelMap model, @RequestParam("action") String action, @ModelAttribute("organization") Organization organization, BindingResult result) {
+        if (DirectoryUtil.isCustomDirectoryManager()) {
+            return "error404";
+        }
+
         // validate ID
         validator.validate(organization, result);
 
@@ -362,6 +374,10 @@ public class ConsoleWebController {
 
     @RequestMapping(value = "/console/directory/org/delete", method = RequestMethod.POST)
     public String consoleOrgDelete(@RequestParam(value = "ids") String ids) {
+        if (DirectoryUtil.isCustomDirectoryManager()) {
+            return "error404";
+        }
+        
         StringTokenizer strToken = new StringTokenizer(ids, ",");
         while (strToken.hasMoreTokens()) {
             String organizationId = (String) strToken.nextElement();
@@ -372,12 +388,20 @@ public class ConsoleWebController {
 
     @RequestMapping("/console/directory/org/(*:id)/user/assign/view")
     public String consoleOrgUserAssign(ModelMap model, @RequestParam(value = "id") String id) {
+        if (DirectoryUtil.isCustomDirectoryManager()) {
+            return "error404";
+        }
+        
         model.addAttribute("id", id);
         return "console/directory/orgUserAssign";
     }
 
     @RequestMapping(value = "/console/directory/org/(*:id)/user/assign/submit", method = RequestMethod.POST)
     public String consoleOrgUserAssignSubmit(ModelMap model, @RequestParam(value = "id") String id, @RequestParam(value = "ids") String ids) {
+        if (DirectoryUtil.isCustomDirectoryManager()) {
+            return "error404";
+        }
+        
         StringTokenizer strToken = new StringTokenizer(ids, ",");
         while (strToken.hasMoreTokens()) {
             String userId = (String) strToken.nextElement();
@@ -388,6 +412,10 @@ public class ConsoleWebController {
 
     @RequestMapping(value = "/console/directory/org/(*:id)/user/unassign", method = RequestMethod.POST)
     public String consoleOrgUserUnassign(@RequestParam(value = "id") String id, @RequestParam(value = "ids") String ids) {
+        if (DirectoryUtil.isCustomDirectoryManager()) {
+            return "error404";
+        }
+        
         StringTokenizer strToken = new StringTokenizer(ids, ",");
         while (strToken.hasMoreTokens()) {
             String userId = (String) strToken.nextElement();
@@ -398,6 +426,10 @@ public class ConsoleWebController {
 
     @RequestMapping("/console/directory/dept/create")
     public String consoleDeptCreate(ModelMap model, @RequestParam("orgId") String orgId, @RequestParam(value = "parentId", required = false) String parentId) {
+        if (DirectoryUtil.isCustomDirectoryManager()) {
+            return "error404";
+        }
+        
         model.addAttribute("organization", organizationDao.getOrganization(orgId));
         model.addAttribute("department", new Department());
         if (parentId != null && parentId.trim().length() > 0) {
@@ -426,6 +458,10 @@ public class ConsoleWebController {
 
     @RequestMapping("/console/directory/dept/edit/(*:id)")
     public String consoleDeptEdit(ModelMap model, @RequestParam("id") String id, @RequestParam("orgId") String orgId, @RequestParam(value = "parentId", required = false) String parentId) {
+        if (DirectoryUtil.isCustomDirectoryManager()) {
+            return "error404";
+        }
+        
         model.addAttribute("organization", organizationDao.getOrganization(orgId));
         model.addAttribute("department", departmentDao.getDepartment(id));
         if (parentId != null && parentId.trim().length() > 0) {
@@ -436,6 +472,10 @@ public class ConsoleWebController {
 
     @RequestMapping(value = "/console/directory/dept/submit/(*:action)", method = RequestMethod.POST)
     public String consoleDeptSubmit(ModelMap model, @RequestParam("action") String action, @RequestParam("orgId") String orgId, @RequestParam(value = "parentId", required = false) String parentId, @ModelAttribute("department") Department department, BindingResult result) {
+        if (DirectoryUtil.isCustomDirectoryManager()) {
+            return "error404";
+        }
+        
         Organization organization = organizationDao.getOrganization(orgId);
         Department parent = null;
         if (parentId != null && parentId.trim().length() > 0) {
@@ -505,6 +545,10 @@ public class ConsoleWebController {
 
     @RequestMapping(value = "/console/directory/dept/delete", method = RequestMethod.POST)
     public String consoleDeptDelete(@RequestParam(value = "ids") String ids) {
+        if (DirectoryUtil.isCustomDirectoryManager()) {
+            return "error404";
+        }
+        
         StringTokenizer strToken = new StringTokenizer(ids, ",");
         while (strToken.hasMoreTokens()) {
             String id = (String) strToken.nextElement();
@@ -515,6 +559,10 @@ public class ConsoleWebController {
 
     @RequestMapping("/console/directory/dept/(*:id)/hod/set/view")
     public String consoleDeptHodSet(ModelMap model, @RequestParam(value = "id") String id) {
+        if (DirectoryUtil.isCustomDirectoryManager()) {
+            return "error404";
+        }
+        
         model.addAttribute("id", id);
         Department department = departmentDao.getDepartment(id);
         if (department != null && department.getOrganization() != null) {
@@ -526,18 +574,30 @@ public class ConsoleWebController {
 
     @RequestMapping(value = "/console/directory/dept/(*:deptId)/hod/set/submit", method = RequestMethod.POST)
     public String consoleDeptHodSetSubmit(ModelMap model, @RequestParam(value = "deptId") String deptId, @RequestParam(value = "userId") String userId) {
+        if (DirectoryUtil.isCustomDirectoryManager()) {
+            return "error404";
+        }
+        
         employmentDao.assignUserAsDepartmentHOD(userId, deptId);
         return "console/directory/deptHodSetView";
     }
 
     @RequestMapping(value = "/console/directory/dept/(*:deptId)/hod/remove", method = RequestMethod.POST)
     public String consoleDeptHodRemove(@RequestParam(value = "deptId") String deptId, @RequestParam(value = "userId") String userId) {
+        if (DirectoryUtil.isCustomDirectoryManager()) {
+            return "error404";
+        }
+        
         employmentDao.unassignUserAsDepartmentHOD(userId, deptId);
         return "console/directory/deptView";
     }
 
     @RequestMapping("/console/directory/dept/(*:id)/user/assign/view")
     public String consoleDeptUserAssign(ModelMap model, @RequestParam(value = "id") String id) {
+        if (DirectoryUtil.isCustomDirectoryManager()) {
+            return "error404";
+        }
+        
         model.addAttribute("id", id);
         Department department = directoryManager.getDepartmentById(id);
         if (department != null && department.getOrganization() != null) {
@@ -548,6 +608,10 @@ public class ConsoleWebController {
 
     @RequestMapping(value = "/console/directory/dept/(*:id)/user/assign/submit", method = RequestMethod.POST)
     public String consoleDeptUserAssignSubmit(ModelMap model, @RequestParam(value = "id") String id, @RequestParam(value = "ids") String ids) {
+        if (DirectoryUtil.isCustomDirectoryManager()) {
+            return "error404";
+        }
+        
         StringTokenizer strToken = new StringTokenizer(ids, ",");
         while (strToken.hasMoreTokens()) {
             String userId = (String) strToken.nextElement();
@@ -558,6 +622,10 @@ public class ConsoleWebController {
 
     @RequestMapping(value = "/console/directory/dept/(*:id)/user/unassign", method = RequestMethod.POST)
     public String consoleDeptUserUnassign(@RequestParam(value = "id") String id, @RequestParam(value = "ids") String ids) {
+        if (DirectoryUtil.isCustomDirectoryManager()) {
+            return "error404";
+        }
+        
         StringTokenizer strToken = new StringTokenizer(ids, ",");
         while (strToken.hasMoreTokens()) {
             String userId = (String) strToken.nextElement();
@@ -568,6 +636,10 @@ public class ConsoleWebController {
 
     @RequestMapping("/console/directory/grade/create")
     public String consoleGradeCreate(ModelMap model, @RequestParam("orgId") String orgId) {
+        if (DirectoryUtil.isCustomDirectoryManager()) {
+            return "error404";
+        }
+        
         model.addAttribute("organization", organizationDao.getOrganization(orgId));
         model.addAttribute("grade", new Grade());
         return "console/directory/gradeCreate";
@@ -589,6 +661,10 @@ public class ConsoleWebController {
 
     @RequestMapping("/console/directory/grade/edit/(*:id)")
     public String consoleGradeEdit(ModelMap model, @RequestParam("id") String id, @RequestParam("orgId") String orgId) {
+        if (DirectoryUtil.isCustomDirectoryManager()) {
+            return "error404";
+        }
+        
         model.addAttribute("organization", organizationDao.getOrganization(orgId));
         model.addAttribute("grade", gradeDao.getGrade(id));
         return "console/directory/gradeEdit";
@@ -596,6 +672,10 @@ public class ConsoleWebController {
 
     @RequestMapping(value = "/console/directory/grade/submit/(*:action)", method = RequestMethod.POST)
     public String consoleGradeSubmit(ModelMap model, @RequestParam("action") String action, @RequestParam("orgId") String orgId, @ModelAttribute("grade") Grade grade, BindingResult result) {
+        if (DirectoryUtil.isCustomDirectoryManager()) {
+            return "error404";
+        }
+        
         Organization organization = organizationDao.getOrganization(orgId);
 
         // validate ID
@@ -651,6 +731,10 @@ public class ConsoleWebController {
 
     @RequestMapping(value = "/console/directory/grade/delete", method = RequestMethod.POST)
     public String consoleGradeDelete(@RequestParam(value = "ids") String ids) {
+        if (DirectoryUtil.isCustomDirectoryManager()) {
+            return "error404";
+        }
+        
         StringTokenizer strToken = new StringTokenizer(ids, ",");
         while (strToken.hasMoreTokens()) {
             String id = (String) strToken.nextElement();
@@ -661,6 +745,10 @@ public class ConsoleWebController {
 
     @RequestMapping("/console/directory/grade/(*:id)/user/assign/view")
     public String consoleGradeUserAssign(ModelMap model, @RequestParam(value = "id") String id) {
+        if (DirectoryUtil.isCustomDirectoryManager()) {
+            return "error404";
+        }
+        
         model.addAttribute("id", id);
         Grade grade = directoryManager.getGradeById(id);
         if (grade != null && grade.getOrganization() != null) {
@@ -671,6 +759,10 @@ public class ConsoleWebController {
 
     @RequestMapping(value = "/console/directory/grade/(*:id)/user/assign/submit", method = RequestMethod.POST)
     public String consoleGradeUserAssignSubmit(ModelMap model, @RequestParam(value = "id") String id, @RequestParam(value = "ids") String ids) {
+        if (DirectoryUtil.isCustomDirectoryManager()) {
+            return "error404";
+        }
+        
         StringTokenizer strToken = new StringTokenizer(ids, ",");
         while (strToken.hasMoreTokens()) {
             String userId = (String) strToken.nextElement();
@@ -681,6 +773,10 @@ public class ConsoleWebController {
 
     @RequestMapping(value = "/console/directory/grade/(*:id)/user/unassign", method = RequestMethod.POST)
     public String consoleGradeUserUnassign(@RequestParam(value = "id") String id, @RequestParam(value = "ids") String ids) {
+        if (DirectoryUtil.isCustomDirectoryManager()) {
+            return "error404";
+        }
+        
         StringTokenizer strToken = new StringTokenizer(ids, ",");
         while (strToken.hasMoreTokens()) {
             String userId = (String) strToken.nextElement();
@@ -699,6 +795,10 @@ public class ConsoleWebController {
 
     @RequestMapping("/console/directory/group/create")
     public String consoleGroupCreate(ModelMap model) {
+        if (DirectoryUtil.isCustomDirectoryManager()) {
+            return "error404";
+        }
+        
         Collection<Organization> organizations = organizationDao.getOrganizationsByFilter(null, "name", false, null, null);
         model.addAttribute("organizations", organizations);
         model.addAttribute("group", new Group());
@@ -714,6 +814,10 @@ public class ConsoleWebController {
 
     @RequestMapping("/console/directory/group/edit/(*:id)")
     public String consoleGroupEdit(ModelMap model, @RequestParam("id") String id) {
+        if (DirectoryUtil.isCustomDirectoryManager()) {
+            return "error404";
+        }
+        
         Collection<Organization> organizations = organizationDao.getOrganizationsByFilter(null, "name", false, null, null);
         model.addAttribute("organizations", organizations);
         Group group = groupDao.getGroup(id);
@@ -726,6 +830,10 @@ public class ConsoleWebController {
 
     @RequestMapping(value = "/console/directory/group/submit/(*:action)", method = RequestMethod.POST)
     public String consoleGroupSubmit(ModelMap model, @RequestParam("action") String action, @ModelAttribute("group") Group group, BindingResult result) {
+        if (DirectoryUtil.isCustomDirectoryManager()) {
+            return "error404";
+        }
+        
         // validate ID
         validator.validate(group, result);
 
@@ -779,6 +887,10 @@ public class ConsoleWebController {
 
     @RequestMapping(value = "/console/directory/group/delete", method = RequestMethod.POST)
     public String consoleGroupDelete(@RequestParam(value = "ids") String ids) {
+        if (DirectoryUtil.isCustomDirectoryManager()) {
+            return "error404";
+        }
+        
         StringTokenizer strToken = new StringTokenizer(ids, ",");
         while (strToken.hasMoreTokens()) {
             String id = (String) strToken.nextElement();
@@ -789,12 +901,20 @@ public class ConsoleWebController {
 
     @RequestMapping("/console/directory/group/(*:id)/user/assign/view")
     public String consoleGroupUserAssign(ModelMap model, @RequestParam(value = "id") String id) {
+        if (DirectoryUtil.isCustomDirectoryManager()) {
+            return "error404";
+        }
+        
         model.addAttribute("id", id);
         return "console/directory/groupUserAssign";
     }
 
     @RequestMapping(value = "/console/directory/group/(*:id)/user/assign/submit", method = RequestMethod.POST)
     public String consoleGroupUserAssignSubmit(ModelMap model, @RequestParam(value = "id") String id, @RequestParam(value = "ids") String ids) {
+        if (DirectoryUtil.isCustomDirectoryManager()) {
+            return "error404";
+        }
+        
         StringTokenizer strToken = new StringTokenizer(ids, ",");
         while (strToken.hasMoreTokens()) {
             String userId = (String) strToken.nextElement();
@@ -805,6 +925,10 @@ public class ConsoleWebController {
 
     @RequestMapping(value = "/console/directory/group/(*:id)/user/unassign", method = RequestMethod.POST)
     public String consoleGroupUserUnassign(@RequestParam(value = "id") String id, @RequestParam(value = "ids") String ids) {
+        if (DirectoryUtil.isCustomDirectoryManager()) {
+            return "error404";
+        }
+        
         StringTokenizer strToken = new StringTokenizer(ids, ",");
         while (strToken.hasMoreTokens()) {
             String userId = (String) strToken.nextElement();
@@ -823,6 +947,10 @@ public class ConsoleWebController {
 
     @RequestMapping("/console/directory/user/create")
     public String consoleUserCreate(ModelMap model) {
+        if (DirectoryUtil.isCustomDirectoryManager()) {
+            return "error404";
+        }
+        
         Collection<Organization> organizations = organizationDao.getOrganizationsByFilter(null, "name", false, null, null);
         model.addAttribute("organizations", organizations);
         model.addAttribute("roles", roleDao.getRoles(null, "name", false, null, null));
@@ -889,6 +1017,15 @@ public class ConsoleWebController {
 
     @RequestMapping("/console/directory/user/edit/(*:id)")
     public String consoleUserEdit(ModelMap model, @RequestParam("id") String id) {
+        if (DirectoryUtil.isCustomDirectoryManager()) {
+            return "error404";
+        }
+        
+        User user = userDao.getUserById(id);
+        if (user == null || user.getReadonly()) {
+            return "error404";
+        }
+        
         Collection<Organization> organizations = organizationDao.getOrganizationsByFilter(null, "name", false, null, null);
         model.addAttribute("organizations", organizations);
         model.addAttribute("roles", roleDao.getRoles(null, "name", false, null, null));
@@ -898,8 +1035,7 @@ public class ConsoleWebController {
         status.put("1", "Active");
         status.put("0", "Inactive");
         model.addAttribute("status", status);
-
-        User user = userDao.getUserById(id);
+        
         model.addAttribute("user", user);
 
         Employment employment = null;
@@ -934,6 +1070,11 @@ public class ConsoleWebController {
             @RequestParam(value = "employeeGradeOrganization", required = false) String[] employeeGradeOrganization,
             @RequestParam(value = "employeeGrade", required = false) String[] employeeGrade,
             @RequestParam(value = "employeeStartDate", required = false) String employeeStartDate, @RequestParam(value = "employeeEndDate", required = false) String employeeEndDate) {
+        
+        if (DirectoryUtil.isCustomDirectoryManager()) {
+            return "error404";
+        }
+
         // validate ID
         validator.validate(user, result);
 
@@ -1004,6 +1145,10 @@ public class ConsoleWebController {
                     boolean passwordReset = false;
 
                     u = userDao.getUserById(user.getId());
+                    if (u == null || u.getReadonly()) {
+                        return "error404";
+                    }
+                    
                     String firstName = StringUtil.stripAllHtmlTag(StringUtil.unescapeString(user.getFirstName(), StringUtil.TYPE_HTML, null));
                     String lastName = StringUtil.stripAllHtmlTag(StringUtil.unescapeString(user.getLastName(), StringUtil.TYPE_HTML, null));
                                                 
@@ -1226,6 +1371,10 @@ public class ConsoleWebController {
 
     @RequestMapping(value = "/console/directory/user/delete", method = RequestMethod.POST)
     public String consoleUserDelete(@RequestParam(value = "ids") String ids) {
+        if (DirectoryUtil.isCustomDirectoryManager()) {
+            return "error404";
+        }
+        
         String currentUsername = workflowUserManager.getCurrentUsername();
         
         StringTokenizer strToken = new StringTokenizer(ids, ",");
@@ -1246,6 +1395,15 @@ public class ConsoleWebController {
 
     @RequestMapping("/console/directory/user/(*:id)/group/assign/view")
     public String consoleUserGroupAssign(ModelMap model, @RequestParam(value = "id") String id) {
+        if (DirectoryUtil.isCustomDirectoryManager()) {
+            return "error404";
+        }
+        
+        User user = userDao.getUserById(id);
+        if (user == null || user.getReadonly()) {
+            return "error404";
+        }
+        
         model.addAttribute("id", id);
         Collection<Organization> organizations = organizationDao.getOrganizationsByFilter(null, "name", false, null, null);
         model.addAttribute("organizations", organizations);
@@ -1254,7 +1412,15 @@ public class ConsoleWebController {
 
     @RequestMapping("/console/directory/user/(*:id)/reportTo/assign/view")
     public String consoleUserReportToAssign(ModelMap model, @RequestParam(value = "id") String id) {
+        if (DirectoryUtil.isCustomDirectoryManager()) {
+            return "error404";
+        }
+        
         User user = userDao.getUserById(id);
+        if (user == null || user.getReadonly()) {
+            return "error404";
+        }
+        
         model.addAttribute("id", id);
         if (user != null && user.getEmployments() != null && user.getEmployments().size() > 0) {
             Employment e = (Employment) user.getEmployments().iterator().next();
@@ -1269,18 +1435,42 @@ public class ConsoleWebController {
 
     @RequestMapping(value = "/console/directory/user/(*:id)/reportTo/assign/submit", method = RequestMethod.POST)
     public String consoleUserReportToAssignSubmit(ModelMap model, @RequestParam(value = "id") String id, @RequestParam(value = "userId") String userId) {
+        if (DirectoryUtil.isCustomDirectoryManager()) {
+            return "error404";
+        }
+        User user = userDao.getUserById(id);
+        if (user == null || user.getReadonly()) {
+            return "error404";
+        }
+        
         employmentDao.assignUserReportTo(id, userId);
         return "console/directory/userReportToAssign";
     }
 
     @RequestMapping(value = "/console/directory/user/(*:id)/reportTo/unassign", method = RequestMethod.POST)
     public String consoleUserReportToUnassign(@RequestParam(value = "id") String id) {
+        if (DirectoryUtil.isCustomDirectoryManager()) {
+            return "error404";
+        }
+        User user = userDao.getUserById(id);
+        if (user == null || user.getReadonly()) {
+            return "error404";
+        }
+        
         employmentDao.unassignUserReportTo(id);
         return "console/directory/userView";
     }
 
     @RequestMapping(value = "/console/directory/user/(*:id)/group/assign/submit", method = RequestMethod.POST)
     public String consoleUserGroupAssignSubmit(ModelMap model, @RequestParam(value = "id") String id, @RequestParam(value = "ids") String ids) {
+        if (DirectoryUtil.isCustomDirectoryManager()) {
+            return "error404";
+        }
+        User user = userDao.getUserById(id);
+        if (user == null || user.getReadonly()) {
+            return "error404";
+        }
+        
         StringTokenizer strToken = new StringTokenizer(ids, ",");
         while (strToken.hasMoreTokens()) {
             String groupId = (String) strToken.nextElement();
@@ -1291,6 +1481,14 @@ public class ConsoleWebController {
 
     @RequestMapping(value = "/console/directory/user/(*:id)/group/unassign", method = RequestMethod.POST)
     public String consoleUserGroupUnassign(@RequestParam(value = "id") String id, @RequestParam(value = "ids") String ids) {
+        if (DirectoryUtil.isCustomDirectoryManager()) {
+            return "error404";
+        }
+        User user = userDao.getUserById(id);
+        if (user == null || user.getReadonly()) {
+            return "error404";
+        }
+        
         StringTokenizer strToken = new StringTokenizer(ids, ",");
         while (strToken.hasMoreTokens()) {
             String groupId = (String) strToken.nextElement();
