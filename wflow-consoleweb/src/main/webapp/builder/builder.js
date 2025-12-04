@@ -858,7 +858,9 @@
      * Add element to palette
      */
     initPaletteElement : function(categories, className, label, icon, propertyOptions, defaultPropertiesValues, render, css, metaData, tab){
-        if (this.paletteElements[className] !== undefined) {
+        if (this.paletteElements[className] !== undefined && !(
+                this.paletteElements[className].isMissing === true
+                && metaData.isMissing === undefined)) {
             return;
         }
         if (tab === undefined || tab === "") {
@@ -6177,7 +6179,8 @@ _CustomBuilder.Builder = {
             'deletable' : true,
             'copyable' : false,
             'navigable' : true
-        }});
+        },
+        isMissing: true});
         return CustomBuilder.paletteElements[className];
     },
 
