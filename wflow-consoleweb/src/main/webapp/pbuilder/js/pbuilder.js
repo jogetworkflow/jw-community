@@ -3731,7 +3731,7 @@ ProcessBuilder = {
                 mapping.properties = $.extend(true, mapping.properties, activity.properties['tools'][0]['properties']);
             } else if ((activity.properties['tools'] === undefined || activity.properties['tools'].length === 0) && mapping !== undefined) {
                 delete CustomBuilder.data['activityPlugins'][id];
-            } else {
+            } else if(activity.properties['tools'] !== undefined && activity.properties['tools'].length > 0) {
                 //use multi tools
                 if (mapping === undefined) {
                     mapping = {};
@@ -5708,7 +5708,7 @@ ProcessBuilder = {
         ProcessBuilder.resizePool();
         
         ProcessBuilder.currentProcessData = processData;
-        if (!ProcessBuilder.readonly) {
+        if (!ProcessBuilder.readonly && !$("body").hasClass("initializing")) {
             CustomBuilder.update(addToUndo);
         }
     },
