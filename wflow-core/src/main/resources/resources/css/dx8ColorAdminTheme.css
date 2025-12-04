@@ -430,7 +430,9 @@ input:focus, select:focus, textarea:focus {
     border: 1px solid var(--theme-primary, var(--theme-color3, #007C01));
     outline: 0;
 }
-
+.ql-bubble .ql-tooltip-editor input[type=text]{
+    border-radius: 1.5rem;
+}
 .form-cell > label.label, .subform-cell > label.label {
     font-weight: 500;
 }

@@ -1531,9 +1531,13 @@ div.ui-timepicker-div dl dd > * > select {
     background-size: 10.5px 6.47px !important;
 }
 
+body.rtl select {
+    background-position: left 24.55px center;
+}
+
 body.rtl div.ui-timepicker-div dl dd > * > select {
     background-size: 80.5px 6.47px !important;
-}select
+}
 
 .ContainerComponent {
     padding: 0;
@@ -1610,6 +1614,14 @@ select, textarea, .ql-container.ql-bubble,
     padding-bottom: var(--input-padding-y) !important;
 }
 
+.ql-tooltip-editor input[type="text"]{
+    min-height: auto;
+}
+
+.ql-bubble .ql-tooltip-editor input[type=text]{
+    border-radius: 1.5rem;
+}
+
 body:not(.compact-mode) select {
     padding-top: var(--input-padding-y) !important;
     padding-bottom: var(--input-padding-y) !important;
@@ -1675,19 +1687,24 @@ textarea:focus, .chosen-container-multi .chosen-choices:focus, .selector_element
     padding-right: 80px;
 }
 
+body.rtl .selector_element .selector_items {
+    padding-right: 0px;
+    padding-left: 80px;
+}
+
 .selector_element .selector_button, 
 .selector_element .selector_button:hover {
     width: 80px;
     position: absolute;
     top: 50%;
     transform: translateY(-50%);
-    right: 0px;
+    right: 10px;
     background-color: #4b6eec;
 }
 
 body.rtl .selector_element .selector_button, 
 body.rtl .selector_element .selector_button:hover {
-    right: calc(100% - 80px);
+    right: calc(100% - 80px - 10px);
 }
 
 .selector_element .selector_items .selector_item, div.chosen-container ul.chosen-choices > li.search-choice {
@@ -2140,12 +2157,10 @@ body.rtl .ui-datepicker .ui-datepicker-next {
     color: #FFF;
 }
 
-div#ui-datepicker-div:has(div.ui-timepicker-div) table.ui-datepicker-calendar:not(:has(td > a.ui-state-active)) + div.ui-timepicker-div {
-    display: none;
-}
-
-div#ui-datepicker-div:has(div.ui-timepicker-div) table.ui-datepicker-calendar:has(td > a.ui-state-active) + div.ui-timepicker-div {
+div#page:has(.time_only.no-manual-input.hasDatepicker.focus) ~ div div.ui-timepicker-div {
     display: block;
+    border-top: none !important;
+    margin-top: 0px;
 }
 
 div.ui-timepicker-div dl {
@@ -2237,10 +2252,6 @@ div.ui-timepicker-div dl dd > * > select {
 
 body.rtl #ui-datepicker-div .ui-timepicker-div.ui-timepicker-rtl dl dd {
     margin: 0 0px 10px 41%;
-}
-
-div#ui-datepicker-div:has(div.ui-timepicker-div) table.ui-datepicker-calendar:has(td > a.ui-state-active) tbody tr:not(:has(td > a.ui-state-active)) {
-    display: none;
 }
 
 div#ui-datepicker-div:has(div.ui-timepicker-div) table.ui-datepicker-calendar:has(td > a.ui-state-active):hover tbody tr:not(:has(td > a.ui-state-active)) {

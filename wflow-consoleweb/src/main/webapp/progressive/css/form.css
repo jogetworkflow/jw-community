@@ -246,6 +246,16 @@ body .editor-cell input.focus{
   box-shadow: 0 1px 0 0 #727272;
 }
 
+.ql-bubble .ql-tooltip-editor input[type=text]:focus {
+    border-bottom: 0px;
+    box-shadow: none;
+}
+
+.ql-bubble.ql-toolbar button, .ql-bubble .ql-toolbar button {
+    box-shadow: none;
+    margin-bottom: 0px !important;
+}
+
 body .filter-cell input:not([type]),
 body .filter-cell input[type=text],
 body .filter-cell input[type=password],

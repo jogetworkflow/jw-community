@@ -757,6 +757,16 @@ body.rtl .filters { text-align:left;}
     width: auto !important;
     text-align: left;
 }
+body.rtl *:is(.dataList.size_sm > form > .table-wrapper > table.responsivetable,
+.dataList.size_sm > .table-wrapper > table.responsivetable,
+.dataList.size_sm > form > .table-wrapper > table.responsivetable > tbody,
+.dataList.size_sm > .table-wrapper > table.responsivetable > tbody,
+.dataList.size_sm > form > .table-wrapper > table.responsivetable > tbody > tr,
+.dataList.size_sm > .table-wrapper > table.responsivetable > tbody > tr,
+.dataList.size_sm > form > .table-wrapper > table.responsivetable > tbody > tr > td:not([data-cbuilder-sample]):not(.control_hide),
+.dataList.size_sm > .table-wrapper > table.responsivetable > tbody > tr > td:not([data-cbuilder-sample]):not(.control_hide)) {
+    text-align: right;
+}
 .dataList.size_sm > form > .table-wrapper > table.responsivetable > tbody > tr > td:not([data-cbuilder-sample]),
 .dataList.size_sm > .table-wrapper > table.responsivetable > tbody > tr > td:not([data-cbuilder-sample]){
     padding: 0px !important;
