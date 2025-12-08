@@ -2,6 +2,49 @@ Joget DX COMMUNITY
 ====================
 For more information, please refer to https://community.joget.org
 
+9.0.3
+=====
+93959da9b Fixed: wflow-commons - Logging - Downgrade to SLF4J because of issue with CSRFGuard library. #1480 @9.0-SNAPSHOT
+16b36d535 Fixed: wflow-consoleweb - Process Builder - Missing validator for deadline configuration. T7012 #1533 @9.0-SNAPSHOT
+7688b513c Fixed: wflow-consoleweb - Process Builder - Adding process info to the exception log. T7012 #1533 @8.2-SNAPSHOT
+ebcc1fa1a Fixed: wflow-consoleweb - Builder Theme - Fixed popup selectbox button position under RTL #1255 @9.0-SNAPSHOT
+027809869 Fixed: wflow-consoleweb - RTL UI Issues - Fixed RTL UI Issues found on the themes #1255 @8.2-SNAPSHOT
+322d05e10 Fixed: wflow-consoleweb - Universal & Progressive Theme - Fixed regression issue found on b033bcc45. @8.2-SNAPSHOT
+a6b47373b Fixed: wflow-consoleweb, wflow-core - Rich Text Editor - Fixed styling issues. #988 @8.2-SNAPSHOT
+a3c2e2718 Fixed: wflow-consoleweb - Trimeda Calendar Popup - Fixed missing time selection #1153 @8.2-SNAPSHOT
+0c4d31406 Fixed: wflow-consoleweb - DX8 Trimeda Theme - Fixed time only date picker not visible #1152 @8.2-SNAPSHOT
+13bdc9011 Fixed: wflow-consoleweb - Process Builder - Route label is not rendered after reopening. #1548 @9.0-SNAPSHOT
+feb1549d8 Fixed: wflow-core - Process Builder - Null mapping value is not set correctly #1541. @9.0-SNAPSHOT
+5a81fde6b Fixed: wflow-consoleweb - Environment Name - Enhanced the position and appearance of the environment name. #1180 @9.0-SNAPSHOT
+389e6ef61 Fixed: wflow-consoleweb - Admin bar - Fixed long environment Name blocking admin bar buttons for DX 8. #1180 @8.2-SNAPSHOT
+72ceaad40 Fixed: wflow-consoleweb - Admin Bar - Menus does not render correctly when user having both App Creator and System Manager roles #1459. @9.0-SNAPSHOT
+7e9e0f1a5 Fixed: wflow-core - User Profile - System error page is shown when readonly user access the page. T7023 #1559 @9.0-SNAPSHOT
+8dd44c1f6 Fixed: wflow-core - Application Context - method invocation for processStart, assignmentComplete not recorded in audit trail #1543 @9.0-SNAPSHOT
+96613fc14 Fixed: wflow-commons - Directory Manager - Fixed Changing Directory Manager Plugin does not updated in DB T6841 #1475. @8.2-SNAPSHOT
+fc8564288 Fixed: wflow-consoleweb - Userview Builder - Ability to run script from Category label of UI Builder. #1287 @8.2-SNAPSHOT
+f0a00e31c Fixed: wflow-consoleweb - DX9 Theme - Fixed issue where there is unnecessary spacing between the scrollbar container and scrollbar. #1488 @9.0-SNAPSHOT
+9628d54a7 Fixed: wflow-consoleweb - Admin Console - Fixed footer gets blocked by the admin bar #1230 @9.0-SNAPSHOT
+f7cc3e720 Fixed: wflow-consoleweb - Webconsole - Added extra margin to cater for DX9 design #1230 @9.0-SNAPSHOT
+10bc3e23c Fixed: wflow-consoleweb - Webconsole - Fixed extra spacing on footer under RTL #1230 @8.2-SNAPSHOT
+d7af0fae2 Fixed: wflow-consoleweb - Form Tooltip - Regression of #1215. Tooltip can't populate for subform. T6977 #1509 @8.2-SNAPSHOT
+684226cf9 Fixed: wflow-core - Password Field - fixed password field returns plain text instead of masked value #1268 @8.2-SNAPSHOT
+b66bf2fa9 Fixed: jw-community - pom.xml - Upgrade Spring Framework to 6.2.11. #1383 @9.0-SNAPSHOT
+47b850c44 Fixed: wflow-commons - pom.xml - Upgrade Spring Security to 6.5.5. #1383 @9.0-SNAPSHOT
+d1094c012 Fixed: wflow-core - BuilderDefinitionDaoImpl - Fixed unable to delete addon builder item when multiple addon builder is installed. #1358 @8.2-SNAPSHOT
+aee52805b Modified: wflow-wfengine - Performance - Added -Dwflow.sharkCacheSize system property to configure Shark counter and object ID cache sizes for high loads T6716 T6717 #1367. @8.2-SNAPSHOT
+23af12062 Fixed: wflow-consoleweb - Spreadsheet - Fixed issue with spreadsheet overlapping in print @9.0-SNAPSHOT
+3e3abdc03 Fixed: wflow-consoleweb - Monitoring - View Graph Doesn't highlight the pending activity with the Yellow Box. T6948 #1493 @9.0-SNAPSHOT
+3c6117bb0 Fixed: wflow-consoleweb - System Information - Fixed the System Information page contains old Joget logo. #1426 @9.0-SNAPSHOT
+580a4f9de Fixed: wflow-consoleweb - UI - Locale checker show alert when there is no locale change in non sticky session cluster environment. T6944 #1306 @8.2-SNAPSHOT
+70abc8bb5 Fixed: wflow-commons - PluginThread - Ensure locale context is set. #1514 @9.0-SNAPSHOT
+37af27b89 Fixed: wflow-consoleweb - Datalist - Fixed datalist horizontal scroll not working in Preview mode. #1497 @8.2-SNAPSHOT
+d34697fab Fixed: wflow-consoleweb - User link dropdown  - Fixed user link dropdown blocked in trimeda theme. #1251 @8.2-SNAPSHOT
+b9300e189 Fixed: wflow-consoleweb - Priority Menu - Fixed issues with Priority Menu & Print Button #1251 @8.2-SNAPSHOT
+6c6aee2ec Fixed: wflow-consoleweb - User - No way to set user to inactive when using directory manager with auto-provisioning. #1536 @9.0-SNAPSHOT
+d0e501be0 Fixed: wflow-consoleweb - Monitor > performance - Should appear when ignite OR glowroot enabled. #1375 @9.0-SNAPSHOT
+bb54e381f Fixed: wflow-consoleweb - Property Editor - Fixed fields misalignment issue in builder settings during RTL view. #1450 @8.2-SNAPSHOT
+bd06cf700 Fixed: wflow-consoleweb - Process Builder - Fixed unresponsive info button unless process once saved #1365 @9.0-SNAPSHOT
+
 9.0.2
 =====
 44c741b20 Fixed: wflow-consoleweb - Regression of #1045 causing Directory Manager default properties does not populate. #1495 @8.2-SNAPSHOT
