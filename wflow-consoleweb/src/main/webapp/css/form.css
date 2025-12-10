@@ -803,6 +803,11 @@ body.rtl #${elementParamName!}_multiPagedForm_${element.properties.elementUnique
         -khtml-border-radius: 5px 5px 0px 0px;
         border-radius: 5px 5px 0px 0px;
     }
+
+    body .multiPagedForm .page-nav-panel .nav_item button > span {
+        white-space: normal;
+        word-break: break-word;
+    }
     
     .multiPagedForm .page-container {
         border:#ddd solid 1px;
