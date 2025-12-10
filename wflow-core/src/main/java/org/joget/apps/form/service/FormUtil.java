@@ -2436,13 +2436,21 @@ public class FormUtil implements ApplicationContextAware {
         String json = "[]";
         try {
             JSONArray jsonArray = new JSONArray();
-            
+
             for (FormRow r : rows) {
                 JSONObject obj = new JSONObject();
-                
+
                 for (Object p : r.getCustomProperties().keySet()) {
-                    obj.put(p.toString(), r.getProperty(p.toString()));
+                    String key = (p != null) ? p.toString().trim() : null;
+                    
+                    // Skip empty or invalid keys
+                    if (key == null || key.isEmpty()) {
+                        continue;
+                    }
+
+                    obj.put(key, r.getProperty(key));
                 }
+                
                 if (r.getDateCreated() != null) {
                     if (isExport) {
                         obj.put(FormUtil.PROPERTY_DATE_CREATED, TimeZoneUtil.convertToTimeZone(r.getDateCreated(), TimeZone.getDefault().getID(), "yyyy-MM-dd HH:mm:ss"));
@@ -2457,7 +2465,7 @@ public class FormUtil implements ApplicationContextAware {
                         obj.put(FormUtil.PROPERTY_DATE_MODIFIED, TimeZoneUtil.convertToTimeZone(r.getDateModified(), null, AppUtil.getAppDateFormat()));
                     }
                 }
-                
+
                 if (r.getTempFilePathMap() != null && !r.getTempFilePathMap().isEmpty()) {
                     JSONObject filePaths = new JSONObject();
                     for (Object f : r.getTempFilePathMap().keySet()) {
