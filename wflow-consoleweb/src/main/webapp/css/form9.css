@@ -1351,6 +1351,7 @@ body.rtl .handsontable .htCore tr td:last-child {
         max-width: 250px;
         overflow: hidden;
         text-overflow: ellipsis;
+        white-space: nowrap;
     }
     .multiPagedForm.wizard .page-nav-panel {
         text-align: center;
@@ -1424,10 +1425,6 @@ body.rtl .handsontable .htCore tr td:last-child {
         box-shadow: none;
         background: var(--jgt-wizard-colorPrimary);
     }
-    
-    .multiPagedForm .page-nav-panel .nav_item.current button {
-        white-space: nowrap;
-    }
 }
 
 .multiPagedForm.wizard .page-nav-panel button {
@@ -1448,7 +1445,6 @@ body.rtl .handsontable .htCore tr td:last-child {
 }
 
 .rtl .multiPagedForm.wizard .page-nav-panel .nav_item {
-    float: right;
     padding-left: 15px;
     padding-right: auto;
 }

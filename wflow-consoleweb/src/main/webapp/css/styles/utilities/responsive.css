@@ -668,14 +668,12 @@
     }
 
     .multiPagedForm.wizard .page-nav-panel .nav_item button span {
-        display: -webkit-box;
-        -webkit-line-clamp: 3;
-        -webkit-box-orient: vertical;
+        display: block;
         overflow: hidden;
         text-overflow: ellipsis;
         min-width: 130px;
         max-width: 130px;
-        white-space: normal;
+        white-space: nowrap;
     }
 
     .multiPagedForm.tab .page-nav-panel {
@@ -885,6 +883,7 @@
         float: none;
         display: flex;
         width: 100%;
+        height: auto;
         background: #f5f5f5;
         border: none;
         padding: 8px;
@@ -898,6 +897,16 @@
         position: relative;
         flex-wrap: wrap;
         padding-inline-end: 30px;
+    }
+
+    .multiPagedForm.wizard .page-nav-panel .nav_item button span,
+    .multiPagedForm.tab .page-nav-panel .nav_item button span,
+    .rtl .multiPagedForm.wizard .page-nav-panel .nav_item button span,
+    .rtl .multiPagedForm.tab .page-nav-panel .nav_item button span {
+        display: block;
+        flex: 1 1 auto;
+        min-width: 0;
+        white-space: normal;
     }
 
     .multiPagedForm.wizard .page-nav-panel .nav_item button:after {

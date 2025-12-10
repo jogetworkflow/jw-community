@@ -54,6 +54,29 @@
     line-height: var(--jgt-wizard-titleLineHeight);
 }
 
+@media (min-width: 768px) {
+    .multiPagedForm.wizard .page-nav-panel .nav_item button span,
+    .multiPagedForm.tab .page-nav-panel .nav_item button span {
+        display: block;
+        max-width: 250px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+
+    .multiPagedForm.tab .page-nav-panel ul {
+        display: flex;
+        flex-wrap: nowrap;
+        overflow-x: auto;
+        overflow-y: hidden;
+    }
+
+    .multiPagedForm.tab .page-nav-panel .nav_item {
+        float: none;
+        flex: 0 0 auto;
+    }
+}
+
 .multiPagedForm .page-nav-panel.bottom {
     display: none;
 }
