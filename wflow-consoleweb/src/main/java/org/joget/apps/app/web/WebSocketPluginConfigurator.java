@@ -18,7 +18,9 @@ public class WebSocketPluginConfigurator extends ServletAwareConfigurator {
         // Get the HttpSession from the HandshakeRequest
         HttpSession httpSession = (HttpSession) request.getHttpSession();
 
-        // Store the HttpSession as a user property in the WebSocket session
-        config.getUserProperties().put(HttpSession.class.getName(), httpSession);
+        if (httpSession != null) {
+            // Store the HttpSession as a user property in the WebSocket session
+            config.getUserProperties().put(HttpSession.class.getName(), httpSession);
+        }
     }
 }
