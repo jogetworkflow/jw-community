@@ -5273,7 +5273,7 @@ _CustomBuilder.Builder = {
             $(field).addClass("syncPropValue");
 
             if ($(field).hasClass('property-type-codeeditor')) {
-                value = $(pfield).find('.CodeMirror')[0].CodeMirror.setValue(content);
+                value = $(field).find('.CodeMirror')[0].CodeMirror.setValue(content);
             } else if ($(field).hasClass('property-type-htmleditor')) {
                 tinymce.get($(field).find('textarea').attr('id')).setContent(content);
             } else {
