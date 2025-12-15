@@ -10121,6 +10121,10 @@ PropertyEditor.Type.CodeEditor.prototype = {
                 thisObj.codeeditor.refresh();
             }, 1)
         })
+
+        thisObj.codeeditor.on("change", function(cm, change) {
+            $('#' + thisObj.id).trigger("change");
+        });
     },
     pageShown: function() {
         this.codeeditor.refresh();
