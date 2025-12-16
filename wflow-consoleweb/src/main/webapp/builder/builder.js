@@ -1,8 +1,9 @@
 /**
  * Customised from https://github.com/givanz/VvvebJs
  */
+import * as jsondiffpatch from '../js/jsondiffpatch/jsondiffpatch-0-7-3.js';
 
- _CustomBuilder = {
+window._CustomBuilder = {
     isAjaxReady : false,
     saveUrl : '',
     previewUrl : '',
@@ -1056,7 +1057,7 @@
             function(returnedData){
                 if (returnedData !== null && returnedData !== undefined) {
                     CustomBuilder.permissionOptions = returnedData;
-                    for (e in returnedData) {
+                    for (let e in returnedData) {
                         if (returnedData[e].value !== "") {
                             CustomBuilder.availablePermission[returnedData[e].value] = returnedData[e].label;
                         }
@@ -3853,7 +3854,7 @@
 /*
  * Default builder to manage the palette and canvas
  */
-_CustomBuilder.Builder = {
+window._CustomBuilder.Builder = {
     zoom : 1,
     dragMoveMutation : false,
     mousedown : false,
@@ -3985,10 +3986,14 @@ _CustomBuilder.Builder = {
         }
         CustomBuilder.Builder.frameBody.addClass("initializing");
         
-        var self = CustomBuilder.Builder;
+        let self = CustomBuilder.Builder;
         
-        var selectedELSelector = "";
-        var selectedElIndex = 0;
+        let selectedELSelector = "";
+        let selectedElIndex = 0;
+
+        //to handle change of id
+        let selectedELAltSelector = "";
+        let selectedElAltIndex = 0;
 
         //find overview path element if overviewPath having value
         if (CustomBuilder.overviewPath !== null && CustomBuilder.overviewPath !== undefined && CustomBuilder.overviewPath !== "") {
@@ -4019,8 +4024,8 @@ _CustomBuilder.Builder = {
         self.selectNode(false);
         $("#element-parent-box, #element-highlight-box").hide();
         
-        var component = self.parseDataToComponent(data);
-        var temp = $('<div></div>');
+        let component = self.parseDataToComponent(data);
+        let temp = $('<div></div>');
         self.frameBody.append(temp);
         self.renderElement(data, temp, component, false, null, function(){
             if (self.nodeAdditionalType !== undefined && self.nodeAdditionalType !== "") {
@@ -4029,7 +4034,7 @@ _CustomBuilder.Builder = {
             
             //reselect previous selected element
             if (selectedELSelector !== "") {
-                var element = self.frameBody.find(selectedELSelector);
+                let element = self.frameBody.find(selectedELSelector);
                 
                 //to handle change of id
                 if (element.length === 0) {
@@ -4038,7 +4043,7 @@ _CustomBuilder.Builder = {
                 }
                 
                 if (element.length > 1) {
-                    var elements = element;
+                    let elements = element;
                     do {
                         element = elements[selectedElIndex];
                     } while (element === undefined && selectedElIndex-- > 0);
@@ -6194,7 +6199,7 @@ _CustomBuilder.Builder = {
 
         $('.drag-elements-sidepane').off("mousedown.builder touchstart.builder", "ul > li > ol > li > [element-class]");
         $('.drag-elements-sidepane').on("mousedown.builder touchstart.builder", "ul > li > ol > li > [element-class]", function (event) {
-            $this = $(this);
+            let $this = $(this);
             if (self.iconDrag) {
                 self.iconDrag.remove();
                 self.iconDrag = null;
@@ -6635,6 +6640,7 @@ _CustomBuilder.Builder = {
             if (props.tagName !== undefined && props.tagName !== "") {
                 var newTemp = document.createElement(props.tagName);
                 attributes = temp[0].attributes;
+                let len;
                 for (i = 0, len = attributes.length; i < len; i++) {
                     newTemp.setAttribute(attributes[i].nodeName, attributes[i].nodeValue);
                 }
@@ -7657,6 +7663,6 @@ _CustomBuilder.Builder = {
     }
 }
 
-CustomBuilder = $.extend(true, {}, _CustomBuilder);
+window.CustomBuilder = $.extend(true, {}, _CustomBuilder);
 
 var isIE11 = !!window.MSInputMethodContext && !!document.documentMode;
