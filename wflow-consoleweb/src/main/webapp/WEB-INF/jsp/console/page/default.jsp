@@ -6,7 +6,7 @@
 
 <div id="nav">
     <div id="nav-title">
-        <p>${pluginIcon} ${pluginLabel}</p>
+        <p>${pluginLocationIcon} ${pluginLocationLabel}</p>
     </div>
     <div id="nav-body">
         <ul id="nav-list">
