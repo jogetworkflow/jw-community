@@ -3039,6 +3039,10 @@ body[builder-theme] .nv-tags label {
     color: var(--theme-label-color-2);
 }
 
+body[builder-theme='dark'] .tree ol li.tree-viewer-item label > span.image{
+    filter: brightness(0) invert(1);
+}
+
 /* Add on builder CSS */
 body[builder-theme] .plugin-label {
     background-color: var(--theme-primary-color-3);
