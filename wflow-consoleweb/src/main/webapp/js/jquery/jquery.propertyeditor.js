@@ -8026,19 +8026,45 @@ PropertyEditor.Type.Grid.prototype = {
         var grid = this;
         var currentRow = $(object).parent().parent();
         var prevRow = $(currentRow).prev();
+        var container = $(".property-editor-pages:visible");
+
+        if (!container.length) return;
+
+        var scrollTop = container.scrollTop();
+
         if (prevRow.attr("id") !== "model") {
             $(currentRow).after(prevRow);
             grid.gridDisabledMoveAction($(currentRow).parent());
         }
+      
+        setTimeout(() => container.scrollTop(scrollTop), 0);
+
+        requestAnimationFrame(() => {
+            container.scrollTop(scrollTop);
+            setTimeout(() => container.scrollTop(scrollTop), 80);
+        });
     },
     gridActionMoveDown: function(object) {
         var grid = this;
         var currentRow = $(object).parent().parent();
         var nextRow = $(currentRow).next();
-        if (nextRow.length > 0) {
+        var container = $(".property-editor-pages:visible");
+        
+        if (!container.length) return;
+        
+        var scrollTop = container.scrollTop();
+        
+        if (nextRow.length > 0 && nextRow.attr("id") !== "model") {
             $(nextRow).after(currentRow);
             grid.gridDisabledMoveAction($(currentRow).parent());
         }
+
+        setTimeout(() => container.scrollTop(scrollTop), 0);
+        
+        requestAnimationFrame(() => {
+            container.scrollTop(scrollTop);
+            setTimeout(() => container.scrollTop(scrollTop), 80);
+        });
     },
     gridDisabledMoveAction: function(table) {
         $(table).find('a.property-type-grid-action-moveup').removeClass("disabled");
