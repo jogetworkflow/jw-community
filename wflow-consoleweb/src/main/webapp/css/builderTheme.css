@@ -2420,7 +2420,7 @@ body[builder-theme='dark'] .permission-table .unauthorized {
     color: var(--theme-label-color-1);
 }
 body[builder-theme='dark'] .permission-table th.export, .permission-table td.export{
-    background: transparent;
+    background: #25454a !important;
     color: var(--theme-label-color-1);
 }
 body[builder-theme='dark'] .permission_view .permission_rule{
