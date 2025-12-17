@@ -161,8 +161,8 @@
         </dependency>
         <dependency>
             <groupId>org.mozilla</groupId>
-            <artifactId>rhino</artifactId>
-            <version>1.7R4</version>
+            <artifactId>rhino-all</artifactId>
+            <version>1.8.1</version>
         </dependency>        
         <dependency>
             <groupId>xerces</groupId>
