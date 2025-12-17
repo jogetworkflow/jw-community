@@ -638,14 +638,16 @@ body.rtl:not(.horizontal_menu) #sidebar .nav-tabs.user-menu .mm-profile > a{
     display: block;
     width: 35px;
     height: 35px;
-    border: 2px solid #fff;
+    border: 2px solid var(--theme-sidebar-link, var(--theme-color2, #72777a));
     border-radius: 50%;
     overflow: hidden;
     text-align: center;
     padding-top: 9px;
     transform: translateY(-50%);
 }
-
+#sidebar .nav-tabs.user-menu .mm-profile.type-no > a:hover > span:before{
+    border-color: var(--theme-sidebar-active-link, var(--theme-color3 ,#313435));
+}
 body.rtl #sidebar .nav-tabs.user-menu .mm-profile.type-no > a > span:before{
     left: unset;
     right: 0;
