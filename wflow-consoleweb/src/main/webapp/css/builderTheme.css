@@ -2412,15 +2412,15 @@ body[builder-theme='dark'] .permission-table .element-meta .element-id {
     font-size: 70%;
 }
 body[builder-theme='dark'] .permission-table .authorized {
-    background: #263026;
+    background: #263026ab;
     color: var(--theme-label-color-1);
 }
 body[builder-theme='dark'] .permission-table .unauthorized {
-    background: #2e2626;
+    background: #2e26267a;
     color: var(--theme-label-color-1);
 }
-body[builder-theme='dark'] .permission-table th.export, .permission-table td.export{
-    background: #25454a !important;
+body[builder-theme='dark'] .permission-table th.export, body[builder-theme='dark'] .permission-table td.export{
+    background: #25454a9c !important;
     color: var(--theme-label-color-1);
 }
 body[builder-theme='dark'] .permission_view .permission_rule{
