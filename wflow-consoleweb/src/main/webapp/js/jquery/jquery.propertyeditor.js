@@ -2518,6 +2518,10 @@ PropertyEditor.Model.ButtonPanel.prototype = {
                 } else if (button.callback !== undefined) {
                     buttonAttrs = 'data-callback="' + button.callback + '"';
                 }
+                
+                if (button.confirmation) {
+                    buttonAttrs += ' data-confirmation="' + button.confirmation + '"';
+                }
 
                 html += '<input id="' + page.id + '_' + button.name + '" type="button" class="page-button-custom '+css+'" value="' + button.label + '" ' + buttonAttrs +' data-action="' + button.name + '" ' + showHide + ' />';
                 if (button.addition_fields !== undefined && button.addition_fields !== null) {
@@ -2673,7 +2677,21 @@ PropertyEditor.Model.ButtonPanel.prototype = {
             return false;
         });
     },
-    executeButtonEvent: function(data, button) {
+    executeButtonEvent: function(data, button, checkConfirmation = true) {
+        let thisObj = this;
+        
+        if (checkConfirmation 
+                && $(button).data("confirmation")) {
+            UI.confirm($(button).data("confirmation"),
+                () => {
+                    thisObj.executeButtonEvent(data, button, false);
+                }, {
+                    confirmButtonLabel: $(button).val()
+                }
+            );
+            return;
+        }
+        
         var url = $(button).data("ajax_url");
         var callback = $(button).data("callback");
         if (url !== null && url !== undefined && url !== "") {
@@ -2683,7 +2701,7 @@ PropertyEditor.Model.ButtonPanel.prototype = {
                     data[i] = d.replace(/%%%%/g, "");
                 }
             });
-
+            
             $.ajax({
                 method: method,
                 url: PropertyEditor.Util.replaceContextPath(url, this.options.contextPath),

@@ -123,10 +123,7 @@ public class UserMetaDataDaoImpl extends AbstractSpringDao implements UserMetaDa
     @Override
     public Boolean deleteUserMetaDataByKey(String key) {
         try {
-            UserMetaData data = getUserMetaDataByKey(key).iterator().next();
-            if (data != null) {
-                delete("UserMetaData", data);
-            }
+            delete("UserMetaData", "WHERE e.key = ?", new Object[] { key });
             return true;
         } catch (Exception e) {
             LogUtil.error(UserDaoImpl.class.getName(), e, "Delete User Meta Data Error!");
@@ -136,12 +133,43 @@ public class UserMetaDataDaoImpl extends AbstractSpringDao implements UserMetaDa
 
     public Boolean deleteUserMetaDatas(String username) {
         try {
-            Collection<UserMetaData> datas = getUserMetaDatas(username);
-            if (datas != null && !datas.isEmpty()) {
-                for (UserMetaData data : datas) {
-                    delete("UserMetaData", data);
-                }
+            delete("UserMetaData", "WHERE e.username = ?", new Object[] { username });
+            return true;
+        } catch (Exception e) {
+            LogUtil.error(UserDaoImpl.class.getName(), e, "Delete User Meta Data Error!");
+            return false;
+        }
+    }
+
+    @Override
+    public Boolean deleteUserMetaDataByKeyPrefix(String keyPrefix) {
+        try {
+            // escape existing % in search string then only append the SQL % at the end
+            if (keyPrefix.contains("%")) {
+                keyPrefix = keyPrefix.replace("%", "\\%");
             }
+            keyPrefix += "%";
+
+            delete("UserMetaData", "WHERE e.key LIKE ?", new Object[] { keyPrefix });
+
+            return true;
+        } catch (Exception e) {
+            LogUtil.error(UserDaoImpl.class.getName(), e, "Delete User Meta Data Error!");
+            return false;
+        }
+    }
+    
+    @Override
+    public Boolean deleteUserMetaDatasByUsernameKeyPrefix(String username, String keyPrefix) {
+        try {
+            // escape existing % in search string then only append the SQL % at the end
+            if (keyPrefix.contains("%")) {
+                keyPrefix = keyPrefix.replace("%", "\\%");
+            }
+            keyPrefix += "%";
+            
+            delete("UserMetaData", "where e.username = ? and e.key LIKE ?", new Object[]{username, keyPrefix});
+            
             return true;
         } catch (Exception e) {
             LogUtil.error(UserDaoImpl.class.getName(), e, "Delete User Meta Data Error!");

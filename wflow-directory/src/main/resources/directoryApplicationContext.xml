@@ -118,6 +118,11 @@
 
     <bean id="workflowUserManager" class="org.joget.workflow.model.service.WorkflowUserManager" lazy-init="true">
     </bean>
+    
+    <!-- Session Management Beans -->
+    <bean id="sessionInvalidationService" class="org.joget.directory.model.service.SessionInvalidationService">
+        <property name="userMetaDataDao" ref="userMetaDataDao"/>
+    </bean>
 
     <aop:config>
         <aop:advisor advice-ref="txAdvice" pointcut="execution(* org.joget.directory.model.service.DirectoryManagerImpl.*(..))" order="1" />

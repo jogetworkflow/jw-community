@@ -13,14 +13,14 @@ import org.joget.commons.util.StringUtil;
 public abstract class AbstractSpringDao {
 
     transient SessionFactory sessionFactory;
-    
+
     public AbstractSpringDao() {
     }
-    
+
     public void setSessionFactory(SessionFactory sf) {
         this.sessionFactory = sf;
     }
-    
+
     public SessionFactory getSessionFactory() {
         return sessionFactory;
     }
@@ -31,7 +31,7 @@ public abstract class AbstractSpringDao {
         session = sf.getCurrentSession();
         return session;
     }
-    
+
     protected Serializable save(String entityName, Object obj) {
         Session session = findSession();
         Serializable save = (Serializable)session.merge(entityName, obj);
@@ -58,6 +58,22 @@ public abstract class AbstractSpringDao {
         Session session = findSession();
         session.remove(obj);
         session.flush();
+    }
+
+    protected int delete(final String entityName, final String condition, final Object[] params) {
+        String newCondition = StringUtil.replaceOrdinalParameters(condition, params);
+        Session session = findSession();
+        String query = "DELETE FROM " + entityName + " e " + newCondition;
+        Query q = session.createQuery(query);
+
+        if (params != null) {
+            int i = 1;
+            for (Object param : params) {
+                q.setParameter(i, param);
+                i++;
+            }
+        }
+        return q.executeUpdate();
     }
 
     protected Object find(String entityName, String id) {
@@ -87,7 +103,7 @@ public abstract class AbstractSpringDao {
         setCacheable(q, null);
 
         int s = (start == null) ? 0 : start;
-        
+
         //setting this unnecessarily causing performance issue 
         if (s > 0) {
             q.setFirstResult(s);
@@ -121,7 +137,7 @@ public abstract class AbstractSpringDao {
                 i++;
             }
         }
-        
+
         List result = q.list();
         if (!newCondition.contains(" group by ")) {
             return (Long) result.get(0);
@@ -129,17 +145,17 @@ public abstract class AbstractSpringDao {
             return Long.valueOf(result.size());
         }
     }
-    
+
     protected void setCacheable(Query q, String regionName) {
         String cacheRegionName = (regionName != null && !regionName.isEmpty()) ? regionName : getClass().getPackageName();
         InMemoryCacheManager cacheManager = InMemoryCacheManager.getInMemoryCacheManager();
         cacheManager.setCacheable(q, cacheRegionName);
     }
-    
+
     /**
      * Normalizes and truncates a String if there is a space.
      * @param str
-     * @return 
+     * @return
      */
     protected String filterSpace(String str) {
         if (str != null) {
@@ -149,6 +165,6 @@ public abstract class AbstractSpringDao {
             }
         }
         return str;
-    }    
+    }
 }
 

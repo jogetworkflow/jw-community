@@ -13,6 +13,7 @@ import org.joget.apps.workflow.security.WorkflowUserDetails;
 import org.joget.commons.util.LogUtil;
 import org.joget.directory.model.User;
 import org.joget.directory.model.service.DirectoryManagerProxyImpl;
+import org.joget.directory.model.service.SessionInvalidationService;
 import org.joget.workflow.model.dao.WorkflowHelper;
 import org.joget.workflow.model.service.WorkflowUserManager;
 import org.joget.workflow.util.WorkflowUtil;
@@ -114,6 +115,10 @@ public final class UserAuthenticationService {
 
             // Add audit trail
             loginAuditTrailLogging(true, username, request);
+
+            // extra handling as it bypass the SessionAuthenticationSuccessHandler
+            SessionInvalidationService sessionInvalidationService = (SessionInvalidationService) AppUtil.getApplicationContext().getBean("sessionInvalidationService");
+            sessionInvalidationService.setupUserSession(request, username);
 
         } catch (Exception e) {
             LogUtil.error(UserAuthenticationService.class.getName(), e, "Failed to login");

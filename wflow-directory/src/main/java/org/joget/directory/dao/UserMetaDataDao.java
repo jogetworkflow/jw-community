@@ -4,9 +4,9 @@ import java.util.Collection;
 import org.joget.directory.model.UserMetaData;
 
 public interface UserMetaDataDao {
-    
+
     UserMetaData getUserMetaData(String username, String key);
-    
+
     Collection<UserMetaData> getUserMetaDatas(String username);
 
     Collection<UserMetaData> getUserMetaDataByKey(String key);
@@ -18,12 +18,16 @@ public interface UserMetaDataDao {
     Collection<UserMetaData> getUserMetaDatasByUsernameKeyPrefix(String username, String keyPrefix);
 
     Boolean addUserMetaData(UserMetaData data);
-    
+
     Boolean updateUserMetaData(UserMetaData data);
-    
+
     Boolean deleteUserMetaData(String username, String key);
 
     Boolean deleteUserMetaDataByKey(String key);
-    
+
     Boolean deleteUserMetaDatas(String username);
+
+    Boolean deleteUserMetaDataByKeyPrefix(String keyPrefix);
+    
+    Boolean deleteUserMetaDatasByUsernameKeyPrefix(String username, String keyPrefix);
 }
