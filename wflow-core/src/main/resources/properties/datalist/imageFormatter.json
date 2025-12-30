@@ -6,14 +6,14 @@
                 "name": "imageSrc",
                 "label": "@@datalist.imageFormatter.imageSrc@@",
                 "type": "selectbox",
-                "options" : [
+                "options": [
                     {
-                        "value" : "",
-                        "label" : "@@datalist.imageFormatter.imageSrc.columnValue@@"
+                        "value": "",
+                        "label": "@@datalist.imageFormatter.imageSrc.columnValue@@"
                     },
                     {
-                        "value" : "form",
-                        "label" : "@@datalist.imageFormatter.imageSrc.form@@"
+                        "value": "form",
+                        "label": "@@datalist.imageFormatter.imageSrc.form@@"
                     }
                 ]
             },
@@ -28,13 +28,22 @@
                 "control_use_regex": "false"
             },
             {
+                "name": "recordId",
+                "label": "@@datalist.imageFormatter.recordId@@",
+                "description": "@@datalist.imageFormatter.recordId.desc@@",
+                "type": "textfield",
+                "control_field": "imageSrc",
+                "control_value": "form",
+                "control_use_regex": "false"
+            },
+            {
                 "name": "imagefullsize",
                 "label": "@@datalist.imageFormatter.imagefullsize@@",
-                "type" : "checkbox",
-                "options" : [
+                "type": "checkbox",
+                "options": [
                     {
-                        "value" : "true",
-                        "label" : ""
+                        "value": "true",
+                        "label": ""
                     }
                 ]
             },
