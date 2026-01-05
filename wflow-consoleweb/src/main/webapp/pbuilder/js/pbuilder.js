@@ -2587,6 +2587,10 @@ ProcessBuilder = {
     viewProcess : function() {
         var self = CustomBuilder.Builder;
         var id = window.location.hash.replace("#", "");
+
+        if (localStorage.getItem("addNewProcess") === "true") {
+            $("body").addClass("process-initializing");
+        }
         
         //select back the element when undo/redo
         var selectedEl = self.selectedEl;
@@ -2595,10 +2599,20 @@ ProcessBuilder = {
         //The generateProcessData method will redirect to the first remaining process when id is empty
         if (id !== "" || $("#processes_list option").length > 0) {
             ProcessBuilder.generateProcessData(id);
+            
             if (ProcessBuilder.currentProcessData !== undefined && ProcessBuilder.currentProcessData !== null && ProcessBuilder.currentProcessData.properties !== undefined) {
                 ProcessBuilder.updateAdvancedView();
+                
                 CustomBuilder.Builder.load(ProcessBuilder.currentProcessData, function(){
                     ProcessBuilder.validate();
+
+                    if (localStorage.getItem("addNewProcess") === "true") {
+                        localStorage.removeItem("addNewProcess");
+                        ProcessBuilder.addProcess();
+                        setTimeout(function(){
+                            $("body").removeClass("process-initializing");
+                        }, 500);
+                    }
                     
                     setTimeout(function(){
                         if (ProcessBuilder.preSelect !== "") {

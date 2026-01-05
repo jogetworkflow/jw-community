@@ -77,7 +77,8 @@ body:after{
     opacity: 0.3;
     transition: 0.35s display ease-in-out; 
 }
-body.initializing:after{
+body.initializing:after,
+body.process-initializing:after{
     display: block;
 }
 body.quick-nav-shown {
@@ -96,7 +97,8 @@ body.quick-nav-shown.quick-nav-position-left {
 #builder_loader .fa-stack-1x{
     font-size: 60%;
 }
-body.initializing #builder_loader{
+body.initializing #builder_loader,
+body.process-initializing #builder_loader {
     display: block !important;
 }
 

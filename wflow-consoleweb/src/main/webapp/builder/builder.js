@@ -3749,6 +3749,12 @@ window._CustomBuilder = {
             $("#builder-menu ul").on("click", ".addnew a", function(){
                 var type = $(this).data("type");
                 if (type === "process") {
+                    if ($(this).closest("ul").find("li.item").length > 0 && !window.location.href.includes("/process/")) {
+                        localStorage.setItem("addNewProcess", true);
+                    } else if (window.location.href.includes("/process/")){
+                        $("#process-add-btn").click();
+                        return false;
+                    }
                     CustomBuilder.ajaxRenderBuilder(CustomBuilder.contextPath + '/web/console/app' + CustomBuilder.appPath + '/process/builder');
                 } else {
                     var url = CustomBuilder.contextPath + '/web/console/app' + CustomBuilder.appPath + '/';

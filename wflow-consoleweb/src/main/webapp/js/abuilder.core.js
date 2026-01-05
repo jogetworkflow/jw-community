@@ -73,6 +73,9 @@ AppBuilder = {
             
             var type = $(this).data("builder-type");
             if (type === "process") {
+                if ($(this).closest(".builder-process").find("li.item").length > 0) {
+                    localStorage.setItem("addNewProcess", true);
+                }
                 CustomBuilder.ajaxRenderBuilder(CustomBuilder.contextPath + '/web/console/app' + CustomBuilder.appPath + '/process/builder');
             } else {
                 var url = CustomBuilder.contextPath + '/web/console/app' + CustomBuilder.appPath + '/';
