@@ -6261,12 +6261,30 @@ PropertyEditor.Type.IconTextField.prototype = {
             if (this.properties.iconOnly !== undefined && this.properties.iconOnly === "true") {
                 value = iconValue;
             } else {
-                if (iconValue !== "" && value !== "") {
+                if (iconValue !== "") {
                     value = iconValue + " " + value;
                 }
             }
         }
         
+        // Mark manually typed <i> icons to avoid being treated as picker icons later
+        if (typeof value === "string" && (icon.length === 0 || icon.find(".value").html() === "")) {
+            var tempManual = $('<div>' + value + '</div>');
+            var firstChild = tempManual.find('> *:eq(0)');
+            // Only proceed if first child is an <i> element
+            if (firstChild.is('i')) {
+                var peIconAttr = (firstChild.attr('data-pe-icon') || '').toLowerCase();
+                var manualMarker = (firstChild.attr('aria-label') || '').toLowerCase();
+                // If not already marked as picker icon or manual icon, mark it as manual
+                if (peIconAttr !== 'true' && manualMarker !== 'pe-manual') {
+                    if (!firstChild.attr('aria-label') || firstChild.attr('aria-label') === '') {
+                        firstChild.attr('aria-label', 'pe-manual');
+                        value = tempManual.html();
+                    }
+                }
+            }
+        }
+       
         if (value === undefined || value === null || value === "") {
             if (useDefault !== undefined && useDefault &&
                 this.defaultValue !== undefined && this.defaultValue !== null) {

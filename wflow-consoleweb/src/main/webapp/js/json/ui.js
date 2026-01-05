@@ -48,11 +48,24 @@ UI = {
         if (c == null || c == undefined) {
             return '';
         }
-        var stripped = UI.stripHtmlTags(c);
-        if (c.length > stripped.length) {
-            return '';
-        }
-        return stripped;
+        const template = document.createElement('template');
+        template.innerHTML = c;
+
+        const sanitize = (node) => {
+            Array.from(node.children).forEach(child => {
+                const tag = child.tagName.toLowerCase();
+
+                // Remove script/style entirely
+                if (['script', 'style', 'iframe', 'object'].includes(tag)) {
+                    child.remove();
+                    return;
+                }
+                sanitize(child);
+            });
+        };
+
+        sanitize(template.content);
+        return template.innerHTML;
    },
    htmlDecode: function(string) {
        if (string === undefined || string === null) {
