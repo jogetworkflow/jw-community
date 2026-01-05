@@ -100,6 +100,7 @@ public class DataList {
     private String unauthorizedMsg = null;
     private DataListTemplate template = null;
     private Boolean isUsingInboxBinder = null;
+    private static final ThreadLocal<Boolean> calculatingPaging = ThreadLocal.withInitial(() -> Boolean.FALSE);
     
     private Map<String, Object> properties;
     
@@ -369,8 +370,11 @@ public class DataList {
                 pageSize = getDefaultPageSize();
             }
         }
-        if (Objects.equals(pageSize, MAXIMUM_PAGE_SIZE)) { //if show max, return the record size
-            pageSize = getSize();
+        if (Objects.equals(pageSize, MAXIMUM_PAGE_SIZE)) {
+            if (calculatingPaging.get()) {
+                return MAXIMUM_PAGE_SIZE;
+            }
+            return getSize(); // do NOT assign
         }
         return pageSize;
     }
@@ -671,6 +675,7 @@ public class DataList {
         
         if (size == null) {
             try {
+                calculatingPaging.set(true);
                 if (getBinder() != null) {
                     //force get total before get size to bypass additional filter
                     if (!isConsiderFilterWhenGetTotal()) {
@@ -683,6 +688,8 @@ public class DataList {
             } catch (Exception e) {
                 LogUtil.error(DataList.class.getName(), e, "Error retrieving binder row count");
                 size = 0;
+            } finally {
+                calculatingPaging.remove();
             }
         }
         return size;
