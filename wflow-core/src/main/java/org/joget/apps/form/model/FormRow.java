@@ -37,7 +37,7 @@ public class FormRow extends Properties {
             for (Iterator i = customProperties.keySet().iterator(); i.hasNext();) {
                 String key = (String) i.next();
                 Object value = customProperties.get(key);
-                if (value != null) {
+                if (!key.equals("$type$") && value != null) {
                     put(key, value);
                 }
             }
