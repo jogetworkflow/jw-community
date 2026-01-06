@@ -2902,6 +2902,13 @@ body .renew-banner .mobile-view {
     header.navbar .container-fluid {
         padding-left: 16px !important
     }
+    header.navbar .navbar-inner .container-fluid .brand-tooltip-wrap {
+       padding-left: unset;
+       height: unset;
+    }
+    header.navbar .navbar-inner .container-fluid .brand-text {
+       vertical-align: middle;
+    }
     div#page > ul#category-container {
         position: sticky;
         bottom: 0px;
