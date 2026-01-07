@@ -2737,7 +2737,7 @@ _CustomBuilder = {
             $(view).find("button.button").wrap('<div class="sticky-buttons">');
             $(view).prepend('<pre id="json_definition" style="height:100%"></pre>');
 
-            codeeditor = CodeMirror(document.getElementById("json_definition"), {
+            let codeeditor = CodeMirror(document.getElementById("json_definition"), {
                 lineNumbers: true,
                 mode: "text",
                 autoRefresh:true,
@@ -2748,7 +2748,6 @@ _CustomBuilder = {
                 autoCloseTags: true,
                 autoCloseBrackets: true,
                 foldGutter: true,
-                lint: true,
                 lineWrapping: true,
                 highlightSelectionMatches: {annotateScrollbar: true, minChars: 1},
                 extraKeys: {
