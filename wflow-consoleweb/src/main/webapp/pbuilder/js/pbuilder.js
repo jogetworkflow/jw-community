@@ -1210,7 +1210,7 @@ ProcessBuilder = {
                 mapping.properties = $.extend(true, mapping.properties, activity.properties['tools'][0]['properties']);
             } else if ((activity.properties['tools'] === undefined || activity.properties['tools'].length === 0) && mapping !== undefined) {
                 delete CustomBuilder.data['activityPlugins'][id];
-            } else {
+            } else if(activity.properties['tools'] !== undefined && activity.properties['tools'].length > 0) {
                 //use multi tools
                 if (mapping === undefined) {
                     mapping = {};
@@ -5024,6 +5024,8 @@ ProcessBuilder = {
     saveEditProperties : function(container, elementProperty, elementObj, element) {
         if (elementProperty.id !== $(element).attr("id") && elementObj.className !== "process") {
             var self = CustomBuilder.Builder;
+            var oldElementId = $(element).attr("id");
+            var newElementId = elementProperty.id;
 
             ProcessBuilder.jsPlumb.unbind("connection");
             ProcessBuilder.jsPlumb.unbind("connectionDetached");
@@ -5051,6 +5053,24 @@ ProcessBuilder = {
                 }
                 ProcessBuilder.jsPlumb.detach(targetConnSet[i]);
                 transition.push(data);
+            }
+
+            // Update mappings on save
+            var processId = ProcessBuilder.currentProcessData.properties.id;
+            var participantMapping = CustomBuilder.data['participants'][processId + "::" + oldElementId];
+            if (participantMapping) {
+                delete CustomBuilder.data['participants'][processId + "::" + oldElementId];
+                CustomBuilder.data['participants'][processId + "::" + newElementId] = participantMapping;
+            }
+            var pluginMapping = CustomBuilder.data['activityPlugins'][processId + "::" + oldElementId];
+            if (pluginMapping) {
+                delete CustomBuilder.data['activityPlugins'][processId + "::" + oldElementId];
+                CustomBuilder.data['activityPlugins'][processId + "::" + newElementId] = pluginMapping;
+            }
+            var formMapping = CustomBuilder.data['activityForms'][processId + "::" + oldElementId];
+            if (formMapping) {
+                delete CustomBuilder.data['activityForms'][processId + "::" + oldElementId];
+                CustomBuilder.data['activityForms'][processId + "::" + newElementId] = formMapping;
             }
 
             $(element).attr("id", elementProperty.id);
