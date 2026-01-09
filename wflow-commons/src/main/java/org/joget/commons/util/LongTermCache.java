@@ -1,6 +1,5 @@
 package org.joget.commons.util;
 
-import java.io.Serializable;
 import java.util.Date;
 import java.util.Iterator;
 import javax.cache.Cache;
@@ -37,7 +36,7 @@ public class LongTermCache {
         Element element = (Element)cache.get(key);
         Long lastClear = getLastClearTime(key);
         if (element != null) {
-            if (lastClear != null && element.getCreationTime() < lastClear) {
+            if (lastClear != null && element.getCreationTime() <= lastClear) {
                 cache.remove(key);
                 LogUtil.debug(LongTermCache.class.getName(), key + " need to refresh.");
                 return null;
@@ -57,13 +56,30 @@ public class LongTermCache {
             Cache.Entry entry = (Cache.Entry)i.next();
             if (entry.getKey().toString().startsWith(prefix)) {
                 i.remove();
+                setupManager.updateSetting("CACHE_LAST_CLEAR_" + entry.getKey().toString(), Long.toString((new Date()).getTime()));
             }
         }
         LogUtil.debug(LongTermCache.class.getName(), "All caches with `"+prefix+"` prefix are removed.");
     }
 
     public void putObject(String key, Object value) {
-        Element element = new Element(key, value, System.currentTimeMillis());
+        putObject(key, value, null);
+    }
+    
+    /**
+     * This is used for long processing time cache data. 
+     * Keep its requesting time instead of cache creation time to prevent stale cache
+     * 
+     * @param key
+     * @param value
+     * @param requestTime 
+     */
+    public void putObject(String key, Object value, Date requestTime) {
+        if (requestTime == null) {
+            requestTime = new Date();
+        }
+        
+        Element element = new Element(key, value, requestTime.getTime());
         put(element);
     }
     

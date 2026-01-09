@@ -1,6 +1,7 @@
 package org.joget.commons.spring.model;
 
 import java.util.Collection;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -38,12 +39,14 @@ public class ResourceBundleMessageDao extends AbstractSpringDao {
         String cacheKey = getCacheKey(key,locale);
         Map<String, ResourceBundleMessage> messageMap = (Map<String, ResourceBundleMessage>)cache.getObject(cacheKey);
         if (messageMap == null) {
+            Date requestTime = new Date();
+            
             messageMap = new HashMap<String, ResourceBundleMessage>();
             Collection<ResourceBundleMessage> results = super.find(ENTITY_NAME, "WHERE e.locale = ?", new String[]{locale}, null, null, null, null);
             for (ResourceBundleMessage message : results) {
                 messageMap.put(message.getKey(), message);
             }
-            cache.putObject(cacheKey, messageMap);
+            cache.putObject(cacheKey, messageMap, requestTime);
         }
         ResourceBundleMessage result = messageMap.get(key);
         return result;

@@ -1,6 +1,7 @@
 package org.joget.apps.form.model;
 
 import java.util.Collection;
+import java.util.Date;
 import static org.joget.apps.form.dao.FormDataDaoImpl.FORM_PREFIX_TABLE_NAME;
 import org.joget.commons.util.DynamicDataSourceManager;
 import org.joget.commons.util.LongTermCache;
@@ -23,11 +24,15 @@ public class FormColumnCache {
         Collection<String> columnList = (Collection<String>)cache.getObject(cacheKey);
         return columnList;
     }
-
+    
     public void put(String tableName, Collection<String> columnList) {
+        put(tableName, columnList, null);
+    }
+
+    public void put(String tableName, Collection<String> columnList, Date requestTime) {
         if (columnList != null) {
             String cacheKey = getCacheKey(tableName);
-            cache.putObject(cacheKey, columnList);
+            cache.putObject(cacheKey, columnList, requestTime);
         } else {
             remove(tableName);
         }
@@ -40,9 +45,13 @@ public class FormColumnCache {
     }
     
     public void putIndexes(String tableName, Collection<String> indexesList) {
+        putIndexes(tableName, indexesList, null);
+    }
+    
+    public void putIndexes(String tableName, Collection<String> indexesList, Date requestTime) {
         if (indexesList != null) {
             String cacheKey = getIndexCacheKey(tableName);
-            cache.putObject(cacheKey, indexesList);
+            cache.putObject(cacheKey, indexesList, requestTime);
         } else {
             remove(tableName);
         }
