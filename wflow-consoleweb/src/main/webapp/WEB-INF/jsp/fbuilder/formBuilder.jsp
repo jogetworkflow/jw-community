@@ -137,6 +137,11 @@
                 "unauthorized" : {
                     property : "permissionReadonly"
                 }
+            },
+            "visibility" : {
+                "disabled" : false,
+                "ignore_classes" : ["org.joget.apps.form.model.Form", "org.joget.apps.form.model.Column"],
+                "display_element_id" : true
             }
         }
     }

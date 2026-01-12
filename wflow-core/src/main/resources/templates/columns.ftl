@@ -15,7 +15,7 @@
         width: 100% !important;
         max-width: 100% !important;
     }
-    
+
     .container-fluid.form-element-columns {
         margin-top: 12px;
         padding: 0 !important;
@@ -28,10 +28,18 @@
     }
 </style>
 
-<div id="${element.properties.id!}" class="container-fluid form-element-columns" ${elementMetaData!}>
+<div id="${element.properties.id!}" class="container-fluid form-element-columns columns_${element.properties.elementUniqueKey!}" ${elementMetaData!} <#if visible == false && includeMetaData == false>style="display: none"</#if>>
     <div class="row" <#if includeMetaData!false>data-cbuilder-columns</#if>>
         <#list element.children as e>
             ${e.render(formData, includeMetaData!false)}
         </#list>
     </div>
 </div>
+
+<#if rules?? && includeMetaData == false>
+<script type="text/javascript">
+    $(document).ready(function() {
+        new VisibilityMonitor($('.columns_${element.properties.elementUniqueKey!}'), ${rules}).init();
+    });
+</script>
+</#if>

@@ -116,6 +116,9 @@ window._CustomBuilder = {
                 ignore_classes : [],
                 render_elements_callback : ""
             },
+            visibility : {
+                disabled : true
+            },
             screenshot : {
                 disabled : true
             },
@@ -514,6 +517,11 @@ window._CustomBuilder = {
             $(".advanced-tools #usages-btn").hide();
         } else {
             $(".advanced-tools #usages-btn").show();
+        }
+        if (!CustomBuilder.supportVisibility()) {
+            $(".advanced-tools #visibility-btn").hide();
+        } else {
+            $(".advanced-tools #visibility-btn").show();
         }
         if (!CustomBuilder.supportPermission()) {
             $(".advanced-tools #permission-btn").hide();
@@ -1890,6 +1898,13 @@ window._CustomBuilder = {
     supportUsage: function() {
         return !CustomBuilder.config.advanced_tools.usage.disabled;
     },
+
+    /*
+     * Builder support visibility editor in advanced tool based on config
+     */
+    supportVisibility: function() {
+        return !CustomBuilder.config.advanced_tools.visibility.disabled;
+    },
     
     /*
      * Builder support permission editor in advanced tool based on config
@@ -2725,6 +2740,44 @@ window._CustomBuilder = {
         }
         
         $("#cbuilder-json").off("change.permissionViewInit");
+    },
+
+    /*
+     * Show the visibility editor view, called by switchView method
+     */
+    visibilityViewInit : function(view) {
+        CustomBuilder.isViewerWithPE = true;
+        CustomBuilder.Builder.selectedElBeforeVisibility = CustomBuilder.Builder.selectedEl;
+
+        $("body").addClass("no-right-panel");
+        view.html("");
+        $(view).prepend('<i class="dt-loading fas fa-5x fa-spinner fa-spin"></i>');
+        VisibilityManager.render($(view));
+        $(view).find(".dt-loading").remove();
+
+        $("#cbuilder-json").off("change.visibilityViewInit");
+        $("#cbuilder-json").on("change.visibilityViewInit", function () {
+            if (!$("body").hasClass("visibility-builder-view")) {
+                view.html("");
+                $(view).prepend('<i class="dt-loading fas fa-5x fa-spinner fa-spin"></i>');
+                VisibilityManager.render($(view));
+                $(view).find(".dt-loading").remove();
+            }
+        });
+    },
+
+    /*
+     * Run before visibility editor dismiss, called by switchView method
+     */
+    visibilityViewBeforeClosed : function(view) {
+        CustomBuilder.isViewerWithPE = false;
+        CustomBuilder.Builder.selectedEl = null;
+
+        if (CustomBuilder.Builder.selectedElBeforeVisibility !== null && CustomBuilder.Builder.selectedElBeforeVisibility !== undefined) {
+            CustomBuilder.Builder.selectNode(CustomBuilder.Builder.selectedElBeforeVisibility);
+        }
+
+        $("#cbuilder-json").off("change.visibilityViewInit");
     },
     
     /*

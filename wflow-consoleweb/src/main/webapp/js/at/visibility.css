@@ -1,0 +1,87 @@
+.visibility_view {height:100%; overflow: hidden; font-size: 13px;}
+.visibility_view a{cursor: pointer;}
+.visibility_view .visibility_rules { width: 250px; height:100%; overflow-y: auto; display: inline-block; border-right: 2px solid #ddd; box-sizing: border-box; padding: 25px 25px 45px;}
+.visibility_view .elements_container {width: calc(100% - 250px); height:100%; overflow-y: auto; display: inline-block; box-sizing: border-box; padding: 25px 25px 45px;}
+.visibility_view .elements_container.hidden {display: none;}
+.visibility_view .buttons {margin-bottom: 10px; text-align: right;}
+.visibility_view .visibility_rule {padding: 5px 30px 5px 15px; margin-bottom: 5px; border: 1px solid #efefef; box-shadow: 1px 1px 2px 0px rgba(0,0,0,0.5); position: relative; cursor: pointer;}
+.visibility_view .sortable .visibility_rule .sort {position: absolute; top: 3px; bottom:3px; left: 2px; border-left: 1px solid #ccc; border-right: 1px solid #ccc; width: 2px; cursor: move;}
+.visibility_view .sortable .visibility_rule.active .sort {border-color: #fff;}
+.visibility_view .visibility_rule.active {background: #0069d9; color: #fff; border-color: #0069d9; cursor: default;}
+.visibility_view .visibility_rule:hover:not(.active) {background: #eff7ff;}
+.visibility_view .visibility_rule .rule-content {padding-right: 5px;}
+.visibility_view .visibility_rule .name {font-weight: bold; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 100%; margin-bottom: 3px;}
+.visibility_view .visibility_rule .name.editable {cursor: text;}
+.visibility_view .visibility_rule .conditions_summary {font-size: 11px; color: #666; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;}
+.visibility_view .visibility_rule.active .conditions_summary {color: rgba(255,255,255,0.8);}
+.visibility_view .visibility_rule .rule-buttons {position: absolute; top: 0px; right: 5px;  display: none;}
+.visibility_view .visibility_rule:hover .rule-buttons {display: block;}
+.visibility_view .visibility_rule .rule-buttons a {color: #007bff; display: block; width: 22px; height: 22px; padding:0 !important; text-align: center; overflow: hidden; cursor: pointer; opacity: .7;}
+.visibility_view .visibility_rule .rule-buttons a.delete_rule {color: #ff6c6c !important;}
+.visibility_view .visibility_rule .rule-buttons a:hover {opacity: 1;}
+.visibility_view .visibility_rule.active .rule-buttons a{color:#fff;}
+.visibility-table {width: 100%;}
+.visibility-table td {padding: 8px; position: relative;}
+.visibility-table .element-meta {padding-left: 30px;}
+.visibility-table .level-2 .element-meta {padding-left: 50px;}
+.visibility-table .level-3 .element-meta {padding-left: 70px;}
+.visibility-table .level-4 .element-meta {padding-left: 90px;}
+.visibility-table .level-5 .element-meta {padding-left: 110px;}
+.visibility-table .level-6 .element-meta {padding-left: 120px;}
+.visibility-table .level-7 .element-meta {padding-left: 150px;}
+.visibility-table .level-8 .element-meta {padding-left: 170px;}
+.visibility-table .element-meta .toggle {position: absolute; height: 100%; display: block; top: 0px;}
+.visibility-table tr .element-meta .toggle > .bar:after {content:""; border-left: 1px dotted #aaa; position: absolute; height: 100%; top: 0px; left:-35px;}
+.visibility-table tr .element-meta .toggle > .bar:nth-last-child(3):after {left:-55px;}
+.visibility-table tr .element-meta .toggle > .bar:nth-last-child(4):after {left:-75px;}
+.visibility-table tr .element-meta .toggle > .bar:nth-last-child(5):after {left:-95px;}
+.visibility-table tr .element-meta .toggle > .bar:nth-last-child(6):after {left:-115px;}
+.visibility-table tr .element-meta .toggle > .bar:nth-last-child(7):after {left:-135px;}
+.visibility-table tr .element-meta .toggle > .bar:nth-last-child(8):after {left:-155px;}
+.visibility-table tr.last-1 .element-meta .toggle > .bar:nth-child(1):after,
+.visibility-table tr.last-2 .element-meta .toggle > .bar:nth-child(2):after,
+.visibility-table tr.last-3 .element-meta .toggle > .bar:nth-child(3):after,
+.visibility-table tr.last-4 .element-meta .toggle > .bar:nth-child(4):after,
+.visibility-table tr.last-5 .element-meta .toggle > .bar:nth-child(5):after,
+.visibility-table tr.last-6 .element-meta .toggle > .bar:nth-child(6):after,
+.visibility-table tr.last-7 .element-meta .toggle > .bar:nth-child(7):after{height: 22px;}
+.visibility-table tr.last-1:not(.level-2) .element-meta .toggle > .bar:nth-child(1):after,
+.visibility-table tr.last-2:not(.level-3) .element-meta .toggle > .bar:nth-child(2):after,
+.visibility-table tr.last-3:not(.level-4) .element-meta .toggle > .bar:nth-child(3):after,
+.visibility-table tr.last-4:not(.level-5) .element-meta .toggle > .bar:nth-child(4):after,
+.visibility-table tr.last-5:not(.level-6) .element-meta .toggle > .bar:nth-child(5):after,
+.visibility-table tr.last-6:not(.level-7) .element-meta .toggle > .bar:nth-child(6):after,
+.visibility-table tr.last-7:not(.level-8) .element-meta .toggle > .bar:nth-child(7):after{display:none;}
+.visibility-table tr .element-meta .toggle > .bar:nth-last-child(2):before {content:""; border-top: 1px dotted #aaa; position: absolute; top: 22px; left:-35px; width: 25px;}
+.visibility-table tr.has-child .element-meta .toggle > .bar:nth-last-child(2):before {width: 15px;}
+.visibility-table tr.level-1 {background-color: #f2f2f2;}
+.visibility-table .element-meta .toggle-btn {position: absolute; left: -23px; top: 11px; font-size: 16px;}
+.visibility-table .element-meta .toggle-btn i {display: none; cursor:pointer;}
+.visibility-table .has-child:not(.collapsed) .element-meta .toggle-btn i.la-minus-square {display: inline;}
+.visibility-table .has-child.collapsed .element-meta .toggle-btn i.la-plus-square {display: inline;}
+.visibility-table .has-child .element-meta .toggle:after{content:""; border-left: 1px dotted #aaa; position: absolute; height: calc(100% - 31px); top: 30px; left:-15px;}
+.visibility-table .has-child.collapsed .element-meta .toggle:after{display:none;}
+.visibility-table .element-meta > div > span:not(.toggle) + span {margin-left: 5px;}
+.visibility-table .element-meta .element-icon + span {margin-left: 20px !important;}
+.visibility-table .element-meta .element-icon {position: relative; text-align: center; width: 30px; color: #aaa;}
+.visibility-table .element-meta .element-icon > i, .visibility-table .element-meta .element-icon > span, .visibility-table .element-meta .element-icon > svg{top: 1px !important;color: #aaa !important; left: 8px !important;}
+.visibility-table .element-meta .element-id {font-style: italic; color: #777; font-size: 70%;}
+.visibility-table .element-meta .element-id:before{content:"("}
+.visibility-table .element-meta .element-id:after{content:")";}
+.visibility-table .element-meta .rules-indicator {font-size: 11px; color: #0069d9; padding: 2px 6px; background: #eff7ff; border-radius: 3px; cursor: pointer; position: relative;}
+.visibility-table .element-meta .rules-indicator .rules-tooltip {display: none; position: absolute; left: 0; top: 100%; margin-top: 5px; background: #333; color: #fff; border-radius: 4px; padding: 8px 0; min-width: 180px; max-width: 280px; z-index: 1000; box-shadow: 0 2px 8px rgba(0,0,0,0.2); cursor: auto;}
+.visibility-table .element-meta .rules-indicator .rules-tooltip.visible {display: block;}
+.visibility-table .element-meta .rules-indicator .rules-tooltip:before {content: ""; position: absolute; top: -6px; left: 15px; border-left: 6px solid transparent; border-right: 6px solid transparent; border-bottom: 6px solid #333;}
+.visibility-table .element-meta .rules-indicator .rules-tooltip-title {font-weight: bold; padding: 0 12px 6px; border-bottom: 1px solid #444; margin-bottom: 6px; font-size: 11px; text-transform: uppercase;}
+.visibility-table .element-meta .rules-indicator .rules-tooltip-list { margin: 0; padding: 0; list-style-type: none !important;}
+.visibility-table .element-meta .rules-indicator .rules-tooltip-list li {padding: 4px 12px; font-size: 12px;}
+.visibility-table tbody tr:hover {background:#eff7ff;}
+.visibility-table thead th {padding: 8px; text-transform: uppercase; font-size: 13px; text-align: center;}
+.visibility-table .apply {text-align: center;}
+.visibility-table .apply .apply-btns {display: inline-block;}
+.visibility-table .btn-group .btn[disabled] {opacity: 0.3; cursor: not-allowed;}
+.visibility-table .apply-btn {min-width: 80px; margin-right: 0px;}
+.visibility-table .apply-btn.active {background-color: #0069d9; border-color: #0069d9; color: #fff;}
+.visibility_view .empty-state {display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100%; color: #999;}
+.visibility_view .empty-state i {font-size: 64px; margin-bottom: 15px; opacity: 0.5;}
+.visibility_view .empty-state p {font-size: 14px; text-align: center; max-width: 300px; line-height: 1.5;}

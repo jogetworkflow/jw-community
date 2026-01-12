@@ -658,7 +658,9 @@ body[builder-theme] .tree ol li {
     color: var(--theme-link-color-1);
 }
 body[builder-theme] .permission-table .element-meta .element-icon > i, 
-body[builder-theme] .permission-table .element-meta .element-icon > span, 
+body[builder-theme] .permission-table .element-meta .element-icon > span,
+body[builder-theme] .visibility-table .element-meta .element-icon > i,
+body[builder-theme] .visibility-table .element-meta .element-icon > span,
 body[builder-theme] .tree ol li.tree-viewer-item label > i, 
 body[builder-theme] .tree ol li.tree-viewer-item label > span {
     color: unset;
@@ -854,12 +856,14 @@ body[builder-theme='dark'] #loadingTip a:hover {
     text-decoration: underline;
 }
 
-body[builder-theme] .permission_view .permission_rules {
+body[builder-theme] .permission_view .permission_rules,
+body[builder-theme] .visibility_view .visibility_rules {
     width: 240px !important;
     border-right: 1px solid var(--theme-border-color-1) !important;
 }
 
-body[builder-theme] .permission_view .permission_rule .name {
+body[builder-theme] .permission_view .permission_rule .name,
+body[builder-theme] .visibility_view .visibility_rule .name{
     font-weight: 500;
 }
 
@@ -2032,7 +2036,8 @@ body[builder-theme] .table_column_items li {
     border: 1px solid var(--theme-border-color-1);
     border-radius: 3px;
 }
-body[builder-theme] .permission_view .permission_rule {
+body[builder-theme] .permission_view .permission_rule,
+body[builder-theme] .visibility_view .visibility_rule {
     border: 1px solid var(--theme-border-color-1);
     box-shadow: none;
     border-radius: 3px;
@@ -2525,20 +2530,25 @@ body[builder-theme='dark'] .tree ol li:hover {
     color: #fff;
 }
 body[builder-theme='dark'] .permission-table tbody tr.support-plugin,
-body[builder-theme='dark'] .permission-table tbody tr.header {
+body[builder-theme='dark'] .visibility-table tbody tr.level-1,
+body[builder-theme='dark'] .permission-table tbody tr.header,
+body[builder-theme='dark'] .visibility-table tbody tr.header {
     background: var(--theme-primary-color-3);
     color: var(--theme-label-color-1);
 }
 body[builder-theme='dark'] .permission-table tbody tr.support-plugin:hover {
     background: var(--theme-primary-color-3);
 }
-body[builder-theme='dark'] .permission-table .level-2 .element-meta {
+body[builder-theme='dark'] .permission-table .level-2 .element-meta,
+body[builder-theme='dark'] .visibility-table .level-2 .element-meta {
     color: var(--theme-label-color-1);
 }
-body[builder-theme='dark'] .permission-table tbody tr:hover {
+body[builder-theme='dark'] .permission-table tbody tr:hover,
+body[builder-theme='dark'] .visibility-table tbody tr:hover {
     background: var(--theme-primary-color-3);
 }
-body[builder-theme='dark'] .permission-table .element-meta .element-id {
+body[builder-theme='dark'] .permission-table .element-meta .element-id,
+body[builder-theme='dark'] .visibility-table .element-meta .element-id {
     font-style: italic;
     color: var(--theme-label-color-2);
     font-size: 70%;
@@ -2551,9 +2561,60 @@ body[builder-theme='dark'] .permission-table .unauthorized {
     background: transparent;
     color: var(--theme-label-color-1);
 }
-body[builder-theme='dark'] .permission-table th.export, .permission-table td.export{
+body[builder-theme='dark'] .permission_view .permission_rules .add_permission,
+body[builder-theme='dark'] .visibility_view .visibility_rules .add_visibility{
+    color: rgba(var(--jgt-link-color-rgb), var(--jgt-link-opacity, 1));
+}
+body[builder-theme='dark'] .permission_view .permission-table .permission-plugin i.la-edit{
+    color: rgba(var(--jgt-link-color-rgb), var(--jgt-link-opacity, 1));
+}
+body[builder-theme='dark'] .permission-table th.export, body[builder-theme='dark'] .permission-table td.export{
+    background: #25454a9c !important;
+    color: var(--theme-label-color-1);
+}
+body[builder-theme='dark'] .permission_view .permission_rule,
+body[builder-theme='dark'] .visibility_view .visibility_rule{
+    color: #ffff;
+}
+body[builder-theme='dark'] .permission-table .has-child .element-meta i.la-minus-square,
+body[builder-theme='dark'] .permission-table .has-child .element-meta i.la-plus-square,
+body[builder-theme='dark'] .visibility-table .has-child .element-meta i.la-minus-square,
+body[builder-theme='dark'] .visibility-table .has-child .element-meta i.la-plus-square {
+    color: var(--theme-label-color-1);
+}
+body[builder-theme='dark'] .permission_view .permission_rule:hover:not(.active),
+body[builder-theme='dark'] .visibility_view .visibility_rule:hover:not(.active) {
+    background: var(--theme-primary-color-3);
+}
+body[builder-theme='dark'] .permission-table .element-meta .element-label {
+    color: var(--theme-label-color-1);
+}
+body[builder-theme='dark'] .permission-table .element-meta .element-icon .image,
+body[builder-theme='dark'] .visibility-table .element-meta .element-icon .image {
+    filter: brightness(0) invert(0.7);
+}
+body[builder-theme='dark'] .visibility-table .apply {
     background: transparent;
     color: var(--theme-label-color-1);
+}
+body[builder-theme='dark'] .visibility-table .element-meta .element-label {
+    color: var(--theme-label-color-1);
+}
+body[builder-theme='dark'] .visibility-table .element-meta span.rules-indicator {
+    background: var(--theme-primary-color-3);
+    color: var(--theme-link-color-1);
+}
+body[builder-theme='dark'] .visibility_view .empty-state {
+    color: var(--theme-label-color-2);
+}
+body[builder-theme='dark'] .visibility_view .empty-state i {
+    color: var(--theme-label-color-2);
+}
+body[builder-theme='dark'] #components_comphead_Page-Components_list .image {
+    filter: brightness(0) invert(0.7);
+}
+body[builder-theme='dark'] #components_comphead_Page-Components_list .image[style*='.gif'] {
+    filter: none;
 }
 body[builder-theme='dark'] #tableUsageView h5 #desc-tab .tableName {
     color: var(--theme-label-color-2);

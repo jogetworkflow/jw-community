@@ -1,7 +1,6 @@
 package org.joget.apps.form.model;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
@@ -9,15 +8,14 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.apache.commons.lang.ArrayUtils;
-import org.apache.commons.lang.StringEscapeUtils;
 import org.joget.apps.app.lib.RulesDecisionPlugin;
 import org.joget.apps.app.service.AppPluginUtil;
 import org.joget.apps.app.service.AppUtil;
 import org.joget.apps.form.service.FormUtil;
+import org.joget.apps.form.service.VisibilityControlUtil;
 import org.joget.commons.util.LogUtil;
 import org.joget.plugin.base.PluginWebSupport;
 import org.json.JSONObject;
-import org.mozilla.javascript.Scriptable;
 
 public class Section extends Element implements FormBuilderEditable, FormContainer, PluginWebSupport {
     protected Map<FormData, Boolean> continueValidations = new HashMap<FormData, Boolean>();
@@ -122,114 +120,26 @@ public class Section extends Element implements FormBuilderEditable, FormContain
         return null;
     }
     
+    /**
+     * Get visibility rules for this section.
+     * @param formData
+     * @return Collection of visibility rules
+     */
     protected Collection<Map<String, String>> getRules(FormData formData) {
         if (rules == null) {
-            rules = new ArrayList<Map<String, String>>();
-            
-            String[] fields = getPropertyString("visibilityControl").split(";", -1);
-            String[] values = getPropertyString("visibilityValue").split(";", -1);
-            String[] regex = getPropertyString("regex").split(";", -1);
-            String[] joins = getPropertyString("join").split(";", -1);
-            String[] reverses = getPropertyString("reverse").split(";", -1);
-            
-            if (fields.length > 0) {
-                Form rootForm = FormUtil.findRootForm(this);
-                
-                for (int i = 0; i < fields.length; i++) {
-                    if (fields[i].isEmpty()) {
-                        continue;
-                    }
-                    
-                    Map<String, String> rule = new HashMap<String, String>();
-                    rule.put("join", joins[i]);
-                    rule.put("reverse", reverses[i]);
-                    rule.put("value", values[i]);
-                    rule.put("regex", regex[i]);
-                    if (!fields[i].equals("(") && !fields[i].equals(")")) {
-                        Element controlElement = FormUtil.findElement(fields[i], rootForm, formData, false);
-                        if (controlElement != null) {
-                            String visibilityControlParam = FormUtil.getElementParameterName(controlElement);
-                            rule.put("field", visibilityControlParam);
-                            elements.put(visibilityControlParam, controlElement);
-                        }
-                    } else {
-                        rule.put("field", fields[i]);
-                    }
-                    if (rule.get("field") != null) {
-                        rules.add(rule);
-                    }
-                }
-            }
+            rules = VisibilityControlUtil.parseVisibilityRules(this, formData, elements);
         }
         return rules;
     }
-    
+
+    /**
+     * Check if the visibility control rules match for this section.
+     *
+     * @param formData
+     * @return true if section should be visible, false otherwise
+     */
     protected Boolean isMatch(FormData formData) {
-        if (!getRules(formData).isEmpty()) {
-            boolean match = false;
-            
-            org.mozilla.javascript.Context cx = org.mozilla.javascript.Context.enter();
-            Scriptable scope = cx.initStandardObjects(null);
-            try {
-                String rule = "";
-                for (Map<String, String> r : getRules(formData)) {
-                    String field = r.get("field");
-                    String join = r.get("join");
-                    String value = r.get("value");
-                    String regex = r.get("regex");
-                    String reverse = r.get("reverse");
-
-                    if (!rule.isEmpty() && !rule.endsWith("(") && !")".equals(field)) {
-                        if ("or".equals(join)) {
-                            rule += " || ";
-                        } else {
-                            rule += " && ";
-                        }
-                    }
-                    if (!")".equals(field)) {
-                        rule += " ";
-                    }
-                    if (!reverse.isEmpty() && !")".equals(field)) {
-                        rule += "!";
-                    }
-                    if ("(".equals(field) || ")".equals(field) ) {
-                        rule += field;
-                    } else {
-                        rule += checkValue(formData, field, value, regex);
-                    }
-                }
-                
-                return (Boolean) cx.evaluateString(scope, rule, "", 1, null);
-            } catch (Exception e) {
-                LogUtil.error(Section.class.getName(), e, "rules are not valid");
-            } finally {
-                org.mozilla.javascript.Context.exit();
-            }
-            
-            return match;
-        } else {
-            return true;
-        }
-    }
-    
-    protected boolean checkValue(FormData formData, String field, String value, String operator) {
-        Element controlElement = elements.get(field);
-        if (controlElement != null) {
-            // check for matching values
-            String[] paramValue = FormUtil.getElementPropertyValues(controlElement, formData);
-
-            if (paramValue != null) {
-                if (paramValue.length == 0) {
-                    paramValue = new String[]{""};
-                }
-                for (String v : paramValue) {
-                    if (checkValue(v, operator, value)) {
-                        return true;
-                    }
-                }
-            }
-        }
-        return false;
+        return VisibilityControlUtil.evaluateVisibilityRules(getRules(formData), elements, formData);
     }
     
     public static boolean checkValue(String fieldValue, String operator, String value) {

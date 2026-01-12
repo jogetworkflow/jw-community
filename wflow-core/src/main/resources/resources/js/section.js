@@ -1,15 +1,24 @@
-var VisibilityMonitor = function(targetEl, data) {
+var VisibilityMonitor = function(targetEl, data, isField) {
     this.target = targetEl;
     this.rules = data['rules'];
+    this.isField = isField || false;
 };
 
 VisibilityMonitor.prototype.rules = null; 
+VisibilityMonitor.prototype.isField = false;
 
 VisibilityMonitor.prototype.init = function() {
     var thisObject = this;
     
     var targetEl = $(this.target);
     var id = $(this.target).attr("id");
+
+    if (!id) {
+        // Generate a unique ID for field visibility targets
+        id = "field_" + Math.random().toString(36).substr(2, 9);
+        $(targetEl).attr("id", id);
+    }
+    $(targetEl).data('visibilityMonitor', thisObject);
     
     var changeEvent = function(field) {
         thisObject.handleChange(targetEl, thisObject.rules);
@@ -37,6 +46,16 @@ VisibilityMonitor.prototype.init = function() {
 VisibilityMonitor.prototype.handleChange = function(targetEl, rules) {
     var thisObject = this;
     var match = false;
+
+    // check if the parent section is hidden
+    // If parent section is hidden, skip field visibility
+    if (thisObject.isField) {
+        var parentSection = $(targetEl).closest(".form-section, .subform-section");
+        if (parentSection.length > 0 && parentSection.hasClass("section-visibility-hidden")) {
+            // Parent section is hidden, don't apply field visibility rules
+            return;
+        }
+    }
     
     try {
         var rule = "";
@@ -70,21 +89,24 @@ VisibilityMonitor.prototype.handleChange = function(targetEl, rules) {
         match = eval(rule);
     } catch (err) {}
     
-    if (match && (targetEl.hasClass("section-visibility-hidden") || !targetEl.is(":visible"))) {
+    //visibility class based on whether a field or section
+    var hiddenClass = thisObject.isField ? "field-visibility-hidden" : "section-visibility-hidden";
+
+    if (match && (targetEl.hasClass(hiddenClass) || !targetEl.is(":visible"))) {
         targetEl.css("display", "");
-        targetEl.removeClass("section-visibility-hidden");
+        targetEl.removeClass(hiddenClass);
         thisObject.enableInputField(targetEl);
-    } else if (!match && (!targetEl.hasClass("section-visibility-hidden") || targetEl.is(":visible"))) {
+    } else if (!match && (!targetEl.hasClass(hiddenClass) || targetEl.is(":visible"))) {
         targetEl.css("display", "none");
-        targetEl.addClass("section-visibility-hidden");
+        targetEl.addClass(hiddenClass);
         thisObject.disableInputField(targetEl);
     }
 };
 
 VisibilityMonitor.prototype.checkValue = function(thisObject, controlEl, controlValue, operator) {
-    //get enabled input field oni
+    //get enabled input field only
     controlEl = $(controlEl).filter("input[type=hidden]:not([disabled=true]), :enabled, :disabled, [disabled=false]");
-    controlEl = $(controlEl).filter(":not(.section-visibility-disabled)"); //must put in newline to avoid conflict with above condition
+    controlEl = $(controlEl).filter(":not(.section-visibility-disabled):not(.field-visibility-disabled)"); //must put in newline to avoid conflict with above condition
     
     var match = false;
     if ($(controlEl).length > 0) {
@@ -171,11 +193,13 @@ VisibilityMonitor.prototype.isMatch = function(fieldValue, controlValue, operato
 VisibilityMonitor.prototype.disableInputField = function(targetEl) {
     var thisObject = this;
     
+    var disabledClass = thisObject.isField ? "field-visibility-disabled" : "section-visibility-disabled";
+
     var names = new Array();
     var radios = new Array();
     $(targetEl).find('input:not([type=submit]), select, textarea, .form-element').each(function(){
         if($(this).is("input[type=hidden]:not([disabled=true]), :enabled, [disabled=false]")){
-            $(this).addClass("section-visibility-disabled").attr("disabled", true);
+            $(this).addClass(disabledClass).attr("disabled", true);
             
             var mobileSelector = ".ui-input-text, .ui-checkbox, .ui-radio, .ui-select";
             
@@ -209,11 +233,13 @@ VisibilityMonitor.prototype.disableInputField = function(targetEl) {
 VisibilityMonitor.prototype.enableInputField = function(targetEl) {
     var thisObject = this;
     
+    var disabledClass = thisObject.isField ? "field-visibility-disabled" : "section-visibility-disabled";
+
     var names = new Array();
     var radios = new Array();
     $(targetEl).find('input:not([type=submit]), select, textarea, .form-element').each(function(){
-        if($(this).is(".section-visibility-disabled")){
-            $(this).removeClass("section-visibility-disabled").removeAttr("disabled");
+        if($(this).is("." + disabledClass)){
+            $(this).removeClass(disabledClass).removeAttr("disabled");
             
             var mobileSelector = ".ui-input-text, .ui-checkbox, .ui-radio, .ui-select";
             
@@ -244,6 +270,15 @@ VisibilityMonitor.prototype.enableInputField = function(targetEl) {
     
     thisObject.handleRadio(targetEl, radios);
     thisObject.triggerChange(targetEl, names);
+    // When section becomes visible, re-evaluate field visibility for all child fields that have visibility monitors
+    if (!thisObject.isField) {
+        $(targetEl).find('.form-cell[class*="field_"]').each(function() {
+            var fieldMonitor = $(this).data('visibilityMonitor');
+            if (fieldMonitor) {
+                fieldMonitor.handleChange($(this), fieldMonitor.rules);
+            }
+        });
+    }
     $(window).trigger("resize");
 };
 VisibilityMonitor.prototype.triggerChange = function(targetEl, names) {
@@ -265,8 +300,8 @@ VisibilityMonitor.prototype.handleRadio = function(targetEl, names) {
     $.each(names, function(i) {
         $("[name=" + names[i] + "][checked]").removeProp("checked").removeAttr("checked").attr("data-checked", "checked");
         $("[name=" + names[i] + "][data-checked]").each(function(){
-            //check if not in visibility disabled section
-            if ($(this).closest(".form-section.section-visibility-hidden, .subform-section.section-visibility-hidden").length === 0) {
+            //check if not in visibility disabled section or field
+            if ($(this).closest(".form-section.section-visibility-hidden, .subform-section.section-visibility-hidden, .form-cell.field-visibility-hidden").length === 0) {
                 if ($(this).is("[data-checked]")) {
                     $(this).removeProp("data-checked").prop("checked", "checked");
                 }

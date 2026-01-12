@@ -7,8 +7,11 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 import org.joget.apps.app.service.AppPluginUtil;
+import org.joget.apps.form.lib.ColumnContainer;
+import org.joget.apps.form.lib.Columns;
 import org.joget.apps.form.service.FormService;
 import org.joget.apps.form.service.FormUtil;
+import org.joget.apps.form.service.VisibilityControlUtil;
 import org.joget.apps.userview.model.Permission;
 import org.joget.apps.util.DefaultPropertyValuesCache;
 import org.joget.plugin.base.ExtDefaultPlugin;
@@ -34,6 +37,11 @@ public abstract class Element extends ExtDefaultPlugin implements PropertyEditab
     protected Map<FormData, Boolean> isHiddenSet = new HashMap<FormData, Boolean>();
     protected Map<FormData, String> permissionKeys = new HashMap<FormData, String>();
     protected Set<String> childsUniqueKeys = new HashSet<String>();
+
+    // Visibility control fields
+    protected Collection<Map<String, String>> visibilityRules = null;
+    protected Map<String, Element> visibilityControlElements = new HashMap<String, Element>();
+    protected Map<FormData, Boolean> continueValidations = new HashMap<FormData, Boolean>();
 
     /**
      * Get load binder
@@ -280,7 +288,54 @@ public abstract class Element extends ExtDefaultPlugin implements PropertyEditab
 
         String html = renderTemplate(formData, dataModel);
         html = decorateWithBuilderProperties(html, formData);
-        
+
+        if (!includeMetaData && !(this instanceof Section) && !(this instanceof Form) && !(this instanceof Column) && !(this instanceof Columns) && !(this instanceof ColumnContainer)) {
+            html = decorateWithVisibilityControl(html, formData);
+        }
+
+        return html;
+    }
+
+    /**
+     * Decorate the HTML output with visibility control script if visibility rules are defined.
+     *
+     * @param html The rendered HTML
+     * @param formData The form data
+     * @return HTML with visibility script injected
+     */
+    protected String decorateWithVisibilityControl(String html, FormData formData) {
+        if (!getVisibilityRules(formData).isEmpty()) {
+            String uniqueKey = getPropertyString("elementUniqueKey");
+            String rulesJson = getVisibilityRulesJson(formData);
+
+            if (rulesJson != null && !html.isEmpty()) {
+                // Add a unique class to the form-cell for targeting
+                String cellClass = "field_" + uniqueKey;
+                boolean visible = isVisibilityMatch(formData);
+
+                String hiddenClass = visible ? "" : " field-visibility-hidden";
+                String hiddenStyle = visible ? "" : " style=\"display: none\"";
+
+                //replace class attribute while preserving any existing classes
+                html = html.replaceFirst(
+                    "class=\"form-cell([^\"]*)\"",
+                    "class=\"form-cell " + cellClass + hiddenClass + "$1\"" + hiddenStyle
+                );
+
+                // Inject visibility control script
+                String script = "\n<script type=\"text/javascript\">\n" +
+                        "$(document).ready(function() {\n" +
+                        "    new VisibilityMonitor($('." + cellClass + "'), " + rulesJson + ", true).init();\n" +
+                        "});\n" +
+                        "</script>\n";
+
+                // Insert script before the closing div
+                int lastDivIndex = html.lastIndexOf("</div>");
+                if (lastDivIndex > 0) {
+                    html = html.substring(0, lastDivIndex) + script + html.substring(lastDivIndex);
+                }
+            }
+        }
         return html;
     }
     
@@ -603,12 +658,77 @@ public abstract class Element extends ExtDefaultPlugin implements PropertyEditab
     }
 
     /**
+     * Get visibility rules for this element.
+     * @param formData
+     * @return Collection of visibility rules
+     */
+    public Collection<Map<String, String>> getVisibilityRules(FormData formData) {
+        if (visibilityRules == null) {
+            visibilityRules = VisibilityControlUtil.parseVisibilityRules(this, formData, visibilityControlElements);
+        }
+        return visibilityRules;
+    }
+
+    /**
+     * Check if the visibility control rules match for this element.
+     *
+     * @param formData
+     * @return true if element should be visible, false otherwise
+     */
+    public Boolean isVisibilityMatch(FormData formData) {
+        return VisibilityControlUtil.evaluateVisibilityRules(
+                getVisibilityRules(formData),
+                visibilityControlElements,
+                formData);
+    }
+
+    /**
+     * Check if element has visibility control rules defined.
+     *
+     * @return true if visibility rules are defined
+     */
+    public boolean hasVisibilityRules() {
+        return VisibilityControlUtil.hasVisibilityControl(this);
+    }
+
+    /**
+     * Generate JSON representation of visibility rules for client-side JavaScript.
+     *
+     * @param formData
+     * @return JSON string of visibility rules
+     */
+    public String getVisibilityRulesJson(FormData formData) {
+        return VisibilityControlUtil.toJson(getVisibilityRules(formData));
+    }
+
+    /**
      * Flag to indicate whether or not continue validating descendent elements.
+     * Checks for visibility control rules in addition to hidden status.
+     *
      * @param formData
      * @return
      */
     public boolean continueValidation(FormData formData) {
-        return !isHidden(formData);
+        if (this instanceof Section) {
+            return !isHidden(formData);
+        }
+
+        Boolean continueValidation = continueValidations.get(formData);
+        if (continueValidation == null) {
+            if (!isHidden(formData)) {
+                // Check visibility control rules
+                String visibilityControl = getPropertyString("visibilityControl");
+                if (visibilityControl != null && !visibilityControl.isEmpty()) {
+                    continueValidation = isVisibilityMatch(formData);
+                } else {
+                    continueValidation = true;
+                }
+            } else {
+                continueValidation = false;
+            }
+            continueValidations.put(formData, continueValidation);
+        }
+        return continueValidation;
     }
     
     /**

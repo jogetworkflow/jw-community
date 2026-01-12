@@ -147,6 +147,10 @@
                                     <i class="la la-binoculars"></i>
                                 </button>
 
+                                <button class="btn btn-light" title="<fmt:message key="adv.tool.visibility"/>" id="visibility-btn" type="button" data-bs-toggle="button" aria-pressed="false" data-cbuilder-view="visibility" data-cbuilder-action="switchView" data-view-control>
+                                    <i class="la la-eye"></i>
+                                </button>
+
                                 <button class="btn btn-light" title="<fmt:message key="adv.tool.i18n"/>" id="i18n-btn" type="button" data-bs-toggle="button" aria-pressed="false" data-cbuilder-view="i18n" data-cbuilder-action="switchView" data-hide-tool data-view-control>
                                     <i class="la la-language"></i>
                                 </button>

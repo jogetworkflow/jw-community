@@ -66,17 +66,11 @@
     },
     {
         title:'@@form.section.advancedOptions@@',
-        properties:[{
+        properties:[
+            {
                 label : '@@form.section.visibility@@',
                 type : 'header',
-                developer_mode : 'advanced'
-            },
-            {
-                name : 'rules',
-                label : '@@form.section.visibilityRules@@',
-                type : custom,
-                script_url : '[CONTEXT_PATH]/web/json/app[APP_PATH]/plugin/org.joget.apps.form.model.Section/service',
-                developer_mode : 'advanced'
+                description : '@@form.section.visibilityNotice@@'
             },
             {
                 label : '@@form.section.permission@@',

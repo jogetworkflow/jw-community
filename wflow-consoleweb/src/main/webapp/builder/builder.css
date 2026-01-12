@@ -1241,6 +1241,7 @@ body.page-component-editor #builderToolbar {
     width: 100%;
 }
 .permission-table .element-meta .element-icon > i, .permission-table .element-meta .element-icon > span,
+.visibility-table .element-meta .element-icon > i, .visibility-table .element-meta .element-icon > span,
 .tree ol li.tree-viewer-item label > i, .tree ol li.tree-viewer-item label > span,
 .builder-palette-element > i, .builder-palette-element > span {
     display: block;
@@ -1260,6 +1261,7 @@ body.page-component-editor #builderToolbar {
     font-size: 11px;
 }
 .permission-table .element-meta .element-icon > svg,
+.visibility-table .element-meta .element-icon > svg,
 .tree ol li.tree-viewer-item label > svg,
 .builder-palette-element > svg{
     height: 16px;
@@ -1271,23 +1273,27 @@ body.page-component-editor #builderToolbar {
     transform: scale(1.5);
 }
 .permission-table .element-meta .element-icon > i, .permission-table .element-meta .element-icon > span,
+.visibility-table .element-meta .element-icon > i, .visibility-table .element-meta .element-icon > span,
 .tree ol li.tree-viewer-item label > i, .tree ol li.tree-viewer-item label > span{
     transform: scale(1);
     top: 1px;
     color: #ddd;
 }
 .permission-table .element-meta .element-icon > svg,
+.visibility-table .element-meta .element-icon > svg,
 .tree ol li.tree-viewer-item label > svg{
     transform: scale(1);
     top: 1px;
 }
 .permission-table .element-meta .element-icon > span.fa-stack,
+.visibility-table .element-meta .element-icon > span.fa-stack,
 .tree ol li.tree-viewer-item label > span.fa-stack,
 .builder-palette-element > span.fa-stack{
     font-size: 50%;
     padding-top: 2px;
 }
 .permission-table .element-meta .element-icon > span.fa-stack i:last-child,
+.visibility-table .element-meta .element-icon > span.fa-stack i:last-child,
 .tree ol li.tree-viewer-item label > span.fa-stack i:last-child,
 .builder-palette-element > span.fa-stack i:last-child {
     display: block;
@@ -1573,12 +1579,14 @@ body:not(.quick-nav-position-left) .builder-view:not(.treeRightPanel) {
 .xray-builder-view .element-bottom-actions{
     display:none;
 }
-#permissionView .builder-view-body{
+#permissionView .builder-view-body,
+#visibilityView .builder-view-body {
     height: 100%;
     padding: 0;
     overflow: none;
 }
-#cbuilder.permission-builder-view  #right-panel {
+#cbuilder.permission-builder-view  #right-panel,
+#cbuilder.visibility-builder-view #right-panel {
     z-index: 11;
 }
 
