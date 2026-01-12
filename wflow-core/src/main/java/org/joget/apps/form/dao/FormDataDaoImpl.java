@@ -1344,6 +1344,8 @@ public class FormDataDaoImpl extends HibernateDaoSupport implements FormDataDao 
         columnList = formColumnCache.get(tableName);
         indexesList = formColumnCache.getIndexes(tableName);
         if (columnList == null) {
+            Date requestTime = new Date();
+            
             LogUtil.debug(FormDataDaoImpl.class.getName(), "======== Build Form Column Cache for table \""+ tableName +"\" START ========");
             columnList = new HashSet<String>();
             indexesList = new HashSet<String>();
@@ -1433,8 +1435,8 @@ public class FormDataDaoImpl extends HibernateDaoSupport implements FormDataDao 
                 columnList.remove(FormUtil.PROPERTY_MODIFIED_BY_NAME);
 
                 LogUtil.debug(FormDataDaoImpl.class.getName(), "All Columns - " + columnList.toString());
-                formColumnCache.put(tableName, columnList);
-                formColumnCache.putIndexes(tableName, indexesList);
+                formColumnCache.put(tableName, columnList, requestTime);
+                formColumnCache.putIndexes(tableName, indexesList, requestTime);
             }
             LogUtil.debug(FormDataDaoImpl.class.getName(), "======== Build Form Column Cache for table \""+ tableName +"\" END   ========");
         }
