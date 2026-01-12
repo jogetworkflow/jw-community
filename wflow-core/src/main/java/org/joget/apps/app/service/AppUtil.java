@@ -1447,7 +1447,7 @@ public class AppUtil implements ApplicationContextAware {
         if (p12 != null && !p12.isEmpty() && storepass != null && !storepass.isEmpty() && alias != null && !alias.isEmpty()) {
             email = ((HtmlEmail) new DigitalSignedHtmlEmail(p12, storepass, alias, form));
         } else {
-            email = new HtmlEmail();
+            email = new Base64HtmlEmail();
         }
         email.setHostName(host);
         if (port != null && port.length() != 0) {

@@ -11,7 +11,6 @@ import java.util.List;
 import javax.mail.internet.MimeBodyPart;
 import javax.mail.internet.MimeMultipart;
 import org.apache.commons.mail.EmailException;
-import org.apache.commons.mail.HtmlEmail;
 import org.bouncycastle.asn1.ASN1EncodableVector;
 import org.bouncycastle.asn1.cms.AttributeTable;
 import org.bouncycastle.asn1.cms.IssuerAndSerialNumber;
@@ -27,7 +26,7 @@ import org.bouncycastle.mail.smime.SMIMESignedGenerator;
 import org.joget.commons.util.LogUtil;
 import org.joget.commons.util.SetupManager;
 
-public class DigitalSignedHtmlEmail extends HtmlEmail {
+public class DigitalSignedHtmlEmail extends Base64HtmlEmail {
     protected PrivateKey privateKey;
     protected X509Certificate issuerCertificate;
     protected X509Certificate certificate;
