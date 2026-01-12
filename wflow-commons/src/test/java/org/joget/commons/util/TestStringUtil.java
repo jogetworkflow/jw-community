@@ -241,6 +241,26 @@ public class TestStringUtil {
     }
     
     @Test
+    public void testEscapeData2Base64() throws Exception {
+        //check svg image
+        String original = "<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"100\" height=\"100\">\n"
+                + "    <circle cx=\"50\" cy=\"50\" r=\"40\" fill=\"red\"/>\n"
+                + "</svg>";
+        String escaped = "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMDAiIGhlaWdodD0iMTAwIj4KICAgIDxjaXJjbGUgY3g9IjUwIiBjeT0iNTAiIHI9IjQwIiBmaWxsPSJyZWQiLz4KPC9zdmc+";
+        Assert.isTrue(escaped.equals(StringUtil.escapeString(original, StringUtil.TYPE_DATA2BASE64, null)), "false");
+        
+        //check data with base64 data
+        original = "[{\"penColor\":\"#000000\",\"dotSize\":0,\"minWidth\":1,\"maxWidth\":3,\"velocityFilterWeight\":0.7,\"compositeOperation\":\"source-over\",\"points\":[{\"time\":1768186113244,\"x\":30.4453125,\"y\":25.62109375,\"pressure\":0.5}]}]||#FFFFFF||data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAGQAAAAyCAYAAACqNX6+AAABS0lEQVR4AeyaQQ6DMAwEEz4GvAx4GfysbU4I92ZhvBGDFKk+xN7MyLcOHz4pAkPhkyKAECkdpSAEIWIExOKwIQgRIyAWhw1BiBgBsThsyCuEiD2ypzhsiJgthCBEjIBYHDYEIWIExOKwIQgRIyAWhw1BiBgBsTg9bYgYupg4CInh6u6KEDe6mItpQo7jiHlR511ThNRayzzPpdbaOb774z8uZNu2yyvYlAuO5/8GNI7jJcE0TZf67cXjG9IErOta1t/Z9/3t/P/e/7iQlmBZltJOk9NqzkkgRcg5nl+WAEIskeQaIckC7HiEWCLJNUKSBdjxCLFEkmuEJAuw4xFiiSTXCEkWYMcjxBJJrhGSLMCOR4glck/t7oIQN7qYiwiJ4eruihA3upiLCInh6u6KEDe6mIsIieHq7ooQN7qYiwiJ4eruihA3upiLXwAAAP//asgzSQAAAAZJREFUAwDPNqDkscqWlAAAAABJRU5ErkJggg==";
+        escaped = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAGQAAAAyCAYAAACqNX6+AAABS0lEQVR4AeyaQQ6DMAwEEz4GvAx4GfysbU4I92ZhvBGDFKk+xN7MyLcOHz4pAkPhkyKAECkdpSAEIWIExOKwIQgRIyAWhw1BiBgBsThsyCuEiD2ypzhsiJgthCBEjIBYHDYEIWIExOKwIQgRIyAWhw1BiBgBsTg9bYgYupg4CInh6u6KEDe6mItpQo7jiHlR511ThNRayzzPpdbaOb774z8uZNu2yyvYlAuO5/8GNI7jJcE0TZf67cXjG9IErOta1t/Z9/3t/P/e/7iQlmBZltJOk9NqzkkgRcg5nl+WAEIskeQaIckC7HiEWCLJNUKSBdjxCLFEkmuEJAuw4xFiiSTXCEkWYMcjxBJJrhGSLMCOR4glck/t7oIQN7qYiwiJ4eruihA3upiLCInh6u6KEDe6mIsIieHq7ooQN7qYiwiJ4eruihA3upiLXwAAAP//asgzSQAAAAZJREFUAwDPNqDkscqWlAAAAABJRU5ErkJggg==";
+        Assert.isTrue(escaped.equals(StringUtil.escapeString(original, StringUtil.TYPE_DATA2BASE64, null)), "false");
+        
+        //check json graphics data with size
+        original = "[{\"lx\":44,\"ly\":39,\"mx\":44,\"my\":38},{\"lx\":44,\"ly\":38,\"mx\":44,\"my\":39},{\"lx\":45,\"ly\":38,\"mx\":44,\"my\":38},{\"lx\":46,\"ly\":38,\"mx\":45,\"my\":38},{\"lx\":47,\"ly\":38,\"mx\":46,\"my\":38},{\"lx\":48,\"ly\":38,\"mx\":47,\"my\":38}]";
+        escaped = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAMgAAABQCAIAAADTD63nAAABL0lEQVR4Xu3UoZGDUBRAUQqIRyBi8KQESolPE7RAR+lsN3bRe4chc4744v0n77zhBwLDcQD/QVgkhEVCWCSERUJYJIRFQlgkhEVCWCSERUJYJIRFQlgkhEVCWCSERUJYJIRFQlgkhEVCWCSERUJYJIRFQlgkhEVCWCSERUJYJIRFQlgkhEVCWCSERUJYJM4P6/V6jeM4TdM8z4/H4/l8vt/v4xJXc35Y9/t9+GvbtuMSV3N+WMuyfGK63W4u1jc5P6x939d1/bzHD67s/LD4SsIiISwSwiIhLBLCIiEsEsIiISwSwiIhLBLCIiEsEsIiISwSwiIhLBLCIiEsEsIiISwSwiIhLBLCIiEsEsIiISwSwiIhLBLCIiEsEsIiISwSwiIhLBLCIiEsEsIiISwSvzoXmPKilzypAAAAAElFTkSuQmCC";
+        Assert.isTrue(escaped.equals(StringUtil.escapeString(original, StringUtil.TYPE_DATA2BASE64 + "(200,80)", null)), "false");
+    }
+    
+    @Test
     public void testEscapeImg2Base64() throws Exception {
         //todo
     }

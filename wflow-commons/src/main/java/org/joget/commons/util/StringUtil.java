@@ -28,6 +28,13 @@ import org.jsoup.safety.Safelist;
 import javax.mail.internet.MimeUtility;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
+import java.awt.BasicStroke;
+import java.awt.Color;
+import java.awt.Graphics2D;
+import java.awt.RenderingHints;
+import java.awt.image.BufferedImage;
+import java.nio.charset.StandardCharsets;
+import javax.imageio.ImageIO;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
@@ -46,6 +53,7 @@ import org.apache.http.impl.client.HttpClients;
 import org.apache.http.impl.client.LaxRedirectStrategy;
 import org.apache.http.impl.cookie.BasicClientCookie;
 import org.apache.http.ssl.SSLContextBuilder;
+import org.json.JSONArray;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Entities.EscapeMode;
 import org.springframework.web.context.request.RequestContextHolder;
@@ -68,6 +76,7 @@ public class StringUtil {
     public static final String TYPE_NL2BR = "nl2br";
     public static final String TYPE_SEPARATOR = "separator";
     public static final String TYPE_IMG2BASE64 = "img2base64";
+    public static final String TYPE_DATA2BASE64 = "data2base64";
     public static final String TYPE_EXP = "expression";
     public static final String TYPE_DECIMAL = "decimal";
 
@@ -475,6 +484,12 @@ public class StringUtil {
                 inStr = inStr.replaceAll("(\r\n|\n)", "<br class=\"nl2br\" />");
             } else if (TYPE_IMG2BASE64.equals(f)) {
                 inStr = imageToBase64(inStr);
+            } else if (f != null && f.startsWith(TYPE_DATA2BASE64)) {
+                String size = "";
+                if (f.length() > TYPE_DATA2BASE64.length()) {
+                    size = f.substring(TYPE_DATA2BASE64.length() + 1, f.length() -1).trim();
+                }
+                inStr = dataToBase64(inStr, size);
             } else if (f != null && f.startsWith(TYPE_SEPARATOR) && inStr.contains(";")) {
                 String newSeparator = f.substring(TYPE_SEPARATOR.length() + 1, f.length() -1);
                 String [] temps = inStr.split(";");
@@ -588,6 +603,70 @@ public class StringUtil {
                         }
                     }
                 }
+            }
+        }
+        
+        return content;
+    }
+    
+    public static String dataToBase64(String content, String size) {
+        if (content != null && !content.isEmpty()) {
+            //if the data is appended with base64 data, extract it
+            if (content.contains("||data:image/")) {
+                content = content.substring(content.indexOf("||data:image/") + 2);
+            } else if (content.startsWith("<svg")) { //convert svg image
+                String base64 = Base64.encodeBase64String(content.getBytes(StandardCharsets.UTF_8));
+                content = "data:image/svg+xml;base64," + base64;
+            } else if (content.startsWith("[") 
+                    && content.endsWith("]") 
+                    && content.contains("lx")) { //convert json graphics data
+                
+                int width = 200;
+                int height = 80;
+                
+                if (size != null && !size.isEmpty()) {
+                    String widthStr = size;
+                    String heightStr = size;
+                    if (size.contains(",")) {
+                        String[] temp = size.split(",");
+                        widthStr = temp[0].trim();
+                        heightStr = temp[1].trim();
+                    }
+                    
+                    try {
+                        width = Integer.parseInt(widthStr);
+                    } catch(Exception e) {}
+                    
+                    try {
+                        height = Integer.parseInt(heightStr);
+                    } catch(Exception e) {}
+                }
+                
+                try {
+                    String jsonstr = URLDecoder.decode(content, "UTF-8");
+                    JSONArray jarr = new JSONArray(jsonstr);
+                    BufferedImage offscreenImage = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
+                    Graphics2D g2 = offscreenImage.createGraphics();
+                    g2.setColor(Color.white);
+                    g2.fillRect(0,0,width,height);
+                    g2.setPaint(Color.black);
+                    g2.setStroke(new BasicStroke(2));
+                    g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+                    for (int i = 0; i < jarr.length(); i++) {
+                        org.json.JSONObject jobj = jarr.getJSONObject(i);
+                        g2.drawLine(jobj.getInt("lx"), jobj.getInt("ly"), jobj.getInt("mx"), jobj.getInt("my"));
+                    }
+
+                    ByteArrayOutputStream baos = new ByteArrayOutputStream();
+                    ImageIO.setUseCache(false);
+                    ImageIO.write( offscreenImage, "png", baos );
+                    baos.flush();
+                    byte[] imageInByte = baos.toByteArray();
+                    baos.close();   
+                    String base64bytes = Base64.encodeBase64String(imageInByte);
+                    content = "data:image/png;base64," + base64bytes;
+
+                } catch (Exception e) { }
             }
         }
         

@@ -12321,6 +12321,13 @@ PropertyAssistant = {
                                     ]
                                 },
                                 {
+                                    "value" : "?data2base64",
+                                    "label" : get_peditor_msg('peditor.escape.data2base64'),
+                                    "syntax" : [
+                                        "data2base64"
+                                    ]
+                                },
+                                {
                                     "value" : "?img2base64",
                                     "label" : get_peditor_msg('peditor.escape.img2base64'),
                                     "syntax" : [
