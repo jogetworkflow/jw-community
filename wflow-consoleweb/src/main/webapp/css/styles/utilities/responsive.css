@@ -726,7 +726,12 @@
         float: none;
         text-align: left !important;
     }
-    
+
+    .label-top.form-cell>label.label,
+    .label-top.subform-cell>label.label {
+        text-align: var(--jgt-form-labelAlignTop) !important;
+    }
+
     body.rtl .form-cell>label.label,
     body.rtl .subform-cell>label.label,
     body.rtl .form-cell>label.label+*:not(.ui-screen-hidden),
@@ -735,7 +740,12 @@
     body.rtl .subform-cell>label.label+.ui-screen-hidden+* {
         text-align: right !important;
     }
-    
+
+    body.rtl .label-top.form-cell>label.label,
+    body.rtl .label-top.subform-cell>label.label {
+        text-align: var(--jgt-form-labelAlignTop) !important;
+    }
+
     .rtl .form-cell>label.label,
     .rtl .subform-cell>label.label {
         float: unset;
@@ -746,6 +756,9 @@
         text-align: right !important;
     }
 
+    body.rtl .label-top .form-cell:not(.label-left)>label.label, .label-top .subform-cell:not(.label-left)>label.label {
+        text-align: var(--jgt-form-labelAlignTop) !important;
+    }
     /* Datepicker */
     .hasDatepicker+a {
         top: unset;

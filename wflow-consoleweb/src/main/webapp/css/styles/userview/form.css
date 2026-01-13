@@ -8,6 +8,7 @@
 .label-top.subform-cell > label.label{
     width: 100%;
     float: none !important;
+    text-align: var(--jgt-form-labelAlignTop);
 }
 
 .form-cell > label.label + *:not(.ui-screen-hidden), 
@@ -24,7 +25,18 @@
     width: 100%;
     max-width: 100%;
 }
+.label-top .form-cell:not(.label-left)>label.label,
+.label-top .subform-cell:not(.label-left)>label.label {
+    float: none !important;
+    text-align: var(--jgt-form-labelAlignTop);
+}
 
+.label-top .form-cell:not(.label-left)>label.label+*:not(.ui-screen-hidden),
+.label-top .subform-cell:not(.label-left)>label.label+*:not(.ui-screen-hidden),
+.label-top .form-cell:not(.label-left)>label.label+.ui-screen-hidden+*,
+.label-top .subform-cell:not(.label-left)>label.label+.ui-screen-hidden+* {
+    float: none !important;
+}
 @media screen and (max-width: 991px) and (min-width : 768px) {
     .tablet-label-top.form-cell > label.label,
     .tablet-label-top.subform-cell > label.label{
