@@ -6,6 +6,7 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import org.joget.commons.util.ResourceBundleUtil;
 
 /**
  * Used to add menu to admin console and render the page for the added menu.
@@ -35,10 +36,26 @@ public interface ConsolePagePlugin {
     }
     
     public enum Location {
-        DIRECTORY,
-        MONITOR,
-        SETTINGS
-    };
+        DIRECTORY(ResourceBundleUtil.getMessage("console.header.menu.label.users"), "<i class=\"fas fa-users\">"),
+        MONITOR(ResourceBundleUtil.getMessage("console.header.menu.label.monitor"), "<i class=\"fas fa-tachometer-alt\"></i>"),
+        SETTINGS(ResourceBundleUtil.getMessage("console.header.top.label.settings"), "<i class=\"fas fa-cogs\"></i>");
+
+        private final String label;
+        private final String icon;
+
+        Location(String label, String icon) {
+            this.label = label;
+            this.icon = icon;
+        }
+
+        public String getLabel() {
+            return label;
+        }
+
+        public String getIcon() {
+            return icon;
+        }
+    }
     
     /**
      * Unique identifier of the page without space 

@@ -394,7 +394,7 @@ header.navbar .dropdown-menu.notifications > li.task > div.more-info > span.time
     text-decoration: unset;
 }
 
-.dropdown-menu > div.profile-item > div.menu-content > div.symbol > img.gravatar {
+.dropdown-menu > div.profile-item > div.menu-content > div.symbol > img {
     width: 34.89px;
     height: 34.89px;
     border-radius: 16px;
@@ -420,6 +420,13 @@ header.navbar .dropdown-menu.notifications > li.task > div.more-info > span.time
     outline: 15px solid transparent;
     outline-offset: -2px;
     box-shadow: 2px 4px 6px 2px #1CDEBA1A;
+}
+
+.dropdown-menu > div.profile-item > div.menu-content > div.symbol > i.fa-user-circle{
+    display: block;
+    font-size: 35px;
+    z-index: 2;
+    color: #fff;
 }
 
 .dropdown-menu > div.profile-item > div.separator {
@@ -1113,6 +1120,10 @@ header.navbar li.dropdown.user-link > a {
     display: flex;
     gap: 10px;
     align-items: center;
+}
+
+header.navbar li.dropdown.user-link > a > i.fa-user-circle {
+    font-size: 25px;
 }
 
 .dropdown-toggle::after {
@@ -1896,17 +1907,22 @@ body.mediumFontSize #form-canvas input + .numeric_field_controls > .numeric_fiel
     gap: 20px;
     border-bottom: none;
 }
-
-.form-element.multiPagedForm > .page-nav-panel.top > ul {
-    margin-bottom: 0;
-    display: flex;
-    overflow-x: auto;
-    white-space: nowrap;
-    scroll-behavior: smooth;
-    scrollbar-width: none;
-    -ms-overflow-style: none;
+@media (min-width: 768px) {
+    .form-element.multiPagedForm > .page-nav-panel.top > ul {
+        margin-bottom: 0;
+        display: flex;
+        overflow-x: auto;
+        white-space: nowrap;
+        scroll-behavior: smooth;
+        scrollbar-width: none;
+        -ms-overflow-style: none;
+    }
+    .multiPagedForm .page-nav-panel .nav_item.current button,
+    .multiPagedForm .page-nav-panel .nav_item button:hover,
+    .multiPagedForm .page-nav-panel .nav_item button > span:focus-visible {
+        border-color: transparent;
+    }
 }
-
 .form-element.multiPagedForm > .page-nav-panel.top > ul.hideNavArrows + div.navigation-arrows-container {
     display: none;
 }
@@ -1963,7 +1979,6 @@ body.mediumFontSize #form-canvas input + .numeric_field_controls > .numeric_fiel
 .multiPagedForm .page-nav-panel .nav_item button:hover,
 .multiPagedForm .page-nav-panel .nav_item button > span:focus-visible {
     color: var(--primary-text-color);
-    border: none;
     outline: none;
 }
 
@@ -1971,11 +1986,16 @@ body.mediumFontSize #form-canvas input + .numeric_field_controls > .numeric_fiel
     padding-bottom: 0px;
 }
 
-.multiPagedForm .page-nav-panel .nav_item.current button > span {
-    padding-bottom: 8px;
+@media (min-width: 769px) {
+  .multiPagedForm .page-nav-panel .nav_item.current button > span {
+    padding-bottom: 7px;
     border-bottom: 1px solid var(--primary-text-color);
+  }
 }
 
+.multiPagedForm.wizard .page-nav-panel .nav_item::before{
+    padding-top: 3px;
+}
 /* Date Picker */
 #ui-datepicker-div > *:not(table.ui-datepicker-calendar) {
     margin-left: 24px;
@@ -2498,7 +2518,6 @@ body.rtl .accordion .card-header::after {
     }
 
     .form-element.multiPagedForm > .page-nav-panel.top > ul {
-        flex-direction: column;
         width: 100%;
     }
     

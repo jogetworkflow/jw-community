@@ -26,9 +26,11 @@
 .form-column > .subform-cell > .subform-container > .subform-section {
     z-index: 2;
 }
-/* Fix for spreadsheet being blocked by subform-section sibling */
+/* Fix for spreadsheet and chosen dropdown being blocked by subform-section sibling */
 .form-column>.form-cell>.subform-container>.subform-section:has(.spreadsheet), 
-.form-column>.subform-cell>.subform-container>.subform-section:has(.spreadsheet) {
+.form-column>.subform-cell>.subform-container>.subform-section:has(.spreadsheet),
+.form-column>.form-cell>.subform-container>.subform-section:has(.chosen-container.chosen-with-drop), 
+.form-column>.subform-cell>.subform-container>.subform-section:has(.chosen-container.chosen-with-drop) {
     z-index: 3;
 }
 /* End of Fix */
@@ -992,6 +994,10 @@ body.rtl .calculationField_value {
 .multiPagedForm .page-nav-panel.bottom{
     display:none;
 }
+.multiPagedForm .page-nav-panel ul {
+    overflow-y: hidden;
+    overflow-x: auto;
+}
 .multiPagedForm .page-nav-panel .nav_item.error button span{
     color: red;
 }
@@ -1037,6 +1043,13 @@ body.rtl .calculationField_value {
     margin-bottom: -1px;
 }
 @media (min-width: 768px) {
+    .multiPagedForm .page-nav-panel .nav_item button span {
+        display: block;
+        max-width: 250px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
     .multiPagedForm.wizard .page-nav-panel {
         text-align: center;
         margin-bottom: 5px;
@@ -1045,8 +1058,13 @@ body.rtl .calculationField_value {
     .multiPagedForm.wizard .page-nav-panel .nav_item{
         display: inline-block;
         position:relative;
-        padding: 0 15px;
+        padding: 1px 15px;
+        padding-bottom: 8px;
         cursor: pointer;
+    }
+    .rtl .multiPagedForm.wizard .page-nav-panel .nav_item {
+        padding-left: 15px;
+        padding-right: 15px;
     }
     .multiPagedForm.wizard .page-nav-panel .nav_item::before {
         counter-increment: nav-item;                   
@@ -1070,6 +1088,10 @@ body.rtl .calculationField_value {
         top: 15px;
         right: -2px;
     }
+    body.rtl .multiPagedForm.wizard .page-nav-panel .nav_item::after {
+        left: -2px;
+        right: unset;
+    }
     .multiPagedForm.wizard .page-nav-panel .nav_item:last-child::after {
         display:none;
     }
@@ -1080,6 +1102,10 @@ body.rtl .calculationField_value {
         border-bottom: 1px solid #dee2e6;
         top: 15px;
         left: -2px;
+    }
+    body.rtl .multiPagedForm.wizard .page-nav-panel .nav_item button::after{
+        right: -2px;
+        left: unset;
     }
     .multiPagedForm.wizard .page-nav-panel .nav_item:first-child button::after {
         display:none;
@@ -1105,8 +1131,6 @@ body.rtl .calculationField_value {
 }
 .rtl .multiPagedForm.wizard .page-nav-panel .nav_item {
     float: right;
-    padding-left:15px;
-    padding-right:auto;
 }
 .rtl .multiPagedForm.wizard .page-nav-panel button{
     float:right;

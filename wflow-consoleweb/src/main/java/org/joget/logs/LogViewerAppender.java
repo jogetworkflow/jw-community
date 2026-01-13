@@ -11,6 +11,8 @@ import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.io.Writer;
 import java.net.ConnectException;
+import java.util.Arrays;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -20,6 +22,7 @@ import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.TimeUnit;
 import jakarta.servlet.http.HttpServletRequest;
 import java.nio.file.NoSuchFileException;
+import java.util.concurrent.atomic.AtomicReference;
 import org.apache.commons.lang.RandomStringUtils;
 import org.apache.http.client.HttpRequestRetryHandler;
 import org.apache.http.client.methods.HttpPost;
@@ -47,9 +50,11 @@ import org.joget.apps.app.model.AppDefinition;
 import org.joget.apps.app.service.AppUtil;
 import org.joget.commons.spring.model.Setting;
 import org.joget.commons.util.HostManager;
+import org.joget.commons.util.LogUtil;
 import org.joget.commons.util.PluginThread;
 import org.joget.commons.util.SecurityUtil;
 import org.joget.commons.util.ServerUtil;
+import org.joget.commons.util.SetupDao;
 import org.joget.commons.util.SetupManager;
 import org.joget.commons.util.StringUtil;
 import org.joget.workflow.model.service.WorkflowUserManager;
@@ -62,6 +67,7 @@ public class LogViewerAppender extends AbstractAppender {
     protected static final Map<String, BlockingQueue<String>> messages = new HashMap<String, BlockingQueue<String>>();
     protected static final Map<String, Boolean> processingMessage = new HashMap<String, Boolean>();
     protected static final Set<String> unreachableNodes = new HashSet<String>();
+    protected static final AtomicReference<String> CURRENT_NODE_TOKEN = new AtomicReference<>();
 
     protected static final int SIZE = 40;
     public static final int MAX_FILESIZE = 200 * 1024; //200kb
@@ -74,7 +80,7 @@ public class LogViewerAppender extends AbstractAppender {
     public static final String CONSOLE_LOG = "CONSOLE_LOG";
 
     protected static boolean startLogging = false;
-
+    
     protected static Map<String, Set<LogViewerEndpoint>> broadcastEndpoints = new HashMap<String, Set<LogViewerEndpoint>>();
 
     @PluginFactory
@@ -462,8 +468,7 @@ public class LogViewerAppender extends AbstractAppender {
                             CloseableHttpClient client = null;
                             try {
                                 String currentNode = ServerUtil.getServerName();
-                                final String token = getLogViewerToken(currentNode);
-                                updateJsonIPWhitelist(currentNode);
+                                final String token = getCurrentLogViewerToken();
 
                                 String broadcastURL = "http://" + nodeIp + ":" + httpRequest.getLocalPort() + httpRequest.getContextPath() +"/web/json/log/broadcast?";
 
@@ -514,16 +519,66 @@ public class LogViewerAppender extends AbstractAppender {
     }
     
     //get or create log viewer token
-    public static String getLogViewerToken(String node) {
-        SetupManager setupManager = (SetupManager) AppUtil.getApplicationContext().getBean("setupManager");
-        Setting setting = setupManager.getSettingByProperty(node + "LogToken");
-        if (setting == null) {
-            //generate random 12 chars string
-            String token = RandomStringUtils.random(12, true, true);
-            setupManager.updateSetting(node + "LogToken", token);
-            return token;
+    public static String getCurrentLogViewerToken() {
+        String token = CURRENT_NODE_TOKEN.get();
+        if (token == null) {
+
+            String node = ServerUtil.getServerName();
+
+            SetupManager setupManager = (SetupManager) AppUtil.getApplicationContext().getBean("setupManager");
+            Setting setting = setupManager.getSettingByProperty(node + "LogToken");
+
+            // Get existing token or generate a random 12-char one
+            String newToken = (setting != null)
+                    ? setting.getValue()
+                    : RandomStringUtils.random(12, true, true);
+
+            // Try to set it atomically (only one thread succeeds)
+            if (CURRENT_NODE_TOKEN.compareAndSet(null, newToken)) {
+
+                // Only the winning thread runs this part
+                if (setting == null) {
+                    setupManager.updateSetting(node + "LogToken", newToken);
+                }
+
+                updateJsonIPWhitelist(node);
+                cleanExpiredLogViewerTokens();
+            }
+
+            // Return the final value (either ours or another thread’s)
+            return CURRENT_NODE_TOKEN.get();
         }
-        return setting.getValue();
+
+        return token;
+    }
+    
+    public static void cleanExpiredLogViewerTokens() {
+        // run it in new thread, so it won't block the current thread 
+        Thread newThread = new PluginThread(new Runnable() {
+            @Override
+            public void run() {
+                Set<String> servers = new HashSet<String>(Arrays.asList(ServerUtil.getServerList()));
+                if (!servers.isEmpty()) {
+                    LogUtil.info(LogViewerAppender.class.getName(), "Start cleaning expired log viewer tokens.");
+                    SetupDao setupDao = (SetupDao) AppUtil.getApplicationContext().getBean("setupDao");
+                    SetupManager setupManager = (SetupManager) AppUtil.getApplicationContext().getBean("setupManager");
+                    Collection<Setting> settings = setupDao.find("WHERE property LIKE ?", new String[]{"%LogToken"}, null, null, null, null);
+                    if (!settings.isEmpty()) {
+                        int count = 0;
+                        for (Setting s : settings) {
+                            //check for token not in server list, and delete it
+                            String node = s.getProperty().replace("LogToken", "");
+                            if (!servers.contains(node)) {
+                                setupManager.deleteSetting(s.getProperty());
+                                count++;
+                            }
+                        }
+                        LogUtil.info(LogViewerAppender.class.getName(), "Removed "+ count + " expired log viewer tokens.");
+                    }
+                }
+            }
+        });
+        newThread.start();
     }
     
     //update or add ip address to JsonIPWhitelist

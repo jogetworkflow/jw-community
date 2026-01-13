@@ -9,6 +9,7 @@ import javax.cache.CacheManager;
 import javax.sql.DataSource;
 import org.apache.commons.dbcp2.BasicDataSource;
 import org.apache.commons.dbcp2.BasicDataSourceFactory;
+import org.joget.commons.util.DynamicDataSource;
 import org.joget.commons.util.DynamicDataSourceManager;
 import org.joget.commons.util.LogUtil;
 
@@ -69,6 +70,8 @@ public class JdbcUtil {
         
         BasicDataSource dataSource = (BasicDataSource) cache.get(cacheKey);
         if (dataSource == null) {
+            url = DynamicDataSource.convertSqlServerUrlWithEncryptParam(driver, url);
+            
             Properties props = new Properties();
             props.put("driverClassName", driver);
             props.put("url", url);

@@ -156,6 +156,12 @@
             <groupId>com.asual.lesscss</groupId>  
             <artifactId>lesscss-engine</artifactId>  
             <version>1.5.1</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.mozilla</groupId>
+                    <artifactId>rhino</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency> 
         <dependency>
             <groupId>org.apache.poi</groupId>

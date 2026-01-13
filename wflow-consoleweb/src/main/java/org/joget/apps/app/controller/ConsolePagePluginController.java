@@ -71,6 +71,8 @@ public class ConsolePagePluginController {
         model.put("pluginIcon", plugin.getPluginIcon());
         model.put("pluginLabel", plugin.getLabel());
         model.put("menuLocation", plugin.getLocation().toString());
+        model.put("pluginLocationIcon", plugin.getLocation().getIcon());
+        model.put("pluginLocationLabel", plugin.getLocation().getLabel());
         
         Method method = null;
         Map<String, String> variables = new HashMap<>();

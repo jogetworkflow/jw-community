@@ -258,7 +258,10 @@ public class Form extends Element implements FormBuilderEditable, FormContainer 
     
     @Override
     public Map<String, String> getElementStyles(String styleClass, Map<String, String> attrs) {
-        Map<String, String> styles = super.getElementStyles(styleClass, attrs);
+        Map<String, String> styles = new HashMap<String, String>();
+        styles.put("DESKTOP", "");
+        styles.put("TABLET", "");
+        styles.put("MOBILE", "");
         
         //form & section default styles
         if (getParent() == null) {
@@ -266,7 +269,7 @@ public class Form extends Element implements FormBuilderEditable, FormContainer 
             String[] cssClass = new String[] {
                 "." + styleClass,
                 "." + styleClass + " .form-section, ." + styleClass + " .subform-section",
-                "." + styleClass + " .form-section .form-section-title, ." + styleClass + " .subform-section .subform-section-title",
+                "." + styleClass + " .form-section .form-section-title, ." + styleClass + " .subform-section .subform-section-title, ." + styleClass + " .form-section .form-section-title span, ." + styleClass + " .subform-section .subform-section-title span",
                 "." + styleClass + " .form-cell > label.label, ." + styleClass + " .subform-cell > label.label",
                 "." + styleClass + " .form-cell > label.label + *:not(.ui-screen-hidden):not(div.form-clear), ." + styleClass + " .subform-cell > label.label + *:not(.ui-screen-hidden):not(div.form-clear), "+
                     "." + styleClass + " .form-cell > label.label + .ui-screen-hidden + *, ." + styleClass + " .subform-cell > label.label + .ui-screen-hidden + *, "+
@@ -275,7 +278,7 @@ public class Form extends Element implements FormBuilderEditable, FormContainer 
             String[] cssHoverClass = new String[] {
                 "." + styleClass + ":hover",
                 "." + styleClass + " .form-section:hover, .{{styleClass}} .subform-section:hover",
-                "." + styleClass + " .form-section:hover .form-section-title, ." + styleClass + " .subform-section:hover .subform-section-title",
+                "." + styleClass + " .form-section:hover .form-section-title, ." + styleClass + " .subform-section:hover .subform-section-title, ." + styleClass + " .form-section:hover .form-section-title span, ." + styleClass + " .subform-section:hover .subform-section-title span",
                 "." + styleClass + " .form-cell:hover > label.label, ." + styleClass + " .subform-cell:hover > label.label",
                 "." + styleClass + " .form-cell:hover > label.label + *:not(.ui-screen-hidden):not(div.form-clear), ." + styleClass + " .subform-cell:hover > label.label + *:not(.ui-screen-hidden):not(div.form-clear), "+
                     "." + styleClass + " .form-cell:hover > label.label + .ui-screen-hidden + *, ." + styleClass + " .subform-cell:hover > label.label + .ui-screen-hidden + *, "+

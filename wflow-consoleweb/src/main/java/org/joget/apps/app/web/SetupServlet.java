@@ -80,10 +80,30 @@ public class SetupServlet extends HttpServlet {
             String jdbcFullUrl = request.getParameter("jdbcFullUrl");
             String jdbcUser = request.getParameter("jdbcUser");
             String jdbcPassword = request.getParameter("jdbcPassword");
+            String encryptTransport = request.getParameter("encryptTransport");
             String dbType = request.getParameter("dbType");
             String dbName = request.getParameter("dbName");
             String sampleApps = request.getParameter("sampleApps");
             String sampleUsers = request.getParameter("sampleUsers");
+
+            // Add encrypt param to JDBC URL for mssql-jdbc 10.2 and above, see setup.jsp.
+            if ("sqlserver".equals(dbType)) {
+                boolean encryptTransportBool = Boolean.parseBoolean(encryptTransport);
+                String appendStr = "encrypt=" + encryptTransportBool;
+                if (!jdbcUrl.contains("encrypt=")) {
+                    if (!jdbcUrl.endsWith(";")) {
+                        jdbcUrl += ";";
+                    }
+                    jdbcUrl += appendStr;
+                }
+                if (!jdbcFullUrl.contains("encrypt=")) {
+                    if (!jdbcFullUrl.endsWith(";")) {
+                        jdbcFullUrl += ";";
+                    }
+                    jdbcFullUrl += appendStr;
+                }
+            }
+
             if ("custom".equals(dbType)) {
                 dbName = null;
             }
