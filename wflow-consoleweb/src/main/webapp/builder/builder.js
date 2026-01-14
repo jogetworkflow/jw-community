@@ -5024,7 +5024,17 @@ window._CustomBuilder.Builder = {
      */
     selectFirst:  function() {
         var self = CustomBuilder.Builder;
-        var first = self.frameBody.find('[data-cbuilder-classname]:not([data-cbuilder-uneditable])').first();
+        if ($("body").hasClass("process")) {
+            const nodes = ProcessBuilder.lf.getGraphData().nodes;
+
+            if (nodes && nodes.length > 0) {
+                var first = ProcessBuilder.selectElementById(nodes[0].id);
+            } else {
+                var first = ProcessBuilder.editProcess();
+            }
+        } else {
+            var first = self.frameBody.find('[data-cbuilder-classname]:not([data-cbuilder-uneditable])').first();
+        }
         if (first) {
             self.selectNode(first, false);
         }
