@@ -2,6 +2,47 @@ Joget DX COMMUNITY
 ====================
 For more information, please refer to https://community.joget.org
 
+9.0.4
+=====
+c4315506e Fixed: wflow-consoleweb - Builders - Fixed an issue where the builder undo action did not update the Save button state. #1412 @8.2-SNAPSHOT
+6ca1800dc Fixed: wflow-core - JSON API Form Data Store - Prevent empty key from appearing in JSON output #1379. @8.2-SNAPSHOT
+644d6b95f Fixed: wflow-consoleweb - Log - Hibernate cache info floods the server log. #1420 @9.0-SNAPSHOT
+25d380d27 Fixed: wflow-consoleweb - builder.js - JSON Definition not working due to missing variable declaration. #1633 @9.0-SNAPSHOT
+5fe3080fa Modified: wflow-consoleweb - Updated jsondiffpatch to v0.7.3. #1573 T7017 @8.2-SNAPSHOT
+29546f9c4 Fixed: wflow-consoleweb - DX9 App Center Login Banner Image - Refined the Login Banner Image #1582 @9.0-SNAPSHOT
+9a5dffba5 Fixed: wflow-core - Gov Health Check - fixed db connections showing wrong active db #1589 @8.2-SNAPSHOT
+8854b6ded Fixed: wflow-commons - Long Term Cache - Cache object could be stale if there is long processing to prepare the cache object before store it. #1607 @9.0-SNAPSHOT
+275dce174 Fixed: wflow-core - Form Data - Extra type data is added in the result after Hibernate upgrade. #1634 @9.0-SNAPSHOT
+ced349cbc Modified: wflow-commons - pom.xml - Upgraded log4j dependencies to 2.25.3. #1641 @8.2-SNAPSHOT
+8f8a00b87 Fixed: wflow-core - Font Size Styling - Fixed Font Size Styling for form elements in Progressive Theme. #968 @8.2-SNAPSHOT
+cf49e9ea0 Fixed: wflow-core - Image List Formatter - Regression of d4a5f1f. Wrongly serves thumbnail when clicked. #1196 @8.2-SNAPSHOT
+64ff57187 Fixed: wflow-consoleweb - Subform Section - Fixed an issue where spreadsheet editor gets blocked due to z-index #1201 @9.0-SNAPSHOT
+a267b73c0 Fixed: wflow-consoleweb - Form - Fixed spreadsheet being blocked by subform-section sibling #1201 @8.2-SNAPSHOT
+060e7f0f9 Fixed: wflow-consoleweb - Multi Paged Form - Fixed DX9 Builder Theme Multi Paged Form UI Issue #1256 @9.0-SNAPSHOT
+5d7bb781f Fixed: wflow-consoleweb - Multipage - Fixed Multipage Responsive Designs #1256 @8.2-SNAPSHOT
+a670c0e11 Fixed: wflow-core - Service Worker - Handle invalid URL strings in offline form submission. T6387 #1348 @8.2-SNAPSHOT
+97e37977e Modified: wflow-wfengine - pom.xml - Upgraded Maven Compiler Plugin source and target versions to Java 8. #1418 T6810 @8.2-SNAPSHOT
+ec7955488 Fixed: wflow-consoleweb - Form Builder - i18n tab does not support all element labels. #1418 T6810 @8.2-SNAPSHOT
+c44762365 Fixed: wflow-consoleweb – DX9 Builder Theme – Resolved an issue where hiding the User Image (gravatar) caused the Profile and Logout links to appear blank. #1430 @9.0-SNAPSHOT
+ae5a4d7cd Fixed: wflow-consoleweb - DX8 Themes - Fixed when user image is set to hidden, the default icon border color is not following the sidebar setting. #1430 @8.2-SNAPSHOT
+caa3592b1 Fixed: wflow-consoleweb – Trimeda Theme / App Center - Resolved an issue where the Trimeda theme did not properly handle cases where the profile image is hidden, and updated the App Center styling to support the hidden profile state. #1430 @8.2-SNAPSHOT
+5de5d5021 Fixed: wflow-consoleweb - PWA - Remove unused version variable. T6912 #1466 @8.2-SNAPSHOT
+562b208d6 Fixed: wflow-consoleweb - UI Guider - Removed console error message #1479 @8.2-SNAPSHOT
+7b15699d0 Fixed: wflow-core - App Variable - Fixed intermittent loss of environmentVariableList in appConfig.xml commits T6974 #1510. @8.2-SNAPSHOT
+854b9b403 Fixed: wflow-core - FormDataDaoImpl - Unable to use reserved words as form element id #1526 @9.0-SNAPSHOT
+632c30c14 Fixed: wflow-consoleweb - Log Viewer - Token created for cluster broadcast didn't cleanup after expired. T7016 #1540 @8.2-SNAPSHOT
+fab53f914 Modified: wflow-jdbc - pom.xml - Upgrade mssql-jdbc to version 10.2.4.jre8. #1542 @8.2-SNAPSHOT
+f4240ea10 Fixed: wflow-consoleweb - Builder - Permission - Rule is not editable due to polluted JSON definition. T7088 #1576 @8.2-SNAPSHOT
+0bcb73f85 Fixed: wflow-core - Expression Hash Variable - Prevent RCE.
+da92c87d4 Fixed: wflow-consoleweb - Builder Inline Edit - Fixed inline editing does not work with html code #1594 @9.0-SNAPSHOT
+77214dd65 Fixed: wflow-consoleweb - Subform - Fixed Multi Select dropdown being hidden inside subform section T7132 #1597. @8.2-SNAPSHOT
+c91bfa4b2 Fixed: wflow-consoleweb/wflow-plugin-base - Console Page - Fixed inconsistent navigation title behavior when a console page plugin is opened. #1603 @8.2-SNAPSHOT
+09c94314d Fixed: wflow-consoleweb - Code Editor - Fixed deletion not updating the value when saved #1604 @9.0-SNAPSHOT
+86c22131f Modified: wflow-core - pom.xml - Excluded old rhino versions from dependencies. #1611 @8.2-SNAPSHOT
+6977bd72c Modified: wflow-consoleweb - pom.xml - Upgraded mysql-connector-j to 9.5.0. #1611 @8.2-SNAPSHOT
+6822a0351 Modified: wflow-commons - pom.xml - Upgraded rhino to 1.8.1. #1611 @8.2-SNAPSHOT
+4bbbe7044 Fixed: wflow-core - Hash Variable - Cache is not implemented correctly causing cache object only used once. T6808 #1614 @8.2-SNAPSHOT
+
 9.0.3
 =====
 93959da9b Fixed: wflow-commons - Logging - Downgrade to SLF4J because of issue with CSRFGuard library. #1480 @9.0-SNAPSHOT
