@@ -74,7 +74,7 @@ public class DbConnectionsCheck extends GovHealthCheckAbstract {
                 result.setScore((int) Math.floor(score));
             }
             if (numActive > 0) {
-                result.addDetail(ResourceBundleUtil.getMessage("dbConnectionsCheck.maxActive", new String[]{Integer.toString(maxActiveAlertNum)}));
+                result.addDetail(ResourceBundleUtil.getMessage("dbConnectionsCheck.maxActive", new String[]{Integer.toString(numActive)}));
             }
         } catch (Exception e) {}
         

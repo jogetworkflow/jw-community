@@ -1,4 +1,6 @@
-DiffMerge = {
+import * as jsondiffpatch from './jsondiffpatch/jsondiffpatch-0-7-3.js';
+
+window.DiffMerge = {
     merge: function (original, current, latest, outputElement) {
         // instantiate jsondiffpatch
         var instance = jsondiffpatch.create({

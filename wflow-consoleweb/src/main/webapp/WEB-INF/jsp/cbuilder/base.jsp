@@ -84,7 +84,6 @@
                 <link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/wro/advancedTool.css?build=<fmt:message key="build.number"/>">
                 <link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/builder/builder.css?build=<fmt:message key="build.number"/>" />
                 <link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/js/line-awesome-1.3.0/css/line-awesome.min.css" />
-                <link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/js/jsondiffpatch/jsondiffpatchhtml.css" />
                 <link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/css/builder_custom.css?build=<fmt:message key="build.number"/>">
                 <link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/fonts/inter/css/font.css" />
                 <jsp:include page="/WEB-INF/jsp/includes/css.jsp" />
@@ -334,10 +333,7 @@
 
                 <script type="text/javascript" src="${pageContext.request.contextPath}/builder/difflib/diffview.js"></script>
                 <script type="text/javascript" src="${pageContext.request.contextPath}/builder/difflib/difflib.js"></script>
-                <script type="text/javascript" src="${pageContext.request.contextPath}/js/jsondiffpatch/jsondiffpatch.js"></script>
-                <script type="text/javascript" src="${pageContext.request.contextPath}/js/jsondiffpatch/jsondiffpatch-formatters.min.js"></script>  
-                <script type="text/javascript" src="${pageContext.request.contextPath}/js/jsondiffpatch/diff_match_patch_uncompressed.js"></script>
-                <script type="text/javascript" src="${pageContext.request.contextPath}/js/builderutil.js"></script>
+                <script type="module" src="${pageContext.request.contextPath}/js/builderutil.js"></script>
                 <script type='text/javascript' src='${pageContext.request.contextPath}/js/boxy/javascripts/jquery.boxy.js'></script>
                 <script type="text/javascript" src="${pageContext.request.contextPath}/js/jquery/jquery.jeditable.js"></script>
                 <script>
@@ -353,7 +349,7 @@
                 <c:if test="${isIE}">
                     <script src="${pageContext.request.contextPath}/js/ie/fetch.js"></script>
                 </c:if>
-                <script type="text/javascript" src="${pageContext.request.contextPath}/builder/builder.js"></script>
+                <script type="module" src="${pageContext.request.contextPath}/builder/builder.js"></script>
                 ${fn:replace(builderJS, '<script', '<script data-cbuilder-script')}
                 <script data-cbuilder-script>
                         $(function () {

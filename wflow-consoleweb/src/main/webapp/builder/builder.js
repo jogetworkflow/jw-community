@@ -1,8 +1,9 @@
 /**
  * Customised from https://github.com/givanz/VvvebJs
  */
+import * as jsondiffpatch from '../js/jsondiffpatch/jsondiffpatch-0-7-3.js';
 
-_CustomBuilder = {
+window._CustomBuilder = {
     isAjaxReady : false,
     saveUrl : '',
     previewUrl : '',
@@ -1075,7 +1076,7 @@ _CustomBuilder = {
             function(returnedData){
                 if (returnedData !== null && returnedData !== undefined) {
                     CustomBuilder.permissionOptions = returnedData;
-                    for (e in returnedData) {
+                    for (let e in returnedData) {
                         if (returnedData[e].value !== "") {
                             CustomBuilder.availablePermission[returnedData[e].value] = returnedData[e].label;
                         }
@@ -1151,9 +1152,7 @@ _CustomBuilder = {
         //update save button
         $("#save-btn").removeClass("unsaved");
         if ($('body').attr("builder-theme") !== 'undefined' && $('body').attr("builder-theme") !== false) {
-            $("#save-btn > span").text(get_cbuilder_msg('ubuilder.save'));
-            $("#save-btn > i").removeClass("zmdi zmdi-check");
-            $("#save-btn > i").addClass("las la-cloud-upload-alt");
+            CustomBuilder.Builder.updateSaveButtonStatus(false);
         }
         if (!CustomBuilder.isSaved()) {
             $("#save-btn").addClass("unsaved");
@@ -1260,9 +1259,7 @@ _CustomBuilder = {
                         $("#save-btn").removeAttr("disabled");
                         if (typeof $('body').attr("builder-theme") !== 'undefined' && $('body').attr("builder-theme") !== false) {
                             if(d.success === true){
-                                $("#save-btn > span").text(get_cbuilder_msg('cbuilder.saved'));
-                                $("#save-btn > i").removeClass("las la-cloud-upload-alt");
-                                $("#save-btn > i").addClass("zmdi zmdi-check");
+                                CustomBuilder.Builder.updateSaveButtonStatus(true);
                             }
                             $("body").removeClass("initializing");
                             $("#loadingMessage").text("");
@@ -1350,8 +1347,13 @@ _CustomBuilder = {
             if(CustomBuilder.undoStack.length === 0){
                 $('#undo-btn').addClass('disabled');
             }
-
-            CustomBuilder.updateSaveStatus("-");
+            
+            if (CustomBuilder.isSaved()){
+                $("#save-btn").removeClass("unsaved");
+            } else {
+                $("#save-btn").addClass("unsaved");
+            }
+            CustomBuilder.Builder.updateSaveButtonStatus(false);
         }
     },
 
@@ -1379,8 +1381,13 @@ _CustomBuilder = {
             if(CustomBuilder.redoStack.length === 0){
                 $('#redo-btn').addClass('disabled');
             }
-
-            CustomBuilder.updateSaveStatus("+");
+            
+            if (CustomBuilder.isSaved()){
+                $("#save-btn").removeClass("unsaved");
+            } else {
+                $("#save-btn").addClass("unsaved");
+            }
+            CustomBuilder.Builder.updateSaveButtonStatus(false);
         }
     },
     
@@ -3730,9 +3737,7 @@ _CustomBuilder = {
         $("#quick-nav-bar").removeClass("active");
         
         if (CustomBuilder.systemTheme === 'light' || CustomBuilder.systemTheme === 'dark') {
-            $("#save-btn > span").text(get_cbuilder_msg('ubuilder.save'));
-            $("#save-btn > i").removeClass("zmdi zmdi-check");
-            $("#save-btn > i").addClass("las la-cloud-upload-alt");
+            CustomBuilder.Builder.updateSaveButtonStatus(false);
             $('body').attr("builder-theme", CustomBuilder.systemTheme);
             var iframes = $('iframe');
             if (iframes.length > 0) {
@@ -4072,7 +4077,7 @@ _CustomBuilder = {
 /*
  * Default builder to manage the palette and canvas
  */
-_CustomBuilder.Builder = {
+window._CustomBuilder.Builder = {
     zoom : 1,
     dragMoveMutation : false,
     mousedown : false,
@@ -4213,10 +4218,14 @@ _CustomBuilder.Builder = {
         }
         CustomBuilder.Builder.frameBody.addClass("initializing");
         
-        var self = CustomBuilder.Builder;
+        let self = CustomBuilder.Builder;
         
-        var selectedELSelector = "";
-        var selectedElIndex = 0;
+        let selectedELSelector = "";
+        let selectedElIndex = 0;
+
+        //to handle change of id
+        let selectedELAltSelector = "";
+        let selectedElAltIndex = 0;
 
         //find overview path element if overviewPath having value
         if (CustomBuilder.overviewPath !== null && CustomBuilder.overviewPath !== undefined && CustomBuilder.overviewPath !== "") {
@@ -4247,8 +4256,8 @@ _CustomBuilder.Builder = {
         self.selectNode(false);
         $("#element-parent-box, #element-highlight-box").hide();
         
-        var component = self.parseDataToComponent(data);
-        var temp = $('<div></div>');
+        let component = self.parseDataToComponent(data);
+        let temp = $('<div></div>');
         self.frameBody.append(temp);
         self.renderElement(data, temp, component, false, null, function(){
             if (self.nodeAdditionalType !== undefined && self.nodeAdditionalType !== "") {
@@ -4257,7 +4266,7 @@ _CustomBuilder.Builder = {
             
             //reselect previous selected element
             if (selectedELSelector !== "") {
-                var element = self.frameBody.find(selectedELSelector);
+                let element = self.frameBody.find(selectedELSelector);
                 
                 //to handle change of id
                 if (element.length === 0) {
@@ -4266,7 +4275,7 @@ _CustomBuilder.Builder = {
                 }
                 
                 if (element.length > 1) {
-                    var elements = element;
+                    let elements = element;
                     do {
                         element = elements[selectedElIndex];
                     } while (element === undefined && selectedElIndex-- > 0);
@@ -6450,7 +6459,7 @@ _CustomBuilder.Builder = {
 
         $('.drag-elements-sidepane').off("mousedown.builder touchstart.builder", "ul > li > ol > li > [element-class]");
         $('.drag-elements-sidepane').on("mousedown.builder touchstart.builder", "ul > li > ol > li > [element-class]", function (event) {
-            $this = $(this);
+            let $this = $(this);
             if (self.iconDrag) {
                 self.iconDrag.remove();
                 self.iconDrag = null;
@@ -6891,6 +6900,7 @@ _CustomBuilder.Builder = {
             if (props.tagName !== undefined && props.tagName !== "") {
                 var newTemp = document.createElement(props.tagName);
                 attributes = temp[0].attributes;
+                let len;
                 for (i = 0, len = attributes.length; i < len; i++) {
                     newTemp.setAttribute(attributes[i].nodeName, attributes[i].nodeValue);
                 }
@@ -8077,10 +8087,26 @@ _CustomBuilder.Builder = {
         } else {
             return false;
         }
+    },
+
+    /*
+     * Update the Save button icon and text when changes are saved or detected
+     */
+    updateSaveButtonStatus: function (saved) {
+        const icon = $("#save-btn > i");
+        const text = $("#save-btn > span");
+
+        if (saved) {
+            text.text(get_cbuilder_msg('cbuilder.saved'));
+            icon.removeClass("las la-cloud-upload-alt").addClass("zmdi zmdi-check");
+        } else {
+            text.text(get_cbuilder_msg('ubuilder.save'));
+            icon.removeClass("zmdi zmdi-check").addClass("las la-cloud-upload-alt");
+        }
     }
 }
 
-CustomBuilder = $.extend(true, {}, _CustomBuilder);
+window.CustomBuilder = $.extend(true, {}, _CustomBuilder);
 
 var isIE11 = !!window.MSInputMethodContext && !!document.documentMode;
 $(document).on('click', '.property-type-elementselect .chosen-container .chosen-drop ul li.disabled-result', CustomBuilder.Builder.handleChosenContainerClick);
