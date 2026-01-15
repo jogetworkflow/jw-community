@@ -1797,7 +1797,7 @@ public class FormDataDaoImpl extends HibernateDaoSupport implements FormDataDao 
                 return result;
             }
                 
-            Pattern pattern = Pattern.compile("(\\w+\\.customProperties\\.)([0-9]\\w+)");
+            Pattern pattern = Pattern.compile("(\\w+\\.customProperties\\.)([0-9]\\w*)");
             Matcher matcher = pattern.matcher(query);
             while (matcher.find()) {
                 query = query.replaceAll(StringUtil.escapeRegex(matcher.group()), StringUtil.escapeRegex(matcher.group(1)) + "t__" + StringUtil.escapeRegex(matcher.group(2)));
