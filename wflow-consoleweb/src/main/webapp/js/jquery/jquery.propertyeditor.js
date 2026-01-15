@@ -2461,7 +2461,8 @@ PropertyEditor.Model.ButtonPanel.prototype = {
             html += customButtons;
         }
 
-        if (!this.options.autoSave) {
+        // For App Composer, add `Save` Button even if autoSave is enabled due to a different saving mechanism
+        if (!this.options.autoSave || (CustomBuilder && CustomBuilder.builderType === "app")) {
             html += '<input type="button" class="page-button-save" value="' + this.options.saveButtonLabel + '"/>';
         }
         if (this.options.showCancelButton) {

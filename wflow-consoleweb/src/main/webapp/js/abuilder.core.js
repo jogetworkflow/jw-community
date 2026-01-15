@@ -434,7 +434,11 @@ AppBuilder = {
         var builderProperties = CustomBuilder.getBuilderProperties();
         builderProperties = $.extend(builderProperties, properties);
         CustomBuilder.update();
-        CustomBuilder.save();
+
+        //Bind save event to button
+        $(container).find(".page-button-save").off("click").on("click", function(){
+            CustomBuilder.save();
+        });
     },
     
     /*
