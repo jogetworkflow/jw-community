@@ -11,7 +11,7 @@
     <link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/css/builderTheme.css?build=<fmt:message key="build.number"/>" />
 </c:if>
 
-<commons:popupHeader builderTheme="${theme}"/>
+<commons:popupHeader builderTheme="${theme}" includeUserviewThemeCSS="${includeUserviewThemeCSS}"/>
 <jsp:include page="/WEB-INF/jsp/console/plugin/library.jsp" />
 
 <div id="main-body-header">
