@@ -28,7 +28,6 @@ import javax.cache.Cache;
 import javax.cache.CacheManager;
 import javax.sql.DataSource;
 import javax.xml.transform.TransformerException;
-import javax.lang.model.SourceVersion;
 import org.apache.commons.collections.map.LRUMap;
 import org.hibernate.SessionFactory;
 import org.hibernate.HibernateException;
@@ -549,21 +548,6 @@ public class FormDataDaoImpl implements FormDataDao {
         try {
             // save the form data
             for (FormRow row : rowSet) {
-                // check for bad keys
-                Map<String, Object> temp = new HashMap<>();
-                for (Object key : row.keySet()) {
-                    String oldKey = String.valueOf(key);
-                    String newKey = oldKey;
-                    if (oldKey != null && !oldKey.isEmpty() && (Character.isDigit(oldKey.charAt(0)) || SourceVersion.isKeyword(oldKey))) {
-                        newKey = "t__" + key;
-                    }
-                    temp.put(newKey, row.get(key));
-                }
-
-                // clear and replace row values
-                row.clear();
-                row.putAll(temp);
-
                 session.merge(entityName, row);
             }
             session.flush();
@@ -1143,7 +1127,7 @@ public class FormDataDaoImpl implements FormDataDao {
             String columnName = FORM_PREFIX_COLUMN + field;
             if (propName != null && !propName.isEmpty()) {
                 String propType = "text";
-                if (actionType == ACTION_TYPE_LOAD && (Character.isDigit(propName.charAt(0)) || SourceVersion.isKeyword(propName))) {
+                if (actionType == ACTION_TYPE_LOAD && Character.isDigit(propName.charAt(0))) {
                     propName = "t__" + propName;
                 }
                 element.setAttribute("name", propName);
@@ -1867,26 +1851,11 @@ public class FormDataDaoImpl implements FormDataDao {
                 return result;
             }
                 
-            Pattern pattern = Pattern.compile("(\\w+\\.customProperties\\.)([0-9a-zA-Z_][0-9a-zA-Z_]*)");
+            Pattern pattern = Pattern.compile("(\\w+\\.customProperties\\.)([0-9]\\w+)");
             Matcher matcher = pattern.matcher(query);
-            StringBuffer sb = new StringBuffer();
-
             while (matcher.find()) {
-                String firstGroup = matcher.group(1);
-                String secondGroup = matcher.group(2);
-
-                // Check if property name starts with digit or is a reserved keyword
-                if ((secondGroup.length() > 0 && Character.isDigit(secondGroup.charAt(0))) || SourceVersion.isKeyword(secondGroup)) {
-                    // Add t__ prefix if not already present
-                    if (!secondGroup.startsWith("t__")) {
-                        secondGroup = "t__" + secondGroup;
-                    }
-                }
-
-                matcher.appendReplacement(sb, StringUtil.escapeRegex(firstGroup) + StringUtil.escapeRegex(secondGroup));
+                query = query.replaceAll(StringUtil.escapeRegex(matcher.group()), StringUtil.escapeRegex(matcher.group(1)) + "t__" + StringUtil.escapeRegex(matcher.group(2)));
             }
-            matcher.appendTail(sb);
-            query = sb.toString();
             // save into cache
             processedQueryCache.put(cacheKey, query);                       
         } catch (Exception e) {

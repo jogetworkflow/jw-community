@@ -7,7 +7,6 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import javax.lang.model.SourceVersion;
 import org.apache.commons.collections.map.ListOrderedMap;
 import org.joget.apps.form.service.FormUtil;
 import org.joget.workflow.model.WorkflowAssignment;
@@ -108,12 +107,9 @@ public class FormData {
      */
     public String getLoadBinderDataProperty(Element element, String property) {
         String value = null;
-        if (property != null && !property.isEmpty()) {
+        if (property != null) {
             FormRowSet rowSet = getLoadBinderData(element);
             if (rowSet != null && !rowSet.isEmpty()) {
-                if (Character.isDigit(property.charAt(0)) || SourceVersion.isKeyword(property)) {
-                    property = "t__" + property;
-                }
                 FormRow firstRow = rowSet.get(0);
                 value = firstRow.getProperty(property);
             }
