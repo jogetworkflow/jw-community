@@ -29,7 +29,6 @@ caa3592b1 Fixed: wflow-consoleweb – Trimeda Theme / App Center - Resolved an i
 5de5d5021 Fixed: wflow-consoleweb - PWA - Remove unused version variable. T6912 #1466 @8.2-SNAPSHOT
 562b208d6 Fixed: wflow-consoleweb - UI Guider - Removed console error message #1479 @8.2-SNAPSHOT
 7b15699d0 Fixed: wflow-core - App Variable - Fixed intermittent loss of environmentVariableList in appConfig.xml commits T6974 #1510. @8.2-SNAPSHOT
-854b9b403 Fixed: wflow-core - FormDataDaoImpl - Unable to use reserved words as form element id #1526 @9.0-SNAPSHOT
 632c30c14 Fixed: wflow-consoleweb - Log Viewer - Token created for cluster broadcast didn't cleanup after expired. T7016 #1540 @8.2-SNAPSHOT
 fab53f914 Modified: wflow-jdbc - pom.xml - Upgrade mssql-jdbc to version 10.2.4.jre8. #1542 @8.2-SNAPSHOT
 f4240ea10 Fixed: wflow-consoleweb - Builder - Permission - Rule is not editable due to polluted JSON definition. T7088 #1576 @8.2-SNAPSHOT
