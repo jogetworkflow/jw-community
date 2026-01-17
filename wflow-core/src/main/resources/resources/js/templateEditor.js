@@ -265,12 +265,13 @@
         //to exit full screen mode, and F1 to toggle help panel
         //and Undo and Redo
         $('#' + this.id).on('keydown', function(event) {
-            if (event.keyCode == 90 && event.ctrlKey){
+            let isModifierPressed = event.ctrlKey || event.metaKey;
+            if (event.keyCode == 90 && isModifierPressed && !event.shiftKey){
                 thisObj.codeeditor.execCommand("undo")
                 event.preventDefault();
                 event.stopPropagation();
             }
-            else if (event.keyCode == 89 && event.ctrlKey){
+            else if ((event.keyCode == 89 && isModifierPressed) || (event.keyCode == 90 && isModifierPressed && event.shiftKey)) {
                 thisObj.codeeditor.execCommand("redo")
                 event.preventDefault();
                 event.stopPropagation();

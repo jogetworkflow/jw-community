@@ -280,6 +280,7 @@
         <!-- Fold addons, these give users the ability to fold the code -->
         <js>/js/codemirror/addon/fold/foldcode.js</js>
         <js>/js/codemirror/addon/fold/foldgutter.js</js>
+        <js>/js/codemirror/addon/fold/brace-fold.js</js>
 
         <!-- CSS for Codemirror5 -->
         <css>/js/codemirror/lib/codemirror.css</css>
