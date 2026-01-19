@@ -6501,22 +6501,30 @@ window._CustomBuilder.Builder = {
             }
             var data = parent.data("data");
             
-            var index = 0;
             var container = $(self.dragElement).parent().closest("[data-cbuilder-"+self.component.builderTemplate.getParentContainerAttr(elementObj, self.component)+"]");
-            index = $(container).find("> *").index(self.dragElement);
-            
+
             var parentDataArray = data[self.component.builderTemplate.getParentDataHolder(elementObj, self.component)];
             if (parentDataArray === undefined) {
                 parentDataArray = [];
                 data[self.component.builderTemplate.getParentDataHolder(elementObj, self.component)] = parentDataArray;
             }
+
             if ($(container).is('[data-cbuilder-single]')) {
                 parentDataArray.splice(0, parentDataArray.length, elementObj);
                 $(container).find("> [data-cbuilder-classname]").remove();
             } else {
+                // Calculate index based on previous sibling with data-cbuilder-classname
+                // This ensures we only count actual builder elements, not style/clear-float divs
+                var prev = $(self.dragElement).prev("[data-cbuilder-classname]");
+                var index = 0;
+
+                if ($(prev).length > 0) {
+                    index = $.inArray($(prev).data("data"), parentDataArray) + 1;
+                }
+
                 parentDataArray.splice(index, 0, elementObj);
             }
-            
+
             if (self.component.builderTemplate.afterAddElement !== undefined) {
                 self.component.builderTemplate.afterAddElement(elementObj, self.component);
             }
