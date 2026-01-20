@@ -456,7 +456,7 @@ public class Dx8TrimedaTheme extends AjaxUniversalTheme {
 
     @Override
     protected String getBreadcrumb(Map<String, Object> data) {
-        String breadcrumb = "<ul class=\"breadcrumb\"><li><i class=\"fa fa-home\"></i> <a href=\"" + data.get("home_page_link") + "\">" + ResourceBundleUtil.getMessage("theme.universal.home") + "</a> <span class='separator'> - </span></li>";
+        String breadcrumb = "<ul class=\"breadcrumb\"><li> <a href=\"" + data.get("home_page_link") + "\">" + ResourceBundleUtil.getMessage("theme.universal.home") + "</a> <span class='separator'> - </span></li>";
         if ((Boolean) data.get("is_login_page") || (Boolean) data.get("embed")) {
             return "";
         } else if (userview.getCurrent() != null) {
