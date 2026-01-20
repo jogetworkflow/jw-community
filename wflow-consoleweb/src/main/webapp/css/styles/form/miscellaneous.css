@@ -1,0 +1,26 @@
+/* Contains minor, one-off, or page-specific style overrides that belong to form but don’t belong to any reusable component. */
+.calculationField_value {
+    color: var(--jgt-input-colorText);
+    font-size: var(--jgt-input-inputFontSize);
+    padding-block: var(--jgt-input-paddingBlock);
+    padding-inline: var(--jgt-input-paddingInline);
+    height: var(--jgt-input-controlHeight);
+    line-height: var(--jgt-input-lineHeight);
+}
+
+.comments_thread .comment {
+    width: 100% !important;
+    margin-top: 20px !important;
+}
+
+/* Multi Select */
+.chosen-container.colorfulTags ul.chosen-choices:after {
+    content: '\f078';
+    font-family: "Font Awesome 5 Free";
+    font-weight: 900;
+    position: absolute;
+    z-index: 1;
+    top: 4px;
+    right: 4px;
+}
+/* End of Form Misc Stylings */

@@ -1,0 +1,22 @@
+/* Any Page Stylings go here */
+#page {
+    min-height: 100vh;
+    padding-left: var(--global-sidebarWidth);
+    -webkit-transition: all 0.2s ease;
+    -o-transition: all 0.2s ease;
+    transition: all 0.2s ease;
+    background-image: var(--theme-background-image, none);
+    background-size: cover !important;
+    background-position: center bottom;
+    background-attachment: fixed;
+}
+
+body.rtl:not(.horizontal_menu) #page {
+    padding-right: 280px;
+    padding-left: unset;
+}
+
+body.horizontal_menu #page {
+    padding-left: 0px;
+}
+/* End of Page Stylings */

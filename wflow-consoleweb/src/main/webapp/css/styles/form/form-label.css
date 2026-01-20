@@ -1,0 +1,43 @@
+/* Any Form Label Styling go here, exmple, labels with Icon */
+/* Form Label with Icon */
+.form-cell > label.label.withIcon > i,
+.subform-cell > label.label.withIcon > i,
+.label-left.form-cell > label.label.withIcon > i,
+.label-left.subform-cell > label.label.withIcon > i{
+    position: absolute;
+    color: var(--jgt-input-colorIcon);
+    background: var(--jgt-input-colorBorder);
+    box-sizing: border-box;
+    z-index: 1;
+    border-radius: calc(var(--jgt-input-borderRadius) - 1px) 0 0 calc(var(--jgt-input-borderRadius) - 1px);
+    width: 35px;
+    height: var(--jgt-input-controlHeight);
+    right: -51px;
+    top: 0px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.form-cell > label.label.withIcon + *:not(.ui-screen-hidden),
+.subform-cell > label.label.withIcon + *:not(.ui-screen-hidden),
+.form-cell > label.label.withIcon + .ui-screen-hidden + *,
+.subform-cell > label.label.withIcon + .ui-screen-hidden + *{
+    padding-left: 45px;
+}
+
+.label-top .form-cell:not(.label-left) > label.label.withIcon > i,
+.label-top .subform-cell:not(.label-left) > label.label.withIcon > i{
+   right: unset;
+   bottom: unset;
+   top: calc(100% + var(--jgt-form-marginBottom));
+   left: 0px;
+}
+
+.label-top.form-cell > label.label.withIcon > i,
+.label-top.subform-cell > label.label.withIcon > i{
+    bottom: unset;
+    right: unset;
+    top: calc(100% + var(--jgt-form-marginBottom));
+}
+/* End of Form Label Styling */

@@ -1,0 +1,268 @@
+/* Any related userview form stylings go here, such as, spacing, bg color */
+.form-cell > label.label, 
+.subform-cell > label.label {
+    max-width: calc(var(--jgt-form-labelWidth) - var(--jgt-form-labelMarginInlineEnd));
+}
+
+.label-top.form-cell > label.label,
+.label-top.subform-cell > label.label{
+    width: 100%;
+    float: none !important;
+}
+
+.form-cell > label.label + *:not(.ui-screen-hidden), 
+.subform-cell > label.label + *:not(.ui-screen-hidden), 
+.form-cell > label.label + .ui-screen-hidden + *, 
+.subform-cell > label.label + .ui-screen-hidden + * {
+    max-width: var(--jgt-form-fieldWidth);
+}
+
+.label-top.form-cell > label.label + *:not(.ui-screen-hidden),
+.label-top.subform-cell > label.label + *:not(.ui-screen-hidden),
+.label-top.form-cell > label.label + .ui-screen-hidden + *,
+.label-top.subform-cell > label.label + .ui-screen-hidden + *{
+    width: 100%;
+    max-width: 100%;
+}
+
+@media screen and (max-width: 991px) and (min-width : 768px) {
+    .tablet-label-top.form-cell > label.label,
+    .tablet-label-top.subform-cell > label.label{
+        width: 100%;
+        float: none !important;
+    }
+    .tablet-label-top.form-cell > label.label + *:not(.ui-screen-hidden),
+    .tablet-label-top.subform-cell > label.label + *:not(.ui-screen-hidden),
+    .tablet-label-top.form-cell > label.label + .ui-screen-hidden + *,
+    .tablet-label-top.subform-cell > label.label + .ui-screen-hidden + *{
+        width: 100%;
+        float: none !important;
+    }
+}
+
+@media screen and (max-width: 768px) {
+    .form-cell > label.label,
+    .subform-cell > label.label,
+    .form-cell > label.label + *:not(.ui-screen-hidden),
+    .subform-cell > label.label + *:not(.ui-screen-hidden),
+    .form-cell > label.label + .ui-screen-hidden + *,
+    .subform-cell > label.label + .ui-screen-hidden + *{
+        white-space: normal;
+        position: relative;
+        width: 100%;
+        max-width: 100%;
+        float: none;
+    }
+}
+
+form.form {
+    font-size: 14px;
+}
+
+form.form fieldset {
+    margin-inline-start: 0;
+    margin-inline-end: 0;
+    padding-block-start: 0;
+    padding-block-end: 0;
+    padding-inline-start: 0;
+    padding-inline-end: 0;
+    min-inline-size: min-content;
+    position: relative;
+    min-width: 0;
+    word-wrap: break-word;
+    background-clip: border-box;
+    border: 1px solid rgba(0, 0, 0, 0.06);
+    border-radius: 0.25rem;
+    padding-bottom: 20px;
+    margin: 0px;
+}
+
+form.form fieldset legend {
+    padding: 0.75rem 0.95rem;
+    margin-bottom: 0;
+    background-color: var(--theme-heading-bg, var(--theme-color5, #fff));
+    color: var(--theme-heading-color, var(--theme-header-font, #ffffff));
+    border-radius: 3px 3px 0 0;
+    display: block;
+    margin-bottom: 20px;
+    font-size: 16px;
+    width: calc(100% + 2px);
+    box-sizing: border-box;
+    float: left;
+    position: relative;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.06);
+}
+
+form.form fieldset legend:after {
+    content: "";
+    position: absolute;
+    background: #fff;
+    opacity: 0.15;
+    top: 0;
+    left: 0;
+    right: 0px;
+    bottom: 0px;
+}
+
+form.form fieldset+fieldset {
+    margin-top: 25px;
+}
+form.form fieldset div.policies,
+form.form fieldset .form-row {
+    padding-left: 20px;
+    padding-right: 20px;
+    position: relative;
+}
+
+form.form fieldset .form-row {
+    display: -webkit-box;
+    display: -ms-flexbox;
+    display: flex;
+    -ms-flex-wrap: wrap;
+    flex-wrap: wrap;
+}
+
+form.form fieldset .form-row:first-child {
+    margin-top: 20px;
+}
+
+form.form fieldset .form-row+.form-row {
+    margin-top: 15px;
+}
+
+form.form fieldset .form-row>label {
+    white-space: normal;
+    position: relative;
+    flex: 0 0 15%;
+    margin-bottom: 0px;
+    padding: 8px 10px 0 0;
+    min-height: 34px;
+    font-weight: 400;
+}
+
+form.form fieldset .form-row>.form-input {
+    white-space: normal;
+    position: relative;
+    flex: 0 0 85%;
+}
+
+form.form .form-buttons {
+    padding-top: 20px;
+    padding-bottom: 20px;
+}
+
+form.form .btn {
+    color: #fff;
+    background-color: #2196f3;
+    border-color: #2196f3;
+}
+
+form.form fieldset {
+    background: #fff;
+}
+
+.form-message {
+    --jgt-body-font-weight: 500;
+    font-weight: var(--jgt-body-font-weight);
+    margin-left: 6px;
+    margin-right: 6px;
+    display: flex;
+    align-items: center;   
+    padding: 0.6875rem 0.625rem;
+    max-height: 2.5rem;
+}
+
+.form-message.form-success {
+    border: 1px solid transparent;
+    color: #004085;
+    background-color: #cce5ff;
+    border-color: #cce5ff;
+    position: relative;
+    margin-bottom: 1rem;
+    border-radius: 0.25rem; 
+}
+
+.form-errors {
+    border: 1px solid transparent !important;
+    color: #721c24 !important;
+    background-color: #f8d7da !important;
+    border-color: #f5c6cb !important;
+    position: relative !important;
+    margin-bottom: 1rem !important;
+    border-radius: 0.25rem !important;
+}
+
+#main-body-message.form-errors{
+    margin-bottom: 0px !important;
+}
+
+.form-error-message {
+    color: #dc3847;
+    display: block;
+    font-size: 80%;
+}
+
+.form #advancedView h5 {
+    padding: 15px 15px 0;
+    font-size: 14px;
+}
+
+.form-row label span.mandatory {
+    color: red;
+}
+
+body .form-container [class*="form-cell-value"] {
+    padding: 4px 10px 0 1px;
+}
+
+/* Form Section & Subform Section */
+#navigation .menu.analyzer,
+.form-section.analyzer,
+.form-column.analyzer,
+.form-cell.analyzer,
+.subform-section.analyzer,
+.subform-column.analyzer,
+.subform-cell.analyzer,
+#content.analyzer {
+    border: inherit !important;
+    margin: inherit !important;
+    border-radius: inherit !important;
+    position: relative;
+}
+
+#navigation .menu.analyzer:before,
+.form-section.analyzer:before,
+.form-column.analyzer:before,
+.form-cell.analyzer:before,
+.subform-section.analyzer:before,
+.subform-column.analyzer:before,
+.subform-cell.analyzer:before,
+#content.analyzer:before {
+    border: solid 1px orange;
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    content: "";
+}
+
+/* User Profile */
+.userProfile-body-content form.form fieldset > legend {
+    background-color: transparent;
+    font-size: 1rem;
+    font-weight: 600;
+}
+.userProfile-body-content label {
+    text-align: var(--jgt-form-labelAlign);
+}
+@media (max-width: 767px) {
+    .userProfile-body-content label {
+        --jgt-form-labelAlign: left;
+    }
+
+    form.form fieldset .form-row>.form-input {
+        flex: 0 0 100%;
+    }
+}
+/* End of Form Stylings */

@@ -1,0 +1,274 @@
+/* Stylings for Datalist for Mobile Breakpoint */
+/* Datalist Size Small */
+body .dataList.size_sm>form>.table-wrapper>table.responsivetable>tbody>tr, 
+body .dataList.size_sm>.table-wrapper>table.responsivetable>tbody>tr {
+    display: flex !important;
+    flex-direction: row !important;
+    column-gap: 12px;
+
+    border-bottom: 1px solid #CED4DA;
+    margin-bottom: 0px !important;
+    padding: 8px 0px !important;
+    border-left: none;
+    border-right: none;
+    border-radius: 0;
+}
+
+.dataList.size_sm .responsivetable .cell-label {
+    display: block;
+    font-weight: bold;
+    font-size: 80%;
+    margin-bottom: 3px;
+}
+
+.dataList.size_sm>form>.table-wrapper>table.responsivetable>thead,
+.dataList.size_sm>.table-wrapper>table.responsivetable>thead {
+    display: flex !important;
+}
+
+.dataList.size_sm>form>.table-wrapper>table.responsivetable>thead>tr,
+.dataList.size_sm>.table-wrapper>table.responsivetable>thead>tr {
+    display: flex;
+    flex: 1;
+    height: fit-content;
+}
+
+.dataList.size_sm>form>.table-wrapper>table.responsivetable>thead>tr>th:last-child,
+.dataList.size_sm>.table-wrapper>table.responsivetable>thead>tr>th:last-child {
+    flex: 1;
+}
+
+.dataList.size_sm>form>.table-wrapper>table.responsivetable>thead>tr>th:is(.select_checkbox, .rowNumberMobile),
+.dataList.size_sm>.table-wrapper>table.responsivetable>thead>tr>th:is(.select_checkbox, .rowNumberMobile) {
+    border: none;
+}
+
+
+.dataList.size_sm>form>.table-wrapper>table.responsivetable>thead>tr>th:not(.select_checkbox, .rowNumberMobile),
+.dataList.size_sm>.table-wrapper>table.responsivetable>thead>tr>th:not(.select_checkbox, .rowNumberMobile),
+.dataList.size_sm>form>.table-wrapper>table.responsivetable>tbody>tr>.column_wrapper>td[xclass~='rowNumber'],
+.dataList.size_sm>.table-wrapper>table.responsivetable>tbody>tr>.column_wrapper>[xclass~='rowNumber'] {
+    display: none;
+}
+
+.dataList.size_sm>form>.table-wrapper>table.responsivetable,
+.dataList.size_sm>.table-wrapper>table.responsivetable {
+    margin-bottom: 5px;
+}
+
+.dataList.size_sm>form>.table-wrapper>table.responsivetable,
+.dataList.size_sm>.table-wrapper>table.responsivetable,
+.dataList.size_sm>form>.table-wrapper>table.responsivetable>tbody,
+.dataList.size_sm>.table-wrapper>table.responsivetable>tbody,
+.dataList.size_sm>form>.table-wrapper>table.responsivetable>tbody>tr,
+.dataList.size_sm>.table-wrapper>table.responsivetable>tbody>tr,
+.dataList.size_sm>form>.table-wrapper>table.responsivetable>tbody>tr>td:not([data-cbuilder-sample]):not(.control_hide),
+.dataList.size_sm>.table-wrapper>table.responsivetable>tbody>tr>td:not([data-cbuilder-sample]):not(.control_hide) {
+    display: block !important;
+    border: 0;
+    width: auto !important;
+    text-align: left;
+}
+
+.dataList.size_sm>form>.table-wrapper>table.responsivetable,
+.dataList.size_sm>.table-wrapper>table.responsivetable {
+    width: fit-content !important;
+    max-width: fit-content !important;
+}
+
+.dataList.size_sm>form>.table-wrapper>table.responsivetable>tbody>tr,
+.dataList.size_sm>.table-wrapper>table.responsivetable>tbody>tr {
+    width: 100%;
+}
+
+div.column_wrapper {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    row-gap: 5px;
+}
+
+.dataList.size_sm>form>.table-wrapper>table.responsivetable>tbody>tr>.column_wrapper>td,
+.dataList.size_sm>.table-wrapper>table.responsivetable>tbody>tr>.column_wrapper>td {
+    display: flex;
+    column-gap: 10px;
+    border: none;
+}
+
+.dataList.size_sm>form>.table-wrapper>table.responsivetable>tbody>tr>.column_wrapper>td.row-action,
+.dataList.size_sm>.table-wrapper>table.responsivetable>tbody>tr>.column_wrapper>td.row-action {
+    column-gap: 5px;
+}
+
+.dataList.size_sm>form>.table-wrapper>table.responsivetable>tbody>tr>.column_wrapper>td.row-action > a,
+.dataList.size_sm>.table-wrapper>table.responsivetable>tbody>tr>.column_wrapper>td.row-action > a {
+    padding: 0px 0px;
+}
+
+
+.dataList.size_sm>form>.table-wrapper>table.responsivetable>tbody>tr>.column_wrapper>td,
+.dataList.size_sm>.table-wrapper>table.responsivetable>tbody>tr>.column_wrapper>td {
+    padding: 0px 0px;
+    margin-bottom: 0px !important;
+}
+
+.dataList.size_sm>form>.table-wrapper>table.responsivetable>tbody>tr>.column_wrapper>td.row_action a.btn-link,
+.dataList.size_sm>.table-wrapper>table.responsivetable>tbody>tr>.column_wrapper>td.row_action a.btn-link {
+    padding-left: 0px;
+    padding-right: 0px;
+}
+
+.dataList.size_sm>form>.table-wrapper>table.responsivetable>tbody>tr>.column_wrapper>td>.cell-label,
+.dataList.size_sm>.table-wrapper>table.responsivetable>tbody>tr>.column_wrapper>td>.cell-label {
+    min-width: 100px;
+    max-width: 100px;
+    font-size: 14px;
+    font-weight: 300;
+}
+
+.dataList.size_sm>form>.table-wrapper>table.responsivetable>tbody>tr>.column_wrapper>td>.cell-value,
+.dataList.size_sm>.table-wrapper>table.responsivetable>tbody>tr>.column_wrapper>td>.cell-value {
+    font-size: 14px;
+    font-weight: 400;
+    flex: 1;
+}
+
+.dataList.size_sm>form>.table-wrapper>table.responsivetable>tbody>tr>td:not([data-cbuilder-sample]),
+.dataList.size_sm>.table-wrapper>table.responsivetable>tbody>tr>td:not([data-cbuilder-sample]) {
+    min-width: 40px;
+    max-width: 40px;
+}
+
+.dataList.size_sm>form>.table-wrapper>table.responsivetable>tbody>tr>td[xclass~='column_id']>.cell-label,
+.dataList.size_sm>.table-wrapper>table.responsivetable>tbody>tr>td[xclass~='column_id']>.cell-label {
+    display: none;
+}
+
+.dataList.size_sm>form>.table-wrapper>table.responsivetable>tbody>tr>td>.cell-label,
+.dataList.size_sm>.table-wrapper>table.responsivetable>tbody>tr>td>.cell-label {
+    display: block;
+}
+
+.dataList.size_sm>form>.table-wrapper>table.responsivetable>tbody>tr>td>.cell-value,
+.dataList.size_sm>.table-wrapper>table.responsivetable>tbody>tr>td>.cell-value {
+    display: inline-block;
+    vertical-align: top;
+    padding: 5px;
+    box-sizing: border-box;
+}
+
+.dataList.size_sm>form>.table-wrapper>table.responsivetable>tbody>tr>td>.cell-label.column-hidden,
+.dataList.size_sm>.table-wrapper>table.responsivetable>tbody>tr>td>.cell-label.column-hidden,
+.dataList.size_sm>form>.table-wrapper>table.responsivetable>tbody>tr>td>.cell-value.column-hidden,
+.dataList.size_sm>.table-wrapper>table.responsivetable>tbody>tr>td>.cell-value.column-hidden {
+    display: none;
+}
+
+.dataList.size_sm>form>.table-wrapper>table.responsivetable>tbody>tr>td>.cell-label,
+.dataList.size_sm>.table-wrapper>table.responsivetable>tbody>tr>td>.cell-label {
+    width: 40%;
+    margin-top: 2px;
+}
+
+.dataList.size_sm>form>.table-wrapper>table.responsivetable>tbody>tr>td>.cell-value,
+.dataList.size_sm>.table-wrapper>table.responsivetable>tbody>tr>td>.cell-value {
+    width: 60%
+}
+
+.dataList.size_sm>form>.table-wrapper>table.cardLayout.cardCollapsible>tbody>tr.collapsed>td[xclass]:not(.collapsible_toggle_column),
+.dataList.size_sm>.table-wrapper>table.cardLayout.cardCollapsible>tbody>tr.collapsed>td[xclass]:not(.collapsible_toggle_column),
+.dataList.size_sm>form>.table-wrapper>table.cardLayout.cardCollapsible>tbody>tr.collapsed>td.rowaction_body,
+.dataList.size_sm>.table-wrapper>table.cardLayout.cardCollapsible>tbody>tr.collapsed>td.rowaction_body {
+    display: none !important;
+}
+
+.dataList.size_sm>form>.table-wrapper>table.responsivetable>tbody>tr>td.rowaction_body,
+.dataList.size_sm>.table-wrapper>table.responsivetable>tbody>tr>td.rowaction_body {
+    display: inline-block !important;
+    margin-right: 5px;
+}
+
+.dataList.size_sm>form>.table-wrapper>table.responsivetable>tbody>tr,
+.dataList.size_sm>.table-wrapper>table.responsivetable>tbody>tr {
+    padding: var(--jgt-list-itemPadding);
+    background: var(--jgt-list-contentBg);
+    border: var(--jgt-list-lineWidth);
+    border-color: var(--jgt-list-colorBorder);
+    border-style: var(--jgt-acc-lineType);
+    border-radius: var(--jgt-list-borderRadius);
+    margin-bottom: 10px;
+    position: relative;
+}
+
+.dataList.size_sm>form>.table-wrapper>table.responsivetable>tbody>tr+tr.nesteddl_row,
+.dataList.size_sm>.table-wrapper>table.responsivetable>tbody>tr+tr.nesteddl_row {
+    display: none !important;
+}
+
+.dataList.size_sm>form>.table-wrapper>table.responsivetable>tbody>tr+tr.nesteddl_row.active,
+.dataList.size_sm>.table-wrapper>table.responsivetable>tbody>tr+tr.nesteddl_row.active {
+    display: block !important;
+}
+
+.dataList.size_sm>form>.table-wrapper>table.responsivetable>tbody>tr>td.select_checkbox,
+.dataList.size_sm>form>.table-wrapper>table.responsivetable>tbody>tr>td.select_radio,
+.dataList.size_sm>.table-wrapper>table.responsivetable>tbody>tr>td.select_checkbox,
+.dataList.size_sm>.table-wrapper>table.responsivetable>tbody>tr>td.select_radio {
+    height: 0px !important;
+    border: 0 !important;
+    margin-bottom: 0 !important;
+    font-size: 0px !important;
+    display: inherit !important;
+
+    min-width: 30px;
+    max-width: 30px;
+}
+
+.dataList.size_sm>form>.table-wrapper>table.responsivetable>thead>tr>th,
+.dataList.size_sm>.table-wrapper>table.responsivetable>thead>tr>th,
+.dataList.size_sm>form>.table-wrapper>table.responsivetable>tbody>tr>td, 
+.dataList.size_sm>.table-wrapper>table.responsivetable>tbody>tr>td,
+.dataList.size_sm>form>.table-wrapper>table.responsivetable>tbody>tr>td:is(.select_checkbox, .select_radio, .rowNumberMobile) {
+    padding: 16px !important;
+}
+
+.dataList.size_sm>form>.table-wrapper>table.responsivetable>tbody>tr>td.select_checkbox input,
+.dataList.size_sm>form>.table-wrapper>table.responsivetable>tbody>tr>td.select_radio input,
+.dataList.size_sm>.table-wrapper>table.responsivetable>tbody>tr>td.select_checkbox input,
+.dataList.size_sm>.table-wrapper>table.responsivetable>tbody>tr>td.select_radio input {
+    display: block !important;
+}
+
+.dataList.size_sm>form>.table-wrapper>table.responsivetable>tbody>tr>td.select_checkbox>label>i,
+.dataList.size_sm>form>.table-wrapper>table.responsivetable>tbody>tr>td.select_radio>label>i,
+.dataList.size_sm>.table-wrapper>table.responsivetable>tbody>tr>td.select_checkbox>label>i,
+.dataList.size_sm>.table-wrapper>table.responsivetable>tbody>tr>td.select_radio>label>i {
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    z-index: 1;
+    pointer-events: auto;
+    content: "";
+    background-color: rgba(0, 0, 0, 0);
+    border-radius: 5px;
+    overflow: hidden;
+    cursor: pointer;
+}
+
+.dataList.size_sm>form>.table-wrapper>table.responsivetable>tbody>tr>td.select_checkbox>label>:checked+i,
+.dataList.size_sm>form>.table-wrapper>table.responsivetable>tbody>tr>td.select_radio>label>:checked+i,
+.dataList.size_sm>.table-wrapper>table.responsivetable>tbody>tr>td.select_checkbox>label>:checked+i,
+.dataList.size_sm>.table-wrapper>table.responsivetable>tbody>tr>td.select_radio>label>:checked+i {
+    box-shadow: none !important;
+}
+
+.dataList.size_sm>form>.table-wrapper>table.responsivetable>tbody>tr:has(td.select_checkbox>label>:checked),
+.dataList.size_sm>form>.table-wrapper>table.responsivetable>tbody>tr:has(td.select_radio>label>:checked),
+.dataList.size_sm>.table-wrapper>table.responsivetable>tbody>tr:has(td.select_checkbox>label>:checked),
+.dataList.size_sm>.table-wrapper>table.responsivetable>tbody>tr:has(td.select_radio>label>:checked) {
+    box-shadow: none !important;
+    background-color: #E7F1FF !important;
+}
+/* End of Stylings */

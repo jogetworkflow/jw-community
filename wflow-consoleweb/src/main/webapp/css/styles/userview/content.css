@@ -1,0 +1,191 @@
+/* Any related content stylings go here */
+#content.page_content {
+    padding-top: calc(var(--global-headerHeight) + 8px);
+    padding-bottom: calc(var(--global-footerHeight) * 1.5);
+    margin-left: auto;
+    margin-right: auto;
+    max-width: var(--global-contentWidth);
+    padding-inline: var(--global-contentPaddingInline);
+    min-height: calc(100vh - var(--global-footerHeight));
+}
+
+#content main {
+    position: relative;
+}
+
+#content .main-body-content {
+    background-color: var(--theme-content-background, #ffffffcc);
+    padding: 24px;
+    color: var(--jgt-tpgh-colorText, var(--theme-font-color, #72777a));
+    border-radius: 8px;
+}
+
+#content .main-body-content.Form_Menu,
+#content .main-body-content.Run_Process_Menu,
+#content .main-body-content:has(.viewForm-body-content) {
+    background-color: transparent;
+    border: 0px;
+    padding: 0px;
+}
+
+#content .main-body-content.User_Profile_Menu {
+    padding: 0px;
+    background-color:transparent;
+}
+
+#content #profile > fieldset:nth-child(3) > div:nth-child(2) > .form-input{
+    display: block;
+    width: 100%;
+    color: var(--jgt-input-colorText);
+    background-color: var(--jgt-input-username-disabled, #E4E4E4);
+    background-clip: padding-box;
+    border: var(--jgt-input-lineWidth) solid var(--jgt-input-colorBorder);
+    font-size: var(--jgt-input-inputFontSize);
+    padding-block: var(--jgt-input-paddingBlock);
+    padding-inline: var(--jgt-input-paddingInline);
+    height: var(--jgt-input-controlHeight);
+    line-height: var(--jgt-input-lineHeight);
+    border-radius: var(--jgt-input-borderRadius);
+    cursor: not-allowed;
+}
+
+#content .main-body-content+.main-body-content {
+    margin-top: 20px;
+}
+
+#content main>[class*="-body-content"]>[class*="-body-header"] {
+    font-family: inherit;
+    color: inherit;
+    margin-bottom: 20px;
+    height: auto;
+    font-size: 1.4em;
+    padding: 0;
+}
+
+#content main:after {
+    clear: both;
+    content: "";
+    display: block;
+}
+
+#content main button[class*="button"]:not([class*="btn-"]):not(.accordion-button),
+#content main input[class*="button"]:not([class*="btn-"]),
+#content main button.btn-primary,
+#content main input.btn-primary {
+    color: var(--jgt-btn-primaryColor);
+    background-color: var(--jgt-btn-colorPrimary);
+    border-color: var(--jgt-btn-colorPrimary);
+}
+
+#content main button[class*="button"]:not(.accordion-button),
+#content main input[class*="button"],
+#sidebar a,
+.btn {
+    --ripple-color: rgba(0, 0, 0, 0.1);
+    --ripple-duration: 1s;
+    --ripple-fuzz: 5px;
+}
+
+#content .btn:not([class*="btn-"]) {
+    color: var(--jgt-btn-primaryColor);
+    background-color: var(--jgt-btn-colorPrimary);
+}
+
+#content main .btn-group>.btn+.btn {
+    box-shadow: 0 0 2px rgb(0 0 0 / 20%);
+}
+
+#content main .btn-group>.btn.active {
+    box-shadow: inset 8px 8px 20px 5px rgb(0 0 0 / 30%);
+}
+
+#content .main-body-content.Dashboard {
+    background-color: transparent;
+    border: 0;
+    padding: 0;
+}
+
+#content .grid-stack-item .grid-stack-item-content {
+    overflow: hidden;
+    background-color: var(--jgt-card-colorBgContainer);
+    background-clip: border-box;
+    border: var(--jgt-card-lineWidth) var(--jgt-card-lineType) var(--jgt-card-colorBorderSecondary);
+    border-radius: var(--jgt-card-borderRadiusLG);
+    color: var(--jgt-card-colorText);
+    font-size: var(--jgt-card-fontSizeLG);
+    line-height: var(--jgt-card-lineHeight);
+}
+
+#content .grid-stack-item-loading {
+    opacity: 0.3;
+}
+
+#content .grid-stack-item .grid-stack-item-header {
+    padding: 0 var(--jgt-card-padding);
+    margin-bottom: 0;
+    background-color: var(--jgt-card-headerBg);
+    border-bottom: var(--jgt-card-lineWidth) var(--jgt-card-lineType) var(--jgt-card-colorBorderSecondary);
+    color: var(--jgt-card-colorTextHeading);
+    font-size: var(--jgt-card-headerFontSize);
+    height: var(--jgt-card-headerHeight);
+    line-height: var(--jgt-card-headerHeight);
+    font-weight: var(--jgt-card-fontWeightStrong);
+}
+
+#content .grid-stack-item .grid-stack-item-header h4 {
+    padding: 0;
+    color: var(--jgt-card-colorTextHeading);
+    font-size: var(--jgt-card-headerFontSize);
+    line-height: var(--jgt-card-headerHeight);
+    font-weight: var(--jgt-card-fontWeightStrong);
+}
+
+#content .grid-stack-item-header-action {
+    --jgt-tpgh-colorLink: #1F1F1F;
+    color: var(--jgt-tpgh-colorLink);
+    opacity: 0.8;
+    top: 0px;
+    margin-right: 15px;
+}
+
+#content .main-body-content.Dashboard .reset_position {
+    color: var(--jgt-tpgh-colorLink);
+}
+
+#content .grid-stack-item-body .pagelinks {
+    display: block;
+    width: 100%;
+}
+
+body.quickEditModeActive #content > main {
+    padding: 1px !important;
+}
+
+#content main .fc-button-group button {
+    border-radius: 0px !important;
+    border-left-color: rgba(0, 0, 0, 0.3) !important;
+}
+
+#content main .fc-button-group button:first-child {
+    border-top-left-radius: 3px !important;
+    border-bottom-left-radius: 3px !important;
+    border-left: 0px;
+}
+
+#content main .fc-button-group button:last-child {
+    border-top-right-radius: 3px !important;
+    border-bottom-right-radius: 3px !important;
+}
+
+#content main .fc-state-active,
+#content main .fc-state-down {
+    box-shadow: inset 0 2px 4px rgb(0 0 0 / 20%), 0 1px 2px rgb(0 0 0 / 10%);
+    opacity: 0.8;
+}
+
+#content .page-button-panel .page-button-prev.btn.button {
+    background: transparent;
+    color: var(--jgt-btn-colorPrimary);
+    border: 1px solid var(--jgt-btn-colorPrimary) !important;
+}
+/* End of Content Stylings */

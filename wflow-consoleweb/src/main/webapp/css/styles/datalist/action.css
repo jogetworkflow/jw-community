@@ -1,0 +1,93 @@
+/* Any Related Datalist Actions Stylings Go Here */
+.dataList .actions {
+    margin-top: 25px;
+}
+
+.dataList .actions .btn:not([class*="btn-"]) {
+    color: var(--jgt-btn-primaryColor);
+    background-color: var(--jgt-btn-colorPrimary);
+    border-color: var(--jgt-btn-colorPrimary);
+}
+
+.dataList .actions .btn {
+    margin: 0 2px 5px;
+}
+
+.dataList .actions.right,
+body.rtl .dataList .actions.left {
+    text-align: right;
+}
+
+.dataList .actions.left,
+body.rtl .dataList .actions.right {
+    text-align: left;
+}
+
+.dataList .actions.top {
+    margin-bottom: 15px;
+}
+
+.dataList .actions.bottom {
+    margin-top: 15px;
+}
+
+.dataList .row_action a:not(.btn) {
+    display: inline-block;
+    font-weight: 400 !important;
+    text-align: center;
+    vertical-align: middle;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+    border: 1px solid transparent;
+    padding: .25rem .5rem;
+    font-size: .875rem;
+    line-height: 1.5;
+    border-radius: .2rem;
+    transition: color .15s ease-in-out, background-color .15s ease-in-out, border-color .15s ease-in-out, box-shadow .15s ease-in-out;
+    color: var(--jgt-btn-primaryColor);
+    background-color: var(--jgt-btn-colorPrimary);
+    border-color: var(--jgt-btn-colorPrimary);
+    background-image: none;
+    text-shadow: none;
+    box-shadow: none;
+    outline: 0;
+    margin-bottom: 5px;
+}
+
+/* Row Action */
+.dataList td.rowaction_body.editCrudButton a {
+    --jgt-btn-primaryColor: #28931A;
+    --jgt-btn-colorPrimary: var(--jgt-btn-primaryColor); 
+    background-color: transparent;
+}
+
+.dataList .rowaction_body a:not(.stretched-link),
+.dataList a.rowaction_body:not(.stretched-link),
+.dataList .column_body a {
+    z-index: 2;
+    position: relative;
+    height: fit-content;
+}
+
+.dataList .rowActionsDropdown .dropdown-menu {
+    padding: 5px;
+}
+
+.dataList .rowActionsDropdown .dropdown-menu .row_action {
+    padding: 5px;
+    display: block;
+}
+
+.dataList .rowActionsDropdown .dropdown-menu .row_action a {
+    background: transparent;
+    border: 0;
+    text-align: left;
+    padding: 0;
+    margin: 0;
+    color: var(--theme-link, var(--theme-color4, #007bff));
+    box-shadow: none;
+    display: block;
+}
+/* End of Datalist Action Stylings */

@@ -1,10 +1,11 @@
 package org.joget.apps.form.lib;
 
 import java.util.Map;
+
 import org.joget.apps.app.service.AppUtil;
 import org.joget.apps.form.model.Element;
-import org.joget.apps.form.model.FormBuilderPaletteElement;
 import org.joget.apps.form.model.FormBuilderPalette;
+import org.joget.apps.form.model.FormBuilderPaletteElement;
 import org.joget.apps.form.model.FormData;
 import org.joget.apps.form.service.FormUtil;
 import org.joget.commons.util.ResourceBundleUtil;
@@ -33,6 +34,9 @@ public class TextArea extends Element implements FormBuilderPaletteElement {
         // set value
         String value = FormUtil.getElementPropertyValue(this, formData);
         dataModel.put("value", value);
+
+        // Check if icon is present, and if so, add to the dataModel
+        checkIfIconIsPresent(dataModel);
 
         String html = FormUtil.generateElementHtml(this, formData, template, dataModel);
         return html;

@@ -1,0 +1,45 @@
+/* Declare any kefraymes animations here */
+@-webkit-keyframes button-ripple {
+    0% {
+        background-size: 0% 0%, 0% 0%;
+        background-position: 50% 50%, 0% 0%;
+    }
+
+    33% {
+        background-size: calc(2 * 71%) calc(2 * 200vw), 0% 0%;
+        background-size: calc(2 * 71%) 100vmax, 0% 0%;
+        background-position: 50% 50%, 0% 0%;
+    }
+
+    33.1% {
+        background-size: 0% 0%, 100% 1000%;
+    }
+
+    100% {
+        background-size: 0% 0%, 100% 1000%;
+        background-position: 0% 0%, 0% 100%;
+    }
+}
+
+@keyframes button-ripple {
+    0% {
+        background-size: 0% 0%, 0% 0%;
+        background-position: 50% 50%, 0% 0%;
+    }
+
+    33% {
+        background-size: calc(2 * 71%) calc(2 * 200vw), 0% 0%;
+        background-size: calc(2 * 71%) 100vmax, 0% 0%;
+        background-position: 50% 50%, 0% 0%;
+    }
+
+    33.1% {
+        background-size: 0% 0%, 100% 1000%;
+    }
+
+    100% {
+        background-size: 0% 0%, 100% 1000%;
+        background-position: 0% 0%, 0% 100%;
+    }
+}
+/* End of Animation Stylings */

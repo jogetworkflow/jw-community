@@ -1,0 +1,29 @@
+/* Any Related Reusable Card Stylings go here */
+.card {
+    background-size: cover;
+}
+
+/* Datalist Card Layout */
+.cardLayout.cardCollapsible>tbody>tr>td.collapsible_toggle_column>.collapsible_toggle {
+    position: absolute;
+    z-index: 1;
+    cursor: pointer;
+    right: 15px;
+    top: 16px;
+    font-size: 16px;
+    color: #737373;
+}
+
+.cardLayout.cardCollapsible>tbody>tr>td.collapsible_toggle_column>.collapsible_toggle>.fa-plus-square,
+.cardLayout.cardCollapsible>tbody>tr.collapsed>td.collapsible_toggle_column>.collapsible_toggle>.fa-minus-square {
+    display: none;
+}
+
+.cardLayout.cardCollapsible>tbody>tr.collapsed>td.collapsible_toggle_column>.collapsible_toggle>.fa-plus-square {
+    display: block;
+}
+
+.card-actions a {
+    margin-right: 5px;
+}
+/* End of Stylings */

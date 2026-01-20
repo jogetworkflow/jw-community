@@ -1,0 +1,97 @@
+/* Contains minor, one-off, or page-specific style overrides that belong to Datalist but don’t belong to any reusable component. */
+.dataList .column-hidden {
+    display: none;
+}
+
+.dataList .datalist-error {
+    font-weight: bold;
+    color: #F00;
+}
+
+.dataList .pagebanner {
+    font-size: 11px;
+    display: block;
+}
+
+.footable-buttons:after {
+    content: "";
+    display: block;
+    clear: both;
+    float: none;
+}
+
+.dataList .stretched-link:focus,
+.dataList .stretched-link:hover,
+.dataList .stretched-link:active,
+.dataList .stretched-link {
+    height: 0px !important;
+    padding: 0 !important;
+    border: 0 !important;
+    margin-bottom: 0 !important;
+    font-size: 0px !important;
+    display: inherit !important;
+    outline: 0 !important;
+    position: unset !important;
+    box-shadow: unset !important;
+    transform: unset !important;
+    opacity: unset !important;
+}
+
+
+.dataList .column_body strong.label {
+    color: inherit;
+    text-align: unset;
+    padding: 0;
+}
+
+.dataList .responsivetable .cell-label {
+    display: none;
+}
+
+.dataList .collapsibleBtns {
+    text-align: right;
+}
+
+.dataList .collapsibleBtns a {
+    font-size: 90%;
+    display: inline-block;
+    cursor: pointer;
+    padding: 5px;
+}
+
+.filter_form .mobile_search_trigger,
+.search_filter_popup .filter_form.popup .mobile_search_trigger,
+.nesteddl_container .mobile_search_trigger,
+.filter_form .filters .filter-cell .mobile_label {
+    display: none;
+}
+
+.multiselect-container .multiselect-filter>input.multiselect-search {
+    padding-right: 5px;
+}
+
+.dataList th[draggable] {
+    cursor: move;
+    position: relative;
+    padding-left: 15px !important;
+}
+
+.dataList th[draggable]:before {
+    content: '\205D\205D';
+    opacity: 0.5;
+    position: absolute;
+    left: 3px;
+}
+
+.dataList .current_dragging {
+    opacity: 0.3;
+}
+
+.dataList .drop_left {
+    border-left: 10px solid #d4d4d4 !important;
+}
+
+.dataList .drop_right {
+    border-right: 10px solid #d4d4d4 !important;
+}
+/* End of Datalist Misc Stylings */

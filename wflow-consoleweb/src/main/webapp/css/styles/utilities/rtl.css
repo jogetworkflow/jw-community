@@ -1,0 +1,466 @@
+/* Any RTL Stylings are Inserted Here  */
+body.rtl {
+    direction: rtl;
+}
+
+/* Login Page */
+body#login.rtl #page{
+    padding-right: 0 !important;
+}
+
+/* Header */
+body.rtl header.navbar .container-fluid{
+    padding: 0px 60px 0px 0px;
+}
+
+.rtl .dropdown-menu.notifications .refresh{
+    left: 10px;
+    right: unset;
+}
+
+body.rtl ul.notifications li.dropdown-menu-title{
+    text-align: right;
+}
+
+.rtl header.navbar .dropdown-menu {
+    left: 0;
+    right: auto;
+}
+
+.rtl header.navbar .dropdown-menu a span,
+.rtl header.navbar .dropdown-menu a {
+    text-align: right;
+}
+
+body.rtl header.navbar .dropdown-menu a span.header,
+body.rtl header.navbar .dropdown-menu a span.message {
+    padding-right: unset;
+}
+
+body.rtl:not(.horizontal_menu) header.navbar .dropdown-menu a span.header,
+body.rtl:not(.horizontal_menu) header.navbar .dropdown-menu a span.message {
+    padding-right: unset;
+}
+
+.rtl header.navbar .dropdown-menu a span.time {
+    left: 0px;
+    right: auto;
+}
+
+body.rtl [class*="-selection"].dropdown .dropdown-menu i.zmdi-check {
+    left: 15px;
+}
+
+body.rtl .btn-group>.btn:first-child:not(:last-child):not(.dropdown-toggle) {
+    border-radius: 0 4px 4px 0;
+}
+
+body.rtl .btn-group>.btn:last-child:not(:first-child),
+body.rtl .btn-group>.dropdown-toggle:not(:first-child) {
+    border-radius: 4px 0 0 4px;
+}
+
+body.rtl .hi-trigger {
+    margin-right: -20px;
+    margin-left: auto;
+    right: 25px;
+    left: unset !important;
+}
+
+.rtl .hi-trigger:before {
+    right: 50%;
+    left: auto;
+    margin-right: -22px;
+    margin-left: auto;
+}
+
+body.rtl div.nav-no-collapse.header-nav > ul.pull-right{
+    float: left;
+}
+
+/* Sidebar */
+body.rtl #sidebar {
+    right: 0px;
+    left: auto !important;
+}
+
+body.rtl #sidebar .category>a>span:not(.badge) {
+    float: right;
+    text-align: right;
+}
+
+body.rtl #sidebar .nav>li>a>span:not(.badge) {
+    text-align: right;
+    padding-left: 0;
+    padding-right: calc(var(--global-iconMarginInline) + 30px);
+}
+
+body.rtl #sidebar .nav>li>a.menu-link>span:not(.badge) {
+    float: right;
+}
+
+body.rtl #sidebar .nav>li>a>span>i:first-child {
+    left: unset !important;
+    right: 0;
+}
+
+body.rtl #sidebar .nav>li>ul {
+    padding-right: unset;
+    width: 100%;
+}
+
+body.rtl #sidebar .nav>li.toggled>ul {
+    padding-right: 0px;
+    float: right;
+    width: 100%;
+}
+
+body.rtl #sidebar .nav>li.active:after {
+    right: 0;
+    left: unset !important;
+}
+
+body.horizontal_menu.rtl #sidebar .nav>li>ul>li>a>span:first-child {
+    padding-left: 10px;
+    padding-right: 0px;
+}
+
+body.rtl #sidebar .nav>li>ul>li>a>span:first-child {
+    float: right;
+    padding-right: 0px;
+}
+
+body.rtl #sidebar li a.dropdown:after {
+    left: 15px;
+    right: unset !important;
+}
+
+body.rtl:not(.horizontal_menu) #sidebar #category-container {
+    padding-right: 0px !important;
+}
+
+body.rtl:not(.horizontal_menu) #sidebar .badge {
+    float: left;
+    left: 20px;
+    right: unset;
+}
+
+body.rtl #sidebar .user-menu>li>a>img {
+    right: 15px;
+}
+
+body.rtl #sidebar .nav-tabs.user-menu {
+    padding-right: 0px !important;
+}
+
+body.rtl #sidebar .nav-tabs.user-menu .mm-profile>a {
+    padding-left: 65px;
+}
+
+body.rtl #sidebar .nav-tabs.user-menu .mm-profile.type-no>a>span:before {
+    left: unset;
+    right: 0;
+}
+
+body.rtl .sidebar_brand .logo_container{
+    right: 0;
+    left: unset;
+}
+
+body.rtl .sidebar_brand #header-link{
+    padding-left: 0px;
+    padding-right: 65px;
+}
+
+body.rtl ul.menu-container .badge.rowCount,
+body.rtl ul#moreSubMenu.sub-menu .badge.rowCount {
+    left: 20px;
+    right: unset !important;
+}
+
+body.rtl li.menu span {
+    text-align: right;
+}
+
+/* User Profile */
+body.rtl li.user-link > a > i{
+    padding-right: 0px;
+    padding-left: 5px;
+}
+
+/* Navigation */
+body.rtl #navigation li.mm-profile.user-link small {
+    float: right;
+    padding-right: 49px;
+}
+
+/* Content */
+body.rtl #content .grid-stack-item-header-action {
+    margin-left: 15px;
+    margin-right: unset;
+}
+
+/* Form */
+body.rtl .form-container [class*="form-cell-value"]{
+    padding: 4px 1px 0 10px;
+}
+
+/* Embeded */
+body.rtl.embeded #page {
+    padding-right: 0;
+}
+
+/* Popup Body */
+body.rtl.popupBody #section-actions .form-cell,
+body.rtl.popupBody .dataList .actions {
+    text-align: left;
+}
+
+/* Page */
+body.rtl .page-heading{
+    text-align: right;
+}
+
+/* Form & Subform */
+.rtl .form-cell>label.label,
+.rtl .subform-cell>label.label {
+    float: right;
+}
+
+.rtl .form-cell>label.label+*:not(.ui-screen-hidden),
+.rtl .subform-cell>label.label+*:not(.ui-screen-hidden),
+.rtl .form-cell>label.label+.ui-screen-hidden+*,
+.rtl .subform-cell>label.label+.ui-screen-hidden+* {
+    float: right;
+}
+
+body.rtl .form-cell-value>label,
+body.rtl .subform-cell-value>label {
+    float: right;
+}
+
+body.rtl .form-cell > label.label + input:has(+ .numeric_field_controls) {
+    padding-inline-start: var(--jgt-input-paddingInline);
+}
+
+/* Datepicker */
+body.rtl .hasDatepicker+a,
+body.rtl .hasDatepicker+a+a {
+    left: calc(8px + var(--jgt-card-padding));
+    right: unset !important;
+}
+
+body.rtl .hasDatepicker+a+a {
+    left: calc(30px + var(--jgt-card-padding));
+    right: unset !important;
+}
+
+/* Multiselect */
+.rtl .chosen-container.colorfulTags ul.chosen-choices:after {
+    left: 4px;
+    right: unset;
+}
+
+.rtl .chosen-rtl .chosen-choices li.search-choice {
+    margin: 3px 0px 3px 5px;
+}
+
+/* Handsontable, Spreadsheet */
+body.rtl .ht_clone_left,
+body.rtl .ht_clone_top,
+body.rtl .ht_clone_top_left_corner {
+    left: unset !important;
+    right: 0;
+}
+
+body.rtl .handsontable .htCore tr th:last-child,
+body.rtl .handsontable .htCore tr td:last-child {
+    border-left-width: 1px !important;
+}
+
+.spreadsheet [dir=rtl].handsontable td:last-child {
+    border-left-width: 1px !important;
+}
+
+
+body.rtl .handsontable .filename_container .filename {
+    direction: ltr;
+    unicode-bidi: isolate;
+}
+
+body.rtl .handsontable td .filename{
+    margin-right: 5.5px;
+}
+
+body.rtl .handsontable .file_delete {
+    float: left;   
+}
+
+/* Spreadsheet date, upload, time icons and hints */
+body.rtl .handsontable .date-icon, body.rtl .handsontable .upload-icon, body.rtl .handsontable .time-icon {
+    margin-left: 4px;
+    float: right;
+}
+
+body.rtl .handsontable td .upload-hint, body.rtl .handsontable td .date-hint, body.rtl td .time-hint {
+    margin-right: -2px;
+}
+
+body.rtl .handsontable td .date-icon{
+    margin-left: 9px;
+}
+
+/* MultiPaged Form */
+.rtl .multiPagedForm .page-button-panel {
+    text-align: left;
+}
+
+.rtl .multiPagedForm.tab .page-nav-panel .nav_item {
+    float: right;
+}
+
+.rtl .multiPagedForm.tab .page-nav-panel .nav_item button {
+    float: right;
+}
+
+/* Form Button */
+body.rtl .form-edit-btn {
+    right: auto;
+    left: 5px;
+}
+
+/* Miscellaneous */
+body.rtl .form-container [class*=form-cell-value] {
+    float: right;
+}
+
+body.rtl .ui-html.ql-editor,
+body.rtl table:not(.ui-datepicker-calendar) * {
+    text-align: right !important;
+}
+
+/* Calendar */
+body.rtl .fc-daygrid-event {
+    direction: rtl;
+}
+
+body.rtl .fc-daygrid-event .fc-event-time {
+    margin-left: 3px;
+    margin-right: 0px;
+}
+
+/* Form Label with Icon */
+body.rtl .form-cell > label.label.withIcon > i,
+body.rtl .subform-cell > label.label.withIcon > i{
+    border-radius: 0 0.25rem 0.25rem 0;
+    left: -50px;
+    right: unset;
+} 
+
+body.rtl .form-cell > label.label.withIcon + *:not(.ui-screen-hidden),
+body.rtl .subform-cell > label.label.withIcon + *:not(.ui-screen-hidden),
+body.rtl .form-cell > label.label.withIcon + .ui-screen-hidden + *,
+body.rtl .subform-cell > label.label.withIcon + .ui-screen-hidden + *{
+    padding-right: 45px;
+    padding-left: 12px;
+}
+
+body.rtl .label-top .form-cell:not(.label-left) > label.label.withIcon > i,
+body.rtl .label-top .subform-cell:not(.label-left) > label.label.withIcon > i{
+    left:unset;
+    right: 0px;
+}
+
+body.rtl .label-top.form-cell > label.label.withIcon > i,
+body.rtl .label-top.subform-cell > label.label.withIcon > i{
+    left: unset;
+}
+
+/* File Upload */
+body.rtl ul.form-fileupload-value li .remove {
+    display: inline-block;
+}
+
+body.rtl ul.form-fileupload-value li .name {
+    direction: ltr;
+    unicode-bidi: isolate;
+}
+
+/* Datalist */
+body.rtl .dataList th.sortable a {
+    background-position-x: left;
+    padding-left: 20px;
+    padding-right: 0;
+}
+
+body.rtl .filter-cell .hasDatepicker+a {
+    right: unset;
+    left: 2px;
+}
+
+body.rtl .dataList span.pagelinks {
+    text-align: right;
+}
+
+body.rtl .dataList span.pagelinks:not(.rtl) .pc.first-disabled:before,
+body.rtl .dataList span.pagelinks:not(.rtl) .pc.first:before {
+    content: "\f101";
+}
+
+body.rtl .dataList span.pagelinks:not(.rtl) .pc.prev-disabled:before,
+body.rtl .dataList span.pagelinks:not(.rtl) .pc.prev:before {
+    content: "\f105";
+}
+
+body.rtl .dataList span.pagelinks:not(.rtl) .pc.next-disabled:before,
+body.rtl .dataList span.pagelinks:not(.rtl) .pc.next:before {
+    content: "\f104";
+}
+
+body.rtl .dataList span.pagelinks:not(.rtl) .pc.last-disabled:before,
+body.rtl .dataList span.pagelinks:not(.rtl) .pc.last:before {
+    content: "\f100";
+}
+
+body.rtl .filter-cell .hasDatepicker+a+a {
+    right: unset;
+    left: 22px;
+}
+
+body.rtl *:is(.multiselect-all, .multiselect-container .multiselect-group, .multiselect-container .multiselect-option) {
+    padding: .25rem .75rem .25rem .25rem;
+}
+
+body.rtl *:is(.filter-cell .multiselect-container .multiselect-all .form-check, .filter-cell .multiselect-container .multiselect-group .form-check, .filter-cell .multiselect-container .multiselect-option .form-check) {
+    float: right;
+    padding: 0 20px 0 5px !important;
+    width: 100%;
+}
+
+body.rtl .filter-cell .multiselect-container.dropdown-menu input.form-check-input {
+    margin-right: -1.25rem !important;
+    margin-left: 0px  !important;
+    float: none  !important;
+}
+
+body.rtl .filter-cell .multiselect-container.dropdown-menu input.multiselect-search {
+    margin-right: -1.625rem;
+    margin-left: 0px;
+    padding-left: 0px;
+    padding-right: 2rem;
+}
+
+body.rtl .multiselect-container .multiselect-filter>.fa-search {
+    padding-right: .75rem;
+    padding-left: 0px;
+}
+
+body.rtl span.multiselect-native-select .multiselect-container .form-check .form-check-label {
+    text-align: right;
+    margin-right: 5px;
+}
+
+body.rtl .filter-cell {
+    text-align: right;
+}
+/* End of RTL Stylings */

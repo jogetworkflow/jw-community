@@ -1,0 +1,89 @@
+/* Any Datepicker Stylings go here */
+.hasDatepicker+a,
+.hasDatepicker+a+a {
+    position: absolute;
+    right: calc(8px + var(--jgt-card-padding));
+    top: 50%;
+    transform: translateY(-50%);
+    height: 18px;
+    width: 18px;
+    font-family: "Font Awesome 5 Free";
+    -moz-osx-font-smoothing: grayscale;
+    -webkit-font-smoothing: antialiased;
+    display: inline-block;
+    font-style: normal;
+    font-variant: normal;
+    text-rendering: auto;
+    line-height: 1;
+    font-size: 16px;
+    cursor: pointer;
+}
+
+.hasDatepicker + a.trigger {
+    color: #ced4da;
+}
+
+.hasDatepicker+a:before {
+    content: '\f073';
+}
+
+.hasDatepicker+a+a {
+    color: #f8d7da;
+    right: calc(30px + var(--jgt-card-padding));
+    z-index: 1;
+}
+
+.hasDatepicker+a+a:before {
+    content: '\f057';
+}
+
+.label-top .hasDatepicker + a, .label-top .hasDatepicker + a + a {
+    bottom: 7px;
+    top: unset;
+}
+
+.datapicker-native.ui-screen-hidden.ios+.hasDatepicker+a+a {
+    z-index: 4;
+}
+
+.hasDatepicker+a>img {
+    display: none;
+}
+
+img.ui-datepicker-trigger {
+    pointer-events: none;
+}
+
+.datapicker-native.ui-screen-hidden {
+    display: block;
+    visibility: hidden;
+    width: 0px;
+    position: absolute;
+    left: 15px;
+    bottom: 0px;
+}
+
+body input.no-manual-input {
+    cursor: text;
+}
+
+.datapicker-native.ui-screen-hidden.ios {
+    right: 15px;
+    top: unset;
+    bottom: 0px;
+    z-index: 2;
+    opacity: 0;
+    width: auto;
+    visibility: unset;
+}
+
+.datapicker-native.ui-screen-hidden.ios input {
+    width: 100%;
+    -webkit-appearance: none;
+}
+
+.datapicker-native.ui-screen-hidden.ios.manual {
+    left: unset;
+    width: 25px;
+}
+/* End of Datepicker Styling */

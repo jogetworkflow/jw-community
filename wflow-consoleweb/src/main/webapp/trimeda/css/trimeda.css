@@ -1785,6 +1785,10 @@ body.rtl .form-cell-value > label > input, .subform-cell-value > label > input {
     margin-left: 5.25px;
 }
 
+.input-group-text {
+    border-radius: 16px;
+}
+
 input[type=checkbox], input[type=radio] {
     width: 18px !important;
     height: 18px !important;
@@ -1855,6 +1859,10 @@ input[type=hidden] + .form-cell, .form-cell + .form-cell, .subform-cell + .subfo
 /* Numeric Controls Position */
 .numeric_field_control {
     position: unset;
+}
+
+.numeric_field_controls {
+    row-gap: 10px;
 }
 
 .numeric_field_controls,
@@ -2406,6 +2414,14 @@ body.rtl .accordion .card-header::after {
     background-color: transparent;
     color: var(--general-accent-color);
     border-top: none !important;
+    border-bottom: 1px solid var(--field-border-color) !important;
+}
+
+.dataList.size_sm>form>.table-wrapper>table.responsivetable>thead th, .dataList.size_sm>.table-wrapper>table.responsivetable>thead th {
+    border-bottom: 0px !important;
+}
+
+.dataList.size_sm>form>.table-wrapper>table.responsivetable>thead, .dataList.size_sm>.table-wrapper>table.responsivetable>thead {
     border-bottom: 1px solid var(--field-border-color) !important;
 }
 

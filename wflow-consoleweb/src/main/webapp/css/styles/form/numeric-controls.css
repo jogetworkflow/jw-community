@@ -1,0 +1,27 @@
+/* Any numeric controls (text field) go here */
+/* To activate, use the text field, and set the format to numeric */
+.numeric_field_controls {
+    display: flex;
+    flex-direction: column;
+
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    right: 15.5px;
+}
+
+.numeric_field_control {
+    line-height: 12px;
+} 
+
+.numeric_field_control img {
+    max-width: 10px; 
+    min-width: 10px; 
+    max-height: fit-content; 
+    min-height: fit-content;
+}
+
+.numeric_field_control.numeric_field_control_decr {
+    top: 15px;
+} 
+/* End of Numeric controls stylings */

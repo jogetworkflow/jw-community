@@ -1,0 +1,133 @@
+/* Form Grid Stylings */
+div.pq-grid * {
+    font-size: 13px !important;
+}
+
+.grid table {
+    width: 100%;
+}
+
+.grid table td {
+    vertical-align: top;
+}
+
+.grid table th,
+.grid table td {
+    border-top: 1px solid #ced4da !important;
+    border-bottom: 1px solid #ced4da;
+    margin: 0px;
+}
+
+.grid table th {
+    border-bottom: 2px solid #ced4da !important;
+}
+
+.grid table .grid-action-header,
+.grid table .grid-action-cell {
+    width: 100px;
+    text-align: right;
+}
+
+.grid table .grid-row-template {
+    display: none;
+}
+
+.grid table .grid-cell,
+.grid table .grid-cell form,
+.grid table .grid-cell[column_editable='yes'] {
+    display: block;
+}
+
+.grid table .grid-cell[column_editable='yes'].editable_empty {
+    color: gray;
+}
+
+.grid a.grid-action-add,
+.grid table td.grid-action-cell a {
+    display: inline-block;
+    font-family: "Font Awesome 5 Free";
+    -moz-osx-font-smoothing: grayscale;
+    -webkit-font-smoothing: antialiased;
+    display: inline-block;
+    font-style: normal;
+    font-variant: normal;
+    font-weight: 900;
+    text-rendering: auto;
+    color: #ced4da;
+    padding: 0 3px;
+}
+
+.grid .btn.delete_btn {
+    margin-bottom: .25rem;
+}
+
+.grid .grid-action-add,
+.grid table tr:hover td.grid-action-cell a {
+    color: #0075ff !important;
+    opacity: 0.5;
+}
+
+.grid table tr:hover td.grid-action-cell a.grid-action-delete {
+    color: #dc3545 !important;
+}
+
+.grid table tr:hover td.grid-action-cell a.disabled {
+    color: #ced4da !important;
+}
+
+.grid a.grid-action-add span,
+.grid table tr td.grid-action-cell a span {
+    display: none !important;
+}
+
+.grid table .grid-action-edit:after {
+    content: '\f304';
+}
+
+.grid table .grid-action-delete:after {
+    content: '\f00d';
+}
+
+.grid table .grid-action-moveup:after {
+    content: '\f077';
+}
+
+.grid table .grid-action-movedown:after {
+    content: '\f078';
+}
+
+.grid.readonly .grid-action-edit:after {
+    content: '\f15c';
+}
+
+.grid:not(.enableSorting) a.grid-action-moveup,
+.grid:not(.enableSorting) a.grid-action-movedown,
+.grid.readonly.enableSorting a.grid-action-moveup,
+.grid.readonly.enableSorting a.grid-action-movedown,
+.grid.readonly a.grid-action-add,
+.grid.readonly a.grid-action-delete,
+.grid.disabledAdd a.grid-action-add,
+.grid.disabledDelete a.grid-action-delete {
+    display: none;
+}
+
+.grid .pg-navigator {
+    text-align: right;
+    padding: 10px 0;
+    margin-bottom: 0;
+    color: #ced4da;
+}
+
+.grid .pg-navigator .pg-current {
+    font-weight: bold;
+}
+
+.grid table tr.pg-tr-hide {
+    display: none;
+}
+
+.grid table+.pg-navigator+.grid-action-add {
+    position: absolute;
+    bottom: 0px;
+}
+/* End of Form Grid Stylings */

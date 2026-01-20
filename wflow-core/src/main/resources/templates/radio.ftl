@@ -41,4 +41,9 @@
             });
         </script>
     </#if>
+    <script type="text/javascript">
+        $(document).ready(function(){
+            $("#${elementParamName!}${element.properties.elementUniqueKey!}").resizeObserver({});
+        });
+    </script>
 </div>

@@ -55,6 +55,24 @@
                 }
             }
             return target;
+        },
+        resizeObserver: function(o) {
+            var target = this;
+            if (!$(target).hasClass("fullWidth") && $(target).css('display') === 'grid'){
+                $(window).off("resize.verticalCheck#" + $(target).attr('id')).on("resize.verticalCheck#" + $(target).attr('id'), function() {
+                    $(target).css('grid-template-columns', 'repeat(auto-fill, minmax(200px, 1fr))');
+
+                    const height = $(target).children().eq(0).length > 0 ? $(target).children().eq(0).height() : 0;
+                    var sameHeight = true;
+                    $(target).children().each(function() {
+                        if (height !== $(this).height()) {
+                            $(target).css('grid-template-columns', '1fr');
+                            sameHeight = false;
+                            return sameHeight;
+                        }
+                    })
+                })
+            }
         }
     });
     

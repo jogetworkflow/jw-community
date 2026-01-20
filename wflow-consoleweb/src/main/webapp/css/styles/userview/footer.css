@@ -1,0 +1,23 @@
+/* Any related footer stylings go here */
+footer {
+    background: var(--theme-footer-bg, var(--theme-color1, transparent));
+    color: var(--theme-footer, #7c8695);
+    border-top: 1px solid var(--theme-border-color);
+    font-size: var(--global-fontSize);
+    text-align: center;
+    padding: var(--global-footerPadding);
+    position: relative;
+    bottom: 0;
+    width: 100%;
+    height: var(--global-footerHeight);
+    z-index: 10;
+}
+
+body.horizontal_menu footer{
+    width: 100%;
+}
+
+footer p {
+    margin-bottom: 0;
+}
+/* End of Footer Stylings */

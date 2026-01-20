@@ -151,6 +151,42 @@ body .editor-cell select:not([class^=ui]){
   color: inherit;
 }
 
+.input-group *:is(input, textarea) {
+    margin-bottom: 0px !important;
+}
+.form-cell:has(.datepicker-wrapper):not(:last-child),
+.form-cell:has(.input-group):not(:last-child) {
+    margin-bottom: 15px;
+}
+.input-group > .input-group-text {
+    border-radius: 0px;
+}
+.input-group > .input-group-text + * {
+    flex: 1 1 100%;
+    width: 100%;
+    max-width: unset;
+}
+.form-cell > label.label + *:is(.input-group, .datepicker-wrapper), 
+.subform-cell > label.label + *:is(.input-group, .datepicker-wrapper), 
+.form-cell > label.label + .ui-screen-hidden + *:is(.input-group, .datepicker-wrapper), 
+.subform-cell > label.label + .ui-screen-hidden + *:is(.input-group, .datepicker-wrapper) {
+    max-width: 70%;
+}
+@media screen and (max-width: 480px) {
+    .form-cell > label.label + *:is(.input-group, .datepicker-wrapper), 
+    .subform-cell > label.label + *:is(.input-group, .datepicker-wrapper), 
+    .form-cell > label.label + .ui-screen-hidden + *:is(.input-group, .datepicker-wrapper), 
+    .subform-cell > label.label + .ui-screen-hidden + *:is(.input-group, .datepicker-wrapper) {
+        max-width: 100%;
+    }
+}
+.label-top.form-cell > label.label + *:is(.input-group, .datepicker-wrapper), 
+.label-top.subform-cell > label.label + *:is(.input-group, .datepicker-wrapper), 
+.label-top.form-cell > label.label + .ui-screen-hidden + *:is(.input-group, .datepicker-wrapper), 
+.label-top.subform-cell > label.label + .ui-screen-hidden + *:is(.input-group, .datepicker-wrapper) {
+    max-width: 100%;
+}
+
 body input[disabled],
 body input[readonly] {
   cursor: not-allowed;
@@ -430,7 +466,7 @@ body label > input[type=checkbox] + i:after {
     font: normal normal normal 14px/1 FontAwesome;
     font-size: 25px;
     content: "\f096";
-    display:inline-block;
+    display:inline-block !important;
     width: 30px;
     cursor: pointer;
     vertical-align: middle;
@@ -445,6 +481,14 @@ body .select_checkbox label > [type="checkbox"]:disabled + i:after,
 body label > input[type=checkbox]:disabled + i:after {
     opacity: 0.5;
     cursor: not-allowed;
+}
+
+body *:is(.dataList.size_sm>form>.table-wrapper>table.responsivetable>tbody>tr>td.select_checkbox input, .dataList.size_sm>form>.table-wrapper>table.responsivetable>tbody>tr>td.select_radio input, .dataList.size_sm>.table-wrapper>table.responsivetable>tbody>tr>td.select_checkbox input, .dataList.size_sm>.table-wrapper>table.responsivetable>tbody>tr>td.select_radio input) {
+    display: none !important;
+}
+
+body .dataList.size_sm tbody td.select_checkbox, body .dataList.size_sm tbody td.select_radio {
+    margin-inline-start: 16px;
 }
 
 /* Select Field
@@ -981,10 +1025,6 @@ body .grid-action-movedown:after{
     content: '\f078';
     color: #ffbb0e;
 }
-body .grid-action-add:after {
-    content: '\f055';
-    color: #4caf50;
-}
 body .grid-action-moveup.disabled:after, body .grid-action-movedown.disabled:after{
     color: #999999;
 }
@@ -1036,4 +1076,12 @@ body.rtl .form-container .label-top .selector_items{
 }
 .form-cell .label, .subform-cell .label {
     font-weight: 500;
+}
+
+/* calendar */
+
+.fullcalendar .fc-view-harness.fc-view-harness-active {
+    border-width: 1px 0px 1px 1px;
+    border-style: solid;
+    border-color: var(--jgt-gray);
 }

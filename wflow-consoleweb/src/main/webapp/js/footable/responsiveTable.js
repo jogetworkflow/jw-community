@@ -231,7 +231,78 @@ function responsiveTable(datalist) {
                             return false;
                         });
                     }
+
+                    //Wrap the column content together
+                    const $table = $(table);
+                    const $thead = $table.find("thead");
+
+                    // Wrap body cells for each row
+                    $table.find("tbody tr").each(function() {
+                        const $row = $(this);
+                        const $tds = $row.find("td[xclass~='column_body'], td.row_action");
+                        const $rowNumberTd = $row.find("td[xclass~='rowNumber']");
+
+                        // Wrap it to group it
+                        if ($tds.length && !$tds.parent().is(".column_wrapper")) {
+                            $tds.wrapAll('<div class="column_wrapper"></div>');
+                        }
+
+                        const $wrapper = $row.find(".column_wrapper");
+                        if ($wrapper.length && $rowNumberTd.length) {
+                            if ($rowNumberTd.next()[0] !== $wrapper[0]) {
+                                const index = $wrapper.index();
+                                if (index === 1 && !$thead.find("th").eq(index).is('.rowNumberMobile')) {
+                                    $thead.find("th").eq(index).before(`<th class='rowNumberMobile'>#</th>`);
+                                }
+                                $wrapper.before($rowNumberTd.clone().addClass('rowNumberMobile'));
+                            }
+                        }
+                    });
+
+                    const observer = new MutationObserver((mutationsList) => {
+                        for (const mutation of mutationsList) {
+                            if ($(mutation.target).is(".ps_progress_container")) {
+                                $(this).find("tbody tr").each(function() {
+                                    const $td = $(this).find("td:has('.ps_progress_container')");
+                                    const match = $td.attr("xclass")?.match(/body_column_(\d+)/);
+                                    const colNo = match ? parseInt(match[1], 10) : null;
+
+                                    console.log($td)
+
+                                    if (colNo) {
+                                        const $row = $td.closest("tr");
+                                        const $wrapper = $row.find(".column_wrapper");
+
+                                        const $elementToInsert = $td; 
+
+                                        const insertIndex = colNo;
+
+                                        const $children = $wrapper.children();
+
+                                        if ($children.length > insertIndex) {
+                                            $elementToInsert.insertBefore($children.eq(insertIndex));
+                                        } else {
+                                            $wrapper.append($elementToInsert);
+                                        }
+                                    }
+                                });
+                            }
+                        }
+                    });
+
+                    if ($(this).find("tbody").length > 0) {
+                        observer.observe($(this).find("tbody")[0], { 
+                            childList: true,    
+                            subtree: true
+                        });
+                    }
                 } else {
+                    $(this).find(".rowNumberMobile").remove();
+
+                    $(this).find("tbody tr .column_wrapper").each(function() {
+                        $(this).children().unwrap();
+                    });
+
                     //restore add remove all elements added for mobile
                     $(table).removeClass("cardLayout");
                     $(table).find('> tbody > tr').removeClass("collapsed");

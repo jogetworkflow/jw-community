@@ -1,0 +1,9 @@
+/* Any Related Reusable Column Stylings go here */
+.col {
+    padding-top: 5px;
+    padding-bottom: 5px;
+    padding-left: 0;
+    padding-right: 0;
+    box-sizing: border-box;
+}
+/* End of Stylings */

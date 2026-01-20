@@ -1,0 +1,383 @@
+/* General Datalist Stylings go here */
+#preview .dataList {
+    pointer-events: none;
+}
+
+.dataList:not(.unauthorized) {
+    display: none;
+}
+
+.dataList.unauthorized h3 {
+    font-size: 16px;
+}
+
+.dataList .table-wrapper {
+    overflow-x: auto;
+    width: 100%;
+    min-height: 300px;
+    padding-bottom: 50px;
+}
+
+.dataList table {
+    min-width: 100%;
+    border-bottom: var(--jgt-table-lineWidth) var(--jgt-table-lineType) var(--jgt-table-borderColor);
+}
+
+.dataList thead th a {
+    color: var(--jgt-table-headerColor);
+}
+
+.dataList th.sorted a, th.sortable a {
+    background-position: right center;
+    background-repeat: no-repeat;
+    display: block;
+    width: 100%;
+    padding-right: 20px;
+}
+
+.dataList th.sorted a {
+    opacity: 0.7;
+}
+
+.dataList th.sortable a {
+    background-image: url("../css/styles/images/v3/arrow_off.png");
+}
+
+.dataList th.sortable a:hover {
+    text-transform: none;
+}
+
+.dataList th.sortable a:not(:hover) {
+    text-decoration: none !important;
+}
+
+.dataList th.order1 a {
+    background-image: url("../css/styles/images/v3/arrow_down.png");
+}
+
+.dataList th.order2 a {
+    background-image: url("../css/styles/images/v3/arrow_up.png");
+}
+
+.dataList a.btn {
+    --jgt-btn-padding-x: 10px !important;
+    --jgt-btn-padding-y: 7px !important;
+    --jgt-btn-font-size: 0.875rem;
+}
+
+.dataList.no_export div.exportlinks {
+    display: none !important;
+}
+
+.dataList .exportlinks {
+    margin: 10px 0;
+}
+
+.rtl .dataList th.dataListAlignRight, .dataList th.dataListAlignLeft, .rtl .dataList td.dataListAlignRight, .dataList td.dataListAlignLeft {
+    text-align: left;
+}
+
+.rtl .dataList th.dataListAlignLeft, .dataList th.dataListAlignRight, .rtl .dataList td.dataListAlignLeft, .dataList td.dataListAlignRight {
+    text-align: right;
+}
+
+.rtl .dataList th.dataListAlignCenter, .dataList th.dataListAlignCenter, .rtl .dataList td.dataListAlignCenter, .dataList td.dataListAlignCenter {
+    text-align: center;
+}
+
+.dataList .dropdown-menu a {
+    display: block;
+}
+
+.dataList .dropdown-menu a.dropdown-item {
+    display: block;
+    width: 100%;
+    padding-block:var(--jgt-dd-paddingBlock);clear: both;
+    padding-inline:var(--jgt-dd-controlPaddingHorizontal);font-weight: 400;
+    color: var(--jgt-dd-colorText);
+    text-align: inherit;
+    white-space: nowrap;
+    background-color: transparent !important;
+    border-color: transparent !important;
+    border: 0;
+    box-shadow: none !important;
+    width: auto;
+    line-height: var(--jgt-dd-lineHeight);
+    margin-bottom: 0;
+}
+
+.dataList.size_sm>form>.table-wrapper>table.responsivetable>thead>tr, .dataList.size_sm>.table-wrapper>table.responsivetable>thead>tr {
+    background-color: var(--jgt-table-headerBg);
+}
+
+.dataList.size_sm>form>.table-wrapper>table.responsivetable>tbody>tr>td.select_checkbox, .dataList.size_sm>form>.table-wrapper>table.responsivetable>tbody>tr>td.select_radio, .dataList.size_sm>.table-wrapper>table.responsivetable>tbody>tr>td.select_checkbox, .dataList.size_sm>.table-wrapper>table.responsivetable>tbody>tr>td.select_radio, .dataList.size_sm>form>.table-wrapper>table.responsivetable>thead>tr>th.select_checkbox, .dataList.size_sm>form>.table-wrapper>table.responsivetable>thead>tr>th.select_radio, .dataList.size_sm>.table-wrapper>table.responsivetable>thead>tr>th.select_checkbox, .dataList.size_sm>.table-wrapper>table.responsivetable>thead>tr>th.select_radio, .dataList.size_sm>form>.table-wrapper>table.responsivetable>tbody>tr>td, .dataList.size_sm>.table-wrapper>table.responsivetable>tbody>tr>td {
+    padding-inline:var(--jgt-table-cellPaddingInline) !important;}
+
+.dataList table th.control_hide, .dataList table td.control_hide {
+    display: none !important;
+}
+
+.dataList .show_hide_control {
+    position: absolute;
+    right: 30px;
+    display: block;
+    margin-top: 8px;
+    z-index: 500;
+}
+
+.dataList .show_hide_control .toggle {
+    position: absolute;
+    right: 0px;
+    padding: 5px;
+    background: #fff;
+    border: 1px solid #e4dede;
+    border-radius: 5px;
+    width: 20px;
+    height: 20px;
+    opacity: 0.8;
+    cursor: pointer;
+    display: block;
+    box-sizing: border-box;
+}
+
+.dataList .show_hide_control ul {
+    list-style: none;
+    padding: 15px;
+    padding-left: 15px !important;
+    display: none;
+    position: absolute;
+    right: 0;
+    top: 20px;
+    background: #fff;
+    border: 1px solid #e4dede;
+    border-radius: 5px;
+    width: max-content;
+}
+
+.dataList .show_hide_control ul li input {
+    display: inline-block !important;
+    margin-right: 5px;
+}
+
+html.ismobile .dataList .show_hide_control.show_dropdown ul, html:not(.ismobile) .dataList .show_hide_control:hover ul {
+    display: block;
+}
+
+.dataList .card .card-text.has-inline-label:after {
+    clear: both;
+    content: "";
+    display: block;
+}
+
+.dataList .card .card-text>.label {
+    display: inline-block;
+    width: 40%;
+    float: left;
+    font-weight: bold;
+    color: unset;
+    text-align: left;
+    font-size: inherit;
+    padding-left: 0px;
+    padding-right: 15px;
+    background: unset;
+    box-sizing: border-box;
+    white-space: unset !important;
+}
+
+.dataList .card .card-text>.column-value {
+    display: inline-block;
+    box-sizing: border-box;
+    width: 60%;
+    white-space: unset !important;
+}
+
+.dataList .select_checkbox label, .dataList .select_radio label {
+    margin-bottom: 0;
+}
+
+.dataList .filter-cell input[type="submit"] {
+    padding: 5px 15px;
+    height: 34px;
+    vertical-align: baseline;
+    margin-bottom: 0px !important;
+}
+
+/* App Icon */
+.dataList#dataList_appIcon .cards.row > div {
+    border: 1px solid var(--jgt-table-borderColor);
+    margin-inline-end:20px;
+    margin-block-end: 20px;
+}
+
+.dataList#dataList_appIcon .appIcon {
+    padding-top: 0px !important;
+}
+
+.dataList#dataList_appIcon div.appIcon .rowAction_0 {
+    width: 16px !important;
+    height: 16px !important;
+    font-size: 8px;
+    padding: 0px !important;
+    display: flex;
+    align-items: center;
+    justify-content: space-around;
+    right: 25% !important;
+    top: 50% !important;
+    transform: translateX(-50%) !important;
+    margin: 0px !important;
+}
+
+.dataList#dataList_appIcon div.appIcon .ph_column_image {
+    border-style: none !important;
+}
+
+@media(min-width: 768px) {
+    .dataList#dataList_appIcon div.appIcon {
+        min-width: 172.5px;
+    }
+
+    .dataList#dataList_appIcon .cards .card-icon {
+        width: fit-content;
+    }
+}
+
+@media(max-width: 767.9px) {
+    .dataList#dataList_appIcon div.appIcon {
+        width: 100% !important;
+    }
+
+    .dataList#dataList_appIcon .cards.row {
+        display: grid;
+        gap: 10px;
+        grid-template-columns: repeat(2, 1fr);    align-items: start;
+    }
+
+    .dataList#dataList_appIcon .cards.row > div {
+        min-width: 0;
+        box-sizing: border-box;
+        margin: 0;
+        width: 100%;
+    }
+
+    .dataList#dataList_appIcon div.appIcon .rowAction_0 {
+        right: calc(50% - 30px) !important;
+        transform: translateX(50%) !important;
+        min-width: unset !important;
+    }
+}
+
+/* Simple Card */
+.dataList#dataList_simplecard .card.data-row {
+    padding: 10px 20px !important;
+    background-color: transparent !important;
+    border: 1px solid var(--jgt-table-borderColor) !important;
+    height: 100%;
+}
+
+.dataList#dataList_simplecard .card.data-row .column_0 {
+    width: 120px !important;
+    height: 120px !important;
+    padding: 0px !important;
+}
+
+.dataList#dataList_simplecard .card.data-row .column-value {
+    --jgt-card-colorTextDescription: #1F1F1F;
+    color: var(--jgt-card-colorTextDescription);
+}
+
+.dataList#dataList_simplecard .card.data-row .card-actions {
+    display: flex;
+    justify-content: space-around;
+    border-top: 1px solid var(--jgt-table-borderColor) !important;
+    padding-top: 10px !important;
+    margin-top: 10px !important;
+}
+
+.dataList#dataList_simplecard .card.data-row .card-body {
+    padding: 0px !important;
+}
+
+.dataList#dataList_simplecard .card.data-row .card-title {
+    text-align: center;
+}
+
+.dataList#dataList_appIcon div.appIcon .dataList#dataList_simplecard .card.data-row div.ph_columns {
+    margin-bottom: 0px !important;
+}
+
+.dataList#dataList_simplecard .card.data-row .card-title + div {
+    border-top: 1px solid var(--jgt-table-borderColor) !important;
+    padding-top: 10px !important;
+}
+
+/* Simple List */
+.dataList#dataList_simplelist .list-group {
+    width: fit-content;
+    min-width: 100%;
+}
+
+.dataList .list-group-item:has(.ph_selector input[type='checkbox']:checked) {
+    --jgt-list-group-bg: #E7F1FF;
+}
+
+.dataList#dataList_simplelist .list-group-item {
+    --jgt-list-group-item-padding-y: 5px;
+    --jgt-list-group-item-padding-x: 16px;
+    border: none;
+    border-bottom: 1px solid var(--jgt-border-color);
+}
+
+.dataList#dataList_simplelist .list-group-item .ph_column_title {
+    --jgt-list-group-color: #1F1F1F;
+    font-size: calc(var(--jgt-list-fontSize) - 2px);
+    margin-bottom: 0px;
+}
+
+/* Column List */
+.dataList#dataList_columnslist .list-group .list-group-item {
+    --jgt-list-group-color: #777777;
+    border: none;
+}
+
+.dataList#dataList_columnslist .list-group .list-group-item span {
+    color: rgba(0, 0, 0, 0.88);
+}
+
+.dataList#dataList_columnslist .list-group .list-group-item {
+    border-top: var(--jgt-list-group-border-width) solid var(--jgt-list-group-border-color);
+}
+
+.dataList#dataList_columnslist .list-group .list-group-item:last-of-type {
+    border-bottom: var(--jgt-list-group-border-width) solid var(--jgt-list-group-border-color);
+}
+
+.dataList#dataList_columnslist .list-group .list-group-item .dropdown,
+.dataList#dataList_columnslist .list-group .list-group-item .dropdown > a:active {
+    color: #FFFFFF;
+    background-color: initial;
+}
+
+@media(max-width: 767.9px) {
+    .dataList#dataList_columnslist .list-group .list-group-item {
+        display:flex;
+        flex-direction: row;
+        align-items: flex-start !important;
+    }
+
+    .dataList#dataList_columnslist .list-group .list-group-item .ph_selector {
+        padding-top: 0.75rem;
+        padding-bottom: 0.75rem;
+    }
+}
+/* Mobile */
+.dataList.size_sm>form>.table-wrapper>table.responsivetable>thead,
+.dataList.size_sm>.table-wrapper>table.responsivetable>thead {
+    background-color: #F0F0F0;
+}
+
+.dataList.size_sm>form>.table-wrapper>table.responsivetable>thead>tr>th,
+.dataList.size_sm>.table-wrapper>table.responsivetable>thead>tr>th {
+    background-color: #F0F0F0;
+}
+
+/* End of Datalist Styling */

@@ -1,0 +1,6 @@
+/* Any Dark Theme/Mode Stylings are Inserted Here  */
+/* Dropdown */
+body.dark-mode [class*="-selection"].dropdown .dropdown-menu #dropdown-title {
+    border-bottom: 1px solid var(--theme-border-color);
+}
+/* End of Dark Theme Stylings */

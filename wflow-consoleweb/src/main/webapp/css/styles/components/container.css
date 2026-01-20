@@ -1,0 +1,9 @@
+/* Any Related Reusable Container Stylings go here */
+.ContainerComponent {
+    padding: 10px;
+}
+
+body.rtl .ContainerComponent {
+    text-align: right;
+}
+/* End of Stylings */

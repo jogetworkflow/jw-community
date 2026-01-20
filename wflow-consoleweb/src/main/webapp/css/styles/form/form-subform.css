@@ -1,0 +1,418 @@
+/* Any form or subform stylings and their children go here */
+.form-container {
+    font-size: 14px;
+}
+
+.form-section {
+    position: relative;
+    min-width: 0;
+    word-wrap: break-word;
+    background-color: var(--jgt-form-colorBgContainer);
+    background-clip: border-box;
+    padding-bottom: var(--jgt-form-sectionPaddingBottom);
+    border: var(--jgt-form-lineWidth) var(--jgt-form-lineType) var(--jgt-form-colorBorder);
+    border-radius: var(--jgt-form-borderRadiusLG);
+}
+
+.subform-section {
+    position: relative;
+    min-width: 0;
+    word-wrap: break-word;
+    background-color: var(--jgt-card-colorBgContainer);
+    background-clip: border-box;
+    padding-bottom: 20px;
+    border: var(--jgt-card-lineWidth) var(--jgt-card-lineType) var(--jgt-card-colorBorderSecondary);
+    border-radius: var(--jgt-card-borderRadiusLG);
+}
+
+.form-column>.form-cell>.subform-container>.subform-section,
+.form-column>.subform-cell>.subform-container>.subform-section {
+    z-index: 2;
+}
+
+.form-section-title,
+.subform-section-title {
+    padding: 0 var(--jgt-form-headerPaddingInline);
+    background-color: var(--jgt-form-headerBg);
+    border-radius: var(--jgt-form-borderRadiusLG) var(--jgt-form-borderRadiusLG) 0 0;
+    flex: 0 0 100%;
+    margin-bottom: 20px;
+    border-bottom: var(--jgt-form-lineWidth) var(--jgt-form-lineType) var(--jgt-form-colorBorder);
+    color: var(--jgt-form-colorTextHeading);
+    font-size: var(--jgt-form-headerFontSize);
+    height: var(--jgt-form-headerHeight);
+    line-height: var(--jgt-form-headerHeight);
+    font-weight: var(--jgt-form-headerFontWeight);
+}
+
+.form-section-empty {
+    display: none !important;
+}
+
+.no_label>.form-section-title,
+.no_label>.subform-section-title {
+    display: none;
+}
+
+.form-section.no_label,
+.subform-section.no_label {
+    padding-top: 20px;
+}
+
+.form-section+.form-section:not(.no_label),
+.subform-section+.subform-section:not(.no_label) {
+    margin-top: 25px;
+}
+
+.form-section+.form-section.no_label:not(#section-actions),
+.subform-section+.subform-section.no_label:not(#section-actions) {
+    margin-top: -20px;
+    border-top: 0px;
+}
+
+.form-row>.form-column,
+.form-row>.subform-column {
+    padding-right: 20px;
+    padding-left: 20px;
+    padding-bottom: 20px;
+}
+
+.form-cell,
+.subform-cell {
+    position: relative;
+    display: block;
+    padding-left: var(--jgt-form-subform-padding);
+    padding-right: calc(var(--jgt-form-subform-padding) / 2);
+}
+
+.form-cell:after,
+.subform-cell:after {
+    clear: both;
+    content: "";
+    display: block;
+}
+
+.form-column-label,
+.subform-column-label {
+    padding-left: 13px;
+    padding-right: 13px;
+}
+
+input[type=hidden]+.form-cell,
+.form-cell+.form-cell,
+.subform-cell+.subform-cell,
+.form-cell+.subform-cell,
+.subform-cell+.form-cell {
+    margin-top: var(--jgt-form-itemMarginBottom);
+}
+
+.form-cell+.form-cell.customHtml.no_label,
+.subform-cell+.subform-cell.customHtml.no_label,
+.form-cell+.subform-cell.customHtml.no_label,
+.subform-cell+.form-cell.customHtml.no_label {
+    margin-top: 0px;
+}
+
+.form-container .customHtml.no_label .form-cell-value,
+.form-container .customHtml.no_label .subform-cell-value {
+    min-height: 0px;
+    margin-bottom: 0px;
+}
+
+body .subform-cell>.subform-container.has-frame,
+.form-cell>.subform-container.has-frame {
+    width: 100%;
+}
+
+.form-cell>label.label,
+.subform-cell>label.label {
+    white-space: normal;
+    position: relative;
+    margin-bottom: var(--jgt-form-marginBottom, 0px);
+    font-weight: var(--jgt-form-fontWeight);
+    width: calc(var(--jgt-form-labelWidth) - var(--jgt-form-labelMarginInlineEnd));
+    float: var(--jgt-form-labelFloat);
+    color: var(--jgt-form-colorText);
+    font-size: var(--jgt-form-labelFontSize);
+    line-height: var(--jgt-form-lineHeight);
+    height: var(--jgt-form-labelHeight);
+    padding-top: 4px;
+}
+
+.subform-cell>label.label {
+    width: calc(var(--jgt-form-labelWidth) - var(--jgt-form-labelMarginInlineEnd) - 13px);
+}
+
+.form-cell>label.label:has(.form-error-message), 
+.subform-cell>label.label:has(.form-error-message) {
+    padding-top: 0px;
+    line-height: normal;
+}
+
+.form-cell:not(.full_width_field) > label.label,
+.subform-cell:not(.full_width_field) > label.label{
+    align-content: center;
+    text-align: var(--jgt-form-labelAlign);
+    overflow: unset;
+    white-space: unset;
+    margin-inline-end: var(--jgt-form-labelMarginInlineEnd);
+}
+
+.label-top.form-cell>label.label,
+.label-top.subform-cell>label.label {
+    width: 100%;
+    float: none !important;
+}
+
+.form-cell>label.label+*:not(.ui-screen-hidden),
+.subform-cell>label.label+*:not(.ui-screen-hidden),
+.form-cell>label.label+.ui-screen-hidden+*,
+.subform-cell>label.label+.ui-screen-hidden+* {
+    white-space: normal;
+    position: relative;
+    width: var(--jgt-form-fieldWidth);
+    float: var(--jgt-form-fieldFloat);
+}
+
+.form-cell>label.label+div.form-clear,
+.subform-cell>label.label+div.form-clear {
+    clear: both;
+    float: unset !important;
+    width: unset !important;
+}
+
+.label-top.form-cell>label.label+*:not(.ui-screen-hidden),
+.label-top.subform-cell>label.label+*:not(.ui-screen-hidden),
+.label-top.form-cell>label.label+.ui-screen-hidden+*,
+.label-top.subform-cell>label.label+.ui-screen-hidden+* {
+    width: 100%;
+    float: none !important;
+}
+
+.ui-screen-hidden {
+    display: none;
+}
+
+.form-cell-validator,
+.subform-cell-validator {
+    color: var(--jgt-form-labelRequiredMarkColor);
+}
+
+.full_width_field>label.label>.subform-cell-validator,
+.full_width_field>label.label>.form-cell-validator {
+    position: unset;
+}
+
+.form-cell-full {
+    width: 100% !important;
+}
+
+.form-column-horizontal,
+.subform-column-horizontal {
+    display: block;
+}
+
+.form-column-horizontal>.form-cell,
+.subform-column-horizontal>.subform-cell {
+    display: inline-block;
+}
+
+.form-column-horizontal>.form-cell+.form-cell,
+.subform-column-horizontal>.subform-cell+.subform-cell {
+    margin-top: 0px;
+}
+
+#section-actions {
+    border: 1px solid transparent;
+    box-shadow: none;
+    background-color: transparent;
+}
+
+#section-more-actions {
+    box-shadow: none;
+    background-color: transparent;
+}
+
+#section_upload {
+    box-shadow: none;
+}
+
+.form-section,
+.subform-section {
+    display: block;
+}
+
+.form-column,
+.subform-column {
+    float: left;
+}
+
+body #form-canvas {
+    margin: 0;
+}
+
+body #form-canvas .h1,
+body #form-canvas h1 {
+    font-size: 27px
+}
+
+body #form-canvas .h2,
+body #form-canvas h2 {
+    font-size: 22px
+}
+
+body #form-canvas .h3,
+body #form-canvas h3 {
+    font-size: 18px
+}
+
+body #form-canvas .h4,
+body #form-canvas h4 {
+    font-size: 16px
+}
+
+body #form-canvas .h5,
+body #form-canvas h5 {
+    font-size: 13px
+}
+
+body #form-canvas .h6,
+body #form-canvas h6 {
+    font-size: 12px
+}
+
+.form-cell table,
+.subform-cell table {
+    width: 100%;
+}
+
+legend,
+main #form-canvas .form-section-title span,
+main #form-canvas .subform-section-title span {
+    background: none;
+    font-size: 18px;
+}
+
+legend,
+body #form-canvas .form-section-title span,
+body #form-canvas .subform-section-title span {
+    text-shadow: none;
+    -moz-border-radius: 0px;
+    -webkit-border-radius: 0px;
+    font-weight: var(--jgt-form-headerFontWeight);
+    font-size: var(--jgt-form-headerFontSize);
+    display: inline-block;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 100%;
+}
+
+body #form-canvas .form-section-title span i,
+body #form-canvas .subform-section-title span i{
+    padding-inline-end: var(--global-iconMarginInline);
+}
+
+.form-container .form-cell-value,
+.form-container .subform-cell-value,
+.form-container .selector_element,
+.form-container .form-fileupload,
+.form-container .subform-fileupload,
+.form-container .grid,
+.form-container .spreadsheet_container {
+    min-height: 31px;
+}
+
+.form-container [class*=form-cell-value] {
+    padding: 6px 10px 0 1px;
+    float: left;
+    width: 70%;
+}
+
+.form-cell-value>label,
+.subform-cell-value>label {
+    display: block;
+    float: left;
+    width: 50%;
+}
+
+.form-cell-value.fullWidth>label,
+.subform-cell-value.fullWidth>label {
+    width: auto !important;
+    float: unset !important;
+}
+
+.form-cell-value>label:last-child,
+.subform-cell-value>label:last-child {
+    margin-bottom: 0;
+}
+
+.form-cell-value>label>input,
+.subform-cell-value>label>input {
+    position: relative;
+    height: 15px;
+    width: 15px;
+}
+
+.form-cell .btn:not([class*="btn-"]) {
+    color: var(--jgt-btn-primaryColor);
+    background-color: var(--jgt-btn-colorPrimary);
+    border-color: var(--jgt-btn-colorPrimary);
+}
+
+/* Form/Subform with Radio and Checkbox */
+.form-cell-value:not(.fullWidth):has(input[type="checkbox"]),
+.form-cell-value:not(.fullWidth):has(input[type="radio"]),
+.subform-cell-value:not(.fullWidth):has(input[type="checkbox"]),
+.subform-cell-value:not(.fullWidth):has(input[type="radio"]) {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    column-gap: 10px;
+}
+
+.form-cell-value:not(.fullWidth) > label:has(input[type="checkbox"]),
+.subform-cell-value:not(.fullWidth) > label:has(input[type="checkbox"]),
+.form-cell-value:not(.fullWidth) > label:has(input[type="radio"]),
+.subform-cell-value:not(.fullWidth) > label:has(input[type="radio"]) {
+    display: flex;
+    align-items: flex-start;
+    width: auto;
+}
+
+#section-actions .form-cell {
+    padding-left: 2px;
+    padding-right: 2px;
+}
+
+.print-button {
+    float: right;
+}
+
+.form-cell > label.label + input:has(+ .numeric_field_controls) {
+    padding-inline-end: 30px;
+}
+
+.subform_wrapper .subform-container.no-frame {
+    border: 0;
+    padding: 0;
+    margin-top: 0px;
+    margin-left: 0px;
+    margin-right: 0px;
+    margin-bottom: 0px;
+}
+
+.subform_repeater .repeater-action a {
+    height: 20px !important;
+    width: 20px !important;
+    border-radius: 50%;
+}
+
+.subform_repeater .subform_repeater_action button {
+    color: var(--jgt-btn-primaryColor);
+    background-color: var(--jgt-btn-colorPrimary);
+    outline: 0;
+    border-radius: .25rem;
+    border: 1px solid var(--jgt-btn-colorPrimary);
+    padding: 5px;
+}
+/* End of Subform Stylings */

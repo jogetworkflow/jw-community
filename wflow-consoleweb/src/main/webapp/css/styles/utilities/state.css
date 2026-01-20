@@ -1,0 +1,187 @@
+/* State Stylings Go Here (Hover, Focus, Toggles etc) */
+a:hover {
+    color: var(--jgt-tpgh-colorLinkHover,var(--theme-link-active, var(--theme-color3, #0f9aee)));
+}
+
+body:not(.light-sidebar):not(.light-header):not(.light-inline) #sidebar .nav>li>ul>li>a:hover,
+body:not(.light-sidebar):not(.light-header):not(.light-inline) ul#moreSubMenu.sub-menu>li>ul>li>a:hover{
+    color: var(--theme-sidebar-active-link,
+        var(--theme-color3, #313435)) !important;
+}
+
+[class*="-selection"].dropdown .dropdown-menu li:hover {
+    background-color: #f6f6f6;
+}
+
+body.dark-mode [class*="-selection"].dropdown .dropdown-menu li:hover {
+    background-color: var(--theme-background);
+}
+
+/* Sidebar */
+body:not(.light-sidebar):not(.light-header):not(.light-inline) #sidebar .nav>li>a:hover {
+    color: var(--theme-sidebar-active-link, var(--theme-color3, #313435));
+    opacity: 1;
+}
+
+body.light-sidebar #sidebar .nav>li>a:hover,
+body.light-sidebar #sidebar .nav>li>ul>li>a:hover,
+body.light-header #sidebar .nav>li>ul>li>a:hover,
+body.light-inline #sidebar .nav>li>ul>li>a:hover,
+body.light-header ul#moreSubMenu.sub-menu>li>ul>li>a:hover,
+body.light-inline ul#moreSubMenu.sub-menu>li>ul>li>a:hover {
+    background-color: #ebebeb;
+}
+
+#sidebar .nav>li>a:hover {
+    color: var(--theme-sidebar-active-link, var(--theme-color3, #313435));
+    opacity: 1;
+}
+#sidebar .nav>li.active>a>span>i:first-child,
+body:not(.light-sidebar):not(.light-header):not(.light-inline) #sidebar .nav>li>a:hover>span>i:first-child {
+    color: var(--theme-sidebar-active-icon, var(--theme-color3, #03a9f4));
+}
+
+body:not(.light-sidebar):not(.light-header):not(.light-inline) #sidebar .nav>li>ul>li>a:hover,
+body:not(.light-sidebar):not(.light-header):not(.light-inline) ul#moreSubMenu.sub-menu>li>ul>li>a:hover{
+    color: var(--theme-sidebar-active-link,
+        var(--theme-color3, #313435)) !important;
+}
+
+/* Navigation */
+#navigation:hover {
+    overflow-y: auto;
+}
+
+/* Content */
+#content main button[class*="button"]:focus:not(:disabled):not(.disabled),
+#content main button[class*="button"]:active:not(:disabled):not(.disabled),
+#content main button[class*="button"]:hover:not(:disabled):not(.disabled):not(.accordion-button),
+#content main input[class*="button"]:focus:not(:disabled):not(.disabled),
+#content main input[class*="button"]:active:not(:disabled):not(.disabled),
+#content main input[class*="button"]:hover:not(:disabled):not(.disabled),
+.btn:focus:not(:disabled):not(.disabled),
+.btn:active:not(:disabled):not(.disabled),
+.btn:hover:not(:disabled):not(.disabled) {
+    background-image: radial-gradient(circle closest-side at center,
+        var(--ripple-color) 0%,
+        var(--ripple-color) calc(100% - var(--ripple-fuzz, 0px)),
+        transparent 100%),
+        -webkit-gradient(linear, left top, left bottom, color-stop(10%, var(--ripple-color)), color-stop(90%, transparent));
+    background-image: radial-gradient(circle closest-side at center,
+        var(--ripple-color) 0%,
+        var(--ripple-color) calc(100% - var(--ripple-fuzz, 0px)),
+        transparent 100%),
+        linear-gradient(180deg, var(--ripple-color) 10%, transparent 90%);
+    background-size: 0% 0%, 0% 0%;
+    background-repeat: no-repeat;
+    background-origin: border-box;
+    -webkit-animation: button-ripple var(--ripple-duration) ease-in;
+    animation: button-ripple var(--ripple-duration) ease-in;
+}
+
+#content .grid-stack-item-header-action:hover {
+    color: var(--jgt-tpgh-colorLinkHover);
+    opacity: 1;
+}
+
+#content .main-body-content.Dashboard .reset_position:hover {
+    color: var(--jgt-tpgh-colorLinkHover);
+}
+
+/* Datepicker */
+.hasDatepicker+a+a:hover {
+    color: #e46772;
+    text-decoration: none;
+}
+
+/* Popup Selectbox */
+.selector_element .selector_button:hover {
+    background-color: #ced4da;
+}
+
+.selector_element .selector_items .selector_item a:hover:after {
+    color: #dc3545;
+}
+
+/* File Upload */
+.form-fileupload.dropzone:hover{
+    border-color: var(--jgt-upload-colorPrimary);
+}
+
+.form-fileupload a.remove:hover {
+    color: var(--jgt-upload-colorError);
+}
+
+/* Grid */
+.grid table tr:hover td {
+    background: #e9ecef;
+}
+
+.grid .grid-action-add:hover,
+.grid table tr:hover td.grid-action-cell a:hover {
+    opacity: 1;
+    text-decoration: none;
+}
+
+.grid .pg-navigator:hover {
+    color: #495057;
+}
+
+/* Handsontable, Spreadsheet */
+.handsontable .file_delete:hover {
+    opacity: 1;
+}
+
+/* Multi Paged Form */
+.multiPagedForm .page-nav-panel .nav_item button:hover {
+    border-color: var(--jgt-tab-colorBorder);
+    color: var(--jgt-tab-itemHoverColor);
+}
+
+/* Datalist */
+.dataList tr:hover {
+    background-color: var(--jgt-table-rowHoverBg);
+}
+
+.dataList tr:has(input[type="checkbox"]:checked),
+.dataList tr:has(input[type="radio"]:checked) {
+    background-color: var(--jgt-table-rowSelectedBg);
+}
+
+.dataList span.pagelinks a:hover,
+.dataList span.pagelinks>span:hover{
+    text-decoration: none;
+    color: var(--jgt-pg-colorText);
+    background-color: var(--jgt-pg-colorBgTextHover);
+    border-color: var(--jgt-pg-colorBgTextHover);
+}
+
+.dataList span.pagelinks strong:hover {
+    color: var(--jgt-pg-colorPrimaryHover);
+    border-color: var(--jgt-pg-colorPrimaryHover);
+}
+
+.dataList .exportlinks a:hover {
+    text-decoration: none;
+}
+
+.dataList .dropdown-menu a.dropdown-item:hover{
+    background-color: var(--jgt-dd-controlItemBgHover) !important;;
+}
+
+.dataList .show_hide_control:hover .toggle {
+    opacity: 1;
+}
+
+.dataList .show_hide_control .toggle:after {
+    content: "";
+    width: 0;
+    height: 0;
+    border-left: 5px solid transparent;
+    border-right: 5px solid transparent;
+    border-top: 5px solid #6c757d;
+    position: absolute;
+    top: 7px;
+    right: 4px;
+}
+/* End of State Stylings */

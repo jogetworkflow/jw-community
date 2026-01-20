@@ -406,6 +406,53 @@ public abstract class Element extends ExtDefaultPlugin implements PropertyEditab
         if (getPropertyString("iconIncluded") != null && getPropertyString("iconIncluded").equals("true")) {
             dataModel.put("classIdentifier", " withIcon");
         }
+
+        String label = getPropertyString("label");
+        if (label == null) {
+            dataModel.put("label", "");
+            dataModel.put("iconValue", "");
+            return;
+        }
+
+        String[] parts = label.split("</i>", 2);
+
+        if (parts.length == 2) {
+            String icon = "<style>\r\n" + //
+                                "            body .form-container span.input-group-text + [class*=\"form-cell-value\"] {\r\n" + //
+                                "                padding: 4px 10px;\r\n" + //
+                                "            }\r\n" + //
+                                "           div.input-group { \r\n" +
+                                "               flex-wrap: nowrap !important;\r\n" +
+                                "               max-width: 70%;\r\n" + //
+                                "           }\r\n" +
+                                "           .label-top.form-cell div.input-group,\r\n" + //
+                                "           .label-top.subform-cell div.input-group { \r\n" +
+                                "               max-width: 100%;\r\n" + //
+                                "           }\r\n" +
+                                "           div.input-group input,  \r\n" +
+                                "           div.input-group select, \r\n" +
+                                "           div.input-group textarea { \r\n" +
+                                "               border-inline-start: none; \r\n" +
+                                "               border-start-start-radius: 0;\r\n" +
+                                "               border-end-start-radius: 0;\r\n" +
+                                "           }\r\n" +
+                                "           div.input-group > .input-group-text { \r\n" +
+                                "               border-start-end-radius: 0;\r\n" +
+                                "               border-end-end-radius: 0;\r\n" +
+                                "           }\r\n" +
+                                "           div.input-group > .input-group-text + * { \r\n" +
+                                "               width: 100%;\r\n" +
+                                "           }\r\n" +
+                                "        </style>" + 
+                                parts[0] + 
+                                "</i>";
+            String labelOnly = parts[1];
+            dataModel.put("label", labelOnly);
+            dataModel.put("iconValue", icon);
+        } else {
+            dataModel.put("label", label);
+            dataModel.put("iconValue", "");
+        }
     }
 
     public String decorateWithBuilderProperties(String html, FormData formData) {

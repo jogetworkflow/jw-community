@@ -1,0 +1,83 @@
+/* Any Datalist Pagelinks Stylings go here */
+.pagelinks [class*="-disabled"] {
+    color: var(--jgt-pg-itemActiveColorDisabled) !important;
+    background-color: var(--jgt-pg-itemActiveBgDisabled) !important;
+}
+
+.dataList span.pagelinks {
+    text-align: left;
+    font-size: 0;
+    color: transparent;
+    white-space: break-spaces;
+    display: inline-block;
+    margin-top: 5px;
+}
+
+.dataList span.pagelinks a,
+.dataList span.pagelinks strong,
+.dataList span.pagelinks>span {
+    cursor: pointer;
+    display: inline-block;
+    z-index: 3;
+    margin-bottom: 2px;
+    position: relative;
+    padding: 0 var(--jgt-pg-padding);
+    color: var(--jgt-pg-colorText);
+    background-color: var(--jgt-pg-colorBgContainer);
+    border: var(--jgt-pg-lineWidth) var(--jgt-pg-lineType) transparent;
+    width: var(--jgt-pg-itemSize);
+    height: var(--jgt-pg-controlHeight);
+    font-size: var(--jgt-pg-fontSize);
+    line-height: var(--jgt-pg-controlHeight);
+    text-align: center;
+    border-radius: var(--jgt-pg-borderRadius);
+    margin-inline-end: var(--jgt-pg-margin);
+}
+
+.dataList span.pagelinks strong {
+    cursor: default;
+    font-weight: var(--jgt-pg-fontWeightStrong);
+    color: var(--jgt-pg-colorPrimary);
+    background-color: var(--jgt-pg-itemActiveBg);
+    border-color: var(--jgt-pg-colorPrimary);
+}
+
+.dataList .pagelinks .pc {
+    background-image: none !important;
+    display: inline-block;
+    font: normal normal normal 14px/1 FontAwesome;
+    text-rendering: auto;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+.dataList .pagelinks .pc.first-disabled,
+.dataList .pagelinks .pc.prev-disabled,
+.dataList .pagelinks .pc.next-disabled,
+.dataList .pagelinks .pc.last-disabled {
+    cursor: not-allowed;
+    vertical-align: bottom;
+    line-height: var(--jgt-pg-controlHeight);
+    background-color: rgba(0, 0, 0, .05);
+}
+
+.dataList .pagelinks .pc.first-disabled:before,
+.dataList .pagelinks .pc.first:before {
+    content: "\f100";
+}
+
+.dataList .pagelinks .pc.prev-disabled:before,
+.dataList .pagelinks .pc.prev:before {
+    content: "\f104";
+}
+
+.dataList .pagelinks .pc.next-disabled:before,
+.dataList .pagelinks .pc.next:before {
+    content: "\f105";
+}
+
+.dataList .pagelinks .pc.last-disabled:before,
+.dataList .pagelinks .pc.last:before {
+    content: "\f101";
+}
+/* End of Page Links Stylings */

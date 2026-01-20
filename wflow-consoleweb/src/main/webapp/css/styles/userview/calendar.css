@@ -1,0 +1,7 @@
+/* Calendar related stylings */
+
+@media (max-width: 372px){
+    .calendar_menu_body .fc-header-toolbar .fc-toolbar-chunk:nth-child(1) {
+        margin-bottom: 8px;
+    }
+}

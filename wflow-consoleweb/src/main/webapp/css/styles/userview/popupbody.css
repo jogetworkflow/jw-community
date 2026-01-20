@@ -1,0 +1,67 @@
+/* Any popupbody stylings go here */
+body.popupBody {
+    background-color: var(--theme-content-background, #ffffffcc);
+    padding: 25px 20px;
+}
+
+body.popupBody #main-body-header {
+    background: var(--theme-heading-bg, var(--theme-color5, #fff));
+    color: var(--theme-heading-color, var(--theme-color2, #ffffff));
+    padding: 15px;
+    position: fixed;
+    text-transform: uppercase;
+    font-size: 16px;
+    font-weight: bold;
+    top: 0;
+    left: 0;
+    width: 100%;
+    box-sizing: border-box;
+    z-index: 1000;
+}
+
+body.popupBody #main-body-header #main-action-help {
+    position: absolute;
+    right: 30px;
+    top: 15px;
+}
+
+body.popupBody #main-body-content {
+    padding: 20px 15px;
+    overflow: auto !important;
+}
+
+body.popupBody #section-actions .form-cell,
+body.popupBody .dataList .actions {
+    box-shadow: none;
+    position: fixed;
+    bottom: 0px;
+    left: 0px;
+    width: 100%;
+    background-color: #fff;
+    padding: 15px 15px;
+    border-top: 1px solid #e9ecef;
+    text-align: right;
+    z-index: 4;
+}
+
+body.popupBody #section-actions .form-cell input,
+body.popupBody .dataList .actions input {
+    float: right;
+}
+
+/* Form Popup Body */
+body.popupBody .form-section-title,
+body.popupBody .subform-section-title {
+    padding: 0.75rem 0.5rem;
+    margin-bottom: 0px;
+}
+
+body.popupBody .form-section,
+body.popupBody .form-section+.form-section {
+    box-shadow: none;
+}
+
+body.popupBody .form-section:first-of-type {
+    padding-top: 0px;
+}
+/* End of Popupbody stylings */

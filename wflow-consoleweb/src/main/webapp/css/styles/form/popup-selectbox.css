@@ -1,0 +1,191 @@
+/* Any Popup selectbox styligns go here */
+span.selector_element {
+    display: flex;
+    align-items: stretch;
+    flex-direction: row-reverse;
+
+    width: 100%;
+    height: fit-content;
+    min-height: 34px;
+    line-height: 1.5;
+    padding: 0px;
+
+    color: #495057;
+    background-color: #fff;
+    background-clip: padding-box;
+    border: 1px solid #ced4da;
+
+    border-radius: 0.25rem;
+    float: left;
+    transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+}
+
+#content main .selector_element .selector_button {
+  background-color: rgba(40, 148, 26, 1);
+}
+
+.selector_element .selector_button,
+.selector_element .selector_button:hover {
+    padding: 2px 12px !important;
+    line-height: 1.5;
+    color: #495057;
+    background-color: #e9ecef;
+    border: 1px solid #ced4da;
+    border-radius: .25rem;
+    border-start-start-radius: 0px;
+    border-end-start-radius: 0px;
+    -webkit-mask-image: none;
+    -webkit-box-shadow: none;
+    box-shadow: none;
+    font-size: inherit;
+    margin-bottom: 0px !important;
+}
+
+.selector_element .selector_items {
+    display: flex;
+    flex: 1 1 100%;
+    flex-wrap: wrap;
+    
+    padding: 8px 12px;
+    gap: 10px;
+}
+
+.selector_element .selector_items .selector_item,
+div.chosen-container-multi .chosen-choices li.search-choice {
+    display: inline-block;
+    background: #3E3E3E;
+    color: #FFFFFF;
+    padding: 0 20px 0 5px;
+    position: relative;
+    border-radius: 3px;
+} {
+    display: inline-block;
+    background: #3E3E3E;
+    color: #FFFFFF;
+    padding: 0 20px 0 5px;
+    position: relative;
+    border-radius: 3px;
+}
+
+.selector_element .selector_items .selector_item a {
+    position: absolute;
+    color: transparent;
+    width: 16px;
+    display: inline-block;
+    cursor: pointer;
+    right: 0px;
+}
+
+.selector_element .selector_items .selector_item a:after {
+    content: '\f00d';
+    font-family: "Font Awesome 5 Free";
+    -moz-osx-font-smoothing: grayscale;
+    -webkit-font-smoothing: antialiased;
+    display: inline-block;
+    font-style: normal;
+    font-variant: normal;
+    font-weight: 900;
+    text-rendering: auto;
+    line-height: 1;
+    position: absolute;
+    z-index: 1;
+    top: 4px;
+    left: 0px;
+}
+
+.selector_element .selector_items .selector_item a:after,
+.chosen-container.chosen-container-multi .chosen-choices li.search-choice .search-choice-close:after {
+    color: #9AA1A8;
+}
+
+span.selector_element button.selector_button {
+    --jgt-btn-colorPrimary: rgba(40, 148, 26, 1);
+}
+
+.selector_element .selector_items.colorfulTags .selector_item,
+.chosen-container.colorfulTags ul.chosen-choices li.search-choice {
+    color: #495057;
+}
+
+.selector_element .selector_items.colorfulTags .selector_item:nth-child(5n+1),
+.chosen-container.colorfulTags ul.chosen-choices li.search-choice:nth-child(5n+1) {
+    background: #C7E3FF;
+}
+
+.selector_element .selector_items.colorfulTags .selector_item:nth-child(5n+2),
+.chosen-container.colorfulTags ul.chosen-choices li.search-choice:nth-child(5n+2) {
+    background: #C7FFEB;
+}
+
+.selector_element .selector_items.colorfulTags .selector_item:nth-child(5n+3),
+.chosen-container.colorfulTags ul.chosen-choices li.search-choice:nth-child(5n+3) {
+    background: #FFDEC7;
+}
+
+.selector_element .selector_items.colorfulTags .selector_item:nth-child(5n+4),
+.chosen-container.colorfulTags ul.chosen-choices li.search-choice:nth-child(5n+4) {
+    background: #EAC7FF;
+}
+
+.selector_element .selector_items.colorfulTags .selector_item:nth-child(5n+5),
+.chosen-container.colorfulTags ul.chosen-choices li.search-choice:nth-child(5n+5) {
+    background: #EBFFC7;
+}
+
+/* Boxy Wrapper */
+.boxy-wrapper {
+    display: block;
+    border-radius: 0.3rem;
+    background: #fff;
+    background-clip: padding-box;
+    border: 1px solid rgba(0, 0, 0, 0.2);
+    overflow: hidden;
+}
+
+.boxy-wrapper tbody tr:nth-child(1),
+.boxy-wrapper tbody tr:nth-child(3),
+.boxy-wrapper tbody tr td.left,
+.boxy-wrapper tbody tr td.right {
+    display: none;
+}
+
+.boxy-wrapper .title-bar {
+    background-color: #fff !important;
+    padding: 1.2rem !important;
+    border-bottom: 1px solid #e9ecef !important;
+}
+
+.boxy-wrapper .title-bar h2 {
+    color: #1F1F1F;
+    font-weight: 600;
+    font-size: 16px;
+    line-height: 24px;
+    vertical-align: middle;
+    text-transform: capitalize;
+}
+
+.boxy-wrapper .title-bar .close {
+    position: absolute;
+    top: 15px !important;
+    right: 15px !important;
+    color: rgba(0, 0, 0, 0.45);
+    font-size: 20px !important;
+}
+
+.boxy-wrapper iframe {
+    border: 0;
+}
+
+.boxy-wrapper .boxy-content {
+    padding: 0;
+}
+
+.boxy-modal-blackout {
+    opacity: 0.3 !important;
+}
+
+/* Disable select */
+tbody tr.disabled-row {
+    display: none;
+}
+/* End of Popup selectbox stylings */

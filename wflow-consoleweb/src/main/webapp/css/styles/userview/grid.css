@@ -1,0 +1,7 @@
+/* Any Grid related stylings go here */
+.grid-stack-item-body>.main-body-content>[class*="-body-content"]:not(.viewForm-body-content):not(.runProcess-body-content) {
+    border: 0;
+    padding: 10px;
+    box-shadow: none;
+}
+/* End of Grid Stylings */

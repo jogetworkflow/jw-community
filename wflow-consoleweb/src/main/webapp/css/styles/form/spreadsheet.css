@@ -1,0 +1,119 @@
+/* Any Spreadsheet Stylings go here */
+.spreadsheet_container {
+    width: 100% !important;
+    height: 100%;
+}
+
+.spreadsheet_container,
+.spreadsheet {
+    width: 100%;
+    overflow: visible !important;
+    color: inherit;
+}
+
+.spreadsheet_container.resize {
+    overflow: hidden !important;
+    max-width: 100% !important;
+    opacity: 0.4;
+}
+
+.spreadsheet_container.resize .wtHolder {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+}
+
+.spreadsheet_container.resize .wtHolder::-webkit-scrollbar {
+    display: none;
+}
+
+.htMobileEditorContainer {
+    width: 260px;
+    height: 112px;
+}
+
+.htMobileEditorContainer .positionControls {
+    right: -12px;
+    top: 48px;
+}
+
+.htMobileEditorContainer .inputs textarea {
+    height: 25px !important;
+    width: auto;
+    max-width: none;
+}
+
+.handsontable .htAutocompleteArrow,
+.handsontable .columnSorting::after {
+    font-family: sans-serif;
+    color: var(--jgt-gray-800) !important;
+}
+
+.handsontable .date-icon, .handsontable .upload-icon, .handsontable .time-icon {
+    margin-top: 4px;
+    margin-right: 4px;
+    color: var(--jgt-gray-800);
+    float: left;
+}
+
+.handsontable td .date-icon{
+    margin-right: 9px;
+}
+
+body.rtl .handsontable td .date-icon{
+    margin-left: 9px;
+}
+
+.handsontable td .filename{
+    margin-left: 5.5px;
+}
+
+.handsontable td .upload-hint, .handsontable td .date-hint, .handsontable td .time-hint{
+   color: var(--jgt-gray-500); 
+   margin-left: -2px;
+}
+
+.handsontable .file_delete {
+    color: #EA5858;
+    margin-top: 4px;
+    margin-left: 10px;
+    margin-right: 10px;
+    cursor:pointer;
+    float: right;
+}
+
+.handsontableInputHolder .handsontableEditor {
+    height: auto !important;
+    overflow: visible !important;
+    position: relative !important;
+    top: 0 !important;
+}
+
+.handsontableInputHolder .handsontableEditor .ht_master .wtHolder {
+    height: auto !important;
+    max-height: 230px;
+}
+
+.form-cell .handsontable table td,
+.form-cell .handsontable table th,
+.subform-cell .handsontable table td,
+.subform-cell .handsontable table th {
+    padding: 0 4px;
+}
+
+.spreadsheet .handsontable table td,
+.spreadsheet .handsontable table th {
+    border: 0px solid #ced4da !important;
+    border-bottom: 1px solid #ced4da !important;
+    border-right: 1px solid #ced4da !important;
+}
+
+.spreadsheet .handsontable.ht_clone_left table.htCore th,
+.spreadsheet .handsontable.ht_clone_top_left_corner table.htCore th {
+    border-left: 1px solid #ced4da !important;
+}
+
+.spreadsheet .handsontable.ht_clone_top table.htCore th,
+.spreadsheet .handsontable.ht_clone_top_left_corner table.htCore th {
+    border-top: 1px solid #ced4da !important;
+}
+/* End of Spreadsheet Stylings */

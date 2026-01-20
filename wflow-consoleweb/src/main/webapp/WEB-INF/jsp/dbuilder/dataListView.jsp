@@ -4,12 +4,37 @@
 <%@ taglib uri="http://displaytag.sf.net" prefix="display" %>
 
 <c:set scope="request" var="dataListId" value="${dataList.id}"/>
-
+<style>
+    .dataList .pagebanner, .dataList .pagebanner + .exportlinks {
+        width: 50% !important;
+        display: inline-block !important;
+        margin: 0px !important;
+        background: transparent !important;
+        border: none !important;
+    }
+    .size_sm *:is(.dataList .pagebanner, .dataList .pagebanner + .exportlinks) {
+        font-size: 11px;
+    }
+    .dataList .pagebanner {
+        text-align: start !important;
+    }
+    .dataList .exportlinks {
+        text-align: end !important;
+    }
+    @media (max-width: 425px) {
+        .dataList .pagebanner, .dataList .pagebanner + .exportlinks {
+            width: 100% !important;
+            text-align: center !important;
+            margin-bottom: 5px !important;
+        }
+    }
+</style>
 <div id="dataList_${dataList.id}" data-responsivemode="${dataList.responsiveMode}" class="dataList <c:if test="${!dataList.isAuthorized}">unauthorized</c:if> <c:if test="${empty dataList.actions}">no_action</c:if> <c:if test="${dataList.noExport}">no_export</c:if>">
     <c:choose>
         <c:when test="${dataList.isAuthorized}">
             <script type="text/javascript" src="${pageContext.request.contextPath}/js/footable/responsiveTable.js?build=<fmt:message key="build.number"/>" defer></script>
             <link rel="preload" href="${pageContext.request.contextPath}/js/footable/fonts/footable.woff" as="font" crossorigin />
+            <link rel="stylesheet" href="${pageContext.request.contextPath}/css/styles/datalist/datalist-mobile.css" />
             
             <c:set var="isQuickEditEnabled" value="<%= AppUtil.isQuickEditEnabled() %>"/>
             <c:if test="${isQuickEditEnabled && !dataList.disableQuickEdit}">
@@ -198,8 +223,8 @@
                                                property="column(${column.name})"
                                                title="${columnLabel}"
                                                sortable="${column.sortable}"
-                                               headerClass="column_header column_${column.name} ${columnHiddenCss} ${column.headerAlignment} header_${column.properties.id} ${column.properties.BUILDER_GENERATED_HEADER_CSS}"
-                                               class="column_body  column_${column.name} ${columnHiddenCss} ${column.alignment} body_${column.properties.id} ${column.properties.BUILDER_GENERATED_CSS}"
+                                               headerClass="column_header column_${column.name} ${columnHiddenCss} ${column.headerAlignment} header_${column.properties.id} ${column.properties.BUILDER_GENERATED_HEADER_CSS} ${column.properties.extraClassIdentifier}"
+                                               class="column_body  column_${column.name} ${columnHiddenCss} ${column.alignment} body_${column.properties.id} ${column.properties.BUILDER_GENERATED_CSS} ${column.properties.extraClassIdentifier}"
                                                style="${column.style}"
                                                media="${columnMedia}"
                                                />
@@ -216,7 +241,7 @@
                                                    <c:when test="${rowActionStatus.index == 0}">
                                                        <c:set var="actionTitle" value="${headerTitle}" />
                                                        <c:set var="firstHeaderCssClass" value="rowaction_header footable-visible header_${rowAction.properties.id} ${rowAction.properties.BUILDER_GENERATED_HEADER_CSS}" />
-                                                       <c:set var="firstBodyCssClass" value="rowaction_body row_action_inner body_${rowAction.properties.id} ${rowAction.properties.BUILDER_GENERATED_CSS}" />
+                                                       <c:set var="firstBodyCssClass" value="rowaction_body row_action_inner body_${rowAction.properties.id} ${rowAction.properties.BUILDER_GENERATED_CSS} ${rowAction.properties.extraClassIdentifier}" />
                                                    </c:when>
                                                    <c:when test="${rowActionStatus.last}">
                                                        <c:set var="actionTitle" value="${actionTitle}</th><th class=\"row_action rowaction_header footable-last-column row_action_last footable-visible header_${rowAction.properties.id} ${rowAction.properties.BUILDER_GENERATED_HEADER_CSS}\">${headerTitle}" />
@@ -229,7 +254,7 @@
                                            <c:if test="${!empty dataList.properties.rowActionsMode && (dataList.properties.rowActionsMode eq 'true' || dataList.properties.rowActionsMode eq 'dropdown')}">
                                                <c:set var="actionTitle" value=""/>
                                                <c:set var="firstHeaderCssClass" value="rowaction_header"/>
-                                               <c:set var="firstBodyCssClass" value="rowaction_body"/>
+                                               <c:set var="firstBodyCssClass" value="rowaction_body ${rowAction.properties.extraClassIdentifier}"/>
                                            </c:if>
                                            <display:column headerClass="row_action ${firstHeaderCssClass}" class="row_action ${firstBodyCssClass}" property="actions" media="html" title="${actionTitle}"/>
                                        </c:if>
@@ -318,6 +343,7 @@
         }
     }
     $(document).ready(function() {
+        $("form[name='form_${dataListId}']").find("input[type='checkbox']").addClass('form-check-input');
         $("form[name='form_${dataListId}']").on(
             "click",
             "tbody .select_checkbox input[type='checkbox']",
@@ -351,6 +377,8 @@
         $('#filters_${dataListId} > .mobile_search_trigger').off("click").on("click", function(){
             $("#filters_${dataListId}").toggleClass("show");
         });
+        $("#dataList_${dataList.id} .exportlinks").prepend("<span class='exportlabel'><fmt:message key='form.form.message.exportMessage'/></span>");
+        $("#dataList_${dataList.id} .exportlinks").insertAfter("#dataList_${dataList.id} .pagebanner");
         $(".exportlinks a").attr("target", "_blank"); //download in new page so that it won't block access
 
         //button 'click' handler

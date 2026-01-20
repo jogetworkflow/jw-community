@@ -1,0 +1,22 @@
+/* Any Related Reusable Button Stylings go here */
+.btn.btn-link,
+.btn.btn-link.focus,
+.btn.btn-link:focus,
+.btn.btn-link:active {
+    box-shadow: none;
+}
+
+/* Form Button */
+.form-edit-btn {
+    position: absolute !important;
+    right: 5px;
+}
+
+.form-edit-btn.top {
+    top: 5px;
+}
+
+.form-edit-btn.bottom {
+    bottom: 20px;
+}
+/* End of Stylings */

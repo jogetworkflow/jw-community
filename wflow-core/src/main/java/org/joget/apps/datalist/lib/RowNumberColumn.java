@@ -24,6 +24,7 @@ public class RowNumberColumn extends DataListDisplayColumnDefault {
 
     @Override
     public String getColumnHeader() {
+        setProperty("extraClassIdentifier", "rowNumber");
         return getPropertyString("label");
     }
 
@@ -44,7 +45,6 @@ public class RowNumberColumn extends DataListDisplayColumnDefault {
                 //ignore
             }
         }
-        
         return rowNo;
     }
 

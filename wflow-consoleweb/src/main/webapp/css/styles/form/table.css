@@ -1,0 +1,10 @@
+/* Any table within a form stylings go here */
+.form-cell table:not([class]) td,
+.form-cell table:not([class]) th,
+.subform-cell table:not([class]) td,
+.subform-cell table:not([class]) th {
+    border: solid 1px silver;
+    margin: 0px;
+    padding: 3px;
+}
+/* End of Table Stylings */

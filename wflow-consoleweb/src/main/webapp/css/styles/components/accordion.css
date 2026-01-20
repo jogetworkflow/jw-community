@@ -1,0 +1,48 @@
+/* Any Related Reusable Accordion Stylings go here */
+.accordion {
+    margin-bottom: 10px;
+}
+
+.accordion .card-header {
+    cursor: pointer;
+}
+
+.accordion-heading {
+    text-align: left;
+}
+
+.accordion .card-body {
+    padding: var(--jgt-acc-contentPadding);
+    background-color: var(--jgt-acc-contentBg);
+    margin-bottom: -2px;
+    color: var(--jgt-acc-colorText);
+}
+
+.accordion>.card>.card-header {
+    text-align: left;
+    border: 0;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.125) !important;
+}
+
+.accordion .accordion-group:first-child .card-header {
+    border-radius: var(--jgt-acc-borderRadius) var(--jgt-acc-borderRadius) 0 0;
+}
+
+.accordion .accordion-group:last-child .card-header:has(+ .card-body:not(.show)) {
+    border-radius: 0 0 var(--jgt-acc-borderRadius) var(--jgt-acc-borderRadius);
+    margin-bottom: 0px;
+}
+
+.accordion .accordion-group:last-child .card-body {
+    border-radius: 0 0 var(--jgt-acc-borderRadius) var(--jgt-acc-borderRadius);
+    margin-bottom: 0px;
+}
+
+.accordion .card-header:focus, .accordion .card-body:focus {
+    outline: 0px;
+}
+
+body.rtl .accordion>.card>.card-header {
+    text-align: right;
+}
+/* End of Stylings */

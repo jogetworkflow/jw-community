@@ -161,9 +161,68 @@
      <group name="ajaxuniversal9.preload.min">
         <css>/universal/lib/material-design-iconic-font/css/material-design-iconic-font.min.css</css>
         <css>/ajaxuniversal/css/ajaxtheme9.css</css>
-        <css>/css/form9.css</css>
-        <css>/css/datalist9.css</css>
-        <css>/css/userview9.css</css>
+    </group>
+    <group name="base.min">
+        <css>/css/styles/base/general.css</css>
+        <css>/css/styles/base/variables.css</css>
+        <css>/css/styles/base/jds.css</css>
+
+        <!-- Form related css -->
+        <css>/css/styles/form/adgrid.css</css>
+        <css>/css/styles/form/datepicker.css</css>
+        <css>/css/styles/form/form-label.css</css>
+        <css>/css/styles/form/form-subform-section.css</css>
+        <css>/css/styles/form/form-subform.css</css>
+        <css>/css/styles/form/grid.css</css>
+        <css>/css/styles/form/miscellaneous.css</css>
+        <css>/css/styles/form/multipagedform.css</css>
+        <css>/css/styles/form/numeric-controls.css</css>
+        <css>/css/styles/form/password.css</css>
+        <css>/css/styles/form/popup-selectbox.css</css>
+        <css>/css/styles/form/spreadsheet.css</css>
+        <css>/css/styles/form/table.css</css>
+        <css>/css/styles/form/upload.css</css>
+
+        <!-- Datalist related css -->
+        <css>/css/styles/datalist/action.css</css>
+        <css>/css/styles/datalist/datalist.css</css>
+        <css>/css/styles/datalist/filter.css</css>
+        <css>/css/styles/datalist/miscellaneous.css</css>
+        <css>/css/styles/datalist/page-link.css</css>
+
+        <!-- Userview related css -->
+        <css>/css/styles/userview/breadcrumb.css</css>
+        <css>/css/styles/userview/content.css</css>
+        <css>/css/styles/userview/embed.css</css>
+        <css>/css/styles/userview/footer.css</css>
+        <css>/css/styles/userview/form.css</css>
+        <css>/css/styles/userview/grid.css</css>
+        <css>/css/styles/userview/header.css</css>
+        <css>/css/styles/userview/login.css</css>
+        <css>/css/styles/userview/miscellaneous.css</css>
+        <css>/css/styles/userview/page.css</css>
+        <css>/css/styles/userview/popupbody.css</css>
+        <css>/css/styles/userview/preview.css</css>
+        <css>/css/styles/userview/quickEdit.css</css>
+        <css>/css/styles/userview/sidebar.css</css>
+        <css>/css/styles/userview/ui-dialog.css</css>
+        <css>/css/styles/userview/calendar.css</css>
+
+        <css>/css/styles/components/accordion.css</css>
+        <css>/css/styles/components/button.css</css>
+        <css>/css/styles/components/card.css</css>
+        <css>/css/styles/components/column.css</css>
+        <css>/css/styles/components/container.css</css>
+        <css>/css/styles/components/input.css</css>
+
+        <css>/css/styles/theme/builder-theme.css</css>
+        <css>/css/styles/theme/dark-mode.css</css>
+        <css>/css/styles/theme/font-size.css</css>
+
+        <css>/css/styles/utilities/animation.css</css>
+        <css>/css/styles/utilities/rtl.css</css>
+        <css>/css/styles/utilities/state.css</css>
+        <css>/css/styles/utilities/responsive.css</css>
     </group>
     <group name="ajaxuniversal.min">
         <css>/universal/lib/waves/waves.min.css</css>

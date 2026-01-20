@@ -10,13 +10,7 @@
 
     <label class="label" field-tooltip="${elementParamName!}">${element.properties.label} <span class="form-cell-validator">${decoration}</span><#if error??> <span class="form-error-message">${error}</span></#if></label>
     <div id="form-fileupload_${elementParamName!}_${element.properties.elementUniqueKey!}" tabindex="0" class="form-fileupload <#if error??>form-error-cell</#if> <#if element.properties.readonly! == 'true'>readonly<#else>dropzone</#if>">
-    <#if element.properties.readonly! != 'true'>
-        <div class="dz-message needsclick">
-            @@form.fileupload.dropFile@@
-        </div>
-        <input style="display:none" id="${elementParamName!}" name="${elementParamName!}" type="file" size="${element.properties.size!}" <#if error??>class="form-error-cell"</#if> <#if element.properties.multiple! == 'true'>multiple</#if>/>
-    </#if>
-        <ul class="form-fileupload-value">
+    <ul class="form-fileupload-value">
             <#if element.properties.readonly! != 'true'>
                 <li class="template" style="display:none;">
                     <span class="name" data-dz-name></span> <a class="remove"style="display:none">@@form.fileupload.remove@@</a> 
@@ -50,6 +44,12 @@
                 </#list>
             </#if>
         </ul>
+    <#if element.properties.readonly! != 'true'>
+        <div class="dz-message needsclick">
+            @@form.fileupload.dropFile@@
+        </div>
+        <input style="display:none" id="${elementParamName!}" name="${elementParamName!}" type="file" size="${element.properties.size!}" <#if error??>class="form-error-cell"</#if> <#if element.properties.multiple! == 'true'>multiple</#if>/>
+    </#if>
     </div>
     <#if element.properties.readonly! != 'true'>
         <script>

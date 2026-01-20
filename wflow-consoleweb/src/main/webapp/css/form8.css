@@ -524,8 +524,7 @@ body input.no-manual-input{
     width: 25px;
 }
 body.rtl input.hasDatepicker {
-     direction: ltr;
-     text-align: right;
+    text-align: right;
 }
 
 /* subform */
@@ -792,9 +791,6 @@ body.rtl .selector_element .selector_items {
 .grid.readonly .grid-action-edit:after{
     content: '\f15c';
 }
-.grid .grid-action-add:after {
-    content: '\f055';
-}
 .grid:not(.enableSorting) a.grid-action-moveup,
 .grid:not(.enableSorting) a.grid-action-movedown,
 .grid.readonly.enableSorting a.grid-action-moveup,
@@ -943,6 +939,11 @@ body.rtl .handsontable .htCore tr td:last-child {
 .spreadsheet .handsontable.ht_clone_top_left_corner table.htCore th{
     border-top: 1px solid #ced4da !important;
 } 
+
+.spreadsheet [dir=rtl].handsontable td:last-child {
+    border-left-width: 1px !important;
+}
+
 @media print {
     .spreadsheet_container, .spreadsheet {
         overflow: hidden !important;
@@ -1488,30 +1489,6 @@ body.rtl .subform-cell > label.label.withIcon > i{
     left: -35px;
     right: unset;
 }
-/* Fix for passworod field padding */
-.form-cell > label.label + .password-container,
-.subform-cell > label.label > i + .password-container,
-.label-left.form-cell > label.label > i + .password-container,
-.label-left.subform-cell > label.label > i + .password-container {
-    padding: 0px !important;
-}
-
-.form-cell > label.label.withIcon + .password-container > .password-wrapper input,
-.subform-cell > label.label.withIcon > i + .password-container > .password-wrapper input,
-.label-left.form-cell > label.label.withIcon > i + .password-container > .password-wrapper input,
-.label-left.subform-cell > label.label.withIcon > i + .password-container > .password-wrapper input {
-    padding: 0px !important;
-    padding-left: 40px !important;
-}
-
-body.rtl *:is(.form-cell > label.label.withIcon + .password-container > .password-wrapper input,
-.subform-cell > label..withIcon > i + .password-container > .password-wrapper input,
-.label-left.form-cell > label.label.withIcon > i + .password-container > .password-wrapper input,
-.label-left.subform-cell > label.label.withIcon > i + .password-container > .password-wrapper input) {
-    padding-left: 0 !important;
-    padding-right: 40px !important;
-}
-/* End of Fix */
 select:focus-visible{
     border: 2px solid var(--theme-primary, var(--theme-color3, #007bff));
 }
@@ -1821,8 +1798,7 @@ body.rtl .handsontable .filename_container .filename {
     unicode-bidi: isolate;
 }
 body.rtl input.hasDatepicker {
-     direction: ltr;
-     text-align: right;
+    text-align: right;
 }
 body.rtl .chosen-container-multi.chosen-rtl .chosen-choices li.search-choice{
     margin: 6px 5px 0 0;

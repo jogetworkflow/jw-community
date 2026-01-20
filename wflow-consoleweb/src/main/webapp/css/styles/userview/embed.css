@@ -1,0 +1,34 @@
+/* Any embed stylings */
+body.embeded #page {
+    padding-left: 0;
+    padding-top: 0 !important;
+}
+
+body.embeded,
+body.embeded #content.page_content {
+    padding: 0px;
+    background-color: transparent;
+}
+
+body.embeded #content .main-body-content.User_Profile_Menu {
+    padding:24px;
+}
+
+body.embeded #content form.form fieldset legend {
+    background-color: var(--jgt-popup-header-bg);
+    border-radius: 10px 10px 0 0;
+}
+
+body.embeded #content form.form fieldset {
+    border-radius: 10px;
+}
+body.embeded #content main>.main-body-content>.ui-html,
+body.embeded .main-body-content>[class*="-body-content"]:not(.viewForm-body-content):not(.runProcess-body-content),
+body.embeded .calendar_menu_body {
+    border: 0;
+}
+
+body.embeded #content .main-body-content {
+    border: 0;
+}
+/* End of Embed stylings */

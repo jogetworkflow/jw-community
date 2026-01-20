@@ -1,0 +1,139 @@
+/* Any Font Size Control Stylings go here */
+/* To activate, Font Size Control, go to Userview > Settings > Theme > Advanced > Enable Font Size Control */
+.adjustfontSize {
+    position: relative;
+    display: block;
+    padding: 0 10px 10px !important;
+    padding-right: 20px;
+}
+
+.buttonFontSize {
+    font-size: 20px !important;
+    color: #6c757d !important;
+    background-color: transparent !important;
+    margin-left: 1px !important;
+    padding: 2px 8px !important;
+    outline: none !important;
+    border: none !important;
+}
+
+.buttonFontSize.activeFont {
+    color: var(--jgt-btn-primaryColor);
+}
+
+.largeFontSize #form-canvas *,
+.largeFontSize .fc-view-container *,
+.largeFontSize .userProfile-body-content *,
+.largeFontSize .dataList *,
+.largeFontSize .ui-html *:not(h1):not(h2):not(h3):not(h4):not(h5) {
+    --font-size: 20px !important;
+    --line-height: 25px !important;
+
+    --global-fontSize: var(--font-size);
+    --jgt-tpgh-fontSize: var(--font-size);
+    --jgt-breadcrumb-fontSize: var(--font-size);
+    --jgt-card-fontSizeLG: var(--font-size);
+    --jgt-cb-fontSize: var(--font-size);
+    --jgt-radio-fontSize: var(--font-size);
+    --jgt-pg-fontSize: var(--font-size);
+    --jgt-input-fontSizeIcon: var(--font-size);
+    --jgt-form-fontSize: var(--font-size);
+    --jgt-list-fontSize: var(--font-size);
+    --jgt-wizard-fontSize: var(--font-size);
+    --jgt-acc-fontSize: var(--font-size);
+    --jgt-dd-fontSize: var(--font-size);
+    --jgt-upload-fontSize: var(--font-size);
+
+    --global-lineHeight: var(--line-height);
+    --jgt-tpgh-lineHeight: var(--line-height);
+    --jgt-breadcrumb-lineHeight: var(--line-height);
+    --jgt-card-lineHeight: var(--line-height);
+    --jgt-table-lineHeight: var(--line-height);
+    --jgt-cb-lineHeight: var(--line-height);
+    --jgt-radio-lineHeight: var(--line-height);
+    --jgt-input-lineHeight: var(--line-height);
+    --jgt-form-lineHeight: var(--line-height);
+    --jgt-list-lineHeight: var(--line-height);
+    --jgt-tab-lineHeight: var(--line-height);
+    --jgt-wizard-lineHeight: var(--line-height);
+    --jgt-tab-lineHeight: var(--line-height);
+    --jgt-wizard-lineHeight: var(--line-height);
+    --jgt-acc-lineHeight: var(--line-height);
+    --jgt-dd-lineHeight: var(--line-height);
+    --jgt-upload-lineHeight: var(--line-height);
+}
+
+.mediumFontSize #form-canvas *,
+.mediumFontSize .fc-view-container *,
+.mediumFontSize .userProfile-body-content *,
+.mediumFontSize .dataList *,
+.mediumFontSize .ui-html *:not(h1):not(h2):not(h3):not(h4):not(h5) {
+    --font-size: 17px !important;
+    --line-height: 20px !important;
+
+    --global-fontSize: var(--font-size);
+    --jgt-tpgh-fontSize: var(--font-size);
+    --jgt-breadcrumb-fontSize: var(--font-size);
+    --jgt-card-fontSizeLG: var(--font-size);
+    --jgt-cb-fontSize: var(--font-size);
+    --jgt-radio-fontSize: var(--font-size);
+    --jgt-pg-fontSize: var(--font-size);
+    --jgt-input-fontSizeIcon: var(--font-size);
+    --jgt-form-fontSize: var(--font-size);
+    --jgt-list-fontSize: var(--font-size);
+    --jgt-wizard-fontSize: var(--font-size);
+    --jgt-acc-fontSize: var(--font-size);
+    --jgt-dd-fontSize: var(--font-size);
+    --jgt-upload-fontSize: var(--font-size);
+
+    --global-lineHeight: var(--line-height);
+    --jgt-tpgh-lineHeight: var(--line-height);
+    --jgt-breadcrumb-lineHeight: var(--line-height);
+    --jgt-card-lineHeight: var(--line-height);
+    --jgt-table-lineHeight: var(--line-height);
+    --jgt-cb-lineHeight: var(--line-height);
+    --jgt-radio-lineHeight: var(--line-height);
+    --jgt-input-lineHeight: var(--line-height);
+    --jgt-form-lineHeight: var(--line-height);
+    --jgt-list-lineHeight: var(--line-height);
+    --jgt-tab-lineHeight: var(--line-height);
+    --jgt-wizard-lineHeight: var(--line-height);
+    --jgt-tab-lineHeight: var(--line-height);
+    --jgt-wizard-lineHeight: var(--line-height);
+    --jgt-acc-lineHeight: var(--line-height);
+    --jgt-dd-lineHeight: var(--line-height);
+    --jgt-upload-lineHeight: var(--line-height);
+}
+
+.largeFontSize #form-canvas .hasDatepicker + a,
+.largeFontSize #form-canvas .hasDatepicker + a + a {
+    line-height: 1rem !important;
+}
+
+.largeFontSize #form-canvas .hasDatepicker + a + a {
+    padding: 0 1.5rem;
+}
+
+.mediumFontSize #form-canvas .hasDatepicker + a,
+.mediumFontSize #form-canvas .hasDatepicker + a + a {
+    line-height: 1rem !important;
+}
+
+.mediumFontSize #form-canvas .hasDatepicker + a + a {
+    padding: 0 1.2rem;
+}
+
+/* Form Label with Icon */
+.mediumFontSize .label-top .form-cell:not(.label-left) > label.label.withIcon > i,
+.mediumFontSize .label-top .subform-cell:not(.label-left) > label.label.withIcon > i,
+.mediumFontSize .label-top.form-cell > label.label.withIcon > i,
+.mediumFontSize .label-top.subform-cell > label.label.withIcon > i{
+    bottom: -39.5px;
+}
+.largeFontSize .label-top .form-cell:not(.label-left) > label.label.withIcon > i,
+.largeFontSize .label-top .subform-cell:not(.label-left) > label.label.withIcon > i,
+.largeFontSize .label-top.form-cell > label.label.withIcon > i,
+.largeFontSize .label-top.subform-cell > label.label.withIcon > i{
+    bottom: -44px;
+}
+/* End of Font Size Stylings */

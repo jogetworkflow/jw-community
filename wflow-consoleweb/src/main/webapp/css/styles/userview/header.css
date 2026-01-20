@@ -1,0 +1,286 @@
+/* Any Header and its children stylings go here */
+header.navbar {
+    background-color: var(--theme-header, var(--theme-color6, #fff));
+    display: block;
+    height: var(--global-headerHeight);
+    margin-bottom: 0;
+    padding: var(--global-headerPaddingInline);
+    padding-top: 0px;
+    padding-bottom: 0px;
+    position: fixed;
+    -webkit-transition: all 0.2s ease;
+    -o-transition: all 0.2s ease;
+    transition: all 0.2s ease;
+    width: calc(100% - 280px);
+    z-index: 1000;
+}
+
+header.navbar .navbar-inner {
+    height: 100%;
+}
+
+body.no_menu header.navbar .container-fluid {
+    padding: 12px 10px 12px 20px;
+}
+
+body.horizontal_menu header.navbar {
+    width: 100%;
+}
+
+body.dark-sidebar header.navbar{
+    background-color: rgba(255, 255, 255, 0.6);
+    -webkit-backdrop-filter: blur(8px);
+    backdrop-filter: blur(8px);
+    transition: background-color 0.3s cubic-bezier(0.645, 0.045, 0.355, 1);
+}
+
+header.navbar .container-fluid {
+    flex-direction: row;
+    padding: 0px 0px 0px 60px;
+    height: 100%;
+}
+
+header.navbar .dropdown-menu {
+    left: auto;
+    right: 0;
+    padding: 0.5rem;
+}
+
+header.navbar .dropdown-menu.notifications {
+    min-width: 280px;
+}
+
+header.navbar .dropdown-menu .dropdown-menu-sub-footer {
+    text-align: center !important;
+    margin: 10px auto 5px;
+}
+
+header.navbar .dropdown-menu a span,
+header.navbar .dropdown-menu a {
+    display: block;
+    position: relative;
+}
+
+header.navbar .dropdown-menu a span.header,
+header.navbar .dropdown-menu a span.message {
+    padding-right: 80px;
+    width: 280px;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+    white-space: normal;
+}
+
+header.navbar .dropdown-menu a span.header {
+    font-weight: bold;
+}
+
+header.navbar .dropdown-menu a span.time {
+    position: absolute;
+    top: 5px;
+    right: 20px;
+    width: 75px;
+    white-space: normal;
+    text-align: right;
+    font-size: 12px;
+}
+
+.header-nav a.btn {
+    color: var(--theme-header-font, var(--theme-color2, #72777a));
+    position: relative;
+    box-shadow: none;
+    height: 100%;
+    line-height: var(--global-lineHeight);
+    padding: 0 var(--global-padding);
+    margin-bottom: 0px;
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+}
+
+.header-nav a.btn i {
+    font-size: 17px;
+}
+
+.header-nav a.btn.dropdown-toggle::after {
+    display: none;
+}
+
+.header-nav a.btn .badge {
+    background-color: #ff3c7e;
+    border-radius: 50px;
+    color: #fff;
+    font-size: 10px;
+    line-height: 1;
+    padding: 3px 5.5px;
+    position: absolute;
+    right: 10px;
+    top: 10px;
+}
+
+.header-nav .user-link img {
+    position: relative;
+    border-radius: 10%;
+}
+
+#header-logout-text {
+    display: none;
+}
+
+#header-info {
+    float: left;
+    display: none;
+}
+
+#header-name .logo {
+    height: 40px;
+    margin-right: 10px;
+    vertical-align: top;
+}
+
+#header-description {
+    display: none;
+}
+
+#header-link {
+    font-size: 25px;
+    display: inline-block;
+    vertical-align: top;
+    font-weight: 500;
+    color: var(--theme-header-font, var(--theme-color2, #72777a));
+    text-decoration: none;
+    max-width: 390px;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    overflow: hidden;
+}
+
+#header-welcome-message {
+    color: var(--theme-header-font, var(--theme-color2, #72777a));
+}
+
+body.horizontal_menu #header-info {
+    display: inline-block;
+}
+
+.hi-trigger {
+    position: absolute;
+    cursor: pointer;
+    margin-left: -20px;
+    display: inline-block;
+    padding: 15px 0;
+    left: 25px;
+}
+
+.hi-trigger:before {
+    -webkit-transform: scale(0);
+    -ms-transform: scale(0);
+    -o-transform: scale(0);
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 45px;
+    height: 45px;
+    border-radius: 50%;
+    -webkit-transition: all;
+    -o-transition: all;
+    transition: all;
+    -webkit-transition-duration: 0.3s;
+    transition-duration: 0.3s;
+    transform: scale(0);
+    z-index: 0;
+    margin-top: -22px;
+    margin-left: -22px;
+    content: "";
+}
+
+.line-wrap {
+    width: 18px;
+    height: 12px;
+    margin: 12px 17px;
+    cursor: pointer;
+}
+
+.line-wrap,
+.line-wrap .line {
+    -webkit-transition: all;
+    -o-transition: all;
+    transition: all;
+    -webkit-transition-duration: 0.3s;
+    transition-duration: 0.3s;
+}
+
+.line-wrap .line {
+    width: 18px;
+    height: 2px;
+    background: var(--theme-header-font, var(--theme-color2, #72777a));
+}
+
+.line-wrap .line.center {
+    margin: 3px 0;
+}
+
+/* User Profile */
+.userProfile-body-content {
+    padding-top: 0px !important;
+}
+
+.userProfile-body-header {
+    padding: 15px 10px !important;
+    font-size: 20px !important;
+    color: var(--theme-heading-color, var(--theme-color2, #ffffff)) !important;
+    margin-left: -20px;
+    margin-right: -20px;
+    margin-bottom: 20px;
+    border-radius: 2px 2px 0 0;
+}
+
+.userProfile-body-content .userProfile-body-header {
+    border-bottom: 1px solid rgba(0, 0, 0, 0.06);
+    padding: 0.75rem 0.7rem !important;
+    font-weight: 500 !important;
+    background-color: var(--theme-heading-bg, var(--theme-color5, #fff));
+}
+
+li.user-link > a > i{
+    padding-right: 5px;
+}
+
+/* Header Dropdown Menu */
+.dropdown-menu.notifications li {
+    padding: 5px;
+    position: relative;
+    font-size: 14px;
+}
+
+.dropdown-menu.notifications .refresh {
+    position: absolute;
+    top: 5px;
+    right: 15px;
+}
+
+[class*="-selection"].dropdown .dropdown-menu li {
+    cursor: default;
+    padding: 5px;
+}
+
+[class*="-selection"].dropdown .dropdown-menu #dropdown-title {
+    border-bottom: 1px solid #dee2e6;
+    padding: 0px 10px;
+    text-align: center;
+    padding-bottom: 5px;
+    margin-bottom: 5px;
+}
+
+[class*="-selection"].dropdown .dropdown-menu li .header {
+    padding-left: 35px;
+}
+
+[class*="-selection"].dropdown .dropdown-menu i.zmdi-check {
+    position: absolute;
+    font-size: 1.4rem;
+}
+
+[class*="-selection"].dropdown .dropdown-menu {
+    width: 220px;
+}
+/* End of Header Stylings */

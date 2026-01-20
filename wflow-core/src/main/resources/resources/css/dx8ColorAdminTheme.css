@@ -189,9 +189,8 @@ body.embeded .main-body-content > [class*="-body-content"]:not(.viewForm-body-co
 .dataList div.exportlinks {
     background-color: transparent; 
     border: 0; 
-    text-align:right; 
-    background: #737373; 
-    color: #fff; 
+    text-align:right;
+    color: #737373; 
     width: fit-content; 
     border-radius: 3px; 
     margin: 30px 0px 10px; 
@@ -199,8 +198,12 @@ body.embeded .main-body-content > [class*="-body-content"]:not(.viewForm-body-co
     position: relative; 
 }
 div.exportlinks > a {
-    color: #ffffff; 
+    color: #737373; 
     font-size: small;
+}
+div.exportlinks > a:hover {
+    color: #0d6efd;
+    transform: translateY(-5px);
 }
 div.exportlinks > a span {
     padding: 5px; 

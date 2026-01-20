@@ -1,0 +1,91 @@
+/* Datalist Filter Stylings go here */
+.dataList .filters {
+    text-align: end;
+    margin-bottom: 25px;
+}
+
+.dataList .filters>span {
+    text-align: left;
+    display: inline-block;
+    height: 32px;
+}
+
+.dataList .filters>span>input.form-button {
+    --jgt-btn-bg: #FFFFFF;
+    --jgt-btn-color: #1F1F1F;
+    --jgt-btn-border-color: #D9D9D9;
+    --jgt-btn-hover-bg: #F3F3F3;
+    --jgt-btn-hover-color: var(--jgt-btn-color);
+    --jgt-btn-hover-border-color: var(--jgt-btn-border-color);
+    height: 100%;
+}
+
+.dataList .filters>span+span {
+    margin-left: 10px;
+}
+
+.dataList .filters input:not([type="checkbox"]),
+.dataList .filters select,
+.dataList .filters textarea {
+    display: inline-block;
+    width: auto;
+    vertical-align: bottom !important;
+}
+
+.dataList .filters select option.label {
+    font-size: 80%;
+}
+
+.dataList .filters select option:not(.label) {
+    color: var(--theme-font-color, #72777a) !important;
+    padding: 3px 0;
+}
+
+.filter-cell {
+    vertical-align: top;
+    position: relative;
+    margin-bottom: 10px;
+}
+
+.dataList .filter-cell .close-icon:after {
+    right: 20px !important;
+    top: 21px !important;
+    bottom: unset !important;
+}
+
+body .filter-cell input.hasDatepicker {
+    padding-right: 40px;
+}
+
+body.rtl .filter-cell input.hasDatepicker {
+    padding-left: 40px;
+    padding-right: auto;
+}
+
+body .filter-cell .hasDatepicker+a {
+    right: 2px;
+}
+
+body .filter-cell .hasDatepicker+a+a {
+    right: 22px;
+}
+
+.search_filter_popup {
+    width: 60vw;
+    padding: 15px !important;
+}
+
+.search_filter_popup .filter-cell {
+    margin-bottom: 10px;
+    display: block;
+}
+
+.search_filter_popup .filter-cell .btn {
+    width: 100%;
+}
+
+.dataList .filter-cell.hidden-filter,
+.search_filter_popup .filter-cell.hidden-filter {
+    display: none !important;
+}
+/* End of Datalist Filter Stylings */

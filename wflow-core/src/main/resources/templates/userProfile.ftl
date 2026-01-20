@@ -1,4 +1,15 @@
 <style>
+    .User_Profile_Menu {
+        padding: 0px !important;
+        background: transparent !important;
+    }
+
+    .userProfile-body-content {
+        padding: 0px !important;
+        border: 0px !important;
+        background: transparent !important;
+    }
+
     .userProfile-body-content .userProfile-body-header {
         clear:both;
         color:#000000;
@@ -10,11 +21,15 @@
     }
 
     .form fieldset {
-        background:none repeat scroll 0 0 transparent;
+        background:none repeat scroll 0 0 white;
         border:1px dotted silver;
         clear:both;
         margin:0.5em 0;
         padding:0.5em;
+    }
+
+    .form fieldset:not(:first-of-type) {
+        margin-top: 20px !important;
     }
 
     .form-row {

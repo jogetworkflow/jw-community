@@ -274,5 +274,12 @@ public class SelectBox extends Element implements FormBuilderPaletteElement, For
         }
         return null;
     }
+
+    protected void addColorfulTags(Map dataModel) {
+        // Used for Multi Select, and Popup Select to add tag colors
+        if (getPropertyString("colorfulTags") != null && getPropertyString("colorfulTags").equals("true")) {
+            dataModel.put("colorfulTags", "colorfulTags");
+        }
+    }
 }
 

@@ -1,0 +1,170 @@
+/* Base styling rules for all input elements (text, select, textarea, etc.). */
+input,
+select,
+textarea {
+    outline: none;
+}
+
+input[type="checkbox"],
+input[type="radio"] {
+    height: 15px;
+    width: 15px;
+}
+
+input:not([type]),
+input[type=text],
+input[type=password],
+input[type=email],
+input[type=url],
+input[type=time],
+input[type=date],
+input[type=datetime],
+input[type=datetime-local],
+input[type=tel],
+input[type=number],
+input[type=search],
+select,
+.selector_element,
+textarea,
+.ql-container.ql-bubble,
+.chosen-container-multi .chosen-choices,
+.multiselect.dropdown-toggle{
+    display: block;
+    width: 100%;
+    color: var(--jgt-input-colorText);
+    background-color: var(--jgt-input-colorBgContainer);
+    background-clip: padding-box;
+    border: var(--jgt-input-lineWidth) solid var(--jgt-input-colorBorder);
+    transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+    font-size: var(--jgt-input-inputFontSize);
+    padding-block: var(--jgt-input-paddingBlock);
+    padding-inline: var(--jgt-input-paddingInline);
+    height: var(--jgt-input-controlHeight);
+    line-height: var(--jgt-input-lineHeight);
+    border-radius: var(--jgt-input-borderRadius);
+}
+
+input:not([type]):focus:not([disabled]):not([readonly]),
+input[type=text]:focus:not([disabled]):not([readonly]),
+input[type=password]:focus:not([disabled]):not([readonly]),
+input[type=email]:focus:not([disabled]):not([readonly]),
+input[type=url]:focus:not([disabled]):not([readonly]),
+input[type=time]:focus:not([disabled]):not([readonly]),
+input[type=date]:focus:not([disabled]):not([readonly]),
+input[type=datetime]:focus:not([disabled]):not([readonly]),
+input[type=datetime-local]:focus:not([disabled]):not([readonly]),
+input[type=tel]:focus:not([disabled]):not([readonly]),
+input[type=number]:focus:not([disabled]):not([readonly]),
+input[type=search]:focus:not([disabled]):not([readonly]),
+select:focus:not([disabled]):not([readonly]),
+.selector_element:focus:not([disabled]):not([readonly]),
+textarea:focus:not([disabled]):not([readonly]),
+.ql-container.ql-bubble:focus:not([disabled]):not([readonly]),
+.chosen-container-multi .chosen-choices:focus:not([disabled]):not([readonly]),
+.multiselect.dropdown-toggle:focus:not([disabled]):not([readonly]){
+    background-color: var(--jgt-input-activeBg);
+    border-color: var(--jgt-input-activeBorderColor);
+    box-shadow: var(--jgt-input-activeShadow);
+}
+
+input:not([type]):hover:not([disabled]):not([readonly]),
+input[type=text]:hover:not([disabled]):not([readonly]),
+input[type=password]:hover:not([disabled]):not([readonly]),
+input[type=email]:hover:not([disabled]):not([readonly]),
+input[type=url]:hover:not([disabled]):not([readonly]),
+input[type=time]:hover:not([disabled]):not([readonly]),
+input[type=date]:hover:not([disabled]):not([readonly]),
+input[type=datetime]:hover:not([disabled]):not([readonly]),
+input[type=datetime-local]:hover:not([disabled]):not([readonly]),
+input[type=tel]:hover:not([disabled]):not([readonly]),
+input[type=number]:hover:not([disabled]):not([readonly]),
+input[type=search]:hover:not([disabled]):not([readonly]),
+select:hover:not([disabled]):not([readonly]),
+.selector_element:hover:not([disabled]):not([readonly]),
+textarea:hover:not([disabled]):not([readonly]),
+.ql-container.ql-bubble:hover:not([disabled]):not([readonly]),
+.chosen-container-multi .chosen-choices:hover:not([disabled]):not([readonly]),
+.multiselect.dropdown-toggle:hover:not([disabled]):not([readonly]) {
+    background-color: var(--jgt-input-hoverBg);
+    border-color: var(--jgt-input-hoverBorderColor);
+}
+
+input:not([type])::placeholder,
+input[type=text]::placeholder,
+input[type=password]::placeholder,
+input[type=email]::placeholder,
+input[type=url]::placeholder,
+input[type=time]::placeholder,
+input[type=date]::placeholder,
+input[type=datetime]::placeholder,
+input[type=datetime-local]::placeholder,
+input[type=tel]::placeholder,
+input[type=number]::placeholder,
+input[type=search]::placeholder,
+select::placeholder,
+.selector_element::placeholder,
+textarea::placeholder,
+.ql-container.ql-bubble::placeholder,
+.chosen-container-multi .chosen-choices::placeholder {
+    color: var(--jgt-input-colorTextPlaceholder, #1F1F1F80);
+}
+
+.ql-container.ql-bubble.focus {
+    outline: 1px auto;
+    outline-color: var(--theme-primary, var(--theme-color3, #007bff));
+}
+
+input[size] {
+    width: auto !important;
+}
+
+select {
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+    background-image: var(--jgt-dropdown-icon);
+    background-repeat: no-repeat;
+    background-position: right 13.36px center;
+    background-size: 10.5px 6.47px;
+}
+
+.rtl select {
+    background-position: left 13.36px center;
+}
+
+.ui-datepicker .ui-datepicker-title select,
+span.filter-cell select {
+    background-position: right 2px center;
+}
+
+span.filter-cell select {
+    padding-inline-end: 20px;
+}
+
+.rtl .ui-datepicker .ui-datepicker-title select,
+.rtl span.filter-cell select {
+    background-position: left 2px center;
+}
+
+select[multiple] {
+    height: auto;
+}
+
+textarea {
+    height: auto;
+    white-space: pre-wrap !important;
+}
+
+body input[disabled],
+body input[readonly]:not(.no-manual-input),
+body textarea[disabled],
+body textarea[readonly]{
+    cursor: not-allowed;
+}
+
+body input[disabled], 
+body textarea[disabled]{
+    background-color: var(--jgt-input-colorBgContainerDisabled);
+    color: var(--jgt-input-colorTextDisabled);
+}
+/* End of Input Stylings */

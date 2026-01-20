@@ -1,0 +1,129 @@
+/* Any Multipaged Form and its children stylings go here */
+.multiPagedForm,
+.multiPagedForm .mpf-container {
+    width: 100%;
+}
+
+.multiPagedForm .page-nav-panel ul {
+    padding: 0;
+}
+
+.multiPagedForm .page-nav-panel ul,
+.multiPagedForm .page-nav-panel li {
+    list-style: none;
+}
+
+.multiPagedForm .page-nav-panel .nav_item button {
+    border: none;
+    border-top-left-radius: var(--jgt-tab-borderRadius);
+    border-top-right-radius: var(--jgt-tab-borderRadius);
+    background-color: var(--jgt-tab-cardBg);
+    color: var(--jgt-tab-itemColor);
+    height: var(--jgt-tab-cardHeight);
+    padding: var(--jgt-tab-cardPadding);
+    font-size: var(--jgt-tab-titleFontSize);
+    line-height: var(--jgt-tab-lineHeight);
+    font-weight: var(--jgt-tab-fontWeight);
+    margin-inline-end: var(--jgt-tab-cardGutter);
+    outline: none;
+}
+
+.multiPagedForm .page-nav-panel .nav_item.current button {
+    color: var(--jgt-card-colorText);
+    background-color: var(--jgt-tab-colorBgContainer);
+    border-color: var(--jgt-tab-colorBorder) var(--jgt-tab-colorBorder) transparent;
+}
+
+.multiPagedForm.wizard  .page-nav-panel .nav_item button{
+    color: var(--jgt-wizard-colorTextDescription);
+    background-color: transparent;
+}
+
+.multiPagedForm.wizard .page-nav-panel .nav_item button{
+    color: var(--jgt-wizard-colorText);
+    background-color: transparent;
+    border-color: transparent;
+    font-size: var(--jgt-wizard-fontSize);
+    line-height: var(--jgt-wizard-lineHeight);
+}
+
+.multiPagedForm.wizard .page-nav-panel .nav_item button span {
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    line-height: var(--jgt-wizard-titleLineHeight);
+}
+
+.multiPagedForm .page-nav-panel.bottom {
+    display: none;
+}
+
+.multiPagedForm .page-nav-panel .nav_item.error button span {
+    color: red;
+}
+
+.multiPagedForm .page-button-panel {
+    text-align: right;
+    padding: 10px 15px;
+}
+
+.multiPagedForm .page-button-panel .btn {
+    padding: 5px 15px;
+    font-size: 90%;
+}
+
+.mpf-container .subform-section {
+    position: relative;
+    min-width: 0;
+    word-wrap: break-word;
+    background-color: #fff;
+    background-clip: border-box;
+    border: 1px solid rgba(0, 0, 0, .06);
+    border-radius: 12px;
+    padding-bottom: 20px;
+}
+
+.subform-container.has-frame .subform-section-title,
+.mpf-container .subform-section .subform-section-title {
+    position: relative;
+    height: 40px;
+    color: #404040;
+    background-color: #F0F0F0;
+    border-top-left-radius: var(--global-borderRadiusLG);
+    border-top-right-radius: var(--global-borderRadiusLG);
+    display: flex;
+    align-items: center;
+}
+
+.subform-container.has-frame .subform-section-title > span,
+.mpf-container .subform-section .subform-section-title > span {
+    line-height: 1;   
+}
+
+.subform-container.has-frame .subform-section-title:after,
+.mpf-container .subform-section .subform-section-title:after {
+    content: "";
+    position: absolute;
+    background: #fff;
+    opacity: 0.15;
+    top: 0;
+    left: 0;
+    right: 0px;
+    bottom: 0px;
+}
+
+.multiPagedForm.tab .page-nav-panel {
+    border-bottom: var(--jgt-tab-lineType) 1px var(--jgt-tab-colorBorder);
+    margin: var(--jgt-tab-horizontalMargin);
+}
+
+.multiPagedForm.tab .page-nav-panel .nav_item {
+    float: left;
+    margin-bottom: -1px;
+}
+
+.multiPagedForm.wizard .page-nav-panel button {
+    border: 0;
+    padding-top: 35px;
+}
+/* End of Multipaged Form Stylings */

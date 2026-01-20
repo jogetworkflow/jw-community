@@ -1774,6 +1774,11 @@ body #form-canvas #section-actions{
     box-shadow: none !important;
 }
 
+/* Calendar */
+.fc .fc-scrollgrid-section-body table tr:last-of-type td > .fc-daygrid-day-frame {
+    border-bottom: inherit;
+}
+
 /* Lists */
 body:not(#login) #content > main > .datalist-body-content:not(.quickEdit) {
     padding: 20px;

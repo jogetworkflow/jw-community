@@ -1,0 +1,119 @@
+/* Contains minor, one-off, or page-specific style overrides that belong to Userview but don’t belong to any reusable component. */
+/* System Alert */
+.systemAlert {
+    background: #ffffd6;
+    position: relative;
+    padding: 10px 15px;
+    z-index: 7;
+    color: #333;
+}
+
+.systemAlertClose {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    cursor: pointer;
+}
+
+.systemAlertMessage {
+    display: inline-block;
+    margin-right: 30px;
+}
+
+.tox.tox-tinymce {
+    margin-bottom: 15px;
+}
+
+.ma-backdrop {
+    position: fixed;
+    height: 100vh;
+    top: 0;
+    left: 0;
+    width: 100%;
+    z-index: 1001;
+    cursor: pointer;
+    background: rgba(0, 0, 0, 0.45);
+}
+
+.fc-theme-bootstrap>.fc-view-harness {
+    background-color: var(--theme-content-background, #ffffff);
+}
+
+main .fc button {
+    height: auto;
+}
+
+main .fc button .fc-icon {
+    top: -2px;
+}
+
+.runProcess-body-content{
+    padding: 0px !important;
+}
+
+img.gravatar:not([src]) {
+    visibility: hidden;
+}
+
+.policies {
+    color: #999;
+    font-size: 11px;
+    line-height: 12px;
+    padding: 0 0 10px 10px;
+}
+
+.policies>span {
+    display: block;
+}
+
+body textarea#HandsontableCopyPaste,
+body #ui-datepicker-div {
+    display: none;
+}
+
+#captcha_img {
+    margin-bottom: 10px;
+}
+
+/* Import */
+#content .main-body-content.Csv_Import_Menu {
+    padding: 0px;
+    background-color: transparent;
+}
+.viewCsvImport-body-content > h3 {
+    color: #1F1F1F;
+    font-weight: 600;
+    font-size: 16px;
+    line-height: 24px;
+    vertical-align: middle;
+    text-transform: capitalize;
+    padding: 16.5px 24px;
+    background-color: var(--theme-content-background, #ffffffcc);
+    margin: 0px;
+    border: var(--jgt-form-lineWidth) var(--jgt-form-lineType) var(--jgt-form-colorBorder);
+    border-top-left-radius: var(--jgt-form-borderRadiusLG);
+    border-top-right-radius: var(--jgt-form-borderRadiusLG);
+    border-bottom: 0px;
+}
+.viewCsvImport-body-content .form-section {
+    border-top-left-radius: 0;
+    border-top-right-radius: 0;
+}
+.viewCsvImport-body-content .form-cell label[for='mode'] + .form-cell-value {
+    display: flex !important;
+    flex-direction: column;
+}
+
+.viewCsvImport-body-content #csvImportFile.file-selected {
+    color: #146CE8;
+}
+
+/* Process Status */
+.process_container .process_title {
+    font-size: 1rem;
+    font-weight: 600;
+    border-bottom: 2px solid #A6AAAE;
+    padding-bottom: 10px;
+    margin-bottom: 25px;
+}
+/* End of Userview Misc Stylings */
