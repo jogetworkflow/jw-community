@@ -4,6 +4,7 @@ For more information, please refer to https://community.joget.org
 
 8.2.7
 =====
+de4e4fb58 Fixed: wflow-core - App Variable - Fixed intermittent loss of environmentVariableList in appConfig.xml commits T6974 #1510. @8.2-SNAPSHOT
 c7b427433 Fixed: jw-community - pom.xml - Fixed duplicate checker-qual version. #1344 @8.2-SNAPSHOT
 c17d2e7aa Fixed: wflow-plugin-base - Plugin - Hibernate packages are missing. #1505  @8.2-SNAPSHOT
 1f43cc955 Fixed: wflow-consoleweb - Datalist - Fixed checkbox header is not updating when at least one row is unchecked. #1547 @8.2-SNAPSHOT
