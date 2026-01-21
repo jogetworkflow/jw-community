@@ -684,11 +684,20 @@ body.rtl .dataList span.pagelinks:not(.rtl) .pc.last:before {
         overflow: hidden;
     }
 
+    .rtl .dataList .swipeActions > .rowActionsContainer {
+        right: unset;
+        left: 0;
+    }
+
     .dataList .swipeActions>.rowActionsContainer>.rowActions {
         transform: translateX(101%);
         height: 100%;
         font-size: 0px;
         display: flex;
+    }
+    
+    .rtl .dataList .swipeActions > .rowActionsContainer > .rowActions {
+        transform: translate(-101%);
     }
 
     .dataList .swipeActions>.rowActionsContainer>.rowActions>a {
@@ -699,6 +708,7 @@ body.rtl .dataList span.pagelinks:not(.rtl) .pc.last:before {
         align-items: center;
         justify-content: center;
         border-radius: 0px;
+        column-gap: 5px;
     }
 
     .dataList .swipeActions * {
