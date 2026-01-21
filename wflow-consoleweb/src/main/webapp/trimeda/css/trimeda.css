@@ -265,6 +265,7 @@ div#dataList_columnslist tbody span.row_action_inner > a {
     color: var(--primary-text-color) !important;
     border: 1.5px solid var(--field-border-color) !important;
     border-color: var(--field-border-color) !important;
+    box-sizing: border-box;
 }
 
 /* Danger Buttons */

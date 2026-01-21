@@ -326,8 +326,8 @@
                 var checked = $(this).is(":checked");
 
                 // sync left + right checkbox for the same row (same value)
-                $form
-                    .find("tbody .select_checkbox input[type='checkbox'][value='" + value + "']")
+                $(this).closest("tr")
+                    .find(".select_checkbox input[type='checkbox'][value='" + value + "']")
                     .prop("checked", checked);
 
                 // update ALL header checkboxes
