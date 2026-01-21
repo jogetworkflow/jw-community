@@ -2,6 +2,56 @@ Joget DX COMMUNITY
 ====================
 For more information, please refer to https://community.joget.org
 
+8.2.7
+=====
+c7b427433 Fixed: jw-community - pom.xml - Fixed duplicate checker-qual version. #1344 @8.2-SNAPSHOT
+c17d2e7aa Fixed: wflow-plugin-base - Plugin - Hibernate packages are missing. #1505  @8.2-SNAPSHOT
+1f43cc955 Fixed: wflow-consoleweb - Datalist - Fixed checkbox header is not updating when at least one row is unchecked. #1547 @8.2-SNAPSHOT
+1dac62d9e Fixed: wflow-consoleweb - WebSocket Plugin - Prevent NPE throw for unclose session after a server restart. #1590 @8.2-SNAPSHOT
+c4315506e Fixed: wflow-consoleweb - Builders - Fixed an issue where the builder undo action did not update the Save button state. #1412 @8.2-SNAPSHOT
+5fe3080fa Modified: wflow-consoleweb - Updated jsondiffpatch to v0.7.3. #1573 T7017 @8.2-SNAPSHOT
+9a5dffba5 Fixed: wflow-core - Gov Health Check - fixed db connections showing wrong active db #1589 @8.2-SNAPSHOT
+e6bf52fc2 Fixed: wflow-commons - Long Term Cache - Cache object could be stale if there is long processing to prepare the cache object before store it. #1607 @8.2-SNAPSHOT
+ced349cbc Modified: wflow-commons - pom.xml - Upgraded log4j dependencies to 2.25.3. #1641 @8.2-SNAPSHOT
+8f8a00b87 Fixed: wflow-core - Font Size Styling - Fixed Font Size Styling for form elements in Progressive Theme. #968 @8.2-SNAPSHOT
+cf49e9ea0 Fixed: wflow-core - Image List Formatter - Regression of d4a5f1f. Wrongly serves thumbnail when clicked. #1196 @8.2-SNAPSHOT
+5d7bb781f Fixed: wflow-consoleweb - Multipage - Fixed Multipage Responsive Designs #1256 @8.2-SNAPSHOT
+a670c0e11 Fixed: wflow-core - Service Worker - Handle invalid URL strings in offline form submission. T6387 #1348 @8.2-SNAPSHOT
+ec7955488 Fixed: wflow-consoleweb - Form Builder - i18n tab does not support all element labels. #1418 T6810 @8.2-SNAPSHOT
+ae5a4d7cd Fixed: wflow-consoleweb - DX8 Themes - Fixed when user image is set to hidden, the default icon border color is not following the sidebar setting. #1430 @8.2-SNAPSHOT
+caa3592b1 Fixed: wflow-consoleweb – Trimeda Theme / App Center - Resolved an issue where the Trimeda theme did not properly handle cases where the profile image is hidden, and updated the App Center styling to support the hidden profile state. #1430 @8.2-SNAPSHOT
+632c30c14 Fixed: wflow-consoleweb - Log Viewer - Token created for cluster broadcast didn't cleanup after expired. T7016 #1540 @8.2-SNAPSHOT
+fab53f914 Modified: wflow-jdbc - pom.xml - Upgrade mssql-jdbc to version 10.2.4.jre8. #1542 @8.2-SNAPSHOT
+f4240ea10 Fixed: wflow-consoleweb - Builder - Permission - Rule is not editable due to polluted JSON definition. T7088 #1576 @8.2-SNAPSHOT
+0bcb73f85 Fixed: wflow-core - Expression Hash Variable - Prevent RCE.
+77214dd65 Fixed: wflow-consoleweb - Subform - Fixed Multi Select dropdown being hidden inside subform section T7132 #1597. @8.2-SNAPSHOT
+c91bfa4b2 Fixed: wflow-consoleweb/wflow-plugin-base - Console Page - Fixed inconsistent navigation title behavior when a console page plugin is opened. #1603 @8.2-SNAPSHOT
+86c22131f Modified: wflow-core - pom.xml - Excluded old rhino versions from dependencies. #1611 @8.2-SNAPSHOT
+6977bd72c Modified: wflow-consoleweb - pom.xml - Upgraded mysql-connector-j to 9.5.0. #1611 @8.2-SNAPSHOT
+6822a0351 Modified: wflow-commons - pom.xml - Upgraded rhino to 1.8.1. #1611 @8.2-SNAPSHOT
+4bbbe7044 Fixed: wflow-core - Hash Variable - Cache is not implemented correctly causing cache object only used once. T6808 #1614 @8.2-SNAPSHOT
+7688b513c Fixed: wflow-consoleweb - Process Builder - Adding process info to the exception log. T7012 #1533 @8.2-SNAPSHOT
+cb3447c3f Fixed: wflow-consoleweb - Process Builder - Missing validator for deadline configuration. T7012 #1533 @8.2-SNAPSHOT
+027809869 Fixed: wflow-consoleweb - RTL UI Issues - Fixed RTL UI Issues found on the themes #1255 @8.2-SNAPSHOT
+322d05e10 Fixed: wflow-consoleweb - Universal & Progressive Theme - Fixed regression issue found on b033bcc45. @8.2-SNAPSHOT
+a6b47373b Fixed: wflow-consoleweb, wflow-core - Rich Text Editor - Fixed styling issues. #988 @8.2-SNAPSHOT
+a3c2e2718 Fixed: wflow-consoleweb - Trimeda Calendar Popup - Fixed missing time selection #1153 @8.2-SNAPSHOT
+0c4d31406 Fixed: wflow-consoleweb - DX8 Trimeda Theme - Fixed time only date picker not visible #1152 @8.2-SNAPSHOT
+389e6ef61 Fixed: wflow-consoleweb - Admin bar - Fixed long environment Name blocking admin bar buttons for DX 8. #1180 @8.2-SNAPSHOT
+96613fc14 Fixed: wflow-commons - Directory Manager - Fixed Changing Directory Manager Plugin does not updated in DB T6841 #1475. @8.2-SNAPSHOT
+fc8564288 Fixed: wflow-consoleweb - Userview Builder - Ability to run script from Category label of UI Builder. #1287 @8.2-SNAPSHOT
+10bc3e23c Fixed: wflow-consoleweb - Webconsole - Fixed extra spacing on footer under RTL #1230 @8.2-SNAPSHOT
+d7af0fae2 Fixed: wflow-consoleweb - Form Tooltip - Regression of #1215. Tooltip can't populate for subform. T6977 #1509 @8.2-SNAPSHOT
+684226cf9 Fixed: wflow-core - Password Field - fixed password field returns plain text instead of masked value #1268 @8.2-SNAPSHOT
+d1094c012 Fixed: wflow-core - BuilderDefinitionDaoImpl - Fixed unable to delete addon builder item when multiple addon builder is installed. #1358 @8.2-SNAPSHOT
+aee52805b Modified: wflow-wfengine - Performance - Added -Dwflow.sharkCacheSize system property to configure Shark counter and object ID cache sizes for high loads T6716 T6717 #1367. @8.2-SNAPSHOT
+c46b9982d Fixed: wflow-consoleweb - Spreadsheet - Fixed issue with spreadsheet overlapping in print @8.2-SNAPSHOT
+580a4f9de Fixed: wflow-consoleweb - UI - Locale checker show alert when there is no locale change in non sticky session cluster environment. T6944 #1306 @8.2-SNAPSHOT
+37af27b89 Fixed: wflow-consoleweb - Datalist - Fixed datalist horizontal scroll not working in Preview mode. #1497 @8.2-SNAPSHOT
+d34697fab Fixed: wflow-consoleweb - User link dropdown  - Fixed user link dropdown blocked in trimeda theme. #1251 @8.2-SNAPSHOT
+b9300e189 Fixed: wflow-consoleweb - Priority Menu - Fixed issues with Priority Menu & Print Button #1251 @8.2-SNAPSHOT
+bb54e381f Fixed: wflow-consoleweb - Property Editor - Fixed fields misalignment issue in builder settings during RTL view. #1450 @8.2-SNAPSHOT
+
 8.2.6
 =====
 44c741b20 Fixed: wflow-consoleweb - Regression of #1045 causing Directory Manager default properties does not populate. #1495 @8.2-SNAPSHOT
