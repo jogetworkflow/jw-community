@@ -4,6 +4,11 @@ For more information, please refer to https://community.joget.org
 
 8.2.7
 =====
+83068e621 Fixed: wflow-consoleweb - Spreadsheet - Fixed page scrolling to the top #1201 @8.2-SNAPSHOT
+f50eb8dbd Fixed: wflow-core - JSON API Form Data Store - Prevent empty key from appearing in JSON output #1379. @8.2-SNAPSHOT
+6eca96c24 Modified: wflow-wfengine - pom.xml - Upgraded Maven Compiler Plugin source and target versions to Java 8. #1418 T6810 @8.2-SNAPSHOT
+652d4a561 Fixed: wflow-consoleweb - PWA - Remove unused version variable. T6912 #1466 @9.0-SNAPSHOT
+1b5b2499e Fixed: wflow-consoleweb - UI Guider - Removed console error message #1479 @8.2-SNAPSHOT
 de4e4fb58 Fixed: wflow-core - App Variable - Fixed intermittent loss of environmentVariableList in appConfig.xml commits T6974 #1510. @8.2-SNAPSHOT
 c7b427433 Fixed: jw-community - pom.xml - Fixed duplicate checker-qual version. #1344 @8.2-SNAPSHOT
 c17d2e7aa Fixed: wflow-plugin-base - Plugin - Hibernate packages are missing. #1505  @8.2-SNAPSHOT
