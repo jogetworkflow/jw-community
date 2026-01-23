@@ -1190,7 +1190,16 @@ window._CustomBuilder = {
         if (proceedSave) {
             CustomBuilder.showMessage(get_cbuilder_msg('cbuilder.saving'));
             var self = CustomBuilder;
-            var json = CustomBuilder.getJson();
+            var jsonObj = JSON.parse(CustomBuilder.getJson());
+
+            if (jsonObj.setting !== undefined) {
+                self.processMultiLines(jsonObj.setting.properties);
+            } else if (jsonObj.properties !== undefined) {
+                self.processMultiLines(jsonObj.properties);
+            } else if (jsonObj.binder !== undefined) {
+                self.processMultiLines(jsonObj.binder);
+            }
+            var json = JSON.stringify(jsonObj).replace(/\//g, '\\/');
             
             var jsonFile = new Blob([json], {type : 'text/plain'});
             var params = new FormData();
