@@ -1593,13 +1593,21 @@ body.rtl div.ui-timepicker-div dl dd > * > select {
 }
 
 .form-section > div.form-section-title, .subform-section > div.form-section-title {
-    border-bottom: none;
+    border-bottom: 1px solid var(--field-border-color);
     margin-bottom: var(--form-section-title-spacing);
 }
 
 .form-section-title, .subform-section-title {
     color: var(--primary-text-color);
     margin-bottom: var(--form-section-title-spacing);
+}
+
+body #form-canvas .form-section:not(#section-actions),
+body #form-canvas .subform-section:not(#section-actions) {
+    border: 1px solid var(--field-border-color);
+    border-radius: 12px;
+    margin-bottom: 20px;
+    overflow: hidden;
 }
 
 input:not([type]), input[type=text], input[type=password], input[type=email], 
@@ -1854,6 +1862,10 @@ input[type=radio] {
 
 input[type=hidden] + .form-cell, .form-cell + .form-cell, .subform-cell + .subform-cell, .form-cell + .subform-cell, .subform-cell + .form-cell {
     margin-top: var(--form-cell-spacing);
+}
+
+.form-element-columns { 
+    margin-top: var(--form-cell-spacing) !important;
 }
 
 /* Numeric Controls Position */

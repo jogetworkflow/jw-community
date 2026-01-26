@@ -99,6 +99,36 @@
                 }]
             },
             {
+                label : '@@form.section.display@@',
+                type : 'header'
+            },
+            {
+                name: 'sectionCollapsible',
+                label: '@@form.section.sectionCollapsible@@',
+                type: 'selectbox',
+                value: 'none',
+                options: [
+                    { value: 'none', label: '@@form.section.sectionCollapsible.none@@' },
+                    { value: 'expanded', label: '@@form.section.sectionCollapsible.expanded@@' },
+                    { value: 'collapsed', label: '@@form.section.sectionCollapsible.collapsed@@' }
+                ],
+                control_field: 'label',
+                control_value: '.+',
+                control_use_regex: 'true'
+            },
+            {
+                name: 'sectionCollapsibleNoLabel',
+                label: '@@form.section.sectionCollapsible@@',
+                type: 'selectbox',
+                value: 'none',
+                options: [
+                    { value: 'none', label: '@@form.section.sectionCollapsible.none@@' }
+                ],
+                control_field: 'label',
+                control_value: '^$',
+                control_use_regex: 'true'
+            },
+            {
                 label : '@@fbuilder.development@@',
                 type : 'header',
                 developer_mode : 'advanced'

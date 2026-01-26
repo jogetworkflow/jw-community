@@ -186,6 +186,15 @@ body.embeded .main-body-content > [class*="-body-content"]:not(.viewForm-body-co
     background-color: transparent;
 }
 
+/* Toggle Button - Icon Only */
+.section-toggle-icon {
+    border-top: 5px solid #ffffff !important;
+}
+
+.rtl .section-toggle-icon {
+  border-top: 5px solid #ffffff !important;
+}
+
 .dataList div.exportlinks {
     background-color: transparent; 
     border: 0; 

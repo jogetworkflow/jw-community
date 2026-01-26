@@ -1728,17 +1728,28 @@ label {
 
 /* Forms */
 body #form-canvas .form-section {
-    padding: 10px;
+    padding: 10px !important;
     border: solid 1px #ddd;
     box-shadow: 1px 1px 1px 1px #ddd;
     border-radius: 2px;
     background: white;
 }
+.form-element-columns > .row {
+    padding-right: 30px;
+    padding-left: 0px;
+}
+
+.rtl .form-element-columns > .row {
+    padding-left: 30px;
+    padding-right: 0px;
+}
+
 legend, main #form-canvas .form-section-title span, main #form-canvas .subform-section-title span {
     background: none;
     color: #555;
     padding-left: 4px;
     font-size: 18px;
+    border-bottom: 1px solid #ddd;
 }
 div#section-actions.form-section, div#section-actions.subform-section{
     border: none;

@@ -1758,3 +1758,27 @@ body.rtl .card-header .header-tag {
 body.rtl .InformationTileComponent small {
     float: left !important;
 }
+
+/* Toggle button */
+.section-toggle-icon {
+    border-top: 5px solid #ffffff !important;
+}
+
+.rtl .section-toggle-icon {
+    border-top: 5px solid #ffffff !important
+}
+
+body #form-canvas .form-section:not(#section-actions),
+body #form-canvas .subform-section:not(#section-actions) {
+    border: 1px solid rgba(59, 89, 152, 0.8);
+}
+
+.form-element-columns > .row {
+    padding-right: 30px;
+    padding-left: 0px;
+}
+
+.rtl .form-element-columns > .row {
+    padding-left: 30px;
+    padding-right: 0px;
+}

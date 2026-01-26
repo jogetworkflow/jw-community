@@ -1,0 +1,133 @@
+{
+    "dragHtml": "<div class=\"container-fluid\"><div class=\"row form-row\"><div class=\"col form-column\" data-cbuilder-label=\"@@org.joget.apps.form.lib.ColumnContainer.pluginLabel@@\" data-cbuilder-invisible=\"\"></div><div class=\"col form-column\" data-cbuilder-label=\"@@org.joget.apps.form.lib.ColumnContainer.pluginLabel@@\" data-cbuilder-invisible=\"\"></div></div></div>",
+    "html": "<div class=\"container-fluid\"><div class=\"row form-row\" data-cbuilder-columns></div></div>",
+    "childsContainerAttr": "columns",
+    "elements": [
+        {
+            "className": "org.joget.apps.form.lib.ColumnContainer",
+            "properties": {}
+        },
+        {
+            "className": "org.joget.apps.form.lib.ColumnContainer",
+            "properties": {}
+        }
+    ],
+    "properties": {
+        "columns": [
+            {
+                "style-max-width": ""
+            },
+            {
+                "style-max-width": ""
+            }
+        ],
+        "css-mobile-stack-columns": "true"
+    },
+    "getStylePropertiesDefinition": function(elementObj, component) {
+        var styleProps = $.extend(true, [], this.stylePropertiesDefinition);
+        var propColumns = elementObj.properties.columns;
+        for (var i = 0; i < propColumns.length; i++) {
+            styleProps.push(CustomBuilder.Builder.stylePropertiesDefinition("col-"+i+"-", "@@org.joget.apps.form.lib.ColumnContainer.pluginLabel@@ " + (i+1))[0]);
+        }
+        
+        return styleProps;
+    },
+    "afterRender": function(element, elementObj, component) {
+        if (elementObj.properties['gutter'] !== undefined && elementObj.properties['gutter'] !== "") {
+            var gutter = elementObj.properties['gutter'];
+            $(element).css({
+                "padding-left": "0px",
+                "padding-right": "0px"
+            });
+            $(element).find("> .row").css({
+                "margin-left": "-"+gutter,
+                "margin-right": "-"+gutter
+            });
+            $(element).find("> .row > .col").css({
+                "padding-left": gutter,
+                "padding-right": gutter
+            });
+        }
+        
+        var childCols = $(element).find("> .row > .col");
+        var elements = elementObj.elements;
+        for (var i = 0; i < elements.length; i++) {
+            if (childCols[i]) {
+                var properties = elements[i].properties;
+                var width = properties['width'];
+                
+                if (width !== undefined && width !== "") {
+                    var flex = "0 0 " + width;
+                    $(childCols[i]).css({
+                        "flex": flex,
+                        "max-width": width
+                    });
+                } else {
+                    $(childCols[i]).css({
+                        "flex": "",
+                        "max-width": ""
+                    });
+                }
+            }
+        }
+    },
+    "updateProperties": function(element, elementObj, component) {
+        var propColumns = elementObj.properties.columns;
+        var columns = elementObj.elements;
+        var hasChange = false;
+        var forceRefresh = false;
+
+        if (columns.length < propColumns.length) {
+            for (var i = columns.length - 1; i < propColumns.length - 1; i++) {
+                elementObj.elements.push({ "className": "org.joget.apps.form.lib.ColumnContainer", "properties": {} });
+            }
+            hasChange = true;
+        } else if (columns.length > propColumns.length) {
+            for (var i = columns.length - 1; i > propColumns.length - 1; i--) {
+                elementObj.elements.splice(i);
+            }
+            hasChange = true;
+        }
+
+        for (var i = 0; i < propColumns.length; i++) {
+
+            var oldWidth = elementObj.elements[i].properties['width'];
+            elementObj.elements[i].properties = {};
+            var oldProps = elementObj.elements[i].properties || {};
+            elementObj.elements[i].properties = {};
+
+            var newWidth = propColumns[i]['style-max-width'];
+            if (newWidth) {
+                elementObj.elements[i].properties.width = newWidth;
+                elementObj.elements[i].properties.flex = "0 0 " + newWidth;
+            }
+
+            if (elementObj.properties.readonly === 'true' || elementObj.properties.readonly === 'readonly') {
+                elementObj.elements[i].properties.readonly = elementObj.properties.readonly;
+            } else if (propColumns[i].readonly) {
+                elementObj.elements[i].properties.readonly = propColumns[i].readonly;
+            }
+
+            if (oldWidth !== newWidth) {
+                forceRefresh = true;
+            }
+        }
+
+        var properties = elementObj.properties;
+        for (var property in properties) {
+            if (properties.hasOwnProperty(property)) {
+                for (var i = 0; i < propColumns.length; i++) {
+                    if (property.indexOf("col-" + i + "-") === 0) {
+                        elementObj.elements[i].properties[property.replace("col-" + i + "-","")] = properties[property];
+                    }
+                }
+            }
+        }
+
+        if (hasChange || forceRefresh) {
+            return true;
+        }
+
+        CustomBuilder.Builder.editStyles(properties, element, elementObj, component);
+    }
+}

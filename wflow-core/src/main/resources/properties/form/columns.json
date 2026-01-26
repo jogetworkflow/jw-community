@@ -1,0 +1,95 @@
+[
+    {
+        "title": "@@form.columns.editColumns@@",
+        "properties": [
+            {
+                "name": "id",
+                "label": "Id",
+                "type": "hidden"
+            },
+            {
+                "name": "customId",
+                "label": "@@form.columns.customId@@",
+                "type": "textfield",
+                "regex_validation": "^[a-zA-Z0-9_]+$",
+                "validation_message": "@@form.columns.invalidId@@"
+            },
+            {
+                "name": "columns",
+                "label": "@@form.columns.columns@@",
+                "type": "grid",
+                "columns": [
+                    {
+                        "key": "style-max-width",
+                        "label": "@@form.columns.columnsClass@@"
+                    },
+                    {
+                        "key": "style-tablet-max-width",
+                        "label": "@@form.columns.columnsClass.tablet@@"
+                    },
+                    {
+                        "key": "style-mobile-max-width",
+                        "label": "@@form.columns.columnsClass.mobile@@"
+                    },
+                    {
+                        "key": "readonly",
+                        "label": "@@form.textfield.writePermission@@",
+                        "type": "selectbox",
+                        "options": [
+                          { "value": "", "label": "" },
+                          { "value": "readonly", "label": "@@form.textfield.readonly@@" },
+                          { "value": "true", "label": "@@form.textfield.disabled@@" }
+                        ]
+                    }
+
+                ]
+            },
+            {
+                "name": "css-mobile-stack-columns",
+                "label": "@@form.columns.stackColumns@@",
+                "type": "checkbox",
+                "value": "true",
+                "options": [
+                    {
+                        "value": "true",
+                        "label": ""
+                    }
+                ]
+            },
+            {
+                "name": "gutter",
+                "label": "@@form.columns.gutter@@",
+                "type": "number",
+                "mode": "css_unit",
+                "value": "5px"
+            }
+        ]
+    },
+    {
+        "title" : "@@form.columns.advancedOptions@@",
+        "properties" : [
+            {
+                "label" : "@@form.columns.ui@@",
+                "type" : "header"
+            },
+            {
+                "name" : "readonly",
+                "label" : "@@form.textfield.writePermission@@",
+                "type" : "selectbox",
+                "value" : "",
+                "options" : [{
+                    "value" : "",
+                    "label" : ""
+                },
+                {
+                    "value" : "readonly",
+                    "label" : "@@form.textfield.readonly@@"
+                },
+                {
+                    "value" : "true",
+                    "label" : "@@form.textfield.disabled@@"
+                }]
+            }
+        ]
+    }
+]
