@@ -36,12 +36,20 @@
     },
     {
         name : 'readonly',
-        label : '@@form.grid.readonly@@',
-        type : 'checkbox',
-        value : 'False',
+        label : '@@form.grid.writePermission@@',
+        type : 'selectbox',
+        value : '',
         options : [{
-            value : 'true',
+            value : '',
             label : ''
+        },
+        {
+            value : 'readonly',
+            label : '@@form.grid.readonly@@'
+        },
+        {
+            value : 'true',
+            label : '@@form.grid.disabled@@'
         }]
     },
     {

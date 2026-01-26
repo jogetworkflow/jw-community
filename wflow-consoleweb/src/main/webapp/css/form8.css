@@ -353,10 +353,20 @@ textarea{
     height: auto;
     white-space: pre-wrap !important;
 }
+textarea[readonly]:not([readonlyv2]) {
+    cursor: not-allowed;
+}
 body input[disabled],
 body input[readonly] {
     cursor: not-allowed;
     background-color: #eeeeee;
+}
+body input[readonlyv2] {
+    cursor: auto;
+    background-color: #ffffff;
+}
+input.form-check-input[readonlyv2] {
+    border: 1px solid #bdbcbc;
 }
 
 /* checkbox & radio */

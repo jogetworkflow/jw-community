@@ -144,12 +144,20 @@
     },
     {
         name : 'readonly',
-        label : '@@form.fileupload.readonly@@',
-        type : 'checkbox',
-        value : 'False',
+        label : '@@form.fileupload.writePermission@@',
+        type : 'selectbox',
+        value : '',
         options : [{
-            value : 'true',
+            value : '',
             label : ''
+        },
+        {
+            value : 'readonly',
+            label : '@@form.fileupload.readonly@@'
+        },
+        {
+            value : 'true',
+            label : '@@form.fileupload.disabled@@'
         }]
     },
     {

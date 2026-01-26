@@ -27,15 +27,21 @@
             },
             {
                 name:'readonly',
-                label:'@@form.subform.readonly@@',
-                type:'checkbox',
-                value:'False',
-                options:[
-                    {
-                        value:'true',
-                        label:''
-                    }
-                ]
+                label:'@@form.subform.writePermission@@',
+                type : 'selectbox',
+                value : '',
+                options : [{
+                    value : '',
+                    label : ''
+                },
+                {
+                    value : 'readonly',
+                    label : '@@form.subform.readonly@@'
+                },
+                {
+                    value : 'true',
+                    label : '@@form.subform.disabled@@'
+                }]
             },
             {
                 name:'readonlyLabel',

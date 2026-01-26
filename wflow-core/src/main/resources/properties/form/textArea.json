@@ -66,12 +66,20 @@
     },
     {
         name : 'readonly',
-        label : '@@form.textarea.readonly@@',
-        type : 'checkbox',
-        value : 'False',
+        label : '@@form.textarea.writePermission@@',
+        type : 'selectbox',
+        value : '',
         options : [{
-            value : 'true',
+            value : '',
             label : ''
+        },
+        {
+            value : 'readonly',
+            label : '@@form.textarea.readonly@@'
+        },
+        {
+            value : 'true',
+            label : '@@form.textarea.disabled@@'
         }]
     },
     {

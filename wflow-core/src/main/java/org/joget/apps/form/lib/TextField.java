@@ -42,7 +42,7 @@ public class TextField extends Element implements FormBuilderPaletteElement {
         
         value = SecurityUtil.decrypt(value);
         
-        if (FormUtil.isReadonly(this, formData) && "true".equalsIgnoreCase(getPropertyString("readonlyLabel"))) {
+        if ((FormUtil.isReadonly(this, formData, 1) || FormUtil.isReadonly(this, formData, 2)) && "true".equalsIgnoreCase(getPropertyString("readonlyLabel"))) {
             String valueLabel = value;
             if (!getPropertyString("style").isEmpty() && "true".equalsIgnoreCase(getPropertyString("storeNumeric"))) {
                 valueLabel = StringUtil.numberFormat(value, getPropertyString("style"), getPropertyString("prefix"), getPropertyString("postfix"), "true".equalsIgnoreCase(getPropertyString("useThousandSeparator")), getPropertyString("numOfDecimal"));

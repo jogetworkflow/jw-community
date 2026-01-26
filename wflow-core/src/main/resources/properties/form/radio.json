@@ -85,12 +85,20 @@
     },
     {
         name : 'readonly',
-        label : '@@form.radio.readonly@@',
-        type : 'checkbox',
-        value : 'False',
+        label : '@@form.radio.writePermission@@',
+        type : 'selectbox',
+        value : '',
         options : [{
-            value : 'true',
+            value : '',
             label : ''
+        },
+        {
+            value : 'readonly',
+            label : '@@form.radio.readonly@@'
+        },
+        {
+            value : 'true',
+            label : '@@form.radio.disabled@@'
         }]
     },
     {

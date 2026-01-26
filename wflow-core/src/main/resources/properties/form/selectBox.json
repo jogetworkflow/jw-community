@@ -91,12 +91,20 @@
     },
     {
         name : 'readonly',
-        label : '@@form.selectbox.readonly@@',
-        type : 'checkbox',
-        value : 'False',
+        label : '@@form.selectbox.writePermission@@',
+        type : 'selectbox',
+        value : '',
         options : [{
-            value : 'true',
+            value : '',
             label : ''
+        },
+        {
+            value : 'readonly',
+            label : '@@form.selectbox.readonly@@'
+        },
+        {
+            value : 'true',
+            label : '@@form.selectbox.disabled@@'
         }]
     },
     {

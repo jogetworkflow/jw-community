@@ -9,9 +9,9 @@
     </#if>
 
     <label class="label" field-tooltip="${elementParamName!}">${element.properties.label} <span class="form-cell-validator">${decoration}</span><#if error??> <span class="form-error-message">${error}</span></#if></label>
-    <div id="form-fileupload_${elementParamName!}_${element.properties.elementUniqueKey!}" tabindex="0" class="form-fileupload <#if error??>form-error-cell</#if> <#if element.properties.readonly! == 'true'>readonly<#else>dropzone</#if>">
+    <div id="form-fileupload_${elementParamName!}_${element.properties.elementUniqueKey!}" tabindex="0" class="form-fileupload <#if error??>form-error-cell</#if> <#if element.properties.readonly! == 'true'>readonly<#elseif element.properties.readonly! == 'readonly'>readonly readonlyv2<#else>dropzone</#if>">
     <ul class="form-fileupload-value">
-            <#if element.properties.readonly! != 'true'>
+            <#if element.properties.readonly! != 'true' && element.properties.readonly! != 'readonly'>
                 <li class="template" style="display:none;">
                     <span class="name" data-dz-name></span> <a class="remove"style="display:none">@@form.fileupload.remove@@</a> 
                     <strong class="error text-danger" data-dz-errormessage></strong>
@@ -25,7 +25,7 @@
                 <#list tempFilePaths?keys as key>
                     <li>
                         <span class="name">${tempFilePaths[key]!?html}</span>
-                            <#if element.properties.readonly! != 'true'>
+                            <#if (element.properties.readonly! != 'true' && element.properties.readonly! != 'readonly')>
                                 <a class="remove">@@form.fileupload.remove@@</a>
                             </#if>
                         <input type="hidden" name="${elementParamName!}_path" value="${key!?html}"/>
@@ -36,7 +36,7 @@
                 <#list filePaths?keys as key>
                     <li>
                         <a href="${request.contextPath}${key!?html}" target="_blank" ><span class="name">${filePaths[key]!?html}</span></a>
-                        <#if element.properties.readonly! != 'true'>
+                        <#if (element.properties.readonly! != 'true' && element.properties.readonly! != 'readonly')>
                             <a class="remove">@@form.fileupload.remove@@</a>
                         </#if>
                         <input type="hidden" name="${elementParamName!}_path" value="${filePaths[key]!?html}"/>
@@ -44,14 +44,14 @@
                 </#list>
             </#if>
         </ul>
-    <#if element.properties.readonly! != 'true'>
+    <#if element.properties.readonly! != 'true' && element.properties.readonly! != 'readonly'>
         <div class="dz-message needsclick">
             @@form.fileupload.dropFile@@
         </div>
         <input style="display:none" id="${elementParamName!}" name="${elementParamName!}" type="file" size="${element.properties.size!}" <#if error??>class="form-error-cell"</#if> <#if element.properties.multiple! == 'true'>multiple</#if>/>
     </#if>
     </div>
-    <#if element.properties.readonly! != 'true'>
+    <#if (element.properties.readonly! != 'true' && element.properties.readonly! != 'readonly')>
         <script>
             $(document).ready(function(){
                 $('#form-fileupload_${elementParamName!}_${element.properties.elementUniqueKey!}').fileUploadField({

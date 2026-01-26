@@ -1,5 +1,5 @@
 <div class="form-cell" ${elementMetaData!}>
-<#if element.properties.readonly! != 'true'>
+<#if (element.properties.readonly! != 'true' && element.properties.readonly! != 'readonly')>
     <#if !(request.getAttribute("org.joget.apps.form.lib.DatePicker_EDITABLE")??)>
         <#if locale! != ''>
             <script type="text/javascript" src="${request.contextPath}/js/jquery/ui/i18n/jquery.ui.datepicker-${locale}.js"></script>
@@ -160,12 +160,12 @@
     }
 </style>
 </#if>
-    <label field-tooltip="${elementParamName!}" class="label${classIdentifier!}" for="${elementParamName!}_${element.properties.elementUniqueKey!}">${label} <span class="form-cell-validator">${decoration}</span><#if element.properties.showUserTimeZone! == 'true' && userTimeZone?? && !(element.properties.readonly! == 'true' && element.properties.readonlyLabel! == 'true') ><br/><span>(${userTimeZone!?html})</span></#if><#if error??> <span class="form-error-message">${error}</span></#if></label>
+    <label field-tooltip="${elementParamName!}" class="label${classIdentifier!}" for="${elementParamName!}_${element.properties.elementUniqueKey!}">${label} <span class="form-cell-validator">${decoration}</span><#if element.properties.showUserTimeZone! == 'true' && userTimeZone?? && !(element.properties.readonly! == 'true' && element.properties.readonly! == 'readonly' && element.properties.readonlyLabel! == 'true') ><br/><span>(${userTimeZone!?html})</span></#if><#if error??> <span class="form-error-message">${error}</span></#if></label>
     <#if ((iconValue?? && iconValue != ""))>
         <div class="input-group px-0" style="<#if element.properties.size?has_content>width:${element.properties.size!};</#if>">
             <span class="input-group-text">${iconValue}</span>
     </#if>
-    <#if (element.properties.readonly! == 'true' && element.properties.readonlyLabel! == 'true') >
+    <#if ((element.properties.readonly! == 'true' || element.properties.readonly! == 'readonly') && element.properties.readonlyLabel! == 'true') >
         <div class="form-cell-value"><span>${value!?html} <#if element.properties.showUserTimeZone! == 'true' && userTimeZone??>(${userTimeZone!?html})</#if></span></div>
         <input id="${elementParamName!}" name="${elementParamName!}" type="hidden" value="${value!?html}" />
     <#else>

@@ -4,7 +4,7 @@
         <div class="input-group px-0" style="<#if element.properties.size?has_content>width:${element.properties.size!};</#if>">
             <span class="input-group-text">${iconValue}</span>
     </#if>
-    <#if (element.properties.readonly! == 'true' && element.properties.readonlyLabel! == 'true') >
+    <#if ((element.properties.readonly! == 'true' || element.properties.readonly! == 'readonly') && element.properties.readonlyLabel! == 'true') >
         <div class="form-cell-value">
             <#list options as option>
                 <#if values?? && values?seq_contains(option.value!)>
@@ -16,13 +16,13 @@
         </div>
         <div style="clear:both;"></div>
     <#else>
-        <select <#if element.properties.readonly! != 'true'>id="${elementParamName!}${element.properties.elementUniqueKey!}"</#if> name="${elementParamName!}" <#if iconValue?? && iconValue == '' && element.properties.size?has_content> size="${element.properties.size!}"</#if> <#if element.properties.multiple! == 'true'>multiple="multiple" data-role="none" data-native-menu="true"</#if> <#if error??>class="form-error-cell"</#if> <#if element.properties.readonly! == 'true'> disabled </#if>>
+        <select <#if element.properties.readonly! != 'true'>id="${elementParamName!}${element.properties.elementUniqueKey!}"</#if> name="${elementParamName!}" <#if iconValue?? && iconValue == '' && element.properties.size?has_content> size="${element.properties.size!}"</#if> <#if element.properties.multiple! == 'true'>multiple="multiple" data-role="none" data-native-menu="true"</#if> <#if error??>class="form-error-cell"</#if> <#if element.properties.readonly! == 'true'> disabled <#elseif element.properties.readonly! == 'readonly'> disabled readonlyv2 </#if>>
             <#list options as option>
                 <option value="${option.value!?html}" grouping="${option.grouping!?html}" <#if values?? && values?seq_contains(option.value!)>selected</#if> <#if element.properties.readonly! == 'true'>disabled</#if>>${option.label!?html}</option>
             </#list>
         </select>
     </#if>
-    <#if element.properties.readonly! == 'true'>    
+    <#if element.properties.readonly! == 'true' || element.properties.readonly! == 'readonly'>
         <#list values as value>
             <input type="hidden" id="${elementParamName!}" name="${elementParamName!}" value="${value?html}" />
         </#list>

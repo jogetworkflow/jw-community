@@ -2241,10 +2241,24 @@ PropertyEditor.Model.Page.prototype = {
         if (this.properties.properties !== undefined) {
             var page = this;
             $.each(this.properties.properties, function(i, property) {
+                if (property.name === 'readonly') {
+                    page.handleReadonlyProperty(property);
+                }
                 html += page.renderProperty(i, "", property);
             });
         }
         return html;
+    },
+    handleReadonlyProperty: function(property) {
+        if (property.type === 'checkbox') {
+            property.label = get_advtool_msg("adv.permission.writePermission");
+            property.type = "selectbox";
+            property.options = [
+                { label: '', value: '' },
+                { label: get_advtool_msg("adv.permission.readonly"), value: 'readonly' },
+                { label: get_advtool_msg("adv.permission.disabled"), value: 'true' }
+            ];
+        }
     },
     renderProperty: function(i, prefix, property) {
         var type = property.propertyEditorObject;

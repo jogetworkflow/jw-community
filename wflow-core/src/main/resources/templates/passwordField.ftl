@@ -52,7 +52,7 @@
         </style>
     </#if>
     <label field-tooltip="${elementParamName!}" class="label${classIdentifier!}" for="${elementParamName!}_${element.properties.elementUniqueKey!}">${label} <span class="form-cell-validator">${decoration}</span><#if error??> <span class="form-error-message">${error}</span></#if></label>
-    <#if (element.properties.readonly! == 'true' && element.properties.readonlyLabel! == 'true')>
+    <#if ((element.properties.readonly! == 'true' || element.properties.readonly! == 'readonly') && element.properties.readonlyLabel! == 'true')>
         <span>*************</span>
         <#if ((iconValue?? && iconValue != ""))>
             <div class="input-group px-0"  style="<#if element.properties.size?has_content>width:${element.properties.size!};</#if>">
@@ -70,7 +70,7 @@
                         <span class="input-group-text">${iconValue}</span>
                 </#if>
                 <div class="password-input-wrapper">
-                    <input id="${elementParamName!}_${element.properties.elementUniqueKey!}" name="${elementParamName!}" type="password" value="${value!?html}" <#if element.properties.maxlength?has_content>maxlength="${element.properties.maxlength!}"</#if> <#if error??>class="form-error-cell"</#if> <#if element.properties.readonly! == 'true'>readonly</#if> />
+                    <input id="${elementParamName!}_${element.properties.elementUniqueKey!}" name="${elementParamName!}" type="password" value="${value!?html}" <#if element.properties.maxlength?has_content>maxlength="${element.properties.maxlength!}"</#if> <#if error??>class="form-error-cell"</#if> <#if element.properties.readonly! == 'true'>readonly</#if> <#if element.properties.readonly! == 'readonly'>readonly readonlyv2</#if>/>
                     <#if (element.properties.enableVisibility! == 'true')>
                         <button type="button" class="password-toggle" title="Toggle password visibility">
                             <i class="fas fa-fw fa-eye"></i>

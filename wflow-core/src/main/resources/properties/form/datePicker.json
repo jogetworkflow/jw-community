@@ -180,12 +180,20 @@
     },
     {
         name : 'readonly',
-        label : '@@form.datepicker.readonly@@',
-        type : 'checkbox',
-        value : 'False',
+        label : '@@form.datepicker.writePermission@@',
+        type : 'selectbox',
+        value : '',
         options : [{
-            value : 'true',
+            value : '',
             label : ''
+        },
+        {
+            value : 'readonly',
+            label : '@@form.datepicker.readonly@@'
+        },
+        {
+            value : 'true',
+            label : '@@form.datepicker.disabled@@'
         }]
     },
     {

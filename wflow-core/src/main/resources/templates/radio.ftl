@@ -6,7 +6,7 @@
         <div class="form-cell-value" id="${elementParamName!}${element.properties.elementUniqueKey!}">
     </#if>
     <#list options as option>
-        <#if (element.properties.readonly! == 'true' && element.properties.readonlyLabel! == 'true') >
+        <#if ((element.properties.readonly! == 'true' || element.properties.readonly! == 'readonly') && element.properties.readonlyLabel! == 'true') >
             <#if value?? && value == option.value!>
                 <label class="readonly_label">
                     <span>${option.label!?html}</span>
@@ -14,13 +14,13 @@
             </#if>
         <#else>
             <label tabindex="0" >
-                <input grouping="${option.grouping!?html}" <#if element.properties.readonly! != 'true'>id="${elementParamName!}"</#if> name="${elementParamName!}" type="radio" value="${option.value!?html}" class="form-check-input <#if error??>form-error-cell</#if>" <#if element.properties.readonly! == 'true'> disabled</#if> <#if value?? && value == option.value!>checked</#if> />
+                <input grouping="${option.grouping!?html}" <#if element.properties.readonly! != 'true' && element.properties.readonly! != 'readonly'>id="${elementParamName!}"</#if> name="${elementParamName!}" type="radio" value="${option.value!?html}" class="form-check-input <#if error??>form-error-cell</#if>" <#if element.properties.readonly! == 'true'> disabled</#if> <#if element.properties.readonly! == 'readonly'> disabled readonlyv2</#if> <#if value?? && value == option.value!>checked</#if> />
                 <i></i>    
                 ${option.label!?html}
             </label>
         </#if>
     </#list>
-        <#if element.properties.readonly! == 'true'><input id="${elementParamName!}" name="${elementParamName!}" type="hidden" value="${value!}" /></#if>
+        <#if element.properties.readonly! == 'true' || element.properties.readonly! == 'readonly'><input id="${elementParamName!}" name="${elementParamName!}" type="hidden" value="${value!}" /></#if>
     </div>
     <div style="clear:both;"></div>
 

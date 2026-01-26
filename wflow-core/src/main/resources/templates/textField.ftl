@@ -18,7 +18,7 @@
         <div class="input-group px-0" style="<#if element.properties.size?has_content>width:${element.properties.size!};</#if>">
             <span class="input-group-text">${iconValue}</span>
     </#if>
-    <#if (element.properties.readonly! == 'true' && element.properties.readonlyLabel! == 'true') >
+    <#if ((element.properties.readonly! == 'true' || element.properties.readonly! == 'readonly') && element.properties.readonlyLabel! == 'true') >
         <div class="form-cell-value"><span>${valueLabel!?html}</span></div>
         <input id="${elementParamName!}" name="${elementParamName!}" class="textfield_${element.properties.elementUniqueKey!}" type="hidden" value="${value!?html}" />
     <#else>
@@ -94,7 +94,7 @@
                 </script>
             </#if>   
         <#else>
-            <input id="${elementParamName!}" name="${elementParamName!}" class="textfield_${element.properties.elementUniqueKey!}" type="text" placeholder="${element.properties.placeholder!?html}" <#if iconValue?? && iconValue == '' && element.properties.size?has_content> size="${element.properties.size!}"</#if> value="${value!?html}" <#if element.properties.maxlength?has_content>maxlength="${element.properties.maxlength!}"</#if> <#if error??>class="form-error-cell"</#if> <#if element.properties.readonly! == 'true'>readonly</#if> />
+            <input id="${elementParamName!}" name="${elementParamName!}" class="textfield_${element.properties.elementUniqueKey!}" type="text" placeholder="${element.properties.placeholder!?html}" <#if iconValue?? && iconValue == '' && element.properties.size?has_content> size="${element.properties.size!}"</#if> value="${value!?html}" <#if element.properties.maxlength?has_content>maxlength="${element.properties.maxlength!}"</#if> <#if error??>class="form-error-cell"</#if> <#if element.properties.readonly! == 'true'>readonly</#if> <#if element.properties.readonly! == 'readonly'>readonly readonlyv2</#if>/>
         </#if>
     </#if>
     <#if ((iconValue?? && iconValue != ""))>

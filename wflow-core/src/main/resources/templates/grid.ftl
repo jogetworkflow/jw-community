@@ -4,7 +4,7 @@
     <script type="text/javascript" src="${request.contextPath}/js/jquery/jquery.jeditable.js"></script>
     <script type="text/javascript" src="${request.contextPath}/plugin/org.joget.apps.form.lib.Grid/js/jquery.formgrid.js"></script>
 </#if>
-<#if element.properties.readonly! != 'true'>
+<#if element.properties.readonly! != 'true' && element.properties.readonly! != 'readonly'>
     <script type="text/javascript">
         $(document).ready(function() {
             $(".grid_${element.properties.elementUniqueKey!}").formgrid();

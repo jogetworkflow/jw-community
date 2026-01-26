@@ -30,6 +30,7 @@ public abstract class Element extends ExtDefaultPlugin implements PropertyEditab
     private Validator validator;
     protected Map<FormData, Boolean> isAuthorizeSet = new HashMap<FormData, Boolean>();
     protected Map<FormData, Boolean> isReadonlySet = new HashMap<FormData, Boolean>();
+    protected Map<FormData, Boolean> isReadonlyV2Set = new HashMap<FormData, Boolean>();
     protected Map<FormData, Boolean> isHiddenSet = new HashMap<FormData, Boolean>();
     protected Map<FormData, String> permissionKeys = new HashMap<FormData, String>();
     protected Set<String> childsUniqueKeys = new HashSet<String>();
@@ -269,8 +270,10 @@ public abstract class Element extends ExtDefaultPlugin implements PropertyEditab
             return "";
         }
         
-        if (FormUtil.isReadonly(this, formData)) {
+        if (FormUtil.isReadonly(this, formData, 1)) {
             this.setProperty(FormUtil.PROPERTY_READONLY, "true");
+        } else if (FormUtil.isReadonly(this, formData, 2)) {
+            this.setProperty(FormUtil.PROPERTY_READONLY, "readonly");
         } else {
             this.setProperty(FormUtil.PROPERTY_READONLY, "");
         }
@@ -703,7 +706,8 @@ public abstract class Element extends ExtDefaultPlugin implements PropertyEditab
     
     /**
      * Flag to indicate whether or not the current logged in user is able to edit this field in the form.
-     * 
+     * If the value is edited through DOM manipulation, the value WILL NOT be saved into database.
+     *
      * @param formData
      * @return 
      */
@@ -711,10 +715,12 @@ public abstract class Element extends ExtDefaultPlugin implements PropertyEditab
         Boolean isReadonly = isReadonlySet.get(formData);
         if (isReadonly == null) {
             boolean isParentReadonly = false;
+            boolean isParentReadonlyV2 = false;
             if (getParent() != null) {
                 isParentReadonly = getParent().isReadonly(formData);
+                isParentReadonlyV2 = getParent().isReadonlyV2(formData);
             }
-            if (!isParentReadonly) {
+            if ((!isParentReadonly && !isParentReadonlyV2) || !isAuthorize(formData)) {
                 Map props = getProperties();
                 if (!Permission.DEFAULT.equals(getPermissionKey(formData)) && !(this instanceof Form)) {
                     Map rules = (Map) getProperty("permission_rules");
@@ -739,20 +745,88 @@ public abstract class Element extends ExtDefaultPlugin implements PropertyEditab
 
                     isReadonly = "true".equalsIgnoreCase(readonlyProp) || "true".equalsIgnoreCase(hiddenProp);
                 } else {
-                    if (props.containsKey("permissionReadonly")) {
+                    if (isParentReadonlyV2) {
+                        isReadonly = false;
+                    } else if (props.containsKey("permissionReadonly")) {
                         isReadonly = "true".equalsIgnoreCase((String) props.get("permissionReadonly"));
                     } else if (props.containsKey("permissionReadonlyHidden")) {
-                        isReadonly = "true".equalsIgnoreCase((String) props.get("permissionReadonlyHidden"));
+                        isReadonly = "".equalsIgnoreCase((String) props.get("permissionReadonlyHidden"));
                     } else {
-                        isReadonly = true;
+                        if (isParentReadonlyV2) {
+                            isReadonly = false;
+                        } else {
+                            isReadonly = true;
+                        }
                     }
                 }
             } else {
-                isReadonly = true;
+                if (isParentReadonlyV2) {
+                    isReadonly = false;
+                } else {
+                    isReadonly = true;
+                }
             }
             isReadonlySet.put(formData, isReadonly);
         }
         return isReadonly;
+    }
+
+    /**
+     * Flag to indicate whether or not the current logged in user is able to edit this field in the form.
+     * If the value is edited through DOM manipulation, the value WILL be saved into database.
+     *
+     * @param formData
+     * @return
+     */
+    public Boolean isReadonlyV2 (FormData formData) {
+        Boolean isReadonlyV2 = isReadonlyV2Set.get(formData);
+        if (isReadonlyV2 == null) {
+            boolean isParentReadonly = false;
+            boolean isParentReadonlyV2 = false;
+            if (getParent() != null) {
+                isParentReadonly = getParent().isReadonly(formData);
+                isParentReadonlyV2 = getParent().isReadonlyV2(formData);
+            }
+            if ((!isParentReadonly && !isParentReadonlyV2) || !isAuthorize(formData)) {
+                Map props = getProperties();
+                if (!Permission.DEFAULT.equals(getPermissionKey(formData)) && !(this instanceof Form)) {
+                    Map rules = (Map) getProperty("permission_rules");
+                    if (rules != null && rules.containsKey(getPermissionKey(formData))) {
+                        props = (Map)rules.get(getPermissionKey(formData));
+                    }
+                }
+
+                if (props == null) {
+                    props = new HashMap();
+                }
+
+                if (isAuthorize(formData)) {
+                    isReadonlyV2 = "readonly".equalsIgnoreCase((String) props.get(FormUtil.PROPERTY_READONLY));
+                } else {
+                    if (isParentReadonlyV2) {
+                        isReadonlyV2 = true;
+                    } else if (props.containsKey("permissionReadonly")) {
+                        isReadonlyV2 = "readonly".equalsIgnoreCase((String) props.get("permissionReadonly"));
+                    } else if (props.containsKey("permissionReadonlyHidden")) {
+                        isReadonlyV2 = "readonly".equalsIgnoreCase((String) props.get("permissionReadonlyHidden"));
+                    } else {
+                        if (isParentReadonly) {
+                            isReadonlyV2 = false;
+                        } else {
+                            isReadonlyV2 = true;
+                        }
+                    }
+                }
+            } else {
+                if (isParentReadonly) {
+                    isReadonlyV2 = false;
+                } else {
+                    isReadonlyV2 = true;
+                }
+            }
+            isReadonlyV2Set.put(formData, isReadonlyV2);
+        }
+        return isReadonlyV2;
     }
     
     /**
@@ -769,13 +843,15 @@ public abstract class Element extends ExtDefaultPlugin implements PropertyEditab
             } else {
                 boolean isParentHidden = false;
                 boolean isParentReadonly = false;
+                boolean isParentReadonlyV2 = false;
                 if (getParent() != null) {
                     isParentHidden = getParent().isHidden(formData);
                     isParentReadonly = getParent().isReadonly(formData);
+                    isParentReadonlyV2 = getParent().isReadonlyV2(formData);
                 }
-                if (!isParentHidden && isParentReadonly && !(this instanceof Section)) { 
+                if (!isParentHidden && (isParentReadonly || isParentReadonlyV2) && !(this instanceof Section) && isAuthorize(formData)) {
                     //section in subform should check for permission plugin, so should not just follow parent permission.
-                    //based on permission setting, if parent is readonly, all childs are readonly as well
+                    //for authorized user, based on permission setting, if parent is readonly, all childs are readonly as well
                     isHidden = false;
                 } else if (!isParentHidden) {
                     Map props = getProperties();
@@ -793,8 +869,10 @@ public abstract class Element extends ExtDefaultPlugin implements PropertyEditab
                     if (isAuthorize(formData)) {
                         isHidden = "true".equalsIgnoreCase((String) props.get(FormUtil.PROPERTY_HIDDEN));
                     } else {
-                        if (props.containsKey("permissionReadonly")) {
-                            isHidden = !"true".equalsIgnoreCase((String) props.get("permissionReadonly"));
+                        if (isParentReadonlyV2) {
+                            isHidden = false;
+                        } else if (props.containsKey("permissionReadonly")) {
+                            isHidden = !"true".equalsIgnoreCase((String) props.get("permissionReadonly")) && !"readonly".equalsIgnoreCase((String) props.get("permissionReadonly"));;
                         } else if (this instanceof Section) {
                             isHidden = true;
                         } else {

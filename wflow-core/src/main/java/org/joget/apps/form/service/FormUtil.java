@@ -1585,15 +1585,38 @@ public class FormUtil implements ApplicationContextAware {
     }
 
     /**
-     * Recursively set the readonly property for all descendent elements.
+     * Determines whether to set the specified descendent elements as readonly or disabled using version check
+     * @param element
+     * @param readonly
+     * @param label
+     * @param version
+     */
+    public static void setReadOnlyProperty(Element element, Boolean readonly, Boolean label, int version) {
+        if (version == 1) {
+            setDisabledProperty(element, readonly, label);
+        } else {
+            setReadonlyV2Property(element, readonly, label);
+        }
+    }
+
+    /**
+     * Recursively set the disabled property for all descendent elements.
      * @param element
      */
     public static void setReadOnlyProperty(Element element) {
-        setReadOnlyProperty(element, true, null);
+        setReadOnlyProperty(element, true, null, 1);
+    }
+
+    /**
+     * Recursively set the disabled property for all descendent elements.
+     * @param element
+     */
+    public static void setDisabledProperty (Element element, Boolean  readonly, Boolean label) {
+        setReadOnlyProperty(element, readonly, label);
     }
     
     /**
-     * Recursively set the readonly property for all descendent elements.
+     * Recursively set the disabled property for all descendent elements.
      * @param element
      */
     public static void setReadOnlyProperty(Element element, Boolean readonly, Boolean label) {
@@ -1606,6 +1629,23 @@ public class FormUtil implements ApplicationContextAware {
         Collection<Element> children = element.getChildren();
         for (Element child : children) {
             setReadOnlyProperty(child, readonly, label);
+        }
+    }
+
+    /**
+     * Recursively set the readonly property for all descendent elements.
+     * @param element
+     */
+    private static void setReadonlyV2Property (Element element, Boolean readonly, Boolean label) {
+        if (readonly != null && readonly) {
+            element.setProperty(FormUtil.PROPERTY_READONLY, "readonly");
+        }
+        if (label != null && label) {
+            element.setProperty(FormUtil.PROPERTY_READONLY_LABEL, "true");
+        }
+        Collection<Element> children = element.getChildren();
+        for (Element child : children) {
+            setReadonlyV2Property(child, readonly, label);
         }
     }
 
@@ -1638,13 +1678,48 @@ public class FormUtil implements ApplicationContextAware {
         }
         return false;
     }
+
+    /**
+     * Determines whether to validate the specified element is readonly or disabled using version check
+     * @param element
+     * @param form
+     * @param version
+     * @return
+     */
+    public static boolean isReadonly(Element element, FormData form, int version) {
+        if (version == 1) {
+            return isDisabled(element, form);
+        } else if (version == 2) {
+            return isReadonlyV2(element, form);
+        } else {
+            return false;
+        }
+    }
     
     /**
-     * Check an element is readonly or not
+     * Check an element is disabled or not
      * @param formData
      */
     public static boolean isReadonly(Element element, FormData formData) {
+        return isReadonly(element, formData, 1);
+    }
+
+    /**
+     * Check an element is disabled or not based on version 1 readonly logic
+     * @param element
+     * @param formData
+     */
+    public static boolean isDisabled(Element element, FormData formData) {
         return element.isReadonly(formData);
+    }
+
+    /**
+     * Check an element is readonly or not based on version 2 readonly logic
+     * @param element
+     * @param formData
+     */
+    private static boolean isReadonlyV2 (Element element, FormData formData) {
+        return element.isReadonlyV2(formData);
     }
     
     /**
