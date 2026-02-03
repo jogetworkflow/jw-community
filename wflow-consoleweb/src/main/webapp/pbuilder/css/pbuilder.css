@@ -19,6 +19,47 @@ body#cbuilder.default-builder #process-selector + #builder_canvas #iframe-wrappe
     border-color: var(--theme-primary-color-1) !important;
     color: var(--theme-primary-color-1) !important;
 }
+#pbuilder-controls-indicator {
+    position: fixed;
+    right: 50px;
+    bottom: 60px;
+    z-index: 200;
+    background: rgba(0,0,0,0.75);
+    color: #fff;
+    padding: 10px 12px;
+    border-radius: 6px;
+    font-size: 12px;
+    max-width: 300px;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.4);
+    height : fit-content;
+    width:  fit-content;
+    cursor: move
+}
+#pbuilder-controls-indicator > #pbuilder-controls-header {
+    font-weight:600; 
+    margin-bottom:6px; 
+    color:#fff;
+}
+#pbuilder-controls-indicator > #pbuilder-controls-body {
+    font-size:12px; 
+    line-height:1.35; 
+    color:#fff; 
+    opacity:0.95;
+}
+#pbuilder-controls-indicator > #pbuilder-controls-body > div {
+    margin-bottom:4px;
+}
+#pbuilder-controls-indicator #pbuilder-controls-close {
+    position:absolute; 
+    top:3px; 
+    right:8px; 
+    border:0; 
+    background:transparent; 
+    color:#fff; 
+    font-size:14px; 
+    cursor:pointer;
+    box-shadow:none
+}
 .lf-label-overlay .lf-label-editor{
     font-size:14px
 }

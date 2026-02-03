@@ -1950,6 +1950,158 @@ ProcessBuilder = {
             }
             return false;
         });
+
+        (function () {
+            // Track whether drag scrolling is active
+            let p = false, x = 0, y = 0, id = null;
+            // Get the main process builder canvas container
+            const root =
+                ProcessBuilder.lf?.container || document.querySelector('#lf-container') || document.documentElement;
+            // Check if user clicked on an input, button, or link
+            const isCtrl = t => t && t.closest && !!t.closest('input,textarea,button,a,select');
+            // Get current zoom level of the canvas
+            const getScale = () => {
+                const t = ProcessBuilder.lf?.getTransform?.() || {};
+                return [t.SCALE_X || 1, t.SCALE_Y || 1];
+            };
+            // Move the canvas based on mouse movement
+            const move = (dx, dy) => {
+                const [sx, sy] = getScale();
+                if (ProcessBuilder.lf?.translate) {
+                    // Move LogicFlow canvas when available
+                    ProcessBuilder.lf.translate(dx * sx, dy * sy);
+                } else {
+                    // Fallback to normal scrolling
+                    root.scrollLeft -= dx;
+                    root.scrollTop -= dy;
+                }
+            };
+       
+            // Start dragging when Shift + left click is pressed
+            root.addEventListener('pointerdown', e => {
+                // Allow only left mouse + Shift key and no element dragging
+                if (e.button !== 0 || !e.shiftKey || ProcessBuilder.draggingElementId) return;
+                // Do not activate drag on form controls or links
+                if (isCtrl(e.target)) return;
+                // Store drag start position
+                p = true;
+                id = e.pointerId;
+                x = e.clientX;
+                y = e.clientY;
+                // Show grabbing cursor
+                document.body.style.cursor = 'grabbing';
+                // Capture pointer for smooth dragging
+                try { root.setPointerCapture?.(id); } catch (e) {}
+                // Stop default browser behavior
+                e.preventDefault();
+                e.stopPropagation();
+            }, true);
+       
+            // Move canvas while dragging
+            document.addEventListener('pointermove', e => {
+                // Ignore if not dragging
+                if (!p || e.pointerId !== id) return;
+                // Calculate mouse movement
+                const dx = e.clientX - x;
+                const dy = e.clientY - y;
+                // Move the canvas
+                move(dx, dy);
+                // Update mouse position
+                x = e.clientX;
+                y = e.clientY;
+                // Prevent text selection or page scroll
+                e.preventDefault();
+                e.stopPropagation();
+            }, true);
+       
+            // Stop dragging when mouse is released
+            document.addEventListener('pointerup', e => {
+                // Ignore unrelated pointer events
+                if (!p || e.pointerId !== id) return;
+                // Reset dragging state
+                p = false;
+                id = null;
+                // Restore normal cursor
+                document.body.style.cursor = '';
+                // Release pointer capture safely
+                try { root.releasePointerCapture?.(e.pointerId); } catch (e) {}
+            }, true);
+
+            // Enable Shift + Wheel to scroll horizontally
+            document.addEventListener('wheel', function (e) {
+                try {
+                    // Only act when Shift is pressed
+                    if (!e.shiftKey || isCtrl(e.target)) return;
+
+                    // Save vertical scroll positions so we can restore them if needed
+                    const prevWindowY = window.scrollY || window.pageYOffset || 0;
+                    const prevRootScrollTop = (root && typeof root.scrollTop === 'number') ? root.scrollTop : null;
+
+                    // Prevent default vertical scroll and stop other handlers
+                    e.preventDefault();
+                    e.stopPropagation();
+                    if (typeof e.stopImmediatePropagation === 'function') e.stopImmediatePropagation();
+
+                    let delta = e.deltaY || 0;
+                    if (e.deltaMode === 1) delta *= 16; // approximate line height in pixels
+                    else if (e.deltaMode === 2) delta *= window.innerHeight; // page
+
+                    // Fallback to deltaX if deltaY is zero
+                    if (!delta) delta = e.deltaX || 0;
+
+                    // Move horizontally only (prevent any vertical movement)
+                    move(-delta, 0);
+
+                    // Restore any accidental vertical scroll applied by other handlers or default behavior
+                    try {
+                        if (prevRootScrollTop !== null && root && typeof root.scrollTop === 'number') {
+                            root.scrollTop = prevRootScrollTop;
+                        }
+                        if ((window.scrollY || window.pageYOffset || 0) !== prevWindowY) {
+                            window.scrollTo(window.scrollX, prevWindowY);
+                        }
+                    } catch (ex) {
+                        // ignore
+                    }
+                } catch (err) {
+                    // fail safe - do nothing
+                }
+            }, { passive: false, capture: true });
+
+            // Simple controls indicator
+            (function () {
+                const elId = 'pbuilder-controls-indicator';
+                // Always create the indicator on load
+                if (!document.getElementById(elId) && $("body").hasClass("process")) {
+                    const el = document.createElement('div');
+                    el.id = elId;
+                    el.innerHTML = '<div id="pbuilder-controls-header">' + get_cbuilder_msg("pbuilder.canvas.tooltip.header") + '</div>' +
+                        '<div id="pbuilder-controls-body">' +
+                            '<div>' + get_cbuilder_msg("pbuilder.canvas.tooltip.message1") + '</div>' +
+                            '<div>' + get_cbuilder_msg("pbuilder.canvas.tooltip.message2") + '</div>' +
+                            '<div>' + get_cbuilder_msg("pbuilder.canvas.tooltip.message3") + '</div>' +
+                        '</div>' +
+                        '<button aria-label="Close" id="pbuilder-controls-close">✕</button>';
+
+                    document.body.appendChild(el);
+
+                    // Close button only hides for current page view
+                    el.querySelector('#pbuilder-controls-close').addEventListener('click', function () { el.remove(); });
+
+                    $(el).draggable();
+
+                    const ps = history.pushState;
+                    history.pushState = function () {
+                        ps.apply(history, arguments);
+                        detect();
+                    };
+
+                    function detect() {
+                        if (!location.href.includes("/process/")) $('#pbuilder-controls-indicator').remove();
+                    }
+                } 
+            })();
+        })();
     },
     
     /**
