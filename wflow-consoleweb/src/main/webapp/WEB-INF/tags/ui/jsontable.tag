@@ -288,14 +288,19 @@
 
         // set row link and popup dialog
         var ${var}_popupDialog = null;
-    <c:if test="${!empty href && hrefDialog}">
-        <c:if test="${!empty hrefDialogWindowName}">
-            ${var}_popupDialog = new PopupDialog("${href}", "${hrefDialogTitle}", "${hrefDialogWindowName}");
-        </c:if>
-        <c:if test="${empty hrefDialogWindowName}">
-            ${var}_popupDialog = new PopupDialog("${href}", "${hrefDialogTitle}");
-        </c:if>
-    </c:if>
+    <c:choose>
+        <c:when test="${!empty href && hrefDialog eq 'slideout'}">
+            ${var}_popupDialog = new SlideOutPanel("${href}", "${hrefDialogTitle}");
+        </c:when>
+        <c:when test="${!empty href && hrefDialog eq 'true'}">
+            <c:if test="${!empty hrefDialogWindowName}">
+                ${var}_popupDialog = new PopupDialog("${href}", "${hrefDialogTitle}", "${hrefDialogWindowName}");
+            </c:if>
+            <c:if test="${empty hrefDialogWindowName}">
+                ${var}_popupDialog = new PopupDialog("${href}", "${hrefDialogTitle}");
+            </c:if>
+        </c:when>
+    </c:choose>    
     <c:if test="${!empty href}">
         ${var}.link = new Link("${href}", "${hrefParam}", ${hrefQuery}, ${var}_popupDialog);
         <c:if test="${!empty hrefSuffix}">
