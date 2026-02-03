@@ -60,7 +60,8 @@
         UI.msg = {
             "ok" : "<ui:msgEscJS key="general.method.label.ok"/>",
             "cancel" : "<ui:msgEscJS key="general.method.label.cancel"/>",
-            "loading" : "<ui:msgEscJS key="console.blockUI.loading"/>"
+            "loading" : "<ui:msgEscJS key="console.blockUI.loading"/>",
+            "close" : "<ui:msgEscJS key="general.method.label.close"/>"
         };
 
         if(window.parent.UI.theme === ""){

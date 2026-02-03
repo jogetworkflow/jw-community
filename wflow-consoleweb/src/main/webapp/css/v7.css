@@ -8,6 +8,161 @@
     --console-button-danger-bg: #dc3545;
     --console-button-danger-bg-hover: #c82333;
 }
+
+/* SlideOutPanel Styles */
+.slide-out-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 15000;
+    display: none;
+    opacity: 0;
+}
+
+.slide-out-panel {
+    position: fixed;
+    top: 0;
+    right: -100%;
+    width: 65%;
+    height: 100%;
+    background: #fff;
+    box-shadow: -2px 0 10px rgba(0, 0, 0, 0.3);
+    z-index: 15001;
+    display: none;
+    overflow: hidden;
+}
+
+body[system-theme="dark"] .slide-out-panel {
+    background: var(--console-main-background-color);
+    color: var(--console-default-font-color);
+}
+
+.slide-out-panel.nested-panel {
+    min-width: 85%;
+}
+
+.slide-out-header {
+    padding: 15px 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    min-height: 60px;
+    flex-shrink: 0;
+}
+
+.slide-out-title {
+    margin: 0;
+    font-size: 18px;
+    font-weight: 600;
+    color: #333;
+    flex: 1;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.slide-out-wrapper {
+    position: relative;
+    width: 100%;
+    height: 100%;
+}
+
+.slide-out-close {
+    background: #007A5E;
+    border: none;
+    font-size: 14px;
+    cursor: pointer;
+    color: #fff;
+    padding: 6px 12px;
+    min-width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 4px;
+    transition: all 0.2s ease;
+    font-weight: 500;
+    position: absolute;
+    top: 5px;
+    left: 15px;
+    z-index: 10;
+}
+
+.iframe-slide-out-show .slide-out-close {
+    display: none;
+}
+
+.slide-out-content {
+    padding: 45px 0px 35px;
+    height: 100%;
+    overflow: hidden;
+    flex: 1;
+    position: relative;
+    box-sizing: border-box;
+}
+
+.slide-out-content iframe {
+    border: none;
+    width: 100%;
+    height: 100%;
+}
+
+/* Body scroll prevention */
+body.stop-scrolling {
+    overflow: hidden;
+}
+
+/* RTL Support */
+body.rtl .slide-out-panel {
+    right: auto;
+    left: -100%;
+}
+
+body.rtl .slide-out-panel.show {
+    right: auto;
+    left: 0;
+}
+
+body.rtl .slide-out-close {
+    left: auto;
+    right: 15px;
+}
+
+/* Responsive styles */
+@media (max-width: 768px) {
+    .slide-out-panel {
+        width: 95%;
+        right: -100%;
+    }
+    
+    .slide-out-header {
+        padding: 12px 15px;
+        min-height: 50px;
+    }
+    
+    .slide-out-title {
+        font-size: 16px;
+    }
+    
+    .slide-out-close {
+        font-size: 12px;
+        padding: 4px 8px;
+        min-width: 28px;
+        height: 28px;
+    }
+    
+    .slide-out-content {
+        height: 100%;
+    }
+    
+    /* RTL mobile support */
+    body.rtl .slide-out-panel {
+        left: -100%;
+    }
+}
 html[system-theme='light'], body[system-theme='light'], body[builder-theme='light'] {
     --console-border-color: #ced4da;
     --console-main-background-color: #f6f7fb;

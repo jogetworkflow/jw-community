@@ -809,13 +809,423 @@ PopupDialog.prototype = {
 }
 
 /*
- * Link object to represent a clickable link that either redirects to a new URL or pops up a dialog
+ * Slide-out panel from right side showing a URL in an IFRAME or HTML content
  */
-Link = function(href, param, queryString, popupDialog) {
+SlideOutPanel = function(src, title, options) {
+    this.src = src;
+    this.title = title;
+    this.options = options || {};
+    this.content = this.options.content || null; // HTML content alternative to src
+    this.width = this.options.width || '65%';
+    this.height = this.options.height || '100%';
+    this.overlay = this.options.overlay !== false; // default true
+    this.closeOnOverlayClick = this.options.closeOnOverlayClick !== false; // default true
+}
+
+SlideOutPanelCache = {
+    slideOutPanel: null
+}
+
+SlideOutPanel.closePanel = function() {
+    var cacheObj = SlideOutPanelCache.slideOutPanel;
+    if (cacheObj != null) {
+        cacheObj.close();
+    }
+    else if (cacheObj == null && parent && parent.SlideOutPanelCache && parent.SlideOutPanelCache.slideOutPanel) {
+        cacheObj = parent.SlideOutPanelCache.slideOutPanel;
+        cacheObj.close();
+    }
+}
+
+SlideOutPanel.prototype = {
+
+    width: '65%',
+    height: '100%',
+    title: ' ',
+    src: null,
+    content: null,
+    options: null,
+    panelElement: null,
+    overlayElement: null,
+    isOpen: false,
+
+    init: function() {
+        this.show();
+    },
+
+    show: function() {
+        // hide help
+        if (typeof HelpGuide !== 'undefined' && HelpGuide.hide) {
+            HelpGuide.hide();
+        }
+        
+        SlideOutPanelCache.slideOutPanel = this;
+
+        // Calculate responsive width
+        var windowWidth = $(window).width();
+        var calculatedWidth = this.width;
+        if (typeof this.width === 'string' && this.width.indexOf('%') !== -1) {
+            var widthPercent = parseFloat(this.width.replace('%', ''));
+            if (windowWidth < 768) {
+                // On mobile, use 95% width
+                calculatedWidth = '95%';
+            } else if (widthPercent > 95) {
+                // Cap at 90% for very large screens
+                calculatedWidth = '95%';
+            }
+        }
+
+        var thisObject = this;
+        
+        // Create overlay
+        if (this.overlay) {
+            this.overlayElement = $('<div id="slideOutOverlay" class="slide-out-overlay"></div>');
+            
+            if (this.closeOnOverlayClick) {
+                this.overlayElement.on('click', function() {
+                    thisObject.close();
+                });
+            }
+            
+            $('body').append(this.overlayElement);
+        }
+
+        // Create panel
+        this.panelElement = $('<div id="slideOutPanel" class="slide-out-panel"></div>');
+
+        // Create wrapper 
+        var panelWrapper = $('<div class="slide-out-wrapper"></div>');
+        this.panelElement.append(panelWrapper);
+
+        // Create header only if title is provided
+        if (this.title && this.title.trim() !== '') {
+            var header = $('<div class="slide-out-header"></div>');
+
+            var titleElement = $('<h3 class="slide-out-title"></h3>').text(this.title);
+
+            header.append(titleElement);
+            panelWrapper.append(header);
+        }
+
+        // Create content area
+        var contentArea = $('<div class="slide-out-content"></div>');
+
+        var closeBtn = $('<button class="slide-out-close">' + (UI.msg.close || 'Close') + '</button>').on('click', function() {
+            thisObject.close();
+        });
+        contentArea.prepend(closeBtn);
+
+        // Add content
+        if (this.content) {
+            // HTML content
+            contentArea.append(this.content);
+
+            contentArea.css('overflow', 'auto');
+        } else if (this.src) {
+            // iframe content
+            var newSrc = this.src;
+            if (newSrc.indexOf("?") < 0) {
+                newSrc += "?";
+            }
+            newSrc += "&_=" + new Date().valueOf().toString();
+            newSrc += UI.userviewThemeParams();
+
+            var iframe = $('<iframe id="slideOutFrame" frameborder="0" width="100%" height="100%"></iframe>');
+
+            iframe.on('load', function() {
+                try {
+                    var url = this.contentWindow.location.href;
+                    if (url.indexOf("/web/userview/") !== -1 || url.indexOf("&__a_=") !== -1) {
+                        $(this).attr('scrolling', 'yes');
+                    }
+                    
+                    // Clean up iframe content
+                    var iframeWindow = this.contentWindow;
+                    var iframeDoc = iframeWindow.document;
+                    var $iframeBody = $(iframeDoc).find('body');
+                    
+                    if ($iframeBody.find('#main-header').length > 0) {
+                        // Delay the override to ensure iframe is fully ready
+                        setTimeout(function() {
+                            thisObject.overrideIframeMethods(iframeWindow);
+                        }, 100);
+
+                        // Remove main header and nav
+                        $iframeBody.find('#main-header, #nav, #footer').remove();
+
+                        $iframeBody.find("div#content-container > div#main").css({'visibility': 'visible'});
+                        
+                        // Adjust main content layout
+                        var $main = $iframeBody.find('#main');
+                        if ($main.length > 0) {
+                            $main.css({
+                                'width': '100%',
+                                'margin-left': '0',
+                                'margin-right': '0',
+                                'padding' : '20px !important'
+                            });
+                            
+                            $iframeBody.css({
+                                'margin-top': '0'
+                            });
+                        }
+                    }
+
+                    // Remove spinner container
+                    $iframeBody.find('#spinner-container').remove();
+                } catch (err) {
+                    console.error('SlideOutPanel: Error in iframe load handler', err);
+                    // Continue execution even if iframe processing fails
+                }
+            });
+
+            contentArea.append(iframe);
+            iframe.attr('src', newSrc);
+        }
+
+        // Assemble panel
+        panelWrapper.append(contentArea);
+        $('body').append(this.panelElement);
+
+        // Set initial position based on RTL
+        var isRTL = $('body').hasClass('rtl');
+        if (isRTL) {
+            this.panelElement.css('left', '-' + calculatedWidth);
+        } else {
+            this.panelElement.css('right', '-' + calculatedWidth);
+        }
+        this.panelElement.css('width', calculatedWidth);
+        this.panelElement.css('height', this.height);
+
+        // Handle iframe maximization
+        if (this.src && parent && parent.UI !== undefined && window.frameElement !== null && window.frameElement.id !== "quickOverlayFrame") {
+            try {
+                $("html").css("background", "#fff");
+                parent.UI.maxIframe(window.frameElement.id);
+            } catch (err) {}
+        }
+
+        // Check if slide-out is in an iframe and add class to parent body
+        if (window.frameElement && window.frameElement.id && window.parent && window.parent.document) {
+            var parentBody = window.parent.document.body;
+            if (parentBody) {
+                $(parentBody).addClass("iframe-slide-out-show");
+            }
+
+            // If it is nested slide out panel
+            if (window.parent.SlideOutPanelCache && 
+                    window.parent.SlideOutPanelCache.slideOutPanel &&
+                    window.parent.SlideOutPanelCache.slideOutPanel.isOpen) {
+                this.panelElement.addClass("nested-panel")       
+            }
+        }
+
+        var thisObject = this;
+        
+        // Show overlay
+        if (this.overlayElement) {
+            this.overlayElement.css('display', 'block').animate({ opacity: 1 }, 200);
+        }
+        
+        // Show panel
+        this.panelElement.css('display', 'block');
+        
+        // Prevent body scroll on desktop
+        if ($(window).width() >= 768) {
+            $('body').addClass("stop-scrolling");
+        }
+        
+        // Slide in animation
+        var isRTL = $('body').hasClass('rtl');
+        var animateProps = isRTL ? { left: 0 } : { right: 0 };
+        this.panelElement.animate(animateProps, 300, function() {
+            thisObject.isOpen = true;
+            thisObject.panelElement.addClass('show');
+            
+            // Focus iframe content
+            if (thisObject.src) {
+                setTimeout(function() {
+                    var iframe = document.getElementById("slideOutFrame");
+                    if (iframe && iframe.contentWindow) {
+                        iframe.contentWindow.focus();
+                    }
+                }, 100);
+            }
+        });
+    },
+
+    close: function() {
+        //check if iframe slide out is open, close it first
+        if (this.src && this.isOpen) {
+            try {
+                var iframe = document.getElementById("slideOutFrame");
+                if (iframe && iframe.contentWindow && iframe.contentWindow.SlideOutPanelCache) {
+                    var nestedPanel = iframe.contentWindow.SlideOutPanelCache.slideOutPanel;
+                    if (nestedPanel && nestedPanel.isOpen) {
+                        nestedPanel.close();
+                        return;
+                    }
+                }
+            } catch (err) {
+                // Cross-origin or other access issues, continue with close
+            }
+        }
+
+        if (!this.isOpen) {
+            return;
+        }
+
+        var thisObject = this;
+        var calculatedWidth = this.width;
+        if (typeof this.width === 'string' && this.width.indexOf('%') !== -1) {
+            var windowWidth = $(window).width();
+            var widthPercent = parseFloat(this.width.replace('%', ''));
+            if (windowWidth < 768) {
+                calculatedWidth = '90%';
+            } else if (widthPercent > 90) {
+                calculatedWidth = '90%';
+            }
+        }
+
+        // Slide out animation
+        var isRTL = $('body').hasClass('rtl');
+        var animateProps = isRTL ? { left: '-' + calculatedWidth } : { right: '-' + calculatedWidth };
+        this.panelElement.animate(animateProps, 300, function() {
+            thisObject.panelElement.remove();
+            thisObject.panelElement = null;
+        });
+
+        // Hide overlay
+        if (this.overlayElement) {
+            this.overlayElement.animate({ opacity: 0 }, 200, function() {
+                thisObject.overlayElement.remove();
+                thisObject.overlayElement = null;
+            });
+        }
+
+        // Restore body scroll
+        $('body').removeClass("stop-scrolling");
+
+        // Check if slide-out is in an iframe and remove class from parent body
+        if (window.frameElement && window.frameElement.id && window.parent && window.parent.document) {
+            var parentBody = window.parent.document.body;
+            if (parentBody) {
+                $(parentBody).removeClass("iframe-slide-out-show");
+            }
+        }
+
+        // Handle iframe restoration
+        if (this.src && parent && parent.UI !== undefined && window.frameElement !== null && window.frameElement.id !== "quickOverlayFrame") {
+            try {
+                parent.UI.restoreIframe(window.frameElement.id);
+                $("html").css("background", "transparent");
+            } catch (err) {}
+        }
+
+        this.isOpen = false;
+        SlideOutPanelCache.slideOutPanel = null;
+    },
+
+    setContent: function(content) {
+        this.content = content;
+        if (this.isOpen && this.panelElement) {
+            var contentArea = this.panelElement.find('.slide-out-content');
+            if (contentArea.length > 0) {
+                contentArea.html(content);
+            }
+        }
+    },
+
+    setSrc: function(src) {
+        this.src = src;
+        if (this.isOpen && this.panelElement) {
+            var iframe = this.panelElement.find('#slideOutFrame');
+            if (iframe.length > 0) {
+                var newSrc = src;
+                if (newSrc.indexOf("?") < 0) {
+                    newSrc += "?";
+                }
+                newSrc += "&_=" + new Date().valueOf().toString();
+                newSrc += UI.userviewThemeParams();
+                iframe.attr('src', newSrc);
+            }
+        }
+    },
+
+    /*
+     * Override the iframe UI methods to use current window UI methods for better UX
+     */
+    overrideIframeMethods: function (iframeWindow, retryCount) {
+        retryCount = retryCount || 0;
+        
+        try {
+            // Check if iframe content window is accessible
+            if (!iframeWindow) {
+                return;
+            }
+
+            // Check if UI exists in iframe
+            if (!iframeWindow.UI) {
+                // Retry after a short delay
+                if (retryCount < 3) {
+                    var self = this;
+                    setTimeout(function() {
+                        self.overrideIframeMethods(iframeWindow, retryCount + 1);
+                    }, 200);
+                }
+                return;
+            }
+
+            // Check if current window UI is accessible
+            if (!window.UI) {
+                return;
+            }
+
+            var self = this;
+            var iframeUI = iframeWindow.UI;
+            var currentUI = window.UI; // Use current window UI
+
+            // Create wrapper functions that delegate to current window UI methods
+            var createCurrentWindowDelegate = function(methodName) {
+                return function() {
+                    try {
+                        return currentUI[methodName].apply(currentUI, arguments);
+                    } catch (err) {
+                        console.error('SlideOutPanel: Error calling current window UI method ' + methodName, err);
+                        return null;
+                    }
+                };
+            };
+
+            // Override all UI methods to use current window
+            var methodsToOverride = [
+                'blockUI', 'unblockUI',
+                'alert', 'alertBlock', 'confirm', 'asyncConfirm', 'prompt',
+                'showConsoleToast'
+            ];
+
+            // Override each method
+            methodsToOverride.forEach(function(method) {
+                if (typeof currentUI[method] === 'function') {
+                    iframeUI[method] = createCurrentWindowDelegate(method);
+                    console.log('SlideOutPanel: Overridden iframe method: ' + method);
+                }
+            });
+        } catch (err) {
+            console.error('SlideOutPanel: Error in overrideIframeMethods', err);
+        }
+    }
+}
+
+/*
+ * Link object to represent a clickable link that either redirects to a new URL or show a dialog container
+ * dialogContainer canbe a popup or slideout panel
+ */
+Link = function(href, param, queryString, dialogContainer) {
     this.href = href;
     this.param = param;
     this.queryString = queryString;
-    this.popupDialog = popupDialog;
+    this.dialogContainer = dialogContainer;
 }
 
 Link.prototype = {
@@ -826,7 +1236,7 @@ Link.prototype = {
     suffix: null,
     queryString: false,
     post: false,
-    popupDialog: null,
+    dialogContainer: null,
 
     init: function() {
         var link = this.href;
@@ -850,9 +1260,9 @@ Link.prototype = {
             }
         }
 
-        if (this.popupDialog) {
-            this.popupDialog.src = link;
-            this.popupDialog.show.apply(this.popupDialog);
+        if (this.dialogContainer) { 
+            this.dialogContainer.src = link;
+            this.dialogContainer.show.apply(this.dialogContainer);
         }
         else if (this.post) {
             if (link.indexOf("?") < 0) {
