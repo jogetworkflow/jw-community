@@ -4,6 +4,7 @@ import java.io.File;
 import java.net.URLDecoder;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.springframework.context.ApplicationContext;
 
 /**
  * Utility methods to log message to log file
@@ -48,6 +49,7 @@ public class LogUtil {
      * @param message 
      */
     public static void info(String className, String message) {
+        message = getLogInfoHelper().prepareAdditionalLogMessage(className, "INFO", message);
         Log log = getLog(className);
         
         String clean = (message != null) ? message.replace( '\n', '_' ).replace( '\r', '_' ) : null;
@@ -60,6 +62,7 @@ public class LogUtil {
      * @param message 
      */
     public static void debug(String className, String message) {
+        message = getLogInfoHelper().prepareAdditionalLogMessage(className, "DEBUG", message);
         Log log = getLog(className);
         
         String clean = (message != null) ? message.replace( '\n', '_' ).replace( '\r', '_' ) : null;
@@ -72,6 +75,7 @@ public class LogUtil {
      * @param message 
      */
     public static void warn(String className, String message) {
+        message = getLogInfoHelper().prepareAdditionalLogMessage(className, "WARN", message);
         Log log = getLog(className);
         
         String clean = (message != null) ? message.replace( '\n', '_' ).replace( '\r', '_' ) : null;
@@ -84,6 +88,7 @@ public class LogUtil {
      * @param message 
      */
     public static void error(String className, Throwable e, String message) {
+        message = getLogInfoHelper().prepareAdditionalLogMessage(className, "ERROR", message);
         Log log = getLog(className);
         
         if (message != null && message.trim().length() > 0) {
@@ -187,5 +192,18 @@ public class LogUtil {
             return HostManager.getCurrentProfile() + " : ";
         }
         return "";
+    }
+    
+    protected static LogInfoHelper getLogInfoHelper() {
+        LogInfoHelper logInfoHelper = null;
+        
+        ApplicationContext ac = SecurityUtil.getApplicationContext();
+        if (ac != null) {
+            logInfoHelper = (LogInfoHelper) ac.getBean("logInfoHelper");
+        }
+        if (logInfoHelper == null) {
+            logInfoHelper = new LogInfoHelperImpl();
+        }
+        return logInfoHelper;
     }
 }

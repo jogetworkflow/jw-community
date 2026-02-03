@@ -274,7 +274,10 @@
     </bean>
 
     <bean id="userAuthenticationService" class="org.joget.apps.util.UserAuthenticationService" lazy-init="true"/>
-   
+    
+    <bean id="logInfoHelper" class="org.joget.apps.app.service.AppLogInfoHelperImpl" lazy-init="true">
+    </bean>
+
     <aop:config>
         <aop:advisor advice-ref="txAdvice" pointcut="execution(* org.joget.apps.app.dao.*Dao.*(..)) and !(execution(* org.joget.apps.app.dao.AppDefinitionDao.updateDateModified(..)))" order="1" />
         <aop:advisor advice-ref="txAdvice" pointcut="execution(* org.joget.report.dao.*Dao.*(..))" order="1" />

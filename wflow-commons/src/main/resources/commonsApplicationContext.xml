@@ -195,4 +195,6 @@
         <qualifier value="default"/>
     </bean>
 
+    <bean id="logInfoHelper" class="org.joget.commons.util.LogInfoHelperImpl" lazy-init="true">
+    </bean>
 </beans>
