@@ -1146,11 +1146,12 @@ JsonTable.prototype = {
                 var row = $(this).closest("tr");
                 var id = $(row).attr("id").substring(3);
                 var checkboxSelected = $(this).hasClass("selectionTd") || $(this).closest(".selectionTd").length > 0 || $(this).find(".selectionTd").length > 0;
-                if (thisObject.link && !checkboxSelected) {
+                var noLinkClicked = $(this).hasClass("noLinkTd") || $(this).closest(".noLinkTd").length > 0 || $(this).find(".noLinkTd").length > 0;
+                if (thisObject.link && !checkboxSelected && !noLinkClicked) {
                     thisObject.link.value = id.replace(/__dot__/g, '.');
                     thisObject.link.init();
                     return false;
-                } else if (!checkboxSelected) {
+                } else if (!checkboxSelected && !noLinkClicked) {
                     var checkbox = row.find('input[type="checkbox"], input[type="radio"]');
                     if (checkbox.length > 0) {
                         var cb = $(checkbox[0]);

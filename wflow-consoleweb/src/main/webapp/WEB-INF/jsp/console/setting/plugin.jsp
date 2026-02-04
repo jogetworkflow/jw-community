@@ -156,11 +156,12 @@
                         checkboxButton2="appCenter.label.updateApp"
                         checkboxCallback2="update"
                         searchItems="name|Name"
-                        fields="['id','label','description','version','plugintype']"
+                        fields="['id','label','description','version','plugintype','url']"
                         column1="{key: 'label', label: 'console.plugin.label.name', sortable: false, width: 180}"
-                        column2="{key: 'description', label: 'console.plugin.label.description', sortable: false, width: 300}"
-                        column3="{key: 'latestVersion', label: 'console.plugin.label.latestVersion', sortable: false, width: 140}"
-                        column4="{key: 'version', label: 'console.plugin.label.version', sortable: false, width: 140}"
+                        column2="{key: 'description', label: 'console.plugin.label.description', sortable: false, width: 200}"
+                        column3="{key: 'latestVersion', label: 'console.plugin.label.latestVersion', sortable: false, width: 100}"
+                        column4="{key: 'version', label: 'console.plugin.label.version', sortable: false, width: 100}"
+                        column5="{key: 'url', label: 'console.plugin.label.marketplaceUrl', sortable: false, width: 200}"
                         />
                 </div>
                 <c:if test="${hasConfigurablePlugin}">
