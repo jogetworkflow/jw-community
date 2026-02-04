@@ -51,6 +51,7 @@ import java.util.Date;
 import java.util.Dictionary;
 import java.util.Enumeration;
 import java.util.HashSet;
+import java.util.concurrent.locks.ReentrantReadWriteLock;
 import java.util.jar.JarEntry;
 import javax.servlet.http.HttpServletRequest;
 import org.apache.commons.collections.map.ListOrderedMap;
@@ -91,6 +92,8 @@ public class PluginManager implements ApplicationContextAware {
     protected final static String COMPLETED = "COMPLETED::";
     
     private FileAlterationMonitor monitor = null;
+    private final ReentrantReadWriteLock refreshLock = new ReentrantReadWriteLock(true);
+    private final ReentrantReadWriteLock pluginListLock = new ReentrantReadWriteLock(true);
     
     /**
      * Used by system to initialize Plugin manager
@@ -698,18 +701,41 @@ public class PluginManager implements ApplicationContextAware {
      */
     public Collection<Plugin> list(Class clazz) {
         // lookup in cache
+        Map<String, Plugin> pluginMap = getPluginsByClass(clazz);
+        return new ArrayList<>(pluginMap.values());
+    }
+
+    protected Map<String, Plugin> getPluginsByClass(Class<?> clazz) {
         Class classFilter = (clazz != null) ? clazz : Plugin.class;
         Map<String, Plugin> pluginMap = getCache().getPluginCache().get(classFilter);
         if (pluginMap == null) {
-            // load plugins
-            pluginMap = internalLoadPluginMap(clazz);
+            // the first thread gets write lock for single flight caching
+            if (pluginListLock.writeLock().tryLock()) {
+                try {
+                    // load plugins
+                    pluginMap = internalLoadPluginMap(clazz);
 
-            // store in cache
-            getCache().getPluginCache().put(classFilter, pluginMap);
+                    // store in cache
+                    getCache().getPluginCache().put(classFilter, pluginMap);
+                } finally {
+                    pluginListLock.writeLock().unlock();
+                }
+            } else {
+                // other threads wait and get from the cache again
+                pluginListLock.readLock().lock();
+                try {
+                    pluginMap = getCache().getPluginCache().get(classFilter);
+                    if (pluginMap == null) {
+                        // This should not happen, but handle gracefully
+                        pluginMap = internalLoadPluginMap(clazz);
+                        getCache().getPluginCache().put(classFilter, pluginMap);
+                    }
+                } finally {
+                    pluginListLock.readLock().unlock();
+                }
+            }
         }
-        Collection<Plugin> pluginList = new ArrayList<Plugin>();
-        pluginList.addAll(pluginMap.values());
-        return pluginList;
+        return pluginMap;
     }
 
     /**
@@ -1128,14 +1154,7 @@ public class PluginManager implements ApplicationContextAware {
      */
     public Plugin getPluginByTypeAndName(Class pluginType, String name) {
         if (pluginType != null && name != null && !name.isEmpty()) {
-            Map<String, Plugin> pluginMap = getCache().getPluginCache().get(pluginType);
-            if (pluginMap == null) {
-                // load plugins
-                pluginMap = internalLoadPluginMap(pluginType);
-
-                // store in cache
-                getCache().getPluginCache().put(pluginType, pluginMap);
-            }
+            Map<String, Plugin> pluginMap = getPluginsByClass(pluginType);
             
             Plugin plugin = pluginMap.get(name);
             if (plugin != null) {
