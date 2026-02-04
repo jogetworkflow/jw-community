@@ -310,6 +310,63 @@ UI = {
 
         return false; // Prevent default behavior
     },
+    offlineHandler: function() {
+        if (window.top === window.self) {
+
+            // Save previous URL before going offline for redirection purposes
+            if (!window.location.href.endsWith('/offline')) {
+                localStorage.setItem('previousUrl', window.location.href);
+            }
+            
+            $(window).on('load page_loaded', function() {
+                if (!window.location.href.endsWith('/offline')) {
+                    localStorage.setItem('previousUrl', window.location.href);
+                }
+            });
+            
+            // Make sure all the necessary libraries are loaded
+            window.addEventListener("load", function () {
+                Offline.options = {
+                    checkOnLoad: false,
+                    checks: {
+                        xhr: {
+                            url: PwaUtil.contextPath + '/images/favicon_uv.ico?m=testconnection&t=' + new Date().getTime(),
+                        }
+                    },
+                    interceptRequests: true,
+                    requests: false,
+                    reconnect: {
+                        initialDelay: 5,
+                        delay: 5
+                    }
+                };
+
+                Offline.on('confirmed-up', function () {
+                    const previousUrl = localStorage.getItem('previousUrl');
+                    const isOfflinePage = window.location.pathname.endsWith('/offline');
+
+                    function redirectTo(url) {
+                        window.location.href = url;
+                    }
+
+                    if (isOfflinePage){
+                        if ($(".x-tab").length > 0) {
+                            redirectTo(`${UI.base}/web/userview/${UI.userview_app_id}/${UI.userview_id}/_/_index`);
+                            return;
+                        }
+                        redirectTo((previousUrl !== null && previousUrl.includes(`${UI.base}/web/userview/${UI.userview_app_id}/${UI.userview_id}`)) ? previousUrl : `${UI.base}/web/userview/${UI.userview_app_id}/${UI.userview_id}`);   
+                    }
+                });
+
+                //Run a check every 5 seconds, in case, tomcat is down and suddenly goes online
+                setInterval(() => {
+                    if (Offline.state === 'up') {
+                        Offline.check();
+                    }
+                }, 5000);
+            });
+        }
+    },
     isValidInput: function(input) {
         if (input === null || input === "") return true;
         
