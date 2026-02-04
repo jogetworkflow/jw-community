@@ -904,14 +904,22 @@ body.rtl .label-top .selector_item{
     display: none;  /* Safari and Chrome */
 }
 .handsontable .file_delete {color:#EA5858; display:inline-block; margin:0 10px; cursor:pointer;}
-.handsontableInputHolder .handsontableEditor {height: auto !important; overflow: visible !important; position: relative !important; top: 0 !important;}
+.handsontableInputHolder .handsontableEditor {
+    height: auto !important; 
+    overflow: visible !important; 
+    position: relative !important; 
+    top: 0 !important;
+    width: auto !important;
+    min-width: 100%;
+}
 .handsontableInputHolder .handsontableEditor .ht_master .wtHolder {height: auto !important; max-height: 230px;}
 .form-cell .handsontable table td, .form-cell .handsontable table th, .subform-cell .handsontable table td, .subform-cell .handsontable table th {padding: 0 4px;}
 body.rtl .ht_clone_left, body.rtl .ht_clone_top, body.rtl .ht_clone_top_left_corner  { left: unset !important; right:0;}
 body.rtl .handsontable .htCore tr th:last-child, body.rtl .handsontable .htCore tr td:last-child {border-left-width:1px !important;}
 
 .ht_editor_visible .ht_master .wtHolder{
-    max-width: fit-content;
+    width: auto !important;
+    min-width: 100%;
     overflow-x: hidden;
 }
 

@@ -897,6 +897,8 @@ body.rtl .selector_element .selector_items {
     overflow: visible !important; 
     position: relative !important; 
     top: 0 !important;
+    width: auto !important; /* Add this */
+    min-width: 100%; /* Add this */
 }
 .handsontableInputHolder .handsontableEditor .ht_master .wtHolder {
     height: auto !important; 
@@ -940,7 +942,8 @@ body.rtl .handsontable .htCore tr td:last-child {
 }
 
 .ht_editor_visible .ht_master .wtHolder{
-    max-width: fit-content;
+    width: auto !important;
+    min-width: 100%;
     overflow-x: hidden;
 }
 
