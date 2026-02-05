@@ -1877,15 +1877,6 @@ body.mediumFontSize #form-canvas input + .numeric_field_controls > .numeric_fiel
     border-bottom: none;
 }
 @media (min-width: 768px) {
-    .form-element.multiPagedForm > .page-nav-panel.top > ul {
-        margin-bottom: 0;
-        display: flex;
-        overflow-x: auto;
-        white-space: nowrap;
-        scroll-behavior: smooth;
-        scrollbar-width: none;
-        -ms-overflow-style: none;
-    }
     .multiPagedForm .page-nav-panel .nav_item.current button,
     .multiPagedForm .page-nav-panel .nav_item button:hover,
     .multiPagedForm .page-nav-panel .nav_item button > span:focus-visible {
@@ -1951,14 +1942,13 @@ body.mediumFontSize #form-canvas input + .numeric_field_controls > .numeric_fiel
     outline: none;
 }
 
-.multiPagedForm .page-nav-panel .nav_item.current button {
-    padding-bottom: 0px;
-}
-
 @media (min-width: 769px) {
   .multiPagedForm .page-nav-panel .nav_item.current button > span {
+    border-color: var(--primary-text-color);
+  }
+  .multiPagedForm .page-nav-panel .nav_item button > span {
     padding-bottom: 7px;
-    border-bottom: 1px solid var(--primary-text-color);
+    border-bottom: 1px solid transparent;
   }
 }
 
