@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import org.apache.commons.collections.map.ListOrderedMap;
+import org.joget.apps.form.dao.FormDataDaoImpl;
 import org.joget.apps.form.service.FormUtil;
 import org.joget.workflow.model.WorkflowAssignment;
 import org.joget.workflow.model.WorkflowProcess;
@@ -110,6 +111,9 @@ public class FormData {
         if (property != null) {
             FormRowSet rowSet = getLoadBinderData(element);
             if (rowSet != null && !rowSet.isEmpty()) {
+                if (Character.isDigit(property.charAt(0)) || FormDataDaoImpl.RESERVED_KEYWORDS.contains(property.toLowerCase())) {
+                    property = "t__" + property;
+                }
                 FormRow firstRow = rowSet.get(0);
                 value = firstRow.getProperty(property);
             }
