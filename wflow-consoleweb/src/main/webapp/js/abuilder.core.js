@@ -141,6 +141,12 @@ AppBuilder = {
                 AppBuilder.view = "";
             }, 1500);
         }
+
+        // Ensure version warning check runs after builders are loaded
+        setTimeout(function(){
+            try { AppBuilder.showVersionWarning(); } catch (e) { /* swallow errors */ }
+        }, 200);
+
     },
     
     /*
@@ -1091,5 +1097,95 @@ AppBuilder = {
                 }
             );             
         }
+    },
+
+    /*
+     * Show version warning if not editing latest unpublished version
+     */
+    showVersionWarning: function () {
+        // Get current app ID and version from App Builder context
+        var appId = CustomBuilder.appId;
+        var currentVersion = CustomBuilder.appVersion;
+
+        // Fetch all versions of the current app
+        $.getJSON(
+            CustomBuilder.contextPath + '/web/json/console/app/' + appId + '/version/list',
+            function (resp) {
+                // Exit if API response is invalid or empty
+                if (!resp || !resp.data || !resp.data.length) return;
+
+                // Store the latest unpublished version
+                var latest = resp.data[0];
+                var latestVersion = resp.data[0].version;
+
+                // Find the latest version (latest)
+                for (var i = 0; i < resp.data.length; i++) {
+                    if (parseInt(resp.data[i].version) > parseInt(latestVersion)) {
+                        latest = resp.data[i];
+                        latestVersion = resp.data[i].version;
+                    }
+                }
+
+                // No latest found
+                if (!latest) return;
+
+                // User is on the latest version
+                if (latest.version === currentVersion) return;
+
+                // Remove existing version warning banner to avoid duplicates
+                $('#version-global-banner').remove();
+
+                // Create the warning banner with inline styles (fixed top-right)
+                var banner = $(
+                    '<div id="version-global-banner">' +
+
+
+                        '<div>' +
+
+                            // Warning indicator dot
+                            '<span id="version-warning-message"><i class="fas fa-exclamation-triangle"></i>' +
+
+                            // Warning message with version number
+                            '<strong>' + get_cbuilder_msg("abuilder.warning.version") + ':</strong>' + '<button id="dismiss-version-alert"><i class="las la-times"></i></button></span><span id="message">' + get_cbuilder_msg("abuilder.warning.version.message").replace("{0}", latest.version) + '<button id="open-latest-version-btn">' + get_cbuilder_msg("abuilder.warning.version.latest") + '</button>' + '</span>' +
+
+                        '</div>' +
+                    '</div>'
+                );
+
+                // Append the banner to the page
+                $('body').append(banner);
+
+                // Handle click on "Latest" button to navigate to newest version
+                $('#open-latest-version-btn').on('click', function () {
+                    $('#version-global-banner').remove();
+                    window.location.href =
+                        CustomBuilder.contextPath +
+                        '/web/console/app/' +
+                        appId +
+                        '/' +
+                        latest.version +
+                        '/builders';
+                });
+            }
+        ).fail(function(jqXHR, textStatus, errorThrown) {
+            var banner = $(
+                '<div id="version-global-banner" class="error">' +
+                    '<div>' +
+                        '<span id="version-warning-message"><i class="fas fa-exclamation-triangle"></i>' +
+                        '<strong>' + get_cbuilder_msg("abuilder.warning.version.error") + '</strong>' +  '<button id="dismiss-version-alert"><i class="las la-times"></i></button></span>' +
+                    '</div>' +
+                '</div>'
+            );
+
+            // Append the banner to the page
+            $('body').append(banner);
+        }).always(function() {
+            // Handle dismiss button to hide and remove the banner
+            $('#dismiss-version-alert').on('click', function () {
+                $('#version-global-banner').fadeOut(150, function () {
+                    $(this).remove();
+                });
+            });
+        });
     }
 };

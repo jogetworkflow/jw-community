@@ -40,6 +40,11 @@ body[builder-theme='dark'], body[system-theme='dark']{
     --theme-link-color-1: #6c757d;
     --theme-link-color-2: #AAAAAA;
     --theme-danger-color: #dc3545;
+
+    --theme-version-banner-bg-color: #242424;
+    --theme-version-banner-border-color: none;
+    --theme-version-banner-text-color: #FFFFFF;
+    --theme-version-dismiss-text-color: #FFFFFF;
 }  
 body {
     font-family: "Inter", sans-serif !important;
