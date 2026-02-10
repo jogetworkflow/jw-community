@@ -75,6 +75,17 @@
                         }
                         $('#value_editor').find(".CodeMirror-advanced-dialog").draggable()
                     },
+                    "Cmd-F": function(cm) {
+                        cm.execCommand("replace")
+                        $('#value_editor').find(".CodeMirror-advanced-dialog").css({display: 'block'})
+                        if (codeeditor.getOption("fullScreen")){
+                            $('#value_editor').find(".CodeMirror-advanced-dialog").css({position:"fixed", zIndex:"2147483647", top: "0px", left:"50%"})
+                        }
+                        else{
+                            $('#value_editor').find(".CodeMirror-advanced-dialog").css({position:"fixed", top:"100px", zIndex:"10", left:"50%"});
+                        }
+                        $('#value_editor').find(".CodeMirror-advanced-dialog").draggable()
+                    },
                     "Ctrl-=": function(cm) {
                       cm.increaseFontSize();
                     },

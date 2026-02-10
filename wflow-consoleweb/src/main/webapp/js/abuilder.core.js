@@ -643,7 +643,17 @@ AppBuilder = {
                                         if ($("body #top-panel").length > 0){
                                             offsetTop = $("body #top-panel").outerHeight() + "px"
                                         }
-                                        
+
+                                        $codeDetail.find(".CodeMirror-advanced-dialog").draggable()
+                                    },
+                                    "Cmd-F": function(cm) {
+                                        cm.execCommand("find")
+                                        $codeDetail.find(".CodeMirror-advanced-dialog").css({display: 'block'})
+                                        var offsetTop = "0px"
+                                        if ($("body #top-panel").length > 0){
+                                            offsetTop = $("body #top-panel").outerHeight() + "px"
+                                        }
+
                                         $codeDetail.find(".CodeMirror-advanced-dialog").draggable()
                                     },
                                     "Ctrl-=": function(cm) {

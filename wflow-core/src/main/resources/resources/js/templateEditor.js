@@ -238,6 +238,21 @@
                   }
                   $('#' + thisObj.id).find(".CodeMirror-advanced-dialog").draggable()
                 },
+                "Cmd-F": function(cm) {
+                  cm.execCommand("replace")
+                  $('#' + thisObj.id).find(".CodeMirror-advanced-dialog").css({display: 'block'})
+                  var offsetTop = "0px"
+                  if ($("body #top-panel").length > 0){
+                    offsetTop = $("body #top-panel").outerHeight() + "px"
+                  }
+                  if (thisObj.codeeditor.getOption("fullScreen")){
+                    $('#' + thisObj.id).find(".CodeMirror-advanced-dialog").css({position:"fixed", zIndex:"2147483647", top: offsetTop, left:"calc(100%% - 320px)"});
+                  }
+                  else{
+                    $('#' + thisObj.id).find(".CodeMirror-advanced-dialog").css({position:"fixed", top:"0", left:"calc(100%% - 320px)", zIndex:"999", marginTop:"150px"});
+                  }
+                  $('#' + thisObj.id).find(".CodeMirror-advanced-dialog").draggable()
+                },
                 "Ctrl-=": function(cm) {
                   cm.increaseFontSize();
                 },
