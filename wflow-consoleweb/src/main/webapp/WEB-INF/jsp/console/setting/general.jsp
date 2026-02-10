@@ -786,18 +786,6 @@
 </div>
 
 <script>
-    //masterLoginHash
-    var loginHashDeliminator = '<%= org.joget.directory.model.User.LOGIN_HASH_DELIMINATOR %>';
-    if($('#masterLoginPassword').val() != '' && $('#masterLoginUsername').val() != ''){
-	    getLoginHash($('#masterLoginUsername').val(), $('#masterLoginPassword').val());
-    }
-    $('#masterLoginUsername, #masterLoginPassword').keyup(function(){
-        if($('#masterLoginPassword').val() != '' && $('#masterLoginUsername').val() != ''){
-            getLoginHash($('#masterLoginUsername').val(), $('#masterLoginPassword').val());
-        }else{
-            $('#masterLoginHash').text("-");
-        }
-    });
     function getLoginHash(username, password) {
         var callback = {
             success : function(o) {
@@ -813,6 +801,18 @@
         ConnectionManager.post('${pageContext.request.contextPath}/web/console/setting/general/loginHash', callback, params);
     }
     $(document).ready(function() {
+        //masterLoginHash
+        var loginHashDeliminator = '<%= org.joget.directory.model.User.LOGIN_HASH_DELIMINATOR %>';
+        if($('#masterLoginPassword').val() != '' && $('#masterLoginUsername').val() != ''){
+            getLoginHash($('#masterLoginUsername').val(), $('#masterLoginPassword').val());
+        }
+        $('#masterLoginUsername, #masterLoginPassword').keyup(function(){
+            if($('#masterLoginPassword').val() != '' && $('#masterLoginUsername').val() != ''){
+                getLoginHash($('#masterLoginUsername').val(), $('#masterLoginPassword').val());
+            }else{
+                $('#masterLoginHash').text("-");
+            }
+        });
         const savedMessage = localStorage.getItem('showFormSavedMessage');
         if (savedMessage) {
             UI.showConsoleToast(0, '<fmt:message key="general.label.savedMessage"/>', "fas fa-check-circle", 2000, $("div#main"));
