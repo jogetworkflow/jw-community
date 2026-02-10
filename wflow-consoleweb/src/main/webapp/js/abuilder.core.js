@@ -307,7 +307,11 @@ AppBuilder = {
                 },
                 success: function(response) {
                     if (response !== undefined && response.update !== undefined && response.update.length > 0) {
-                        $(".canvas-header").prepend('<div class="alert alert-warning error updateplugin" role="alert">'+get_cbuilder_msg('cbuilder.seamless.marketplace.updateAvailable')+'<ul></ul></div>');
+                        let updateMsg = get_cbuilder_msg('cbuilder.seamless.marketplace.updateAvailable');
+                        if (response.update.length > 1) {
+                            updateMsg = get_cbuilder_msg('cbuilder.seamless.marketplace.updatesAvailable');
+                        }
+                        $(".canvas-header").prepend('<div class="alert alert-warning error updateplugin" role="alert">'+updateMsg+'<ul></ul></div>');
                         for (var i in response.update) {
                             $(".canvas-header .updateplugin ul").append('<li>'+response.update[i]+'</li>');
                         }
