@@ -11,7 +11,8 @@
             o.postfix = o.postfix || "";
             
             var incrementDecrementValue = function(text, incrDecrValue) {
-                var sum = 0;
+                var sum = new BigNumber(0);
+                
                 if (text !== "") {
                     var regexDecimalSeperator = "\\\.";
                     var regexThousandSeparator = ",";
@@ -30,10 +31,10 @@
                         number = number.replace(o.postfix, "");
                     }
                     
-                    sum = parseFloat(number);
+                    sum = new BigNumber(number);
                 }
-                
-                sum = (sum + incrDecrValue).toFixed(o.numOfDecimal);
+
+                sum = sum.plus(incrDecrValue).toFixed(parseInt(o.numOfDecimal));
                 
                 //If euro, use , as decimal
                 if (o.format === "euro"){
@@ -45,6 +46,7 @@
             };
             
             var initField = function(element) {
+                $(element).off("change").off("blur").off("focusout")
                 var controls = $(element).next('.numeric_field_controls');
                 
                 $(controls).find('a').off('click').on("click", function(){
@@ -68,6 +70,7 @@
                     var output = incrementDecrementValue($(element).val(), incrDecrValue);
                     
                     var formatted = FormUtil.numberFormat(output, o);
+
                     $(element).val(formatted).trigger("change");
                 });
             };

@@ -47,6 +47,7 @@
         <css>/js/tooltipster/css/tooltipster.bundle.min.css</css>
         <js>/js/tablesaw/tablesaw.stackonly.js</js>
         <js>/js/tooltipster/js/tooltipster.bundle.min.js</js>
+        <js>/js/json/bignumber.js</js>
         <js>/js/json/formUtil.js</js>
         <js>classpath:resources/js/jquery.custom.datepicker.js</js>
         <js>classpath:resources/js/jquery.dynamicoptions.js</js>
