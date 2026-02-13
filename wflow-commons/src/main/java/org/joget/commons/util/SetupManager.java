@@ -2,14 +2,12 @@ package org.joget.commons.util;
 
 import org.joget.commons.spring.model.Setting;
 
-import javax.cache.Cache;
-import javax.cache.CacheManager;
 import java.io.File;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.TimeoutException;
 
 /**
  * Service method used to manage system settings
@@ -165,12 +163,11 @@ public class SetupManager {
     public Setting getSettingByProperty(String property) {
         if (cache != null) {
             return cache.get(property);
-        } else {
-            Collection<Setting> result = getSetupDao().find("WHERE property = ?",
-                    new String[]{property},
-                    null, null, null, null);
-            return (result.isEmpty()) ? null : result.iterator().next();
         }
+        Collection<Setting> result = getSetupDao().find("WHERE property = ?",
+                new String[]{property},
+                null, null, null, null);
+        return (result.isEmpty()) ? null : result.iterator().next();
     }
 
     /**
