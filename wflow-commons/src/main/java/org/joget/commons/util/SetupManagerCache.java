@@ -20,6 +20,7 @@ public class SetupManagerCache {
     private static final ConcurrentMap<String, Long> CACHE_LAST_UPDATED = new ConcurrentHashMap<>();
     private static final ConcurrentMap<String, Long> CACHE_LAST_CHECKED = new ConcurrentHashMap<>();
     private static final ConcurrentMap<String, CompletableFuture<Void>> PROFILE_IS_REFRESHING = new ConcurrentHashMap<>();
+    private static final ThreadLocal<Boolean> THREAD_IS_REFRESHING = ThreadLocal.withInitial(() -> false);
 
     /**
      * Cache mapping: {@code Profile string -> ConcurrentMap<String, Setting>}.
@@ -104,29 +105,40 @@ public class SetupManagerCache {
 
         // Single flight caching of CompletableFuture to execute refreshCacheFromDataSource
         // The refresh will only run once if multiple threads access the same key while the refresh is running.
+        // However, if the same thread reenters, throw an exception to be handled by caller
+        if (THREAD_IS_REFRESHING.get()) {
+            CompletableFuture<Void> cf = new CompletableFuture<>();
+            cf.completeExceptionally(new IllegalThreadStateException("Current thread is refreshing"));
+            return cf;
+        }
+
         CompletableFuture<Void> future = new CompletableFuture<>();
         CompletableFuture<Void> result = PROFILE_IS_REFRESHING.putIfAbsent(profile, future);
         if (result != null) {
             return result; // another thread is already refreshing
         }
 
+        boolean inCache = cache.isKeyInCache(profile);
         Runnable refresh = () -> {
             try {
+                // mark this thread as refreshing to prevent self-deadlock
+                THREAD_IS_REFRESHING.set(true);
                 long cacheLastUpdated = CACHE_LAST_UPDATED.getOrDefault(profile, 0L);
                 long tableLastUpdated = getTableModifiedTimestamp();
                 if (!debounce || tableLastUpdated > cacheLastUpdated) {
-                    refreshCacheFromDataSource(profile);
+                    // on server startup it is not yet cached, so we do not check setting changes
+                    refreshCacheFromDataSource(profile, inCache);
                 }
                 future.complete(null);
             } catch (Exception e) {
                 future.completeExceptionally(e);
             } finally {
                 PROFILE_IS_REFRESHING.remove(profile, future);
+                THREAD_IS_REFRESHING.remove();
             }
         };
 
         // if NOT in cache, refresh synchronously, else asynchronously
-        boolean inCache = cache.isKeyInCache(profile);
         if (!inCache) {
             refresh.run();
         } else {
@@ -140,8 +152,11 @@ public class SetupManagerCache {
 
     /**
      * Refresh cache from the datasource
+     *
+     * @param profile             the profile key
+     * @param checkSettingChanges whether to check for setting changes
      */
-    private void refreshCacheFromDataSource(String profile) {
+    private void refreshCacheFromDataSource(String profile, boolean checkSettingChanges) {
         assertProfileNotNull(profile);
         LogUtil.debug(getClass().getName(), "Refreshing setup cache for " + profile);
 
@@ -164,7 +179,9 @@ public class SetupManagerCache {
         // since we updated cache, reset last checked timer so it will not check again soon
         CACHE_LAST_CHECKED.put(profile, now);
 
-        getSetupManagerHelper().checkSettingChanges(settingMap);
+        if (checkSettingChanges) {
+            getSetupManagerHelper().checkSettingChanges(settingMap);
+        }
     }
 
     /**
@@ -189,9 +206,20 @@ public class SetupManagerCache {
             // wait synchronously and get refreshed value from cache
             if (element == null) {
                 try {
-                    refreshed.get();
+                    refreshed.get(5, TimeUnit.SECONDS);
                 } catch (Exception e) {
-                    throw new RuntimeException(e);
+                    // if current thread is refreshing or timeout, we get it directly from database
+                    if (e instanceof TimeoutException || e.getCause() instanceof IllegalThreadStateException) {
+                        if (LogUtil.isDebugEnabled(getClass().getName()) || LogUtil.isDebugEnabled(SetupManager.class.getName())) {
+                            LogUtil.error(getClass().getName(), e, Thread.currentThread().getName() + " -- error getting property " + property + " for profile " + profile);
+                        }
+                        Collection<Setting> result = getSetupDao().find("WHERE property = ?",
+                                new String[]{property},
+                                null, null, null, null);
+                        return (result.isEmpty()) ? null : result.iterator().next();
+                    } else {
+                        throw new RuntimeException(e);
+                    }
                 }
                 element = cache.get(profile);
             }
@@ -238,10 +266,17 @@ public class SetupManagerCache {
         Element element = cache.get(profile);
         if (element == null) {
             try {
-                // forcefully refresh cache
-                refreshCacheInternal(profile, false).get();
+                refreshCacheInternal(profile, false).get(5, TimeUnit.SECONDS);
             } catch (Exception e) {
-                throw new RuntimeException(e);
+                // if current thread is refreshing or timeout, we refresh it directly from database
+                if (e instanceof TimeoutException || e.getCause() instanceof IllegalThreadStateException) {
+                    if (LogUtil.isDebugEnabled(getClass().getName()) || LogUtil.isDebugEnabled(SetupManager.class.getName())) {
+                        LogUtil.error(getClass().getName(), e, Thread.currentThread().getName() + " -- error updating cache for profile " + profile);
+                    }
+                    refreshCacheFromDataSource(profile, false);
+                } else {
+                    throw new RuntimeException(e);
+                }
             }
         }
         element = cache.get(profile);

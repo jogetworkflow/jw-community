@@ -163,12 +163,11 @@ public class SetupManager {
     public Setting getSettingByProperty(String property) {
         if (cache != null) {
             return cache.get(property);
-        } else {
-            Collection<Setting> result = getSetupDao().find("WHERE property = ?",
-                    new String[]{property},
-                    null, null, null, null);
-            return (result.isEmpty()) ? null : result.iterator().next();
         }
+        Collection<Setting> result = getSetupDao().find("WHERE property = ?",
+                new String[]{property},
+                null, null, null, null);
+        return (result.isEmpty()) ? null : result.iterator().next();
     }
 
     /**
