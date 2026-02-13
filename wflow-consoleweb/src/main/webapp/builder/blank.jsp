@@ -43,7 +43,8 @@
             JPopup.tokenValue = "<%= SecurityUtil.getCsrfTokenValue(request) %>";
             UI.msg = {
                 "ok" : "<ui:msgEscJS key="general.method.label.ok"/>",
-                "cancel" : "<ui:msgEscJS key="general.method.label.cancel"/>"
+                "cancel" : "<ui:msgEscJS key="general.method.label.cancel"/>",
+                "loading" : "<ui:msgEscJS key="console.blockUI.loading"/>"
             };
         </script>
     </head>

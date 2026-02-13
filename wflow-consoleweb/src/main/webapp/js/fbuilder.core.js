@@ -1181,15 +1181,7 @@ FormBuilder = {
                     }
                     
                     function markIndexes(indexes) {
-                        $.blockUI({ css: { 
-                            border: 'none', 
-                            padding: '15px', 
-                            backgroundColor: '#000', 
-                            '-webkit-border-radius': '10px', 
-                            '-moz-border-radius': '10px', 
-                            opacity: .3, 
-                            color: '#fff' 
-                        }, message : '<i class="las la-spinner la-3x la-spin" style="opacity:0.3"></i>' }); 
+                        UI.blockUI();
                         $.ajax({
                             type: "POST",
                             data: {

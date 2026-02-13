@@ -40,15 +40,7 @@
                       />
         <script>
             function showLoading() {
-                parent.$.blockUI({ css: { 
-                    border: 'none', 
-                    padding: '15px', 
-                    backgroundColor: '#000', 
-                    '-webkit-border-radius': '10px', 
-                    '-moz-border-radius': '10px', 
-                    opacity: .3, 
-                    color: '#fff' 
-                }, message : "<i class='icon-spinner icon-spin icon-2x fas fa-spinner fa-spin fa-2x'></i>" });                    
+                UI.blockUI();                 
             }
 
             function newVersion(version){

@@ -958,3 +958,20 @@ body.dark-mode .dialog-swal-popup{
     background: var(--theme-background);
     color: var(--theme-font-color);
 }
+
+/* UI Block CSS for dark mode */
+body.dark-mode .blockOverlay{
+    background-color: var(--theme-background) !important;
+    opacity: 0.6 !important;
+}
+body.dark-mode .blockMsg{
+    background: var(--theme-background) !important;
+    color: var(--theme-font-color) !important;
+}
+body.dark-mode .jgt-spin-section .jgt-dot-spinner div {
+    background: var(--theme-font-color);
+}
+body.dark-mode .jgt-spin-description {
+    color: var(--theme-font-color);
+    text-shadow: 0 0px 5px var(--theme-font-color);
+}

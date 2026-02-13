@@ -484,14 +484,6 @@ GovernanceUtil = {
     },
     
     blockUI() {
-        $.blockUI({ css: { 
-            border: 'none', 
-            padding: '15px', 
-            backgroundColor: '#000', 
-            '-webkit-border-radius': '10px', 
-            '-moz-border-radius': '10px', 
-            opacity: .3, 
-            color: '#fff' 
-        }, message : "<h1><i class=\"fas fa-spinner fa-spin\"></i></h1>" });
+        UI.blockUI();
     }
 };

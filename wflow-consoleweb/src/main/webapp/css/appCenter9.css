@@ -3238,6 +3238,16 @@ body .renew-banner .mobile-view {
         width: 50px;
     }
 }
+.login-form-5 p,
+.login-form-5 label{
+    font-weight: 500 !important;
+}
+.jgt-spin-section .jgt-dot-spinner div{
+    background: #009265;
+}
+.jgt-spin-description{
+    color: #009265;
+}
 body.rtl #bannerLabel,
 body.rtl .InformationTileComponent .header-title,
 body.rtl#admin .HeadingComponent{

@@ -7,7 +7,8 @@ UI = {
    theme: '',
    msg: {
        'ok' : 'OK',
-       'cancel' : 'Cancel'
+       'cancel' : 'Cancel',
+       'loading' : 'Loading'
    },
 
     getFunction: function(name) {
@@ -201,16 +202,53 @@ UI = {
 
         }, 100); 
     },
-    blockUI : function() {
-        $.blockUI({ css: { 
-            border: 'none', 
-            padding: '15px', 
-            backgroundColor: 'transparent', 
-            '-webkit-border-radius': '10px', 
-            '-moz-border-radius': '10px', 
-            opacity: 0.8, 
-            color: '#fff' 
-        }, message : '<i class="fas fa-spin fa-spinner fa-3x"></i>' }); 
+    blockUI: function (opts = {}) {
+        let color = '#1677ff';
+
+        // Extract message override (if any)
+        const messageText = opts.message || UI.msg['loading'];
+        // Base template (message container)
+        const template =
+                '<div class="jgt-spin-section">' +
+                '<div class="jgt-dot-spinner-wrapper">' +
+                '<div class="jgt-dot-spinner">' +
+                '<div></div><div></div><div></div><div></div>' +
+                '</div>' +
+                '</div>' +
+                '<div class="jgt-spin-description">' + messageText + '</div>' +
+                '</div>';
+        // Remove message from opts so it doesn't overwrite the template
+        if (opts.message) {
+            delete opts.message;
+        }
+
+        const defaultOptions = {
+            css: {
+                border: 'none',
+                padding: '25px',
+                width: 'unset',
+                height: 'unset',
+                'min-height': '130px',
+                'min-width': '130px',
+                left: '50%',
+                top: '50%',
+                color: color,
+                transform: 'translate(-50%, -50%)',
+                backgroundColor: '#fbfbfb',
+                opacity: 1,
+                'box-shadow': '0 2px 10px rgba(0,0,0,0.08)'
+            },
+            overlayCSS: {
+                backgroundColor: '#FFF',
+                opacity: 0.5
+            },
+            message: template,
+            baseZ: 1001
+        };
+
+        const finalOptions = $.extend(true, {}, defaultOptions, opts);
+
+        $.blockUI(finalOptions);
     },
     unblockUI : function() {
         $.unblockUI();

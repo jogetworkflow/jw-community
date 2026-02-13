@@ -3889,6 +3889,22 @@ body[builder-theme='dark'] .dialog-swal-popup{
     background: var(--theme-primary-color-3);
     color: var(--theme-label-color-1);
 }
+/* UI Block CSS for dark theme */
+body[builder-theme='dark'] .blockOverlay{
+    background-color: var(--theme-primary-color-1) !important;
+    opacity: 0.6 !important;
+}
+body[builder-theme='dark'] .blockMsg{
+    background: var(--theme-primary-color-3) !important;
+    color: var(--theme-label-color-1) !important;
+}
+body[builder-theme='dark'] .jgt-spin-section .jgt-dot-spinner div{
+    background: var(--theme-label-color-1);
+}
+body[builder-theme='dark'] .jgt-spin-description {
+    color: var(--theme-label-color-1);
+    text-shadow: 0 0px 5px var(--theme-label-color-1);
+}
 body[builder-theme].rtl .flexigrid div.nBtn,
 body[system-theme].rtl .flexigrid div.nBtn{
     height: 42px !important;

@@ -247,15 +247,7 @@
             }
         }
         function blockUi() {
-            $.blockUI({ css: { 
-                border: 'none', 
-                padding: '15px', 
-                backgroundColor: '#000', 
-                '-webkit-border-radius': '10px', 
-                '-moz-border-radius': '10px', 
-                opacity: .3, 
-                color: '#fff' 
-            }, message : "<i class='icon-spinner icon-spin icon-2x fas fa-spinner fa-spin fa-2x'></i>" }); 
+            UI.blockUI();
         }
         function populatePluginProperties(className, element) {
             if ($("#pluginConfig > .pluginConfigEditor").data("classname") === className) {
@@ -330,16 +322,7 @@
         
         $(function() {
             $("body").on("submit", "form.cblockui", function(){
-                $.blockUI({ css: { 
-                    border: 'none', 
-                    padding: '15px', 
-                    backgroundColor: 'transparent', 
-                    '-webkit-border-radius': '10px', 
-                    '-moz-border-radius': '10px', 
-                    opacity: 0.8, 
-                    color: '#fff',
-                    'text-align': 'center'
-                }, message : '<i class="fas fa-spin fa-spinner fa-3x"></i><br/><h3><ui:msgEscJS key="console.app.create.loadingMessage"/></h3>' }); 
+                UI.blockUI({message : '<ui:msgEscJS key="console.app.create.loadingMessage"/>' }); 
                 return true;
             });
             

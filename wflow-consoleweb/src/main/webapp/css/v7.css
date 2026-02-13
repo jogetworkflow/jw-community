@@ -1314,6 +1314,22 @@ body[system-theme='dark'] .chosen-container-multi .chosen-choices {
 body[system-theme] input.no-manual-input {
     background-color: var(--console-secondary-background-color);
 }
+/* UI Block CSS for dark theme*/
+body[system-theme='dark'] .blockOverlay{
+    background-color: var(--theme-primary-color-1) !important;
+    opacity: 0.6 !important;
+}
+body[system-theme='dark'] .blockMsg{
+    background: var(--theme-primary-color-3) !important;
+    color: var(--theme-label-color-1) !important;
+}
+body[system-theme='dark'] .jgt-spin-section .jgt-dot-spinner div{
+    background: var(--theme-label-color-1);
+}
+body[system-theme='dark'] .jgt-spin-description {
+    color: var(--theme-label-color-1);
+    text-shadow: 0 0px 5px var(--theme-label-color-1);
+}
 /*  */
 fieldset legend,
 .main-body-content-subheader,

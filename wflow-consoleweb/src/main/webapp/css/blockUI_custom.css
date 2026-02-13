@@ -1,0 +1,76 @@
+:root{
+    --jgt-btn-colorPrimary: var(--jgt-link-color);
+}
+
+.jgt-spin-section{
+    position: relative;
+    z-index: 1;
+    display: flex;
+    align-items: center;
+    flex-direction: column;
+    gap: 15px;
+}
+.jgt-spin-description{
+    font-size: 15px;
+}
+/* container that rotates */
+.jgt-dot-spinner-wrapper {
+    width: 40px;
+    height: 40px;
+    margin: auto;
+    animation: rotate 1.3s linear infinite;
+}
+/* 2x2 dot layout */
+.jgt-dot-spinner {
+    width: 100%;
+    height: 100%;
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 6px;
+}
+.jgt-dot-spinner div {
+    width: 14px;
+    height: 14px;
+    background: #1677ff;
+    border-radius: 100%;
+    animation: blink 2s infinite ease-in-out;
+}
+/* staggered fade timing */
+.jgt-dot-spinner div:nth-child(1) {
+    animation-delay: 0s;
+}
+.jgt-dot-spinner div:nth-child(2) {
+    animation-delay: 0.15s;
+}
+.jgt-dot-spinner div:nth-child(3) {
+    animation-delay: 0.3s;
+}
+.jgt-dot-spinner div:nth-child(4) {
+    animation-delay: 0.45s;
+}
+@keyframes blink {
+    0%, 100% {
+        opacity: 0.3;
+    }
+    50% {
+        opacity: 1;
+    }
+}
+@keyframes rotate {
+    0% {
+        transform: rotate(0deg);
+    }
+    100% {
+        transform: rotate(360deg);
+    }
+}
+.blockUI.blockMsg {
+    box-sizing: border-box;
+    border-radius: 8px;
+}
+.jgt-spin-section .jgt-dot-spinner div{
+    background: var(--jgt-btn-colorPrimary, var(--console-button-primary-bg, #009265));
+}
+.jgt-spin-description{
+    color: var(--jgt-btn-colorPrimary, var(--console-button-primary-bg, #009265));
+}

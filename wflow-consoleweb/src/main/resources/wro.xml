@@ -18,6 +18,7 @@
         <css>/js/guiders/guiders-1.1.1.css</css>
         <css>/js/boxy/stylesheets/boxy.css</css>
         <css>/css/admin_bar.css</css>
+        <css>/css/blockUI_custom.css</css>
         <css>/js/tablesaw/tablesaw.stackonly.css</css>
         <css>/js/chosen/chosen.css</css>
         <css>/js/tooltipster/css/tooltipster.bundle.min.css</css>
