@@ -268,20 +268,20 @@ public class DataListDecorator extends CheckboxTableDecorator {
                     confirmation = "";
                 }
                 confirmation = StringUtil.stripAllHtmlTag(confirmation);
-                targetString = " onclick=\"return dlPopupAction(this, '" + StringUtil.escapeString(confirmation, StringUtil.TYPE_JAVASCIPT, null) + "')\"";
+                targetString = " onclick=\"return dlPopupAction(this, '" + StringUtil.escapeString(confirmation, StringUtil.TYPE_JAVASCIPT + ";" + StringUtil.TYPE_HTML, null) + "')\"";
             } else if (target != null && "post".equalsIgnoreCase(target)) {
                 if (confirmation == null) {
                     confirmation = "";
                 }
                 confirmation = StringUtil.stripAllHtmlTag(confirmation);
-                targetString = " onclick=\"return dlPostAction(this, '" + StringUtil.escapeString(confirmation, StringUtil.TYPE_JAVASCIPT, null) + "')\"";
+                targetString = " onclick=\"return dlPostAction(this, '" + StringUtil.escapeString(confirmation, StringUtil.TYPE_JAVASCIPT + ";" + StringUtil.TYPE_HTML, null) + "')\"";
             } else {
                 if (target != null && target.trim().length() > 0) {
                     targetString = " target=\"" + StringUtil.escapeString(target, StringUtil.TYPE_HTML, null) + "\"";
                 }
                 if (confirmation != null && confirmation.trim().length() > 0) {
                     confirmation = StringUtil.stripAllHtmlTag(confirmation);
-                    confirmationString = " onclick=\"return confirm('" + StringUtil.escapeString(confirmation, StringUtil.TYPE_JAVASCIPT, null) + "')\"";
+                    confirmationString = " onclick=\"return confirm('" + StringUtil.escapeString(confirmation, StringUtil.TYPE_JAVASCIPT + ";" + StringUtil.TYPE_HTML, null) + "')\"";
                 }
             }
             if (StringUtil.stripAllHtmlTag(text).isEmpty()) {
