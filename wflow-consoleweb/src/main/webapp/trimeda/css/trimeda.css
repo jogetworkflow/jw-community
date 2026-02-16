@@ -2489,6 +2489,16 @@ body.rtl .accordion .card-header::after {
         display: flex;
         justify-content: flex-end;
     }
+
+    #section-actions > .form-column{
+        flex-wrap: wrap;
+    }
+}
+
+@media screen and (max-width: 490px) {
+    #section-actions > .form-column > .form-cell{  
+        margin-top: 0.5rem;
+    }
 }
 
 @media screen and (min-width: 768px) {
@@ -2879,4 +2889,9 @@ body.rtl [class*=-selection].dropdown .dropdown-menu #dropdown-title {
 
 body.rtl [class*=-selection].dropdown .dropdown-menu li {
     text-align: right;
+}
+
+body.rtl .form-column-horizontal > .form-cell + .form-cell {
+    margin-right: 10px;
+    margin-left: 0;
 }
