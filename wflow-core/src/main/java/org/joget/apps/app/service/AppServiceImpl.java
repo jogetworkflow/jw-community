@@ -2290,6 +2290,7 @@ public class AppServiceImpl implements AppService {
                 return null;
             }
             AppDefinition prevAppDef = appDefinitionDao.loadVersion(appId, previousVersion);
+            AppUtil.setCurrentAppDefinition(prevAppDef);
             prevAppDef.setPublished(Boolean.FALSE);
             appDefinitionDao.saveOrUpdate(prevAppDef);
         }
@@ -2304,6 +2305,7 @@ public class AppServiceImpl implements AppService {
             appDef = appDefinitionDao.loadVersion(appId, versionLong);
         }
         if (appDef != null) {
+            AppUtil.setCurrentAppDefinition(appDef);
             appDef.setPublished(Boolean.TRUE);
             appDefinitionDao.saveOrUpdate(appDef);
         }
@@ -2320,6 +2322,7 @@ public class AppServiceImpl implements AppService {
         AppDefinition prevAppDef = getPublishedAppDefinition(appId);
         // unset previous published version
         if (prevAppDef != null) {
+            AppUtil.setCurrentAppDefinition(prevAppDef);
             prevAppDef.setPublished(Boolean.FALSE);
             appDefinitionDao.saveOrUpdate(prevAppDef);
         }
