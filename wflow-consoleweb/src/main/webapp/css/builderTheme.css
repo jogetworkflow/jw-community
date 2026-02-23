@@ -913,6 +913,10 @@ body[builder-theme] .chosen-container .chosen-results li {
     margin: 0 3px;
     margin-right: 5px;
 }
+body[builder-theme] .chosen-container .chosen-results li.no-results {
+    background: var(--theme-primary-color-3);
+}
+
 body[builder-theme] .chosen-results::-webkit-scrollbar {
     width: 3px;
 }
