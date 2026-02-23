@@ -77,4 +77,12 @@
 #content .form-section.no_label>.form-column:nth-child(2):last-child>.subform-cell:first-child:last-child>.subform-container.no-frame>.subform-section+.subform-section:not(.no_label):before {
     background-color: var(--theme-content-background, #ffffff);
 }
+
+/* Fix for spreadsheet being blocked by subform-section sibling */
+.form-column>.form-cell>.subform-container>.subform-section:has(.spreadsheet), 
+.form-column>.subform-cell>.subform-container>.subform-section:has(.spreadsheet),
+.form-column>.form-cell>.subform-container>.subform-section:has(.chosen-container.chosen-with-drop), 
+.form-column>.subform-cell>.subform-container>.subform-section:has(.chosen-container.chosen-with-drop){
+    z-index: 3;
+}
 /* End of Form Section Styling */
