@@ -6666,9 +6666,9 @@ window._CustomBuilder.Builder = {
             var props = self.parseElementProps(elementObj);
             if (props.tagName !== undefined && props.tagName !== "") {
                 var newTemp = document.createElement(props.tagName);
-                attributes = temp[0].attributes;
+                let attributes = temp[0].attributes;
                 let len;
-                for (i = 0, len = attributes.length; i < len; i++) {
+                for (let i = 0, len = attributes.length; i < len; i++) {
                     newTemp.setAttribute(attributes[i].nodeName, attributes[i].nodeValue);
                 }
                 temp = $(newTemp);
