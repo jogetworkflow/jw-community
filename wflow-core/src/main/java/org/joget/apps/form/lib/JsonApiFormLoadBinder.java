@@ -106,7 +106,13 @@ public class JsonApiFormLoadBinder extends FormBinder implements FormLoadBinder,
                 }
             }
         } else {
-            r.putAll(object);
+            for (Object o : object.keySet()) {
+                String key = (String) o;
+                Object value = object.get(key);
+                if (value != null) {
+                    r.put(key, value.toString());
+                }
+            }
         }
         
         String idField = getPropertyString("primaryKey");

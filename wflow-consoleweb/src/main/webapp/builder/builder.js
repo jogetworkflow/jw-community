@@ -1317,7 +1317,16 @@ window._CustomBuilder = {
      */
     updateFromJson: function() {
         var json = $('#cbuilder-json').val();
-        if (CustomBuilder.getJson() !== json) {
+        var currentJson = CustomBuilder.getJson();
+        // Normalize JSON for comparison to handle formatting differences
+        var normalizedJson = json;
+        var normalizedCurrent = currentJson;
+        try {
+            normalizedJson = JSON.stringify(JSON.decode(json));
+            normalizedCurrent = JSON.stringify(JSON.decode(currentJson));
+        } catch(e) {
+        }
+        if (normalizedCurrent !== normalizedJson) {
             CustomBuilder.loadJson(json, true); //need to save a copy in undo
         }
         return false;
@@ -3491,6 +3500,9 @@ window._CustomBuilder = {
      */
     isSaved : function(){
         var hasChange = false;
+        var currentJson = $('#cbuilder-json').val();
+        var originalJson = $('#cbuilder-json-original').val();
+        var savedJson = CustomBuilder.savedJson;
         
         if ($("body").hasClass("property-editor-right-panel") && !$("body").hasClass("no-right-panel")) {
             $(".element-properties .property-editor-container").each(function() {
@@ -3500,9 +3512,20 @@ window._CustomBuilder = {
                 }
             });
         }
-        
-        if(((CustomBuilder.savedJson !== undefined && CustomBuilder.savedJson === $('#cbuilder-json').val()) ||
-            ($('#cbuilder-json-original').val() === $('#cbuilder-json').val())) && !hasChange){
+
+
+        // Normalize JSON for comparison to handle formatting differences
+        try {
+            currentJson = JSON.stringify(JSON.decode(currentJson));
+            originalJson = JSON.stringify(JSON.decode(originalJson));
+            if (savedJson !== undefined) {
+                savedJson = JSON.stringify(JSON.decode(savedJson));
+            }
+        } catch(e) {
+            // Use original strings if parsing fails
+        }
+
+        if(((savedJson !== undefined && savedJson === currentJson) || (originalJson === currentJson)) && !hasChange){
             return true;
         }else{
             return false;

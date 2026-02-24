@@ -213,7 +213,7 @@ public class DataListService {
             DataSource ds = (DataSource) AppUtil.getApplicationContext().getBean("setupDataSource");
             String driver = BeanUtils.getProperty(ds, "driverClassName");
             
-            if (driver.equals("oracle.jdbc.driver.OracleDriver")) {
+            if (driver.startsWith("oracle.jdbc.")) {
                 Connection con = null;
                 PreparedStatement pstmt = null;
                 try {

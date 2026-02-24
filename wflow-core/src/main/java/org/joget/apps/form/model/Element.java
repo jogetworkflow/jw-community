@@ -285,58 +285,82 @@ public abstract class Element extends ExtDefaultPlugin implements PropertyEditab
         return getElementStyles(styleClass, attrs, true);
     }
     
-    public Map<String, String> getElementStyles(String styleClass, Map<String, String> attrs, boolean applyToChildren) {
+    public Map<String, String> getElementStyles(String styleClass, Map<String, String> attrs, boolean applyToLabelAndField) {
         Map<String, String> styles = new HashMap<String, String>();
         styles.put("DESKTOP", "");
         styles.put("TABLET", "");
         styles.put("MOBILE", "");
         
-        String selectorSuffix = applyToChildren ? " *" : "";
+        String labelInputSelector = "";
+        String labelInputHoverSelector = "";
+        String[] keys = new String[]{""};
+        if (applyToLabelAndField) {
+            keys = new String[]{"fieldLabel-", "fieldInput-"};
+        }
         
+        String[] cssClass = getLabelAndInputSelector(styleClass, false);
+        String[] cssHoverClass = getLabelAndInputSelector(styleClass, true);
+        
+        for (int i = 0; i < keys.length; i++) {
+            if (applyToLabelAndField) {
+                labelInputSelector += ", " + cssClass[i];
+                labelInputHoverSelector += ", " + cssHoverClass[i];
+            }
+        }
         if (!attrs.get("desktopStyle").isEmpty()) {
-            styles.put("DESKTOP", styles.get("DESKTOP") + " ." + styleClass + selectorSuffix + "{" + attrs.get("desktopStyle") + "} ");
+            styles.put("DESKTOP", styles.get("DESKTOP") + " ." + styleClass + labelInputSelector + "{" + attrs.get("desktopStyle") + "} ");
         }
         if (!attrs.get("tabletStyle").isEmpty()) {
-            styles.put("TABLET", styles.get("TABLET") + " ." + styleClass + selectorSuffix + "{" + attrs.get("tabletStyle") + "} ");
+            styles.put("TABLET", styles.get("TABLET") + " ." + styleClass + labelInputSelector + "{" + attrs.get("tabletStyle") + "} ");
         }
         if (!attrs.get("mobileStyle").isEmpty()) {
-            styles.put("MOBILE", styles.get("MOBILE") + " ." + styleClass + selectorSuffix + "{" + attrs.get("mobileStyle") + "} ");
+            styles.put("MOBILE", styles.get("MOBILE") + " ." + styleClass + labelInputSelector + "{" + attrs.get("mobileStyle") + "} ");
         }
         if (!attrs.get("hoverDesktopStyle").isEmpty()) {
-            styles.put("DESKTOP", styles.get("DESKTOP") + " ." + styleClass  + ":hover" + selectorSuffix + "{" + attrs.get("hoverDesktopStyle") + "} ");
+            styles.put("DESKTOP", styles.get("DESKTOP") + " ." + styleClass + ":hover" + labelInputHoverSelector + "{" + attrs.get("hoverDesktopStyle") + "} ");
         }
         if (!attrs.get("hoverTabletStyle").isEmpty()) {
-            styles.put("TABLET", styles.get("TABLET") + " ." + styleClass + ":hover" + selectorSuffix + "{" + attrs.get("hoverTabletStyle") + "} ");
+            styles.put("TABLET", styles.get("TABLET") + " ." + styleClass + ":hover" + labelInputHoverSelector + "{" + attrs.get("hoverTabletStyle") + "} ");
         }
         if (!attrs.get("hoverMobileStyle").isEmpty()) {
-            styles.put("MOBILE", styles.get("MOBILE") + " ." + styleClass + ":hover" + selectorSuffix + "{" + attrs.get("hoverMobileStyle") + "} ");
-        }    
-        
+            styles.put("MOBILE", styles.get("MOBILE") + " ." + styleClass + ":hover" + labelInputHoverSelector + "{" + attrs.get("hoverMobileStyle") + "} ");
+        }
+
         addingLabelAndInputStyle(styleClass, styles);
         
         return styles;
     }
     
-    public void addingLabelAndInputStyle(String styleClass, Map<String, String> styles) {
-        String[] keys = new String[]{"fieldLabel-", "fieldInput-"};
-        String[] cssClass = new String[]{
+    public String[] getLabelAndInputSelector(String styleClass, boolean isHover) {
+        String[] selector = new String[]{
             "form.form-container ." + styleClass + " > label.label",
             "form.form-container ." + styleClass + " > label.label + *:not(.ui-screen-hidden):not(div.form-clear), "
             + "form.form-container ." + styleClass + " > label.label + .ui-screen-hidden + *, "
             + "form.form-container ." + styleClass + " > label.label + div.form-clear + *, "
             + "form.form-container ." + styleClass + " .form-cell-value > label, "
             + "form.form-container ." + styleClass + " .form-cell-value > label > i,"
-            + "form.form-container ." + styleClass + " select option "
+            + "form.form-container ." + styleClass + " select option, "
+            + "form.form-container ." + styleClass + " div.richtexteditor"
         };
-        String[] cssHoverClass = new String[]{
-            "form.form-container ." + styleClass + ":hover > label.label",
-            "form.form-container ." + styleClass + ":hover > label.label + *:not(.ui-screen-hidden):not(div.form-clear), "
-            + "form.form-container ." + styleClass + ":hover > label.label + .ui-screen-hidden + *, "
-            + "form.form-container ." + styleClass + ":hover > label.label + div.form-clear + *, "
-            + "form.form-container ." + styleClass + ":hover .form-cell-value > label, "
-            + "form.form-container ." + styleClass + ":hover .form-cell-value > label > i, "
-            + "form.form-container ." + styleClass + ":hover select option"
-        };
+        if (isHover) {
+            selector = new String[]{
+                "form.form-container ." + styleClass + ":hover > label.label",
+                "form.form-container ." + styleClass + ":hover > label.label + *:not(.ui-screen-hidden):not(div.form-clear), "
+                + "form.form-container ." + styleClass + ":hover > label.label + .ui-screen-hidden + *, "
+                + "form.form-container ." + styleClass + ":hover > label.label + div.form-clear + *, "
+                + "form.form-container ." + styleClass + ":hover .form-cell-value > label, "
+                + "form.form-container ." + styleClass + ":hover .form-cell-value > label > i, "
+                + "form.form-container ." + styleClass + ":hover select option, "
+                + "form.form-container ." + styleClass + ":hover div.richtexteditor"
+            };
+        } 
+        return selector;
+    }
+    
+    public void addingLabelAndInputStyle(String styleClass, Map<String, String> styles) {
+        String[] keys = new String[]{"fieldLabel-", "fieldInput-"};
+        String[] cssClass = getLabelAndInputSelector(styleClass, false);
+        String[] cssHoverClass = getLabelAndInputSelector(styleClass, true);
 
         for (int i=0; i < keys.length; i++) {
             Map<String, String> tempAttrs = AppPluginUtil.generateAttrAndStyles(getProperties(), keys[i]);
@@ -454,11 +478,23 @@ public abstract class Element extends ExtDefaultPlugin implements PropertyEditab
 
         if (!builderStyles.isEmpty()) {
             if (this instanceof Form) {
-                int index = html.lastIndexOf("</form>");
-                html = html.substring(0, index) + "<style id=\""+styleClass+"\">" + builderStyles + "</style></form>";
+               int index = html.lastIndexOf("</form>");
+
+                // Unauthorized message or non-form rendering may not contain </form>
+                if (index != -1) {
+                    html = html.substring(0, index)
+                         + "<style id=\"" + styleClass + "\">"
+                         + builderStyles
+                         + "</style></form>";
+                }
             } else {
                 int index = html.lastIndexOf("</div>");
-                html = html.substring(0, index) + "<style id=\""+styleClass+"\">" + builderStyles + "</style></div>";
+                if (index != -1) {
+                    html = html.substring(0, index)
+                         + "<style id=\"" + styleClass + "\">"
+                         + builderStyles
+                         + "</style></div>";
+                }
             }
         }
 

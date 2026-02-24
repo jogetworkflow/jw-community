@@ -820,7 +820,7 @@ public class UserviewService {
             StringBuilder condition = new StringBuilder();
             condition.append("AND e.type = ? ");
 
-            if ("oracle.jdbc.driver.OracleDriver".equals(driver)) {
+            if (driver.startsWith("oracle.jdbc.")) {
                 condition.append("AND TO_CHAR(e.description) = ?");
             } else {
                 // MySQL, MSSQL, etc.

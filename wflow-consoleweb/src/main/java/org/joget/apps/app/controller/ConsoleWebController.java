@@ -4528,6 +4528,10 @@ public class ConsoleWebController {
             } else {
                 properties = setupManager.getSettingValue(DirectoryUtil.IMPL_PROPERTIES);
             }
+            String activeDirectoryManagerImpl = setupManager.getSettingValue("directoryManagerImpl");
+            if (activeDirectoryManagerImpl == null || !directoryManagerImpl.equals(activeDirectoryManagerImpl)) {
+                properties = "";
+            }
 
             String propertiseValue = properties;
             if (propertiseValue != null && !propertiseValue.isEmpty()) {
