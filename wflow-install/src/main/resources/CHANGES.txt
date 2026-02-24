@@ -2,6 +2,30 @@ Joget DX COMMUNITY
 ====================
 For more information, please refer to https://community.joget.org
 
+9.0.5
+=====
+d31dd6ab8 Fixed: wflow-consoleweb - ConsoleWebController - Fixed stale url when switching SAML directory plugins #974 @8.2-SNAPSHOT
+abe46da0c Fixed: wflow-consoleweb - Process Builder - Process with empty tool mapping causes user need to save everytime #1566 @9.0-SNAPSHOT
+e35abdafd Fixed: wflow-consoleweb - Process Builder - Process with empty tool mapping causes user need to save everytime and extra activityForm mapping #1566 @8.2-SNAPSHOT
+324b3d586 Fixed: wflow-core - JSON API Form Load Binder - Fixed numeric values not displaying in Spreadsheet Grid when loaded via JsonApiFormLoadBinder T7153 #1608. @8.2-SNAPSHOT
+458a32e70 Fixed: wflow-consoleweb - Code Editor - added code folding in beanshell and json editor, fixed undo-redo in code editor on mac T7174 #1620 @9.0-SNAPSHOT
+3f3b1954e Fixed: wflow-core - Image Formatter - Fixed Image Formatter not displaying images when list uses joined tables T7161 #1621. @8.2-SNAPSHOT
+3e9f30797 Fixed: wflow-core - Styles - Fixed unauthorized message displaying null and causing error when builder styles are applied T7250 #1668. @8.2-SNAPSHOT
+6f4b7547f Fixed: wflow-core - Userview/Datalist Service - db fix not applied for new oracle driver name T7116 #1696 @8.2-SNAPSHOT
+952384f41 Fixed: wflow-core - Custom Styling - Fixed default styling selector using * is too broad, causing UI regression issues. #1714 @8.2-SNAPSHOT
+7d497bbd3 Fixed: wflow-commons - SetupManagerCache - Added thread-local checks and timeout handling to prevent self-deadlocks during cache refresh. #1772 @9.0-SNAPSHOT
+83068e621 Fixed: wflow-consoleweb - Spreadsheet - Fixed page scrolling to the top #1201 @8.2-SNAPSHOT
+f50eb8dbd Fixed: wflow-core - JSON API Form Data Store - Prevent empty key from appearing in JSON output #1379. @8.2-SNAPSHOT
+6eca96c24 Modified: wflow-wfengine - pom.xml - Upgraded Maven Compiler Plugin source and target versions to Java 8. #1418 T6810 @8.2-SNAPSHOT
+652d4a561 Fixed: wflow-consoleweb - PWA - Remove unused version variable. T6912 #1466 @9.0-SNAPSHOT
+1b5b2499e Fixed: wflow-consoleweb - UI Guider - Removed console error message #1479 @8.2-SNAPSHOT
+67fd4d32d Fixed: wflow-core - App Variable - Fixed intermittent loss of environmentVariableList in appConfig.xml commits T6974 #1510. @8.2-SNAPSHOT
+bdcbeb81c Fixed: jw-community - pom.xml - Fixed duplicate dependencies version. #1344 @9.0-SNAPSHOT
+c7b427433 Fixed: jw-community - pom.xml - Fixed duplicate checker-qual version. #1344 @8.2-SNAPSHOT
+c17d2e7aa Fixed: wflow-plugin-base - Plugin - Hibernate packages are missing. #1505  @8.2-SNAPSHOT
+1f43cc955 Fixed: wflow-consoleweb - Datalist - Fixed checkbox header is not updating when at least one row is unchecked. #1547 @8.2-SNAPSHOT
+1dac62d9e Fixed: wflow-consoleweb - WebSocket Plugin - Prevent NPE throw for unclose session after a server restart. #1590 @8.2-SNAPSHOT
+
 9.0.4
 =====
 c4315506e Fixed: wflow-consoleweb - Builders - Fixed an issue where the builder undo action did not update the Save button state. #1412 @8.2-SNAPSHOT
