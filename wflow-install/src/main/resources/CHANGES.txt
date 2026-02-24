@@ -2,6 +2,30 @@ Joget DX COMMUNITY
 ====================
 For more information, please refer to https://community.joget.org
 
+9.1-PREVIEW
+===========
+95b38400d Added: wflow-consoleweb - Advance Tool - Added new tool visibility for individual field-level visibility controls T6629 #1054 @9.1-SNAPSHOT
+d99cd4f6d Added: wflow-core - Element - Added a new Columns element and enhanced Section in the Form Builder T6631 #1053. @9.1-SNAPSHOT
+28980fdf6 Modified: wflow-consoleweb, wflow-core - Form Builder Elements - Added new Read Only option that prevents users from editing a field but still allows its value to be saved to the database. @9.1-SNAPSHOT
+396d3fcfb Modified: wflow-consoleweb - App Composer - Create or update copy of definition file in YAML whenever saving. @9.0-SNAPSHOT
+d8bed5bb3 Modified: wflow-consoleweb - UI Builder toolbar  - Added save button in edit page components. #479 @9.0-SNAPSHOT
+5f1e1147f Added: wflow-consoleweb - Monitor > Completed Processes - Added feature to batch delete all process instances. #49 @9.1-SNAPSHOT
+e70524a10 Added: wflow-core - Governance Health Check - Orphaned Form Data Table - Add feature to remove orphaned form data table. #49 @9.1-SNAPSHOT
+b0cc0e1c3 Added: wflow-core - Governance Health Check - Add new checker to detect unused process design and having feature to clear it. #49 @9.1-SNAPSHOT
+a4ae567ad Added: wflow-core - Governance Health Check - Add support for checker to render buttons to perform action on scanned results. #49 @9.1-SNAPSHOT
+9a560b7ed Modified:  wflow-consoleweb - Builder - Made builder pop-up draggable and able to be exit by clicking outside the popup #709 @9.1-SNAPSHOT
+6c16c79ba Added: wflow-consoleweb - Enhance Color Picker - Added a new color picker library called Coloris #1008 @8.2-SNAPSHOT
+c9544bcf2 Modified: wflow-core - X-Admin Theme - Added sub-header field to x-admin theme #1009 T6175 @9.1-SNAPSHOT
+8205f1951 Modified: wflow-consoleweb - App Composer - Removed auto saved feature and add warning for unsaved changes #1250 @9.1-SNAPSHOT
+99a38fe80 Modified: wflow-consoleweb - Builder loading and saving  - Improve builder loading and saving experience. #1291 @9.0-SNAPSHOT
+8fe7f0eda Modified: wflow-consoleweb - DX9 Builder Theme - UI Enhancement. #1364 @9.1-SNAPSHOT
+890a55bfc Added: wflow-consoleweb - Property Editor - Added configuration for text-decoration, word-break, text-overflow, white-space and overflow. #1499 @9.0-SNAPSHOT
+8fbdb7c18 Modified: wflow-core - Hash Variable - Support '?data2base64' escape type to convert image data like svg or signature to base64 data url. #1545 @9.1-SNAPSHOT
+60af0c557 Modified: wflow-core - Email - Auto convert image base64 data url to CID attachment. #1545 @9.1-SNAPSHOT
+02187e813 Fixed: wflow-consoleweb - Builder - Save button appear to be in incorrect state after undo/redo #1710 @9.1 -SNAPSHOT
+e15fa5665 Fixed: wflow-consoleweb - general.jsp - Misplaced JavaScript initialization for masterLoginHash logic. #1749 @9.1-SNAPSHOT
+83baee9a1 Modified: wflow-consoleweb - UI - Enhance the alert and confirm popup. #958 @9.1-SNAPSHOT
+
 9.0.5
 =====
 d31dd6ab8 Fixed: wflow-consoleweb - ConsoleWebController - Fixed stale url when switching SAML directory plugins #974 @8.2-SNAPSHOT
