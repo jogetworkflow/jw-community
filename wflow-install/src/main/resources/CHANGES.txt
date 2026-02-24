@@ -2,6 +2,17 @@ Joget DX COMMUNITY
 ====================
 For more information, please refer to https://community.joget.org
 
+8.2.8
+=====
+d31dd6ab8 Fixed: wflow-consoleweb - ConsoleWebController - Fixed stale url when switching SAML directory plugins #974 @8.2-SNAPSHOT
+e35abdafd Fixed: wflow-consoleweb - Process Builder - Process with empty tool mapping causes user need to save everytime and extra activityForm mapping #1566 @8.2-SNAPSHOT
+324b3d586 Fixed: wflow-core - JSON API Form Load Binder - Fixed numeric values not displaying in Spreadsheet Grid when loaded via JsonApiFormLoadBinder T7153 #1608. @8.2-SNAPSHOT
+3f3b1954e Fixed: wflow-core - Image Formatter - Fixed Image Formatter not displaying images when list uses joined tables T7161 #1621. @8.2-SNAPSHOT
+3e9f30797 Fixed: wflow-core - Styles - Fixed unauthorized message displaying null and causing error when builder styles are applied T7250 #1668. @8.2-SNAPSHOT
+6f4b7547f Fixed: wflow-core - Userview/Datalist Service - db fix not applied for new oracle driver name T7116 #1696 @8.2-SNAPSHOT
+952384f41 Fixed: wflow-core - Custom Styling - Fixed default styling selector using * is too broad, causing UI regression issues. #1714 @8.2-SNAPSHOT
+2ae96b05f Fixed: SetupManagerCache - Added thread-local checks and timeout handling to prevent self-deadlocks during cache refresh. #1772 @8.2-SNAPSHOT
+
 8.2.7
 =====
 83068e621 Fixed: wflow-consoleweb - Spreadsheet - Fixed page scrolling to the top #1201 @8.2-SNAPSHOT
