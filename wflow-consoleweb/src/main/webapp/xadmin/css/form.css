@@ -676,6 +676,20 @@ body .hasDatepicker + a, body .hasDatepicker + img {
 body input.hasDatepicker {
     width: 50%;
 }
+.datapicker-native.ui-screen-hidden.ios {
+    right: 15px;
+}
+body.rtl .datapicker-native.ui-screen-hidden.ios,
+body.rtl .datapicker-native.ui-screen-hidden.ios.manual {
+    left: 15px;
+}
+
+/* Advanced Grid - datepicker */
+body .adgrid input.hasDatepicker {
+    width: 85%;
+    max-width: unset;
+}
+
 body .filter-cell .hasDatepicker + a, body .filter-cell .hasDatepicker + img {
     right: auto;
     margin-left: -21px;
