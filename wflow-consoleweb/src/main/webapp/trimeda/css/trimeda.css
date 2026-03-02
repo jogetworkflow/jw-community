@@ -1425,10 +1425,12 @@ body.quickEditModeActive:not(.horizontal_menu) #sidebar #category-container {
     font-size: 16px;
     line-height: 14px;
     float: left;
+    padding-left: 14px;
 }
 
 body.rtl .print-button {
     float: right;
+    padding-right: 14px;
 }
 
 .form-cell > label.label + input:has(+ .numeric_field_controls) {
@@ -2508,11 +2510,6 @@ body.rtl .accordion .card-header::after {
     }
 }
 
-@media screen and (max-width: 490px) {
-    #section-actions > .form-column > .form-cell{  
-        margin-top: 0.5rem;
-    }
-}
 
 @media screen and (min-width: 768px) {
     .dataList .filters > .filter-cell:has(span) {
@@ -2902,9 +2899,4 @@ body.rtl [class*=-selection].dropdown .dropdown-menu #dropdown-title {
 
 body.rtl [class*=-selection].dropdown .dropdown-menu li {
     text-align: right;
-}
-
-body.rtl .form-column-horizontal > .form-cell + .form-cell {
-    margin-right: 10px;
-    margin-left: 0;
 }
