@@ -9,5 +9,6 @@
         <aspect name="org.enhydra.shark.SharkUtilitiesAspect"/>
         <aspect name="org.enhydra.shark.PostgresBooleanAspect"/>
         <aspect name="org.joget.workflow.shark.VariableDataBatchAspect"/>
+        <aspect name="org.joget.apps.app.service.BitronixRollbackAspect"/>
     </aspects>
 </aspectj>

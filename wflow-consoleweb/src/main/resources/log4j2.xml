@@ -88,6 +88,8 @@
         </Logger>
         <Logger name="TimeProfiler-EventAudit" level="error" additivity="true">
         </Logger>
+        <Logger name="org.joget.apps.app.service.BitronixRollbackAspect" level="debug" additivity="true">
+        </Logger>
 
         <!-- Email log file -->
         <Logger name="org.joget.apps.app.lib.EmailTool" level="debug" additivity="true">
