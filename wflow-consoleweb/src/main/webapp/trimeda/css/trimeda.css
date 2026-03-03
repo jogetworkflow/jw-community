@@ -1595,11 +1595,15 @@ body.rtl div.ui-timepicker-div dl dd > * > select {
 .form-section > div.form-section-title, .subform-section > div.form-section-title {
     border-bottom: 1px solid var(--field-border-color);
     margin-bottom: var(--form-section-title-spacing);
+    border-top-left-radius: 11px;
+    border-top-right-radius: 11px;
 }
 
 .form-section-title, .subform-section-title {
     color: var(--primary-text-color);
     margin-bottom: var(--form-section-title-spacing);
+    border-top-left-radius: 11px !important;
+    border-top-right-radius: 11px !important;
 }
 
 body #form-canvas .form-section:not(#section-actions),
@@ -1607,7 +1611,6 @@ body #form-canvas .subform-section:not(#section-actions) {
     border: 1px solid var(--field-border-color);
     border-radius: 12px;
     margin-bottom: 20px;
-    overflow: hidden;
 }
 
 input:not([type]), input[type=text], input[type=password], input[type=email], 
