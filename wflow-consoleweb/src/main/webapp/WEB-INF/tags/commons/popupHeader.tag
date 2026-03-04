@@ -6,7 +6,7 @@
 <%@ attribute name="includeUserviewThemeCSS" required="false" %>
 <c:choose>
     <c:when test="${empty includeUserviewThemeCSS}">
-        <c:set var="userviewThemeCss" value="${appUtil.userviewThemeCss}" />
+        <c:set var="userviewThemeCss" value="<%= AppUtil.getUserviewThemeCss() %>"/>
     </c:when>
 </c:choose>
 <c:set var="lang" value="<%= AppUtil.getAppLocale() %>"/>
