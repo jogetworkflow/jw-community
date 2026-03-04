@@ -47,7 +47,7 @@
                     alertString = '<ui:msgEscJS key="console.setting.message.error.label.idInvalid"/>';
                     $("#key").focus();
                 }
-                UI.alert(alertString);
+                UI.alert(alertString, {icon: 'error'});
             }else{
                 $("#createMessage").submit();
             }

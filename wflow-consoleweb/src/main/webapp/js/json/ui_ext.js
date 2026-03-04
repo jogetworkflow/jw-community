@@ -3,7 +3,8 @@ JPopup = {
     tokenValue : "",
     dialogboxes : new Object(),
     isChanges : new Object(),
-    msg : "Changes that you made may not be saved. Please click 'Cancel' button to stay or click 'OK' button to leave.",
+    msg : "You have unsaved changes. Are you sure you want to leave this page?",
+    buttonMsg: "Leave",
 
     create: function (id, title, width, height) {
         if (JPopup.dialogboxes[id] === undefined || JPopup.dialogboxes[id] === null) {
@@ -115,7 +116,11 @@ JPopup = {
     
     checkChangesAndConfirmHide : async function(id) {
         if (JPopup.isChanges[id] !== $('form:not(.filter_form)', $('iframe#'+id).contents()).serialize()) {
-            return await UI.asyncConfirm(JPopup.msg);
+            return !await UI.asyncConfirm(JPopup.msg, {
+                confirmButtonClass : 'dialog-btn-primary',
+                cancelButtonLabel: JPopup.buttonMsg,
+                confirmButtonLabel: UI.msg['cancel']
+            });
         }
         return true;
     },
@@ -125,6 +130,9 @@ JPopup = {
         
         UI.loadMsg(['ubuilder.saveBeforeClose'], function(msgs){
             JPopup.msg = msgs['ubuilder.saveBeforeClose'];
+        });
+        UI.loadMsg(['ubuilder.saveBeforeClose.leave'], function(msgs) {
+            JPopup.buttonMsg = msgs['ubuilder.saveBeforeClose.leave'];
         });
     },
     

@@ -2691,9 +2691,12 @@ PropertyEditor.Model.ButtonPanel.prototype = {
                 dataType: "text",
                 success: function(response) {
                     var r = $.parseJSON(response);
-
+                    var icon = 'error';
                     if (r.message !== undefined && r.message !== null) {
-                        UI.alert(r.message, {icon: 'error'});
+                        if(r.status !== undefined && r.status !== null && r.status == true){
+                            icon = 'success';
+                        }
+                        UI.alert(r.message, {icon: icon});
                     }
                 }
             });

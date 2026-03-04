@@ -232,10 +232,12 @@ window._CustomBuilder = {
        
         if (!CustomBuilder.isSaved()) {    
             const result = await UI.asyncConfirm(get_cbuilder_msg('ubuilder.saveBeforeClose'), {
-                confirmButtonClass : 'dialog-btn-primary'    
+                confirmButtonClass : 'dialog-btn-primary',
+                cancelButtonLabel: get_cbuilder_msg('ubuilder.saveBeforeClose.leave'),
+                confirmButtonLabel: UI.msg['cancel']
             });
             //if user click "cancel", stay on the same/current page
-            if(!result){
+            if(result){
                 return;
             }
         }

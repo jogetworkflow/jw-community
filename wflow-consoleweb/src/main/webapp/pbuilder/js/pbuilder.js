@@ -2516,7 +2516,7 @@ ProcessBuilder = {
         }
         $(selector).trigger("chosen:updated");
         $(selector).off("change");
-        $(selector).on("change", function(){
+        $(selector).on("change", async function(){
             var hasChange = false;
             
             //check for changes
@@ -2529,10 +2529,20 @@ ProcessBuilder = {
                 });
             }
             
-            if (hasChange && !confirm(get_cbuilder_msg('ubuilder.saveBeforeClose'))) {
-                //revert the selected value
-                $(selector).val(ProcessBuilder.currentProcessData.properties.id);
-                $(selector).trigger("chosen:updated");
+            if (hasChange) {
+                const result = await UI.asyncConfirm(get_cbuilder_msg('ubuilder.saveBeforeClose'), {
+                    confirmButtonClass: 'dialog-btn-primary',
+                    cancelButtonLabel: get_cbuilder_msg('ubuilder.saveBeforeClose.leave'),
+                    confirmButtonLabel: UI.msg['cancel']
+                });
+                
+                if (result) {
+                    //revert the selected value
+                    $(selector).val(ProcessBuilder.currentProcessData.properties.id);
+                    $(selector).trigger("chosen:updated");
+                } else {
+                    window.location.hash = $(selector).val();
+                }
             } else {
                 window.location.hash = $(selector).val();
             }

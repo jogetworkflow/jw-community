@@ -196,6 +196,7 @@ public class EmailTool extends DefaultApplicationPlugin implements PluginWebSupp
         String action = request.getParameter("action");
         if ("testmail".equals(action)) {
             String message = "";
+            Boolean status = false;
             try {
                 AppDefinition appDef = AppUtil.getCurrentAppDefinition();
                 
@@ -222,6 +223,7 @@ public class EmailTool extends DefaultApplicationPlugin implements PluginWebSupp
 
                     email.send();
                     message = ResourceBundleUtil.getMessage("app.emailtool.testEmailSent");
+                    status = true;
                 } else {
                     message = ResourceBundleUtil.getMessage("app.emailtool.testEmailFail") + "\n" + ResourceBundleUtil.getMessage("app.emailtool.error.smtp");
                 }
@@ -232,6 +234,7 @@ public class EmailTool extends DefaultApplicationPlugin implements PluginWebSupp
             try {
                 JSONObject jsonObject = new JSONObject();
                 jsonObject.put("message", message);
+                jsonObject.put("status", status);
                 jsonObject.write(response.getWriter());
             } catch (Exception e) {
                 //ignore

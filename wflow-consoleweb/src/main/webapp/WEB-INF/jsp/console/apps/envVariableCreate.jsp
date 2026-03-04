@@ -212,7 +212,7 @@
                     alertString = '<ui:msgEscJS key="console.app.envVariable.error.label.idInvalid"/>';
                     $("#id").focus();
                 }
-               UI.alert(alertString);
+               UI.alert(alertString, {icon: 'error'});
             }else{
                 $("#createEnvVariable").submit();
             }

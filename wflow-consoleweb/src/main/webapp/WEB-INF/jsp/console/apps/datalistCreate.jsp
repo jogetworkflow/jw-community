@@ -109,7 +109,7 @@
                     alertString = '<ui:msgEscJS key="console.datalist.error.label.idInvalid"/>';
                     $("#id").focus();
                 }
-                UI.alert(alertString);
+                UI.alert(alertString, {icon: 'error'});
             }else{
                 $("#createDatalist").submit();
             }
