@@ -8,9 +8,12 @@
     <name>wflow-install</name>
     <url>http://www.joget.org</url>
     <properties>
+        <maven.compiler.encoding>UTF-8</maven.compiler.encoding>
         <nsis.setup.nsi>target/setup.nsi</nsis.setup.nsi>
         <nsis.output.file>../wflow-install/builds/joget-setup-${project.version}-${buildNumber}.exe</nsis.output.file>
         <nsis.makensis.bin>makensis</nsis.makensis.bin>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
     </properties>
     <scm>
         <connection>scm:git:ssh://git@repo.joget.org:2224/joget/jw-community.git</connection>

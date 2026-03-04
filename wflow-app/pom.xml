@@ -6,6 +6,12 @@
     <packaging>pom</packaging>
     <name>wflow-app</name>
     <url>http://www.joget.org</url>
+    <properties>
+        <maven.compiler.encoding>UTF-8</maven.compiler.encoding>
+        <maven.compiler.release>17</maven.compiler.release>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+    </properties>
     <scm>
         <connection>scm:git:ssh://git@repo.joget.org:2224/joget/jw-community.git</connection>
         <developerConnection>scm:git:ssh://git@repo.joget.org:2224/joget/jw-community.git</developerConnection>
@@ -16,9 +22,9 @@
         <module>../wflow-jdbc</module>
         <module>../wflow-plugin-base</module>
         <module>../wflow-plugin-archetype</module>
-	<module>../wflow-commons-jakarta</module>
+	    <module>../wflow-commons-jakarta</module>
         <module>../wflow-directory</module>
-	<module>../wflow-commons</module>
+	    <module>../wflow-commons</module>
         <module>../wflow-shark-jakarta</module>
         <module>../wflow-wfengine</module>
         <module>../wflow-shark</module>
