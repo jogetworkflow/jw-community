@@ -3338,6 +3338,10 @@ body[builder-theme] .ui-dialog .ui-dialog-buttonpane {
 body[builder-theme] .ui-dialog .ui-dialog-buttonpane button{
     border: 0px !important;
 }
+body[builder-theme] .pluginConfig .builder-link a.openbuilder, 
+body[builder-theme] .pluginConfig .property-input a.elementHelplink{
+    top: 9px;
+}
 /* Guider Dark Theme */
 body[builder-theme='dark'] .guider {
     background-color: var(--theme-primary-color-1);

@@ -67,7 +67,7 @@
         </script>
     </head>
     <body class="popupBody ${bodyCssClass}"
-    <c:if test="${empty param.__a_ or empty param.__u_}">
+    <c:if test="${empty param.__a_ or empty param.__u_ or not empty theme}">
         <c:choose>
             <c:when test="${not empty builderTheme}">
                 builder-theme="${systemTheme}"
