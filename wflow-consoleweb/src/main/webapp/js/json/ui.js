@@ -910,10 +910,23 @@ SlideOutPanel.prototype = {
         // Create content area
         var contentArea = $('<div class="slide-out-content"></div>');
 
-        var closeBtn = $('<button class="slide-out-close">' + (UI.msg.close || 'Close') + '</button>').on('click', function() {
-            thisObject.close();
-        });
+        var closeBtn = $('<a class="slide-out-close" aria-label="' + (UI.msg.close || 'Close') + '"><i class="fas fa-times"></i></a>')
+            .on('click', function () {
+                thisObject.close();
+            });
         contentArea.prepend(closeBtn);
+
+        // Hide the default quick overlay buttons
+        setTimeout(function () {
+            var $targetBtn = $('#quickOverlayContainer #quickOverlayButton a');
+            if ($targetBtn.length === 0 && window.parent && window.parent !== window) {
+                try { $targetBtn = $(window.parent.document).find('#quickOverlayContainer #quickOverlayButton a'); } catch(e){}
+            }
+            if ($targetBtn.length === 0 && window.top && window.top !== window.parent) {
+                try { $targetBtn = $(window.top.document).find('#quickOverlayContainer #quickOverlayButton a'); } catch(e){}
+            }
+            $targetBtn.hide();
+        }, 0);
 
         // Add content
         if (this.content) {
@@ -943,6 +956,14 @@ SlideOutPanel.prototype = {
                     var iframeWindow = this.contentWindow;
                     var iframeDoc = iframeWindow.document;
                     var $iframeBody = $(iframeDoc).find('body');
+                    var $contentContainer = $iframeBody.find('#content-container');
+
+
+                    if ($contentContainer.length > 0) {
+                        $contentContainer.css({
+                            'padding-right': '0px' // change this to whatever you want
+                        });
+                    }
                     
                     if ($iframeBody.find('#main-header').length > 0) {
                         // Delay the override to ensure iframe is fully ready
@@ -951,7 +972,7 @@ SlideOutPanel.prototype = {
                         }, 100);
 
                         // Remove main header and nav
-                        $iframeBody.find('#main-header, #nav, #footer').remove();
+                        $iframeBody.find('#main-header, #main-title, #nav, #footer').remove();
 
                         $iframeBody.find("div#content-container > div#main").css({'visibility': 'visible'});
                         
@@ -962,11 +983,21 @@ SlideOutPanel.prototype = {
                                 'width': '100%',
                                 'margin-left': '0',
                                 'margin-right': '0',
-                                'padding' : '20px !important'
                             });
                             
+                            $main[0].style.setProperty('margin-top', '0px', 'important');
+                            $main[0].style.setProperty('padding-top', '20px', 'important');
+                            $main[0].style.setProperty('padding-right', '45px', 'important');
+                            $main[0].style.setProperty('padding-left', '45px', 'important');
+                            $main[0].style.setProperty('border-radius', '0px', 'important');
+                            $main[0].style.setProperty('overflow', 'auto', 'important');
+
                             $iframeBody.css({
                                 'margin-top': '0'
+                            });
+
+                            contentArea.css({
+                                'padding':'0'
                             });
                         }
                     }
@@ -1106,6 +1137,47 @@ SlideOutPanel.prototype = {
         // Restore body scroll
         $('body').removeClass("stop-scrolling");
 
+        // Restore the default quick overlay buttons
+        setTimeout(function () {
+            var hasParentPanel = false;
+            try {
+                var currentWin = window;
+                while (currentWin !== currentWin.parent) {
+                    if (currentWin.parent.SlideOutPanelCache && 
+                        currentWin.parent.SlideOutPanelCache.slideOutPanel && 
+                        currentWin.parent.SlideOutPanelCache.slideOutPanel.isOpen) {
+                        hasParentPanel = true;
+                        break;
+                    }
+                    currentWin = currentWin.parent;
+                }
+            } catch (e) {}
+
+            if (!hasParentPanel) {
+
+                var $targetBtn = $('#quickOverlayContainer #quickOverlayButton');
+
+                if ($targetBtn.length === 0 && window.parent && window.parent !== window) {
+                    try { 
+                        $targetBtn = $(window.parent.document).find('#quickOverlayContainer #quickOverlayButton'); 
+                    } catch(e){}
+                }
+                if ($targetBtn.length === 0 && window.top && window.top !== window.parent) {
+                    try { 
+                        $targetBtn = $(window.top.document).find('#quickOverlayContainer #quickOverlayButton'); 
+                    } catch(e){}
+                }
+                // Use top window width if inside iframe
+                var screenWidth = window.top ? $(window.top).width() : $(window).width();
+
+                if (screenWidth <= 680) {
+                    $targetBtn.find('a').hide();
+                    $targetBtn.find('a.overlayClose').show();
+                } else {
+                    $targetBtn.find('a').show();
+                }
+            }
+        }, 300);        
         // Check if slide-out is in an iframe and remove class from parent body
         if (window.frameElement && window.frameElement.id && window.parent && window.parent.document) {
             var parentBody = window.parent.document.body;
@@ -1208,7 +1280,6 @@ SlideOutPanel.prototype = {
             methodsToOverride.forEach(function(method) {
                 if (typeof currentUI[method] === 'function') {
                     iframeUI[method] = createCurrentWindowDelegate(method);
-                    console.log('SlideOutPanel: Overridden iframe method: ' + method);
                 }
             });
         } catch (err) {

@@ -7,11 +7,12 @@
     #logviewer .line:nth-child(even) {background: #ffffff;}
     #logviewer .line.error {color: #dc3545;}
     #logviewer .line.warn {color: #fd7e14;}
-    #logviewer .line.info {color: #0d6efd;}
+    #logviewer .line.info {color: #0a58ca;} 
     #logviewer .line.debug {color: #6c757d;}
     .followbuttondiv {position: fixed; right: 80px; margin-top: 10px;}
     .rtl .followbuttondiv {left: 80px; right: unset;}
-    .linenumber {display: inline-block; width: 45px; text-align: left; color: #6c757d; font-size: 10px; vertical-align: top; padding-top: 2px;}
+    .linenumber {display: inline-block; width: 45px; text-align: left; color: #6c757d; font-size: 10px; vertical-align: top; padding-top: 2px; -webkit-user-select: none; -moz-user-select: none; -ms-user-select: none; user-select: none;}
+    .rtl .linenumber{text-align:right;}
     .text {display: inline-block; width: calc(100% - 55px);}
     body.no-header.builder-popup div#main-body {margin-top: 0;}
 
@@ -61,6 +62,10 @@
         margin-right: 10px;
         min-width: 60px;
         display: inline-block;
+        -webkit-user-select: none;
+        -moz-user-select: none;
+        -ms-user-select: none;
+        user-select: none;
     }
 
     .log-text {
@@ -419,8 +424,8 @@ $(document).ready(function() {
                             <input type="text" id="searchInput" placeholder="Enter search term...">
                         </div>
                         <div class="search-filter-buttons">
-                            <button id="applyFilter" class="btn">Apply Filter</button>
-                            <button id="clearFilter" class="btn">Clear Filter</button>
+                            <button id="applyFilter" class="btn console-primary">Apply Filter</button>
+                            <button id="clearFilter" class="btn console-tertiary">Clear Filter</button>
                         </div>
                     </div>
                 </div>
@@ -468,8 +473,6 @@ $(document).ready(function() {
                 var line = $(elm).find('.linenumber').text().trim();
                 var content = $(elm).find('.text').text().trim();
                 
-                // Debug: Log the content being processed
-                console.log('Processing line:', line, 'Content:', content);
                 
                 // Check if this is a main error line (with timestamp pattern)
                 if (content.match(/ERROR[\s]+[0-9]{2}\s[a-zA-Z]{3}\s[0-9]{4}/) || 
@@ -484,7 +487,6 @@ $(document).ready(function() {
                         children: []
                     }
                     prevErrorLine = line;
-                    console.log('Added main entry:', line, content);
                 } else if (content.match(/Caused\sby:\s/)) {
                     // Add "Caused by:" lines as children
                     if (prevErrorLine !== '') {
@@ -494,7 +496,6 @@ $(document).ready(function() {
                                 line: line,
                                 text: content
                             });
-                            console.log('Added child:', line, content);
                         }
                     }
                 }
@@ -522,11 +523,9 @@ $(document).ready(function() {
                     }
                 });
                 
-                console.log('Filtered overview:', filteredOverview);
                 return filteredOverview;
             }
 
-            console.log('Final overview:', overview);
             return overview;
         }
 

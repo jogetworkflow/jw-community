@@ -71,24 +71,25 @@ body[system-theme="dark"] .slide-out-panel {
 }
 
 .slide-out-close {
-    background: #007A5E;
-    border: none;
-    font-size: 14px;
+    font-size: 18px;
     cursor: pointer;
-    color: #fff;
+    color: var(--console-button-secondary-bg);
     padding: 6px 12px;
-    min-width: 32px;
-    height: 32px;
     display: flex;
     align-items: center;
     justify-content: center;
-    border-radius: 4px;
-    transition: all 0.2s ease;
-    font-weight: 500;
     position: absolute;
-    top: 5px;
-    left: 15px;
+    top: 10px;
+    right: 15px;
     z-index: 10;
+}
+
+a.slide-out-close:hover {
+    color: var(--console-button-danger-bg-hover);
+}
+
+body[system-theme="dark"] .slide-out-close {
+    color: #fff;
 }
 
 .iframe-slide-out-show .slide-out-close {
@@ -127,8 +128,8 @@ body.rtl .slide-out-panel.show {
 }
 
 body.rtl .slide-out-close {
-    left: auto;
-    right: 15px;
+    left: 15px;
+    right: auto;
 }
 
 /* Responsive styles */
