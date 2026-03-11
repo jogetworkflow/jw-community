@@ -37,6 +37,7 @@ import java.util.Properties;
 import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 import java.util.zip.ZipOutputStream;
@@ -58,24 +59,7 @@ import org.joget.apps.app.dao.MessageDao;
 import org.joget.apps.app.dao.PackageDefinitionDao;
 import org.joget.apps.app.dao.PluginDefaultPropertiesDao;
 import org.joget.apps.app.dao.UserviewDefinitionDao;
-import org.joget.apps.app.model.AbstractAppVersionedObject;
-import org.joget.apps.app.model.AppDefinition;
-import org.joget.apps.app.model.AppImportExportAwarePlugin;
-import org.joget.apps.app.model.AppResource;
-import org.joget.apps.app.model.BuilderDefinition;
-import org.joget.apps.app.model.DatalistDefinition;
-import org.joget.apps.app.model.EnvironmentVariable;
-import org.joget.apps.app.model.FormDefinition;
-import org.joget.apps.app.model.ImportAppException;
-import org.joget.apps.app.model.Message;
-import org.joget.apps.app.model.PackageActivityForm;
-import org.joget.apps.app.model.PackageActivityPlugin;
-import org.joget.apps.app.model.PackageDefinition;
-import org.joget.apps.app.model.PackageParticipant;
-import org.joget.apps.app.model.PluginDefaultProperties;
-import org.joget.apps.app.model.ProcessFormModifier;
-import org.joget.apps.app.model.StartProcessFormModifier;
-import org.joget.apps.app.model.UserviewDefinition;
+import org.joget.apps.app.model.*;
 import org.joget.apps.datalist.service.DataListUtil;
 import org.joget.apps.form.dao.FormDataDao;
 import org.joget.apps.form.dao.FormDataDaoImpl;
@@ -1345,8 +1329,22 @@ public class AppServiceImpl implements AppService {
                         }
                     }
                     
-                    //import
+                    // convert modified XML definitions into AppDefinition object
                     appDef = serializer.read(AppDefinition.class, new ByteArrayInputStream(appDefinitionXml), false);
+
+                    // perform pre-import CustomBuilder processing
+                    Collection<BuilderDefinition> builderDefinitions = appDef.getBuilderDefinitionList();
+                    Map<CustomBuilder, List<BuilderDefinition>> builderDefinitionMap = builderDefinitions.stream()
+                            .collect(Collectors.groupingBy(o -> CustomBuilderUtil.getBuilder(o.getType())));
+                    for (Entry<CustomBuilder, List<BuilderDefinition>> entry : builderDefinitionMap.entrySet()) {
+                        CustomBuilder key = entry.getKey();
+                        if (key instanceof CustomBuilderCloneCallback) {
+                            List<BuilderDefinition> value = entry.getValue();
+                            ((CustomBuilderCloneCallback) key).onClone(Collections.unmodifiableList(value), appDef);
+                        }
+                    }
+
+                    // import app
                     AppDefinition newAppDef = importAppDefinition(appDef, 1L, xpdl);
                     
                     AppResourceUtil.copyAppResources(copy.getAppId(), copy.getVersion().toString(), newAppDef.getAppId(), newAppDef.getVersion().toString());
