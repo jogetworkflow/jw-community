@@ -215,7 +215,8 @@ public class SetupManagerCache {
         } else {
             refreshCacheInternal(profile, true);
         }
-        return settingMap.get(property);
+        Setting s = settingMap.get(property);
+        return s == null ? null : s.copy();
     }
 
     private void updateTableModifiedTimestamp(String profile) {
@@ -268,8 +269,12 @@ public class SetupManagerCache {
             }
         }
         settingMap = cache.get(profile);
-        String settingProperty = setting.getProperty();
-        settingMap.put(settingProperty, setting);
+        String property = setting.getProperty();
+        if (setting.getValue() == null) {
+            settingMap.remove(property); // remove to prevent Setting obj with null value
+        } else {
+            settingMap.put(property, setting);
+        }
         cache.put(profile, settingMap);
     }
 
