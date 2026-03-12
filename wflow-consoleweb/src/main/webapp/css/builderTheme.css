@@ -4055,3 +4055,28 @@ body[builder-theme].rtl .property-editor-container:not(.editor-panel-mode) .elem
 body[builder-theme].rtl .property-editor-container:not(.editor-panel-mode) .repeater-row .actions.rowbuttons{
     border-color: var(--theme-border-color-1);
 }
+/* Dark theme alert styles */
+body[system-theme="dark"] .alert,
+body[builder-theme="dark"] .alert {
+    color: #6ea8fe;
+    background-color: #031633;
+    border-color: #084298;
+}
+body[system-theme="dark"] .alert-success,
+body[builder-theme="dark"] .alert-success {
+    color: #75b798;
+    background-color: #051b11;
+    border-color: #0f5132;
+}
+body[system-theme="dark"] .alert-danger,
+body[builder-theme="dark"] .alert-danger {
+    color: #ea868f !important;
+    background-color: #2c0b0e;
+    border-color: #842029;
+}
+body[system-theme="dark"] .alert-warning,
+body[builder-theme="dark"] .alert-warning {
+    color: #ffda6a ;
+    background-color: #332701;
+    border-color: #997404;
+}
