@@ -50,4 +50,18 @@ public class Setting implements Serializable {
     public String getOriginalValue() {
         return originalValue;
     }
+
+    /**
+     * Creates a new object with the same values, except originalValue is the current value
+     * @return a new instance
+     */
+    public Setting copy() {
+        Setting s = new Setting();
+        s.id = id;
+        s.property = property;
+        s.value = value;
+        s.ordering = ordering;
+        s.originalValue = value;
+        return s;
+    }
 }

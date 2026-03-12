@@ -227,7 +227,8 @@ public class SetupManagerCache {
             refreshCacheInternal(profile, true);
         }
         ConcurrentMap<String, Setting> settingMap = (ConcurrentMap<String, Setting>) element.getObjectValue();
-        return settingMap.get(property);
+        Setting s = settingMap.get(property);
+        return s == null ? null : s.copy();
     }
 
     private void updateTableModifiedTimestamp(String profile) {
