@@ -687,7 +687,7 @@ body.rtl .datapicker-native.ui-screen-hidden.ios.manual {
 /* Advanced Grid - datepicker */
 body .adgrid input.hasDatepicker {
     width: 85%;
-    max-width: unset;
+    max-width: 75%;
 }
 
 body .filter-cell .hasDatepicker + a, body .filter-cell .hasDatepicker + img {
