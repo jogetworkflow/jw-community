@@ -377,7 +377,7 @@ span.tablesaw-cell-content {
 .hasDatepicker + a + a{
     position: absolute;
     right: 5px;
-    top: 12px;
+    top: 8px;
     height: 18px;
     font-family: "Font Awesome 5 Free";
     -moz-osx-font-smoothing: grayscale;

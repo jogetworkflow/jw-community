@@ -669,17 +669,20 @@ body .sigPad .pad:hover{
 
 /* datepicker */
 .hasDatepicker + a, .hasDatepicker + a + a {
-    position: absolute;
+    position: relative;
     padding: 2px 5px;
     display: inline-block;
     cursor: pointer;
-    top: 8px;
+    top: 0px;
     right: -0.5rem;
     z-index: 1;
 }
+body.rtl .hasDatepicker + a, body.rtl .hasDatepicker + a + a{
+    left: unset;
+    right: 5px !important; 
+}
 body .hasDatepicker + a + a {
     padding: 2px 5px;
-    right: 0.8rem;
 }
 body.mediumFontSize .hasDatepicker + a, body.mediumFontSize .hasDatepicker + a + a {
     right: -1.4rem;
@@ -1013,25 +1016,36 @@ body #form-canvas .div.pq-grid-toolbar,
 body #form-canvas .pq-grid-bottom.ui-corner-bottom{
     padding: 5px 0px;
 }
+.grid.adgrid .hasDatepicker + a, .grid.adgrid .hasDatepicker + a + a {
+    position: absolute;
+    top: 12px !important;
+}
+.grid.adgrid .editor-cell .hasDatepicker + a {
+    right: 24px;
+}
+.grid.adgrid .editor-cell .hasDatepicker + a + a {
+    right: 4px;
+}
 body.rtl .grid.adgrid .editor-cell .hasDatepicker + a {
-    left: 8px;
-    right: unset;
+    left: 24px;
+    right: unset !important;
 }
 body.rtl .grid.adgrid .editor-cell .hasDatepicker + a + a {
-    left: 30px;
-    right: unset;
+    left: 2px;
+    right: unset !important;
 }
 @media (max-width: 480px) {
-    .grid.adgrid .editor-cell .hasDatepicker + a + a {
-        right: 25px;
+    .grid.adgrid .datapicker-native.ui-screen-hidden.ios {
+        right: 20px;
     }
-    body.rtl #form-canvas .adgrid .hasDatepicker + a {
-        left: 5px !important;
-        top: 12px !important;
+    .grid.adgrid .editor-cell .hasDatepicker + a + a {
+        right: 3px;
+    }
+    body.rtl #form-canvas .grid.adgrid .hasDatepicker + a {
+        left: 25px !important;
     }
     body.rtl .grid.adgrid .editor-cell .hasDatepicker + a + a {
-        left: 25px;
-        top: 12px;
+        left: 5px;
     }
 }
 
@@ -1116,7 +1130,7 @@ body .handsontable input, .handsontable textarea{
         padding-left: 0px;
     }
     body #form-canvas .hasDatepicker{
-        width: calc(100% - 42px);
+        width: calc(100% - 43px);
     }
     body.rtl #form-canvas div.form-cell .label {
         text-align: right;
