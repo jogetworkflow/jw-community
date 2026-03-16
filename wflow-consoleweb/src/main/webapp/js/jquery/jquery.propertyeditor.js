@@ -10160,6 +10160,24 @@ PropertyEditor.Type.CodeEditor.prototype = {
         thisObj.codeeditor.on("change", function(cm, change) {
             $('#' + thisObj.id).trigger("change");
         });
+        
+        var lastWidth = 0;
+        var lastHeight = 0;
+        var container = document.getElementById(thisObj.id);
+
+        setInterval(function () {
+            if (container && thisObj.codeeditor) {
+                var currentWidth = container.clientWidth;
+                var currentHeight = container.clientHeight;
+
+
+                if (currentWidth !== lastWidth || currentHeight !== lastHeight) {
+                    thisObj.codeeditor.refresh();
+                    lastWidth = currentWidth;
+                    lastHeight = currentHeight;
+                }
+            }
+        }, 100);
     },
     pageShown: function() {
         this.codeeditor.refresh();
