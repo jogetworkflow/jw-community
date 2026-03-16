@@ -283,7 +283,24 @@ AppBuilder = {
                         itemClass = "has-sublabel";
                         subLabel = '<span class="item-sublabel">'+builder.elements[j].subLabel+'</span>';
                     }
-                    $(builderDiv).find("ul").append('<li class="item '+itemClass+'" data-builder-type="'+builder.value+'" data-id="'+builder.elements[j].id+'"><a class="item-link" href="'+builder.elements[j].url+'" target="_self"><span class="item-label">'+builder.elements[j].label+'</span><span class="item-id">'+builder.elements[j].id+'</span>'+subLabel+'</a><div class="builder-actions">'+action+'<a class="delete" title="'+get_cbuilder_msg('cbuilder.remove')+'"><i class="las la-trash-alt"></i></a></div></li>');
+                    var isProcess = builder.value === "process";
+                    var actionsBtn = isProcess
+                            ? ""
+                            : '<button class="item-actions-btn" aria-label="Actions"><i class="fas fa-ellipsis-vertical"></i></button>' +
+                                '<div class="item-actions-dropdown"></div>';
+                    $(builderDiv).find("ul").append(
+                        '<li class="item ' + itemClass + '" data-builder-type="' + builder.value + '" data-id="' + builder.elements[j].id + '">' +
+                            '<a class="item-link" href="' + builder.elements[j].url + '" target="_self">' +
+                                '<span class="item-label">' + builder.elements[j].label + '</span>' +
+                                '<span class="item-id">' + builder.elements[j].id + '</span>' +
+                                subLabel +
+                            '</a>' +
+                            '<div class="builder-actions">' +
+                                action +
+                                actionsBtn +
+                            '</div>' +
+                        '</li>'
+                    );
                 }
             } else {
                 $(builderDiv).find("ul").append('<li class="message">'+self.msg('addNewMessage')+'</li>');
@@ -385,6 +402,286 @@ AppBuilder = {
                 }
             });
         }, 2); // Slightly delayed to avoid conflicts
+
+        AppBuilder.itemActions = [
+            {
+                label: get_cbuilder_msg("abuilder.duplicate"),
+                icon: '<i class="las la-copy"></i>',
+                action: "duplicate",
+                handler: function(item) {
+                    AppBuilder.openDuplicateDialog(item);
+                }
+            },
+            {
+                label: get_cbuilder_msg("abuilder.edit"),
+                icon: '<i class="las la-edit"></i>',
+                action: "edit",
+                handler: function(item) {
+                    $(item).find(".item-link").trigger("click");
+                }
+            },
+            {
+                label: get_cbuilder_msg("abuilder.delete"),
+                icon: '<i class="las la-trash-alt"></i>',
+                action: "delete",
+                handler: function(item) {
+                    AppBuilder.deleteItem(item);
+                },
+                isDelete: true
+            }
+        ];
+       
+        /* Remove previous handlers to avoid duplicate binding */
+        $("#builder_canvas").off("click", ".item-actions-btn");
+       
+        /* Three-dot button click handler */
+        $("#builder_canvas").on("click", ".item-actions-btn", function (e) {
+            e.stopPropagation();
+       
+            var $item = $(this).closest(".item");
+            var $dropdown = $item.find(".item-actions-dropdown");
+            var builderType = $item.data("builder-type");
+       
+            /* Build dropdown only once */
+            if ($dropdown.children().length === 0) {
+           
+                AppBuilder.itemActions.forEach(function (action) {
+               
+                    // Hide Duplicate for Userview
+                    if (builderType === "userview" && action.action === "duplicate") {
+                        return;
+                    }
+               
+                    // Allow Duplicate ONLY for form & datalist
+                    if (
+                        action.action === "duplicate" &&
+                        builderType !== "form" &&
+                        builderType !== "datalist"
+                    ) {
+                        return;
+                    }
+
+                    if (action.isDelete && $item.data("builder-type") === "process") {
+                        return;
+                    }
+
+                    var $action = $("<div class='dropdown-action'></div>")
+                        .html((action.icon ? action.icon + " " : "") + action.label)
+                        .on("click", function (ev) {
+                            ev.stopPropagation();
+                            action.handler($item);
+                            $dropdown.hide();
+                        });
+                   
+                    /* Delete highlighting */
+                    if (action.isDelete) {
+                        $action.addClass("dropdown-action-delete");
+                        $action
+                            .on("mouseenter", function () {
+                                $item.addClass("delete-highlight");
+                            })
+                            .on("mouseleave", function () {
+                                $item.removeClass("delete-highlight");
+                            });
+                    }
+               
+                    $dropdown.append($action);
+                });
+            }
+       
+            /* Toggle dropdown visibility */
+            if ($dropdown.is(":visible")) {
+                $dropdown.hide();
+                $dropdown.removeClass("active");
+            } else {
+                $(".item-actions-dropdown").hide(); // close others
+                $dropdown.css({ display: "block" });
+                $dropdown.addClass("active");
+            }
+        });
+       
+        /* Hide dropdown when mouse leaves item */
+        $("#builder_canvas")
+            .off("mouseleave.itemDropdown")
+            .on("mouseleave.itemDropdown", ".item", function () {
+                $(this).find(".item-actions-dropdown").hide();
+                $(this).find(".item-actions-dropdown").removeClass("active");
+            });
+       
+        /* Hide dropdown on outside click */
+        $(document)
+            .off("click.itemDropdown")
+            .on("click.itemDropdown", function () {
+                $(".item-actions-dropdown").hide();
+                $(this).find(".item-actions-dropdown").removeClass("active");
+            });
+    },
+
+     openDuplicateDialog : function(item) {
+        // Determine whether the clicked item is a form or datalist
+        var type = $(item).data("builder-type");
+        if (type !== "form" && type !== "datalist") {
+            return;
+        }
+        // Extract original ID, name, and table/subLabel from the item
+        var defaults = AppBuilder.buildDuplicateDefaults(type, {
+            id : $(item).data("id") || "",
+            name : $(item).find(".item-label").text().trim(),
+            subLabel : $(item).find(".item-sublabel").text().trim()
+        });
+        // Reuse the existing creation dialog but prefill it with duplicate values
+        var url = CustomBuilder.contextPath + '/web/console/app' + CustomBuilder.appPath + '/' + (type === "datalist" ? "datalist" : "form") + '/create?builderMode=true';
+        JPopup.show("navCreateNewDialog", url, {}, "");
+        // Wait a short time for the iframe to be injected into the DOM, then bind to load
+        setTimeout(function(){
+            var frame = $("#navCreateNewDialog");
+            if (frame.length === 0) {
+                return;
+            }
+            $(frame).css("visibility", "hidden");
+            frame.off("load.builderDuplicate").on("load.builderDuplicate", function(){
+                var header = $(frame).contents().find("#main-body-header");
+                if (type === "form") {
+                    var newText = get_cbuilder_msg("abuilder.duplicate.form");
+                    if (header.length) {
+                        header.text(newText);
+                        
+                        $(frame).css("visibility", "visible");
+                    }
+                } else if (type === "datalist") {
+                    var newText = get_cbuilder_msg("abuilder.duplicate.datalist");
+                    if (header.length) {
+                        header.text(newText);
+                        $(frame).css("visibility", "visible");
+                    }
+                }
+
+                AppBuilder.prefillDuplicateDialog(type, defaults);
+            });
+        }, 30);
+    },
+
+
+    prefillDuplicateDialog : function(type, defaults) {
+        var frame = $("#navCreateNewDialog")[0];
+        if (!frame || !frame.contentWindow) {
+            return;
+        }
+    
+        // wrapper for iframe document
+        var doc = $(frame.contentWindow.document);
+        
+        // Prefill form fields
+        var idInput = doc.find("input[name='id']");
+        if (idInput.length && defaults.newId !== "") {
+            idInput.val(defaults.newId);
+        }
+        var nameInput = doc.find("input[name='name']");
+        if (nameInput.length && defaults.newName !== "") {
+            nameInput.val(defaults.newName);
+        }
+        if (defaults.description !== undefined && defaults.description !== null && defaults.description !== "" && doc.find("textarea[name='description']").length) {
+            doc.find("textarea[name='description']").val(defaults.description);
+        }
+        if (type === "form") {
+            var tableInput = doc.find("input[name='tableName']");
+            if (tableInput.length && defaults.newTableName !== "") {
+                tableInput.val(defaults.newTableName);
+            }
+        }
+        // Autoselect the current app
+        var copyApp = doc.find("#copyAppId");
+        if (copyApp.length) {
+            copyApp.val(CustomBuilder.appId).trigger("change").trigger("chosen:updated");
+        }
+        // Autoselect the current form or datalist as source
+        var attempts = 0;
+        var trySelectTarget = function(){
+            var copySelect = doc.find(type === "form" ? "#copyFormId" : "#copyListId");
+            if (!copySelect.length) {
+                // Select element not ready yet, keep polling
+                return false;
+            }
+            var option = copySelect.find('option[value="'+defaults.sourceId+'"]');
+
+
+            //  try matching by label text by stripping the _2 from name if value doesn't match
+            if (!option.length && defaults.newName) {
+                var originalName = (defaults.newName || "").replace(/_2$/, "").toLowerCase();
+                if (originalName) {
+                    option = copySelect.find("option").filter(function(){
+                        var text = ($(this).text() || "").toLowerCase();
+                        return text.indexOf(originalName) !== -1;
+                    }).first();
+                }
+            }
+            if (option.length) {
+                copySelect.val(option.val()).trigger("change").trigger("chosen:updated");
+                // Manually sync Chosen display text, in case plugin UI does not refresh automatically
+                var chosenContainer = copySelect.next('.chosen-container');
+                if (chosenContainer.length) {
+                    chosenContainer.find('.chosen-single span').text(option.text());
+                }
+                return true;
+            }
+            return false;
+        };
+        var poller = setInterval(function(){
+            attempts++;
+            if (trySelectTarget() || attempts > 25) {
+                clearInterval(poller);
+            }
+        }, 200);
+    },
+
+
+    buildDuplicateDefaults : function(type, meta) {
+        var suffix = 1;  // Suffix to append for duplicates
+        // Helper to clean and trim strings
+        var clean = function(value) {
+            return (value && typeof value === "string") ? value.trim() : "";
+        };
+        // Helper to increment an existing numeric suffix, or append _2 if none
+        var incrementSuffix = function(value) {
+            value = clean(value);
+            if (!value) {
+                return "";
+            }
+            
+            $("body")
+            .find("li[data-builder-type='" + type + "'][data-id^='" + sourceId + "_']")
+            .each(function () {
+                var id = $(this).attr("data-id");
+                var match = id.match(/_(\d+)$/);
+                if (match) {
+                    var num = parseInt(match[1], 10);
+                    if (num > suffix) {
+                        suffix = num;
+                    }
+                }
+            });
+
+            return value + "_" + (suffix + 1);
+        };
+        // Extract original values
+        var sourceId = clean(meta.id);
+        var label = clean(meta.name) || sourceId;
+        var subLabel = clean(meta.subLabel);
+        var tableBase = subLabel || sourceId;
+        if (tableBase.indexOf("app_fd_") === 0) {
+            tableBase = tableBase.substring(7);
+        }
+        // Build new values
+        var newId = sourceId ? incrementSuffix(sourceId) : "";
+        var newName = label ? incrementSuffix(label) : "";
+        var newTable = (type === "form") ? (tableBase ? incrementSuffix(tableBase) : "") : "";
+        return {
+            sourceId : sourceId,
+            newId : newId,
+            newName : newName,
+            newTableName : newTable,
+            description : clean(meta.description)
+        };
     },
     
     /*
@@ -885,14 +1182,14 @@ AppBuilder = {
         $(header).html("");
         $(header).append('<i class="dt-loading las la-spinner la-3x la-spin" style="opacity:0.3; position:absolute; z-index:2000; margin:30px;"></i>');
         $(header).append('<div class="sticky-buttons" style="z-index:3;"><button id="mmCollapseAll" class="btn button btn-secondary">'+get_cbuilder_msg('cbuilder.collapseAll')+'</button> <button id="mmExpandAll" class="btn button btn-secondary">'+get_cbuilder_msg('cbuilder.expandAll')+'</button> <button id="mmScreenshot" class="btn button btn-secondary" style="display:none;">'+get_cbuilder_msg('cbuilder.screenshot')+'</button></div>');
-        
-        $(view).html("");
-        $(view).attr("id", "jsmind_container");
-        $(view).css("overflow", "auto");
-        $(view).css("padding", "0px");
-        
-        loadCSS(CustomBuilder.contextPath + "/js/jsmind/jsmind.css");
-        loadScript(CustomBuilder.contextPath + "/js/jsmind/dom-to-image.min.js");
+            
+            $(view).html("");
+            $(view).attr("id", "jsmind_container");
+            $(view).css("overflow", "auto");
+            $(view).css("padding", "0px");
+            
+            loadCSS(CustomBuilder.contextPath + "/js/jsmind/jsmind.css");
+            loadScript(CustomBuilder.contextPath + "/js/jsmind/dom-to-image.min.js");
         loadScript(CustomBuilder.contextPath + "/js/jsmind/jsmind.js", function(){
             loadScript(CustomBuilder.contextPath + "/js/jsmind/jsmind.screenshot.js", function(){
                 //load overview data first before render the map

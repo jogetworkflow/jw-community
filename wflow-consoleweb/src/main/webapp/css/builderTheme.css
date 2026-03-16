@@ -2051,9 +2051,6 @@ body[builder-theme] .visibility_view .visibility_rule {
     box-shadow: none;
     border-radius: 3px;
 }
-body[builder-theme] .builder-type .builder-actions{
-    top: 6px;
-}
 body[builder-theme] .editor-panel-mode .property-type-label .property-input label {
     background-color: var(--theme-primary-color-3);
 }
@@ -2318,6 +2315,9 @@ body[builder-theme].rtl .ui-dialog-titlebar-close{
 }
 body[builder-theme] #generator_container .list_content .more_info{
     color: var(--theme-label-color-2);
+}
+body[builder-theme] .builder-actions .item-actions-btn {
+    box-shadow: none;
 }
 /* Dark Theme CSS */
 body[builder-theme='dark'] .dt-loading {
