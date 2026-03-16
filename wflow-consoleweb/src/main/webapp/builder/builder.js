@@ -2399,6 +2399,7 @@ window._CustomBuilder = {
         $(view).html('<div id="preview-iframe-wrapper"><i class="dt-loading las la-spinner la-3x la-spin" style="opacity:0.3; position:absolute; z-index:2000;"></i><iframe id="preview-iframe" name="preview-iframe" style="opacity:0;" src="about:none"></iframe></div>');
         
         var iframe = $(view).find("#preview-iframe")[0];
+        iframe.name = "preview-iframe";
         iframe.onload = function() {
             $(view).find('.dt-loading').remove();
             $(iframe).css('opacity', "1");
@@ -2413,7 +2414,10 @@ window._CustomBuilder = {
         $('#cbuilder-preview [name=OWASP-CSRFTOKEN]').val(ConnectionManager.tokenValue);
         $('#cbuilder-preview').attr("action", CustomBuilder.previewUrl);
         $('#cbuilder-preview').attr("target", "preview-iframe");
-        $('#cbuilder-preview').submit();
+        // Delay submission slightly to allow iframe to register in the DOM
+        setTimeout(function(){
+            $('#cbuilder-preview').submit();
+        }, 0);
         return false;
     },
     

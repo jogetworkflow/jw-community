@@ -2191,7 +2191,11 @@ UserviewBuilder = {
         $('#cbuilder-preview [name=OWASP-CSRFTOKEN]').val(ConnectionManager.tokenValue);
         $('#cbuilder-preview').attr("action", CustomBuilder.previewUrl + menuId);
         $('#cbuilder-preview').attr("target", "preview-iframe");
-        $('#cbuilder-preview').submit();
+        var f = document.getElementById('preview-iframe');  		// Get the preview iframe element
+        if (f) { f.name = 'preview-iframe'; } 				// Ensure iframe has the correct name for targeting
+        setTimeout(function(){ 
+            $('#cbuilder-preview').submit(); 
+        }, 0); 	// Delay submission so Firefox resolves the iframe
         return false;
     },
     

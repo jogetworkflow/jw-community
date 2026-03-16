@@ -350,7 +350,12 @@ CustomBuilder = {
     preview : function() {
         $('#cbuilder-json').val(this.getJson());
         $('#cbuilder-preview').attr("action", this.previewUrl);
-        $('#cbuilder-preview').submit();
+        var f = document.getElementById('preview-iframe');			 // Get the preview iframe element
+        if (f) { f.name = 'preview-iframe'; } 					// Ensure the iframe name is correctly set
+        $('#cbuilder-preview').attr("target", "preview-iframe"); 			// Direct the preview request to the iframe
+        setTimeout(function(){ 
+            $('#cbuilder-preview').submit(); 
+        }, 0); 		// Add small delay to avoid Firefox timing issue
         return false;
     },
     
