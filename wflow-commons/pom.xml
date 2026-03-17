@@ -313,7 +313,7 @@
         <dependency>
             <groupId>org.apache.tomcat</groupId>
             <artifactId>tomcat-jdbc</artifactId>
-            <version>9.0.111</version>
+            <version>9.0.115</version>
         </dependency>      
         <dependency>
             <groupId>org.joget</groupId>
