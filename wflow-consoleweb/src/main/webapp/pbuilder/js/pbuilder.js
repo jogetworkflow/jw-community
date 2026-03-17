@@ -4834,10 +4834,12 @@ ProcessBuilder = {
                     },{
                         name: 'actualParameters',
                         label: get_cbuilder_msg("pbuilder.label.parameters"),
+                        description: get_cbuilder_msg("pbuilder.label.actualParameter.tooltip") + ' <a href="https://kb.joget.org/jw/web/userview/jdocs/docs/DX9/standard-subflow-with-parameters" target="_blank">' + get_cbuilder_msg("pbuilder.label.learnMore") + '</a>',
                         type: 'grid',
                         columns: [{
                             key: 'actualParameter',
-                            label: get_cbuilder_msg("pbuilder.label.actualParameter")
+                            label: get_cbuilder_msg("pbuilder.label.actualParameter"),
+                            options_callback: "ProcessBuilder.getWorkflowVariablesOptions"
                         }]
                     }]
                 },{

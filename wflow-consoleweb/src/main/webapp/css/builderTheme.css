@@ -1391,6 +1391,10 @@ body[builder-theme] .tooltipster-sidetip .tooltipster-content{
 body[builder-theme] .property-description {
     font-size: 13px;
 }
+body[builder-theme] .tooltipster-base .property-description a {
+    color: #1a73e8;
+    text-decoration: underline;
+}
 body[builder-theme] .tooltipster-sidetip.tooltipster-right .tooltipster-arrow-background{
     border-right-color: rgba(0, 0, 0, 0.85);
 }
