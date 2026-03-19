@@ -13,6 +13,7 @@
         <css>/js/jquery/themes/ui-lightness/jquery-ui-override.css</css>
         <css>/js/fontawesome6/css/all.min.css</css>
         <css>/js/line-awesome-1.3.0/css/line-awesome.min.css</css>
+        <css>/universal/lib/material-design-iconic-font/css/material-design-iconic-font.min.css</css>
         <css>/js/jquery/flexigrid/css/flexigrid/flexigrid.css</css>
         <css>/js/guiders/guiders-1.1.1.css</css>
         <css>/js/boxy/stylesheets/boxy.css</css>

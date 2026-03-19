@@ -31,7 +31,9 @@
 
 /* Fix for spreadsheet being blocked by subform-section sibling */
 .form-column>.form-cell>.subform-container>.subform-section:has(.spreadsheet), 
-.form-column>.subform-cell>.subform-container>.subform-section:has(.spreadsheet) {
+.form-column>.subform-cell>.subform-container>.subform-section:has(.spreadsheet),
+.form-column>.form-cell>.subform-container>.subform-section:has(.chosen-container.chosen-with-drop), 
+.form-column>.subform-cell>.subform-container>.subform-section:has(.chosen-container.chosen-with-drop){
     z-index: 3;
 }
 /* End of Fix */

@@ -85,6 +85,9 @@ public class FormDataDaoImpl implements FormDataDao {
     public static final String FORM_PREFIX_COLUMN = "c_";
     public static final int ACTION_TYPE_LOAD = 0;
     public static final int ACTION_TYPE_STORE = 1;
+    public static final Set<String> RESERVED_KEYWORDS = Collections.unmodifiableSet(
+        new HashSet<>(java.util.Arrays.asList("class", "true", "false", "null"))
+    );
     
     private FormDefinitionDao formDefinitionDao;
     private BuilderDefinitionDao builderDefinitionDao;
@@ -548,6 +551,21 @@ public class FormDataDaoImpl implements FormDataDao {
         try {
             // save the form data
             for (FormRow row : rowSet) {
+                // check for bad keys
+                Map<String, Object> temp = new HashMap<>();
+                for (Object key : row.keySet()) {
+                    String oldKey = String.valueOf(key);
+                    String newKey = oldKey;
+                    if (oldKey != null && !oldKey.isEmpty() && (Character.isDigit(oldKey.charAt(0)) || RESERVED_KEYWORDS.contains(oldKey.toLowerCase()))) {
+                        newKey = "t__" + key;
+                    }
+                    temp.put(newKey, row.get(key));
+                }
+
+                // clear and replace row values
+                row.clear();
+                row.putAll(temp);
+
                 session.merge(entityName, row);
             }
             session.flush();
@@ -953,7 +971,7 @@ public class FormDataDaoImpl implements FormDataDao {
                                     propertyName = propertyName.substring(3);
                                 }
                                 found = formFields.contains(propertyName);
-                                if (!found) {
+                                if (!found || RESERVED_KEYWORDS.contains(property.getName().toLowerCase())) {
                                     // property not found, fields changed
                                     changes = true;
                                     break;
@@ -1127,7 +1145,7 @@ public class FormDataDaoImpl implements FormDataDao {
             String columnName = FORM_PREFIX_COLUMN + field;
             if (propName != null && !propName.isEmpty()) {
                 String propType = "text";
-                if (actionType == ACTION_TYPE_LOAD && Character.isDigit(propName.charAt(0))) {
+                if (actionType == ACTION_TYPE_LOAD && (Character.isDigit(propName.charAt(0)) || RESERVED_KEYWORDS.contains(propName.toLowerCase()))) {
                     propName = "t__" + propName;
                 }
                 element.setAttribute("name", propName);
@@ -1850,12 +1868,27 @@ public class FormDataDaoImpl implements FormDataDao {
             if (result != null) {
                 return result;
             }
-                
-            Pattern pattern = Pattern.compile("(\\w+\\.customProperties\\.)([0-9]\\w+)");
+
+            Pattern pattern = Pattern.compile("(\\w+\\.customProperties\\.)([0-9a-zA-Z_][0-9a-zA-Z_]*)");
             Matcher matcher = pattern.matcher(query);
+            StringBuffer sb = new StringBuffer();
+            
             while (matcher.find()) {
-                query = query.replaceAll(StringUtil.escapeRegex(matcher.group()), StringUtil.escapeRegex(matcher.group(1)) + "t__" + StringUtil.escapeRegex(matcher.group(2)));
+                String firstGroup = matcher.group(1);
+                String secondGroup = matcher.group(2);
+
+                // Check if property name starts with digit or is a reserved keyword
+                if ((secondGroup.length() > 0 && Character.isDigit(secondGroup.charAt(0))) || RESERVED_KEYWORDS.contains(secondGroup.toLowerCase())) {
+                    // Add t__ prefix if not already present
+                    if (!secondGroup.startsWith("t__")) {
+                        secondGroup = "t__" + secondGroup;
+                    }
+                }
+
+                matcher.appendReplacement(sb, StringUtil.escapeRegex(firstGroup) + StringUtil.escapeRegex(secondGroup));
             }
+            matcher.appendTail(sb);
+            query = sb.toString();
             // save into cache
             processedQueryCache.put(cacheKey, query);                       
         } catch (Exception e) {

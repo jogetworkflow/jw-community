@@ -3075,6 +3075,25 @@ PropertyEditor.Model.Type.prototype = {
             }
             value += `<script>${script}</script>`;
         }
+
+         if (this.properties.name === 'id' && this.properties.js_validation !== undefined && typeof CustomBuilder !== "undefined" && CustomBuilder?.builderType === 'form') {
+            const numericScript =
+                `$('#${this.id}').on('input', function() {
+                    const numericText = get_cbuilder_msg('fbuilder.warn.numericIdStart');
+                    if (/^\\d/.test(this.value)) {
+                        PropertyEditor.Util.addFieldWarning($('#${this.id}_input'), numericText);
+                    } else {
+                        PropertyEditor.Util.removeFieldWarning($('#${this.id}_input'), numericText);
+                    }
+                });`
+            // show warning immediately if current value starts with a digit
+            if (/^\d/.test(this.value)) {
+                const numericText = get_cbuilder_msg('fbuilder.warn.numericIdStart');
+                value += PropertyEditor.Util.getFieldWarningHtml(numericText);
+            }
+            value += `<script>${numericScript}</script>`;
+        }
+
         return value;
     },
     renderField: function() {
@@ -10045,7 +10064,7 @@ PropertyEditor.Type.CodeEditor.prototype = {
           });
 
         thisObj.codeeditor.execCommand("replace");
-        $('#' + thisObj.id).find(".CodeMirror-advanced-dialog").css({display: 'none'})
+        $('#' + thisObj.id).find(".CodeMirror-advanced-dialog").css({display: 'none'});
 
         if (this.properties.mode !== undefined && this.properties.mode !== "") {
             if (this.properties.mode === "html"){

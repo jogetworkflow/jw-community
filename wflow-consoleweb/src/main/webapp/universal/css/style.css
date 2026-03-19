@@ -781,7 +781,13 @@ li.breadcrumb-item {
     right: 25px;
     left: auto;
 }
-
+.main-menu.nav-tabs > li > ul >li >a > span >i {
+  margin-right: 5px;
+}
+body.rtl .main-menu.nav-tabs > li > ul >li >a > span >i {
+  margin-left: 5px;
+  margin-right:unset;
+}
 .main-menu.nav-tabs > li.mm-profile a {
     padding: 30px 20px 20px 65px;
 }
@@ -852,6 +858,9 @@ body.rtl .badge{
     white-space: normal;
     word-wrap: break-word;
 }
+body.rtl #sidebar li ul>li:first-child>a {
+    padding-top: 14px;
+}
 body.rtl #sidebar li ul>li>a > span:first-child{
     float: right !important;
 }
@@ -863,9 +872,6 @@ body.rtl #sidebar li ul>li>a > span:first-child{
     color: rgba(255,255,255,.4);
 }
 
-#sidebar li ul>li>a > span > i {
-    display:none;
-}
 
 #sidebar li>a.dropdown:after,
 #sidebar li>a.dropdown:before {

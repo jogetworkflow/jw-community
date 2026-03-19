@@ -1072,6 +1072,7 @@ body.rtl .calculationField_value {
         padding: 1px 15px;
         padding-bottom: 8px;
         cursor: pointer;
+        float: left;
     }
     .rtl .multiPagedForm.wizard .page-nav-panel .nav_item {
         padding-left: 15px;

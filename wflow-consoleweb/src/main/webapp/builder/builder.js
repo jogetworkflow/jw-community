@@ -5451,7 +5451,17 @@ window._CustomBuilder.Builder = {
      */
     selectFirst:  function() {
         var self = CustomBuilder.Builder;
-        var first = self.frameBody.find('[data-cbuilder-classname]:not([data-cbuilder-uneditable])').first();
+        if ($("body").hasClass("process")) {
+            const nodes = ProcessBuilder.lf.getGraphData().nodes;
+
+            if (nodes && nodes.length > 0) {
+                var first = ProcessBuilder.selectElementById(nodes[0].id);
+            } else {
+                var first = ProcessBuilder.editProcess();
+            }
+        } else {
+            var first = self.frameBody.find('[data-cbuilder-classname]:not([data-cbuilder-uneditable])').first();
+        }
         if (first) {
             self.selectNode(first, false);
         }
@@ -7349,9 +7359,9 @@ window._CustomBuilder.Builder = {
             var props = self.parseElementProps(elementObj);
             if (props.tagName !== undefined && props.tagName !== "") {
                 var newTemp = document.createElement(props.tagName);
-                attributes = temp[0].attributes;
+                let attributes = temp[0].attributes;
                 let len;
-                for (i = 0, len = attributes.length; i < len; i++) {
+                for (let i = 0, len = attributes.length; i < len; i++) {
                     newTemp.setAttribute(attributes[i].nodeName, attributes[i].nodeValue);
                 }
                 temp = $(newTemp);
