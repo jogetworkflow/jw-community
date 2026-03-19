@@ -2040,6 +2040,12 @@ span.dot_yellow{
     width: 15px;
 }
 
+/* Code Detail Stylings */
+/* To prevent double scroll to appear */
+pre#code_detail {
+    box-sizing: border-box;
+}
+
 /* quick overlay frame */
 #main-header, #footer, #adminBar {
     display:none !important;

@@ -611,7 +611,7 @@ AppBuilder = {
                             var height = UI.getPopUpHeight("");
                             $("iframe#overview_data_more_detail").css("width", width + "px");
                             $("iframe#overview_data_more_detail").css("height", height + "px");
-                            $(frameBody).find("#main-body-content").css("height", (height - 53) + "px");
+                            $(frameBody).find("#main-body-content")[0].style.setProperty("height", (height - 53) + "px", "important");
                             
                             //create code editor to show code
                             $(frameBody).find("#main-body-content").html('<div id="code_detail" name="code_detail" class="code-editor" style="width:100%; height:100%"></pre>');
@@ -674,6 +674,15 @@ AppBuilder = {
                             //show the popup
                             JPopup.dialogboxes["overview_data_more_detail"].show();
                             UI.adjustPopUpDialog(JPopup.dialogboxes["overview_data_more_detail"]);
+
+                            // Add necessary padding
+                            var headerHeight = $(frameBody).find("#main-body-header").outerHeight();
+                            var mainBodyHeight = $(frameBody).find("#main-body-content").outerHeight() - headerHeight;
+                            $(frameBody).css("padding-top", headerHeight + 'px');
+                            setTimeout(function () {
+                                $(frameBody).find("#main-body-content")[0].style.setProperty("height", (mainBodyHeight) + "px", "important");
+                                aceField.resize();
+                            }, 50);
                         };
                         
                         $("#builders")
@@ -684,9 +693,15 @@ AppBuilder = {
                                     JPopup.create("overview_data_more_detail", "", "", "");
                                     $("iframe#overview_data_more_detail")[0].src = CustomBuilder.contextPath+'/builder/popup.jsp';
                                     $("iframe#overview_data_more_detail").on("load", function(){
+                                        var frameHtml = $($("iframe#overview_data_more_detail")[0].contentWindow.document).find("html");
                                         var frameBody = $($("iframe#overview_data_more_detail")[0].contentWindow.document).find("body");
                                         $(frameBody).find("#main-body-content").css("padding", "0px");
                                         
+                                        //Set builder theme
+                                        const theme = $("body").attr("builder-theme");
+                                        $(frameBody).attr('builder-theme', theme);
+                                        $(frameHtml).attr('builder-theme', theme);
+
                                         //wait for ace editor available
                                         while (!codeEditor) {
                                             codeEditor = $("iframe#overview_data_more_detail")[0].contentWindow.CodeMirror;

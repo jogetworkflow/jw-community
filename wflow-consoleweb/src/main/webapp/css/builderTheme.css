@@ -2050,6 +2050,10 @@ body[builder-theme] .property-input .multiple_option label {
 body[builder-theme].popupBody #main-body-header i{
     margin-right: 5px;
 }
+body[builder-theme].popupBody.rtl #main-body-header i{
+    margin-left: 5px;
+    margin-right: 0px;
+}
 body[builder-theme] .css-styles-container .style-group > h6 {
     background: var(--theme-primary-color-3);
     color: var(--theme-label-color-2);
@@ -2414,7 +2418,7 @@ body[builder-theme='dark'] #left-panel-toogle {
 }
 /* scrollbar */
 body[builder-theme='dark'] * {
-    scrollbar-color: rgba(0, 0, 0, 0.1) var(--theme-primary-color-2);
+    scrollbar-color: #888 #2a2a2a;
     scrollbar-width: thin; 
 }
 body[builder-theme='dark'] *::-webkit-scrollbar {

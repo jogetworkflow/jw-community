@@ -1031,7 +1031,7 @@ public class UniversalTheme extends UserviewV5Theme implements UserviewPwaTheme,
     }
     
     protected String getBreadcrumb(Map<String, Object> data) {
-        String breadcrumb = "<ul class=\"breadcrumb\"><li class=\"breadcrumb-item\"><i class=\"fa fa-home\"></i> <a href=\"" + data.get("home_page_link") + "\">" + ResourceBundleUtil.getMessage("theme.universal.home") + "</a></li>";
+        String breadcrumb = "<ul class=\"breadcrumb\"><li class=\"breadcrumb-item\"><a href=\"" + data.get("home_page_link") + "\">" + ResourceBundleUtil.getMessage("theme.universal.home") + "</a> <i class=\"fa fa-angle-right\"></i></li>";
         if ((Boolean) data.get("is_login_page") || (Boolean) data.get("embed")) {
             return "";
         } else if (userview.getCurrent() != null) {
