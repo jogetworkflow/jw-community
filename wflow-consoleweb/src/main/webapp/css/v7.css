@@ -72,6 +72,9 @@ button#filter-btn {
     color: #fff !important;
     border-color: var(--console-button-primary-bg) !important;
 }
+.dialog-btn-primary:focus-visible{
+    box-shadow: 0 0 0 3px color-mix(in srgb, var(--console-button-primary-bg) 50%, transparent);
+}
 .console-primary:hover, .console-primary:active, .console-primary:focus,
 .dialog-btn-primary:hover, .dialog-btn-primary:active {
     background: var(--console-button-primary-bg-hover) !important;
@@ -94,6 +97,9 @@ button#filter-btn {
     background: var(--console-button-tertiary-bg-hover) !important;
     color: var(--console-button-primary-bg) !important;
     border-color: var(--console-button-primary-bg) !important;
+}
+.dialog-btn-tertiary:focus-visible{
+    box-shadow: 0 0 0 3px color-mix(in srgb, var(--console-button-primary-bg) 50%, transparent);
 }
 ul, li{
     margin:0;

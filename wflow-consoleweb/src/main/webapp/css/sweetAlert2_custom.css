@@ -68,7 +68,9 @@ body.rtl .dialog-swal-popup .swal2-html-container li{
     color: var(--jgt-btn-primaryColor, #FFFFFF) !important;
     background: var(--jgt-btn-colorPrimary, var(--console-button-primary-bg, #009265)) !important;
     border-color: var(--jgt-btn-colorPrimary, var(--console-button-primary-bg, #009265)) !important;
-    box-shadow: var(--jgt-btn-primaryShadow);
+}
+.dialog-btn-primary:focus-visible{
+    box-shadow: 0 0 0 3px color-mix(in srgb, var(--jgt-btn-colorPrimary, var(--console-button-primary-bg, #009265)) 50%, transparent);
 }
 .dialog-btn-primary:hover, .dialog-btn-primary:active{
     color: var(--jgt-btn-primaryColor, #FFFFFF) !important;
@@ -79,7 +81,9 @@ body.rtl .dialog-swal-popup .swal2-html-container li{
     color: var(--jgt-btn-dangerColor, #FFFFFF) !important;
     background: var(--jgt-btn-colorError, var(--console-button-danger-bg, #dc3545)) !important;
     border-color: var(--jgt-btn-colorError, var(--console-button-danger-bg, #dc3545)) !important;
-    box-shadow: var(--jgt-btn-dangerShadow);
+}
+.dialog-btn-danger:focus-visible{
+    box-shadow: 0 0 0 3px color-mix(in srgb, var(--jgt-btn-colorError, var(--console-button-danger-bg, #dc3545)) 50%, transparent);
 }
 .dialog-btn-danger:hover, .dialog-btn-danger:active{
     color: var(--jgt-btn-dangerColor, #FFFFFF) !important;
@@ -90,7 +94,9 @@ body.rtl .dialog-swal-popup .swal2-html-container li{
     color: var(--jgt-btn-defaultColor, var(--console-button-primary-bg, #009265)) !important;
     background: var(--jgt-btn-defaultBg, transparent) !important;
     border-color: var(--jgt-btn-defaultBorderColor, var(--console-button-primary-bg, #009265)) !important;
-    box-shadow: var(--jgt-btn-defaultShadow);
+}
+.dialog-btn-tertiary:focus-visible{
+    box-shadow: 0 0 0 3px color-mix(in srgb, var(--jgt-btn-defaultBorderColor, var(--console-button-primary-bg, #009265)) 50%, transparent);
 }
 .dialog-btn-tertiary:hover, .dialog-btn-tertiary:active{
     color: var(--jgt-btn-defaultHoverColor, var(--console-button-primary-bg, #009265)) !important;
@@ -99,4 +105,7 @@ body.rtl .dialog-swal-popup .swal2-html-container li{
 }
 .swal2-actions button:before{
     content: none !important;
+}
+.swal2-input{
+    width: auto !important;
 }

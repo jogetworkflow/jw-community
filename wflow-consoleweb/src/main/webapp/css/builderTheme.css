@@ -1734,7 +1734,7 @@ body[system-theme] .flexigrid div.pDiv div.pDiv2 {
     width: 100%;
     color: var(--theme-label-color-2);
 }
-body[builder-theme] button,
+body[builder-theme] button:not(.swal2-styled),
 body[builder-theme] input[type='button'],
 body[builder-theme] input[type='submit'],
 body[builder-theme] .smallbutton,
