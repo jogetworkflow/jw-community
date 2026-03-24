@@ -8,23 +8,29 @@ import org.json.JSONObject;
 
 public class AppLogInfoHelperImpl extends LogInfoHelperImpl {
 
+    private static final ThreadLocal<Boolean> IN_PROGRESS = ThreadLocal.withInitial(() -> false);
+
     @Override
     public String prepareAdditionalLogMessage(String className, String level, String message) {
         if ("ERROR".equals(level) || "DEBUG".equals(level)) {
-            JSONObject logInfo = new JSONObject();
-            
+            if (IN_PROGRESS.get()) {
+                return message;
+            }
+            IN_PROGRESS.set(true);
             try {
+                JSONObject logInfo = new JSONObject();
                 logInfo.put("message", message != null ? message : "");
                 logInfo.put("username", getCurrentUsername());
                 logInfo.put("url", getCurrentUrl());
                 logInfo.put("thread", Thread.currentThread().getName());
                 logInfo.put("params", getIdParameters());
+                return logInfo.toString();
             } catch (Exception e) {
                 // Fallback to simple format if JSON creation fails
                 return message;
+            } finally {
+                IN_PROGRESS.remove();
             }
-            
-            return logInfo.toString();
         }
         return message;
     }
