@@ -3519,6 +3519,14 @@ window._CustomBuilder = {
             if ($(event.target).closest('.swal2-container, .swal2-popup').length > 0) {
                 return;
             }
+            //Ignore for property assistant click
+            if ($(event.target).closest('#propertyAssistantDialog').length > 0 || $('#propertyAssistantDialog').is(':visible')) {
+                return;
+            }
+            //Ignore for boxy modal blackout when property assistant is open
+            if ($(event.target).closest('.boxy-modal-blackout').length > 0 && $('#propertyAssistantDialog').is(':visible')) {
+                return;
+            }
             // Ignore if the right panel is not in window mode or is hidden
             if (!$("body").hasClass("right-panel-mode-window") || $("body").hasClass("no-right-panel")) {
                 return;
