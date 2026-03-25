@@ -1700,6 +1700,12 @@ body.rtl  .grid.adgrid .editor-cell .hasDatepicker+a+a {
         top: unset;
         bottom: 6px;
     }
+    .form-cell>label.label+*:not(.ui-screen-hidden),
+    .subform-cell>label.label+*:not(.ui-screen-hidden),
+    .form-cell>label.label+.ui-screen-hidden+*,
+    .subform-cell>label.label+.ui-screen-hidden+*{
+        --jgt-form-fieldWidth: 100%;
+    }
 }
 
 @media screen and (max-width:39.9375em) {
