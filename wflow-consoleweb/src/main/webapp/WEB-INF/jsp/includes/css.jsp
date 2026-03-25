@@ -13,6 +13,6 @@
     <link rel="stylesheet" type="text/css" href="<c:out value="${css}"/>?build=<fmt:message key="build.number"/>">
     </c:if>
     <style>
-    <c:out value="${customCss}"/>
+    <c:out value="${customCss}" escapeXml="false"/>
     </style>
 </c:if>
