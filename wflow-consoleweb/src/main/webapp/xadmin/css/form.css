@@ -699,51 +699,18 @@ body.largeFontSize .hasDatepicker + a + a {
 body input.hasDatepicker {
     width: 50%;
 }
-body.rtl .hasDatepicker + a, body.rtl .hasDatepicker + a + a {
-    right: unset;
-    left: -0.5rem;
+.datapicker-native.ui-screen-hidden.ios {
+    right: 15px;
 }
-body.rtl .hasDatepicker + a + a {
-    right: unset;
-    left: 0.8rem;
+body.rtl .datapicker-native.ui-screen-hidden.ios,
+body.rtl .datapicker-native.ui-screen-hidden.ios.manual {
+    left: 15px;
 }
-body.rtl.mediumFontSize .hasDatepicker + a, body.rtl.mediumFontSize .hasDatepicker + a + a {
-    left: -1.4rem;
-}
-body.rtl.mediumFontSize .hasDatepicker + a + a {
-    left: 0.3rem;
-}
-body.rtl.largeFontSize .hasDatepicker + a, body.rtl.largeFontSize .hasDatepicker + a + a {
-    left: -1.8rem;
-}
-body.rtl.largeFontSize .hasDatepicker + a + a {
-    left: 0;
-}
-.label-top .hasDatepicker + a, .label-top .hasDatepicker + a + a {
-    top: auto;
-    bottom: 1.6rem;
-}
-.mediumFontSize .label-top .hasDatepicker + a, .mediumFontSize .label-top .hasDatepicker + a + a {
-    top: auto;
-    bottom: 1.8rem;
-}
-.largeFontSize .label-top .hasDatepicker + a, .largeFontSize .label-top .hasDatepicker + a + a {
-    top: auto;
-    bottom: 2rem;
-}
-@media (max-width: 768px) {
-    body.largeFontSize .hasDatepicker + a, body.largeFontSize .hasDatepicker + a + a {
-        right: -1.2rem;
-    }
-    body.largeFontSize .hasDatepicker + a + a {
-        right: 0.8rem;
-    }
-}
-@media (max-width: 480px) {
-    .hasDatepicker + a, .hasDatepicker + a + a {
-        top: auto;
-        bottom: 1rem;
-    }
+
+/* Advanced Grid - datepicker */
+body .adgrid input.hasDatepicker {
+    width: 85%;
+    max-width: 75%;
 }
 body .filter-cell .hasDatepicker + a, body .filter-cell .hasDatepicker + img {
     right: auto;

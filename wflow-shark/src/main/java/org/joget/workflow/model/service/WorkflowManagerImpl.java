@@ -9,10 +9,8 @@ import com.lutris.dods.builder.generator.query.NonUniqueQueryException;
 import com.lutris.dods.builder.generator.query.QueryException;
 import java.text.SimpleDateFormat;
 import java.lang.reflect.Field;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Iterator;
-import java.util.Map;
+import java.util.*;
+import java.util.concurrent.TimeoutException;
 
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
@@ -50,16 +48,8 @@ import org.enhydra.shark.utilities.WMEntityUtilities;
 
 import org.joget.workflow.shark.JSPClientUtilities;
 import org.joget.workflow.util.WorkflowUtil;
-import java.util.Arrays;
-import java.util.Calendar;
-import java.util.Collections;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Set;
-import java.util.TreeMap;
-import java.util.concurrent.TimeoutException;
-import jakarta.transaction.TransactionManager;
+
+import javax.transaction.TransactionManager;
 import org.apache.commons.collections.SequencedHashMap;
 import org.apache.commons.lang.StringEscapeUtils;
 import org.enhydra.shark.CustomWfActivityImpl;
@@ -1409,7 +1399,7 @@ public class WorkflowManagerImpl implements SharkWorkflowManager {
     public Collection<WorkflowActivity> getActivityList(String processId, Integer start, Integer rows, String sort, Boolean desc) {
 
         SharkConnection sc = null;
-        Collection<WorkflowActivity> activityList = new ArrayList<WorkflowActivity>();
+        List<WorkflowActivity> activityList = new ArrayList<>();
 
         int activitySize = 0;
 
@@ -1440,12 +1430,16 @@ public class WorkflowManagerImpl implements SharkWorkflowManager {
                 if (desc == null) {
                     desc = false;
                 }
-                if (sort.equals("id")) {
-                    filter = aieb.setOrderById(sessionHandle, filter, !desc);
-                } else if (sort.equals("name")) {
-                    filter = aieb.setOrderByName(sessionHandle, filter, !desc);
-                } else {	
-                    filter = aieb.setOrderByActivatedTime(sessionHandle, filter, !desc);
+                switch (sort) {
+                    case "id":
+                        filter = aieb.setOrderById(sessionHandle, filter, !desc);
+                        break;
+                    case "name":
+                        filter = aieb.setOrderByName(sessionHandle, filter, !desc);
+                        break;
+                    default:
+                        filter = aieb.setOrderByActivatedTime(sessionHandle, filter, !desc);
+                        break;
                 }
             }
 
@@ -1479,6 +1473,11 @@ public class WorkflowManagerImpl implements SharkWorkflowManager {
                 activityList.add(workflowActivity);
             }
 
+            // if "state" is the sort field, sort it after the query
+            if ("state".equals(sort)) {
+                Comparator<WorkflowActivity> comparator = Comparator.comparing(WorkflowActivity::getState);
+                activityList.sort(desc ? comparator.reversed() : comparator);
+            }
 
         } catch (Exception ex) {
 

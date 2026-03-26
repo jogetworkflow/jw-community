@@ -207,8 +207,8 @@ public final class AppMessageReplacer {
 
             // Get the key and replacement
             String key = m.group(2);
-            String replacement = appMessages.getOrDefault(key, key);
-            sb.append(replacement);
+            String replacement = appMessages.get(key);
+            sb.append(replacement != null ? replacement : m.group(1));
 
             lastEnd = m.end();
         }

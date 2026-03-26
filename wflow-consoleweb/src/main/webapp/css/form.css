@@ -432,6 +432,9 @@ img.ui-datepicker-trigger {
     left: 15px;
     bottom: 0px;
 }
+.adgrid .datapicker-native.ui-screen-hidden{
+    bottom: unset;
+}
 body input.no-manual-input{
     cursor: text;
     background-color: #fff;
@@ -440,21 +443,35 @@ body input.no-manual-input{
     z-index: 4;
 }
 .datapicker-native.ui-screen-hidden.ios {
-    right: 15px;
+    right: 0px;
+    left: 0px;
     top: unset;
-    bottom: 0px;
+    bottom: unset;
     z-index: 2;
     opacity: 0;
     width: auto;
     visibility: unset;  
 }
+body.rtl .datapicker-native.ui-screen-hidden.ios{
+    width: 25px;
+    right: unset;
+}
 .datapicker-native.ui-screen-hidden.ios input{
     width:100%;
     -webkit-appearance: none;
+    padding:0px;
 }
 .datapicker-native.ui-screen-hidden.ios.manual{
     left:unset;
     width: 25px;
+}
+body.rtl .datapicker-native.ui-screen-hidden.ios.manual{
+    left: 0px;
+}
+
+/* Advanced Grid - datepicker */
+body.rtl .adgrid .datapicker-native.ui-screen-hidden.ios.manual{
+    right: unset;
 }
 
 .trigger:hover, .close-icon:hover{
@@ -1016,14 +1033,22 @@ body.rtl .label-top .selector_item{
     display: none;  /* Safari and Chrome */
 }
 .handsontable .file_delete {color:#EA5858; display:inline-block; margin:0 10px; cursor:pointer;}
-.handsontableInputHolder .handsontableEditor {height: auto !important; overflow: visible !important; position: relative !important; top: 0 !important;}
+.handsontableInputHolder .handsontableEditor {
+    height: auto !important; 
+    overflow: visible !important; 
+    position: relative !important; 
+    top: 0 !important;
+    width: auto !important;
+    min-width: 100%;
+}
 .handsontableInputHolder .handsontableEditor .ht_master .wtHolder {height: auto !important; max-height: 230px;}
 .form-cell .handsontable table td, .form-cell .handsontable table th, .subform-cell .handsontable table td, .subform-cell .handsontable table th {padding: 0 4px;}
 body.rtl .ht_clone_left, body.rtl .ht_clone_top, body.rtl .ht_clone_top_left_corner  { left: unset !important; right:0;}
 body.rtl .handsontable .htCore tr th:last-child, body.rtl .handsontable .htCore tr td:last-child {border-left-width:1px !important;}
 
 .ht_editor_visible .ht_master .wtHolder{
-    max-width: fit-content;
+    width: auto !important;
+    min-width: 100%;
     overflow-x: hidden;
 }
 
