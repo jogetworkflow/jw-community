@@ -22,15 +22,21 @@ import org.springframework.context.i18n.LocaleContext;
 import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.context.i18n.TimeZoneAwareLocaleContext;
 import org.springframework.web.servlet.i18n.SessionLocaleResolver;
-import static org.springframework.web.servlet.i18n.SessionLocaleResolver.LOCALE_SESSION_ATTRIBUTE_NAME;
-import static org.springframework.web.servlet.i18n.SessionLocaleResolver.TIME_ZONE_SESSION_ATTRIBUTE_NAME;
 import org.springframework.web.util.WebUtils;
 
 public class LocalLocaleResolver extends SessionLocaleResolver implements LocaleResolver, I18nResourceProvider{
     private WorkflowUserManager workflowUserManager;
     private DirectoryManager directoryManager;
     private SetupManager setupManager;
-    
+
+    // Since Spring 6.0, we have to set the default locale and timezone functions to our own functions using
+    // setDefaultLocaleFunction and setDefaultTimeZoneFunction so that it can properly resolve user locale and timezone
+    // when calling super.resolveLocale
+    {
+        setDefaultLocaleFunction(this::determineDefaultLocale);
+        setDefaultTimeZoneFunction(this::determineDefaultTimeZone);
+    }
+
     public static final String UNDEFINED_KEY = "???"; //$NON-NLS-1$
     public static final String PARAM_NAME = "_lang";
     public static final Locale DEFAULT = new Locale("en", "US");
@@ -154,11 +160,7 @@ public class LocalLocaleResolver extends SessionLocaleResolver implements Locale
                 session.setAttribute(TIMEZONE_OF_USER, getWorkflowUserManager().getCurrentUsername());
             }
         }
-        
-        this.setDefaultTimeZone(timezone);
-            
-        this.setDefaultTimeZone(timezone);
-            
+
         return timezone;
     }
             
@@ -223,8 +225,6 @@ public class LocalLocaleResolver extends SessionLocaleResolver implements Locale
                         locale = new Locale(temp[0], temp[1], temp[2]);
                     }
 
-                    Locale.setDefault(DEFAULT);
-
                     if (request != null) {
                         request.setAttribute(DEFAULT_LOCALE_KEY, locale);
                         
@@ -254,9 +254,7 @@ public class LocalLocaleResolver extends SessionLocaleResolver implements Locale
                 session.setAttribute(LOCALE_OF_USER, getWorkflowUserManager().getCurrentUsername());
             }
         }
-        
-        setDefaultLocale(locale);
-            
+
         return locale;
     }
     
