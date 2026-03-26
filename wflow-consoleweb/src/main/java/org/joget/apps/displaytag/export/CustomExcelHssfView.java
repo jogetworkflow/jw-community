@@ -24,11 +24,19 @@ import org.displaytag.model.Row;
 import org.displaytag.model.RowIterator;
 import org.displaytag.model.TableModel;
 import org.displaytag.model.TableModelWrapper;
+import org.joget.apps.app.dao.FormDefinitionDao;
+import org.joget.apps.app.model.AppDefinition;
+import org.joget.apps.app.model.FormDefinition;
+import org.joget.apps.app.service.AppUtil;
 import org.joget.apps.datalist.model.DataList;
 import org.joget.apps.datalist.model.DataListColumn;
 import org.joget.apps.datalist.model.DataListColumnFormat;
 import org.joget.apps.datalist.model.DataListExcelExportFormatter;
 import org.joget.apps.datalist.model.DataListExcelWriter;
+import org.joget.apps.form.model.Element;
+import org.joget.apps.form.model.Form;
+import org.joget.apps.form.service.FormService;
+import org.joget.apps.form.service.FormUtil;
 import org.joget.commons.util.LogUtil;
 
 public class CustomExcelHssfView implements BinaryExportView {
@@ -71,6 +79,12 @@ public class CustomExcelHssfView implements BinaryExportView {
     private Map<Integer, DataListExcelExportFormatter> formatter = new HashMap<Integer, DataListExcelExportFormatter>();
 
     /**
+     * Column index → style preference ("us" / "euro"), populated from the form
+     * element definitions during {@link #setParameters}.
+     */
+    private Map<Integer, String> colPreferences = new HashMap<>();
+
+   /**
      * @see org.displaytag.export.ExportView#setParameters(TableModel, boolean, boolean, boolean)
      */
     public void setParameters(TableModel tableModel, boolean exportFullList, boolean includeHeader,
@@ -81,29 +95,26 @@ public class CustomExcelHssfView implements BinaryExportView {
         this.decorated = decorateValues;
         
         PageContext pageContext = (new TableModelWrapper(tableModel)).getPageContext();
-        if (pageContext != null) {
-            datalist = (DataList) pageContext.findAttribute("dataList");
-            
-            if (datalist != null) {
-                DataListColumn[] columns = datalist.getColumns();
-                Collection<DataListColumnFormat> formats;
-                DataListExcelExportFormatter ef;
-                for (int i = 0; i < columns.length; i++) {
-                    formats = columns[i].getFormats();
-                    if (formats != null && !formats.isEmpty()) {
-                        for (DataListColumnFormat f : formats) {
-                            if (f instanceof DataListExcelExportFormatter) {
-                                ef = (DataListExcelExportFormatter) f;
-                                if (ef.isExcelBeforeRow()) {
-                                    isBeforeRow = true;
-                                }
-                                if (ef.isExcelAfterRow()) {
-                                    isAfterRow = true;
-                                }
-                                formatter.put(i, ef);
-                            }
-                        }
-                    }
+        if (pageContext == null) return;
+
+        datalist = (DataList) pageContext.findAttribute("dataList");
+        if (datalist == null) return;
+
+        DataListColumn[] columns = datalist.getColumns();
+
+        // Read numeric style preferences from the bound form
+        loadColumnStylePreferences(columns);
+
+        // Collect per-row Excel formatter hooks
+        for (int i = 0; i < columns.length; i++) {
+            Collection<DataListColumnFormat> formats = columns[i].getFormats();
+            if (formats == null) continue;
+            for (DataListColumnFormat f : formats) {
+                if (f instanceof DataListExcelExportFormatter) {
+                    DataListExcelExportFormatter ef = (DataListExcelExportFormatter) f;
+                    if (ef.isExcelBeforeRow()) isBeforeRow = true;
+                    if (ef.isExcelAfterRow())  isAfterRow  = true;
+                    formatter.put(i, ef);
                 }
             }
         }
@@ -127,6 +138,8 @@ public class CustomExcelHssfView implements BinaryExportView {
             Iterator iterator = null;
             HeaderCell headerCell = null;
             String columnHeader = null;
+            
+            colPreferences.forEach(writer::setColumnPreference);
             if (this.header) {
                 // Create an header row
                 writer.createNewRow();
@@ -169,7 +182,7 @@ public class CustomExcelHssfView implements BinaryExportView {
                         col++;
                     }
                 }
-                
+
                 writer.createNewRow();
                 // iterator on columns
                 columnIterator = row.getColumnIterator(this.model.getHeaderCellList());
@@ -180,8 +193,8 @@ public class CustomExcelHssfView implements BinaryExportView {
                     value = column.getValue(this.decorated);
                     writer.addCell(value);
                 }
-                
-                if (isAfterRow) {
+
+               if (isAfterRow) {
                     // iterator on columns
                     columnIterator = row.getColumnIterator(this.model.getHeaderCellList());
                     col = 0;
@@ -200,7 +213,7 @@ public class CustomExcelHssfView implements BinaryExportView {
             writer.adjustColumnWidth();
             wb.write(out);
         } catch (Exception e) {
-            LogUtil.error(CustomExcelHssfView.class.getName(), e, "");
+            LogUtil.error(CustomExcelHssfView.class.getName(), e, "Error during Excel export");
             throw new RuntimeException(e.getLocalizedMessage());
         } finally {
             if (wb != null) {
@@ -211,7 +224,48 @@ public class CustomExcelHssfView implements BinaryExportView {
             }
         }
     }
-    
+
+    /**
+     * Walk each DataList column and look up the matching form element.
+     * If the element carries a {@code "style"} property ("us" or "euro"), store
+     * that as a column preference so the writer can resolve ambiguous numbers.
+     */
+    private void loadColumnStylePreferences(DataListColumn[] columns) {
+        try {
+            AppDefinition appDef = AppUtil.getCurrentAppDefinition();
+            if (appDef == null) return;
+
+            String formDefId = datalist.getBinder() != null
+                               ? (String) datalist.getBinder().getProperty("formDefId")
+                               : null;
+            if (StringUtils.isBlank(formDefId)) return;
+
+            FormDefinitionDao formDefinitionDao =
+                (FormDefinitionDao) AppUtil.getApplicationContext().getBean("formDefinitionDao");
+            FormService formService =
+                (FormService) AppUtil.getApplicationContext().getBean("formService");
+
+            FormDefinition formDef = formDefinitionDao.loadById(formDefId, appDef);
+            if (formDef == null) return;
+
+            Form form = (Form) formService.createElementFromJson(formDef.getJson(), false);
+
+            for (int i = 0; i < columns.length; i++) {
+                String  colName = columns[i].getName();
+                Element el = FormUtil.findElement(colName, form, null);
+                if (el == null) continue;
+
+                String style = el.getPropertyString("style");
+                if (StringUtils.isNotBlank(style)) {
+                    colPreferences.put(i, style.toLowerCase());
+                }
+            }
+        } catch (Exception e) {
+            LogUtil.error(CustomExcelHssfView.class.getName(), e,
+                          "Error reading form element styles for Excel export");
+        }
+    }
+
     /**
      * Wraps IText-generated exceptions.
      * @author Fabrizio Giustina
