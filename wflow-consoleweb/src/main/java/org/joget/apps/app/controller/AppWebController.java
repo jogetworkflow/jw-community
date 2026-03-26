@@ -571,11 +571,6 @@ public class AppWebController {
         
         ServletOutputStream stream = response.getOutputStream();
         String decodedFileName = fileName;
-        try {
-            decodedFileName = URLDecoder.decode(fileName, "UTF8");
-        } catch (UnsupportedEncodingException e) {
-            // ignore
-        }
         File file = FileUtil.getFile(decodedFileName, tableName, primaryKeyValue);
         if (file.isDirectory() || !file.exists()) {
             response.sendError(HttpServletResponse.SC_NOT_FOUND);

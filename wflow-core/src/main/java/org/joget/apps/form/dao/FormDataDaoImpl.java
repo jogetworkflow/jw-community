@@ -443,9 +443,10 @@ public class FormDataDaoImpl implements FormDataDao {
      * @return 
      */
     protected String replaceColumnNameWithPrefix(String tableName, String condition) {
-        if (condition != null && !condition.isEmpty() && (condition.contains(" c_") || condition.contains("(c_"))) {
+        String lower = condition.toLowerCase();
+        if (condition != null && !condition.isEmpty() && (lower.contains(" c_") || lower.contains("(c_"))) {
             //there is no function or method name started with c_, so i think it is safe to replace any ` c_` & `(c_` directly
-            condition = condition.replaceAll("([ \\(])c_", "$1" + StringUtil.escapeRegex("e."+FormUtil.PROPERTY_CUSTOM_PROPERTIES+"."));
+            condition = condition.replaceAll("(?i)([ \\(])c_", "$1" + StringUtil.escapeRegex("e."+FormUtil.PROPERTY_CUSTOM_PROPERTIES+"."));
         }
         return condition;
     }
@@ -916,11 +917,13 @@ public class FormDataDaoImpl implements FormDataDao {
                         metadata = metadataSources.buildMetadata();
                         
                         pc = metadata.getEntityBinding(entityName);
-                        if (LogUtil.isDebugEnabled(FormDataDaoImpl.class.getName())) {
-                            LogUtil.debug(FormDataDaoImpl.class.getName(), "  --- Form " + entityName + " loaded from mapping file " + mappingFile.getName());
+                        if (pc != null) {
+                            if (LogUtil.isDebugEnabled(FormDataDaoImpl.class.getName())) {
+                                LogUtil.debug(FormDataDaoImpl.class.getName(), "  --- Form " + entityName + " loaded from mapping file " + mappingFile.getName());
+                            }
+                            // save into cache
+                            formPersistentClassCache.put(getPersistentClassCacheKey(entityName), pc);
                         }
-                        // save into cache
-                        formPersistentClassCache.put(getPersistentClassCacheKey(entityName), pc);
                     } else {
                         mappingFileExist = false;
                     }
@@ -1874,8 +1877,8 @@ public class FormDataDaoImpl implements FormDataDao {
             StringBuffer sb = new StringBuffer();
             
             while (matcher.find()) {
-                String firstGroup = matcher.group(1);
-                String secondGroup = matcher.group(2);
+                String firstGroup = matcher.group(1);   // match "<alias>.customProperties."
+                String secondGroup = matcher.group(2);  // match "<field_name>"
 
                 // Check if property name starts with digit or is a reserved keyword
                 if ((secondGroup.length() > 0 && Character.isDigit(secondGroup.charAt(0))) || RESERVED_KEYWORDS.contains(secondGroup.toLowerCase())) {
@@ -1889,11 +1892,145 @@ public class FormDataDaoImpl implements FormDataDao {
             }
             matcher.appendTail(sb);
             query = sb.toString();
+
+            // Normalize indetifiers from case-sesitive to case-insensitive based on table metadata
+            Map<String, String> aliasToTableMap = extractAliasToTableMapping(query);
+            query = normalizeCustomPropertiesWithAliases(query, aliasToTableMap);
+
             // save into cache
             processedQueryCache.put(cacheKey, query);                       
         } catch (Exception e) {
             LogUtil.error(query, e, query);
         }
         return query;
+    }
+
+    /***
+     * Generate 'alias to table-name' mapping, to be used inside normalizeCustomPropertiesWithAliases()
+     * @param query
+     * @return aliasToTable
+     */
+    protected Map<String, String> extractAliasToTableMapping(String query) {
+        Map<String, String> aliasToTable = new HashMap<>();
+
+        // Match "app_fd_<table_name> <alias>" or "app_fd_<table_name> AS <alias>"
+        Pattern pattern = Pattern.compile("(app_fd_\\w+)\\s+(?:AS\\s+)?(\\w+)", Pattern.CASE_INSENSITIVE);
+        Matcher matcher = pattern.matcher(query);
+
+        while (matcher.find()) {
+            String tableName = matcher.group(1);   // match "app_fd_<table_name>"
+            String alias = matcher.group(2);       // match "<alias>"
+            aliasToTable.put(alias, tableName);
+        }
+
+        return aliasToTable;
+    }
+
+    /***
+     * Normalize the query part by part based on the alias-table map iteration.
+     * @param query
+     * @param aliasToTableMap
+     * @return query
+     */
+    protected String normalizeCustomPropertiesWithAliases(String query, Map<String, String> aliasToTableMap) {
+        for (Map.Entry<String, String> entry : aliasToTableMap.entrySet()) {
+            String alias = entry.getKey();
+            String tableName = entry.getValue();
+
+            query = normalizeCustomPropertiesForAlias(query, alias, tableName);
+        }
+        return query;
+    }
+
+    /***
+     * Normalize the query based on alias and table name
+     * @param query
+     * @param alias
+     * @param tableName
+     * @return query
+     */
+    protected String normalizeCustomPropertiesForAlias(String query, String alias, String tableName) {
+        try {
+            Pattern checkPattern = Pattern.compile("(\\b" + Pattern.quote(alias) + "\\.customProperties\\.)([a-zA-Z_]\\w*)");
+            Matcher checkMatcher = checkPattern.matcher(query);
+            if (!checkMatcher.find()) {
+                return query;
+            }
+
+            // Load metadata for the table and cache PersistentClass
+            PersistentClass pc = (PersistentClass)formPersistentClassCache.get(getPersistentClassCacheKey(tableName));
+            if (pc == null) {
+                Metadata metadata = loadMetadataForTable(tableName);
+                if (metadata == null) {
+                    return query;
+                }
+                pc = metadata.getEntityBinding(tableName);
+                if (pc == null) {
+                    return query;
+                }
+                formPersistentClassCache.put(getPersistentClassCacheKey(tableName), pc);
+            }
+            Property customProp = pc.getProperty(FormUtil.PROPERTY_CUSTOM_PROPERTIES);
+            if (customProp == null) {
+                return query;
+            }
+
+            Component customComponent = (Component) customProp.getValue();
+
+            // Map to store case-corrected property names
+            Map<String, String> propertyNameMap = new HashMap<>();
+            Iterator<Property> propIter = customComponent.getProperties().iterator();
+            while (propIter.hasNext()) {
+                Property prop = propIter.next();
+                propertyNameMap.put(prop.getName().toLowerCase(), prop.getName());
+            }
+
+            // Replace <alias>.customProperties.<fieldName> with correct case
+            Pattern pattern = checkPattern;
+            Matcher matcher = pattern.matcher(query);
+            StringBuffer sb = new StringBuffer();
+
+            while (matcher.find()) {
+                String prefix = matcher.group(1);           // match "<alias>.customProperties."
+                String queryFieldName = matcher.group(2);   // match "<field_name>"
+
+                String mappedName = propertyNameMap.get(queryFieldName.toLowerCase());
+                if (mappedName != null && !mappedName.equals(queryFieldName)) {
+                    // Replace with correct case is case mismatch detected
+                    matcher.appendReplacement(sb, Matcher.quoteReplacement(prefix + mappedName));
+                } else {
+                    matcher.appendReplacement(sb, Matcher.quoteReplacement(matcher.group(0)));
+                }
+            }
+
+            matcher.appendTail(sb);
+            query = sb.toString();
+            return query;
+        } catch (Exception e) {
+            LogUtil.debug(FormDataDaoImpl.class.getName(), "Error normalizing for alias " + alias + ": " + e.getMessage());
+            return query;
+        }
+    }
+
+    /***
+     * To load table metadata in order to generate the `PersistentClass` if none was being cached
+     * @param tableName
+     * @return
+     */
+    private Metadata loadMetadataForTable(String tableName) {
+        try {
+            String path = getFormMappingPath();
+            String filename = tableName + ".hbm.xml";
+            File mappingFile = new File(path, filename);
+
+            if (mappingFile.exists()) {
+                MetadataSources metadataSources = createMetadataSources();
+                metadataSources.addFile(mappingFile);
+                return metadataSources.buildMetadata();
+            }
+        } catch (Exception e) {
+            LogUtil.debug(FormDataDaoImpl.class.getName(), "Error loading metadata: " + e.getMessage());
+        }
+        return null;
     }
 }

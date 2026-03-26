@@ -525,16 +525,33 @@ body input.no-manual-input{
     width: auto;
     visibility: unset;  
 }
+body.rtl .datapicker-native.ui-screen-hidden.ios{
+    width: 25px;
+    right: unset;
+}
 .datapicker-native.ui-screen-hidden.ios input{
     width:100%;
     -webkit-appearance: none;
+    padding: 0px;
 }
 .datapicker-native.ui-screen-hidden.ios.manual{
     left:unset;
     width: 25px;
 }
-body.rtl input.hasDatepicker {
-    text-align: right;
+body.rtl .datapicker-native.ui-screen-hidden.ios.manual{
+    left: 15px;
+}
+
+/* Advanced Grid - datepicker */
+.adgrid .datapicker-native.ui-screen-hidden.ios{
+    bottom: unset;
+}
+.adgrid .datapicker-native.ui-screen-hidden.ios.manual{
+    right: 6px;
+}
+body.rtl .adgrid .datapicker-native.ui-screen-hidden.ios.manual{
+    left: 6px;
+    right: unset;
 }
 
 /* subform */
@@ -914,6 +931,8 @@ body.rtl .selector_element .selector_items {
     overflow: visible !important; 
     position: relative !important; 
     top: 0 !important;
+    width: auto !important; /* Add this */
+    min-width: 100%; /* Add this */
 }
 .handsontableInputHolder .handsontableEditor .ht_master .wtHolder {
     height: auto !important; 
@@ -962,7 +981,8 @@ body.rtl .handsontable .htCore tr td:last-child {
 }
 
 .ht_editor_visible .ht_master .wtHolder{
-    max-width: fit-content;
+    width: auto !important;
+    min-width: 100%;
     overflow-x: hidden;
 }
 
@@ -1331,6 +1351,14 @@ body.rtl .grid.adgrid .pq-grid-number-col{
 }
 .pq-grid-row{
     border-left: 1px solid transparent;
+}
+body.rtl .grid.adgrid .editor-cell .hasDatepicker + a {
+    left: 8px !important;
+    right: unset;
+}
+body.rtl .grid.adgrid .editor-cell .hasDatepicker + a + a{
+    left: 30px;
+    right: unset;
 }
 @media screen and (max-width: 767px) {
     .form-cell > label.label,

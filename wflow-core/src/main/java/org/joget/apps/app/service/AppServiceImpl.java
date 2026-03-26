@@ -27,6 +27,7 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
@@ -174,7 +175,7 @@ public class AppServiceImpl implements AppService {
     GroupDao groupDao;
     //----- Workflow use cases ------
     
-    final protected Map<String, String> processMigration = new HashMap<String, String>();
+    final protected Map<String, String> processMigration = new ConcurrentHashMap<String, String>();
     private final static String PROCESS_MIGRATION_PATH = "app_migration" + File.separator;
 
     /**
@@ -2810,33 +2811,38 @@ public class AppServiceImpl implements AppService {
         final String profile = DynamicDataSourceManager.getCurrentProfile();
         final AppDefinition appDef = AppUtil.getCurrentAppDefinition();
         final User currentUser = workflowUserManager.getCurrentUser();
-        
-        Thread backgroundThread = new Thread(new Runnable() {
 
-            public void run() {
-                try {
-                    HostManager.setCurrentProfile(profile);
-                    AppUtil.setCurrentAppDefinition(appDef);
-                    workflowUserManager.setCurrentThreadUser(currentUser);
+        processMigration.put(profile + "::" + appDef.getAppId() + "_" + appDef.getVersion() + "::" + fromVersion, toVersion.toString());
 
-                    processMigration.put(profile + "::" + appDef.getAppId() + "_" + appDef.getVersion() + "::" + fromVersion, toVersion.toString());
-                
-                    LogUtil.info(getClass().getName(), "Updating running processes for " + packageId + " from " + fromVersion + " to " + toVersion.toString());
+        try {
+            Thread backgroundThread = new Thread(new Runnable() {
 
-                    Collection<String> runningProcessList = workflowAssignmentDao.getMigrateProcessInstances(packageId + "#" + fromVersion); 
+                public void run() {
+                    try {
+                        HostManager.setCurrentProfile(profile);
+                        AppUtil.setCurrentAppDefinition(appDef);
+                        workflowUserManager.setCurrentThreadUser(currentUser);
 
-                    migrateProcessInstance(runningProcessList, profile, packageId, fromVersion.toString(), toVersion.toString());
+                        LogUtil.info(getClass().getName(), "Updating running processes for " + packageId + " from " + fromVersion + " to " + toVersion.toString());
 
-                    processMigration.remove(profile + "::" + appDef.getAppId() + "_" + appDef.getVersion() + "::" + fromVersion);
-                    LogUtil.info(getClass().getName(), "Completed updating running processes for " + packageId + " from " + fromVersion + " to " + toVersion.toString());
-                    removeUnusedXpdl(profile, packageId);
-                } finally {
-                    tryReleaseProcessUpdate(appDef);
+                        Collection<String> runningProcessList = workflowAssignmentDao.getMigrateProcessInstances(packageId + "#" + fromVersion);
+
+                        migrateProcessInstance(runningProcessList, profile, packageId, fromVersion.toString(), toVersion.toString());
+
+                        LogUtil.info(getClass().getName(), "Completed updating running processes for " + packageId + " from " + fromVersion + " to " + toVersion.toString());
+                        removeUnusedXpdl(profile, packageId);
+                    } finally {
+                        processMigration.remove(profile + "::" + appDef.getAppId() + "_" + appDef.getVersion() + "::" + fromVersion);
+                        tryReleaseProcessUpdate(appDef);
+                    }
                 }
-            }
-        });
-        backgroundThread.setDaemon(false);
-        backgroundThread.start();
+            });
+            backgroundThread.setDaemon(false);
+            backgroundThread.start();
+        } catch (Exception e) {
+            processMigration.remove(profile + "::" + appDef.getAppId() + "_" + appDef.getVersion() + "::" + fromVersion);
+            LogUtil.error(getClass().getName(), e, "Error starting process migration thread");
+        }
     }
     
     protected void migrateProcessInstance(Collection<String> runningProcesses, String profile, String packageId, String fromVersion, String toVersion) {

@@ -132,7 +132,7 @@ body.horizontal_menu #sidebar a,
         background: @primary;
     }
     body.horizontal_menu.inline_menu #sidebar .main-menu.nav-tabs>li.active>a{
-        box-shadow: 0 2px 0 0 @defaultFontColor;
+        box-shadow: 0 2px 0 0 @menuFont;
     }
     body.horizontal_menu.inline_menu header.navbar .header-nav .nav>li.user-link img {
         border: 2px solid fade(@defaultFontColor, 13%);
@@ -144,14 +144,14 @@ body.horizontal_menu #sidebar a,
     body.horizontal_menu .main-menu.nav-tabs>li.active>a, body.horizontal_menu .main-menu.nav-tabs>li.active>a:focus, body.horizontal_menu .main-menu.nav-tabs>li.active>a:hover,
     body.horizontal_menu .main-menu.nav-tabs .active>a, body.horizontal_menu .main-menu.nav-tabs a.active, body.horizontal_menu .main-menu.nav-tabs a:hover,
     body.horizontal_menu #sidebar li#menu-more{
-        color: @defaultFontColor;
+        color: @menuFont;
     }
     body.horizontal_menu .main-menu.nav-tabs>li>a {
-        color: fade(@defaultFontColor, 65%);
+        color: fade(@menuFont, 65%);
     }
     body.horizontal_menu .main-menu.nav>li>a:focus, body.horizontal_menu .main-menu.nav>li>a:hover,
     body.horizontal_menu .main-menu.nav-tabs>li.active>a, body.horizontal_menu .main-menu.nav-tabs>li>a:hover {
-        background-color: fade(@defaultFontColor, 4%);
+        background-color: fade(@menuFont, 4%);
     }
     body.horizontal_menu .main-menu.nav-tabs > li.mm-profile a img {
         box-shadow: 0 0 0 2px fade(@defaultFontColor, 13%);
@@ -160,7 +160,7 @@ body.horizontal_menu #sidebar a,
         color: fade(@defaultFontColor, 70%);
     }
     body.horizontal_menu #sidebar li ul a {
-        color: fade(@defaultFontColor, 70%);
+        color: fade(@menuFont, 70%);
     }
 }
 body:not(#login).embeded #content > main > div:not(.quickEdit),

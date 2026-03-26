@@ -16,7 +16,7 @@ import org.springframework.stereotype.Service;
 
 /**
  * Utility methods used by security feature
- * 
+ *
  */
 @Service("securityUtil")
 @Lazy
@@ -24,10 +24,11 @@ public class SecurityUtil implements ApplicationContextAware {
 
     public final static String ENVELOPE = "%%%%";
     private static ApplicationContext appContext;
+    private static final Pattern URL_ENCODED_PATTERN = Pattern.compile("%[0-9a-fA-F]{2}");
 
     /**
      * Utility method to retrieve the ApplicationContext of the system
-     * @return 
+     * @return
      */
     public static ApplicationContext getApplicationContext() {
         return appContext;
@@ -36,7 +37,7 @@ public class SecurityUtil implements ApplicationContextAware {
     /**
      * Method used by system to set an ApplicationContext
      * @param context
-     * @throws BeansException 
+     * @throws BeansException
      */
     public void setApplicationContext(ApplicationContext context) throws BeansException {
         appContext = context;
@@ -44,7 +45,7 @@ public class SecurityUtil implements ApplicationContextAware {
 
     /**
      * Gets the data encryption implementation
-     * @return 
+     * @return
      */
     public static DataEncryption getDataEncryption() {
         try {
@@ -54,10 +55,10 @@ public class SecurityUtil implements ApplicationContextAware {
             return null;
         }
     }
-    
+
     /**
      * Gets the nonce generator implementation
-     * @return 
+     * @return
      */
     public static NonceGenerator getNonceGenerator() {
         try {
@@ -71,7 +72,7 @@ public class SecurityUtil implements ApplicationContextAware {
     /**
      * Encrypt raw content if data encryption implementation is exist
      * @param rawContent
-     * @return 
+     * @return
      */
     public static String encrypt(String rawContent) {
         DataEncryption de = getDataEncryption();
@@ -88,7 +89,7 @@ public class SecurityUtil implements ApplicationContextAware {
     /**
      * Decrypt protected content if data encryption implementation is exist
      * @param protectedContent
-     * @return 
+     * @return
      */
     public static String decrypt(String protectedContent) {
         DataEncryption de = getDataEncryption();
@@ -107,7 +108,7 @@ public class SecurityUtil implements ApplicationContextAware {
      * Computes the hash of a raw content if data encryption implementation is exist
      * @param rawContent
      * @param randomSalt
-     * @return 
+     * @return
      */
     public static String computeHash(String rawContent, String randomSalt) {
         DataEncryption de = getDataEncryption();
@@ -122,12 +123,12 @@ public class SecurityUtil implements ApplicationContextAware {
     }
 
     /**
-     * Verify the hash is belong to the raw content if data encryption 
+     * Verify the hash is belong to the raw content if data encryption
      * implementation is exist
      * @param hash
      * @param randomSalt
      * @param rawContent
-     * @return 
+     * @return
      */
     public static Boolean verifyHash(String hash, String randomSalt, String rawContent) {
         if (hash != null && !hash.isEmpty() && rawContent != null && !rawContent.isEmpty()) {
@@ -144,7 +145,7 @@ public class SecurityUtil implements ApplicationContextAware {
 
     /**
      * Generate a random salt value if data encryption implementation is exist
-     * @return 
+     * @return
      */
     public static String generateRandomSalt() {
         DataEncryption de = getDataEncryption();
@@ -153,12 +154,12 @@ public class SecurityUtil implements ApplicationContextAware {
         }
         return "";
     }
-    
+
     /**
-     * Check the content is a wrapped in a security envelop if data encryption 
+     * Check the content is a wrapped in a security envelop if data encryption
      * implementation is exist
      * @param content
-     * @return 
+     * @return
      */
     public static boolean hasSecurityEnvelope(String content) {
         if (content != null && content.startsWith(ENVELOPE) && content.endsWith(ENVELOPE) && getDataEncryption() != null) {
@@ -172,15 +173,15 @@ public class SecurityUtil implements ApplicationContextAware {
 
         return content;
     }
-    
+
     /**
      * Generate a nonce value based on attributes if Nonce Generator implementation is exist
      * @param attributes
      * @param lifepanHour
-     * @return 
+     * @return
      */
     public static String generateNonce(String[] attributes, int lifepanHour) {
-        
+
         SetupManager sm = (SetupManager) appContext.getBean("setupManager");
         String extendNonceCacheTime = sm.getSettingValue("extendNonceCacheTime");
         if (extendNonceCacheTime != null && !extendNonceCacheTime.isEmpty()) {
@@ -198,13 +199,13 @@ public class SecurityUtil implements ApplicationContextAware {
         }
         return "";
     }
-    
+
     /**
-     * Verify the nonce is a valid nonce against the attributes if Nonce 
+     * Verify the nonce is a valid nonce against the attributes if Nonce
      * Generator implementation is exist
      * @param nonce
      * @param attributes
-     * @return 
+     * @return
      */
     public static boolean verifyNonce(String nonce, String[] attributes) {
 
@@ -219,11 +220,11 @@ public class SecurityUtil implements ApplicationContextAware {
         }
         return false;
     }
-    
+
     /**
-     * Clear generated nonces of a request hash when the request hash is submitted 
+     * Clear generated nonces of a request hash when the request hash is submitted
      * Generator implementation is exist
-     * @param requestHash 
+     * @param requestHash
      */
     public static void clearNonces(int requestHash) {
         NonceGenerator generator = getNonceGenerator();  // Store in local variable
@@ -237,7 +238,7 @@ public class SecurityUtil implements ApplicationContextAware {
     /**
      * Gets the domain name from a given URL
      * @param url
-     * @return 
+     * @return
      */
     public static String getDomainName(String url) {
         try {
@@ -246,12 +247,12 @@ public class SecurityUtil implements ApplicationContextAware {
         } catch (Exception e) {}
         return null;
     }
-    
+
     /**
      * Verify the domain name against a whitelist
      * @param domain
      * @param whitelist
-     * @return 
+     * @return
      */
     public static boolean isAllowedDomain(String domain, List<String> whitelist) {
         if (whitelist != null && domain != null && domain.contains(", ")) {
@@ -269,17 +270,17 @@ public class SecurityUtil implements ApplicationContextAware {
 
     /**
      * Returns the name of the CRSF token
-     * @return 
+     * @return
      */
     public static String getCsrfTokenName() {
         CsrfGuard csrfGuard = CsrfGuard.getInstance();
         return csrfGuard.getTokenName();
     }
-    
+
     /**
      * Returns the value of the CRSF token in the request
      * @param request
-     * @return 
+     * @return
      */
     public static String getCsrfTokenValue(HttpServletRequest request) {
         CsrfGuard csrfGuard = CsrfGuard.getInstance();
@@ -325,23 +326,34 @@ public class SecurityUtil implements ApplicationContextAware {
         return input;
     }
 
+    /**
+     * Normalize a filename to prevent path traversal attacks
+     *
+     * <p>This method does not strip any slashes from the filename, only parent directory traversals. Any other slashes
+     * will have to be manually stripped if required.</p>
+     *
+     * <p>For example, {@code ../etc/passwd} will be normalized to {@code etc/passwd}.</p>
+     *
+     * @param filename the filename or path to normalize
+     * @return the normalized filename
+     * @throws SecurityException if the filename contains path traversal attempts
+     */
     public static String normalizedFileName(String filename) {
-        // validate input
         try {
-            filename = URLDecoder.decode(filename, "UTF-8");
-        } catch (Exception ex) {
+            // only decode if it is URL encoded (to prevent decoding filenames with only + into <space>)
+            if (URL_ENCODED_PATTERN.matcher(filename).find()) {
+                filename = URLDecoder.decode(filename, "UTF-8");
+            }
+        } catch (Exception e) {
+            // for security reasons, throw exception for caller to handle and prevent proceeding any further
+            throw new RuntimeException(e);
         }
-        
-        String normalizedFileName = Normalizer.normalize(filename, Normalizer.Form.NFKC);
+
+        String normalizedFileName = Normalizer.normalize(filename, Normalizer.Form.NFC);
         if (normalizedFileName.contains("../") || normalizedFileName.contains("..\\")) {
             throw new SecurityException("Invalid filename " + normalizedFileName);
         }
-        
-        //handle for commonly used chinese colon char
-        if (filename.contains("：")) {
-            normalizedFileName = normalizedFileName.replaceAll(":", "：");
-        }
-        
+
         return normalizedFileName;
     }
 }

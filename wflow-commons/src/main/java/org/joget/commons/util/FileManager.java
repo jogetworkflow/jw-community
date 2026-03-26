@@ -19,6 +19,8 @@ import org.apache.commons.io.FileUtils;
 import org.springframework.web.multipart.MultipartFile;
 import java.awt.geom.AffineTransform;
 import java.awt.image.AffineTransformOp;
+import java.util.regex.Pattern;
+
 import com.drew.imaging.ImageMetadataReader;
 import com.drew.metadata.Metadata;
 import com.drew.metadata.exif.ExifIFD0Directory;
@@ -34,13 +36,15 @@ import org.springframework.util.FileCopyUtils;
  */
 public class FileManager {
     public final static Integer THUMBNAIL_SIZE = 60; 
-    public final static String THUMBNAIL_EXT = ".thumb.jpg"; 
-    public final static String ILLEGAL_CHARS = "[:*?\"<>|]";
+    public final static String THUMBNAIL_EXT = ".thumb.jpg";
+    public final static String ILLEGAL_CHARS = "[:*?\"<>|/\\\\]";
     
     public static final long CLEANER_INTERVAL_MS = 12 * 60 * 60 * 1000; // 12 hours
     public static final long EXPIRES_MS = 24 * 60 * 60 * 1000; // 24 hours
     
     protected static final ScheduledExecutorService scheduledExecutorService = Executors.newScheduledThreadPool(1);
+
+    private final static Pattern ILLEGAL_CHARS_PATTERN = Pattern.compile(ILLEGAL_CHARS);
     
     static {
         scheduledExecutorService.scheduleAtFixedRate(new Runnable() {
@@ -80,15 +84,10 @@ public class FileManager {
             String path =  id + File.separator;
             String filename = path;
             try {
-                try {
-                    filename += URLDecoder.decode(customFileName, "UTF-8");
-                } catch (Exception e) {
-                    filename += customFileName.replaceAll("%", ""); //remove % to prevent java.lang.IllegalArgumentException in future use
-                }
-                filename = SecurityUtil.normalizedFileName(filename);
+                String normalizedCustomFileName = SecurityUtil.normalizedFileName(customFileName);
                 
                 // remove all illegal chars after normalized the file name (unicode chars are normalized and become illegal chars)
-                filename = filename.replaceAll(ILLEGAL_CHARS, "");
+                filename = path + ILLEGAL_CHARS_PATTERN.matcher(normalizedCustomFileName).replaceAll("");
                 
                 File uploadFile = new File(getBaseDirectory(), filename).getAbsoluteFile();
                 if (!uploadFile.isDirectory()) {
