@@ -10,10 +10,6 @@ import com.lutris.dods.builder.generator.query.QueryException;
 import java.text.SimpleDateFormat;
 import java.lang.reflect.Field;
 import java.util.*;
-<<<<<<< Updated upstream
-import java.util.concurrent.TimeoutException;
-=======
->>>>>>> Stashed changes
 
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
@@ -51,13 +47,8 @@ import org.enhydra.shark.utilities.WMEntityUtilities;
 
 import org.joget.workflow.shark.JSPClientUtilities;
 import org.joget.workflow.util.WorkflowUtil;
-<<<<<<< Updated upstream
-
-import javax.transaction.TransactionManager;
-=======
 import java.util.concurrent.TimeoutException;
 import jakarta.transaction.TransactionManager;
->>>>>>> Stashed changes
 import org.apache.commons.collections.SequencedHashMap;
 import org.apache.commons.lang.StringEscapeUtils;
 import org.enhydra.shark.CustomWfActivityImpl;
