@@ -148,10 +148,11 @@ public class LocalLocaleResolver extends SessionLocaleResolver implements Locale
                 LogUtil.warn(getClass().getName(), "Error setting system timezone from setting, using default timezone");
             }
         }
-            
-        
+
         if (timezone == null) {
-            timezone = super.getDefaultTimeZone();
+            // fallback to server (JVM) timezone to prevent a method call to
+            // LocaleContextHolder.setDefaultTimeZone from affecting all profiles
+            timezone = TimeZone.getDefault();
         }
         
         if (request != null) {
