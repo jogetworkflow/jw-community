@@ -1511,7 +1511,7 @@ public class FormUtil implements ApplicationContextAware {
         String content = pluginManager.getPluginFreeMarkerTemplate(dataModel, element.getClassName(), "/templates/" + templatePath, "message/form/" + element.getName().replace(" ", ""));
         
         String readonly = "_EDITABLE";
-        if (FormUtil.isReadonly(element, formData)) {
+        if (FormUtil.isDisabled(element, formData) || FormUtil.isReadonlyV2(element, formData)) {
              readonly = "_READONLY";
         }
         try {
