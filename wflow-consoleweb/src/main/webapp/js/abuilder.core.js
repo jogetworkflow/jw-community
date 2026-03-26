@@ -478,10 +478,8 @@ AppBuilder = {
             if (builder.value === "app") {
                 continue;
             }
-            var builderDiv = $('<div class="builder-type builder-'+builder.value+'" data-builder-type="'+builder.value+'"><div class="builder-title"><span class="icon" style="background: '+builder.color+'" ><i class="'+builder.icon+'"></i></span> '+builder.label+' <a class="addnew" data-builder-type="'+builder.value+'" title="'+get_cbuilder_msg("cbuilder.addnew")+'"><i class="las la-plus"></i></a></div><div class="ul-wrapper"><ul></ul></div></div>');
-            if (builder.theme === 'light' || builder.theme === 'dark') {
-                builderDiv = $('<div class="builder-type builder-' + builder.value + '" data-builder-type="' + builder.value + '"><div class="builder-title"><span class="icon" style="color: ' + builder.color + '" ><i class="' + builder.icon + '"></i></span> ' + builder.label + ' <a class="addnew" data-builder-type="' + builder.value + '" title="' + get_cbuilder_msg("cbuilder.addnew") + '"><i class="las la-plus"></i></a></div><div class="ul-wrapper"><ul></ul></div></div>');
-            }
+            var builderDiv = $('<div class="builder-type builder-' + builder.value + '" data-builder-type="' + builder.value + '"><div class="builder-title"><span class="icon" style="color: ' + builder.color + '" ><i class="' + builder.icon + '"></i></span> ' + builder.label + ' <a class="addnew" data-builder-type="' + builder.value + '" title="' + get_cbuilder_msg("cbuilder.addnew") + '"><i class="las la-plus"></i></a></div><div class="ul-wrapper"><ul></ul></div></div>');
+            
             if (builder.elements && builder.elements.length > 0) {
                 for (var j in builder.elements) {
                     var action = "";
