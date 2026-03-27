@@ -9,7 +9,7 @@
     background-color: var(--theme-primary-color-1, #ddd);
     color: var(--theme-label-color-1);
     height: 40px;
-    width: 225px;
+    width: 265px;
     margin-left: auto;
     border-radius: 5px;
     direction: ltr;
@@ -72,7 +72,7 @@
     display: flex;
     align-items: center;
     height: 22px;
-    min-width: 135px;
+    min-width: 145px;
     font-size: x-small;
 }
 
@@ -80,6 +80,7 @@
     width: 17px;
     padding: 0;
     height: 25px;
+    margin-left: 2px;
     margin-bottom: 0px !important;
 }
 
@@ -124,6 +125,7 @@
     min-width: 50px;
     max-width: 50px;
     white-space: normal;
+    margin-right: 5px;
 }
 
 .buttons button {

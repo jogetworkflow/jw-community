@@ -3108,6 +3108,11 @@ window._CustomBuilder = {
                         $('#json_definition').find(".CodeMirror-advanced-dialog").css({position:"fixed", zIndex:"2147483647", top: $("body #top-panel").outerHeight() + "px", left:"calc(90% - 320px)", display: 'block'})
                         $('#json_definition').find(".CodeMirror-advanced-dialog").draggable({containment: 'parent'})
                     },
+                    "Cmd-F": function(cm) {
+                        cm.execCommand("replace")
+                        $('#json_definition').find(".CodeMirror-advanced-dialog").css({position:"fixed", zIndex:"2147483647", top: $("body #top-panel").outerHeight() + "px", left:"calc(90% - 320px)", display: 'block'})
+                        $('#json_definition').find(".CodeMirror-advanced-dialog").draggable({containment: 'parent'})
+                    },
                     "Ctrl-=": function(cm) {
                       cm.increaseFontSize();
                     },

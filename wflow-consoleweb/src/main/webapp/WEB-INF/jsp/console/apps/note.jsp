@@ -79,6 +79,17 @@
                         }
                         $('#description_editor').find(".CodeMirror-advanced-dialog").draggable()
                     },
+                    "Cmd-F": function(cm) {
+                        cm.execCommand("replace")
+                        $('#description_editor').find(".CodeMirror-advanced-dialog").css({display: 'block'})
+                        if (codeeditor.getOption("fullScreen")){
+                            $('#description_editor').find(".CodeMirror-advanced-dialog").css({position:"fixed", zIndex:"2147483647", top: "0px", left:"calc(100% - 320px)"})
+                         }
+                        else{
+                            $('#description_editor').find(".CodeMirror-advanced-dialog").css({position:"fixed", top:"0px", zIndex:"10", left:"calc(100% - 320px)"});
+                        }
+                        $('#description_editor').find(".CodeMirror-advanced-dialog").draggable()
+                    },
                     "Ctrl-=": function(cm) {
                       cm.increaseFontSize();
                     },

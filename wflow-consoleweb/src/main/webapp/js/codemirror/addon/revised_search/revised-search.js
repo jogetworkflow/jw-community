@@ -11,8 +11,8 @@
 })(function (CodeMirror) {
   "use strict";
 
-  var replaceDialog = `<button id="collapse-button" type="button" class="btn btn-light" style="height:100%;position:absolute;top:0;width:18px;padding:0"><i class="fas fa-chevron-down"></i></button> <div class="row find" style="margin-top:2px;display: block;align-items: center;flex-wrap:nowrap;flex-direction:column;height: 28px;"> <div class="find-part"> <div id="find-input"> <input id="CodeMirror-find-field" type="text" class="CodeMirror-search-field" placeholder="Find" style="flex: 1;"/> </div> <div class="find-actions"><button type="button" class="btn btn-light" title="Find Previous"><i class="fas fa-arrow-up"></i></button> <button type="button" class="btn btn-light" title="Find Next"><i class="fas fa-arrow-down"></i></button> <button type="button" class="btn btn-light" id="closeDialogButton" title="Close"><i class="fa fa-times"></i></button> </div> </div> <span class="CodeMirror-search-hint" style="font-size: 10px; color: #888; font-weight:400">(Use /re/ syntax for regexp search)</span> </div> <div class="row replace" style="align-items: center;flex-flow: column;height: 28px;display: none;top:41px;margin-top:0px"> <div class="find-part"> <div id="find-input"> <input id="CodeMirror-replace-field" type="text" class="CodeMirror-search-field" placeholder="Replace" style="flex:1"/> </div> <div class="find-actions"> <button type="button" class="btn btn-light" title="Replace"><i class="fas fa-reply"></i></button> <button type="button" class="btn btn-light" title="Replace All"><i class="fas fa-reply-all"></i></button> </div> </div> </div>`; 
-  
+  var replaceDialog = `<button id="collapse-button" type="button" class="btn btn-light" style="height:100%;position:absolute;top:0;width:18px;padding:0"><i class="fas fa-chevron-down"></i></button> <div class="row find" style="margin-top:2px;display: block;align-items: center;flex-wrap:nowrap;flex-direction:column;height: 28px;"> <div class="find-part"> <div id="find-input"> <input id="CodeMirror-find-field" type="text" class="CodeMirror-search-field" placeholder="Find" style="flex: 1;"/> </div> <div class="find-actions"><span class="CodeMirror-search-count" style="font-weight:bold;min-width:20px;font-size:10px;">0/0</span><button type="button" class="btn btn-light" title="Find Previous"><i class="fas fa-arrow-up"></i></button> <button type="button" class="btn btn-light" title="Find Next"><i class="fas fa-arrow-down"></i></button> <button type="button" class="btn btn-light" id="closeDialogButton" title="Close"><i class="fa fa-times"></i></button> </div> </div> <span class="CodeMirror-search-hint" style="font-size: 10px; color: #888; font-weight:400; margin-top: 2px;">(Use /re/ syntax for regexp search)</span> </div> <div class="row replace" style="align-items: center;flex-flow: column;height: 28px;display: none;top:41px;margin-top:0px"> <div class="find-part"> <div id="find-input"> <input id="CodeMirror-replace-field" type="text" class="CodeMirror-search-field" placeholder="Replace" style="flex:1"/> </div> <div class="find-actions"> <button type="button" class="btn btn-light" title="Replace"><i class="fas fa-reply"></i></button> <button type="button" class="btn btn-light" title="Replace All"><i class="fas fa-reply-all"></i></button> </div> </div> </div>`;
+
   var findDialog = `<div style="display:flex;align-items:center;width:100%;"><div class="row find" style="display:flex;align-items:center;flex-wrap:nowrap;flex-direction:column;height:50px;margin:6px 2px;"><div class="find-part" style="display:flex;font-size:12px;"><div id="find-input" style="position:relative;display:flex;flex:1;"><input id="CodeMirror-find-field" type="text" class="CodeMirror-search-field" placeholder="Find" style="flex:1;"></div><div class="find-actions" style="min-width: 145px;"><span class="CodeMirror-search-count" style="font-weight:bold;min-width:20px;">0/0</span><button class="btn btn-light" style="margin-right:5px;padding:0px !important;"><i class="fa-solid fa-arrow-up"></i></button><button class="btn btn-light" style="margin-right:5px;padding:0px !important;"><i class="fa-solid fa-arrow-down"></i></button><button class="btn btn-light" style="padding:0px !important;"><i class="fa fa-times"></i></button></div></div><span class="CodeMirror-search-hint" style="font-size:9px;color:#888;margin-top:2px;">(Use /re/ syntax for regexp search)</span></div></div>`;
     
   var numMatches = 0;
@@ -276,11 +276,34 @@
     var matches = value.match(globalQuery);
     var count = matches ? matches.length : 0;
 
+    var currentIndex = 0;
+    if (count > 0 && state.posFrom) {
+      var searchCursor = getSearchCursor(cm, state.query, CodeMirror.Pos(cm.firstLine(), 0));
+      var idx = 0;
+      while (searchCursor.findNext()) {
+        idx++;
+        if (searchCursor.from().line === state.posFrom.line &&
+            searchCursor.from().ch === state.posFrom.ch) {
+          currentIndex = idx;
+          break;
+        }
+      }
+    }
+
+    var countElement = cm.getWrapperElement().parentNode.querySelector('.CodeMirror-search-count');
+    if (countElement) {
+      countElement.innerHTML = count > 0 ? currentIndex + '/' + count : '0/0';
+    }
+
     var countText = count === 1 ? '1 match found.' : count + ' matches found.';
     cm.getWrapperElement().parentNode.querySelector('.CodeMirror-search-hint').innerHTML = countText;
   };
 
   var resetCount = function resetCount(cm) {
+    var countElement = cm.getWrapperElement().parentNode.querySelector('.CodeMirror-search-count');
+    if (countElement) {
+      countElement.innerHTML = '0/0';
+    }
     cm.getWrapperElement().parentNode.querySelector('.CodeMirror-search-hint').innerHTML = '(Use /re/ syntax for regexp search)';
   };
 
@@ -360,7 +383,7 @@
 
         cm.getWrapperElement().parentNode.querySelector('.CodeMirror-search-hint').innerHTML = "Searching";
         debounceTimeout = setTimeout(function () {
-          doSearch(cm, query, !!e.shiftKey, false);
+          doSearch(cm, query, !!e.shiftKey);
         }, 500);
       }
     };
@@ -442,10 +465,7 @@
     var query = cm.getSelection() || state.lastQuery;
     var closeDialog = cm.openAdvancedDialog(replaceDialog, {
       shrinkEditor: true,
-      inputBehaviours: [getFindBehaviour(cm, query, function (inputs) {
-        inputs[1].focus();
-        inputs[1].select();
-      }), {
+      inputBehaviours: [getFindBehaviour(cm, query), {
         closeOnEnter: false,
         closeOnBlur: false,
         callback: replaceNextCallback

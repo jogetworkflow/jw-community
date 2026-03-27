@@ -350,6 +350,16 @@
                 <artifactId>maven-war-plugin</artifactId>
                 <version>3.4.0</version>
                 <configuration>
+                    <webResources>
+                        <resource>
+                            <directory>src/main/resources</directory>
+                            <targetPath>/WEB-INF/classes</targetPath>
+                            <filtering>true</filtering>
+                            <includes>
+                                <include>**/*.properties</include>
+                            </includes>
+                        </resource>
+                    </webResources>
                     <archive>
                         <manifestEntries>
                             <Dependencies>org.omg.api</Dependencies>

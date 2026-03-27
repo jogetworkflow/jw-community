@@ -7489,6 +7489,11 @@ ProcessBuilder = {
                   $('#xpdl_definition').find(".CodeMirror-advanced-dialog").css({position:"fixed", zIndex:"2147483647", top: $("body #top-panel").outerHeight() + "px", left:"calc(80% - 320px)", display: 'block'})
                   $('#xpdl_definition').find(".CodeMirror-advanced-dialog").draggable({containment:'parent'})
                 },
+                "Cmd-F": function(cm) {
+                  cm.execCommand("replace")
+                  $('#xpdl_definition').find(".CodeMirror-advanced-dialog").css({position:"fixed", zIndex:"2147483647", top: $("body #top-panel").outerHeight() + "px", left:"calc(80% - 320px)", display: 'block'})
+                  $('#xpdl_definition').find(".CodeMirror-advanced-dialog").draggable({containment:'parent'})
+                },
                 "Ctrl-=": function(cm) {
                   cm.increaseFontSize();
                 },
