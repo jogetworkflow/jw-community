@@ -2,6 +2,43 @@ Joget DX COMMUNITY
 ====================
 For more information, please refer to https://community.joget.org
 
+9.0.6
+=====
+4d98e95f9 Fixed: wflow-consoleweb - Find UI - fixed ui issues and navigation issues in search ui T7213 #1630 @9.0-SNAPSHOT
+3f78a752a Fixed: wflow-consoleweb - AppWebController - added HTTP Range request support for Safari video playback T7296 #1689 @8.2-SNAPSHOT
+b0572fe0b Fixed: wflow-plugin-base - PluginManager - Improved thread safety for plugin cache with read/write locks. #1697 T6717 @8.2-SNAPSHOT
+824905695 Modified: wflow-consoleweb - pom.xml - Added web resources configuration to include filtered properties in WAR packaging. #1752 @8.2-SNAPSHOT
+5fb164cf1 Fixed: wflow-core - Menu font color - Fixed menu font color not follow font color settings on horizontal menu in Progressive and Universal themes. #1267 @8.2-SNAPSHOT
+58f8e83f0 Fixed: wflow-consoleweb - XAdmin theme - Fixed date picker calendar icon and input field are separated. #1446 @9.0-SNAPSHOT
+b13b0f13f Fixed: wflow-consoleweb - datepicker - Fixed an issue where the native date picker was not displaying when the date icon was clicked. #1446 @9.0-SNAPSHOT
+f49ffa4d4 Fixed: wflow-consoleweb - XAdmin Theme - Fixed the issue where the datepicker icon was rendered outside the Advanced Grid dialog. #1446 @8.2-SNAPSHOT
+4767229d1 Fixed: wflow-consoleweb - DX9 Builder Theme - Fixed advanced grid datepicker icon position are too over to the right during RTL. #1446 @9.0-SNAPSHOT
+7d19a4c2e Fixed: wflow-consoleweb - Trimeda Theme - Fixed Advanced grid date picker misalignment issue. #1446 @8.2-SNAPSHOT
+8607b8826 Fixed: wflow-consoleweb - Spreadsheet - Fixed the dropdown being clipped in spreadsheet when zoom in or zoom out T7266 #1674. @8.2-SNAPSHOT
+710e7e95c Modified: wflow-commons - pom.xml - Added UTF-8 encoding properties for compiler, build, and reporting. #1729 T7326 @8.2-SNAPSHOT
+4f488bbd8 Fixed: wflow-commons - SecurityUtil - Corrected filename normalization to use NFC for better compatibility. #1729 T7326 @8.2-SNAPSHOT
+d17c405da Fixed: wflow-core - FormDataDaoImpl - Resolve strict case sensitivity for identifiers after upgrading to Hibernate 6 T7344 #1733 @9.0-SNAPSHOT
+23053d994 Fixed: wflow-core - AppMessageReplacer - Nested i18n hash variable is not being parsed correctly. T7449 #1805 @8.2-SNAPSHOT
+7b3e12304 Fixed: wflow-core - AppServiceImpl - Fixed race condition allows concurrent save during migration T7495  #1825 @9.0-SNAPSHOT
+b8b8c9ab3 Modified: jw-community - Upgraded jackson to 2.21.1 to address security vulnerability GHSA-72hv-8253-57qq. #1849 @9.0-SNAPSHOT
+02209de6a Modified: wflow-core - pom.xml - Upgraded jackson to 2.21.1 to address security vulnerability GHSA-72hv-8253-57qq. #1849 @8.2-SNAPSHOT
+20e196747 Fixed: jw-community - Security - Upgrade Apache Tomcat to 9.0.115 CVE-2025-66614, CVE-2026-24733, CVE-2026-24734. #1854 @9.0-SNAPSHOT
+0438b9f8e Fixed: wflow-wfengine - WorkflowManagerImpl - Corrected sorting logic for state field in getActivityList. #1856 T7560 @8.2-SNAPSHOT
+8bbb7dcbb Modified: wflow-commons - pom.xml - Upgraded Spring Security dependencies to 6.5.9 to address CVE-2026-22732. #1867 @9.0-SNAPSHOT
+4b3d8479b Added: wflow-commons - OnCommittedResponseWrapper - Backported changes from Spring Security to address CVE-2026-22732. #1867 @8.2-SNAPSHOT
+e680d8111 Fixed: wflow-consoleweb - Menu icon - Fixed menu icon not appear on app user view in Progressive & Universal themes. #1096 @8.2-SNAPSHOT
+d8c2348ea Fixed: wflow-consoleweb - App Composer - Corrected the “plugin update available” message. #1181 @9.0-SNAPSHOT
+f497ff01f FIxed: wflow-consoleweb - Builder - Fixed web script not appearing #1222 @9.0-SNAPSHOT
+502f938b2 Fixed: wflow-consoleweb - DX9 Builder Theme - Fixed multi select box dropdown overlapping/clipping through next section in subform. #1518 @9.0-SNAPSHOT
+7c674ba54 Fixed: wflow-core - Datalist - Fixed StackOverflowError caused by recursive DataList size or pageSize calculation #1610. @8.2-SNAPSHOT
+5aab8c900 Fixed: wflow-consoleweb - Trimeda Theme - Fixed page buttons UI not visible for more than 10 pages in Trimeda Theme. #1658 @8.2-SNAPSHOT
+7c0d52a81 Fixed: wflow-core- Breadcrumb - Fixed duplicated home icons causing confusion. #1667 @8.2-SNAPSHOT
+f8ae7c5a3 Fixed: wflow-consoleweb - Tooltip Guide - Fixed guide blocking the process builder #1670 @9.0-SNAPSHOT
+09371e13d Fixed: wflow-consoleweb - App Messages - Fixed missing import po and generate po buttons caused by incorrect button color styling. #1731 @9.0-SNAPSHOT
+bb91eeecb Fixed: wflow-enterpriseweb - Builder - Undefined attribute error triggered when using Heading element in UI Builder edit page component T7383 #1777. @8.2-SNAPSHOT
+264b9e455 Modified: wflow-consoleweb - Form Builder - Added warning indicator for field id in Form Builder #1812 @8.2-SNAPSHOT
+34cb2e187 Fixed: wflow-core - FormDataDaoImpl FormData - Handle class keyword in Hibernate HQL queries to prevent UnknownPathExeption #1526 @9.0-SNAPSHOT
+
 9.0.5
 =====
 d31dd6ab8 Fixed: wflow-consoleweb - ConsoleWebController - Fixed stale url when switching SAML directory plugins #974 @8.2-SNAPSHOT
