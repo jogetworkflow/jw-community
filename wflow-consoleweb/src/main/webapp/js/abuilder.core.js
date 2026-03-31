@@ -155,11 +155,216 @@ AppBuilder = {
     renderBuilders: function(data) {
         var self = AppBuilder;
         
-        $("#builder_canvas").html('<div><div class="canvas-header"><div class="search-container"><input class="form-control form-control-sm component-search" placeholder="'+get_cbuilder_msg('cbuilder.search')+'" type="text"><button class="clear-backspace"><i class="la la-close"></i></button></div> <a href="" id="showTags"><i class="las la-tags"></i> <span>'+self.msg('showTag')+'</span></a></div><div id="builders"><div id="builders-seperator"></div></div></div>');
-        
-        $("#builder_canvas").find('.search-container input').off("keyup change");
-        $("#builder_canvas").find('.search-container input').on("keyup change", function(){
+        $("#builder_canvas").html('<div><div class="canvas-header"><div><div class="search-container"><input class="form-control form-control-sm component-search" placeholder="'+get_cbuilder_msg('cbuilder.search')+'" type="text"><button class="clear-backspace"><i class="la la-close"></i></button> <ul class="search-suggestion"></ul> </div> <a href="" id="showTags"><i class="las la-tags"></i> <span>'+self.msg('showTag')+'</span></a></div></div><div id="builders"><div id="builders-seperator"></div></div></div>');
+
+        var $searchSuggestion = $("#builder_canvas").find(".search-suggestion");
+        var $searchSuggestionChildren = $searchSuggestion.find("li");
+        var $searchContainer = $("#builder_canvas").find(".search-container");
+
+        $("#builder_canvas").find('.search-container input').off("focusout.search").on("focusout.search", function(){ 
+            $searchSuggestion.removeClass("show");
+        });
+
+        $("#builder_canvas").find('.search-container input').off("keydown input focusin").on("keydown input focusin", function(e){
+            // Controls keydown for traversing with keyboard
+            
+            // Hide suggestion results that do not match
             var searchText = $(this).val().toLowerCase();
+
+            $searchSuggestionChildren.each(function(){
+                $(this).toggleClass("hidden", !$(this).text().toLowerCase().includes(searchText));
+            })
+            
+            if ($searchSuggestionChildren.length !== $searchSuggestionChildren.filter("li.hidden").length) {
+                $searchSuggestion.addClass("show");
+                $searchSuggestion.find(".options").removeClass("hidden");
+            } else {
+                $searchSuggestion.removeClass("show");
+            }
+
+            var index = $searchSuggestion.find("li.highlight").index();
+            var direction = 0;
+            
+            var $items = $searchSuggestion.children().children();
+            var total = $items.length;
+
+            switch (e.key) {
+                case "ArrowUp": // Up
+                    direction = -1;
+                    e.preventDefault();
+                    break;
+                case "ArrowDown": // Down
+                    direction = 1;
+                    e.preventDefault();
+                    break;
+                case 'Enter':
+                    $searchSuggestion.find("li.highlight").trigger("mousedown");
+                    e.preventDefault();
+                    break;
+                default:
+                    return;
+            }
+
+            if (index === -1) {
+                $items.eq(direction === 1 ? 0 : total - 1).addClass("highlight");
+            } else {
+                $items.eq(index).removeClass("highlight");
+
+                var nextIndex = index + direction;
+
+                if (nextIndex < 0) nextIndex = total - 1;
+                if (nextIndex >= total) nextIndex = 0;
+
+                $items.eq(nextIndex).addClass("highlight");
+            }
+
+            $searchSuggestion.find("li.highlight")[0].scrollIntoView({
+                block: "nearest"
+            });
+        });
+
+        function parseSearch(query) {
+            const filters = {};
+            var terms = "";
+
+            query.toLowerCase().split(/\s+/).forEach(token => {
+                if (!token) return;
+
+                if (token.includes(":")) {
+                    const [key, value] = token.split(":");
+
+                    if (key && value) {
+                        (filters[key] ||= []).push(value);
+                    }
+                } else {
+                    terms += token;
+                }
+            });
+
+            return { filters, terms };
+        }
+
+        $("body").off("mousedown.reset", ".advanced-tools > button").on("mousedown.reset", ".advanced-tools > button", function(){
+            setTimeout(function(){
+                $("#builder_canvas").find(".search-container > input").trigger("change");
+            }, 300)
+        })
+
+        function searchItem(searchText, tagsArr = [], $input) { 
+            function updateResultMsg() {
+                $("#builder_canvas").find(".builder-type").each(function () {
+                    const $builder = $(this);
+                    const $ul = $builder.find(".ul-wrapper > ul");
+
+                    const visibleItems = $builder.find("li.item").filter(function(){
+                        return $(this).css('display') !== 'none';
+                    }).length;
+
+                    const noItem = $builder.find("li.message").length;
+                    const hasMsg = $ul.find(".no-result-message").length;
+
+                    if (visibleItems === 0 && !hasMsg && !noItem    ) {
+                        $ul.append('<li class="no-result-message">' + get_cbuilder_msg('abuilder.noSearchResult') + '</li>');
+                    } else if (visibleItems > 0) {
+                        $ul.find(".no-result-message").remove();
+                    }
+                });
+            }
+
+            var searchQuery = "";
+            const $inputContainer = $input.parent();
+
+            searchQuery += $input.val();
+
+            //Get all the filters
+            $inputContainer.find(".sub-search").each(function(){
+                if ($(this).hasClass("tag") && !$(this).find(".nv-tag").length) {}
+                else {
+                    var bType = $(this).data("builder-type");
+                    var val = $(this).find("input").val();
+                    if ($(this).hasClass("tag")) {
+                        bType = "tag";
+
+                        const classes = $(this).find(".nv-tag")[0].className.split(/\s+/);
+                        const colorClass = classes.find(c => c.startsWith("tag-") && c !== "tag");
+                        val = colorClass;
+                    } 
+                    searchQuery += " " + bType + ":" + val;    
+                }
+            })
+
+            const { filters, terms } = parseSearch(searchQuery);
+
+            var $items = $("#builder_canvas li.item");
+            if ($("body").hasClass("overview_view")) {
+                $items = $("#builder_canvas li.item").not(".no_overview_data");
+            }
+            
+            if (searchQuery !== "") {
+                $items.each(function () {
+                    const $item = $(this);
+                    let match = false;
+
+                    if ($("body").hasClass("overview_view")) { //overview tool search
+                        $(this).find('.overview_data.active_data').each(function(){
+                            if ($(this).text().toLowerCase().indexOf(terms) > -1) {
+                                $(this).removeClass("search_hide").show();
+                            } else {
+                                $(this).addClass("search_hide").hide();
+                            }
+                        });
+                    }
+
+                    $item.find("span.item-label, span.item-id").each(function () {
+                        const text = $(this).text().toLowerCase();
+
+                        // Normal text search
+                        if (!match && terms !== "") {
+                            match = text.includes(terms);
+                        }
+
+                        const builderType = $item.data("builder-type");
+
+                        if (!match && filters[builderType] !== undefined) {
+                            match = filters[builderType].some(t => text.includes(t));
+                        }
+                    });
+
+                    // If tag
+                    if (!match && filters['tag'] && $(this).find(".nv-tag").length) {
+                        $(this).find(".nv-tag").each(function(){
+                            const classes = $(this)[0].className.split(/\s+/);
+                            const colorClass = classes.find(c => c.startsWith("tag-") && c !== "tag");
+                            
+                            match = filters['tag'].some(t => t === colorClass);
+                        })
+                    }
+
+                    $item.toggleClass("search_hide", !match);
+                });
+            } else {
+                $("#builder_canvas li.item").removeClass("search_hide");
+            }
+
+            updateResultMsg();
+            $("body").trigger("resize");
+        }
+
+        function debounce(callback, delay=250) {
+            let timer
+            return function() {
+                clearTimeout(timer)
+                timer = setTimeout(() => {
+                callback();
+                }, delay)
+            }
+        }
+
+        $("#builder_canvas").find('.search-container input').off("keyup change");
+        $("#builder_canvas").find('.search-container input').on("keyup change", function(e){
+
+            var searchText = $(this).val().toLowerCase();
+        
             if (searchText !== "") {
                 var tags = "";
                 if (searchText.indexOf("#") === 0) {
@@ -181,59 +386,14 @@ AppBuilder = {
                         }
                     }
                 }
-                
-                $("#builder_canvas").find("li.item").each(function(){
-                    var match = false;
-                    if (searchText !== "") {
-                        if ($("body").hasClass("overview_view")) { //overview tool search
-                            $(this).find('.overview_data.active_data').each(function(){
-                                if ($(this).text().toLowerCase().indexOf(searchText) > -1) {
-                                    match = true;
-                                    $(this).removeClass("search_hide").show();
-                                } else {
-                                    $(this).addClass("search_hide").hide();
-                                }
-                            });
-                        } else {
-                            $(this).find('span.item-label, span.item-id').each(function(){
-                                if ($(this).text().toLowerCase().indexOf(searchText) > -1) {
-                                    match = true;
-                                }
-                            });
-                            $(this).find('span.item-sublabel').each(function(){
-                                if ($(this).text().toLowerCase().indexOf(searchText) > -1) {
-                                    match = true;
-                                }
-                            });
-                        }
-                    }
-                    var hasTags = false;
-                    if (tagsArr.length > 0) {
-                        hasTags = true;
-                        for (var i in tagsArr) {
-                            var found = false;
-                            $(this).find('.nv-tag').each(function(){
-                                if ($(this).text().toLowerCase().indexOf(tagsArr[i]) > -1) {
-                                    found = true;
-                                }
-                            });
-                            if (!found) {
-                                hasTags = false;
-                                break;
-                            }
-                        }
-                    }
-                    
-                    if (match || hasTags) {
-                        $(this).removeClass("search_hide").show();
-                    } else {
-                        $(this).addClass("search_hide").hide();
-                    }
-                });
+
+                debounce(searchItem(searchText, tagsArr, $searchContainer.find("> input")), 1000);
             } else {
-                $("#builder_canvas").find("li.item").removeClass("search_hide").show();
+                debounce(searchItem(searchText, tagsArr, $searchContainer.find("> input")), 1000);
                 $("#builder_canvas").find("li.item .overview_data.active_data.search_hide").removeClass("search_hide").show();
+                $searchSuggestionChildren.removeClass("hidden")
             }
+
             if (this.value !== "") {
                 $(this).next("button").show();
             } else {
@@ -283,24 +443,13 @@ AppBuilder = {
                         itemClass = "has-sublabel";
                         subLabel = '<span class="item-sublabel">'+builder.elements[j].subLabel+'</span>';
                     }
-                    var isProcess = builder.value === "process";
-                    var actionsBtn = isProcess
-                            ? ""
-                            : '<button class="item-actions-btn" aria-label="Actions"><i class="fas fa-ellipsis-vertical"></i></button>' +
+            
+                    var actionsBtn = '<button class="item-actions-btn" aria-label="Actions"><i class="fas fa-ellipsis-vertical"></i></button>' +
                                 '<div class="item-actions-dropdown"></div>';
-                    $(builderDiv).find("ul").append(
-                        '<li class="item ' + itemClass + '" data-builder-type="' + builder.value + '" data-id="' + builder.elements[j].id + '">' +
-                            '<a class="item-link" href="' + builder.elements[j].url + '" target="_self">' +
-                                '<span class="item-label">' + builder.elements[j].label + '</span>' +
-                                '<span class="item-id">' + builder.elements[j].id + '</span>' +
-                                subLabel +
-                            '</a>' +
-                            '<div class="builder-actions">' +
-                                action +
-                                actionsBtn +
-                            '</div>' +
-                        '</li>'
-                    );
+            
+                    var addedBuilder = '<li class="item '+itemClass+'" data-builder-type="'+builder.value+'" data-id="'+builder.elements[j].id+'"><a class="item-link" href="'+builder.elements[j].url+'" target="_self"><span class="item-label">'+builder.elements[j].label+'</span><span class="item-id">'+builder.elements[j].id+'</span>'+subLabel+'</a><div class="builder-actions">'+action+ actionsBtn + '</div></li>';
+                    
+                    $(builderDiv).find("ul").append(addedBuilder);
                 }
             } else {
                 $(builderDiv).find("ul").append('<li class="message">'+self.msg('addNewMessage')+'</li>');
@@ -308,6 +457,192 @@ AppBuilder = {
             container.append(builderDiv);
             $("#builders-seperator").append("<span></span>");
         }
+
+        // Add the builders to the list
+        function enableAutoGrow($input) {
+            const styles = window.getComputedStyle($input[0]);
+
+            const paddingLeft = parseFloat(styles.paddingLeft) || 0;
+            const paddingRight = parseFloat(styles.paddingRight) || 0;
+            const borderLeft = parseFloat(styles.borderLeftWidth) || 0;
+            const borderRight = parseFloat(styles.borderRightWidth) || 0;
+
+            const extra =
+                paddingLeft + paddingRight +
+                borderLeft + borderRight + 2;
+
+            const $mirror = $("<span>").css({
+                position: "absolute",
+                top: "-9999px",
+                left: "-9999px",
+                whiteSpace: "pre",
+                visibility: "hidden",
+                fontSize: styles.fontSize,
+                fontFamily: styles.fontFamily,
+                fontWeight: styles.fontWeight,
+                letterSpacing: styles.letterSpacing
+            }).appendTo(document.body);
+
+            function resize() {
+                const value = $input.val() || $input.attr("placeholder") || "";
+                $mirror.text(value);
+
+                const width = Math.max(
+                    $mirror[0].offsetWidth + extra,
+                    40 // minimum so caret is visible
+                );
+
+                $input[0].style.width = width + "px";
+            }
+
+            $input.on("input", resize);
+
+            // initialize
+            resize();
+        }
+        
+        $searchSuggestion.append("<div class='options'></div>");
+        $searchSuggestion.append("<div class='tag-options'></div>");
+        $searchSuggestion.find('.tag-options').append("");
+        
+        $("body").off("mousedown", ".tag-options").on("mousedown", ".tag-options li", function() {
+            var $subSearch = $(this).closest(".search-container").find(".sub-search.tag.active");
+            $subSearch.find("input").hide();
+
+            const $cloneLi = $(this).clone();
+
+            $cloneLi.find(".nv-tag").append("<i class='fas fa-xmark'> </i>");
+            $cloneLi.find(".nv-tag span").remove();
+
+            $cloneLi.find("i").on("click", function(){
+                $(this).closest("li").remove();
+                $subSearch.find("input").show();
+                $subSearch.find("input").focus();
+
+                if ($(this).closest(".sub-search").siblings(".sub-search").length === 0) {
+                    $("#builder_canvas").find("li.item").removeClass("search_hide");
+                }   
+
+                debounce(searchItem("", [], $searchContainer.find("> input")), 1000);
+            })
+
+            $subSearch.find("input").before($cloneLi);
+            
+            $searchContainer.find("> input.component-search").focus();
+
+            const classes = $cloneLi.find(".nv-tag").attr("class").split(/\s+/);
+
+            const colorClass = classes.find(c => c.startsWith("tag-") && c !== "tag");
+            
+            debounce(searchItem(colorClass, [], $searchContainer.find("> input")), 1000);
+        });
+
+        const $tagOptions = $searchSuggestion.find(".tag-options");
+        $searchSuggestion.off("mousedown", "li.tag").on("mousedown", "li.tag", function(){
+            $searchSuggestion.parent().addClass("hidden");
+
+            var obj = this;
+            $(this).addClass("hidden");
+
+            Nav.toggleInfo();
+
+            setTimeout(function(){
+                Nav.showInfo();
+
+                var tags = Nav.getTagOptions();
+
+                $(tags).each(function () {
+                    var $clone = $(this).clone().find("div.nv-tag");
+                    $clone.find("i.check").remove();
+                    
+                    $tagOptions.append(
+                        $("<li>").append($clone)
+                    );
+                });
+                
+                $tagOptions.removeClass("hidden"); 
+                $tagOptions.parent().siblings("options").addClass("hidden");
+
+                const $sub = $('<div class="sub-search tag"><span>' + get_cbuilder_msg('cbuilder.tag') + '</span>:<input class="form-control form-control-sm component-search"><i class="fas fa-xmark remove-filter"></i></div>');
+                
+                $sub.find(".remove-filter").off("click").on("click", function(){
+                    $(this).parent().remove();
+                    $searchSuggestion.removeClass("show");
+                    debounce(searchItem("", [], $searchContainer.find("> input")), 1000);
+                })
+
+                $sub.find("input").off("keydown input").on("keydown input", function(e){
+                    if ((e.key === 'Delete' || e.key === 'Backspace') && $(this).val() === "") {
+                        $(this).siblings(".remove-filter").click();
+                    }
+                })
+
+                $sub.find("input").off("focusin").on("focusin", function(e){
+                    $searchSuggestion.addClass("show");
+                    $(this).parent().addClass("active");
+
+                    $searchSuggestion.find(".options").addClass("hidden");
+                    $searchSuggestion.find(".tag-options").removeClass("hidden");
+                })
+
+                $sub.find("input").off("blur").on("blur", function(e){
+                    $searchSuggestion.removeClass("show");
+                    $(this).parent().removeClass("active");
+
+                    $searchSuggestion.find(".tag-options").addClass("hidden");
+                })
+
+                $searchContainer.find(" > input.component-search").before($sub);
+
+                $sub.find("input").focus();
+            }, 300)
+        })
+
+        $("#builder_canvas").find("div.builder-title").each(function(){
+            const classIdentifier = $(this)
+                                    .closest(".builder-type")
+                                    .attr("class")
+                                    .split(/\s+/)
+                                    .filter(c => c !== "builder-type")
+                                    .join(" ");
+
+            const bType = $(this).find(".addnew").data("builder-type");
+
+            $searchSuggestion.find('.options').append('<li data-builder-type="' + bType + '">' + $(this).text() + '</li>');
+            $searchSuggestion.find('.options').children().last()
+            .off("mousedown")
+            .on("mousedown", function (e) {
+                e.preventDefault();
+
+                $(this).addClass("hidden");
+
+                const builderIcon = $("body").find(".builder-type[data-builder-type='" + $(this).data("builder-type") + "'] .builder-title > span.icon").html();
+
+                const $sub = $('<div class="sub-search" data-builder-type="' + $(this).data("builder-type") + '"><span>' + builderIcon + ' ' + $(this).data("builder-type").charAt(0).toUpperCase() + $(this).data("builder-type").slice(1) + '</span>:<input data-builder="' + classIdentifier + '" class="form-control form-control-sm component-search"><i class="fas fa-xmark remove-filter"></i></div>');
+
+                $sub.find(".remove-filter").off("click").on("click", function(){
+                    $(this).parent().remove();
+                    debounce(searchItem("", [], $searchContainer.find("> input")), 1000);
+                })
+
+                $sub.find("input").off("keydown input").on("keydown input", function(e){
+                    if ((e.key === 'Delete' || e.key === 'Backspace') && $(this).val() === "") {
+                        $(this).siblings(".remove-filter").click();
+                    } else if ($(this).val().trim() !== "") {
+                        debounce(searchItem($(this).val().trim().toLowerCase(),[], $searchContainer.find("> input")), 1000);
+                    } 
+                })
+
+                $searchContainer.children("input.component-search").before($sub);
+
+                enableAutoGrow($sub.find("input"));
+
+                $sub.find("input").focus();
+            });
+        })
+        $searchSuggestionChildren = $searchSuggestion.find("li");
+
+        $searchSuggestion.find('.options').append('<li class="tag">' + get_cbuilder_msg('cbuilder.tagTitle') + '</li>');
         
         //add marketplace seemless install link
         container.append('<div class="builder-type builder-marketplace"><a class="marketplaceLink btn btn-link" onclick="CustomBuilder.Builder.loadSeamlessMarketplace()">' + get_cbuilder_msg("cbuilder.seamless.marketplace.more.plugin") + '</a></div>');
@@ -418,6 +753,69 @@ AppBuilder = {
                 action: "edit",
                 handler: function(item) {
                     $(item).find(".item-link").trigger("click");
+                }
+            },
+            {
+                label: get_cbuilder_msg('cbuilder.findUsages'),
+                icon: '<i class="la la-binoculars"></i>',
+                action: "findUsage",
+                handler: function(item) {
+                    if ($("body").hasClass("show-usages-mode")) {
+                        $("#builder_canvas").find(".search-container .sub-search.usage .remove-filter").click();
+                        $("body").removeClass("show-usages-mode");
+                    }
+                    var currentBuilder = item;
+                    Usages.getUsages(
+                        $(currentBuilder).data("id"),
+                        $(currentBuilder).data("builder-type"),
+                        {
+                            appId: CustomBuilder.appId,
+                            appVersion: CustomBuilder.appVersion,
+                            builder: $(currentBuilder).data("builder-type"),
+                            contextPath: CustomBuilder.contextPath,
+                            id: $(currentBuilder).data("id")
+                        },
+                        function(data){ 
+                            var usages = data.usages;
+                            
+                            $("body").addClass("show-usages-mode");
+                            $("body").find("div.builder-type li.item").addClass("usage_hide");
+                            $("body").find("div.builder-type li.item[data-id='" + $(item).data("id") + "']").removeClass("usage_hide");
+
+                            if (parseInt(data.size) > 0) {
+                                for (var i = 0; i < usages.length; i++) {
+                                    var usage = usages[i];
+                                    var builderType = usage.type;
+                                    var builderId = usage.where;
+
+                                    if (builderType.includes('process_')) {
+                                        builderType = "process";
+                                        builderId = builderId.split("::")[0];
+                                    }
+
+                                    var $items = $("div.builder-type[data-builder-type='" + builderType + "'] li.item");
+
+                                    $items.filter("[data-id='" + builderId + "']")
+                                        .removeClass("usage_hide");
+                                }
+                            }
+                            
+                            var currentId = $(item).find(".item-label").text();
+                            var builderIcon = $(item).closest(".builder-type").find(".builder-title > .icon").html();
+                            var builderTitle = $(item).closest(".builder-type").data("builder-type");
+                            var builderStyle = "style='background-color:" + $(item).closest(".builder-type").find(".builder-title .icon").css('color') + ";'";
+
+                            const $sub = $('<div class="sub-search usage" ' + builderStyle + '><span>' + builderIcon + " " + builderTitle.charAt(0).toUpperCase() + builderTitle.slice(1) + '</span> : <b>' + currentId + '</b><i class="fas fa-xmark remove-filter"></i></div>');
+
+                            $sub.find(".remove-filter").off("click").on("click", function(){
+                                $("body").removeClass("show-usages-mode");
+                                $("body").find("div.builder-type li.item").removeClass("usage_hide");
+                                $(this).parent().remove();
+                            })
+
+                            $("body").find(".search-container > input").before($sub);
+                        }
+                    );   
                 }
             },
             {

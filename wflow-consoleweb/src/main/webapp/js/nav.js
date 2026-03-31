@@ -445,23 +445,60 @@
             }
         },
         searchTag: function(tag){
-            var searchTxt = "";
-            if ($(tag).find("span").length > 0) {
-                searchTxt = $(tag).find("span").text();
-                if (searchTxt.indexOf(" ") !== -1) {
-                    searchTxt = searchTxt.substring(searchTxt.indexOf(" ") + 1);
-                }
-            } else {
-                searchTxt = $(tag).text();
+            const $searchSuggestion = $(Nav.options.search).find(".search-suggestion");
+            const $span = $(tag);
+            const $div = $("<div>").append($span.contents());
+
+            if ($searchSuggestion.find(".tag-options").children().length === 0) {
+                var tags = Nav.getTagOptions();
+
+                $(tags).each(function () {
+                    var $clone = $(this).clone().find("div.nv-tag");
+                    $clone.find("i.check").remove();
+                    
+                    $searchSuggestion.find(".tag-options").append(
+                        $("<li>").append($clone)
+                    );
+                });
             }
-            var filter = $(Nav.options.search).find("input").val();
-            if (filter.indexOf("#"+searchTxt) === -1) {
-                if (filter !== "") {
-                    filter += " ";
-                }
-                $(Nav.options.search).find("input").val(filter + "#" + searchTxt);
+
+            $.each($span[0].attributes, function () {
+                $div.attr(this.name, this.value);
+            });
+
+            $span.replaceWith($div);
+
+            const $sub = $('<div class="sub-search tag"><span>' + get_cbuilder_msg('cbuilder.tag') + '</span>:<li>' + $span[0].outerHTML + '</li> <input class="form-control form-control-sm component-search" style="display:none"><i class="fas fa-xmark remove-filter"></i></div>');
+            
+            $sub.find(".nv-tag").append("<i class='fas fa-xmark'> </i>");
+            $sub.find(".nv-tag span").remove();
+
+            $sub.find("i").on("click", function(){
+                $(this).closest("li").remove();
+                $sub.find("input").show();
+                $sub.find("input").focus();
+
                 $(Nav.options.search).find("input").trigger("change");
-            }
+            })
+
+            $sub.find(".remove-filter").off("click").on("click", function(){
+                $(this).parent().remove();
+                
+                $(Nav.options.search).find("> input").trigger("focusout.search");
+                $(Nav.options.search).find("> input").trigger("change");
+            })
+
+            $sub.find("input").off("focusin").on("focusin", function(e){
+                $searchSuggestion.addClass("show");
+                $(this).parent().addClass("active");
+
+                $searchSuggestion.find(".options").addClass("hidden");
+                $searchSuggestion.find(".tag-options").removeClass("hidden");
+            })
+
+            $(Nav.options.search).find("> input").before($sub)
+
+            $(Nav.options.search).find("> input").trigger("change");
         }
     };
     window.Nav = Nav;

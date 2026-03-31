@@ -153,6 +153,36 @@ body[builder-theme] .builder-title .icon{
     font-size: 22px;
     padding: 5px 0px;
 }
+body[builder-theme] .item_usages_container ul.usage_found > li {
+    display: flex;
+    align-items: center;
+    column-gap: 5px;
+}
+body[builder-theme] .item_usages_container ul.usage_found > li i{
+    background:  var(--theme-primary-color-3);
+    color: var(--theme-label-color-1);
+    border: 1px solid var(--theme-border-color-1);
+}
+body[builder-theme] .item_usages_container ul.usage_found > li i {
+    border: none;
+    background: none;
+}
+body[builder-theme] .item_usages_container ul.usage_found > li i:hover {
+    color: var(--theme-active-color-1);
+    cursor: pointer;
+}
+body[builder-theme='dark'] .pewrapper a ul {
+    background-color: var(--theme-primary-color-3);
+    color: var(--theme-label-color-1);
+    border-color: var(--theme-border-color-1);
+}
+body[builder-theme='dark'] .pewrapper a ul,
+body[builder-theme='dark'] .pewrapper a ul li {
+    border-color: var(--theme-border-color-1);
+}
+body[builder-theme='dark'] .pewrapper a ul li:hover {
+    background-color: var(--theme-link-color-1)
+}
 body[builder-theme] .builder-type ul li > a {
     color: var(--theme-label-color-1);
     border-radius: 3px;

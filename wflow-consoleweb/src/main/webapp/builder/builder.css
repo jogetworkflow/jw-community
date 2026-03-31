@@ -1731,6 +1731,9 @@ body.mobile .property-page-show.property-editor-page.desktop{
 li.jsondiffpatch-unchanged {
     display: none;
 }
+.usage-highlight {
+    background-color: yellow;
+}
 #diff1, #diff2 {
     border: solid 1px #ccc;
     margin: 5px;
@@ -1744,6 +1747,9 @@ li.jsondiffpatch-unchanged {
     position: fixed;
     right: 40px;
     top: 100px;
+    display: flex;
+    flex-direction: row;
+    gap: 5px;
 }
 .table_column_items {
     list-style: none;

@@ -750,8 +750,219 @@ window._CustomBuilder = {
         };
         
         CustomBuilder.callback(CustomBuilder.config.builder.callbacks["initBuilder"], [builderCallback]);
-    },
     
+        const self = this;
+        var usageArray = JSON.parse(localStorage.getItem("usageArray"));
+        var usage = localStorage.getItem("usage");
+        var usageIndex = localStorage.getItem("usageIndex");
+
+        CustomBuilder.usageArray = usageArray;
+        
+        var interval;
+        var retry = 0;
+        if (usageArray) {
+            self._goToCodeUsages(interval, usageArray, usageIndex, retry);
+        } else if (usage) {
+            self._goToUsage(usage, self, usageIndex);
+        }
+    },
+
+    _goToUsage : function(usage, self, usageIndex) {
+        let retry = 0;
+
+        const interval = setInterval(function () {
+            if (CustomBuilder &&
+                CustomBuilder.json &&
+                JSON.stringify(CustomBuilder.json).includes(usage)) {
+
+                const obj = JSON.parse(CustomBuilder.json);
+                const id = self._findClosestIdByValue(obj, String(usage), parseInt(usageIndex));
+
+                var $item = $(CustomBuilder.Builder.frameBody).find("[data-" + $("body").attr('id') + "-id='" + id + "']");
+
+                if (CustomBuilder.builderType === 'process') {
+                    ProcessBuilder.selectElementById(usage, true);
+                    clearInterval(interval);
+                }
+
+                if ($item.length) {
+                    _CustomBuilder.Builder.selectNode($item, false);
+
+                    // If no right panel is opened, meaning that the Usage is in the Settings
+                    if ($("body").hasClass("no-right-panel")) {
+                        if ($("#builderToolbar").find("button[data-cbuilder-view='dataBinder'")) {
+                            $("#builderToolbar").find("button[data-cbuilder-view='dataBinder'").click();
+                        }
+                    }
+
+                    localStorage.removeItem("usage");
+                    localStorage.removeItem("usageIndex");
+
+                    clearInterval(interval);
+                }
+            }
+
+            retry++;
+
+            if (retry > 100) {
+                clearInterval(interval);
+            }
+
+        }, 300);
+    },
+
+    _goToCodeUsages : function(interval, usageArray, usageIndex, retry) {
+        const self = this;
+        interval = setInterval(function () {
+            var jsonReady = false;
+
+            self.enableEnhancedTools();
+
+            var btn = $("#json-def-btn");
+            if (btn.length > 0) {
+                $(btn).click();
+                if ($("#json_definition").length > 0) {
+                    jsonReady = true;
+                } else {
+                    $(btn).click();
+                }
+            }
+            if (jsonReady) {
+                clearInterval(interval);
+
+                var cm = $("#json_definition").find(".CodeMirror");
+                if (cm.length > 0) {
+                    clearInterval(interval);
+
+                    $("#json_definition").siblings(".sticky-buttons").prepend(`<div class="jump-to-usage-btn-container"><button type="button" class="btn btn-sm btn-secondary" id="jump-to-usage-previous"><i class="fas fa-angle-up"></i></button><button type="button" class="btn btn-sm btn-secondary" id="jump-to-usage-next"><i class="fas fa-angle-down"></i></button></div>`);
+
+                    cm = $(cm)[0].CodeMirror;
+
+                    // Look for the position
+                    var matches = [];
+
+                    usageArray.forEach(function (pattern) {
+
+                        var cursor = cm.getSearchCursor(pattern, { line: 0, ch: 0 });
+
+                        while (cursor.findNext()) {
+                            matches.push({
+                                text: pattern,
+                                from: cursor.from(),
+                                to: cursor.to()
+                            });
+                        }
+
+                    });
+
+                    if (matches.length === 0) return;
+
+                    var count = parseInt(usageIndex) || 0;
+                    if (count >= matches.length) count = 0;
+
+                    let currentMark = null;
+
+                    // Go to the clicked match
+                    currentMark = cm.markText(matches[count].from, matches[count].to, {
+                        className: "usage-highlight"
+                    });
+                    setTimeout(function () {
+                        cm.scrollIntoView(matches[count].from);
+                    }, 300);
+
+                    // Add buttons for user to go up and down
+                    $("#json_definition")
+                        .siblings(".sticky-buttons")
+                        .find("#jump-to-usage-previous, #jump-to-usage-next")
+                        .off("click")
+                        .on("click", function () {
+
+                            if (matches.length === 0) return;
+
+                            if (this.id === "jump-to-usage-previous") {
+                                count = (count - 1 + matches.length) % matches.length;
+                            } else {
+                                count = (count + 1) % matches.length;
+                            }
+
+                            var match = matches[count];
+
+                            if (currentMark) currentMark.clear();
+
+                            currentMark = cm.markText(match.from, match.to, {
+                                className: "usage-highlight"
+                            });
+                            cm.scrollIntoView(match.from);
+                        });
+
+                    localStorage.removeItem("usageArray");
+                    localStorage.removeItem("usageIndex");
+                }
+            }
+
+            retry++;
+            if (retry > 100) {
+                clearInterval(interval);
+            }
+        }, 300);
+    },
+
+    /*
+     * Traverse through the JSONm until find the targetValue
+     */
+    _findClosestIdByValue : function(root, targetValue, targetIndex = 0) {
+        let matchCount = 0;
+        let result = null;
+
+        function traverse(node, parents = []) {
+
+            if (result) return;
+
+            if (Array.isArray(node)) {
+                for (let item of node) {
+                    traverse(item, parents);
+                    if (result) return;
+                }
+                return;
+            }
+
+            if (node && typeof node === "object") {
+
+                const newParents = [...parents, node];
+
+                for (let key in node) {
+
+                    const value = node[key];
+
+                    if (typeof value === "string" &&
+                        value.trim() === targetValue.trim()) {
+
+                        if (matchCount === targetIndex) {
+
+                            // Walk upward in parents stack
+                            for (let i = newParents.length - 1; i >= 0; i--) {
+                                if (newParents[i].id) {
+                                    result = newParents[i].id;
+                                    return;
+                                }
+                            }
+                        }
+
+                        matchCount++;
+                    }
+
+                    if (typeof value === "object") {
+                        traverse(value, newParents);
+                        if (result) return;
+                    }
+                }
+            }
+        }
+
+        traverse(root);
+
+        return result;
+    },
     
     initBuilderActions : function(container) {
         if (container === undefined) {
@@ -2733,7 +2944,7 @@ window._CustomBuilder = {
         }; 
         
         var viewport = $(".responsive-buttons button.active").data("view");
-	$(view).closest(".builder-view").addClass(viewport);
+    $(view).closest(".builder-view").addClass(viewport);
         
         $('#cbuilder-preview [name=OWASP-CSRFTOKEN]').val(ConnectionManager.tokenValue);
         $('#cbuilder-preview').attr("action", CustomBuilder.previewUrl);
@@ -3413,14 +3624,14 @@ window._CustomBuilder = {
      */
     tabSearch : function() {
         var searchText = this.value.toLowerCase();
-	var tab = $(this).closest(".tab-pane");
-	$(tab).find(".components-list li ol li").each(function () {
+    var tab = $(this).closest(".tab-pane");
+    $(tab).find(".components-list li ol li").each(function () {
             var element = $(this);
             element.hide();
             if ($(element).find("a").text().toLowerCase().indexOf(searchText) > -1) { 
                 element.show();
             }
-	});
+    });
         if (this.value !== "") {
             $(this).next("button").show();
         } else {
@@ -3481,7 +3692,7 @@ window._CustomBuilder = {
         }
         $(".responsive-buttons button").removeClass("active");
         $(".responsive-buttons button#"+view+"-view").addClass("active");
-	$("body, #builder_canvas, #previewView").removeClass("mobile tablet desktop noviewport").addClass(view);
+    $("body, #builder_canvas, #previewView").removeClass("mobile tablet desktop noviewport").addClass(view);
         
         //for builder
         $("#element-highlight-box, #element-select-box").hide();
@@ -3695,7 +3906,7 @@ window._CustomBuilder = {
      */
     propertySearch : function() {
         var searchText = this.value.toLowerCase();
-	    var tab = $(this).closest(".element-properties");
+        var tab = $(this).closest(".element-properties");
         $(tab).find(".property-page-show").each(function() {
             var page = $(this);
             if ($(page).find(".property-editor-page-title > span").text().toLowerCase().indexOf(searchText) > -1) { 
@@ -4888,7 +5099,7 @@ window._CustomBuilder.Builder = {
         
         var self = this;
         self.selectedEl = null;
-	self.highlightEl = null;
+    self.highlightEl = null;
         self.zoom = 1;
                 
         $("#builder_canvas").append('<div id="iframe-wrapper"> \
@@ -5342,7 +5553,7 @@ window._CustomBuilder.Builder = {
      * Used to initialize the canvas iframe once it is  loaded
      */
     _frameLoaded : function(callback) {
-		
+        
         var self = CustomBuilder.Builder;
 
         self.frameDoc = $(window.FrameDocument);
