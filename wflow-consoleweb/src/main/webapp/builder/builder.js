@@ -258,7 +258,7 @@ window._CustomBuilder = {
         });
         
         $("#quick-nav-bar").removeClass("active");
-        if (typeof $('body').attr("builder-theme") !== 'undefined' && $('body').attr("builder-theme") !== false){
+        if (CustomBuilder.Builder.isBuilderTheme()){
             $("#loadingMessage").text("");
         }
         $("body").addClass("initializing");
@@ -1238,7 +1238,7 @@ window._CustomBuilder = {
         //update save button
         $("#save-btn").removeClass("unsaved");
         $("#save-btn-toolbar").removeClass("unsaved");
-        if ($('body').attr("builder-theme") !== 'undefined' && $('body').attr("builder-theme") !== false) {
+        if (CustomBuilder.Builder.isBuilderTheme()) {
             CustomBuilder.Builder.updateSaveButtonStatus(false);
         }
         if (!CustomBuilder.isSaved()) {
@@ -1287,7 +1287,7 @@ window._CustomBuilder = {
      * Save JSON 
      */
     save : function(){
-        if (typeof $('body').attr("builder-theme") !== 'undefined' && $('body').attr("builder-theme") !== false) {
+        if (CustomBuilder.Builder.isBuilderTheme()) {
             //update button text to saving, and add spinning icon
             $("#save-btn > span").text(get_cbuilder_msg('cbuilder.saving'));
             $("#save-btn > i").attr("class", "fas fa-spinner fa-spin");
@@ -1306,146 +1306,148 @@ window._CustomBuilder = {
         }
         
         if (proceedSave) {
-            CustomBuilder.showMessage(get_cbuilder_msg('cbuilder.saving'));
-            var self = CustomBuilder;
-            var jsonObj = JSON.parse(CustomBuilder.getJson());
+            try {
+                CustomBuilder.showMessage(get_cbuilder_msg('cbuilder.saving'));
+                var self = CustomBuilder;
+                var jsonObj = JSON.parse(CustomBuilder.getJson());
 
-            if (jsonObj.setting !== undefined) {
-                self.processMultiLines(jsonObj.setting.properties);
-            } else if (jsonObj.properties !== undefined) {
-                self.processMultiLines(jsonObj.properties);
-            } else if (jsonObj.binder !== undefined) {
-                self.processMultiLines(jsonObj.binder);
-            }
-            var json = JSON.stringify(jsonObj).replace(/\//g, '\\/');
-            
-            var jsonFile = new Blob([json], {type : 'text/plain'});
-            var params = new FormData();
-            params.append("jsonFile", jsonFile);
-            
-            if (CustomBuilder.config.builder.options["submitDiff"]) {
-                //prepare diff file
-                // Parse the original JSON strings into JavaScript objects
-                const oldData = JSON.decode($('#cbuilder-json-original').val());
+                if (jsonObj.setting !== undefined) {
+                    self.processMultiLines(jsonObj.setting.properties);
+                } else if (jsonObj.properties !== undefined) {
+                    self.processMultiLines(jsonObj.properties);
+                } else if (jsonObj.binder !== undefined) {
+                    self.processMultiLines(jsonObj.binder);
+                }
+                var json = JSON.stringify(jsonObj).replace(/\//g, '\\/');
 
-                // Get the difference patch
-                let diff = jsondiffpatch.diff(oldData, CustomBuilder.data);
-                
-                if (diff === null || diff === undefined) {
-                    diff = {};
+                var jsonFile = new Blob([json], {type : 'text/plain'});
+                var params = new FormData();
+                params.append("jsonFile", jsonFile);
+
+                if (CustomBuilder.config.builder.options["submitDiff"]) {
+                    //prepare diff file
+                    // Parse the original JSON strings into JavaScript objects
+                    const oldData = JSON.decode($('#cbuilder-json-original').val());
+
+                    // Get the difference patch
+                    let diff = jsondiffpatch.diff(oldData, CustomBuilder.data);
+
+                    if (diff === null || diff === undefined) {
+                        diff = {};
+                    }
+
+                    // Convert the difference patch to a JSON string
+                    const diffString = JSON.stringify(diff);
+
+                    //submit it
+                    var diffFile = new Blob([diffString], {type : 'text/plain'});
+                    params.append("diffFile", diffFile);
                 }
 
-                // Convert the difference patch to a JSON string
-                const diffString = JSON.stringify(diff);
-                
-                //submit it
-                var diffFile = new Blob([diffString], {type : 'text/plain'});
-                params.append("diffFile", diffFile);
-            }
-        
-            $.ajax({ 
-                type: "POST", 
-                url: CustomBuilder.saveUrl,
-                data: params,
-                cache: false,
-                processData: false,
-                contentType: false,
-                beforeSend: function (request) {
-                   request.setRequestHeader(ConnectionManager.tokenName, ConnectionManager.tokenValue);
-                },
-                success:function(data) {
-                    var d = JSON.decode(data);
-                    if(d.success == true){
-                        $("#save-btn").removeClass("unsaved");
-                        $("#save-btn-toolbar").removeClass("unsaved");
-                        CustomBuilder.savedJson = json;
-                        $('#cbuilder-json-original').val(d.data);
-                        CustomBuilder.updateSaveStatus("0");
-                        CustomBuilder.showMessage(get_cbuilder_msg('ubuilder.saved'), "success");
+                $.ajax({ 
+                    type: "POST", 
+                    url: CustomBuilder.saveUrl,
+                    data: params,
+                    cache: false,
+                    processData: false,
+                    contentType: false,
+                    beforeSend: function (request) {
+                       request.setRequestHeader(ConnectionManager.tokenName, ConnectionManager.tokenValue);
+                    },
+                    success:function(data) {
+                        var d = JSON.decode(data);
+                        if(d.success == true){
+                            $("#save-btn").removeClass("unsaved");
+                            $("#save-btn-toolbar").removeClass("unsaved");
+                            CustomBuilder.savedJson = json;
+                            $('#cbuilder-json-original').val(d.data);
+                            CustomBuilder.updateSaveStatus("0");
+                            CustomBuilder.showMessage(get_cbuilder_msg('ubuilder.saved'), "success");
 
-                        if (d.properties !== undefined && d.properties !== null) {
-                            CustomBuilder.config.builder.properties = $.extend(true, CustomBuilder.config.builder.properties, d.properties);
-                        }
-
-                        CustomBuilder.callback(CustomBuilder.config.builder.callbacks["builderSaved"], [d]);
-                    }else{
-                        CustomBuilder.showMessage(get_cbuilder_msg('ubuilder.saveFailed') + ((d.error && d.error !== "")?(" : " + d.error):""), "danger");
-
-                        CustomBuilder.callback(CustomBuilder.config.builder.callbacks["builderSaveFailed"], [d]);
-                    }
-
-                    //check builder name change
-                    var name = CustomBuilder.getBuilderItemName();
-                    if ((name !== null && $("#builderElementName .title span.item_name").text() !== name) || (name === null && CustomBuilder.builderType === "process")) {
-                        if (name !== null) {
-                            $("#builderElementName .title span.item_name").text(name);
-
-                            $("head title").text(CustomBuilder.builderLabel + " : " + name);
-                        }
-
-                        //reload nav
-                        CustomBuilder.reloadBuilderMenu();
-                    }
-
-                    setTimeout(function(){
-                        $("#save-btn").removeAttr("disabled");
-                        $("#save-btn-toolbar").removeAttr("disabled");
-                        if (typeof $('body').attr("builder-theme") !== 'undefined' && $('body').attr("builder-theme") !== false) {
-                            if(d.success === true){
-                                CustomBuilder.Builder.updateSaveButtonStatus(true);
+                            if (d.properties !== undefined && d.properties !== null) {
+                                CustomBuilder.config.builder.properties = $.extend(true, CustomBuilder.config.builder.properties, d.properties);
                             }
-                            $("#loadingMessage").text("");
+
+                            CustomBuilder.callback(CustomBuilder.config.builder.callbacks["builderSaved"], [d]);
+                        }else{
+                            let msg = get_cbuilder_msg('ubuilder.saveFailed');
+                            if (d.error && d.error !== "") {
+                                msg += ' <br><div class="toast-error-detail">' + UI.escapeHTML(d.error) + '</div>';
+                            }
+                            CustomBuilder.showMessage(msg, "danger");
+
+                            CustomBuilder.callback(CustomBuilder.config.builder.callbacks["builderSaveFailed"], [d]);
                         }
-                    }, 250);
-                },
-                error: function(xhr, status, error) {
-                    let errorText = (UI.stripHtmlTags(xhr.responseText) || status || error);
-                    
-                    // Show a generic or detailed error message
-                    CustomBuilder.showMessage(
-                        get_cbuilder_msg('ubuilder.saveFailed') + " <br>" + errorText,
-                        "danger"
-                    );
 
-                    // Optional callback for external handling
-                    CustomBuilder.callback(CustomBuilder.config.builder.callbacks["builderSaveFailed"], [{
-                        success: false,
-                        error: error,
-                        status: status,
-                        response: xhr.responseText
-                    }]);
-                    
-                    if (typeof $('body').attr("builder-theme") !== 'undefined' && $('body').attr("builder-theme") !== false) {
-                        // Re-enable the button if disabled
-                        $("#save-btn").removeAttr("disabled");
-                        $("#save-btn-toolbar").removeAttr("disabled");
-                        $("#loadingMessage").text("");
-                        //revert back the button
-                        $("#save-btn > i").removeClass("fas fa-spinner fa-spin");
-                        $("#save-btn > span").text(get_cbuilder_msg('ubuilder.save'));
-                        $("#save-btn > i").attr("class", "las la-cloud-upload-alt");
-                        //save button in edit page component
-                        $("#save-btn-toolbar > i").removeClass("fas fa-spinner fa-spin");
-                        $("#save-btn-toolbar > span").text(get_cbuilder_msg('ubuilder.save'));
-                        $("#save-btn-toolbar > i").attr("class", "las la-cloud-upload-alt");
+                        //check builder name change
+                        var name = CustomBuilder.getBuilderItemName();
+                        if ((name !== null && $("#builderElementName .title span.item_name").text() !== name) || (name === null && CustomBuilder.builderType === "process")) {
+                            if (name !== null) {
+                                $("#builderElementName .title span.item_name").text(name);
 
+                                $("head title").text(CustomBuilder.builderLabel + " : " + name);
+                            }
+
+                            //reload nav
+                            CustomBuilder.reloadBuilderMenu();
+                        }
+
+                        setTimeout(function(){
+                            $("#save-btn").removeAttr("disabled");
+                            $("#save-btn-toolbar").removeAttr("disabled");
+                            if (CustomBuilder.Builder.isBuilderTheme()) {
+                                if(d.success === true){
+                                    CustomBuilder.Builder.updateSaveButtonStatus(true);
+                                }
+                                $("#loadingMessage").text("");
+                            }
+                        }, 250);
+                    },
+                    error: function(xhr, status, error) {
+                        let errorText = (UI.stripHtmlTags(xhr.responseText) || status || error);
+                        if (errorText) {
+                            errorText = errorText.replace(/\s+/g, " ").trim();
+                        }
+
+                        let msg = get_cbuilder_msg('ubuilder.saveFailed') + " <br>" + get_cbuilder_msg('ubuilder.seeMoreDetail');
+                        if (errorText) {
+                            msg = get_cbuilder_msg('ubuilder.saveFailed') + ' <br><div class="toast-error-detail">' + UI.escapeHTML(errorText) + '</div>';
+                        }
+
+                        // Show a generic or detailed error message
+                        CustomBuilder.showMessage(
+                            msg,
+                            "danger"
+                        );
+
+                        // Output errorText to the console and remove extra whitespace
+                        console.error("Error during save:", errorText.replace(/\s+/g, " ").trim());
+                        // Optional callback for external handling
+                        CustomBuilder.callback(CustomBuilder.config.builder.callbacks["builderSaveFailed"], [{
+                            success: false,
+                            error: error,
+                            status: status,
+                            response: xhr.responseText
+                        }]);
+
+                        if (CustomBuilder.Builder.isBuilderTheme()) {
+                            CustomBuilder.Builder.resetSaveButton();
+                        }
                     }
-                }
-            });
+                });
+            } catch (err) {
+                 console.error("Error during save:", err);
+                 CustomBuilder.showMessage(get_cbuilder_msg('ubuilder.saveFailed') , "danger");
+                 if (CustomBuilder.Builder.isBuilderTheme()) {
+                     setTimeout(function(){
+                      CustomBuilder.Builder.resetSaveButton();
+                     },250);
+                 }
+            }
         } else {
             setTimeout(function(){
-                $("#save-btn").removeAttr("disabled");
-                $("#save-btn-toolbar").removeAttr("disabled");
-                if (typeof $('body').attr("builder-theme") !== 'undefined' && $('body').attr("builder-theme") !== false) {
-                    $("#loadingMessage").text("");
-                    //revert back the button
-                    $("#save-btn > i").removeClass("fas fa-spinner fa-spin");
-                    $("#save-btn > span").text(get_cbuilder_msg('ubuilder.save'));
-                    $("#save-btn > i").attr("class", "las la-cloud-upload-alt");
-                    //save button in edit page component
-                    $("#save-btn-toolbar > i").removeClass("fas fa-spinner fa-spin");
-                    $("#save-btn-toolbar > span").text(get_cbuilder_msg('ubuilder.save'));
-                    $("#save-btn-toolbar > i").attr("class", "las la-cloud-upload-alt");
+                if (CustomBuilder.Builder.isBuilderTheme()) {
+                    CustomBuilder.Builder.resetSaveButton();
                 }
             }, 1000);
         }
@@ -1608,7 +1610,7 @@ window._CustomBuilder = {
      */
     showMessage: function(message, type, center) {
         if (message && message !== "") {
-            if (typeof $('body').attr("builder-theme") !== 'undefined' && $('body').attr("builder-theme") !== false && type !== "danger") {
+            if (CustomBuilder.Builder.isBuilderTheme() && type !== "danger") {
                 $("#loadingMessage").text(message);
             }
             var id = "toast-" + (new Date()).getTime();
@@ -1770,18 +1772,38 @@ window._CustomBuilder = {
                 var currentString = JSON.stringify(data);
                 currentSaved = currentString;
                 $('#cbuilder-json-current').val(currentString);
-                var original = JSON.decode($('#cbuilder-json-original').val());
-                var latest = JSON.decode($('#cbuilder-json').val());
-                merged = DiffMerge.merge(original, current, latest, output);
+                try {
+                    var original = JSON.decode($('#cbuilder-json-original').val());
+                    var latest = JSON.decode($('#cbuilder-json').val());
+                    merged = DiffMerge.merge(original, current, latest, output);
+                } catch (err) {
+                    console.error("Error during diff merge:", err);
+                    let errorText = err;
+                    let msg = get_cbuilder_msg('ubuilder.saveFailed') + " <br>" + get_cbuilder_msg('ubuilder.seeMoreDetail');
+                    if (errorText) {
+                        msg = get_cbuilder_msg('ubuilder.saveFailed') + ' <br><div class="toast-error-detail">' + UI.escapeHTML(errorText) + '</div>';
+                    }
+                    CustomBuilder.showMessage(msg, "danger");
+                    if (CustomBuilder.Builder.isBuilderTheme()) {
+                        CustomBuilder.Builder.resetSaveButton();
+                    }
+                    // Stop further execution
+                    return;
+                }
             },
             error: function() {
                 currentSaved = $('#cbuilder-json-current').val();
                 merged = $('#cbuilder-json').val();
             },
             complete: function() {
-                if (callback) {
+                if (merged !== undefined && callback) {
                     callback.call(thisObject, currentSaved, merged);
-                }    
+                } else if (merged === undefined && callback) {
+                    // It failed during decode, reset state
+                    if (CustomBuilder.Builder.isBuilderTheme()) {
+                        CustomBuilder.Builder.resetSaveButton();
+                    }
+                }
             }
         });
     },
@@ -3158,8 +3180,8 @@ window._CustomBuilder = {
                     CustomBuilder.editorSilentChange = true;
                     var value = codeeditor.getValue();
                     if (value.length > 0) {
-                        var jsonObj = JSON.decode(value);
-                        textarea.val(JSON.encode(jsonObj)).trigger("change");
+                            var jsonObj = JSON.decode(value);
+                            textarea.val(JSON.encode(jsonObj)).trigger("change");
                     }
                     CustomBuilder.editorSilentChange = false;
                 }
@@ -8591,6 +8613,31 @@ window._CustomBuilder.Builder = {
             iconToolbar.removeClass("zmdi zmdi-check").addClass("las la-cloud-upload-alt");
             iconToolbar.removeClass("fas fa-spinner fa-spin");
         }
+    },
+
+    /*
+     * Check builder theme
+     */
+    isBuilderTheme: function () {
+        return typeof $('body').attr("builder-theme") !== 'undefined' && $('body').attr("builder-theme") !== false;
+    },
+    
+    /*
+     * Reset the Save button
+     */
+    resetSaveButton: function() {
+        //re-enable save button if disabled
+        $("#save-btn").removeAttr("disabled");
+        $("#save-btn-toolbar").removeAttr("disabled");
+        $("#loadingMessage").text("");
+        //revert back the button
+        $("#save-btn > i").removeClass("fas fa-spinner fa-spin");
+        $("#save-btn > span").text(get_cbuilder_msg('ubuilder.save'));
+        $("#save-btn > i").attr("class", "las la-cloud-upload-alt");
+        //save button in edit page component
+        $("#save-btn-toolbar > i").removeClass("fas fa-spinner fa-spin");
+        $("#save-btn-toolbar > span").text(get_cbuilder_msg('ubuilder.save'));
+        $("#save-btn-toolbar > i").attr("class", "las la-cloud-upload-alt");
     }
 }
 

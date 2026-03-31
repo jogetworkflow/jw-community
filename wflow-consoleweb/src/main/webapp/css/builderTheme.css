@@ -3370,7 +3370,9 @@ body[builder-theme='dark'] .guider_arrow {
 #builder-message .toast .close:focus-visible {
     outline: none;
 }
-
+#builder-message .toast .btn-close{
+    box-shadow: none;
+}
 body[builder-theme] #resources .view-toggle-button, 
 body[builder-theme] #resources .sort-toggle-button {
     float: inline-end;
