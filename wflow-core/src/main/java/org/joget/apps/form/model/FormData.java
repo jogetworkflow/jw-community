@@ -108,7 +108,7 @@ public class FormData {
      */
     public String getLoadBinderDataProperty(Element element, String property) {
         String value = null;
-        if (property != null) {
+        if (property != null && !property.isEmpty()) {
             FormRowSet rowSet = getLoadBinderData(element);
             if (rowSet != null && !rowSet.isEmpty()) {
                 if (Character.isDigit(property.charAt(0)) || FormDataDaoImpl.RESERVED_KEYWORDS.contains(property.toLowerCase())) {

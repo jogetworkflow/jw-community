@@ -2114,6 +2114,15 @@ public class AppServiceImpl implements AppService {
                 FormRow row = results.get(i);
                 String rowPrimaryKeyValue = row.getId();
 
+                // Remove empty key-value pairs
+                Iterator<Object> keyIterator = row.keySet().iterator();
+                while (keyIterator.hasNext()) {
+                    String key = (String) keyIterator.next();
+                    if (key == null || key.isEmpty()) {
+                        keyIterator.remove();
+                    }
+                }
+
                 // set id
                 if (rowPrimaryKeyValue == null || rowPrimaryKeyValue.trim().length() == 0) {
                     rowPrimaryKeyValue = primaryKeyValue;
