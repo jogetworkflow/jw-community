@@ -65,27 +65,27 @@
         <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-core</artifactId>
-            <version>6.2.11</version>
+            <version>6.2.17</version>
         </dependency>
         <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-orm</artifactId>
-            <version>6.2.11</version>
+            <version>6.2.17</version>
         </dependency>
         <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-context-support</artifactId>
-            <version>6.2.11</version>
+            <version>6.2.17</version>
         </dependency>
         <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-aop</artifactId>
-            <version>6.2.11</version>
+            <version>6.2.17</version>
         </dependency>
         <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-aspects</artifactId>
-            <version>6.2.11</version>
+            <version>6.2.17</version>
             <exclusions>
                 <exclusion>
                     <groupId>org.aspectj</groupId>
@@ -96,7 +96,7 @@
         <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-test</artifactId>
-            <version>6.2.11</version>
+            <version>6.2.17</version>
             <scope>test</scope>
         </dependency>
         <dependency>
@@ -107,7 +107,7 @@
         <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-webmvc</artifactId>
-            <version>6.2.11</version>
+            <version>6.2.17</version>
         </dependency>
         <dependency>
             <groupId>commons-validator</groupId>
