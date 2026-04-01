@@ -239,8 +239,8 @@
                 var url = $(this).text().trim();
                 if (url && url.startsWith("http")) {
                     $(this).html(
-                        '<a href="' + UI.escapeHTML(url) + '" target="_blank" class="marketplace-btn open-link"><i class="fas fa-external-link-alt"></i><fmt:message key="console.plugin.label.openLink"/></a>' +
-                        '<span class="marketplace-btn copy-link" data-url="' + UI.escapeHTML(url) + '"><i class="far fa-copy"></i><fmt:message key="console.plugin.label.copyLink"/></span>'
+                        '<a href="' + UI.escapeHTML(url) + '" target="_blank" class="marketplace-btn open-link"><i class="fas fa-external-link-alt"></i> <fmt:message key="console.plugin.label.openLink"/></a>' +
+                        '<span class="marketplace-btn copy-link" data-url="' + UI.escapeHTML(url) + '"><i class="far fa-copy"></i> <fmt:message key="console.plugin.label.copyLink"/></span>'
                     );
                 }
             });

@@ -1,6 +1,16 @@
 <%@ include file="/WEB-INF/jsp/includes/taglibs.jsp" %>
 
 <commons:popupHeader bodyCssClass=" builder-popup no-header" builderTheme="true"/>
+<style>
+    .marketplace-btn {
+        color: #0165fc !important;
+        text-decoration: none !important;
+        margin-right: 15px;
+    }
+    .marketplace-btn:hover {
+        text-decoration: underline !important;
+    }
+</style>
 <div id="main-body-content">
     <div id="pluginstab">
         <ul>
@@ -52,10 +62,11 @@
                     hrefDialogHeight="400px"
                     hrefDialogTitle=""
                     searchItems="name|Name"
-                    fields="['pluginClass','label','description','version','plugintype']"
+                    fields="['pluginClass','label','description','version','plugintype','url']"
                     column1="{key: 'label', label: 'console.plugin.label.name', sortable: false, width: 180}"
-                    column2="{key: 'description', label: 'console.plugin.label.description', sortable: false, width: 300}"
-                    column3="{key: 'version', label: 'console.plugin.label.version', sortable: false, width: 140}"
+                    column2="{key: 'description', label: 'console.plugin.label.description', sortable: false, width: 265}"
+                    column3="{key: 'version', label: 'console.plugin.label.version', sortable: false, width: 115}"
+                    column4="{key: 'url', label: 'console.plugin.label.marketplaceUrl', sortable: false, width: 200}"
                     />
             </div>
             <div id="update" class="pluginList_container">
@@ -77,11 +88,12 @@
                     checkboxButton2="appCenter.label.updateApp"
                     checkboxCallback2="update"
                     searchItems="name|Name"
-                    fields="['id','label','description','version','plugintype']"
+                    fields="['id','label','description','version','plugintype','url']"
                     column1="{key: 'label', label: 'console.plugin.label.name', sortable: false, width: 180}"
-                    column2="{key: 'description', label: 'console.plugin.label.description', sortable: false, width: 300}"
-                    column3="{key: 'latestVersion', label: 'console.plugin.label.latestVersion', sortable: false, width: 140}"
-                    column4="{key: 'version', label: 'console.plugin.label.version', sortable: false, width: 140}"
+                    column2="{key: 'description', label: 'console.plugin.label.description', sortable: false, width: 265}"
+                    column3="{key: 'latestVersion', label: 'console.plugin.label.latestVersion', sortable: false, width: 130}"
+                    column4="{key: 'version', label: 'console.plugin.label.version', sortable: false, width: 130}"
+                    column5="{key: 'url', label: 'console.plugin.label.marketplaceUrl', sortable: false, width: 200}"
                     />
             </div>    
         </div>  
@@ -100,7 +112,39 @@
             $('#JsonPluginDefaultDataTable_searchTerm').hide();
             $('#JsonDataTable_searchTerm').hide();
             $('#JsonDataTable1_searchTerm').hide();
-        
+
+            //helper function to render marketplace column action buttons
+            function renderMarketplaceButtons(tableId, colIndex) {
+                var selector = "#" + tableId + " tbody tr td:nth-child(" + colIndex + ")";
+                $(selector).addClass("noLinkTd");
+                $(selector + " div").each(function(){
+                    var url = $(this).text().trim();
+                    if (url && url.startsWith("http")) {
+                        $(this).html(
+                            '<a href="' + UI.escapeHTML(url) + '" target="_blank" class="marketplace-btn open-link"><i class="fas fa-external-link-alt"></i> <fmt:message key="console.plugin.label.openLink"/></a>' +
+                            '<span class="marketplace-btn copy-link" data-url="' + UI.escapeHTML(url) + '"><i class="far fa-copy"></i> <fmt:message key="console.plugin.label.copyLink"/></span>'
+                        );
+                    }
+                });
+            }
+            //render marketplace action buttons for Installed and Update tabs
+            $("#pluginList").on("success", function(){
+                renderMarketplaceButtons(this.id, 4);
+            });
+            $("#pluginList2").on("success", function(){
+                renderMarketplaceButtons(this.id, 6);
+            });
+            //handle click events for marketplace column buttons
+            $(document).on("click", ".marketplace-btn", function(e){
+                e.stopPropagation();
+                if ($(this).hasClass("copy-link")) {
+                    var url = $(this).data("url");
+                    navigator.clipboard.writeText(url).then(function() {
+                        parent.window.CustomBuilder.showMessage('<fmt:message key="console.plugin.label.linkCopied"/>', "success", true);
+                    });
+                }
+            });
+
             //reset to 0 first before refresh
             $("#pluginList2").on("refresh", function(){
                 $(".update_count").text("(0)");
