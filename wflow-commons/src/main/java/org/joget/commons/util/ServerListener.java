@@ -14,5 +14,10 @@ public class ServerListener implements ServletContextListener {
 
     @Override
     public void contextDestroyed(ServletContextEvent sce) {
+        try {
+            Class.forName("org.joget.apps.license.LicenseManager");
+        } catch (ClassNotFoundException e) {
+            ServerUtil.unregisterServer();
+        }
     }
 }
