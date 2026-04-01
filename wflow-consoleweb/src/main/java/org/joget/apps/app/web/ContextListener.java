@@ -2,6 +2,7 @@ package org.joget.apps.app.web;
 
 import jakarta.servlet.ServletContextEvent;
 import jakarta.servlet.ServletContextListener;
+import org.joget.apps.app.service.AppDevUtil;
 import org.joget.commons.util.FileManager;
 import org.joget.commons.util.LogUtil;
 
@@ -16,6 +17,8 @@ public class ContextListener implements ServletContextListener {
             cleaner.cleanThreadLocals();
             cleaner.cleanThreads();
             FileManager.shutdown();
+            AppDevUtil.shutdownGitTempCleaner();
+            AppDevUtil.shutdownGitGcExecutor();
         } catch (Exception ex) {
             LogUtil.error(ContextListener.class.getName(), ex, "");
         }

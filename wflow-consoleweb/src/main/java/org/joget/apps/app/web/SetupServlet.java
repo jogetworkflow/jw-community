@@ -16,8 +16,6 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.apache.commons.dbcp2.BasicDataSource;
 import org.apache.commons.lang.StringEscapeUtils;
-import org.eclipse.jgit.api.Git;
-import org.eclipse.jgit.api.errors.GitAPIException;
 import org.joget.apps.app.dao.GitCommitHelper;
 import org.joget.apps.app.model.AppDefinition;
 import org.joget.apps.app.service.AppDevUtil;
@@ -430,23 +428,8 @@ public class SetupServlet extends HttpServlet {
         if (!AppDevUtil.isGitDisabled()) {
             GitCommitHelper gitCommitHelper = AppDevUtil.getGitCommitHelper(appDef);
             try {
-                String gitCommitMessage = gitCommitHelper.getCommitMessage();
-                if (gitCommitHelper.hasChanges() && gitCommitMessage != null && !gitCommitMessage.trim().isEmpty()) {
-                    // sync plugins
-                    if (gitCommitHelper.isSyncPlugins()) {
-                        AppDevUtil.syncAppPlugins(appDef);
-                    }
-
-                    // sync resources
-                    if (gitCommitHelper.isSyncResources()) {
-                        AppDevUtil.syncAppResources(appDef);
-                    }
-
-                    Git git = gitCommitHelper.getGit();
-                    File gitWorkingDir = gitCommitHelper.getWorkingDir();
-                    AppDevUtil.gitPullAndCommit(appDef, git, gitWorkingDir, gitCommitMessage);
-                }
-            } catch (GitAPIException e) {
+                gitCommitHelper.commit();
+            } catch (Exception e) {
                 LogUtil.error(SetupServlet.class.getName(), e, "Error setting up Git.");
             } finally {
                 gitCommitHelper.clean();

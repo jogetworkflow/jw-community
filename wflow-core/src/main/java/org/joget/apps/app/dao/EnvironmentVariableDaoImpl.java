@@ -1,11 +1,9 @@
 package org.joget.apps.app.dao;
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Properties;
-import org.eclipse.jgit.api.Git;
 import org.hibernate.LockMode;
 import org.hibernate.LockOptions;
 import org.hibernate.Session;
@@ -15,10 +13,7 @@ import org.joget.apps.app.model.AppDefinition;
 import org.joget.apps.app.model.EnvironmentVariable;
 import org.joget.apps.app.service.AppDevUtil;
 import org.joget.apps.app.service.AppService;
-import org.joget.apps.app.service.AppUtil;
 import org.joget.commons.util.LogUtil;
-import org.joget.directory.model.User;
-import org.joget.workflow.model.service.WorkflowUserManager;
 import org.springframework.beans.factory.annotation.Autowired;
 
 public class EnvironmentVariableDaoImpl extends AbstractAppVersionedObjectDao<EnvironmentVariable> implements EnvironmentVariableDao {
@@ -80,7 +75,7 @@ public class EnvironmentVariableDaoImpl extends AbstractAppVersionedObjectDao<En
             );
 
             if (commitConfig) {
-                synchronized (AppDevUtil.getAppLock(appDef.getAppId())) {
+                synchronized (AppDevUtil.getAppLock(appDef)) {
                     try {
                         // Reload to get latest DB state
                         AppDefinition freshAppDef = appService.loadAppDefinition(appDef.getAppId(), appDef.getVersion().toString());
@@ -94,44 +89,18 @@ public class EnvironmentVariableDaoImpl extends AbstractAppVersionedObjectDao<En
 
                         // Commit and push immediately to local repo
                         GitCommitHelper gitCommitHelper = AppDevUtil.getGitCommitHelper(freshAppDef);
-                        if (gitCommitHelper != null && gitCommitHelper.getCommitMessage() != null 
-                                && !gitCommitHelper.getCommitMessage().trim().isEmpty()) {
-
-                            Git git = gitCommitHelper.getGit();
-                            String username = "admin";
-                            String email = "";
-
+                        
+                        if (gitCommitHelper != null) {
                             try {
-                                WorkflowUserManager wum = (WorkflowUserManager) AppUtil.getApplicationContext().getBean("workflowUserManager");
-                                User user = wum.getCurrentUser();
-                                if (user != null) {
-                                    username = user.getUsername();
-                                    email = user.getEmail();
-                                    if (email == null) {
-                                        email = "";
-                                    }
+                                gitCommitHelper.commit();
+                            } finally {
+                                try {
+                                    gitCommitHelper.clean();
+                                } catch (Exception ex) {
+                                    LogUtil.warn(EnvironmentVariableDaoImpl.class.getName(), "Failed to clean git working directory for " + appDef.getAppId() + " - " + ex.getMessage());
                                 }
-                            } catch (Exception e) {
-                                // Use default username
                             }
-
-                            // Commit to working directory
-                            git.commit()
-                                .setAuthor(username, email)
-                                .setMessage(gitCommitHelper.getCommitMessage())
-                                .call();
-
-                            // Push to local repo
-                            Git localGit = gitCommitHelper.getLocalGit();
-                            File workingDir = gitCommitHelper.getWorkingDir();
-                            if (localGit != null && workingDir != null) {
-                                AppDevUtil.gitPushLocal(freshAppDef, git, workingDir);
-                            }
-
-                            // Clear commit message to prevent double-commit
-                            gitCommitHelper.setCommitMessage("");
                         }
-
                     } catch (Exception e) {
                         LogUtil.error(getClass().getName(), e, "Error during git sync for add operation");
                     }
@@ -158,7 +127,7 @@ public class EnvironmentVariableDaoImpl extends AbstractAppVersionedObjectDao<En
             );
 
             if (commitConfig) {
-                synchronized (AppDevUtil.getAppLock(appDef.getAppId())) {
+                synchronized (AppDevUtil.getAppLock(appDef)) {
                     try {
                         // Reload to get latest DB state
                         AppDefinition freshAppDef = appService.loadAppDefinition(appDef.getAppId(), appDef.getVersion().toString());
@@ -172,44 +141,18 @@ public class EnvironmentVariableDaoImpl extends AbstractAppVersionedObjectDao<En
 
                         // Commit and push immediately to local repo
                         GitCommitHelper gitCommitHelper = AppDevUtil.getGitCommitHelper(freshAppDef);
-                        if (gitCommitHelper != null && gitCommitHelper.getCommitMessage() != null 
-                                && !gitCommitHelper.getCommitMessage().trim().isEmpty()) {
-
-                            Git git = gitCommitHelper.getGit();
-                            String username = "admin";
-                            String email = "";
-
+                        
+                        if (gitCommitHelper != null) {
                             try {
-                                WorkflowUserManager wum = (WorkflowUserManager) AppUtil.getApplicationContext().getBean("workflowUserManager");
-                                User user = wum.getCurrentUser();
-                                if (user != null) {
-                                    username = user.getUsername();
-                                    email = user.getEmail();
-                                    if (email == null) {
-                                        email = "";
-                                    }
+                                gitCommitHelper.commit();
+                            } finally {
+                                try {
+                                    gitCommitHelper.clean();
+                                } catch (Exception ex) {
+                                    LogUtil.warn(EnvironmentVariableDaoImpl.class.getName(), "Failed to clean git working directory for " + appDef.getAppId() + " - " + ex.getMessage());
                                 }
-                            } catch (Exception e) {
-                                // Use default username
                             }
-
-                            // Commit to working directory
-                            git.commit()
-                                .setAuthor(username, email)
-                                .setMessage(gitCommitHelper.getCommitMessage())
-                                .call();
-
-                            // Push to local repo
-                            Git localGit = gitCommitHelper.getLocalGit();
-                            File workingDir = gitCommitHelper.getWorkingDir();
-                            if (localGit != null && workingDir != null) {
-                                AppDevUtil.gitPushLocal(freshAppDef, git, workingDir);
-                            }
-
-                            // Clear commit message to prevent double-commit
-                            gitCommitHelper.setCommitMessage("");
                         }
-
                     } catch (Exception e) {
                         LogUtil.error(getClass().getName(), e, "Error during git sync for update operation");
                     }

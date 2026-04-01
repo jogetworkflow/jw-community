@@ -81,26 +81,12 @@ public class GitRequestFilter implements Filter {
                             for (String appId : gitCommitMap.keySet()) {
                                 GitCommitHelper gitCommitHelper = gitCommitMap.get(appId);
 
-                                if (gitCommitHelper != null) {
+                                if (gitCommitHelper != null && !gitCommitHelper.isCommitted()) {
                                     try {
-                                        Git git = gitCommitHelper.getGit();
                                         AppDefinition appDef = gitCommitHelper.getAppDefinition();
                                         AppUtil.setCurrentAppDefinition(appDef); //to make sure log viewer able to capture the log to app log
 
-                                        // perform commit
-                                        String commitMessage = gitCommitHelper.getCommitMessage();
-                                        if (gitCommitHelper.hasChanges() && commitMessage != null && !commitMessage.trim().isEmpty()) {
-                                            // sync plugins
-                                            if (gitCommitHelper.isSyncPlugins()) {
-                                                AppDevUtil.syncAppPlugins(appDef);
-                                            }
-
-                                            // sync resources
-                                            if (gitCommitHelper.isSyncResources()) {
-                                                AppDevUtil.syncAppResources(appDef);
-                                            }
-
-                                            AppDevUtil.gitPullAndCommit(appDef, git, gitCommitHelper.getWorkingDir(), commitMessage);
+                                        if (gitCommitHelper.commit()) {
                                             pushAppDefs.add(appDef);
                                         }
                                     } catch (Exception ex) {
@@ -109,7 +95,7 @@ public class GitRequestFilter implements Filter {
                                         try {
                                             gitCommitHelper.clean();
                                         } catch (Exception e) {
-                                            LogUtil.debug(GitRequestFilter.class.getName(), appId + " - " + e.getMessage());
+                                            LogUtil.warn(GitRequestFilter.class.getName(), "Failed to clean git working directory for " + appId + " - " + e.getMessage());
                                         }
                                         AppUtil.resetAppDefinition();
                                     }
