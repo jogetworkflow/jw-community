@@ -14,6 +14,13 @@ import java.nio.file.NoSuchFileException;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.ThreadLocalRandom;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.locks.ReentrantReadWriteLock;
+import java.util.stream.Stream;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 import javax.servlet.http.HttpServletRequest;
@@ -21,7 +28,6 @@ import net.sf.ehcache.Cache;
 import net.sf.ehcache.Element;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.ArrayUtils;
-import org.apache.commons.lang.StringUtils;
 import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.api.ListBranchCommand;
 import org.eclipse.jgit.api.MergeResult;
@@ -38,6 +44,7 @@ import org.eclipse.jgit.merge.MergeStrategy;
 import org.eclipse.jgit.revwalk.RevCommit;
 import org.eclipse.jgit.transport.FetchResult;
 import org.eclipse.jgit.transport.PushResult;
+import org.eclipse.jgit.transport.RefSpec;
 import org.eclipse.jgit.transport.RemoteConfig;
 import org.eclipse.jgit.transport.RemoteRefUpdate;
 import org.eclipse.jgit.transport.TrackingRefUpdate;
@@ -83,6 +90,8 @@ import org.simpleframework.xml.Serializer;
 import org.simpleframework.xml.core.Persister;
 import org.springframework.beans.BeansException;
 import org.springframework.util.ClassUtils;
+import java.nio.file.Path;
+import org.eclipse.jgit.treewalk.filter.PathFilter;
 
 public class AppDevUtil {
 
@@ -99,24 +108,127 @@ public class AppDevUtil {
     public static final String PROPERTY_GIT_CONFIG_AUTO_SYNC = "gitConfigAutoSync";
     private static final String CONCAT_APP_DEF = "CONCAT_APP_DEF";
     
-    public static Map<String, Set<String>> workingPulls = new HashMap<String, Set<String>>();
+    private static final ConcurrentHashMap<String, ReentrantReadWriteLock> pullLocks = new ConcurrentHashMap<>();
+    private static final ConcurrentHashMap<String, Long> lastPullTimeMap = new ConcurrentHashMap<>();
+    private static final long GIT_PULL_COOLDOWN_MS;
     protected static Random random = new Random();
-    
-    static ThreadLocal importApp = new ThreadLocal();
-    static ThreadLocal backgroundSync = new ThreadLocal();
-    
+
+    public static final long GIT_TEMP_CLEANER_INTERVAL_MS = 12 * 60 * 60 * 1000; // 12 hours
+    public static final long GIT_TEMP_EXPIRES_MS = 24 * 60 * 60 * 1000; // 24 hours (safe for clustered shared storage)
+
+    protected static final ScheduledExecutorService gitTempCleanerExecutor = Executors.newScheduledThreadPool(1);
+
+    // Git GC configuration
+    private static final boolean GIT_GC_DISABLED;
+    private static final long GIT_GC_INTERVAL_MS;
+    private static final int GIT_GC_EXPIRE_SECONDS;
+    private static final int GIT_GC_COMMIT_THRESHOLD;
+    protected static final ScheduledExecutorService gitGcExecutor = Executors.newScheduledThreadPool(1);
+    // Tracks commit count per repo since last GC (for commit-threshold trigger)
+    private static final ConcurrentHashMap<String, AtomicInteger> gcCommitCounters = new ConcurrentHashMap<>();
+
+    static ThreadLocal<Boolean> importApp = new ThreadLocal<>();
+    static ThreadLocal<Map<String, GitCommitHelper>> backgroundSync = new ThreadLocal<>();
+
     private static final boolean GIT_DISABLED;
-    private static Set<String> prevFileNames = null;
-    private static int prevFileCount = -1;
-    
-    private static final Map<String, Object> GIT_LOCKS = new ConcurrentHashMap<>();
-    
+    // Bounded LRU caches to prevent unbounded memory growth across many apps
+    private static final int MAX_MODIFIED_CACHE_ENTRIES;
+
     static {
         GIT_DISABLED = "true".equalsIgnoreCase(System.getProperty("git.disabled"));
         if (GIT_DISABLED) {
             LogUtil.info(AppDevUtil.class.getName(), "Git feature is disabled.");
         }
+
+        int maxCacheEntries;
+        int defaultCacheSize = 50;
+        if (HostManager.isVirtualHostEnabled()) {
+            defaultCacheSize = 500;
+        }
+        try {
+            maxCacheEntries = Integer.parseInt(System.getProperty("wflow.appDevCacheSize", String.valueOf(defaultCacheSize)));
+        } catch (NumberFormatException e) {
+            maxCacheEntries = defaultCacheSize;
+        }
+        MAX_MODIFIED_CACHE_ENTRIES = maxCacheEntries;
+
+        long cooldownSeconds;
+        try {
+            cooldownSeconds = Long.parseLong(System.getProperty("git.pull.cooldown.seconds", "30"));
+        } catch (NumberFormatException e) {
+            cooldownSeconds = 30;
+        }
+        GIT_PULL_COOLDOWN_MS = cooldownSeconds * 1000L;
+
+        // Schedule periodic cleanup of orphaned git temp directories with random initial delay to stagger across cluster nodes
+        long initialDelay = ThreadLocalRandom.current().nextLong(60000, 3600000); // 1-60 minutes
+        gitTempCleanerExecutor.scheduleAtFixedRate(new Runnable() {
+            @Override
+            public void run() {
+                performCleanGitTempDirectories();
+            }
+        }, initialDelay, GIT_TEMP_CLEANER_INTERVAL_MS, TimeUnit.MILLISECONDS);
+        LogUtil.info(AppDevUtil.class.getName(), "Git Temp Cleaner scheduled: interval=12h, initialDelay=" + (initialDelay / 60000) + "min");
+
+        // Git GC configuration
+        GIT_GC_DISABLED = "true".equalsIgnoreCase(System.getProperty("git.gc.disabled"));
+        long gcIntervalHours;
+        try {
+            gcIntervalHours = Long.parseLong(System.getProperty("git.gc.interval.hours", "24"));
+        } catch (NumberFormatException e) {
+            gcIntervalHours = 24;
+        }
+        GIT_GC_INTERVAL_MS = gcIntervalHours * 60 * 60 * 1000;
+        int gcExpire;
+        try {
+            gcExpire = Integer.parseInt(System.getProperty("git.gc.expire.seconds", "1209600"));
+        } catch (NumberFormatException e) {
+            gcExpire = 1209600; // 14 days
+        }
+        GIT_GC_EXPIRE_SECONDS = gcExpire;
+        int gcCommitThreshold;
+        try {
+            gcCommitThreshold = Integer.parseInt(System.getProperty("git.gc.commit.threshold", "0"));
+        } catch (NumberFormatException e) {
+            gcCommitThreshold = 0;
+        }
+        GIT_GC_COMMIT_THRESHOLD = gcCommitThreshold;
+
+        if (!GIT_DISABLED && !GIT_GC_DISABLED) {
+            // Stagger initial delay 5-90 minutes to avoid cluster thundering herd
+            long gcInitialDelay = ThreadLocalRandom.current().nextLong(300000, 5400000);
+            gitGcExecutor.scheduleAtFixedRate(new Runnable() {
+                @Override
+                public void run() {
+                    performGitGarbageCollection();
+                }
+            }, gcInitialDelay, GIT_GC_INTERVAL_MS, TimeUnit.MILLISECONDS);
+            LogUtil.info(AppDevUtil.class.getName(), "Git GC scheduled: interval=" + gcIntervalHours + "h, initialDelay=" + (gcInitialDelay / 60000) + "min");
+        } else {
+            LogUtil.info(AppDevUtil.class.getName(), "Git GC is disabled.");
+        }
     }
+
+    private static final Map<String, Set<String>> prevFileNamesMap = Collections.synchronizedMap(
+        new LinkedHashMap<String, Set<String>>(MAX_MODIFIED_CACHE_ENTRIES, 0.75f, true) {
+            @Override
+            protected boolean removeEldestEntry(Map.Entry<String, Set<String>> eldest) {
+                return size() > MAX_MODIFIED_CACHE_ENTRIES;
+            }
+        }
+    );
+
+    private static final Map<String, Object> GIT_LOCKS = new ConcurrentHashMap<>();
+
+    // Cache of plugin fingerprints per app to skip redundant syncAppPlugins work
+    private static final Map<String, Set<String>> pluginFingerprintCache = Collections.synchronizedMap(
+        new LinkedHashMap<String, Set<String>>(MAX_MODIFIED_CACHE_ENTRIES, 0.75f, true) {
+            @Override
+            protected boolean removeEldestEntry(Map.Entry<String, Set<String>> eldest) {
+                return size() > MAX_MODIFIED_CACHE_ENTRIES;
+            }
+        }
+    );
     
     public static boolean isGitDisabled() {
         return GIT_DISABLED;
@@ -127,7 +239,250 @@ public class AppDevUtil {
         String dir = SetupManager.getBaseDirectory() + File.separator + "app_src";
         return dir;
     }
-    
+
+    /**
+     * Periodically cleans up orphaned git temporary working directories.
+     * Supports multi-tenant environments by iterating all profiles.
+     */
+    public static void performCleanGitTempDirectories() {
+        LogUtil.debug(AppDevUtil.class.getName(), "Performing git temp directory cleaning...");
+        try {
+            if (HostManager.isVirtualHostEnabled()) {
+                Properties profiles = DynamicDataSourceManager.getProfileProperties();
+                Set<String> profileSet = new HashSet(profiles.values());
+                for (String profile : profileSet) {
+                    if (profile.contains(",")) {
+                        continue;
+                    }
+                    LogUtil.debug(AppDevUtil.class.getName(), "Performing git temp directory cleaning for " + profile);
+                    String baseDirectory = SetupManager.getBaseSharedDirectory() + File.separator + SetupManager.DIRECTORY_PROFILES + File.separator + profile + File.separator + "app_src";
+                    cleanGitTempDirectories(baseDirectory);
+                }
+            } else {
+                String baseDirectory = SetupManager.getBaseSharedDirectory() + File.separator + "app_src";
+                cleanGitTempDirectories(baseDirectory);
+            }
+        } catch (Exception e) {
+            LogUtil.error(AppDevUtil.class.getName(), e, "Error cleaning git temp directories");
+        }
+        LogUtil.debug(AppDevUtil.class.getName(), "Performing git temp directory cleaning completed.");
+    }
+
+    /**
+     * Iterates app directories under the given base dir and deletes stale temp working directories.
+     * Permanent dirs match {appId}_{version} (small integer); temp dirs are everything else.
+     * Cluster-safe: handles concurrent deletion by ignoring NoSuchFileException.
+     */
+    protected static void cleanGitTempDirectories(String baseDir) {
+        File appSrcDir = new File(baseDir);
+        if (!appSrcDir.exists() || !appSrcDir.isDirectory()) {
+            return;
+        }
+        File[] appDirs = appSrcDir.listFiles();
+        if (appDirs == null) {
+            return;
+        }
+        long now = new Date().getTime();
+        for (File appIdDir : appDirs) {
+            if (!appIdDir.isDirectory()) {
+                continue;
+            }
+            String appId = appIdDir.getName();
+            String permanentPrefix = appId + "_";
+            File[] children = appIdDir.listFiles();
+            if (children == null) {
+                continue;
+            }
+            for (File child : children) {
+                if (!child.isDirectory()) {
+                    continue;
+                }
+                String dirName = child.getName();
+                // Identify permanent directories: {appId}_{version} where version is a short integer
+                boolean isPermanent = false;
+                if (dirName.startsWith(permanentPrefix)) {
+                    String suffix = dirName.substring(permanentPrefix.length());
+                    if (suffix.matches("\\d+") && suffix.length() <= 10) {
+                        isPermanent = true;
+                    }
+                }
+                if (!isPermanent) {
+                    long diff = now - child.lastModified();
+                    if (diff > GIT_TEMP_EXPIRES_MS) {
+                        try {
+                            FileUtils.deleteDirectory(child);
+                            LogUtil.info(AppDevUtil.class.getName(), "Cleaned orphaned git temp directory: " + child.getAbsolutePath());
+                        } catch (Exception e) {
+                            // Directory may have been deleted by another cluster node — ignore
+                            if (!(e instanceof java.io.FileNotFoundException) && !(e.getCause() instanceof java.io.FileNotFoundException)) {
+                                LogUtil.warn(AppDevUtil.class.getName(), "Failed to clean git temp directory: " + child.getAbsolutePath() + " - " + e.getMessage());
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    /**
+     * Shuts down the git temp directory cleaner executor.
+     */
+    public static void shutdownGitTempCleaner() {
+        gitTempCleanerExecutor.shutdown();
+    }
+
+    /**
+     * Shuts down the git GC executor.
+     */
+    public static void shutdownGitGcExecutor() {
+        gitGcExecutor.shutdown();
+    }
+
+    /**
+     * Periodically runs JGit garbage collection on all permanent app repositories.
+     * Compacts loose objects, prunes unreachable objects, and expires old reflogs.
+     * Supports multi-tenant environments by iterating all profiles.
+     */
+    public static void performGitGarbageCollection() {
+        LogUtil.info(AppDevUtil.class.getName(), "Performing git garbage collection...");
+        long startTime = System.currentTimeMillis();
+        int repoCount = 0;
+        int errorCount = 0;
+        try {
+            if (HostManager.isVirtualHostEnabled()) {
+                Properties profiles = DynamicDataSourceManager.getProfileProperties();
+                Set<String> profileSet = new HashSet(profiles.values());
+                for (String profile : profileSet) {
+                    if (profile.contains(",")) {
+                        continue;
+                    }
+                    String baseDirectory = SetupManager.getBaseSharedDirectory() + File.separator + SetupManager.DIRECTORY_PROFILES + File.separator + profile + File.separator + "app_src";
+                    int[] results = gcAllRepositories(baseDirectory);
+                    repoCount += results[0];
+                    errorCount += results[1];
+                }
+            } else {
+                String baseDirectory = SetupManager.getBaseSharedDirectory() + File.separator + "app_src";
+                int[] results = gcAllRepositories(baseDirectory);
+                repoCount += results[0];
+                errorCount += results[1];
+            }
+        } catch (Exception e) {
+            LogUtil.error(AppDevUtil.class.getName(), e, "Error during git garbage collection");
+        }
+        long elapsed = System.currentTimeMillis() - startTime;
+        LogUtil.info(AppDevUtil.class.getName(), "Git garbage collection completed: " + repoCount + " repos processed, " + errorCount + " errors, " + elapsed + "ms elapsed");
+    }
+
+    /**
+     * Iterates app directories under the given base dir and runs GC on each permanent repository.
+     * Permanent dirs match {appId}_{version} (small integer version suffix).
+     * Returns int[]{repoCount, errorCount}.
+     */
+    protected static int[] gcAllRepositories(String baseDir) {
+        int repoCount = 0;
+        int errorCount = 0;
+        File appSrcDir = new File(baseDir);
+        if (!appSrcDir.exists() || !appSrcDir.isDirectory()) {
+            return new int[]{0, 0};
+        }
+        File[] appDirs = appSrcDir.listFiles();
+        if (appDirs == null) {
+            return new int[]{0, 0};
+        }
+        for (File appIdDir : appDirs) {
+            if (!appIdDir.isDirectory()) {
+                continue;
+            }
+            String appId = appIdDir.getName();
+            String permanentPrefix = appId + "_";
+            File[] children = appIdDir.listFiles();
+            if (children == null) {
+                continue;
+            }
+            for (File child : children) {
+                if (!child.isDirectory()) {
+                    continue;
+                }
+                String dirName = child.getName();
+                boolean isPermanent = false;
+                if (dirName.startsWith(permanentPrefix)) {
+                    String suffix = dirName.substring(permanentPrefix.length());
+                    if (suffix.matches("\\d+") && suffix.length() <= 10) {
+                        isPermanent = true;
+                    }
+                }
+                if (isPermanent) {
+                    File gitDir = new File(child, ".git");
+                    if (gitDir.exists() && gitDir.isDirectory()) {
+                        try {
+                            gcRepository(child);
+                            repoCount++;
+                            gcCommitCounters.remove(child.getAbsolutePath());
+                        } catch (Exception e) {
+                            errorCount++;
+                            LogUtil.warn(AppDevUtil.class.getName(), "Git GC failed for " + child.getAbsolutePath() + ": " + e.getMessage());
+                        }
+                    }
+                }
+            }
+        }
+        return new int[]{repoCount, errorCount};
+    }
+
+    /**
+     * Runs JGit garbage collection on a single repository directory.
+     * Packs loose objects, prunes unreachable objects, and expires old reflogs.
+     */
+    protected static void gcRepository(File repoDir) throws Exception {
+        LogUtil.debug(AppDevUtil.class.getName(), "Running git GC on: " + repoDir.getAbsolutePath());
+        long start = System.currentTimeMillis();
+        Git repoGit = null;
+        try {
+            repoGit = Git.open(repoDir);
+            Date expireDate = new Date(System.currentTimeMillis() - (GIT_GC_EXPIRE_SECONDS * 1000L));
+            repoGit.gc()
+                    .setExpire(expireDate)
+                    .setAggressive(false)
+                    .call();
+            long elapsed = System.currentTimeMillis() - start;
+            LogUtil.debug(AppDevUtil.class.getName(), "Git GC completed on: " + repoDir.getAbsolutePath() + " in " + elapsed + "ms");
+        } finally {
+            if (repoGit != null) {
+                repoGit.close();
+            }
+        }
+    }
+
+    /**
+     * Increments the commit counter for the given repo and triggers GC if the
+     * threshold is reached. Only active when git.gc.commit.threshold > 0.
+     * GC runs in a background thread to avoid blocking the commit path.
+     */
+    public static void maybeGcAfterCommit(File repoDir) {
+        if (GIT_GC_DISABLED || GIT_DISABLED || GIT_GC_COMMIT_THRESHOLD <= 0) {
+            return;
+        }
+        String repoKey = repoDir.getAbsolutePath();
+        AtomicInteger counter = gcCommitCounters.computeIfAbsent(repoKey, k -> new AtomicInteger(0));
+        int count = counter.incrementAndGet();
+        if (count >= GIT_GC_COMMIT_THRESHOLD) {
+            if (counter.compareAndSet(count, 0)) {
+                new PluginThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        try {
+                            gcRepository(repoDir);
+                            LogUtil.info(AppDevUtil.class.getName(), "Commit-triggered GC completed for " + repoDir.getAbsolutePath() + " (threshold=" + GIT_GC_COMMIT_THRESHOLD + ")");
+                        } catch (Exception e) {
+                            LogUtil.warn(AppDevUtil.class.getName(), "Commit-triggered GC failed for " + repoDir.getAbsolutePath() + ": " + e.getMessage());
+                        }
+                    }
+                }).start();
+            }
+        }
+    }
+
     public static Properties getAppDevProperties(AppDefinition appDef) {
         // load from FILE_APP_PROPERTIES
         Properties props = new Properties();
@@ -186,14 +541,15 @@ public class AppDevUtil {
         return projectDir;
     }
 
-    public static void gitClone(String gitUri, String gitUsername, String gitPassword) throws GitAPIException {
-        // clone git project
+    public static void gitClone(String gitUri, String gitUsername, String gitPassword, File targetDir) throws GitAPIException {
+        // clone git project into the specified target directory
         LogUtil.debug(AppDevUtil.class.getName(), "Clone Git repository: " + gitUri);
         Git.cloneRepository()
                 .setURI(gitUri)
+                .setDirectory(targetDir)
                 .setCredentialsProvider(new UsernamePasswordCredentialsProvider(gitUsername, gitPassword))
                 .call();
-    }    
+    }
     
     public static Git gitInit(File projectDir) throws GitAPIException, IllegalStateException {
         // init git directory
@@ -257,8 +613,14 @@ public class AppDevUtil {
     }
     
     public static void gitCheckout(Git git, String gitBranch, int lockedCount, int conflictCount) throws GitAPIException, IOException {
-        String currentBranch = git.getRepository().getBranch();
-        if (currentBranch == null || !currentBranch.equals(gitBranch)) {
+        // Iterative approach to avoid deep recursion (conflict×lock could previously reach 50 frames)
+        int currentLockedCount = lockedCount;
+        int currentConflictCount = conflictCount;
+        while (true) {
+            String currentBranch = git.getRepository().getBranch();
+            if (currentBranch != null && currentBranch.equals(gitBranch)) {
+                break; // already on the target branch
+            }
             LogUtil.debug(AppDevUtil.class.getName(), "Checkout branch: " + gitBranch);
             boolean createBranch = !ObjectId.isId(gitBranch);
             if (createBranch) {
@@ -271,10 +633,10 @@ public class AppDevUtil {
                 git.checkout()
                         .setCreateBranch(createBranch)
                         .setName(gitBranch)
-                        .call();    
+                        .call();
+                break; // success
             } catch (CheckoutConflictException e) {
-                if (conflictCount < 5) {
-                    // commit to repo
+                if (currentConflictCount < 5) {
                     String username = WorkflowUserManager.ROLE_ANONYMOUS;
                     String email = "";
                     WorkflowUserManager wum = (WorkflowUserManager)AppUtil.getApplicationContext().getBean("workflowUserManager");
@@ -298,7 +660,6 @@ public class AppDevUtil {
                     } catch (Exception ce) {
                         LogUtil.error(AppDevUtil.class.getName(), ce, "");
                     }
-                    
                     try {
                         LogUtil.info(AppDevUtil.class.getName(), "Commit to Git repo by " + username + ": " + commitMessage);
                         git.commit()
@@ -308,25 +669,25 @@ public class AppDevUtil {
                     } catch (Exception ce) {
                         LogUtil.error(AppDevUtil.class.getName(), ce, commitMessage);
                     }
-
-                    gitCheckout(git, gitBranch, lockedCount, conflictCount + 1);
+                    currentConflictCount++;
+                    // continue loop to retry checkout
                 } else {
                     throw e;
                 }
             } catch (JGitInternalException e) {
-                //git may lock, try again
-                if (e.getMessage().contains("Cannot lock") && lockedCount <= 10) {
+                if (e.getMessage().contains("Cannot lock") && currentLockedCount <= 10) {
                     LogUtil.info(AppDevUtil.class.getName(), "Git is locked. Wait 100ms...");
                     try {
                         Thread.sleep(100);
                     } catch (Exception ex) {}
-                    gitCheckout(git, gitBranch, lockedCount + 1, conflictCount);
+                    currentLockedCount++;
+                    // continue loop to retry checkout
                 } else {
                     throw e;
                 }
             }
         }
-    }    
+    }
     
     public static List<String> gitBranches(Git git) throws GitAPIException, IOException {
         LogUtil.debug(AppDevUtil.class.getName(), "List branches:");
@@ -444,7 +805,7 @@ public class AppDevUtil {
             gitPushLocal(appDef, git, workingDir); //push if it is a temporary working dir
         }
     }
-    
+
     public static void gitPullAndCommit(AppDefinition appDef, Git git, File workingDir, String commitMessage) throws GitAPIException {
         try {
             AppDevUtil.gitPullLocal(appDef, git, workingDir);
@@ -505,9 +866,9 @@ public class AppDevUtil {
                 gitMergeCommit(mergeResult, workingDir, git, appDef);
             }
         } catch(Exception ne) {
-            // ignore
+            LogUtil.debug(AppDevUtil.class.getName(), "gitPullLocal failed for " + appDef.getAppId() + ": " + ne.getClass().getSimpleName() + " - " + ne.getMessage());
         }
-    } 
+    }
 
     public static void gitPull(File projectDir, Git git, String gitBranch, String gitUri, String gitUsername, String gitPassword, MergeStrategy mergeStrategy, AppDefinition appDef) throws GitAPIException, IOException {
         // pull from repo
@@ -559,55 +920,67 @@ public class AppDevUtil {
     
     public static void fileMergeOurs(File projectDir, String path) throws IOException {
         LogUtil.debug(AppDevUtil.class.getName(), "Merge ours: " + path);
-        
+
         path = SecurityUtil.normalizedFileName(path);
-        
+        boolean isAppDefXml = path.endsWith("appDefinition.xml");
         File file = new File(projectDir, path);
-        String fileContents = FileUtils.readFileToString(file, "UTF-8");
-        String ours = "<<<<<<< HEAD";
-        String separator = "=======";
-        String theirs = ">>>>>>>";
-        int start = fileContents.indexOf(ours);
-        
-        while (start >= 0) {
-            //find ours full line with carriage return
-            String fullLineOurs = fileContents.substring(start, fileContents.indexOf("\n", start)+1);
-            
-            int theirsIndex = fileContents.indexOf(theirs);
-            int endTheirsIndex = fileContents.indexOf("\n", theirsIndex);
-            String diffStr = fileContents.substring(start, endTheirsIndex);
-            LogUtil.debug(AppDevUtil.class.getName(), "Merge conflict: " + diffStr);
-            
-            String replaceStr = "";
-            if (path.endsWith("appDefinition.xml") && fileContents.substring(start + fullLineOurs.length(), fileContents.indexOf(separator)).contains("<packageDefinitionList/>")) {
-                int separatorIndex = fileContents.indexOf(separator);
-                
-                // remove separator and our content
-                endTheirsIndex = fileContents.indexOf("\n", separatorIndex);
-                replaceStr = fileContents.substring(start, endTheirsIndex+1);
-                
-                // remove End
-                String endtheirs = fileContents.substring(fileContents.indexOf(theirs), fileContents.indexOf("\n", theirsIndex)+1);
-                fileContents = StringUtils.replaceOnce(fileContents, endtheirs, "");
-            } else {
-                // remove HEAD
-                fileContents = StringUtils.replaceOnce(fileContents, fullLineOurs, "");
-                
-                int separatorIndex = fileContents.indexOf(separator);
-                
-                // remove separator and theirs content
-                theirsIndex = fileContents.indexOf(theirs);
-                endTheirsIndex = fileContents.indexOf("\n", theirsIndex);
-                replaceStr = fileContents.substring(separatorIndex, endTheirsIndex+1);
+
+        // Process conflict markers line-by-line to avoid O(n²) repeated indexOf on large strings
+        List<String> lines = FileUtils.readLines(file, "UTF-8");
+        List<String> result = new ArrayList<>(lines.size());
+
+        int state = 0; // 0=normal, 1=collecting-ours, 2=collecting-theirs
+        boolean keepTheirs = false;
+        List<String> ourLines = new ArrayList<>();
+        List<String> theirLines = new ArrayList<>();
+
+        for (String line : lines) {
+            if (state == 0) {
+                if (line.startsWith("<<<<<<< HEAD")) {
+                    state = 1;
+                    ourLines.clear();
+                    theirLines.clear();
+                    keepTheirs = false;
+                } else {
+                    result.add(line);
+                }
+            } else if (state == 1) {
+                if (line.startsWith("=======")) {
+                    // Special case: if our side is just a packageDefinitionList placeholder, keep theirs instead
+                    if (isAppDefXml) {
+                        String ourContent = String.join("\n", ourLines);
+                        keepTheirs = ourContent.contains("<packageDefinitionList/>");
+                    }
+                    state = 2;
+                } else {
+                    ourLines.add(line);
+                }
+            } else { // state == 2
+                if (line.startsWith(">>>>>>>")) {
+                    LogUtil.debug(AppDevUtil.class.getName(), "Merge conflict resolved: " + (keepTheirs ? "keeping theirs" : "keeping ours"));
+                    result.addAll(keepTheirs ? theirLines : ourLines);
+                    ourLines.clear();
+                    theirLines.clear();
+                    state = 0;
+                } else {
+                    theirLines.add(line);
+                }
             }
-            
-            fileContents = StringUtils.replaceOnce(fileContents, replaceStr, "");
-            start = fileContents.indexOf(ours);
         }
-        FileUtils.writeStringToFile(file, fileContents, "UTF-8");
+
+        FileUtils.writeStringToFile(file, String.join("\r\n", result), "UTF-8");
     }
     
     public static void gitPushLocal(AppDefinition appDef, Git git, File workingDir) throws GitAPIException {
+        gitPushLocal(appDef, git, workingDir, 0);
+    }
+
+    private static void gitPushLocal(AppDefinition appDef, Git git, File workingDir, int depth) throws GitAPIException {
+        if (depth >= 3) {
+            LogUtil.warn(AppDevUtil.class.getName(), "Max push retry attempts reached for " + appDef.getAppId());
+            return;
+        }
+
         HttpServletRequest request = WorkflowUtil.getHttpServletRequest();
         if (request == null) {
             //do nothing
@@ -649,7 +1022,7 @@ public class AppDevUtil {
                     } catch (Exception e) {
                         LogUtil.debug(AppDevUtil.class.getName(), "Fail to pull from Git local repo " + appDef.getAppId() + ". Reason :" + e.getMessage());
                     }
-                    gitPushLocal(appDef, git, workingDir);
+                    gitPushLocal(appDef, git, workingDir, depth + 1);
                 }
             }
         }
@@ -710,37 +1083,82 @@ public class AppDevUtil {
     }
 
     public static void gitPullAndPush(File projectDir, Git git, String gitBranch, String gitUri, String gitUsername, String gitPassword, MergeStrategy mergeStrategy, AppDefinition appDef) throws GitAPIException {
-        String pullKeys = getPullUniqueKey();
-        String projectDirName = AppDevUtil.getAppGitDirectory(appDef);
-        if (isConcurrentPull(projectDirName, pullKeys)) {
-            waitForConcurrentPullCompleted(projectDirName, pullKeys);
-        } else {
-            try {
-                gitPull(projectDir, git, gitBranch, gitUri, gitUsername, gitPassword, mergeStrategy, appDef);
-            } catch (Exception e){
-                LogUtil.debug(AppDevUtil.class.getName(), "Fail to pull from Git remote repo " + appDef.getAppId() + ". Reason :" + e.getMessage());
-            } finally {
-                clearConcurrentPull(projectDirName);
-            }
-        }
+        gitPullAndPush(projectDir, git, gitBranch, gitUri, gitUsername, gitPassword, mergeStrategy, appDef, 0);
+    }
 
-        Iterable<PushResult> pushResults =  null;
-        synchronized (workingPulls.get(projectDirName)) {
-            // push to remote
-            LogUtil.info(AppDevUtil.class.getName(), "Push to Git remote repo: " + gitUri);
-            pushResults = git.push()
-                    .setCredentialsProvider(new UsernamePasswordCredentialsProvider(gitUsername, gitPassword))
-                    .call();
+    private static void gitPullAndPush(File projectDir, Git git, String gitBranch, String gitUri, String gitUsername, String gitPassword, MergeStrategy mergeStrategy, AppDefinition appDef, int depth) throws GitAPIException {
+        if (depth >= 3) {
+            LogUtil.warn(AppDevUtil.class.getName(), "Max pull-and-push retry attempts reached for " + appDef.getAppId());
+            return;
+        }
+        String projectDirName = AppDevUtil.getAppGitDirectory(appDef);
+        ReentrantReadWriteLock lock = getPullLock(projectDirName);
+        Iterable<PushResult> pushResults = null;
+        try {
+            if (lock.writeLock().tryLock(getPullLockTimeout(), TimeUnit.SECONDS)) {
+                try {
+                    // pull then push while holding the write lock to prevent interleaving
+                    try {
+                        gitPull(projectDir, git, gitBranch, gitUri, gitUsername, gitPassword, mergeStrategy, appDef);
+                    } catch (Exception e) {
+                        LogUtil.debug(AppDevUtil.class.getName(), "Fail to pull from Git remote repo " + appDef.getAppId() + ". Reason :" + e.getMessage());
+                    }
+                    LogUtil.info(AppDevUtil.class.getName(), "Push to Git remote repo: " + gitUri);
+                    pushResults = git.push()
+                            .setCredentialsProvider(new UsernamePasswordCredentialsProvider(gitUsername, gitPassword))
+                            .call();
+                    // update pull cooldown timestamp so the next request doesn't re-pull immediately after a push
+                    lastPullTimeMap.put(pullLockKey(projectDirName), System.currentTimeMillis());
+                    // snapshot file state so isAppModified() doesn't falsely detect changes after push
+                    snapshotAppFileState(appDef);
+                } finally {
+                    lock.writeLock().unlock();
+                }
+            } else {
+                LogUtil.warn(AppDevUtil.class.getName(), "Timed out waiting for pull-push lock for " + projectDirName);
+            }
+        } catch (InterruptedException ie) {
+            Thread.currentThread().interrupt();
+            LogUtil.warn(AppDevUtil.class.getName(), "Interrupted while waiting for pull-push lock for " + projectDirName);
         }
         if (pushResults != null) {
             for (PushResult pr: pushResults) {
                 for (RemoteRefUpdate ref: pr.getRemoteUpdates()) {
                     LogUtil.info(AppDevUtil.class.getName(), "Push result: " + ref.getStatus());
                     if ("REJECTED_OTHER_REASON".equals(ref.getStatus().toString())) {
-                        gitPullAndPush(projectDir, git, gitBranch, gitUri, gitUsername, gitPassword, mergeStrategy, appDef);
+                        gitPullAndPush(projectDir, git, gitBranch, gitUri, gitUsername, gitPassword, mergeStrategy, appDef, depth + 1);
                     }
                 }
             }
+        }
+    }
+
+    /**
+     * Snapshots the current file state into the isAppModified caches so that a push does not
+     * trigger a false-positive change detection on the next sync check.
+     */
+    private static void snapshotAppFileState(AppDefinition appDef) {
+        try {
+            File dir = AppDevUtil.fileGetFileObject(appDef, ".", false);
+            if (dir != null && dir.isDirectory()) {
+                Collection<File> files = FileUtils.listFiles(dir, new String[]{"json", "xml", "xpdl", "jar"}, true);
+                Set<String> currentFileNames = new HashSet<>();
+                for (File file : files) {
+                    currentFileNames.add(file.getAbsolutePath() + "|" + file.length());
+                }
+                String appKey = getAppCacheKey(appDef);
+                prevFileNamesMap.put(appKey, currentFileNames);
+            }
+        } catch (Exception e) {
+            LogUtil.debug(AppDevUtil.class.getName(), "Failed to snapshot app file state for " + appDef.getAppId() + ": " + e.getMessage());
+        }
+    }
+
+    private static long getPullLockTimeout() {
+        try {
+            return Long.parseLong(System.getProperty("git.pull.lock.timeout.seconds", "30"));
+        } catch (NumberFormatException e) {
+            return 30L;
         }
     }
 
@@ -787,61 +1205,61 @@ public class AppDevUtil {
         return dir;
     }
     
-    protected static String getPullUniqueKey() {
-        return Integer.toString(random.nextInt()) + Long.toString(System.nanoTime());
+    private static String pullLockKey(String projectDirName) {
+        String profile = HostManager.getCurrentProfile();
+        return (profile != null ? profile : "default") + "/" + projectDirName;
     }
-    
-    protected static boolean isConcurrentPull(String projectDirName, String uniqueKey) {
-        boolean isConcurrent = workingPulls.containsKey(projectDirName) && !workingPulls.get(projectDirName).isEmpty();
-        
-        Set<String> keys = workingPulls.get(projectDirName);
-        if (keys == null) {
-            keys = new HashSet<String>();
-            workingPulls.put(projectDirName, keys);
-        }
-        synchronized (workingPulls.get(projectDirName)) {
-            keys.add(uniqueKey);
-        }
-        
-        return isConcurrent;
-    }
-    
-    protected static void clearConcurrentPull(String projectDirName) {
-        if (workingPulls.containsKey(projectDirName)) {
-            synchronized (workingPulls.get(projectDirName)) {
-                workingPulls.get(projectDirName).clear();
-            }
-        }
-    }
-    
-    protected static void waitForConcurrentPullCompleted(String projectDirName, String uniqueKey) {
-        int count = 0;
-        while (workingPulls.get(projectDirName).contains(uniqueKey) && count < 20) { //should not wait longer than 2s
-            try {
-                Thread.sleep(100); 
-            } catch (Exception e) {}
-            count++;
-        }
-        if (workingPulls.get(projectDirName).contains(uniqueKey)) {
-            synchronized (workingPulls.get(projectDirName)) {
-                workingPulls.get(projectDirName).remove(uniqueKey);
-            }
-        }
+
+    private static ReentrantReadWriteLock getPullLock(String projectDirName) {
+        return pullLocks.computeIfAbsent(pullLockKey(projectDirName), k -> new ReentrantReadWriteLock());
     }
 
     public static Map<String, GitCommitHelper> fileInitCommit(AppDefinition appDef, String commitMessage) {
         String appId = appDef.getAppId();
+        Map<String, GitCommitHelper> gitCommitMap = null;
+
+        HttpServletRequest request = WorkflowUtil.getHttpServletRequest();
+        if (request != null) {
+            gitCommitMap = getBackgroundSync();
+            if (gitCommitMap == null) {
+                gitCommitMap = (Map<String, GitCommitHelper>)request.getAttribute(ATTRIBUTE_GIT_COMMIT_REQUEST);
+            }
+        }
+        if (gitCommitMap == null) {
+            gitCommitMap = new LinkedHashMap<>();
+        }
+        GitCommitHelper gitCommitHelper = gitCommitMap.get(appId);
+        if (gitCommitHelper == null) {
+            gitCommitHelper = new GitCommitHelper();
+            gitCommitHelper.setAppDefinition(appDef);
+            gitCommitMap.put(appId, gitCommitHelper);
+        }
+        gitCommitHelper.addCommitMessage(commitMessage);
+
+        if (request != null && getBackgroundSync() == null) {
+            request.setAttribute(ATTRIBUTE_GIT_COMMIT_REQUEST, gitCommitMap);
+        }
+
+        return gitCommitMap;
+    }
+
+    public static void initGitCommitHelper(GitCommitHelper gitCommitHelper) {
+        if (gitCommitHelper.getGit() != null) {
+            return; // Already initialized
+        }
+        AppDefinition appDef = gitCommitHelper.getAppDefinition();
+        String appId = appDef.getAppId();
         String gitBranch = getGitBranchName(appDef);
         String baseDir = AppDevUtil.getAppDevBaseDirectory();
         String projectDirName = getAppGitDirectory(appDef);
-        Map<String, GitCommitHelper> gitCommitMap = null;
-        
+        File projectWorkingDir = null;
+
         try {
             File projectDir = AppDevUtil.dirSetup(baseDir, projectDirName);
             Git localGit = AppDevUtil.gitInit(projectDir);
             try {
                 AppDevUtil.gitCheckout(localGit, gitBranch);
-                
+
                 Properties gitProperties = getAppDevProperties(appDef);
                 if (gitProperties != null) {
                     boolean alwaysPull = Boolean.parseBoolean(gitProperties.getProperty(PROPERTY_GIT_CONFIG_PULL));
@@ -850,25 +1268,34 @@ public class AppDevUtil {
                         HttpServletRequest request = WorkflowUtil.getHttpServletRequest();
                         boolean gitPullRequestDone = request != null && "true".equals(request.getAttribute(ATTRIBUTE_GIT_PULL_REQUEST + appId));
                         if (!gitPullRequestDone) {
-                            String pullKeys = getPullUniqueKey();
-                            if (isConcurrentPull(projectDirName, pullKeys)) {
-                                waitForConcurrentPullCompleted(projectDirName, pullKeys);
-                            } else {
+                            ReentrantReadWriteLock pullLock = getPullLock(projectDirName);
+                            if (pullLock.writeLock().tryLock()) {
                                 try {
                                     // perform git pull
                                     String gitUri = gitProperties.getProperty(PROPERTY_GIT_URI);
                                     String gitUsername = gitProperties.getProperty(PROPERTY_GIT_USERNAME);
                                     String gitPassword = gitProperties.getProperty(PROPERTY_GIT_PASSWORD);
-                                    
                                     if (gitUri != null && !gitUri.trim().isEmpty()) {
                                         AppDevUtil.gitAddRemote(localGit, gitUri);
                                         AppDevUtil.gitPull(projectDir, localGit, gitBranch, gitUri, gitUsername, gitPassword, MergeStrategy.RECURSIVE, appDef);
                                     }
                                 } finally {
-                                    clearConcurrentPull(projectDirName);
+                                    pullLock.writeLock().unlock();
+                                }
+                            } else {
+                                // another pull in progress for the same repo; wait up to 2s for it to finish
+                                try {
+                                    if (pullLock.readLock().tryLock(2, TimeUnit.SECONDS)) {
+                                        pullLock.readLock().unlock();
+                                    } else {
+                                        LogUtil.warn(AppDevUtil.class.getName(), "Timed out waiting for in-progress pull for " + projectDirName);
+                                    }
+                                } catch (InterruptedException ie) {
+                                    Thread.currentThread().interrupt();
+                                    LogUtil.warn(AppDevUtil.class.getName(), "Interrupted while waiting for in-progress pull for " + projectDirName);
                                 }
                             }
-                            
+
                             // set flag to prevent further pulls in the same request
                             if (request != null) {
                                 request.setAttribute(ATTRIBUTE_GIT_PULL_REQUEST + appId, "true");
@@ -879,58 +1306,67 @@ public class AppDevUtil {
             } catch(Exception ne) {
                 LogUtil.debug(AppDevUtil.class.getName(), "Fail to pull from Git remote repo " + appDef.getAppId() + ". Reason :" + ne.getMessage());
             }
-            
+
             //create temporary git working folder
             String projectWorkingDirName = getWorkingGitDirectory(appDef);
-            File projectWorkingDir = AppDevUtil.dirSetup(baseDir, projectWorkingDirName);
+            projectWorkingDir = AppDevUtil.dirSetup(baseDir, projectWorkingDirName);
             Git git = AppDevUtil.gitInit(projectWorkingDir);
             RemoteAddCommand remoteAddCommand = git.remoteAdd();
             remoteAddCommand.setName("local");
             remoteAddCommand.setUri(new URIish(projectDir.getAbsolutePath()));
             remoteAddCommand.call();
-            
-            AppDevUtil.gitPullLocal(appDef, git, projectWorkingDir);
+
+            // Shallow fetch (depth=1) from local repo to avoid transferring full git history
+            // The temp working dir only needs the latest file state, not the full commit history
             try {
-                
-                AppDevUtil.gitCheckout(git, gitBranch);
-            } catch(RefNotFoundException ne) {
-                // ignore
-            }
-            
-            // add git object
-            HttpServletRequest request = WorkflowUtil.getHttpServletRequest();
-            if (request != null) {
-                gitCommitMap = getBackgroundSync();
-                if (gitCommitMap == null) {
-                    gitCommitMap = (Map<String, GitCommitHelper>)request.getAttribute(ATTRIBUTE_GIT_COMMIT_REQUEST);
+                git.fetch()
+                        .setRemote("local")
+                        .setRefSpecs(new RefSpec("+refs/heads/" + gitBranch + ":refs/remotes/local/" + gitBranch))
+                        .setDepth(1)
+                        .call();
+
+                // Create local branch from the fetched remote tracking ref
+                Ref remoteRef = git.getRepository().exactRef("refs/remotes/local/" + gitBranch);
+                if (remoteRef != null) {
+                    Ref localRef = git.getRepository().exactRef("refs/heads/" + gitBranch);
+                    git.checkout()
+                            .setCreateBranch(localRef == null)
+                            .setName(gitBranch)
+                            .setStartPoint("remotes/local/" + gitBranch)
+                            .call();
+                }
+            } catch(Exception ne) {
+                LogUtil.warn(AppDevUtil.class.getName(), "Shallow fetch failed for " + appDef.getAppId() + ", falling back to full pull: " + ne.getMessage());
+                // Fallback to full pull if shallow fetch is not supported (e.g. older git protocol)
+                AppDevUtil.gitPullLocal(appDef, git, projectWorkingDir);
+                try {
+                    AppDevUtil.gitCheckout(git, gitBranch);
+                } catch(RefNotFoundException rne) {
+                    // ignore
                 }
             }
-            if (gitCommitMap == null) {
-                gitCommitMap = new LinkedHashMap<>();
-            }
-            GitCommitHelper gitCommitHelper = gitCommitMap.get(appId);
-            if (gitCommitHelper == null) {
-                gitCommitHelper = new GitCommitHelper();
-                gitCommitMap.put(appId, gitCommitHelper);
-            }
+
             gitCommitHelper.setWorkingDir(projectWorkingDir);
-            gitCommitHelper.setAppDefinition(appDef);
             gitCommitHelper.setLocalGit(localGit);
             gitCommitHelper.setGit(git);
-            gitCommitHelper.setCommitMessage(commitMessage);   
-            if (request != null && getBackgroundSync() == null) {
-                request.setAttribute(ATTRIBUTE_GIT_COMMIT_REQUEST, gitCommitMap);        
-            }
+
         } catch (IOException | IllegalStateException | GitAPIException | URISyntaxException ex) {
             LogUtil.error(AppDevUtil.class.getName(), ex, ex.getMessage());
+            // Clean up orphaned temp working directory on failure
+            if (projectWorkingDir != null && projectWorkingDir.exists()) {
+                try {
+                    FileUtils.deleteDirectory(projectWorkingDir);
+                } catch (IOException ioe) {
+                    LogUtil.warn(AppDevUtil.class.getName(), "Failed to clean orphaned git temp directory: " + projectWorkingDir.getAbsolutePath());
+                }
+            }
         }
-        return gitCommitMap;
     }
     
     public static GitCommitHelper getGitCommitHelper(AppDefinition appDef) {
         Map<String, GitCommitHelper> gitCommitMap = null;
         HttpServletRequest request = WorkflowUtil.getHttpServletRequest();
-        if (request != null) {        
+        if (request != null) {
             gitCommitMap = getBackgroundSync();
             if (gitCommitMap == null) {
                 gitCommitMap = (Map<String, GitCommitHelper>)request.getAttribute(ATTRIBUTE_GIT_COMMIT_REQUEST);
@@ -939,113 +1375,92 @@ public class AppDevUtil {
         if (gitCommitMap == null) {
             gitCommitMap = fileInitCommit(appDef, "");
         }
+        if (gitCommitMap == null) {
+            LogUtil.warn(AppDevUtil.class.getName(), "Failed to initialize git commit map for " + appDef.getAppId());
+            return null;
+        }
         GitCommitHelper gitCommitHelper = gitCommitMap.get(appDef.getAppId());
         if (gitCommitHelper == null) {
+            // Retry init once; do not recurse further to avoid an infinite loop
             gitCommitMap = fileInitCommit(appDef, "");
-            gitCommitHelper = gitCommitMap.get(appDef.getAppId());
+            gitCommitHelper = (gitCommitMap != null) ? gitCommitMap.get(appDef.getAppId()) : null;
+        }
+        if (gitCommitHelper == null) {
+            LogUtil.warn(AppDevUtil.class.getName(), "GitCommitHelper not found for " + appDef.getAppId());
+            return null;
         }
         gitCommitHelper.setAppDefinition(appDef);
-        return gitCommitHelper;  
+        return gitCommitHelper;
     }
     
     
-    /** 
-     * Returns a lock object per appId for serializing Git operations. 
+    /**
+     * Returns a lock object per appId for serializing Git operations.
      */
-    public static Object getAppLock(String appId) {
-        return GIT_LOCKS.computeIfAbsent(appId, k -> new Object());
+    public static Object getAppLock(AppDefinition appDef) {
+        String key = getAppCacheKey(appDef);;
+        return GIT_LOCKS.computeIfAbsent(key, k -> new Object());
     }
     
     public static void fileSave(AppDefinition appDef, String path, String fileContents, String commitMessage) {
         HttpServletRequest request = WorkflowUtil.getHttpServletRequest();
-        if (request == null) {
+        if (request == null && getBackgroundSync() == null) {
             //do nothing
             return;
         }
-        
+
         if (fileContents == null) {
             fileContents = "";
         }
 
         path = SecurityUtil.normalizedFileName(path);
         fileContents = compatibleNewline(fileContents);
-        
-        String gitBranch = getGitBranchName(appDef);
-        
-        try {
-            GitCommitHelper gitCommitHelper = getGitCommitHelper(appDef);
-            Git git = gitCommitHelper.getGit();
-            boolean noHead = false;
-            try {
-                AppDevUtil.gitCheckout(git, gitBranch);
-            } catch(RefNotFoundException ne) {
-                noHead = true;
-            }
-            if (noHead) {
-                AppDevUtil.gitCommit(appDef, git, gitCommitHelper.getWorkingDir(), "Initial commit for " + gitBranch);
-                AppDevUtil.gitRenameBranch(git, gitBranch);
-            }
 
-            // check for content changes
-            File file = new File(gitCommitHelper.getWorkingDir(), path);
+        try {
+            String baseDir = AppDevUtil.getAppDevBaseDirectory();
+            String projectDirName = getAppGitDirectory(appDef);
+            File projectDir = AppDevUtil.dirSetup(baseDir, projectDirName);
+            File file = new File(projectDir, path);
+
             boolean toSave = true;
-            boolean isNew = false;
             try {
-                String currentContents = FileUtils.readFileToString(file, "UTF-8");
-                isNew = currentContents == null;
-                toSave = (isNew || !cleanForCompare(currentContents).equals(cleanForCompare(fileContents)));
-            } catch(NoSuchFileException e) {
+                if (file.exists()) {
+                    String currentContents = FileUtils.readFileToString(file, "UTF-8");
+                    toSave = !cleanForCompare(currentContents).equals(cleanForCompare(fileContents));
+                }
+            } catch(Exception e) {
                 // ignore
             }
 
             if (toSave) {
-                // save file contents
-                FileUtils.writeStringToFile(file, fileContents, "UTF-8");
-                if (commitMessage != null) {
-                    // git add to commit
-                    if (isNew || AppDevUtil.gitFileDiff(git, path)) {
-                        AppDevUtil.gitAdd(git, path);
+                GitCommitHelper gitCommitHelper = getGitCommitHelper(appDef);
+                if (gitCommitHelper != null) {
+                    gitCommitHelper.addPendingFileToSave(path, fileContents);
+                    if (commitMessage != null) {
                         gitCommitHelper.addCommitMessage(commitMessage);
                     }
                 }
             }
-
-        } catch (IOException | GitAPIException ex) {
+        } catch (Exception ex) {
             LogUtil.error(AppDevUtil.class.getName(), ex, ex.getMessage());
         }
     }
 
     public static void fileDelete(AppDefinition appDefinition, String path, String commitMessage) {
         HttpServletRequest request = WorkflowUtil.getHttpServletRequest();
-        if (request == null) {
+        if (request == null && getBackgroundSync() == null) {
             //do nothing
             return;
         }
-        
+
         path = SecurityUtil.normalizedFileName(path);
-        
-        try {
-            // checkout branch
-            String gitBranch = getGitBranchName(appDefinition);
-            GitCommitHelper gitCommitHelper = getGitCommitHelper(appDefinition);
-            Git git = gitCommitHelper.getGit();
-            try {
-                AppDevUtil.gitCheckout(git, gitBranch);
-            } catch(RefNotFoundException ne) {
-                LogUtil.debug(AppDevUtil.class.getName(), "Fail to checkout branch " + gitBranch + ". Reason :" + ne.getMessage());
-            }
 
-            // delete file
-            File file = new File(gitCommitHelper.getWorkingDir(), path);
-            file.delete();
-
-            // commit and push
+        GitCommitHelper gitCommitHelper = getGitCommitHelper(appDefinition);
+        if (gitCommitHelper != null) {
+            gitCommitHelper.addPendingFileToDelete(path);
             if (commitMessage != null) {
-                AppDevUtil.gitRemove(git, path);
                 gitCommitHelper.addCommitMessage(commitMessage);
             }
-        } catch (IOException | GitAPIException ex) {
-            LogUtil.error(AppDevUtil.class.getName(), ex, ex.getMessage());
         }
     }
 
@@ -1055,18 +1470,21 @@ public class AppDevUtil {
             //do nothing
             return null;
         }
-        
+
         path = SecurityUtil.normalizedFileName(path);
-        
+
         try {
-            // checkout branch
+            // checkout branch only if needed
             String gitBranch = getGitBranchName(appDefinition);
             GitCommitHelper gitCommitHelper = getGitCommitHelper(appDefinition);
             Git git = gitCommitHelper.getGit();
-            try {
-                AppDevUtil.gitCheckout(git, gitBranch);
-            } catch(RefNotFoundException ne) {
-                LogUtil.debug(AppDevUtil.class.getName(), "Fail to checkout branch " + gitBranch + ". Reason :" + ne.getMessage());
+            String currentBranch = git.getRepository().getBranch();
+            if (!gitBranch.equals(currentBranch)) {
+                try {
+                    AppDevUtil.gitCheckout(git, gitBranch);
+                } catch(RefNotFoundException ne) {
+                    LogUtil.debug(AppDevUtil.class.getName(), "Fail to checkout branch " + gitBranch + ". Reason :" + ne.getMessage());
+                }
             }
 
             File file = new File(gitCommitHelper.getWorkingDir(), path);
@@ -1077,7 +1495,7 @@ public class AppDevUtil {
                     LogUtil.debug(AppDevUtil.class.getName(), "File " + path + " not found");
                 }
             } else {
-                LogUtil.debug(AppDevUtil.class.getName(), "File " + path + " not found");                
+                LogUtil.debug(AppDevUtil.class.getName(), "File " + path + " not found");
             }
         } catch (IOException | GitAPIException ex) {
             LogUtil.error(AppDevUtil.class.getName(), ex, ex.getMessage());
@@ -1130,19 +1548,40 @@ public class AppDevUtil {
                 HttpServletRequest request = WorkflowUtil.getHttpServletRequest();
                 boolean gitPullRequestDone = request != null && "true".equals(request.getAttribute(ATTRIBUTE_GIT_PULL_REQUEST + appId));
                 if (!gitPullRequestDone) {
-                    String pullKeys = getPullUniqueKey();
-                    if (isConcurrentPull(projectDirName, pullKeys)) {
-                        waitForConcurrentPullCompleted(projectDirName, pullKeys);
-                    } else {
-                        try {
-                            // perform git pull
-                            String gitUri = gitProperties.getProperty(PROPERTY_GIT_URI);
-                            String gitUsername = gitProperties.getProperty(PROPERTY_GIT_USERNAME);
-                            String gitPassword = gitProperties.getProperty(PROPERTY_GIT_PASSWORD);
-                            AppDevUtil.gitAddRemote(git, gitUri);
-                            AppDevUtil.gitPull(projectDir, git, gitBranch, gitUri, gitUsername, gitPassword, MergeStrategy.RECURSIVE, appDefinition);
-                        } finally {
-                            clearConcurrentPull(projectDirName);
+                    String pullKey = pullLockKey(projectDirName);
+                    boolean withinCooldown = GIT_PULL_COOLDOWN_MS > 0
+                            && (System.currentTimeMillis() - lastPullTimeMap.getOrDefault(pullKey, 0L)) < GIT_PULL_COOLDOWN_MS;
+                    if (!withinCooldown) {
+                        ReentrantReadWriteLock lock = getPullLock(projectDirName);
+                        if (lock.writeLock().tryLock()) {
+                            try {
+                                // re-check after acquiring lock (another thread may have just pulled)
+                                boolean stillNeeded = GIT_PULL_COOLDOWN_MS <= 0
+                                        || (System.currentTimeMillis() - lastPullTimeMap.getOrDefault(pullKey, 0L)) >= GIT_PULL_COOLDOWN_MS;
+                                if (stillNeeded) {
+                                    // perform git pull
+                                    String gitUri = gitProperties.getProperty(PROPERTY_GIT_URI);
+                                    String gitUsername = gitProperties.getProperty(PROPERTY_GIT_USERNAME);
+                                    String gitPassword = gitProperties.getProperty(PROPERTY_GIT_PASSWORD);
+                                    AppDevUtil.gitAddRemote(git, gitUri);
+                                    AppDevUtil.gitPull(projectDir, git, gitBranch, gitUri, gitUsername, gitPassword, MergeStrategy.RECURSIVE, appDefinition);
+                                    lastPullTimeMap.put(pullKey, System.currentTimeMillis());
+                                }
+                            } finally {
+                                lock.writeLock().unlock();
+                            }
+                        } else {
+                            // another pull in progress for the same repo; wait up to 2s for it to finish
+                            try {
+                                if (lock.readLock().tryLock(2, TimeUnit.SECONDS)) {
+                                    lock.readLock().unlock();
+                                } else {
+                                    LogUtil.warn(AppDevUtil.class.getName(), "Timed out waiting for in-progress pull for " + projectDirName);
+                                }
+                            } catch (InterruptedException ie) {
+                                Thread.currentThread().interrupt();
+                                LogUtil.warn(AppDevUtil.class.getName(), "Interrupted while waiting for in-progress pull for " + projectDirName);
+                            }
                         }
                     }
                     // set flag to prevent further pulls in the same request
@@ -1181,147 +1620,137 @@ public class AppDevUtil {
 
     public static String getAppDefinitionXml(AppDefinition appDefinition) {
         String appDefinitionXml = null;
-        ByteArrayOutputStream baos = null;
 
         AppDefinition appDef = appDefinition;
         if (appDef instanceof HibernateProxy) {
             appDef = (AppDefinition)((HibernateProxy)appDef).getHibernateLazyInitializer().getImplementation();
         }
-        
-        Collection<FormDefinition> formDefinitionList = appDef.getFormDefinitionList();
-        Collection<DatalistDefinition> datalistDefinitionList = appDef.getDatalistDefinitionList();
-        Collection<UserviewDefinition> userviewDefinitionList = appDef.getUserviewDefinitionList();
-        Collection<BuilderDefinition> builderDefinitionList = appDef.getBuilderDefinitionList();
-        Collection<PluginDefaultProperties> pluginDefaultProperties = appDef.getPluginDefaultPropertiesList();
-        Collection<EnvironmentVariable> envVariableList = appDef.getEnvironmentVariableList();
-        Collection<PackageDefinition> packageDefinitionList = appDef.getPackageDefinitionList();
-        Date appDateCreated = appDef.getDateCreated();
-        Date appDateModified = appDef.getDateModified();
-        PackageDefinition origPackageDef = appDef.getPackageDefinition();
-        PackageDefinition packageDef = origPackageDef;
-        if (origPackageDef instanceof HibernateProxy) {
-            packageDef = (PackageDefinition)((HibernateProxy)origPackageDef).getHibernateLazyInitializer().getImplementation();
-        }        
-        Date packageDateCreated = (packageDef != null) ? packageDef.getDateCreated() : null;
-        Date packageDateModiDate = (packageDef != null) ? packageDef.getDateModified() : null;
-        Long packageVersion =  (packageDef != null) ? packageDef.getVersion() : null;
-        
-        try {
-            // remove unneeded elements
-            appDef.setFormDefinitionList(null);
-            appDef.setDatalistDefinitionList(null);
-            appDef.setUserviewDefinitionList(null);
-            appDef.setBuilderDefinitionList(null);
-            appDef.setDateCreated(null);
-            appDef.setDateModified(null);
-            if (packageDef != null) {
-                packageDef.setVersion(null);
-                packageDef.setDateCreated(null);
-                packageDef.setDateModified(null);
+
+        // Synchronize on the resolved appDef instance to prevent concurrent threads from
+        // observing the temporarily-nulled collections during XML serialization
+        synchronized (appDef) {
+            Collection<FormDefinition> formDefinitionList = appDef.getFormDefinitionList();
+            Collection<DatalistDefinition> datalistDefinitionList = appDef.getDatalistDefinitionList();
+            Collection<UserviewDefinition> userviewDefinitionList = appDef.getUserviewDefinitionList();
+            Collection<BuilderDefinition> builderDefinitionList = appDef.getBuilderDefinitionList();
+            Collection<PluginDefaultProperties> pluginDefaultProperties = appDef.getPluginDefaultPropertiesList();
+            Collection<EnvironmentVariable> envVariableList = appDef.getEnvironmentVariableList();
+            Collection<PackageDefinition> packageDefinitionList = appDef.getPackageDefinitionList();
+            Date appDateCreated = appDef.getDateCreated();
+            Date appDateModified = appDef.getDateModified();
+            PackageDefinition origPackageDef = appDef.getPackageDefinition();
+            PackageDefinition packageDef = origPackageDef;
+            if (origPackageDef instanceof HibernateProxy) {
+                packageDef = (PackageDefinition)((HibernateProxy)origPackageDef).getHibernateLazyInitializer().getImplementation();
             }
-            Collection<PackageDefinition> tempPackageDefinitionList = new ArrayList<>();
-            tempPackageDefinitionList.add(packageDef);
-            appDef.setPackageDefinitionList(tempPackageDefinitionList);
-            appDef.setPluginDefaultPropertiesList(null);
-            appDef.setEnvironmentVariableList(null);
-            
-            // generate XML
-            baos = new ByteArrayOutputStream();
-            Serializer serializer = new Persister();
-            serializer.write(appDef, baos);
-            appDefinitionXml = baos.toString("UTF-8");
-            appDefinitionXml = appDefinitionXml.replace("<version>"+appDef.getVersion()+"</version>", "<version></version>");
-        } catch (Exception ex) {
-            LogUtil.error(AppDevUtil.class.getName(), ex, ex.getMessage());
-        } finally {
-            if (baos != null) {
-                try {
-                    baos.close();
-                } catch (IOException e) {
-                    // ignore
+            Date packageDateCreated = (packageDef != null) ? packageDef.getDateCreated() : null;
+            Date packageDateModiDate = (packageDef != null) ? packageDef.getDateModified() : null;
+            Long packageVersion = (packageDef != null) ? packageDef.getVersion() : null;
+
+            try (ByteArrayOutputStream baos = new ByteArrayOutputStream()) {
+                // remove unneeded elements
+                appDef.setFormDefinitionList(null);
+                appDef.setDatalistDefinitionList(null);
+                appDef.setUserviewDefinitionList(null);
+                appDef.setBuilderDefinitionList(null);
+                appDef.setDateCreated(null);
+                appDef.setDateModified(null);
+                if (packageDef != null) {
+                    packageDef.setVersion(null);
+                    packageDef.setDateCreated(null);
+                    packageDef.setDateModified(null);
                 }
+                Collection<PackageDefinition> tempPackageDefinitionList = new ArrayList<>();
+                tempPackageDefinitionList.add(packageDef);
+                appDef.setPackageDefinitionList(tempPackageDefinitionList);
+                appDef.setPluginDefaultPropertiesList(null);
+                appDef.setEnvironmentVariableList(null);
+
+                // generate XML
+                Serializer serializer = new Persister();
+                serializer.write(appDef, baos);
+                appDefinitionXml = baos.toString("UTF-8");
+                appDefinitionXml = appDefinitionXml.replace("<version>"+appDef.getVersion()+"</version>", "<version></version>");
+            } catch (Exception ex) {
+                LogUtil.error(AppDevUtil.class.getName(), ex, ex.getMessage());
+            } finally {
+                appDef.setFormDefinitionList(formDefinitionList);
+                appDef.setDatalistDefinitionList(datalistDefinitionList);
+                appDef.setUserviewDefinitionList(userviewDefinitionList);
+                appDef.setBuilderDefinitionList(builderDefinitionList);
+                appDef.setPluginDefaultPropertiesList(pluginDefaultProperties);
+                appDef.setEnvironmentVariableList(envVariableList);
+                appDef.setDateCreated(appDateCreated);
+                appDef.setDateModified(appDateModified);
+                if (packageDef != null) {
+                    packageDef.setDateCreated(packageDateCreated);
+                    packageDef.setDateModified(packageDateModiDate);
+                    packageDef.setVersion(packageVersion);
+                }
+                appDef.setPackageDefinitionList(packageDefinitionList);
             }
-            appDef.setFormDefinitionList(formDefinitionList);
-            appDef.setDatalistDefinitionList(datalistDefinitionList);
-            appDef.setUserviewDefinitionList(userviewDefinitionList);
-            appDef.setBuilderDefinitionList(builderDefinitionList);
-            appDef.setPluginDefaultPropertiesList(pluginDefaultProperties);
-            appDef.setEnvironmentVariableList(envVariableList);
-            appDef.setDateCreated(appDateCreated);
-            appDef.setDateModified(appDateModified);
-            if (packageDef != null) {
-                packageDef.setDateCreated(packageDateCreated);
-                packageDef.setDateModified(packageDateModiDate);
-                packageDef.setVersion(packageVersion);
-            }
-            appDef.setPackageDefinitionList(packageDefinitionList);
         }
-        return appDefinitionXml; 
-    }  
+        return appDefinitionXml;
+    }
     
     public static String getAppConfigXml(AppDefinition appDefinition) {
         String appDefinitionXml = null;
-        ByteArrayOutputStream baos = null;
-        
+
         AppDefinition appDef = appDefinition;
         if (appDef instanceof HibernateProxy) {
             appDef = (AppDefinition)((HibernateProxy)appDef).getHibernateLazyInitializer().getImplementation();
         }
-        
-        Collection<FormDefinition> formDefinitionList = appDef.getFormDefinitionList();
-        Collection<DatalistDefinition> datalistDefinitionList = appDef.getDatalistDefinitionList();
-        Collection<UserviewDefinition> userviewDefinitionList = appDef.getUserviewDefinitionList();
-        Collection<BuilderDefinition> builderDefinitionList = appDef.getBuilderDefinitionList();
-        Collection<PluginDefaultProperties> pluginDefaultProperties = appDef.getPluginDefaultPropertiesList();
-        Collection<EnvironmentVariable> envVariableList = appDef.getEnvironmentVariableList();
-        Collection<PackageDefinition> packageDefinitionList = appDef.getPackageDefinitionList();
-        Collection<Message> messageList = appDef.getMessageList();
-        Collection<AppResource> resourceList = appDef.getResourceList();
-        Date appDateCreated = appDef.getDateCreated();
-        Date appDateModified = appDef.getDateModified();
-        
-        try {
-            // remove unneeded elements
-            appDef.setFormDefinitionList(null);
-            appDef.setDatalistDefinitionList(null);
-            appDef.setUserviewDefinitionList(null);
-            appDef.setBuilderDefinitionList(null);
-            appDef.setDateCreated(null);
-            appDef.setDateModified(null);
-            appDef.setPackageDefinitionList(null);
-            appDef.setMessageList(null);
-            appDef.setResourceList(null);
-            
-            // generate XML
-            baos = new ByteArrayOutputStream();
-            Serializer serializer = new Persister();
-            serializer.write(appDef, baos);
-            appDefinitionXml = baos.toString("UTF-8");
-            appDefinitionXml = appDefinitionXml.replace("<version>"+appDef.getVersion()+"</version>", "<version></version>");
-        } catch (Exception ex) {
-            LogUtil.error(AppDevUtil.class.getName(), ex, ex.getMessage());
-        } finally {
-            if (baos != null) {
-                try {
-                    baos.close();
-                } catch (IOException e) {
-                    // ignore
-                }
+
+        // Synchronize on the resolved appDef instance to prevent concurrent threads from
+        // observing the temporarily-nulled collections during XML serialization
+        synchronized (appDef) {
+            Collection<FormDefinition> formDefinitionList = appDef.getFormDefinitionList();
+            Collection<DatalistDefinition> datalistDefinitionList = appDef.getDatalistDefinitionList();
+            Collection<UserviewDefinition> userviewDefinitionList = appDef.getUserviewDefinitionList();
+            Collection<BuilderDefinition> builderDefinitionList = appDef.getBuilderDefinitionList();
+            Collection<PluginDefaultProperties> pluginDefaultProperties = appDef.getPluginDefaultPropertiesList();
+            Collection<EnvironmentVariable> envVariableList = appDef.getEnvironmentVariableList();
+            Collection<PackageDefinition> packageDefinitionList = appDef.getPackageDefinitionList();
+            Collection<Message> messageList = appDef.getMessageList();
+            Collection<AppResource> resourceList = appDef.getResourceList();
+            Date appDateCreated = appDef.getDateCreated();
+            Date appDateModified = appDef.getDateModified();
+
+            try (ByteArrayOutputStream baos = new ByteArrayOutputStream()) {
+                // remove unneeded elements
+                appDef.setFormDefinitionList(null);
+                appDef.setDatalistDefinitionList(null);
+                appDef.setUserviewDefinitionList(null);
+                appDef.setBuilderDefinitionList(null);
+                appDef.setDateCreated(null);
+                appDef.setDateModified(null);
+                appDef.setPackageDefinitionList(null);
+                appDef.setMessageList(null);
+                appDef.setResourceList(null);
+
+                // generate XML
+                Serializer serializer = new Persister();
+                serializer.write(appDef, baos);
+                appDefinitionXml = baos.toString("UTF-8");
+                appDefinitionXml = appDefinitionXml.replace("<version>"+appDef.getVersion()+"</version>", "<version></version>");
+            } catch (Exception ex) {
+                LogUtil.error(AppDevUtil.class.getName(), ex, ex.getMessage());
+            } finally {
+                appDef.setFormDefinitionList(formDefinitionList);
+                appDef.setDatalistDefinitionList(datalistDefinitionList);
+                appDef.setUserviewDefinitionList(userviewDefinitionList);
+                appDef.setBuilderDefinitionList(builderDefinitionList);
+                appDef.setPluginDefaultPropertiesList(pluginDefaultProperties);
+                appDef.setEnvironmentVariableList(envVariableList);
+                appDef.setDateCreated(appDateCreated);
+                appDef.setDateModified(appDateModified);
+                appDef.setPackageDefinitionList(packageDefinitionList);
+                appDef.setMessageList(messageList);
+                appDef.setResourceList(resourceList);
             }
-            appDef.setFormDefinitionList(formDefinitionList);
-            appDef.setDatalistDefinitionList(datalistDefinitionList);
-            appDef.setUserviewDefinitionList(userviewDefinitionList);
-            appDef.setBuilderDefinitionList(builderDefinitionList);
-            appDef.setPluginDefaultPropertiesList(pluginDefaultProperties);
-            appDef.setEnvironmentVariableList(envVariableList);
-            appDef.setDateCreated(appDateCreated);
-            appDef.setDateModified(appDateModified);
-            appDef.setPackageDefinitionList(packageDefinitionList);
-            appDef.setMessageList(messageList);
-            appDef.setResourceList(resourceList);
         }
-        return appDefinitionXml; 
-    }     
+        return appDefinitionXml;
+    }
     
     public static String getPackageXpdl(AppDefinition appDef) {
         PackageDefinition packageDef = appDef.getPackageDefinition();
@@ -1334,15 +1763,11 @@ public class AppDevUtil {
     public static String getPackageXpdl(PackageDefinition packageDef) {
         String xpdl = null;
         try {
-            if (packageDef != null) {
+            if (packageDef != null && packageDef.getId() != null && packageDef.getVersion() != null) {
                 WorkflowManager workflowManager = (WorkflowManager)AppUtil.getApplicationContext().getBean("workflowManager");
-                try {
-                    byte[] contents = workflowManager.getPackageContent(packageDef.getId(), packageDef.getVersion().toString());
-                    if (contents != null) {
-                        xpdl = new String(contents, "UTF-8");
-                    }
-                } catch (NullPointerException npe) {
-                    // ignore non-existing package
+                byte[] contents = workflowManager.getPackageContent(packageDef.getId(), packageDef.getVersion().toString());
+                if (contents != null) {
+                    xpdl = new String(contents, "UTF-8");
                 }
             }
         } catch (UnsupportedEncodingException | BeansException ex) {
@@ -1353,95 +1778,67 @@ public class AppDevUtil {
 
     public static void dirCopy(AppDefinition appDef, String sourcePath, String targetDirName, String commitMessage) {
         HttpServletRequest request = WorkflowUtil.getHttpServletRequest();
-        if (request == null) {
+        if (request == null && getBackgroundSync() == null) {
             //do nothing
             return;
         }
-        
-        String gitBranch = getGitBranchName(appDef);
-        
+
         try {
             GitCommitHelper gitCommitHelper = getGitCommitHelper(appDef);
-            Git git = gitCommitHelper.getGit();
-            AppDevUtil.gitCheckout(git, gitBranch);
-            
-            if (sourcePath != null && !sourcePath.isEmpty()) {
-                File sourceDir = new File(sourcePath);
-                if (sourceDir.exists()) {
-                    File targetDir = new File(gitCommitHelper.getWorkingDir(), targetDirName);
+            if (gitCommitHelper != null) {
+                if (sourcePath != null && !sourcePath.isEmpty()) {
+                    File sourceDir = new File(sourcePath);
+                    if (sourceDir.exists()) {
+                        File targetDir = new File(gitCommitHelper.getWorkingDir(), targetDirName);
 
-                    // remove existing directory
-                    FileUtils.deleteDirectory(targetDir);
-                    // copy directory
-                    targetDir.mkdirs();
-                    FileUtils.copyDirectory(sourceDir, targetDir, true);
-                }
-            }
-            
-            if (commitMessage != null) {
-                // git commit
-                boolean diff = false;
-                List<String> paths = AppDevUtil.gitDiff(git, null);
-                for (String path: paths) {
-                    if (path.startsWith(targetDirName)) {
-                        AppDevUtil.gitAdd(git, path);
-                        diff = true;
+                        // remove existing directory
+                        FileUtils.deleteDirectory(targetDir);
+                        // copy directory
+                        targetDir.mkdirs();
+                        FileUtils.copyDirectory(sourceDir, targetDir, true); 
                     }
                 }
-                List<String> deletedPaths = AppDevUtil.gitDeletedDiff(git, null);
-                for (String path: deletedPaths) {
-                    if (path.startsWith(targetDirName)) {
-                        AppDevUtil.gitRemove(git, path);
-                        diff = true;
+                if (commitMessage != null) {
+                    boolean diff = false;
+                    List<DiffEntry> diffEntries = gitCommitHelper.getGit().diff().setPathFilter(PathFilter.create(targetDirName)).call();
+                    for (DiffEntry diffEntry : diffEntries) {
+                        String newPath = diffEntry.getPath(DiffEntry.Side.NEW);
+                        if ("/dev/null".equals(newPath)) {
+                            String oldPath = diffEntry.getOldPath();
+                            if (oldPath.startsWith(targetDirName)) {
+                                AppDevUtil.gitRemove(gitCommitHelper.getGit(), oldPath);
+                                diff = true;
+                            }
+                        } else if (newPath.startsWith(targetDirName)) {
+                            AppDevUtil.gitAdd(gitCommitHelper.getGit(), newPath);
+                            diff = true;
+                        }
                     }
-                }
-                if (diff) {
-                    gitCommitHelper.addCommitMessage(commitMessage);
-                }
+                    if (diff) {
+                        gitCommitHelper.addCommitMessage(commitMessage);
+                    }
+                }  
             }
-        } catch (IOException | GitAPIException ex) {
-            LogUtil.error(AppDevUtil.class.getName(), ex, ex.getMessage());
+        } catch (IOException | GitAPIException e) {
+            LogUtil.error(AppDevUtil.class.getName(), e, "[appDef= "+appDef+", sourcePath="+sourcePath+", targetDirName="+targetDirName+", commitMessage="+commitMessage+"]");
         }
-    } 
+    }
     
     public static void dirDelete(AppDefinition appDef, String commitMessage) {
         HttpServletRequest request = WorkflowUtil.getHttpServletRequest();
-        if (request == null) {
+        if (request == null && getBackgroundSync() == null) {
             //do nothing
             return;
         }
-        
-        String gitBranch = getGitBranchName(appDef);
-        
-        try {
-            GitCommitHelper gitCommitHelper = getGitCommitHelper(appDef);
-            Git git = gitCommitHelper.getGit();
-            AppDevUtil.gitCheckout(git, gitBranch);
-            
-            final String[] dirs = new String[] { "forms", "lists", "userviews", "plugins", "builder", "resources" };
-            for (String dir : dirs) {
-                // delete dir
-                File tempDir = new File(gitCommitHelper.getWorkingDir(), dir);
-                FileUtils.deleteDirectory(tempDir);  
-            }
-            
-            Collection<File> files = FileUtils.listFiles(gitCommitHelper.getWorkingDir(), new String[]{"json", "xml", "xpdl", "jar"}, true);
-            for (File file : files) {
-                file.delete();
-            }
-            
+
+        GitCommitHelper gitCommitHelper = getGitCommitHelper(appDef);
+        if (gitCommitHelper != null) {
+            gitCommitHelper.addPendingDirToDelete("*");
             if (commitMessage != null) {
-                // git commit
-                List<String> deletedPaths = AppDevUtil.gitDeletedDiff(git, null);
-                for (String path: deletedPaths) {
-                    AppDevUtil.gitRemove(git, path);
-                }
                 gitCommitHelper.addCommitMessage(commitMessage);
             }
-        } catch (IOException | GitAPIException ex) {
-            LogUtil.error(AppDevUtil.class.getName(), ex, ex.getMessage());
         }
-    }      
+    }
 
     public static void dirSyncAppResources(AppDefinition appDef) {
         HttpServletRequest request = WorkflowUtil.getHttpServletRequest();
@@ -1474,30 +1871,26 @@ public class AppDevUtil {
     
     public static void syncAppPlugins(AppDefinition appDef) {
         HttpServletRequest request = WorkflowUtil.getHttpServletRequest();
-        if (request == null) {
+        if (request == null && getBackgroundSync() == null) {
             //do nothing
             return;
         }
-        
+
         // get osgi plugins
         PluginManager pluginManager = (PluginManager)AppUtil.getApplicationContext().getBean("pluginManager");
         Collection<Plugin> pluginList = pluginManager.listOsgiPlugin(null);
-        
+
         try {
             GitCommitHelper gitCommitHelper = getGitCommitHelper(appDef);
-            
+
             String targetDirName = "plugins";
             File targetDir = new File(gitCommitHelper.getWorkingDir(), targetDirName);
-            
-            // remove existing directory
-            FileUtils.deleteDirectory(targetDir);
-            
-            // copy plugins
-            targetDir.mkdirs();
 
-            String concatAppDef = AppDevUtil.getConcatAppDef(appDef);
-            
-            // look for plugins used in any definition file
+            // Build fingerprint of matched plugins (path + lastModified + size) to detect changes
+            // Including lastModified and size ensures we re-sync when a plugin JAR is updated in-place
+            Set<String> matchedPluginFingerprints = new TreeSet<>();
+            Set<String> matchedPluginPaths = new TreeSet<>();
+            AppDefinition appDefCopy = copyAppDefForPluginMatch(appDef, gitCommitHelper.getWorkingDir());
             for (Plugin plugin: pluginList) {
                 String pluginClassName = ClassUtils.getUserClass(plugin).getName();
                 String pluginMatch;
@@ -1507,30 +1900,53 @@ public class AppDevUtil {
                 } else {
                     pluginMatch = pluginClassName;
                 }
-                if (concatAppDef.contains(pluginMatch)) {
-                    try {
-                        // plugin used, copy
-                        String path = pluginManager.getOsgiPluginPath(pluginClassName);
-                        if (path != null) {
-                            File src = new File(path);
-                            File dest = new File(targetDir, src.getName());
-                            FileUtils.copyFile(src, dest);
-                        }
-                    } catch (SecurityException e) {
-                        LogUtil.debug(AppDevUtil.class.getName(), "Fail to copy " + pluginClassName + " due to cloud security manager");
+                if (appDefContainsPlugin(appDefCopy, pluginMatch)) {
+                    String path = pluginManager.getOsgiPluginPath(pluginClassName);
+                    if (path != null) {
+                        matchedPluginPaths.add(path);
+                        File pluginFile = new File(path);
+                        matchedPluginFingerprints.add(path + "|" + pluginFile.lastModified() + "|" + pluginFile.length());
                     }
-                }                
+                }
             }
-            
+
+            // Skip expensive file copy and git diff if the matched plugins haven't changed
+            String cacheKey = getAppCacheKey(appDef);
+            Set<String> previousFingerprints = pluginFingerprintCache.get(cacheKey);
+            if (previousFingerprints != null && previousFingerprints.equals(matchedPluginFingerprints)) {
+                LogUtil.debug(AppDevUtil.class.getName(), "Skipping plugin sync for " + cacheKey + " - plugins unchanged");
+                return;
+            }
+
+            // remove existing directory
+            FileUtils.deleteDirectory(targetDir);
+
+            // copy plugins
+            targetDir.mkdirs();
+
+            // copy matched plugin files
+            for (String path : matchedPluginPaths) {
+                try {
+                    File src = new File(path);
+                    File dest = new File(targetDir, src.getName());
+                    FileUtils.copyFile(src, dest);
+                } catch (SecurityException e) {
+                    LogUtil.debug(AppDevUtil.class.getName(), "Fail to copy " + path + " due to cloud security manager");
+                }
+            }
+
             // commit
             String commitMessage =  "Update app plugins " + appDef.getId();
             AppDevUtil.dirCopy(appDef, null, targetDirName, commitMessage);
-            
+
+            // update cache after successful sync
+            pluginFingerprintCache.put(cacheKey, matchedPluginFingerprints);
+
         } catch (IOException ex) {
             LogUtil.error(AppDevUtil.class.getName(), ex, ex.getMessage());
         }
-        
-    }    
+
+    }
     
     public static AppDefinition dirSyncApp(String appId, Long appVersion) throws IOException, GitAPIException, URISyntaxException {
         if (appVersion == null) {
@@ -1593,41 +2009,50 @@ public class AppDevUtil {
             return null;
         }
         
-        // compare from app last modified date
-        Date latestDate = AppDevUtil.dirLastModified(appDef);
         Properties appProps = AppDevUtil.getAppDevProperties(appDef);
         String appAutoSync = appProps.getProperty(PROPERTY_GIT_CONFIG_AUTO_SYNC);
-        Date appLastModifiedDate = appDef.getDateModified();
-        boolean isAppModified = isAppModified(appDef);
-        if (appLastModifiedDate != null) {
-            Calendar lastModifiedCal = Calendar.getInstance();
-            lastModifiedCal.setTime(appLastModifiedDate);
-            lastModifiedCal.setTimeZone(TimeZone.getTimeZone("UTC"));
-            appLastModifiedDate = lastModifiedCal.getTime();            
-        }
-        //latestDate is null when git folder is empty, should not sync in that case.
-        if ("true".equals(appAutoSync) && latestDate != null && (appLastModifiedDate == null || latestDate.after(appLastModifiedDate) || isAppModified)) {
-            LogUtil.info(AppDevUtil.class.getName(), "Change detected (" + latestDate + " vs " + appLastModifiedDate + "), init sync for app " + appDef);
-            // sync app
-            updatedAppDef = appDefinitionDao.syncAppDefinition(appDef.getAppId(), appDef.getVersion());
-            copyDirectory(appDef);
-            LogUtil.info(AppDevUtil.class.getName(), "Sync complete for app " + appDef);
+        if ("true".equals(appAutoSync)) {
+            // compare from app last modified date
+            Date latestDate = AppDevUtil.dirLastModified(appDef);
+
+            Date appLastModifiedDate = appDef.getDateModified();
+            boolean isAppModified = isAppModified(appDef);
+            if (appLastModifiedDate != null) {
+                Calendar lastModifiedCal = Calendar.getInstance();
+                lastModifiedCal.setTime(appLastModifiedDate);
+                lastModifiedCal.setTimeZone(TimeZone.getTimeZone("UTC"));
+                appLastModifiedDate = lastModifiedCal.getTime();
+            }
+            //latestDate is null when git folder is empty, should not sync in that case.
+            if (latestDate != null && (appLastModifiedDate == null || latestDate.after(appLastModifiedDate) || isAppModified)) {
+                LogUtil.info(AppDevUtil.class.getName(), "Change detected (" + latestDate + " vs " + appLastModifiedDate + "), init sync for app " + appDef);
+                // sync app
+                updatedAppDef = appDefinitionDao.syncAppDefinition(appDef.getAppId(), appDef.getVersion());
+                copyDirectory(appDef);
+                LogUtil.info(AppDevUtil.class.getName(), "Sync complete for app " + appDef);
+            }
         }
         return updatedAppDef;
     }
     
-    public static synchronized void copyDirectory(AppDefinition appDef) throws IOException {
-        String sourcePath = SetupManager.getBaseDirectory() + File.separator + "app_src" + File.separator + appDef.getAppId() + File.separator + appDef.getAppId() + "_" + appDef.getVersion() + File.separator + "resources" + File.separator;
-        String targetDirName = AppResourceUtil.getBaseDirectory() + appDef.getAppId() + File.separator + appDef.getVersion();
+    private static final ConcurrentHashMap<String, Object> COPY_LOCKS = new ConcurrentHashMap<>();
 
-        File sourceDir = new File(sourcePath);
-        if (sourceDir.exists()) {
-            File targetDir = new File(targetDirName);
-            // remove existing directory
-            FileUtils.deleteDirectory(targetDir);
-            // copy directory
-            targetDir.mkdirs();
-            FileUtils.copyDirectory(sourceDir, targetDir, true);
+    public static void copyDirectory(AppDefinition appDef) throws IOException {
+        String appKey = getAppCacheKey(appDef);
+        Object lock = COPY_LOCKS.computeIfAbsent(appKey, k -> new Object());
+        synchronized (lock) {
+            String sourcePath = SetupManager.getBaseDirectory() + File.separator + "app_src" + File.separator + appDef.getAppId() + File.separator + appDef.getAppId() + "_" + appDef.getVersion() + File.separator + "resources" + File.separator;
+            String targetDirName = AppResourceUtil.getBaseDirectory() + appDef.getAppId() + File.separator + appDef.getVersion();
+
+            File sourceDir = new File(sourcePath);
+            if (sourceDir.exists()) {
+                File targetDir = new File(targetDirName);
+                // remove existing directory
+                FileUtils.deleteDirectory(targetDir);
+                // copy directory
+                targetDir.mkdirs();
+                FileUtils.copyDirectory(sourceDir, targetDir, true);
+            }
         }
     }
     
@@ -1646,26 +2071,13 @@ public class AppDevUtil {
 
                     if (gitCommitHelper != null) {
                         try {
-                            Git git = gitCommitHelper.getGit();
-                            AppDefinition gitAppDef = gitCommitHelper.getAppDefinition();
-
-                            // perform commit
-                            String commitMessage = gitCommitHelper.getCommitMessage();
-                            if (gitCommitHelper.hasChanges() && commitMessage != null && !commitMessage.trim().isEmpty()) {
-                                // sync plugins
-                                if (gitCommitHelper.isSyncPlugins()) {
-                                    AppDevUtil.syncAppPlugins(gitAppDef);
-                                }
-
-                                // sync resources
-                                if (gitCommitHelper.isSyncResources()) {
-                                    AppDevUtil.syncAppResources(gitAppDef);
-                                }
-
-                                AppDevUtil.gitPullAndCommit(gitAppDef, git, gitCommitHelper.getWorkingDir(), commitMessage);
-                            }
+                            gitCommitHelper.commit();
                         } finally {
-                            gitCommitHelper.clean();
+                            try {
+                                gitCommitHelper.clean();
+                            } catch (Exception ex) {
+                                LogUtil.warn(AppDevUtil.class.getName(), "Failed to clean git working directory for " + appDef.getAppId() + " - " + ex.getMessage());
+                            }
                         }
                     }
                 }
@@ -1678,22 +2090,31 @@ public class AppDevUtil {
             setBackgroundSync(null);
         }
     }
-   
+
+    public static String getAppCacheKey(AppDefinition appDef) {
+        String profile = HostManager.getCurrentProfile();
+        return profile + "_" + appDef.getAppId() + "_" + appDef.getVersion();
+    }
+
     public static boolean isAppModified(AppDefinition appDef) throws IOException, GitAPIException, URISyntaxException {
+        String appKey = getAppCacheKey(appDef);
         File dir = AppDevUtil.fileGetFileObject(appDef, ".", false);
         if (dir != null && dir.isDirectory()) {
             Collection<File> files = FileUtils.listFiles(dir, new String[]{"json", "xml", "xpdl", "jar"}, true);
             Set<String> currentFileNames = new HashSet<>();
             for (File file : files) {
-                currentFileNames.add(file.getAbsolutePath());
+                currentFileNames.add(file.getAbsolutePath() + "|" + file.length());
             }
-            int currentFileCount = currentFileNames.size();
+            Set<String> prevNames = prevFileNamesMap.get(appKey);
 
             // Check if file count or file names have changed
-            if (prevFileCount == -1 || prevFileCount != currentFileCount || !currentFileNames.equals(prevFileNames)) {
-                prevFileNames = currentFileNames;
-                prevFileCount = currentFileCount;
-                return true; 
+            if (!currentFileNames.equals(prevNames)) {
+                prevFileNamesMap.put(appKey, currentFileNames);
+                
+                if (LogUtil.isDebugEnabled(AppDevUtil.class.getName())) {
+                    LogUtil.debug(AppDevUtil.class.getName(), "appKey="+appKey+", prevNames="+prevNames+", currentFileNames="+currentFileNames+"]");
+                }
+                return true;
             }
         }
         return false; 
@@ -1757,7 +2178,7 @@ public class AppDevUtil {
     public static Date dirLastModified(AppDefinition appDef) throws URISyntaxException, GitAPIException, IOException {
         Date latestDate = null;
         
-        String profile = DynamicDataSourceManager.getCurrentProfile();
+        String profile = HostManager.getCurrentProfile();
         String cacheKey = profile + "_dirLastModified_" + appDef.toString();
         Cache cache = (Cache) AppUtil.getApplicationContext().getBean("userviewMenuCache");
         if (cache != null) {
@@ -1766,27 +2187,32 @@ public class AppDevUtil {
                 latestDate = (Date)element.getObjectValue();
             }
         }
-        if (latestDate == null) {
-            if (!AppDevUtil.isGitDisabled()) {
-                File dir = AppDevUtil.fileGetFileObject(appDef, ".", false);
-                if (dir != null && dir.isDirectory()) {
-                    // get latest modified date
-                    Collection<File> files = FileUtils.listFiles(dir, new String[]{ "json", "xml", "xpdl", "jar" }, true);
-                    for (File file: files) {
-                        BasicFileAttributes attr = Files.readAttributes(file.toPath(), BasicFileAttributes.class);
-                        Date dateModified = new Date(attr.lastModifiedTime().toMillis());
-                        if (latestDate == null || dateModified.after(latestDate)) {
-                            latestDate = dateModified;
-                        }
-                    }
-                    if (cache != null) {
-                        Element element = new Element(cacheKey, latestDate);
-                        cache.put(element);
-                    }
+        if (latestDate == null && !AppDevUtil.isGitDisabled()) {
+            File dir = AppDevUtil.fileGetFileObject(appDef, ".", false);
+            if (dir != null && dir.isDirectory()) {
+                // Use Files.walk with early termination for better performance
+                try (Stream<Path> paths = Files.walk(dir.toPath())) {
+                    latestDate = paths
+                        .filter(Files::isRegularFile)
+                        .filter(p -> {
+                            String name = p.getFileName().toString().toLowerCase();
+                            return name.endsWith(".json") || name.endsWith(".xml") || name.endsWith(".xpdl") || name.endsWith(".jar");
+                        })
+                        .map(p -> {
+                            try {
+                                return new Date(Files.getLastModifiedTime(p).toMillis());
+                            } catch (IOException e) {
+                                return null;
+                            }
+                        })
+                        .filter(d -> d != null)
+                        .max(Date::compareTo)
+                        .orElse(null);
                 }
-            } else if (cache != null) {
-                Element element = new Element(cacheKey, appDef.getDateModified());
-                cache.put(element);
+                if (cache != null && latestDate != null) {
+                    Element element = new Element(cacheKey, latestDate);
+                    cache.put(element);
+                }
             }
         }
         if (latestDate != null) {
@@ -1898,26 +2324,22 @@ public class AppDevUtil {
 
                 if (targetDir.exists()) {
                     File[] files = targetDir.listFiles();
-                    for (File file : files)
-                    {
-                        if (file.canRead())
+                    if (files != null) {
+                        for (File file : files)
                         {
-                            FileInputStream fis = null;
-                            try {
-                                zip.putNextEntry(new ZipEntry(file.getName()));
-                                fis = new FileInputStream(file);
-                                byte[] buffer = new byte[4092];
-                                int byteCount = 0;
-                                while ((byteCount = fis.read(buffer)) != -1)
-                                {
-                                    zip.write(buffer, 0, byteCount);
+                            if (file.canRead())
+                            {
+                                try (FileInputStream fis = new FileInputStream(file)) {
+                                    zip.putNextEntry(new ZipEntry(file.getName()));
+                                    byte[] buffer = new byte[4092];
+                                    int byteCount = 0;
+                                    while ((byteCount = fis.read(buffer)) != -1)
+                                    {
+                                        zip.write(buffer, 0, byteCount);
+                                    }
+                                    zip.closeEntry();
                                 }
-                                zip.closeEntry();
-                            } finally {
-                                if (fis != null) {
-                                    fis.close();
-                                }
-                            }  
+                            }
                         }
                     }
                 }
@@ -1926,16 +2348,14 @@ public class AppDevUtil {
             }
         } else {
             Set<String> jars = new HashSet<String>();
-            
-            // combine all definitions into a string for matching
-            String concatAppDef = getConcatAppDef(appDef);
-            
+
             // get osgi plugins
             PluginManager pluginManager = (PluginManager)AppUtil.getApplicationContext().getBean("pluginManager");
             Collection<Plugin> pluginList = pluginManager.listOsgiPlugin(null);
             
             try {
                 // look for plugins used in any definition file
+                AppDefinition appDefCopy = copyAppDefForPluginMatch(appDef, null);
                 for (Plugin plugin: pluginList) {
                     String pluginClassName = ClassUtils.getUserClass(plugin).getName();
                     String pluginMatch;
@@ -1945,7 +2365,7 @@ public class AppDevUtil {
                     } else {
                         pluginMatch = pluginClassName;
                     }
-                    if (concatAppDef.contains(pluginMatch)) {
+                    if (appDefContainsPlugin(appDefCopy, pluginMatch)) {
                         // plugin used, copy
                         String path = pluginManager.getOsgiPluginPath(pluginClassName);
                         if (path != null) {
@@ -1953,10 +2373,8 @@ public class AppDevUtil {
                             if (!jars.contains(file.getName())) {
                                 if (file.canRead())
                                 {
-                                    FileInputStream fis = null;
-                                    try {
+                                    try (FileInputStream fis = new FileInputStream(file)) {
                                         zip.putNextEntry(new ZipEntry(file.getName()));
-                                        fis = new FileInputStream(file);
                                         byte[] buffer = new byte[4092];
                                         int byteCount = 0;
                                         while ((byteCount = fis.read(buffer)) != -1)
@@ -1964,11 +2382,7 @@ public class AppDevUtil {
                                             zip.write(buffer, 0, byteCount);
                                         }
                                         zip.closeEntry();
-                                    } finally {
-                                        if (fis != null) {
-                                            fis.close();
-                                        }
-                                    }  
+                                    }
                                 }
 
                                 jars.add(file.getName());
@@ -2001,14 +2415,16 @@ public class AppDevUtil {
 
                 if (targetDir.exists()) {
                     File[] files = targetDir.listFiles();
-                    for (File file : files)
-                    {
-                        plugins.add(file.getName());
-                        
-                        //check is it exist in wflow app_plugins folder, if not then newer version exist
-                        if (!(new File(pluginManager.getBaseDirectory() + File.separator + file.getName()).exists())) {
-                            requireUpdate = true;
-                            break;
+                    if (files != null) {
+                        for (File file : files)
+                        {
+                            plugins.add(file.getName());
+
+                            //check is it exist in wflow app_plugins folder, if not then newer version exist
+                            if (!(new File(pluginManager.getBaseDirectory() + File.separator + file.getName()).exists())) {
+                                requireUpdate = true;
+                                break;
+                            }
                         }
                     }
                 }
@@ -2034,21 +2450,21 @@ public class AppDevUtil {
                 File targetDir = new File(projectDir, targetDirName);
                 if (targetDir.exists()) {
                     File[] files = targetDir.listFiles();
-                    for (File file : files)
-                    {
-                        plugins.add(file.getName());
+                    if (files != null) {
+                        for (File file : files)
+                        {
+                            plugins.add(file.getName());
+                        }
                     }
                 }
             }
         } else {
-            // combine all definitions into a string for matching
-            String concatAppDef = getConcatAppDef(appDef);
-            
             // get osgi plugins
             PluginManager pluginManager = (PluginManager)AppUtil.getApplicationContext().getBean("pluginManager");
             Collection<Plugin> pluginList = pluginManager.listOsgiPlugin(null);
-        
+
             // look for plugins used in any definition file
+            AppDefinition appDefCopy = copyAppDefForPluginMatch(appDef, null);
             for (Plugin plugin: pluginList) {
                 String pluginClassName = ClassUtils.getUserClass(plugin).getName();
                 String pluginMatch;
@@ -2058,7 +2474,7 @@ public class AppDevUtil {
                 } else {
                     pluginMatch = pluginClassName;
                 }
-                if (concatAppDef.contains(pluginMatch)) {
+                if (appDefContainsPlugin(appDefCopy, pluginMatch)) {
                     // plugin used, copy
                     String path = pluginManager.getOsgiPluginPath(pluginClassName);
                     if (path != null) {
@@ -2074,7 +2490,7 @@ public class AppDevUtil {
     }
     
     public static String cleanForCompare(String xpdl) {
-        xpdl = xpdl.replaceAll("[\r\n]", "");
+        xpdl = xpdl.replace("\r", "").replace("\n", "");
         xpdl = xpdl.trim();
         
         return xpdl;
@@ -2085,8 +2501,8 @@ public class AppDevUtil {
             return content;
         }
         
-        content = content.replaceAll("\r", "");
-        content = content.replaceAll("\n", "\r\n");
+        content = content.replace("\r", "");
+        content = content.replace("\n", "\r\n");
         content = content.trim();
         
         return content;
@@ -2105,7 +2521,7 @@ public class AppDevUtil {
     }
 
     public static Map<String, GitCommitHelper> getBackgroundSync() throws BeansException {
-        return (Map<String, GitCommitHelper>) backgroundSync.get();
+        return backgroundSync.get();
     }
     
     public static String getConcatAppDef(AppDefinition appDef) {
@@ -2165,6 +2581,144 @@ public class AppDevUtil {
             return result;
         } else {
             return (String) element.getObjectValue();
+        }
+    }
+
+    /**
+     * Checks whether any definition in the app references the given plugin match string.
+     * Searches each definition's JSON individually to avoid building one huge concatenated string,
+     * which can consume hundreds of MB for large applications.
+     */
+    private static boolean appDefContainsPlugin(AppDefinition appDef, String pluginMatch) {
+        if (appDef.getFormDefinitionList() != null) {
+            for (FormDefinition o : appDef.getFormDefinitionList()) {
+                if (o.getJson() != null && o.getJson().contains(pluginMatch)) return true;
+            }
+        }
+        if (appDef.getDatalistDefinitionList() != null) {
+            for (DatalistDefinition o : appDef.getDatalistDefinitionList()) {
+                if (o.getJson() != null && o.getJson().contains(pluginMatch)) return true;
+            }
+        }
+        if (appDef.getUserviewDefinitionList() != null) {
+            for (UserviewDefinition o : appDef.getUserviewDefinitionList()) {
+                if (o.getJson() != null && o.getJson().contains(pluginMatch)) return true;
+            }
+        }
+        if (appDef.getBuilderDefinitionList() != null) {
+            for (BuilderDefinition o : appDef.getBuilderDefinitionList()) {
+                if (o.getJson() != null && o.getJson().contains(pluginMatch)) return true;
+            }
+        }
+        PackageDefinition packageDef = appDef.getPackageDefinition();
+        if (packageDef != null) {
+            if (packageDef.getPackageActivityPluginMap() != null) {
+                for (PackageActivityPlugin o : packageDef.getPackageActivityPluginMap().values()) {
+                    if (o.getPluginName() != null && o.getPluginName().contains(pluginMatch)) return true;
+                    if (o.getPluginProperties() != null && o.getPluginProperties().contains(pluginMatch)) return true;
+                }
+            }
+            if (packageDef.getPackageParticipantMap() != null) {
+                for (PackageParticipant o : packageDef.getPackageParticipantMap().values()) {
+                    if (o.getValue() != null && o.getValue().contains(pluginMatch)) return true;
+                    if (o.getPluginProperties() != null && o.getPluginProperties().contains(pluginMatch)) return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    /**
+     * Creates a detached copy of AppDefinition for plugin matching.
+     * When a Hibernate collection is stale (ObjectNotFoundException), loads JSON
+     * files from the working directory as fallback. The returned object is not
+     * managed by Hibernate, so it is safe to modify without triggering DB writes.
+     */
+    private static AppDefinition copyAppDefForPluginMatch(AppDefinition appDef, File workingDir) {
+        AppDefinition copy = new AppDefinition();
+        copy.setAppId(appDef.getAppId());
+        copy.setVersion(appDef.getVersion());
+
+        // Each getter may return a Hibernate PersistentBag that is lazy-loaded.
+        // The ObjectNotFoundException only occurs when the bag is iterated, not
+        // when the getter is called. Force materialization with new ArrayList<>()
+        // so staleness is detected here and not in the plugin-matching loop.
+        try {
+            Collection<FormDefinition> forms = appDef.getFormDefinitionList();
+            copy.setFormDefinitionList(forms != null ? new ArrayList<>(forms) : null);
+        } catch (org.hibernate.ObjectNotFoundException e) {
+            LogUtil.debug(AppDevUtil.class.getName(), "Stale form cache, loading from files: " + e.getMessage());
+            copy.setFormDefinitionList(workingDir != null ? loadJsonAsDefinitions(new File(workingDir, "forms"), FormDefinition.class) : null);
+        }
+        try {
+            Collection<DatalistDefinition> lists = appDef.getDatalistDefinitionList();
+            copy.setDatalistDefinitionList(lists != null ? new ArrayList<>(lists) : null);
+        } catch (org.hibernate.ObjectNotFoundException e) {
+            LogUtil.debug(AppDevUtil.class.getName(), "Stale datalist cache, loading from files: " + e.getMessage());
+            copy.setDatalistDefinitionList(workingDir != null ? loadJsonAsDefinitions(new File(workingDir, "lists"), DatalistDefinition.class) : null);
+        }
+        try {
+            Collection<UserviewDefinition> views = appDef.getUserviewDefinitionList();
+            copy.setUserviewDefinitionList(views != null ? new ArrayList<>(views) : null);
+        } catch (org.hibernate.ObjectNotFoundException e) {
+            LogUtil.debug(AppDevUtil.class.getName(), "Stale userview cache, loading from files: " + e.getMessage());
+            copy.setUserviewDefinitionList(workingDir != null ? loadJsonAsDefinitions(new File(workingDir, "userviews"), UserviewDefinition.class) : null);
+        }
+        try {
+            Collection<BuilderDefinition> builders = appDef.getBuilderDefinitionList();
+            copy.setBuilderDefinitionList(builders != null ? new ArrayList<>(builders) : null);
+        } catch (org.hibernate.ObjectNotFoundException e) {
+            LogUtil.debug(AppDevUtil.class.getName(), "Stale builder cache, loading from files: " + e.getMessage());
+            copy.setBuilderDefinitionList(workingDir != null ? loadJsonAsDefinitions(new File(workingDir, "builder"), BuilderDefinition.class) : null);
+        }
+        try {
+            Collection<PackageDefinition> pkgs = appDef.getPackageDefinitionList();
+            copy.setPackageDefinitionList(pkgs != null ? new ArrayList<>(pkgs) : null);
+        } catch (org.hibernate.ObjectNotFoundException e) {
+            LogUtil.debug(AppDevUtil.class.getName(), "Stale package cache: " + e.getMessage());
+            copy.setPackageDefinitionList(null);
+        }
+
+        return copy;
+    }
+
+    /**
+     * Reads all .json files from a directory (and subdirectories) and returns
+     * lightweight definition objects with only the json field populated.
+     */
+    private static <T> Collection<T> loadJsonAsDefinitions(File dir, Class<T> defClass) {
+        if (dir == null || !dir.isDirectory()) return Collections.emptyList();
+        List<T> result = new ArrayList<>();
+        loadJsonAsDefinitionsRecursive(dir, defClass, result);
+        return result;
+    }
+
+    private static <T> void loadJsonAsDefinitionsRecursive(File dir, Class<T> defClass, List<T> result) {
+        File[] files = dir.listFiles();
+        if (files == null) return;
+        for (File f : files) {
+            if (f.isDirectory()) {
+                loadJsonAsDefinitionsRecursive(f, defClass, result);
+            } else if (f.getName().endsWith(".json")) {
+                try {
+                    String content = FileUtils.readFileToString(f, "UTF-8");
+                    T def = defClass.getDeclaredConstructor().newInstance();
+                    if (def instanceof FormDefinition) {
+                        ((FormDefinition) def).setJson(content);
+                    } else if (def instanceof DatalistDefinition) {
+                        ((DatalistDefinition) def).setJson(content);
+                    } else if (def instanceof UserviewDefinition) {
+                        ((UserviewDefinition) def).setJson(content);
+                    } else if (def instanceof BuilderDefinition) {
+                        ((BuilderDefinition) def).setJson(content);
+                    }
+                    result.add(def);
+                } catch (IOException ex) {
+                    LogUtil.debug(AppDevUtil.class.getName(), "Error reading " + f.getAbsolutePath() + ": " + ex.getMessage());
+                } catch (ReflectiveOperationException ex) {
+                    LogUtil.debug(AppDevUtil.class.getName(), "Error creating " + defClass.getName() + ": " + ex.getMessage());
+                }
+            }
         }
     }
 
