@@ -736,8 +736,27 @@ VisibilityManager = {
 
             // Populate tooltip list
             var $list = $indicator.find('.rules-tooltip-list');
-            $.each(appliedRules, function(i, name) {
-                $list.append('<li>' + name + '</li>');
+            $.each(appliedRules, function(i, rule) {
+                $list.append('<li data-rule-key="' + rule.key + '">' + rule.name + '</li>');
+            });
+
+            // Handle click on tooltip rule items
+            $list.on('click', 'li[data-rule-key]', function() {
+                var ruleKey = $(this).data('rule-key');
+                var $ruleCard = $(self.container).find('#visibility-rule-' + ruleKey);
+                if ($ruleCard.length > 0) {
+                    // Scroll the rules list to the rule card
+                    var $rulesPane = $(self.container).find('.visibility_rules');
+                    $rulesPane.animate({
+                        scrollTop: $rulesPane.scrollTop() + $ruleCard.position().top - $rulesPane.position().top
+                    }, 300);
+
+                    // Set it as the active rule
+                    self.setActiveRule($ruleCard);
+
+                    // Open the property editor for the rule
+                    self.editRule($ruleCard);
+                }
             });
 
             $row.find(".element-meta > div").append($indicator);
@@ -779,7 +798,10 @@ VisibilityManager = {
                     // Find rule name by key
                     for (var i = 0; i < formRules.length; i++) {
                         if (formRules[i]["visibility_key"] === key) {
-                            appliedNames.push(formRules[i]["visibility_name"] || get_advtool_msg('adv.visibility.unnamed'));
+                            appliedNames.push({
+                                name: formRules[i]["visibility_name"] || get_advtool_msg('adv.visibility.unnamed'),
+                                key: key
+                            });
                             break;
                         }
                     }
