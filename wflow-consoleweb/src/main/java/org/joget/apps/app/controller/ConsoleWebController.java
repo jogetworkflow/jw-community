@@ -4364,67 +4364,6 @@ public class ConsoleWebController {
         return "console/setting/datasource";
     }
 
-    @RequestMapping(value = "/console/setting/profile/change", method = RequestMethod.POST)
-    public void consoleProfileChange(Writer writer, @RequestParam("profileName") String profileName) {
-        WorkflowUtil.switchProfile(profileName);
-    }
-
-    @RequestMapping(value = "/console/setting/profile/create", method = RequestMethod.POST)
-    public void consoleProfileCreate(Writer writer, HttpServletRequest request, @RequestParam("profileName") String profileName) {
-        if (!HostManager.isVirtualHostEnabled()) {
-            SecurityUtil.validateStringInput(profileName);
-            //get 
-            String secureValue = DynamicDataSourceManager.getProperty(DynamicDataSourceManager.SECURE_FIELD);
-            
-            DynamicDataSourceManager.createProfile(profileName);
-            DynamicDataSourceManager.changeProfile(profileName);
-
-            //request params
-            Enumeration e = request.getParameterNames();
-            while (e.hasMoreElements()) {
-                String paramName = (String) e.nextElement();
-                if (!paramName.equals("profileName")) {
-                    String paramValue = request.getParameter(paramName);
-                    
-                    if (DynamicDataSourceManager.SECURE_FIELD.equals(paramName) && DynamicDataSourceManager.SECURE_VALUE.equals(paramValue)) {
-                        paramValue = secureValue;
-                    }
-                    
-                    DynamicDataSourceManager.writeProperty(paramName, paramValue);
-                }
-            }
-            WorkflowUtil.switchProfile(profileName);
-        }
-    }
-
-    @RequestMapping(value = "/console/setting/profile/delete", method = RequestMethod.POST)
-    public void consoleProfileDelete(Writer writer, @RequestParam("profileName") String profileName) {
-        if (!HostManager.isVirtualHostEnabled()) {
-            SecurityUtil.validateStringInput(profileName);
-            DynamicDataSourceManager.deleteProfile(profileName);
-        }
-    }
-
-    @RequestMapping(value = "/console/setting/datasource/submit", method = RequestMethod.POST)
-    public String consoleSetupDatasourceSubmit(HttpServletRequest request, ModelMap map) {
-        //request params
-        Enumeration e = request.getParameterNames();
-        while (e.hasMoreElements()) {
-            String paramName = (String) e.nextElement();
-            if (!paramName.equals("profileName")) {
-                String paramValue = request.getParameter(paramName);
-                
-                if (DynamicDataSourceManager.SECURE_FIELD.equals(paramName) && DynamicDataSourceManager.SECURE_VALUE.equals(paramValue)) {
-                    paramValue = DynamicDataSourceManager.getProperty(DynamicDataSourceManager.SECURE_FIELD);
-                }
-                
-                DynamicDataSourceManager.writeProperty(paramName, paramValue);
-            }
-        }
-
-        return "redirect:/web/console/setting/datasource";
-    }
-
     @RequestMapping("/console/setting/directory")
     public String consoleSettingDirectory(ModelMap map, HttpServletRequest request) {
         Collection<Setting> settingList = setupManager.getSettingList("", null, null, null, null);
