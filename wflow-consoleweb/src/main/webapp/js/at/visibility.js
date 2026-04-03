@@ -15,6 +15,7 @@ VisibilityManager = {
             '<div class="visibility_view">' +
                 '<div class="visibility_rules">' +
                     '<div class="buttons">' +
+                        '<span class="rules-total-count"></span>' +
                         '<a class="add_visibility button"><i class="fas fa-plus"></i> ' + get_advtool_msg('adv.visibility.addRule') + '</a>' +
                     '</div>' +
                     '<div class="sortable"></div>' +
@@ -25,6 +26,7 @@ VisibilityManager = {
 
         this.migrateLegacyRules();
         this.renderRules();
+        this.updateTotalRuleCount();
         this.renderElementsHeader();
         this.attachEvents();
     },
@@ -225,6 +227,20 @@ VisibilityManager = {
     },
 
     /**
+     * Update the total rule count display
+     */
+    updateTotalRuleCount: function() {
+        var ruleObj = this.getRuleElement();
+        var count = (ruleObj["visibility_rules"] && ruleObj["visibility_rules"].length) || 0;
+        var $counter = $(this.container).find('.rules-total-count');
+        if (count > 0) {
+            $counter.text(count + ' ' + get_advtool_msg('adv.visibility.totalRules')).show();
+        } else {
+            $counter.hide();
+        }
+    },
+
+    /**
      * Render a single visibility rule in the left pane
      * @param {Object} ruleData - The rule data object
      * @param {boolean} prepend - Whether to prepend (true) or append (false)
@@ -325,6 +341,7 @@ VisibilityManager = {
 
         var $ruleElm = this.renderRule(rule, true);
         this.setActiveRule($ruleElm);
+        this.updateTotalRuleCount();
         CustomBuilder.update();
     },
 
@@ -355,6 +372,7 @@ VisibilityManager = {
                 }
             }
             this.refreshAllTooltips();
+            this.updateTotalRuleCount();
             CustomBuilder.update();
         }
     },
@@ -1048,7 +1066,7 @@ VisibilityManager = {
             if (props["visibilityControl"] && props["visibilityControl"] !== "" &&
                 !props["_visibility_migrated"]) {
 
-                var ruleName = this.getLegacyRuleName(props);
+                var ruleName = this.getLegacyRuleName(props, data);
                 var ruleKey = this.generateGuid();
 
                 var rule = {
@@ -1097,23 +1115,19 @@ VisibilityManager = {
     },
 
     /**
-     * Generate a name for a legacy rule based on its conditions
+     * Generate a name for a legacy rule based on its section
      * @param {Object} props - The Section properties
+     * @param {Object} data - The Section element data
      * @returns {string} The rule name
      */
-    getLegacyRuleName: function(props) {
-        var visibilityControl = props["visibilityControl"] || "";
-        var fields = visibilityControl.split(";").filter(function(f) {
-            return f && f !== "(" && f !== ")";
-        });
+    getLegacyRuleName: function(props, data) {
+        var sectionId = "";
+        if (data && data.properties) {
+            sectionId = data.properties["id"] || "";
+        }
 
-        if (fields.length > 0) {
-            // Use first field name as rule name
-            var firstName = fields[0];
-            if (fields.length > 1) {
-                return firstName + " +" + (fields.length - 1) + " more";
-            }
-            return firstName;
+        if (sectionId) {
+            return sectionId + " [migrated]";
         }
         return get_advtool_msg('adv.visibility.migratedRule');
     }
