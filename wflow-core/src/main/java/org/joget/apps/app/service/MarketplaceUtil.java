@@ -4,6 +4,7 @@ import java.io.BufferedInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.File;
 import java.net.HttpURLConnection;
 import java.net.URI;
 import java.net.URL;
@@ -776,6 +777,20 @@ public class MarketplaceUtil {
             }
             
             Map<String, Object> installedPlugins = pluginManager.getInstalledBundles(classes, filtePluginClasses, false);
+            //set fileName for all installed plugins
+            File appPluginsDir = new File(SetupManager.getBaseDirectory(), "app_plugins");
+            for (Object value : installedPlugins.values()) {
+                Map bundle = (Map) value;
+                String filename = (String) bundle.get("id");
+                if (filename != null && !filename.isEmpty()) {
+                    filename = SecurityUtil.normalizedFileName(filename);
+                    bundle.put("fileName", filename);
+                    File pluginFile = new File(appPluginsDir, filename);
+                    bundle.put("downloadable", pluginFile.isFile());
+                } else {
+                    bundle.put("downloadable", false);
+                }
+            }
             
             //populate with marketplace data
             if (cache != null && cache.has("data")) {

@@ -75,6 +75,7 @@ import java.awt.image.BufferedImage;
 import java.io.*;
 import java.net.URISyntaxException;
 import java.net.URLDecoder;
+import java.net.URLConnection;
 import java.net.URLEncoder;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -4677,7 +4678,42 @@ public class ConsoleWebController {
         }
         return "redirect:/web/console/setting/plugin";
     }
-    
+
+    @RequestMapping(value="/console/setting/plugin/download")
+    public void downloadPlugin(HttpServletResponse response,
+                               @RequestParam(value = "filename") String filename) throws IOException {
+        try {
+            filename = SecurityUtil.normalizedFileName(filename);
+        } catch (Exception e) {
+            response.sendError(HttpServletResponse.SC_BAD_REQUEST);
+            return;
+        }
+
+        File pluginFile = new File(new File(SetupManager.getBaseDirectory(), "app_plugins"), filename);
+        if (!pluginFile.isFile()) {
+            response.sendError(HttpServletResponse.SC_NOT_FOUND);
+            return;
+        }
+
+        String mimeType = URLConnection.guessContentTypeFromName(filename);
+        response.setContentType(mimeType != null ? mimeType : "application/octet-stream");
+        response.setHeader("Content-Disposition", "attachment; filename=\"" + pluginFile.getName() + "\"");
+        response.setContentLengthLong(pluginFile.length());
+
+        try (FileInputStream fis = new FileInputStream(pluginFile);
+             OutputStream os = response.getOutputStream()) {
+            byte[] buffer = new byte[4096];
+            int bytesRead;
+            while ((bytesRead = fis.read(buffer)) != -1) {
+                os.write(buffer, 0, bytesRead);
+            }
+            os.flush();
+        } catch (IOException e) {
+            LogUtil.error(ConsoleWebController.class.getName(), e, "Error downloading plugin: " + filename);
+            throw e;
+        }
+    }
+
     @RequestMapping("/console/setting/plugin/config")
     public String consoleSettingPluginConfig(ModelMap map, HttpServletRequest request, HttpServletResponse response, @RequestParam("id") String id, @RequestParam(required = false) String pluginProperties) throws UnsupportedEncodingException, IOException {
         Plugin plugin = pluginManager.getPlugin(id);

@@ -4,6 +4,56 @@
 <c:set var="isVirtualHostEnabled" value="<%= HostManager.isVirtualHostEnabled() %>"/>
 
 <commons:header />
+<style>
+    /* Enable text wrapping for marketplace URL and fileName columns */
+    #pluginList1 td:nth-child(5) div {
+        white-space: normal !important;
+        word-break: break-all;
+    }
+    .marketplace-btn {
+        color: #0165fc !important;
+        text-decoration: none !important;
+        margin-inline-end: 15px;
+        display: inline-flex;
+        align-items: center;
+        gap: 4px;
+    }
+    .marketplace-btn:hover {
+        text-decoration: underline !important;
+    }
+    .plugin-download-btn {
+        color: #0165fc !important;
+        text-decoration: none !important;
+        cursor: pointer;
+    }
+    .plugin-download-btn:hover {
+        text-decoration: underline !important
+    }
+</style>
+<script>
+    function pluginListPreProcessor(jsonObject) {
+        if (jsonObject.data) {
+            var data = jsonObject.data;
+            if (!Array.isArray(data)) {
+                data = [data];
+            }
+            for (var i = 0; i < data.length; i++) {
+                var row = data[i];
+                if (row.fileName) {
+                    if (row.downloadable === true) {
+                        row.fileName = '<a href="${pageContext.request.contextPath}/web/console/setting/plugin/download?filename=' + encodeURIComponent(row.fileName) + '"' +
+                            ' class="plugin-download-btn" title="<fmt:message key="console.plugin.label.download"/>"' +
+                            ' onclick="event.stopPropagation();">' +
+                            '<i class="fas fa-download"></i> ' + UI.escapeHTML(row.fileName) + '</a>';
+                    } else {
+                        row.fileName = UI.escapeHTML(row.fileName);
+                    }
+                }
+            }
+        }
+        return jsonObject;
+    }
+</script>
 <div id="nav">
     <div id="nav-title">
         <p><i class="fas fa-cogs"></i> <fmt:message key='console.header.top.label.settings'/></p>
@@ -66,10 +116,13 @@
                         checkboxButton2="console.setting.plugin.unintall.label"
                         checkboxCallback2="uninstall"
                         searchItems="name|Name"
-                        fields="['pluginClass','label','description','version','plugintype']"
+                        fields="['pluginClass','label','description','version','plugintype','fileName','downloadable','url']"
+                        customPreProcessor="pluginListPreProcessor"
                         column1="{key: 'label', label: 'console.plugin.label.name', sortable: false, width: 180}"
-                        column2="{key: 'description', label: 'console.plugin.label.description', sortable: false, width: 300}"
-                        column3="{key: 'version', label: 'console.plugin.label.version', sortable: false, width: 140}"
+                        column2="{key: 'description', label: 'console.plugin.label.description', sortable: false, width: 200}"
+                        column3="{key: 'version', label: 'console.plugin.label.version', sortable: false, width: 115}"
+                        column4="{key: 'fileName', label: 'console.plugin.label.fileName', sortable: false, width: 175, relaxed: true}"
+                        column5="{key: 'url', label: 'console.plugin.label.marketplaceUrl', sortable: false, width: 200}"
                         />
                 </div>
                 <div id="update" class="pluginList_container">
@@ -175,6 +228,46 @@
         //update the count when table done loading
         $("#pluginList2").on("success", function(){
             $(".update_count").text("(" + JsonDataTable2.flexiGrid[0].p.total + ")");
+        });
+
+        //helper function to render marketplace action buttons
+        function renderMarketplaceButtons(tableId, colIndex) {
+            var selector = "#" + tableId + " tbody tr td:nth-child(" + colIndex + ")";
+            $(selector).addClass("noLinkTd");
+            $(selector + " div").each(function(){
+                var url = $(this).text().trim();
+                if (url && url.startsWith("http")) {
+                    $(this).html(
+                        '<a href="' + UI.escapeHTML(url) + '" target="_blank" class="marketplace-btn open-link"><i class="fas fa-external-link-alt"></i><fmt:message key="console.plugin.label.openLink"/></a>' +
+                        '<span class="marketplace-btn copy-link" data-url="' + UI.escapeHTML(url) + '"><i class="far fa-copy"></i><fmt:message key="console.plugin.label.copyLink"/></span>'
+                    );
+                }
+            });
+        }
+
+        //render marketplace action buttons for Installed and Update tabs
+        $("#pluginList1, #pluginList2").on("success", function(){
+            renderMarketplaceButtons(this.id, 6);
+        });
+
+        //mark fileName cells with download links as noLinkTd
+        $("#pluginList1").on("success", function(){
+            $("#pluginList1 tbody tr td:nth-child(5)").each(function(){
+                if ($(this).find(".plugin-download-btn").length > 0) {
+                    $(this).addClass("noLinkTd");
+                }
+            });
+        });
+
+        //handle click events for marketplace buttons
+        $(document).on("click", ".marketplace-btn", function(e){
+            e.stopPropagation();
+            if ($(this).hasClass("copy-link")) {
+                var url = $(this).data("url");
+                navigator.clipboard.writeText(url).then(function() {
+                    UI.showConsoleToast(0, '<fmt:message key="console.plugin.label.linkCopied"/>', "fas fa-check-circle", 2000, $("div#main"));
+                });
+            }
         });
 
         //Reposition the filter

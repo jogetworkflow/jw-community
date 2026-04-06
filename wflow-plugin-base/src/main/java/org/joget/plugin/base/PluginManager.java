@@ -740,7 +740,7 @@ public class PluginManager implements ApplicationContextAware {
 
                         String version = bundle.getVersion().toString();
                         String filename = bundle.getLocation();
-                        filename = filename.substring(filename.lastIndexOf(File.separator) + 1);
+                        filename = filename.substring(filename.lastIndexOf("/") + 1);
 
                         if (!filename.contains(name) && !filename.contains(version)) { //need to be same with Marketplace
                             // Remove the extension (.jar) first
