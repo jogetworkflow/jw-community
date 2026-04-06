@@ -104,7 +104,7 @@ body:not(.light-sidebar):not(.light-header):not(.light-inline) ul#moreSubMenu.su
 }
 
 /* File Upload */
-.form-fileupload.dropzone:hover{
+.form-fileupload.dropzone > .needsclick:hover{
     border-color: var(--jgt-upload-colorPrimary);
 }
 

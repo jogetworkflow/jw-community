@@ -285,10 +285,10 @@ textarea {
   line-height: inherit;
 }
 
-input[disabled]:not(.datepicker-input),
-input[readonly]:not(.datepicker-input),
-textarea[disabled]:not(.datepicker-input),
-textarea[readonly]:not(.datepicker-input) {
+input[disabled]:not(.datepicker-input, .hasDatepicker), 
+input[readonly]:not(.datepicker-input, .hasDatepicker), 
+textarea[disabled]:not(.datepicker-input, .hasDatepicker), 
+textarea[readonly]:not(.datepicker-input, .hasDatepicker) {
   border: none;
   background-color: var(--jgt-input-colorBgContainerDisabled, #E4E4E4);
 }

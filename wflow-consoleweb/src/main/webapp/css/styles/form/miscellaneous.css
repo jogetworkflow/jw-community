@@ -23,4 +23,32 @@
     top: 4px;
     right: 4px;
 }
+
+/* Font Size */
+.mediumFontSize .label-top .form-cell:not(.label-left) > label.label.withIcon > i,
+.mediumFontSize .label-top .subform-cell:not(.label-left) > label.label.withIcon > i,
+.mediumFontSize .label-top.form-cell > label.label.withIcon > i,
+.mediumFontSize .label-top.subform-cell > label.label.withIcon > i{
+    bottom: -39.5px;
+}
+.largeFontSize .label-top .form-cell:not(.label-left) > label.label.withIcon > i,
+.largeFontSize .label-top .subform-cell:not(.label-left) > label.label.withIcon > i,
+.largeFontSize .label-top.form-cell > label.label.withIcon > i,
+.largeFontSize .label-top.subform-cell > label.label.withIcon > i{
+    bottom: -44px;
+}
+@media (max-width: 768px){
+    .mediumFontSize .form-cell > label.label.withIcon > i,
+    .mediumFontSize .subform-cell > label.label.withIcon > i,
+    .mediumFontSize .label-left.form-cell > label.label.withIcon > i,
+    .mediumFontSize .label-left.subform-cell > label.label.withIcon > i{
+        bottom: -39.5px;
+    }   
+    .largeFontSize .form-cell > label.label.withIcon > i,
+    .largeFontSize .subform-cell > label.label.withIcon > i,
+    .largeFontSize .label-left.form-cell > label.label.withIcon > i,
+    .largeFontSize .label-left.subform-cell > label.label.withIcon > i{
+        bottom: -44px;
+    }
+}
 /* End of Form Misc Stylings */

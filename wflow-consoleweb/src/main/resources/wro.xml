@@ -167,8 +167,8 @@
     </group>
     <group name="base.min">
         <css>/css/styles/base/general.css</css>
-        <css>/css/styles/base/variables.css</css>
         <css>/css/styles/base/jds.css</css>
+        <css>/css/styles/base/variables.css</css>
 
         <!-- Form related css -->
         <css>/css/styles/form/adgrid.css</css>

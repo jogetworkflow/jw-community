@@ -156,7 +156,7 @@ textarea {
 }
 
 body input[disabled],
-body input[readonly]:not(.no-manual-input),
+body input[readonly]:not(.no-manual-input):not(.hasDatepicker, .datepicker-input),
 body textarea[disabled],
 body textarea[readonly]{
     cursor: not-allowed;

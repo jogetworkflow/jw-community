@@ -197,7 +197,7 @@ html.ismobile .dataList .show_hide_control.show_dropdown ul, html:not(.ismobile)
 
 .dataList .filter-cell input[type="submit"] {
     padding: 5px 15px;
-    height: 34px;
+    height: 34px !important;
     vertical-align: baseline;
     margin-bottom: 0px !important;
 }

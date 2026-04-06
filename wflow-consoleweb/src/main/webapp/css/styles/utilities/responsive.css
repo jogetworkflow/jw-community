@@ -1054,8 +1054,9 @@
 
     .filter_form:not(.popup) .filters .filter-cell {
         display: block;
-        padding: 10px 0px 15px;
+        padding: 10px 0px 0px 15px;
         margin-left: 0;
+        height: fit-content;
     }
 
     .filter_form:not(.popup) .filters .filter-cell>input,

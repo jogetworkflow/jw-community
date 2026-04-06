@@ -135,7 +135,7 @@
     --jgt-table-borderColor: #CED4DA;
     --jgt-table-rowHoverBg: #FAFAFA;
     --jgt-table-colorText: rgba(0, 0, 0, 0.88);
-    --jgt-table-cellPaddingInline: 16px;
+    --jgt-table-cellPaddingInline: 10px;
     --jgt-table-colorBgContainer: #FFFFFF;
     --jgt-table-fontWeightStrong: 600;
     --jgt-table-headerSplitColor: #CED4DA;
@@ -146,7 +146,7 @@
     --jgt-table-headerColor: rgba(0, 0, 0, 0.88);
     --jgt-table-headerBg: #F0F0F0;
     --jgt-table-borderRadius: 6px;
-    --jgt-table-cellPaddingBlock: 4px;
+    --jgt-table-cellPaddingBlock: 12px;
     --jgt-table-lineType: solid;
     --jgt-table-headerBorderRadius: 8px;
     --jgt-table-lineHeight: 1.5714285714285714;

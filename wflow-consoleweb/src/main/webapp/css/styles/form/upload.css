@@ -4,13 +4,11 @@
 }
 
 .form-fileupload.dropzone {
-    border: var(--jgt-upload-lineWidth) var(--jgt-upload-lineType) var(--jgt-upload-colorBorder);
-    border-radius: var(--jgt-upload-borderRadiusLG);
+    border: none;
     transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
     font-weight: 400;
     line-height: var(--jgt-upload-lineHeight);
     color: var(--jgt-upload-colorText);
-    background-color: var(--jgt-upload-colorFillAlter);
     background-clip: padding-box;
     padding: 0px !important;
 }
@@ -20,7 +18,9 @@
     width: 100%;
     margin: 0px 0px;
     padding: 10px 12px !important;
-
+    background-color: var(--jgt-upload-colorFillAlter);
+    border-radius: var(--jgt-upload-borderRadiusLG);
+    border: var(--jgt-upload-lineWidth) var(--jgt-upload-lineType) var(--jgt-upload-colorBorder);
     display: flex;
     align-items: center;
     justify-content: center;
@@ -37,53 +37,36 @@ ul.form-fileupload-value:not(:has(li)) {
 
 ul.form-fileupload-value {
     margin: 0px 0px;
-    padding: 10px 12px;
+}
+
+.form-fileupload.dropzone > ul > li {
+    --jgt-upload-lineType: solid;
+
+    padding: 9px 12px;
+    border: var(--jgt-upload-lineWidth) var(--jgt-upload-lineType) var(--jgt-upload-colorBorder);
+    border-radius: var(--jgt-upload-borderRadiusLG);
 }
 
 /* Single File/Image Upload */
-.form-fileupload.dropzone:has(input[type="file"]:not([multiple])):has(ul.form-fileupload-value li) {
+.form-fileupload.dropzone:not(.multiple):has(ul.form-fileupload-value li) {
     --jgt-upload-colorFillAlter: #FFFFFF;
     --jgt-upload-lineWidth: 1px; 
     --jgt-upload-lineType: solid; 
     --jgt-upload-colorBorder: #D9D9D9;
 }
 
-.form-fileupload.dropzone:has(input[type="file"]:not([multiple])):has(ul.form-fileupload-value li) > .needsclick {
+.form-fileupload.dropzone:not(.multiple):has(input[type="file"]):has(ul.form-fileupload-value li) > .needsclick {
     display: none;
 }
 
 /* Multiple */
-.form-fileupload.dropzone:has(input[multiple]) {
-    border: unset;
-    border-radius: unset;
-    line-height: unset;
-    color: unset;
-    background-color: unset;
-}
-
-.form-fileupload.dropzone:has(input[multiple]) > .needsclick {
-    border: var(--jgt-upload-lineWidth) var(--jgt-upload-lineType) var(--jgt-upload-colorBorder);
-    border-radius: var(--jgt-upload-borderRadiusLG);
-    line-height: var(--jgt-upload-lineHeight);
-    color: var(--jgt-upload-colorText);
-    background-color: var(--jgt-upload-colorFillAlter);
-}
-
-.form-fileupload.dropzone:has(input[multiple]):has(ul.form-fileupload-value li) > .needsclick,
-.form-fileupload.dropzone:has(input[multiple]) > ul > li + li {
+.form-fileupload.dropzone.multiple:has(ul.form-fileupload-value li) > .needsclick,
+.form-fileupload.dropzone.multiple > ul > li + li {
     margin-top: 6px;
 }
 
-.form-fileupload.dropzone:has(input[multiple]) > ul {
+.form-fileupload.dropzone.multiple > ul {
     padding: 0px;
-}
-
-.form-fileupload.dropzone:has(input[multiple]) > ul > li {
-    --jgt-upload-lineType: solid;
-
-    padding: 9px 12px;
-    border: var(--jgt-upload-lineWidth) var(--jgt-upload-lineType) var(--jgt-upload-colorBorder);
-    border-radius: var(--jgt-upload-borderRadiusLG);
 }
 
 .form-fileupload a.remove {

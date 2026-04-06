@@ -267,8 +267,6 @@ function responsiveTable(datalist) {
                                     const match = $td.attr("xclass")?.match(/body_column_(\d+)/);
                                     const colNo = match ? parseInt(match[1], 10) : null;
 
-                                    console.log($td)
-
                                     if (colNo) {
                                         const $row = $td.closest("tr");
                                         const $wrapper = $row.find(".column_wrapper");

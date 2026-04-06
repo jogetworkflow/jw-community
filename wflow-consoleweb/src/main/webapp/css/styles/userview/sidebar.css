@@ -120,7 +120,6 @@ body:not(.light-sidebar):not(.light-header):not(.light-inline) #sidebar .nav>li>
 #sidebar .nav>li>ul>li>a,
 ul#moreSubMenu.sub-menu>li>ul>li>a {
     display: inline-flex;
-    padding: 0 65px;
     color: var(--theme-submenu-link, var(--theme-sidebar-link, var(--theme-color2, #72777a)));
     -webkit-transition: all 0.3s ease;
     -o-transition: all 0.3s ease;

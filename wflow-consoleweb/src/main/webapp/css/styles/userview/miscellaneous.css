@@ -116,4 +116,57 @@ body #ui-datepicker-div {
     padding-bottom: 10px;
     margin-bottom: 25px;
 }
+
+/* Font Sizes */
+.largeFontSize #form-canvas *,
+.largeFontSize .fc-view-container *,
+.largeFontSize .userProfile-body-content *,
+.largeFontSize .dataList *,
+.largeFontSize .ui-html *:not(h1):not(h2):not(h3):not(h4):not(h5) {
+    font-size: 20px !important;
+    line-height: 25px !important;
+}
+
+.largeFontSize #form-canvas .hasDatepicker + a,
+.largeFontSize #form-canvas .hasDatepicker + a + a {
+    line-height: 1rem !important;
+}
+
+.largeFontSize #form-canvas .hasDatepicker + a + a {
+    padding: 0 1.5rem;
+}
+
+.mediumFontSize #form-canvas .hasDatepicker + a,
+.mediumFontSize #form-canvas .hasDatepicker + a + a {
+    line-height: 1rem !important;
+}
+
+.mediumFontSize #form-canvas .hasDatepicker + a + a {
+    padding: 0 1.2rem;
+}
+
+.mediumFontSize #form-canvas *,
+.mediumFontSize .fc-view-container *,
+.mediumFontSize .userProfile-body-content *,
+.mediumFontSize .dataList *,
+.mediumFontSize .ui-html *:not(h1):not(h2):not(h3):not(h4):not(h5) {
+    font-size: 17px !important;
+    line-height: 20px !important;
+}
+    
+button#smallFont,
+button#mediumFont,
+button#bigFont {
+    opacity:0.6;
+    background-color: var(--jgt-btn-defaultBg) !important;
+    color: var(--jgt-btn-defaultColor) !important;
+}
+
+button#smallFont.activeFont,
+button#mediumFont.activeFont,
+button#bigFont.activeFont {
+    opacity: 1;
+    background-color: var(--jgt-btn-defaultActiveBg) !important;
+    color: var(--jgt-btn-defaultActiveColor) !important;
+}
 /* End of Userview Misc Stylings */
