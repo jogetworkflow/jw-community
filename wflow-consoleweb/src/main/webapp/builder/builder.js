@@ -718,7 +718,35 @@ window._CustomBuilder = {
             HelpGuide.key = "help.web.console.app.builder."+CustomBuilder.builderType;
             HelpGuide.base = CustomBuilder.contextPath;
             HelpGuide.attachTo = "#help-guide-container";
-            HelpGuide.show(); 
+            HelpGuide.show();
+            
+            // Initialize tab switching listener
+            if (!jsonData.xpdl) {
+                $('#properties-tabs').on('shown.bs.tab', function (e) {
+                    var target = $(e.target).attr('href');
+                    var hasButton = $("#right-panel-content").find(".element-properties-header .btn-group").length > 0;
+
+                    if (target === '#style-properties-tab' && !hasButton) {
+                        // Prepend copy & paste style button upon switching to style tab
+                        $("#right-panel-content").find(".element-properties-header").prepend(`
+                            <div class="btn-group toolbar-group tool copypaste" role="group">
+                                <button class="btn btn-light" title="${get_cbuilder_msg('style.copystyle')}" id="copy-style-btn" data-cbuilder-action="copyStyle">
+                                    <i class="las la-copy"></i>
+                                </button>
+
+                                <button class="btn btn-light" title="${get_cbuilder_msg('style.pastestyle')}" id="paste-style-btn" data-cbuilder-action="pasteStyle">
+                                    <i class="las la-paste"></i>
+                                </button>
+                            </div>
+                        `);
+                        // Register event handlers for the newly added buttons
+                        CustomBuilder.initBuilderActions("#right-panel-content .element-properties-header");
+                    } else if (target === '#element-properties-tab') {
+                        // Remove prepended item upon switching from style tab
+                        $("#right-panel-content").find(".element-properties-header .btn-group").remove();
+                    }
+                });
+            }
         };
         
         CustomBuilder.callback(CustomBuilder.config.builder.callbacks["initBuilder"], [builderCallback]);
@@ -753,7 +781,11 @@ window._CustomBuilder = {
                 }
                 
                 var isShortcut = event.type === "keydown";
-                if ($(target).is(":visible") && !$(target).hasClass("disabled")) {
+                var isPasteShortcut;
+                if (event.data !== undefined && event.data.keys !== undefined) {
+                    isPasteShortcut = event.data.keys === "ctrl+v";
+                }
+                if ($(target).is(":visible") && (!$(target).hasClass("disabled") || isShortcut && isPasteShortcut)) {
                     var result = action.call(this, event);
                     if (result) {
                         return result;
@@ -1691,7 +1723,25 @@ window._CustomBuilder = {
         }
         return null;
     },
-    
+
+    /*
+     * Retrieve copied style in local storage
+     */
+    getCopiedStyle : function() {
+        var time = $.localStorage.getItem("customBuilder_"+CustomBuilder.builderType+"_style.copyTime");
+
+        if (time !== undefined && time !== null && ((new Date()) - (new Date(time))) > 3000000) {
+            $.localStorage.removeItem("customBuilder_"+CustomBuilder.builderType+"_style.copyTime");
+            $.localStorage.removeItem("customBuilder_"+CustomBuilder.builderType+"_style.copy");
+            return null;
+        }
+        var copied = $.localStorage.getItem("customBuilder_"+CustomBuilder.builderType+"_style.copy");
+        if (copied !== undefined && copied !== null) {
+            return JSON.decode(copied);
+        }
+        return null;
+    },
+
     /*
      * Copy an element
      */
@@ -1699,11 +1749,26 @@ window._CustomBuilder = {
         var copy = new Object();
         copy['type'] = type;
         copy['object'] = element;
+        var copiedDate = new Date();
         
         $.localStorage.setItem("customBuilder_"+CustomBuilder.builderType+".copy", JSON.encode(copy));
-        $.localStorage.setItem("customBuilder_"+CustomBuilder.builderType+".copyTime", new Date());
-        CustomBuilder.copyTextToClipboard(" ", false); //to clear the clipboard
-        $.localStorage.removeItem("customBuilder.copiedText");
+        $.localStorage.setItem("customBuilder_"+CustomBuilder.builderType+".copyTime", copiedDate);
+
+        // Create JSON to copy to clipboard
+        var json = { copyData:copy };
+        json.copyTime = copiedDate;
+        json.builderType = CustomBuilder.builderType;
+
+        if (CustomBuilder.builderType === "form") {
+            if (type === "elements") {
+                json.copyText = "#form." + CustomBuilder.data.properties.tableName + "." + element.properties.id +"#";
+                $.localStorage.setItem("customBuilder.copiedText", json.copyText);
+            } else if ($.localStorage.getItem("customBuilder.copiedText")) {
+                $.localStorage.removeItem("customBuilder.copiedText");
+            }
+        }
+
+        CustomBuilder.copyTextToClipboard(JSON.stringify(json), false); //to clear the clipboard
         
         CustomBuilder.showMessage(get_cbuilder_msg('ubuilder.copied'), "info");
     },
@@ -1739,8 +1804,6 @@ window._CustomBuilder = {
         $temp.val(text).select();
         document.execCommand("copy");
         $temp.remove(); 
-        
-        $.localStorage.setItem("customBuilder.copiedText", text);
         
         if (clearElementClipboard) {
             CustomBuilder.clearCopiedElement();
@@ -3775,47 +3838,187 @@ window._CustomBuilder = {
             }
         
     },
-    
+
+    /*
+     * Method used for copy element's styling
+     */
+    copyStyle: function () {
+
+        // Get the json data of the element
+        var self = CustomBuilder.Builder;
+        var node = self.selectedEl;
+        var data = $(node).data("data");
+
+        // Extract style properties
+        var styleProps;
+        var styleType = 'styles';
+        if (CustomBuilder.Builder.options.callbacks["copyStyle"] !== undefined && CustomBuilder.Builder.options.callbacks["copyStyle"] !== "") {
+            const { styleProps: props, styleType: type } = CustomBuilder.callback(CustomBuilder.Builder.options.callbacks["copyStyle"], [data]) || {};
+
+            styleProps = props;
+            if (type !== undefined) styleType = type;
+        } else {
+            if (data && data.properties) {
+                styleProps = Object.fromEntries (Object.entries(data.properties).filter(([key]) => key.includes("style-")));
+            } else if (data) {
+                styleProps = Object.fromEntries (Object.entries(data).filter(([key]) => key.includes("style-")));
+            }
+        }
+        // Create copy object
+        var copy = new Object();
+        copy['type'] = styleType;
+        copy['object'] = styleProps;
+        var copiedDate = new Date();
+
+        // Save the style to separate local storage keys
+        $.localStorage.setItem("customBuilder_"+CustomBuilder.builderType+"_style.copy", JSON.encode(copy));
+        $.localStorage.setItem("customBuilder_"+CustomBuilder.builderType+"_style.copyTime", copiedDate);
+
+        // Create JSON to copy to clipboard
+        var json = { copyData:copy };
+        json.copyTime = copiedDate;
+        json.builderType = CustomBuilder.builderType;
+
+        // Copy to clipboard
+        CustomBuilder.copyTextToClipboard(JSON.stringify(json), false);
+        CustomBuilder.showMessage(get_cbuilder_msg('ubuilder.copied'), "info");
+
+        // Enable paste-style button
+        $("#paste-style-btn").removeClass("disabled");
+    },
+
+    /*
+     * Method used for paste element's styling
+     */
+    pasteStyle: function() {
+        try {
+            navigator.clipboard.readText().then(clipText => {
+                if (CustomBuilder.isJSONString(clipText)) {
+                    var pastedJson = JSON.parse(clipText);
+                    var builderType = pastedJson.builderType;
+
+                    // If the clipboard contains styles JSON
+                    if (pastedJson.copyData.type.includes("styles") && pastedJson.builderType === CustomBuilder.builderType) {
+                        if (pastedJson.copyTime && pastedJson.copyData) {
+                            $.localStorage.setItem("customBuilder_" + CustomBuilder.builderType + "_style.copyTime", new Date(pastedJson.copyTime));
+                            $.localStorage.setItem("customBuilder_" + CustomBuilder.builderType + "_style.copy", JSON.stringify(pastedJson.copyData));
+                        }
+                    }
+                }
+
+                // Get selected element
+                var self = CustomBuilder.Builder;
+                var node = self.selectedEl;
+                if (!node) {
+                    return;
+                }
+
+                // Get the copied styles from local storage
+                var copiedStyleData = CustomBuilder.getCopiedStyle();
+                if (!copiedStyleData) {
+                    CustomBuilder.showMessage(get_cbuilder_msg('style.noCopiedItem'), "info");
+                    return;
+                }
+
+                var elementObj;
+                // Get the node of the element
+                if (CustomBuilder.Builder.options.callbacks["pasteStyle"] !== undefined && CustomBuilder.Builder.options.callbacks["pasteStyle"] !== "") {
+                    elementObj = CustomBuilder.callback(CustomBuilder.Builder.options.callbacks["pasteStyle"], [$(node).data("data"), copiedStyleData]);
+                } else {
+                    elementObj = $(node).data("data");
+
+                    if (elementObj && elementObj.properties) {
+                        $.extend(elementObj.properties, copiedStyleData.object);
+                    } else if (elementObj) {
+                        $.extend(elementObj, copiedStyleData.object);
+                    }
+                }
+
+                // Update the data back to the node
+                $(node).data("data", elementObj);
+
+                // Re-render the element to apply the new styles
+                var component = self.parseDataToComponent(elementObj);
+                var deferreds = [];
+                self.updateElement(elementObj, node, deferreds);
+
+                // Update the JSON and trigger change
+                CustomBuilder.update();
+
+                // Refresh the property editor panel to show updated style values
+                self._showPropertiesPanel(node, elementObj, component);
+            });
+        } catch (err) {
+            console.log(err)
+        }
+    },
+
+    isJSONString: function(str) {
+      if (typeof str !== "string") return false;
+
+      try {
+        JSON.parse(str);
+        return true;
+      } catch (e) {
+        return false;
+      }
+    },
+
     /*
      * Method used for toolbar to paste an element
      */
     pasteElement : function(event) {
-        if (event && /textarea|input|select/i.test(event.target.nodeName)) {
-            if (CustomBuilder.getCopiedElement() === null) {
-                return true; //to continue to the default handler to paste text
-            } else {
-                try {
-                    navigator.clipboard.readText().then(clipText => {
-                        if (clipText === undefined || clipText === null ||
-                                clipText === "" || clipText.trim().length === 0 || 
-                                clipText === CustomBuilder.getCopiedText()) {
-                            CustomBuilder.Builder.pasteNode();
-                        } else {
-                            if ($(event.target).hasClass("ace_text-input") || $(event.target).hasClass("ace_editor")) {
-                                var id = $(event.target).closest(".ace_editor").attr("id");
-                                var codeeditor = ace.edit(id);
-                                codeeditor.session.insert(codeeditor.getCursorPosition(), clipText);
-                            } else if ($(event.target).hasClass("code-editor")) {
-                                var codeeditor = $(event.target).find(".CodeMirror")[0].CodeMirror;
-                                codeeditor.getDoc().replaceRange(clipText, PropertyAssistant.currentCaretPosition);
-                            } else {
-                                var caret = PropertyAssistant.doGetCaretPosition(event.target);
-                                var text = $(event.target).val();
-                                var selectedText = (window.getSelection())?window.getSelection().toString():"";
-                                if (selectedText.length > 0) { //remove the selected text
-                                    text = [text.slice(0, caret), text.slice(selectedText.length)].join('');
-                                }
-                                var output = [text.slice(0, caret), clipText, text.slice(caret)].join('');
-                                $(event.target).val(output);
-                            }
-                        }
-                    });
-                } catch (err) {
+        try {
+            navigator.clipboard.readText().then(clipText => {
+                if (CustomBuilder.isJSONString(clipText)) {
+                    var pastedJson = JSON.parse(clipText);
+                    var builderType = pastedJson.builderType;
+
+                    if (CustomBuilder.Builder.options.callbacks["update" + builderType + "CopyJson"] !== undefined && CustomBuilder.Builder.options.callbacks["update" + builderType + "CopyJson"] !== "") {
+                        CustomBuilder.callback(CustomBuilder.Builder.options.callbacks["update" + builderType + "CopyJson"], [pastedJson]);
+                    } else {
+                        CustomBuilder.updateCopyJson(pastedJson);
+                    }
                     CustomBuilder.Builder.pasteNode();
+                } else {
+                    if ($(event.target).hasClass("ace_text-input") || $(event.target).hasClass("ace_editor")) {
+                        var id = $(event.target).closest(".ace_editor").attr("id");
+                        var codeeditor = ace.edit(id);
+                        codeeditor.session.insert(codeeditor.getCursorPosition(), clipText);
+                    } else if ($(event.target).hasClass("code-editor")) {
+                        var codeeditor = $(event.target).find(".CodeMirror")[0].CodeMirror;
+                        codeeditor.getDoc().replaceRange(clipText, PropertyAssistant.currentCaretPosition);
+                    } else {
+                        var caret = PropertyAssistant.doGetCaretPosition(event.target);
+                        var text = $(event.target).val();
+                        var selectedText = (window.getSelection())?window.getSelection().toString():"";
+                        if (selectedText.length > 0) { //remove the selected text
+                            text = [text.slice(0, caret), text.slice(selectedText.length)].join('');
+                        }
+                        var output = [text.slice(0, caret), clipText, text.slice(caret)].join('');
+                        $(event.target).val(output);
+                    }
                 }
-            }
-        } else {
+            });
+        } catch (err) {
             CustomBuilder.Builder.pasteNode();
+        }
+    },
+
+    /*
+     * Method used to update copy data in local storage 
+     */
+    updateCopyJson: function(pastedJson) {
+        if (pastedJson === undefined) {
+            return;
+        }
+
+        if (CustomBuilder.builderType !== pastedJson.builderType) {
+            return;
+        }
+        if (pastedJson.copyTime && pastedJson.copyData) {
+            $.localStorage.setItem("customBuilder_" + CustomBuilder.builderType + ".copyTime", new Date(pastedJson.copyTime));
+            $.localStorage.setItem("customBuilder_" + CustomBuilder.builderType + ".copy", JSON.stringify(pastedJson.copyData));
         }
     },
     
@@ -5381,10 +5584,6 @@ window._CustomBuilder.Builder = {
 
             CustomBuilder.copy(data, type);
 
-            if (CustomBuilder.Builder.options.callbacks["copyElement"] !== undefined && CustomBuilder.Builder.options.callbacks["copyElement"] !== "") {
-                CustomBuilder.callback(CustomBuilder.Builder.options.callbacks["copyElement"], [data, type]);
-            }
-
             self.selectNode(self.selectedEl);
 
             if (component.builderTemplate.isPastable(data, component)) {
@@ -5414,8 +5613,20 @@ window._CustomBuilder.Builder = {
             self.component = self.parseDataToComponent($(node).data("data"));
 
             var data = CustomBuilder.getCopiedElement();
+            if (!data) {
+                CustomBuilder.showMessage(get_cbuilder_msg('ubuilder.noCopiedItem'), "info");
+                return;
+            }
             var copiedObj = $.extend(true, {}, data.object);
             var copiedComponent = self.parseDataToComponent(copiedObj);
+
+            // Check whether the copied field able to be pasted into target
+            if (!self.component.builderTemplate.isPastable($(node).data("data"), self.component)) {
+                CustomBuilder.clearCopiedElement();
+                var msg = `${copiedComponent.label} ${get_cbuilder_msg('ubuilder.unableToPaste')} ${self.component.label}`;
+                CustomBuilder.showMessage(msg, "danger");
+                return;
+            }
 
             self.updateElementId(copiedObj);
 
@@ -8232,7 +8443,12 @@ window._CustomBuilder.Builder = {
         $("#style-properties-tab-link").show();
         $("#right-panel #style-properties-tab").find(".property-editor-container").remove();
         $("#right-panel #style-properties-tab").propertyEditor(options);
-        
+
+        // Populate the data of Userview's menu-component
+        if (elementObj.className === "menu-component"){
+            elementObj.properties = elementProperties
+        }
+
         var supportViewport = false;
         
         for (var i in options.propertiesDefinition) {

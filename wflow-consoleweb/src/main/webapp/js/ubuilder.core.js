@@ -41,6 +41,8 @@ UserviewBuilder = {
                 "initComponent" : "UserviewBuilder.initComponent",
                 "renderElement" : "UserviewBuilder.renderElement",
                 "decorateBoxActions" : "UserviewBuilder.decorateBoxActions",
+                "copyStyle" : "UserviewBuilder.copyStyle",
+                "pasteStyle" : "UserviewBuilder.pasteStyle",
                 "selectElement" : "UserviewBuilder.selectElement",
                 "updateElementId" : "UserviewBuilder.updateElementId",
                 "unselectElement" : "UserviewBuilder.unselectElement",
@@ -1856,7 +1858,83 @@ UserviewBuilder = {
             });
         }
     },
-    
+
+    /**
+     * Special callback to get the styleProps of components in UI Builder
+     * Due to their different class and style-key naming
+     */
+    copyStyle : function(data) {
+        if (!data) {return {};}
+        var className = data.className;
+        var styleProps, styleType;
+        if (className && className.includes("userview-")) {
+            styleProps = Object.fromEntries (Object.entries(data.properties).filter(([key]) => key.startsWith(className.replace("userview-", "") + "-style-")));
+            styleType = className + "-styles";
+        } else if (data.properties){
+            styleProps = Object.fromEntries (Object.entries(data.properties).filter(([key]) => key.startsWith("style-")));
+            styleType = UserviewBuilder.mode + "-styles";
+        }
+        return {styleProps, styleType};
+    },
+
+    /**
+     * Special callback to handle UI component with its className == 'userview-<component>'
+     */
+    pasteStyle : function(elementObj, copiedStyleData) {
+        if(!elementObj) {return elementObj;}
+        let copiedFrom = copiedStyleData.type.startsWith("userview-") ? "userview" : "page";
+        let pastedTo = elementObj.className.startsWith("userview-") ? "userview" : "page";
+
+        // Case-1: 
+        // Copied from page component, paste to page component
+        // Copied from userview component, paste to userview component
+        if ((copiedFrom === 'page' && pastedTo === 'page') || 
+            (copiedFrom === 'userview' && pastedTo === 'userview')) {
+            let targetCompType = elementObj.className.match(/^userview-([^-]+)/)?.[1];
+            const newCopiedStyleDataObj = Object.fromEntries(
+                Object.entries(copiedStyleData.object).map(([key, value]) => [
+                    key.replace(/^[^-]+(?=-style)/, targetCompType),
+                    value
+                ])
+            );
+            
+            $.extend(elementObj.properties, newCopiedStyleDataObj);
+            
+            if (pastedTo === 'userview') {
+                $.extend(CustomBuilder.data.setting.properties.theme.properties, newCopiedStyleDataObj);
+            }
+            return elementObj;
+        }
+
+        // Case-2: Copied from userview component, paste to page component
+        if (copiedFrom === 'userview' && pastedTo === 'page') {
+            let uvCompType = copiedStyleData.type.match(/^userview-([^-]+)/)?.[1];
+            const newCopiedStyleDataObj = Object.fromEntries(
+                Object.entries(copiedStyleData.object).map(([key, value]) => [
+                    key.replace(new RegExp(`^${uvCompType}-`), ""),
+                    value
+                ])
+            );
+
+            $.extend(elementObj.properties, newCopiedStyleDataObj);
+            return elementObj;
+        }
+
+        // Case-3: Copied from page component, paste to userview component
+        if (copiedFrom === 'page' && pastedTo === 'userview') {
+            let uvCompType = elementObj.className.replace("userview-", "");
+            const newCopiedStyleDataObj = Object.fromEntries(
+                Object.entries(copiedStyleData.object).map(([key, value]) => [`${uvCompType}-${key}`, value])
+            );
+
+            $.extend(elementObj.properties, newCopiedStyleDataObj);
+            $.extend(CustomBuilder.data.setting.properties.theme.properties, newCopiedStyleDataObj);
+            return elementObj;
+        }
+
+        return elementObj;
+    },
+
     /*
      * A callback method called from the default component.builderTemplate.selectNode method.
      * It used to listen to navigator scroll event

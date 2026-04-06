@@ -8734,8 +8734,22 @@ ProcessBuilder = {
 
         self.component = self.parseDataToComponent($(node).data("data"));
         var data = CustomBuilder.getCopiedElement();
+        if (!data) {
+            CustomBuilder.showMessage(get_cbuilder_msg('ubuilder.noCopiedItem'), "info");
+            return;
+        }
         var copiedObj = $.extend(true, {}, data.object);
         var copiedComponent = self.parseDataToComponent(copiedObj.properties);
+
+        var targetData = CustomBuilder.Builder.selectedEl[0].data;
+        var targetComponent = self.parseDataToComponent(targetData.properties);
+        // Check whether the copied field able to be pasted into target
+        if (!targetComponent.builderTemplate.isPastable(targetData, targetComponent)) {
+            CustomBuilder.clearCopiedElement();
+            var msg = `${copiedComponent.label} ${get_cbuilder_msg('ubuilder.unableToPaste')} ${self.component.label}`;
+            CustomBuilder.showMessage(msg, "danger");
+            return;
+        }
 
         ProcessBuilder.updateElementId(copiedObj);
         if (copiedObj.properties.className === 'participant') {

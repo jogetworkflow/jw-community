@@ -1599,12 +1599,21 @@ body:not(.quick-nav-position-left) .builder-view:not(.treeRightPanel) {
     border-top-left-radius: .25rem;
     border-top-right-radius: .25rem;
 }
+#copy-style-btn,
+#paste-style-btn {
+    padding: 3px 4px;
+    font-size: 15px;
+    line-height: 3px;
+    box-shadow: none;
+    margin-left: 0px;
+}
 .element-properties {
     height: 100%;
     background: #9bb1c1;
     position: relative;
 }
 .element-properties-header {
+    display: inline-flex;
     position: absolute;
     border-bottom: 3px solid #9bb1c1;
     top: 75px;
@@ -1614,7 +1623,11 @@ body:not(.quick-nav-position-left) .builder-view:not(.treeRightPanel) {
     background: #9bb1c1;
 }
 .element-properties-header .search {
-    
+    width: 100%;
+}
+.element-properties-header .btn-group {
+    border-bottom: 0.1px solid #e6e6e6;
+    border-radius: 0;
 }
 .element-properties-header .search input {
     border-right-color: #ddd !important;

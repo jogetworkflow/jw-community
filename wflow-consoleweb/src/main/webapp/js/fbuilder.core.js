@@ -31,8 +31,8 @@ FormBuilder = {
                 "unloadElement" : "FormBuilder.unloadElement",
                 "decorateBoxActions" : "FormBuilder.decorateBoxActions",
                 "renderXray" : "FormBuilder.renderXray",
-                "copyElement" : "FormBuilder.copyElement",
-                "pasteElement" : "FormBuilder.pasteElement"
+                "pasteElement" : "FormBuilder.pasteElement",
+                "updateformCopyJson" : "FormBuilder.updateCopyJson"
             }
         }, function() {
             CustomBuilder.Builder.setHead('<link data-fbuilder-style href="' + CustomBuilder.contextPath + '/css/form8.css" rel="stylesheet" />');
@@ -1504,15 +1504,6 @@ FormBuilder = {
         }
         return null;
     },
-    
-    /*
-     * copy element to copy form hash variable clipboard
-     */
-    copyElement: function(data, type) {
-        if (type === "elements") {
-            CustomBuilder.copyTextToClipboard("#form." + CustomBuilder.data.properties.tableName + "." + data.properties.id +"#", false);
-        }
-    },
 
     /*
      * special handling to paste field in a section 
@@ -1525,6 +1516,23 @@ FormBuilder = {
             CustomBuilder.Builder._pasteNode(lastColumn, copiedObj, copiedComponent);
         } else {
             CustomBuilder.Builder._pasteNode(element, copiedObj, copiedComponent);
+        }
+    },
+
+    /*
+     * Special handling to update copy date with 'copiedText' value in local storage 
+     */
+    updateCopyJson: function(pastedJson) {
+        if (pastedJson === undefined) {
+            return;
+        }
+        if (pastedJson.copyTime && pastedJson.copyData) {
+            $.localStorage.setItem("customBuilder_form.copyTime", new Date(pastedJson.copyTime));
+            $.localStorage.setItem("customBuilder_form.copy", JSON.stringify(pastedJson.copyData));
+        }
+        // Update copiedText value for "element" type
+        if (pastedJson.copyText) {
+            $.localStorage.setItem("customBuilder.copiedText", pastedJson.copyText);
         }
     },
     
