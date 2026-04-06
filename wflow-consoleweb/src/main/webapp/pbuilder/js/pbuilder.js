@@ -1980,7 +1980,7 @@ ProcessBuilder = {
             // Start dragging when Shift + left click is pressed
             root.addEventListener('pointerdown', e => {
                 // Allow only left mouse + Shift key and no element dragging
-                if (e.button !== 0 || !e.shiftKey || ProcessBuilder.draggingElementId) return;
+                if (e.button !== 0 || !e.shiftKey) return;
                 // Do not activate drag on form controls or links
                 if (isCtrl(e.target)) return;
                 // Store drag start position
@@ -2081,12 +2081,14 @@ ProcessBuilder = {
                             '<div>' + get_cbuilder_msg("pbuilder.canvas.tooltip.message2") + '</div>' +
                             '<div>' + get_cbuilder_msg("pbuilder.canvas.tooltip.message3") + '</div>' +
                         '</div>' +
-                        '<button aria-label="Close" id="pbuilder-controls-close">✕</button>';
+                        '<button aria-label="Close" id="pbuilder-controls-close"><i class="fas fa-angle-down"></i></button>' +
+                        '<button aria-label="Open" id="pbuilder-controls-open"><i class="fas fa-angle-up"></i></button>';
 
                     document.body.appendChild(el);
 
                     // Close button only hides for current page view
-                    el.querySelector('#pbuilder-controls-close').addEventListener('click', function () { el.remove(); });
+                    el.querySelector('#pbuilder-controls-close').addEventListener('click', function () { $(el).addClass('hidden'); });
+                    el.querySelector('#pbuilder-controls-open').addEventListener('click', function () { $(el).removeClass('hidden'); });
 
                     $(el).draggable();
 
