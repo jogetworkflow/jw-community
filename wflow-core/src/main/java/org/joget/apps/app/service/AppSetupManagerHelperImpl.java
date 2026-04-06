@@ -1,7 +1,5 @@
 package org.joget.apps.app.service;
 
-import java.util.HashMap;
-import java.util.Map;
 import org.joget.commons.spring.model.Setting;
 import org.joget.commons.util.DynamicDataSourceManager;
 import org.joget.commons.util.LogUtil;
@@ -9,11 +7,23 @@ import org.joget.commons.util.SetupManager;
 import org.joget.commons.util.SetupManagerHelper;
 import org.joget.governance.service.GovHealthCheckManager;
 import org.joget.plugin.base.ProfilePluginCache;
+import org.joget.plugin.property.service.PropertyUtil;
 import org.joget.workflow.model.dao.WorkflowHelper;
 import org.joget.workflow.model.service.WorkflowManager;
 
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Set;
+
 public class AppSetupManagerHelperImpl implements SetupManagerHelper {
-    
+
+    /** List of properties whose values should not be logged */
+    public static final Set<String> SENSITIVE_PROPERTIES = Set.of(
+            SetupManager.MASTER_LOGIN_PASSWORD,
+            SetupManager.SMTP_PASSWORD,
+            "smtpStorepass"
+    );
+
     private Map<String, Map<String, String>> settings = new HashMap<String, Map<String, String>>();
     private WorkflowManager workflowManager;
     private GovHealthCheckManager govHealthCheckManager;
@@ -84,7 +94,15 @@ public class AppSetupManagerHelperImpl implements SetupManagerHelper {
                 }
                 
                 WorkflowHelper workflowHelper = (WorkflowHelper) AppUtil.getApplicationContext().getBean("workflowHelper");
-                workflowHelper.addAuditTrail(SetupManager.class.getName(), method, setting.getProperty(), null, null, false);        
+                boolean isSensitive = setting.isSensitive() || SENSITIVE_PROPERTIES.contains(setting.getProperty());
+
+                // redact the whole value or try to mask secure values within the string
+                String oldVal = isSensitive ? "***" : PropertyUtil.propertiesJsonLoadProcessing(setting.getOriginalValue());
+                String newVal = isSensitive ? "***" : PropertyUtil.propertiesJsonLoadProcessing(setting.getValue());
+                String auditMessage = "property=" + setting.getProperty()
+                        + ", oldValue=" + oldVal
+                        + ", newValue=" + newVal;
+                workflowHelper.addAuditTrail(SetupManager.class.getName(), method, auditMessage, null, null, null);
             }
         }            
     }

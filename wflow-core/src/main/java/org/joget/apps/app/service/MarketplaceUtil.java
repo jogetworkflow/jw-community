@@ -622,6 +622,7 @@ public class MarketplaceUtil {
                 Setting marketplaceAuth = new Setting();
                 marketplaceAuth.setProperty("marketplaceAuth");
                 marketplaceAuth.setValue(SecurityUtil.encrypt(authorizationHeader));
+                marketplaceAuth.setSensitive(true);
                 
                 SetupManager setupManager = (SetupManager) AppUtil.getApplicationContext().getBean("setupManager");
                 setupManager.saveSetting(marketplaceAuth);

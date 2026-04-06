@@ -9,6 +9,8 @@ public class Setting implements Serializable {
     private String value;
     private Integer ordering;
     private String originalValue = null; //used to keep track value changes
+    /** Can be used to determine whether the values should be logged. This value is not persisted to the database. */
+    private boolean sensitive = false;
 
     public String getId() {
         return id;
@@ -49,5 +51,28 @@ public class Setting implements Serializable {
 
     public String getOriginalValue() {
         return originalValue;
+    }
+
+    public boolean isSensitive() {
+        return sensitive;
+    }
+
+    public void setSensitive(boolean sensitive) {
+        this.sensitive = sensitive;
+    }
+
+    /**
+     * Creates a new object with the same values, except originalValue is the current value
+     * @return a new instance
+     */
+    public Setting copy() {
+        Setting s = new Setting();
+        s.id = id;
+        s.property = property;
+        s.value = value;
+        s.ordering = ordering;
+        s.originalValue = value;
+        s.sensitive = sensitive;
+        return s;
     }
 }

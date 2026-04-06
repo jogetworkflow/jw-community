@@ -39,6 +39,8 @@ public class PropertyUtil implements ApplicationContextAware {
     public final static String TYPE_ELEMENT_SELECT = "elementselect";
     public final static String PROPERTIES_EDITOR_METAS = "PROPERTIES_EDITOR_METAS";
 
+    private static final Pattern SECURITY_ENVELOPE_PATTERN = Pattern.compile(SecurityUtil.ENVELOPE + "((?!" + SecurityUtil.ENVELOPE + ").)*" + SecurityUtil.ENVELOPE);
+
     /**
      * Parses default properties string (JSON format) from Plugin Properties 
      * Options (JSON format)
@@ -313,8 +315,7 @@ public class PropertyUtil implements ApplicationContextAware {
     public static String propertiesJsonLoadProcessing(String json) {
         //parse content
         if (json != null && json.contains(SecurityUtil.ENVELOPE)) {
-            Pattern pattern = Pattern.compile(SecurityUtil.ENVELOPE + "((?!" + SecurityUtil.ENVELOPE + ").)*" + SecurityUtil.ENVELOPE);
-            Matcher matcher = pattern.matcher(json);
+            Matcher matcher = SECURITY_ENVELOPE_PATTERN.matcher(json);
             Set<String> sList = new HashSet<String>();
             while (matcher.find()) {
                 sList.add(matcher.group(0));
