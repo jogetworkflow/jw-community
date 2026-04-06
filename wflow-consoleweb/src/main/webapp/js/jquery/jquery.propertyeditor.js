@@ -7909,6 +7909,7 @@ PropertyEditor.Type.SelectBox.prototype = {
             $("#" + field.id + "_input a.builderAddNew").on("click", function(){
                 var type = $(this).data("type");
                 var url = CustomBuilder.contextPath + '/web/console/app' + CustomBuilder.appPath + '/' + type + '/create?builderMode=true';
+                localStorage.setItem("hasChanges", false);
                 JPopup.show("navCreateNewDialog", url, {}, "");
                 $('iframe#navCreateNewDialog').data('field', field);
             });

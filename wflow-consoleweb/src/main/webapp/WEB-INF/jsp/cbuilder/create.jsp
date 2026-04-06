@@ -119,6 +119,7 @@
         function closeDialog() {
             if (parent && parent.JPopup) {
                 parent.JPopup.hide("navCreateNewDialog");
+                parent.UI.unblockUI();
             }
             return false;
         }

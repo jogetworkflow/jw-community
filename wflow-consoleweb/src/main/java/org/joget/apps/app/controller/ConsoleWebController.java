@@ -5902,10 +5902,18 @@ public class ConsoleWebController {
         data.put("icon", "fas fa-file-alt");
         data.put("color", "#3f84f4");
         data.put("theme", systemSettings);
-        if (appDef.getFormDefinitionList() != null) {
+
+        Collection<FormDefinition> forms = formDefinitionDao.getFormDefinitionList(
+            null,
+            appDef,
+            "name",
+            false,
+            null,
+            null
+        );
+        if (forms != null) {
             List<FormDefinition> list = new ArrayList<FormDefinition>();
-            list.addAll(appDef.getFormDefinitionList());
-            
+            list.addAll(forms);
             Collections.sort(list, new Comparator<FormDefinition>() {
 
                 @Override
@@ -5933,9 +5941,19 @@ public class ConsoleWebController {
         data.put("icon", "fas fa-table");
         data.put("color", "#6638b6");
         data.put("theme", systemSettings);
-        if (appDef.getDatalistDefinitionList() != null) {
+
+        Collection<DatalistDefinition> datalist = datalistDefinitionDao.getDatalistDefinitionList(
+            null,
+            appDef,
+            "name",
+            false,
+            null,
+            null
+        );
+
+        if (datalist != null) {    
             List<DatalistDefinition> list = new ArrayList<DatalistDefinition>();
-            list.addAll(appDef.getDatalistDefinitionList());
+            list.addAll(datalist);
             
             Collections.sort(list, new Comparator<DatalistDefinition>() {
 
@@ -5968,9 +5986,19 @@ public class ConsoleWebController {
             data.put("published", "<small class=\"published\"> (" + ResourceBundleUtil.getMessage("console.app.common.label.published") + ")</small>");
         }
         data.put("theme", systemSettings);
-        if (appDef.getUserviewDefinitionList() != null) {
+        
+        Collection<UserviewDefinition> userview = userviewDefinitionDao.getUserviewDefinitionList(
+            null,
+            appDef,
+            "name",
+            false,
+            null,
+            null
+        );
+
+        if (userview != null) {
             List<UserviewDefinition> list = new ArrayList<UserviewDefinition>();
-            list.addAll(appDef.getUserviewDefinitionList());
+            list.addAll(userview);
             
             Collections.sort(list, new Comparator<UserviewDefinition>() {
 
@@ -6027,8 +6055,18 @@ public class ConsoleWebController {
         jsonArr.put(data);
         
         List<BuilderDefinition> list = new ArrayList<BuilderDefinition>();
-        if (appDef.getBuilderDefinitionList() != null) {
-            list.addAll(appDef.getBuilderDefinitionList());
+        
+        Collection<BuilderDefinition> builders = builderDefinitionDao.getBuilderDefinitionList(
+            null,
+            null,
+            appDef,
+            "name",
+            false,
+            null,
+            null
+        );
+        if (builders != null) {
+            list.addAll(builders);
         }
         Collections.sort(list, new Comparator<BuilderDefinition>() {
 

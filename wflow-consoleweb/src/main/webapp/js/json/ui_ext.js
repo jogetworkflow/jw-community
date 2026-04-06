@@ -109,6 +109,7 @@ JPopup = {
         if (check === undefined || !check || (check && await JPopup.checkChangesAndConfirmHide(id))) {
             JPopup.dialogboxes[id].orgHide(after);
             JPopup.isChanges[id] = '';
+            UI.unblockUI();
             return true;
         }
         return false;
@@ -134,6 +135,7 @@ JPopup = {
         UI.loadMsg(['ubuilder.saveBeforeClose.leave'], function(msgs) {
             JPopup.buttonMsg = msgs['ubuilder.saveBeforeClose.leave'];
         });
+        CustomBuilder.overrideNewCreation(id);
     },
     
     fixIOS : function(id) {

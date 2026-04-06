@@ -230,16 +230,21 @@ window._CustomBuilder = {
         }
         
        
-        if (!CustomBuilder.isSaved()) {    
-            const result = await UI.asyncConfirm(get_cbuilder_msg('ubuilder.saveBeforeClose'), {
-                confirmButtonClass : 'dialog-btn-primary',
-                cancelButtonLabel: get_cbuilder_msg('ubuilder.saveBeforeClose.leave'),
-                confirmButtonLabel: UI.msg['cancel']
-            });
-            //if user click "cancel", stay on the same/current page
-            if(result){
-                return;
+        if (!CustomBuilder.isSaved()) {
+            //override the default confirm dialogue behaviour
+            if(localStorage.getItem("redirectAfterCreate") == "true")   {
+
+                localStorage.removeItem("redirectAfterCreate");
+            } else {
+                const result = await UI.asyncConfirm(get_cbuilder_msg('ubuilder.saveBeforeClose'), {
+                    confirmButtonClass : 'dialog-btn-primary'    
+                });
+                //if user click "cancel", stay on the same/current page
+                if(!result){
+                    return;
+                }
             }
+
         }
         
         if (temp.indexOf("/builders") !== -1 || temp.indexOf("/json/plugin/org.joget.apps.ext.ConsoleWebPlugin/service?spot=appLicense") !== -1) {
@@ -4197,6 +4202,70 @@ window._CustomBuilder = {
             CustomBuilder.reloadBuilderMenu();
         }, 100); //delay the loading to prevent it block the builder ajax call
     },
+
+    /*
+    * Override new item creation if there are unsaved changes
+    */
+    overrideNewCreation : function(id) {
+        var iframe = document.getElementById(id);
+        var iframeWindow = iframe.contentWindow;
+
+        // Prevent double override
+        if (iframeWindow._validateIntercepted) return;
+
+        if (iframeWindow.validateField) {
+
+            var originalValidate = iframeWindow.validateField;
+
+            iframeWindow.validateField = function() {
+
+                var hasChanges = localStorage.getItem("hasChanges");
+
+                if (hasChanges === 'true') {
+
+                    UI.confirm(
+                        get_cbuilder_msg("ubuilder.stayOrLeaveBeforeClose"),
+                        function(){
+                            localStorage.setItem("redirectAfterCreate", "true");
+                            UI.blockUI();
+                            //Ask the user to automatically save the current builder changes or not
+                            UI.confirm(
+                                get_cbuilder_msg("ubuilder.saveCurrentBuilder.confirm"),
+                                function(){
+                                    parent.CustomBuilder.save();
+                                    originalValidate.apply(iframeWindow, arguments);
+                                    setTimeout(() => {
+                                        UI.alert(get_cbuilder_msg("ubuilder.previous.changes.saved"));
+                                    },3000);
+                                },
+                                {
+                                    cancelCallback: function(){
+                                        originalValidate.apply(iframeWindow, arguments);
+                                    },
+                                    confirmButtonLabel: get_cbuilder_msg("ubuilder.save"),
+                                    confirmButtonClass: 'dialog-btn-primary',
+                                }
+                            )
+                        },
+                        {
+                            cancelCallback: function(){
+                            parent.JPopup.hide(id, false);
+                            },
+                            confirmButtonLabel: get_cbuilder_msg("ubuilder.continue"),
+                            cancelButtonLabel: get_cbuilder_msg("cbuilder.cancel")
+                        }
+                    );
+
+                } else {
+                    originalValidate.apply(iframeWindow, arguments);
+                }
+            };
+
+            iframeWindow._validateIntercepted = true;
+        }    
+
+    },
+
     
     reloadBuilderMenu : function() {
         CustomBuilder.getBuilderItems(CustomBuilder.renderBuilderMenu);
@@ -8604,6 +8673,8 @@ window._CustomBuilder.Builder = {
             textToolbar.text(get_cbuilder_msg('cbuilder.saved'));
             iconToolbar.removeClass("las la-cloud-upload-alt").addClass("zmdi zmdi-check");
             iconToolbar.removeClass("fas fa-spinner fa-spin");
+
+            localStorage.setItem("hasChanges", false);
         } else {
             text.text(get_cbuilder_msg('ubuilder.save'));
             icon.removeClass("zmdi zmdi-check").addClass("las la-cloud-upload-alt");
@@ -8612,8 +8683,35 @@ window._CustomBuilder.Builder = {
             textToolbar.text(get_cbuilder_msg('ubuilder.save'));
             iconToolbar.removeClass("zmdi zmdi-check").addClass("las la-cloud-upload-alt");
             iconToolbar.removeClass("fas fa-spinner fa-spin");
+            var isAppComposer = this.checkIsAppComposer();
+            if (isAppComposer) {
+                localStorage.setItem("hasChanges", false);
+            } else {
+                //following the current behaviour of the save button
+                //if in a builder, set the hasStorage to true
+                localStorage.setItem("hasChanges", true);
+            }
+
         }
     },
+
+    /*
+    * Check whether in app composer
+    */
+    checkIsAppComposer: function () {
+        let isAppComposer = false;
+
+        const currentUrl = window.location.href;
+        if (currentUrl.indexOf('/builders') > -1 && currentUrl.indexOf('/builder/') === -1) {
+            // E.g. /web/console/app/testApp/1/builders
+            isAppComposer = true;
+        } else {
+            // E.g. /web/console/app/testApp/1/form/builder/test
+            isAppComposer = false;
+        }
+        return isAppComposer;
+    },
+
 
     /*
      * Check builder theme

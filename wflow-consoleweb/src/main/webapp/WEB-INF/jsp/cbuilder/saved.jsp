@@ -15,6 +15,7 @@
         }
         
         if (!handled){
+            parent.UI.unblockUI();
             parent.CustomBuilder.ajaxRenderBuilder("${pageContext.request.contextPath}/web/console/app/${appId}/${appVersion}/cbuilder/${builder.objectName}/design/<c:out value="${builderDefinition.id}"/>");
         }
     }

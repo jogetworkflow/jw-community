@@ -15,6 +15,7 @@
         }
         
         if (!handled){
+            parent.UI.unblockUI();
             parent.CustomBuilder.ajaxRenderBuilder("${pageContext.request.contextPath}/web/console/app/${appId}/${appVersion}/datalist/builder/<c:out value="${datalistDefinition.id}"/>");
         }
     }
