@@ -1511,7 +1511,7 @@ public class FormUtil implements ApplicationContextAware {
         String content = pluginManager.getPluginFreeMarkerTemplate(dataModel, element.getClassName(), "/templates/" + templatePath, "message/form/" + element.getName().replace(" ", ""));
         
         String readonly = "_EDITABLE";
-        if (FormUtil.isDisabled(element, formData) || FormUtil.isReadonlyV2(element, formData)) {
+        if (FormUtil.isDisabled(element, formData) || FormUtil.isPersistableReadonly(element, formData)) {
              readonly = "_READONLY";
         }
         try {
@@ -1595,7 +1595,7 @@ public class FormUtil implements ApplicationContextAware {
         if (version == 1) {
             setDisabledProperty(element, readonly, label);
         } else {
-            setReadonlyV2Property(element, readonly, label);
+            setPersistableReadonlyProperty(element, readonly, label);
         }
     }
 
@@ -1636,7 +1636,7 @@ public class FormUtil implements ApplicationContextAware {
      * Recursively set the readonly property for all descendent elements.
      * @param element
      */
-    private static void setReadonlyV2Property (Element element, Boolean readonly, Boolean label) {
+    private static void setPersistableReadonlyProperty (Element element, Boolean readonly, Boolean label) {
         if (readonly != null && readonly) {
             element.setProperty(FormUtil.PROPERTY_READONLY, "readonly");
         }
@@ -1645,7 +1645,7 @@ public class FormUtil implements ApplicationContextAware {
         }
         Collection<Element> children = element.getChildren();
         for (Element child : children) {
-            setReadonlyV2Property(child, readonly, label);
+            setPersistableReadonlyProperty(child, readonly, label);
         }
     }
 
@@ -1690,7 +1690,7 @@ public class FormUtil implements ApplicationContextAware {
         if (version == 1) {
             return isDisabled(element, form);
         } else if (version == 2) {
-            return isReadonlyV2(element, form);
+            return isPersistableReadonly(element, form);
         } else {
             return false;
         }
@@ -1718,8 +1718,8 @@ public class FormUtil implements ApplicationContextAware {
      * @param element
      * @param formData
      */
-    private static boolean isReadonlyV2 (Element element, FormData formData) {
-        return element.isReadonlyV2(formData);
+    private static boolean isPersistableReadonly (Element element, FormData formData) {
+        return element.isPersistableReadonly(formData);
     }
     
     /**

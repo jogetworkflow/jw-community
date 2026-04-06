@@ -18,7 +18,7 @@
                 <#if (element.properties.readonly! == 'true' || element.properties.readonly! == 'readonly') && values?? && values?seq_contains(option.value!)>
                     <input id="${elementParamName!}" name="${elementParamName!}" type="hidden" value="${option.value!?html}" />
                 </#if>
-                <input grouping="${option.grouping!?html}" <#if element.properties.readonly! != 'true' && element.properties.readonly! != 'readonly'> id="${elementParamName!}" </#if> name="${elementParamName!}" type="checkbox" value="${option.value!?html}" class="form-check-input <#if error??>form-error-cell</#if>" <#if element.properties.readonly! == 'true'> disabled</#if> <#if element.properties.readonly! == 'readonly'> disabled readonlyv2</#if> <#if values?? && values?seq_contains(option.value!)>checked</#if> />
+                <input grouping="${option.grouping!?html}" <#if element.properties.readonly! != 'true' && element.properties.readonly! != 'readonly'> id="${elementParamName!}" </#if> name="${elementParamName!}" type="checkbox" value="${option.value!?html}" class="form-check-input <#if error??>form-error-cell</#if>" <#if element.properties.readonly! == 'true'> disabled</#if> <#if element.properties.readonly! == 'readonly'> disabled persistablereadonly</#if> <#if values?? && values?seq_contains(option.value!)>checked</#if> />
                 <i></i>
                 ${option.label!?html}
             </label>

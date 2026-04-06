@@ -353,7 +353,7 @@ textarea{
     height: auto;
     white-space: pre-wrap !important;
 }
-textarea[readonly]:not([readonlyv2]) {
+textarea[readonly]:not([persistablereadonly]) {
     cursor: not-allowed;
 }
 body input[disabled],
@@ -361,11 +361,11 @@ body input[readonly] {
     cursor: not-allowed;
     background-color: #eeeeee;
 }
-body input[readonlyv2] {
+body input[persistablereadonly] {
     cursor: auto;
     background-color: #ffffff;
 }
-input.form-check-input[readonlyv2] {
+input.form-check-input[persistablereadonly] {
     border: 1px solid #bdbcbc;
 }
 

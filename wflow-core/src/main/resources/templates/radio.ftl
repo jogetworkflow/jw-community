@@ -14,7 +14,7 @@
             </#if>
         <#else>
             <label tabindex="0" >
-                <input grouping="${option.grouping!?html}" <#if element.properties.readonly! != 'true' && element.properties.readonly! != 'readonly'>id="${elementParamName!}"</#if> name="${elementParamName!}" type="radio" value="${option.value!?html}" class="form-check-input <#if error??>form-error-cell</#if>" <#if element.properties.readonly! == 'true'> disabled</#if> <#if element.properties.readonly! == 'readonly'> disabled readonlyv2</#if> <#if value?? && value == option.value!>checked</#if> />
+                <input grouping="${option.grouping!?html}" <#if element.properties.readonly! != 'true' && element.properties.readonly! != 'readonly'>id="${elementParamName!}"</#if> name="${elementParamName!}" type="radio" value="${option.value!?html}" class="form-check-input <#if error??>form-error-cell</#if>" <#if element.properties.readonly! == 'true'> disabled</#if> <#if element.properties.readonly! == 'readonly'> disabled persistablereadonly</#if> <#if value?? && value == option.value!>checked</#if> />
                 <i></i>    
                 ${option.label!?html}
             </label>

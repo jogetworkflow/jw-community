@@ -70,7 +70,7 @@
                         <span class="input-group-text">${iconValue}</span>
                 </#if>
                 <div class="password-input-wrapper">
-                    <input id="${elementParamName!}_${element.properties.elementUniqueKey!}" name="${elementParamName!}" type="password" value="${value!?html}" <#if element.properties.maxlength?has_content>maxlength="${element.properties.maxlength!}"</#if> <#if error??>class="form-error-cell"</#if> <#if element.properties.readonly! == 'true'>readonly</#if> <#if element.properties.readonly! == 'readonly'>readonly readonlyv2</#if>/>
+                    <input id="${elementParamName!}_${element.properties.elementUniqueKey!}" name="${elementParamName!}" type="password" value="${value!?html}" <#if element.properties.maxlength?has_content>maxlength="${element.properties.maxlength!}"</#if> <#if error??>class="form-error-cell"</#if> <#if element.properties.readonly! == 'true'>readonly</#if> <#if element.properties.readonly! == 'readonly'>readonly persistablereadonly</#if>/>
                     <#if (element.properties.enableVisibility! == 'true')>
                         <button type="button" class="password-toggle" title="Toggle password visibility">
                             <i class="fas fa-fw fa-eye"></i>
