@@ -1706,7 +1706,7 @@ body #form-canvas .form-section {
 legend, main #form-canvas .form-section-title span, main #form-canvas .subform-section-title span {
     background: none;
     color: #555;
-    padding-left: 4px;
+    padding-left: 15px;
     font-size: 18px;
 }
 div#section-actions.form-section, div#section-actions.subform-section{
@@ -1725,9 +1725,7 @@ body .subform-container.has-frame .subform-title {
     padding: 0 10px;
 }
 body .subform-cell .subform-container.has-frame {
-    margin-bottom: 30px;
-    margin-left: 10px;
-    margin-right: 10px;    
+    margin-bottom: 30px;  
 }
 body #form-canvas .form-section:not(.form-section-empty) + .form-section.no_label {
     margin-top: -10px !important;

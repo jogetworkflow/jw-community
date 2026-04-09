@@ -578,7 +578,7 @@ body .form-container .pq-td-div label.label + span:not(.form-cell-value):not(.su
 }
 
 body .form-column, body .subform-column {
-    max-width: 99%;
+    max-width: 100%;
     color: inherit;
     min-width: inherit;
 }
@@ -700,15 +700,24 @@ body .subform-cell .subform-container.has-frame {
     margin-top: 20px;
 }
 
+body #form-canvas .form-section-title span, body #form-canvas .subform-section-title span{
+    padding: 10px 15px;
+}
+
 body .form-column > .subform-cell {
-    margin-left: -0.5%;
-    margin-right: -0.5%;
+    margin-left: 15px;
+    margin-right: 15px;
 }
 
 body .subform-container.has-frame .subform-title {
     position: absolute;
     top: -17px;
     padding: 0 10px;
+}
+
+.subform-container.no-frame{
+    margin-left: -15px;
+    margin-right: -15px;
 }
 
 body .form-fileupload {
