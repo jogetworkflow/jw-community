@@ -76,6 +76,9 @@ public class DateHashVariable extends DefaultHashVariablePlugin {
                             } catch (Exception er) {
                                 LogUtil.error(DateHashVariable.class.getName(), er, "");
                             }
+                        } else {
+                            // If no timezone is specified, fallback to profile or system timezone to align parsing with formatting
+                            df.setTimeZone(LocaleContextHolder.getTimeZone());
                         }
                         Date result =  df.parse(date);
                         cal.setTime(result);
