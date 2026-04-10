@@ -8,5 +8,6 @@
         <aspect name="org.joget.apps.form.service.FormOptionsCacheAspect"/>
         <aspect name="org.enhydra.shark.SharkUtilitiesAspect"/>
         <aspect name="org.enhydra.shark.PostgresBooleanAspect"/>
+        <aspect name="org.joget.workflow.shark.VariableDataBatchAspect"/>
     </aspects>
 </aspectj>
