@@ -1,7 +1,7 @@
 chcp 65001
 
 set JAVA_HOME=.\jre21.0.5
-set CATALINA_HOME=.\apache-tomcat-11.0.18
+set CATALINA_HOME=.\apache-tomcat-11.0.21
 
 REM For a list of available Java system properties for Joget, please refer to:
 REM https://kb.joget.org/jw/web/userview/jdocs/docs/DX9/joget-java_opts-properties

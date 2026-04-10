@@ -282,7 +282,7 @@
         <dependency>
             <groupId>org.apache.tomcat</groupId>
             <artifactId>tomcat-jdbc</artifactId>
-            <version>10.1.52</version>
+            <version>10.1.54</version>
         </dependency>
         <dependency>
             <groupId>io.undertow</groupId>
