@@ -249,6 +249,7 @@ ProcessBuilder = {
                 TaskNodeFactory,
                 sequenceFlowFactory,
                 FlowPath],
+            adjustEdgeStartAndEnd: true,
             pluginsOptions: {
                 label: {
                     isMultiple: false,
@@ -1501,7 +1502,8 @@ ProcessBuilder = {
                 const { properties } = this;
                 this.draggable = false; //disable resize the transition
                 if(properties.type === "startend"){
-                    this.isHitable = false;
+                    this.isHitable = true;
+                    this.deletable = true;
                 }
                 this.text.editable = false; 
             }
@@ -1627,7 +1629,8 @@ ProcessBuilder = {
                 super.setAttributes(data);
                 const { properties } = this;
                 if(properties.type === "startend"){
-                    this.isHitable = false;
+                    this.isHitable = true;
+                    this.deletable = true;
                 }
                 this.text.editable = false; 
             }
@@ -1877,24 +1880,63 @@ ProcessBuilder = {
         ProcessBuilder.lf.on('remove-danger', ({ id }) => {
             ProcessBuilder.lf.setProperties(id, { danger: false });
         });
+
+        function openContextMenu(sourceNodeId, edgeId) {
+            let sourceNode = ProcessBuilder.lf.getNodeDataById(sourceNodeId);
+            ProcessBuilder.lf.deleteEdge(edgeId);
+            ProcessBuilder.showContextMenu(sourceNode);
+            return false;
+        }
+
+        // Handle deletion of edges, when edges are adjusted, it actually deletes the old one and create a new one
+        // so, below is needed to properly remove the conenction
+        ProcessBuilder.lf.on('edge:delete', ({ data }) => {
+            ProcessBuilder.removeConnection(data, false);
+
+            ProcessBuilder.validate();
+        })
         
         // Handle adding a new edge
         ProcessBuilder.lf.on('edge:add', ({ data }) => {
             if (!ProcessBuilder.changeNodeId) {
-                if (data.targetNodeId.startsWith("poolID_") || data.targetNodeId.startsWith("laneID_")) {
-                    let sourceNode = ProcessBuilder.lf.getNodeDataById(data.sourceNodeId);
+                var targetNode = ProcessBuilder.lf.getNodeDataById(data.targetNodeId);
+                if (targetNode && targetNode.properties && targetNode.properties.className === "start") {
                     ProcessBuilder.lf.deleteEdge(data.id);
-                    ProcessBuilder.showContextMenu(sourceNode);
-                    return false;
+                    CustomBuilder.showMessage(get_cbuilder_msg('pbuilder.incomingNodeWarning'), "danger", true)
+                    return;
+                }
+
+                if (data.targetNodeId.startsWith("poolID_") || data.targetNodeId.startsWith("laneID_")) {
+                    return openContextMenu(data.sourceNodeId, data.id);
                 }
                 ProcessBuilder.addConnection(data);
                 
                 if (!ProcessBuilder.disableUpdate) {
                     ProcessBuilder.adjustLane(true, true);
                 }
+
+                ProcessBuilder.validate();
             }
         });
-        
+
+        //Detects when edge is dropped on pool or lane, which will show the context menu
+        ProcessBuilder.lf.on('connection:not-allowed', (data) => {
+            if (data.data.type === "pool" || data.data.type === "lane") {
+                var nodeId = lastSourceNode;
+                var edgeId = lastEdge;
+
+                lastEdge = null;
+                lastSourceNode == null;
+
+                if (nodeId !== null && edgeId !== null) {
+                    ProcessBuilder.lf.deleteEdge(edgeId);
+                    return openContextMenu(nodeId, edgeId);
+                } else if (edgeId === null && nodeId !== null) {
+                    return openContextMenu(nodeId, null);
+                }
+             }
+        });
+
         // Handle adding a new node from the drag-and-drop menu
         ProcessBuilder.lf.on('node:dnd-add', ({ data }) => {
             ProcessBuilder.renderLFNode(data);
@@ -1942,9 +1984,36 @@ ProcessBuilder = {
                 }
             }
         });
+
+        // Handle manual dragging
+        ProcessBuilder.lf.on("anchor:dragstart", (data, e) => {
+            lastEdge = null;
+            lastSourceNode = data.nodeModel.id;
+        })
         
         // Handle for node and edge click
+        var lastEdge = null;
+        var lastSourceNode = null;
         ProcessBuilder.lf.on('node:click,edge:click', (node, e) => {
+            if (node && node.data && node.data.id && node.data.properties.className === 'transition') {
+                lastEdge = node.data.properties.id;
+                lastSourceNode = node.data.sourceNodeId;
+
+                var sourceNode = ProcessBuilder.lf.getNodeDataById(node.data.sourceNodeId);
+                var targetNode = ProcessBuilder.lf.getNodeDataById(node.data.targetNodeId);
+
+                if ((sourceNode && sourceNode.properties.className === 'start') || 
+                    (targetNode && targetNode.properties.className === 'end')) {
+                    $("body").addClass("no-right-panel");
+                    ProcessBuilder.lf.selectElementById(node.data.id, false);
+                    return false; 
+                }
+
+            } else if (node && node.data && node.data.id && node.data.properties.className !== 'transition') {
+                lastSourceNode = node.data.id;
+                lastEdge = null;
+            }
+            
             if (node && node.data && node.data.id) {
                 ProcessBuilder.selectElementById(node.data.id);
             }
@@ -2618,7 +2687,7 @@ ProcessBuilder = {
                         if (ProcessBuilder.preSelect !== "") {
                             ProcessBuilder.selectElementById(ProcessBuilder.preSelect);
                             ProcessBuilder.preSelect = "";
-                        } else if (selectedEl) {
+                        } else if (selectedEl && selectedEl[0] && selectedEl[0].data && selectedEl[0].data.id) {
                             ProcessBuilder.selectElementById(selectedEl[0].data.id);
                         }
                         if (ProcessBuilder.view !== "") {
@@ -5736,6 +5805,18 @@ ProcessBuilder = {
             var selectNode = function() {
                 ProcessBuilder.lf.selectElementById(id, false, false);
 
+                // Add tooltip
+                if (id.includes("laneID_")) {
+                    const titles = ["pbuilder.addParticipantAbove", "pbuilder.addParticipantBelow", "pbuilder.deleteParticipant"];
+                    var $lane = $("g#" + id);
+                    setTimeout(function(){
+                        $lane.find("g[cursor='pointer']").each(function(index){
+                            $(this).attr('title', get_cbuilder_msg(titles[index]));
+                            $(this).children().attr('title', get_cbuilder_msg(titles[index]));
+                        });    
+                    }, 500)
+                }
+
                 var nodeData = ProcessBuilder.getSelectedNode();
                 if (!nodeData) { 
                     if (id.includes("laneID_")) {
@@ -6236,7 +6317,7 @@ ProcessBuilder = {
                             || (toTransition[aid] === undefined && $.inArray(aid, starts) === -1)) {
                         activityInvalid = true;
                     }
-                    
+
                     if ($.inArray(aid, starts) !== -1 && toTransition[aid] !== undefined && toTransition[aid].length > 0) {
                         startInvalid = true;
                     }
