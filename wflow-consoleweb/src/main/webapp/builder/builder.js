@@ -3361,7 +3361,9 @@ window._CustomBuilder = {
                 // fix duplicate xmlns
                 newsvg = newsvg.replace('xmlns="http://www.w3.org/1999/xhtml"', '');
                 // render
-                canvg($tempCanvas[0], newsvg);
+                const ctx = $tempCanvas[0].getContext('2d');
+                const v = window.canvg.Canvg.fromString(ctx, newsvg);
+                v.render();
             });
         }
         target = $(target)[0];
