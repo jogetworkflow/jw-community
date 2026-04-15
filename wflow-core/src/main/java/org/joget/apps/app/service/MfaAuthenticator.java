@@ -141,8 +141,15 @@ public abstract class MfaAuthenticator extends ExtDefaultPlugin implements Prope
      * @throws IOException 
      */
     public String loginUser (String username) throws IOException {
+        HttpServletRequest httpRequest = WorkflowUtil.getHttpServletRequest();
+        if (httpRequest == null) {
+            throw new IOException("Unable to login user " + username + ": No HTTP request found!");
+        }
         ExtDirectoryManager dm = (ExtDirectoryManager) DirectoryUtil.getApplicationContext().getBean("directoryManager");
         User user = dm.getUserByUsername(username);
+
+        // change session ID to prevent session fixation attacks
+        httpRequest.changeSessionId();
 
         Collection<Role> roles = dm.getUserRoles(username);
         List<GrantedAuthority> gaList = new ArrayList<GrantedAuthority>();
@@ -158,8 +165,7 @@ public abstract class MfaAuthenticator extends ExtDefaultPlugin implements Prope
         UsernamePasswordAuthenticationToken result = new UsernamePasswordAuthenticationToken(user.getUsername(), "", gaList);
         result.setDetails(details);
         SecurityContextHolder.getContext().setAuthentication(result);
-        
-        HttpServletRequest httpRequest = WorkflowUtil.getHttpServletRequest();
+
         String ip = AppUtil.getClientIp(httpRequest);
         LogUtil.info(getClass().getName(), "Authentication for user " + username + " ("+ip+") : true");
         WorkflowHelper workflowHelper = (WorkflowHelper) AppUtil.getApplicationContext().getBean("workflowHelper");
