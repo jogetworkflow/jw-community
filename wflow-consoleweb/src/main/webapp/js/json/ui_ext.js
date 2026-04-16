@@ -120,7 +120,8 @@ JPopup = {
             return !await UI.asyncConfirm(JPopup.msg, {
                 confirmButtonClass : 'dialog-btn-primary',
                 cancelButtonLabel: JPopup.buttonMsg,
-                confirmButtonLabel: UI.msg['cancel']
+                confirmButtonLabel: UI.msg['cancel'],
+                allowOutsideClick: false
             });
         }
         return true;

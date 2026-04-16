@@ -446,6 +446,10 @@ UI = {
             msgObj.title = title;
         }
         
+        // fix Tab key not working in Firefox
+        msgObj.didOpen = () => {
+            Swal.getPopup().focus();
+        };
         Swal.fire(msgObj).then(() => {
             if (typeof callback === "function") {
                 callback();
@@ -469,16 +473,17 @@ UI = {
             }
         });
     },
-    asyncConfirm: async function(text, 
+    asyncConfirm: async function(text,
                   {
-                      isHtml = false, 
-                      icon = "question", 
-                      iconColor = "#ffc107", 
-                      title = null, 
-                      confirmButtonLabel = UI.msg['ok'], 
-                      cancelButtonLabel = UI.msg['cancel'], 
-                      confirmButtonClass = "dialog-btn-danger", 
-                      cancelButtonClass = "dialog-btn-tertiary"
+                      isHtml = false,
+                      icon = "question",
+                      iconColor = "#ffc107",
+                      title = null,
+                      confirmButtonLabel = UI.msg['ok'],
+                      cancelButtonLabel = UI.msg['cancel'],
+                      confirmButtonClass = "dialog-btn-danger",
+                      cancelButtonClass = "dialog-btn-tertiary",
+                      allowOutsideClick = true
                   } = {}) {
         var msgObj = {
             icon: icon,
@@ -486,6 +491,7 @@ UI = {
             cancelButtonText: cancelButtonLabel,
             showCancelButton: true,
             reverseButtons: true,
+            allowOutsideClick: allowOutsideClick,
             customClass: {
                 cancelButton: cancelButtonClass,
                 confirmButton: confirmButtonClass,
