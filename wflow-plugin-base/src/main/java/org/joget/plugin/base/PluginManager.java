@@ -35,6 +35,7 @@ import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.StandardCopyOption;
 import java.util.*;
+import java.util.concurrent.locks.ReentrantLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
@@ -55,7 +56,7 @@ public class PluginManager implements ApplicationContextAware {
     private static ProfilePluginCache pluginCache = new ProfilePluginCache();
     private Set<String> blackList;
     private Set<String> scanPackageList;
-    protected Set<String> filesInProgress = new HashSet<String>(); //don't need to consider profile as the plugin for each profile having differrent absolute path
+    protected Set<String> filesInProgress = new HashSet<String>(); // don't need to consider profile as the plugin for each profile has different absolute paths
     protected final Set<String> lockOwnership = new HashSet<>();
 
     public final static String ESCAPE_JAVASCRIPT = "javascript";
@@ -63,8 +64,8 @@ public class PluginManager implements ApplicationContextAware {
     
     private FileAlterationMonitor monitor = null;
     private final ReentrantReadWriteLock refreshLock = new ReentrantReadWriteLock(true);
-    private final ReentrantReadWriteLock pluginListLock = new ReentrantReadWriteLock(true);
-    
+    private final ReentrantLock pluginListLoadLock = new ReentrantLock();
+
     /**
      * Used by system to initialize Plugin manager
      */
@@ -823,30 +824,16 @@ public class PluginManager implements ApplicationContextAware {
         Class classFilter = (clazz != null) ? clazz : Plugin.class;
         Map<String, Plugin> pluginMap = getCache().getPluginCache().get(classFilter);
         if (pluginMap == null) {
-            // the first thread gets write lock for single flight caching
-            if (pluginListLock.writeLock().tryLock()) {
-                try {
-                    // load plugins
+            pluginListLoadLock.lock();
+            try {
+                // re-check under lock in case another thread populated the cache
+                pluginMap = getCache().getPluginCache().get(classFilter);
+                if (pluginMap == null) {
                     pluginMap = internalLoadPluginMap(clazz);
-
-                    // store in cache
                     getCache().getPluginCache().put(classFilter, pluginMap);
-                } finally {
-                    pluginListLock.writeLock().unlock();
                 }
-            } else {
-                // other threads wait and get from the cache again
-                pluginListLock.readLock().lock();
-                try {
-                    pluginMap = getCache().getPluginCache().get(classFilter);
-                    if (pluginMap == null) {
-                        // This should not happen, but handle gracefully
-                        pluginMap = internalLoadPluginMap(clazz);
-                        getCache().getPluginCache().put(classFilter, pluginMap);
-                    }
-                } finally {
-                    pluginListLock.readLock().unlock();
-                }
+            } finally {
+                pluginListLoadLock.unlock();
             }
         }
         return pluginMap;
