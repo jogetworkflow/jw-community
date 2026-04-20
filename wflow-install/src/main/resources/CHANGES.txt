@@ -4,6 +4,7 @@ For more information, please refer to https://community.joget.org
 
 9.1-PREVIEW2
 ============
+e59a100dc Fixed: wflow-consoleweb - Trimeda Theme - Fixed form section corner clipping and dropdown visibility conflict in Trimeda theme #1814. @9.1-SNAPSHOT
 cdbcc05b3 Modified: wflow-core/wflow-consoleweb - Find Usages - Enhanced the Find Usages features #1651 @9.1-SNAPSHOT
 84922192b Added: wflow-consoleweb - Duplicate - Added a way to duplicate form and datalist by right clicking #228. @9.1-SNAPSHOT
 c53fec785 Modified: jw-community - pom.xml - Set Java release to 17, added UTF-8 encoding properties. #363 @9.1-SNAPSHOT
@@ -30,7 +31,6 @@ a26213028 Added: wflow-consoleweb - Process Builder - Replace input field with w
 c7984c832 Fixed: wflow-core/wflow-consoleweb - DX9 Builder Theme - Fixed UI Issues #1798 @9.1-SNAPSHOT
 31ff808d4 Fixed: wflow-consoleweb - Alert/Confirm dialog - Fixed the focus visibility issue for dialog buttons and resolved the prompt dialog width issue. #1800 @9.1-SNAPSHOT
 b7676299b Fixed: wflow-consoleweb - Alert/Confirm Dialog - Fixed alert and confirm dialog issues. #1800 @9.1-SNAPSHOT
-b44af04ee Fixed: wflow-consoleweb - Permission Menu - Fixed the configure popup page is not following the system theme. #1059 @9.0-SNAPSHOT
 e38839088 Modified: wflow-install - pom.xml - Updated Maven Antrun Plugin to version 3.2.0. #1819 @9.1-SNAPSHOT
 2b08af8bc Modified: wflow-core - AppSetupManagerHelperImpl - Log old and new values of system setting changes in audit trail. #1820 @9.1-SNAPSHOT
 d9d6baf3d Modified: wflow-consoleweb - datasource.jsp - Made datasource settings page read-only and removed profile management features. #1823 @9.1-SNAPSHOT
