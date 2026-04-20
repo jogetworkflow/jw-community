@@ -3,10 +3,10 @@
 
 <c:choose>
     <c:when test="${!empty param.__a_ and !empty param.__u_}">
-        <commons:popupHeader bodyCssClass="pluginConfigPopup" builderTheme="${theme}" includeUserviewThemeCSS="${includeUserviewThemeCSS}"/>
+        <commons:popupHeader bodyCssClass="pluginConfigPopup"/>
     </c:when>
     <c:otherwise>
-        <commons:popupHeader bodyCssClass="pluginConfigPopup" builderTheme="true"  includeUserviewThemeCSS="${includeUserviewThemeCSS}"/>
+        <commons:popupHeader bodyCssClass="pluginConfigPopup" builderTheme="true"/>
     </c:otherwise>    
 </c:choose>    
 
