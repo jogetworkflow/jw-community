@@ -100,7 +100,9 @@ public class WorkflowManagerImpl implements WorkflowManager {
     private WorkflowAssignmentDao workflowAssignmentDao;
     private Map processStateMap;
     private String previousProfile;
+    public static final String ARCHIVE_PREFIX = "archive_processing_%";
     public static final String ARCHIVE_SETTING = "archive_processing_status";
+    public static final String ARCHIVE_PROGRESS_SETTING = "archive_processing_progress";
     
     private static ThreadLocal migrationAssignmentUserList = new ThreadLocal() {
         @Override
@@ -6348,13 +6350,13 @@ public class WorkflowManagerImpl implements WorkflowManager {
             Collection<Setting> result = setupDao.find("WHERE property = ?", new String[]{ARCHIVE_SETTING}, null, null, null, null);
             final Setting status = (result.isEmpty()) ? null : result.iterator().next();
             
-            if (status == null || status.getValue().contains("PAUSE")) {
-                //change pause to restarted again, using transactionTemplate so that the value write to db immediatly and available to retrieve again by internalBatchMigrateProcessHistories.
-                if (status != null && status.getValue().contains("PAUSE")) {
+            if (status == null || status.getValue().equals("PAUSE")) {
+                //change pause to restart again, using transactionTemplate so that the value writes to db immediately and available to retrieve again by internalBatchMigrateProcessHistories.
+                if (status != null && status.getValue().equals("PAUSE")) {
                     transactionTemplate.execute(new TransactionCallbackWithoutResult() {
                         @Override
                         public void doInTransactionWithoutResult(TransactionStatus transactionStatus) {
-                            status.setValue(status.getValue().replace("PAUSE", "RESTART"));
+                            status.setValue("RESTART");
                             setupDao.saveOrUpdate(status);
                         }
                     });
@@ -6399,36 +6401,53 @@ public class WorkflowManagerImpl implements WorkflowManager {
                 WorkflowAssignmentDao assDao = (WorkflowAssignmentDao) WorkflowUtil.getApplicationContext().getBean("workflowAssignmentDao");
                 
                 //create a status in setting table to show progress
-                Collection<Setting> result = setupDao.find("WHERE property = ?", new String[]{ARCHIVE_SETTING}, null, null, null, null);
-                Setting status = (result.isEmpty()) ? null : result.iterator().next();
+                Collection<Setting> result = setupDao.find("WHERE property like ?", new String[]{ARCHIVE_PREFIX}, null, null, null, null);
 
-                JSONObject statusObj = null;
-                if (status == null) {
-                    status = new Setting();
-                    status.setProperty(ARCHIVE_SETTING);
+                Setting status = null;
+                Setting statusProgress = null;
 
-                    statusObj = new JSONObject();
+                for (Setting s : result) {
+                    if (s.getProperty().equals(ARCHIVE_SETTING)) {
+                        status = s;
+                    } else if (s.getProperty().equals(ARCHIVE_PROGRESS_SETTING)) {
+                        statusProgress = s;
+                    }
+                }
+
+                JSONObject statusProgressObj = null;
+                if (statusProgress == null) {
+                    statusProgress = new Setting();
+                    statusProgress.setProperty(ARCHIVE_PROGRESS_SETTING);
+
+                    statusProgressObj = new JSONObject();
                     //get total completed process instances
-                    statusObj.put("total", assDao.getProcessesSize(null, null, null, null, null, null, null, "closed"));
-                    statusObj.put("completed", 0);
+                    statusProgressObj.put("total", assDao.getProcessesSize(null, null, null, null, null, null, null, "closed"));
+                    statusProgressObj.put("completed", 0);
                 } else {
                     try {
-                        statusObj = new JSONObject(status.getValue());
+                        statusProgressObj = new JSONObject(statusProgress.getValue());
                     } catch (Exception e) {
                         LogUtil.debug(WorkflowManagerImpl.class.getName(), "Fail to parse archive processing status.");
                     }
                 }
 
-                if (statusObj != null) {
+                if (statusProgressObj != null) {
                     //change the status to STARTED
-                    if (!statusObj.has("state") || "RESTART".equals(statusObj.getString("state"))) {
-                        statusObj.put("state", "STARTED");
-                        statusObj.put("lastRun", sdf.format(new Date()));
-                        status.setValue(statusObj.toString());
+                    if (status == null || "RESTART".equals(status.getValue())) {
+                        if (status == null) {
+                            status = new Setting();
+                            status.setProperty(ARCHIVE_SETTING);
+                        }
+
+                        status.setValue("STARTED");
                         setupDao.saveOrUpdate(status);
+
+                        statusProgressObj.put("lastRun", sdf.format(new Date()));
+                        statusProgress.setValue(statusProgressObj.toString());
+                        setupDao.saveOrUpdate(statusProgress);
                     }
-                
-                    if ("STARTED".equals(statusObj.getString("state"))) {
+
+                    if ("STARTED".equals(status.getValue())) {
                         SharkConnection sc = null;
                         try {
                             sc = connect();
@@ -6438,7 +6457,7 @@ public class WorkflowManagerImpl implements WorkflowManager {
                             ProcessFilterBuilder pieb = shark.getProcessFilterBuilder();
                             WMSessionHandle sessionHandle = sc.getSessionHandle();
                             ExecutionAdministration ea = shark.getExecutionAdministration();
-                            
+
                             //retrieve 10 closed process instances
                             WMFilter filter = new WMFilter();
                             filter = pieb.addStateStartsWith(sessionHandle, "closed");
@@ -6454,39 +6473,36 @@ public class WorkflowManagerImpl implements WorkflowManager {
                                     saveProcessHistory(wfProcessList[i], sessionHandle, tempCache);
                                     pIds.add(wfProcessList[i].key());
                                 }
-                                
+
                                 //remove it after migration done
                                 ea.deleteProcesses(sessionHandle, pIds.toArray(new String[0]));
                                 LogUtil.debug(WorkflowManagerImpl.class.getName(), "Migrated " + pIds.size() + " processes. " + pIds.toString());
-                                
-                                //retrieve the value again to update completed count, in case there is status changed
-                                result = setupDao.find("WHERE property = ?", new String[]{ARCHIVE_SETTING}, null, null, null, null);
-                                status = (result.isEmpty()) ? null : result.iterator().next();
+
                                 try {
-                                    statusObj = new JSONObject(status.getValue());
+                                    statusProgressObj = new JSONObject(statusProgress.getValue());
                                 } catch (Exception e) {
                                     LogUtil.debug(WorkflowManagerImpl.class.getName(), "Fail to parse archive processing status.");
                                 }
-                                
-                                statusObj.put("completed", statusObj.getInt("completed") + 10);
-                                statusObj.put("lastRun", sdf.format(new Date()));
-                                status.setValue(statusObj.toString());
-                                
-                                setupDao.saveOrUpdate(status);
+
+                                statusProgressObj.put("completed", statusProgressObj.getInt("completed") + pIds.size());
+                                statusProgressObj.put("lastRun", sdf.format(new Date()));
+                                statusProgress.setValue(statusProgressObj.toString());
+
+                                setupDao.saveOrUpdate(statusProgress);
                             } else {
                                 //completed, remove the setting for status tracking
                                 setupDao.delete(status);
+                                setupDao.delete(statusProgress);
                                 LogUtil.info(WorkflowManagerImpl.class.getName(), "Process history record migration completed.");
                                 return true;
                             }
                         } catch (Exception e) {
                             LogUtil.error(WorkflowManagerImpl.class.getName(), e, "");
-                            
+
                             try {
                                 //if there is error and already retry for 15mins, pause it
-                                if ((new Date()).getTime() - sdf.parse(statusObj.getString("lastRun")).getTime() > (15 * 60 * 1000)) {
-                                    statusObj.put("state", "PAUSE");
-                                    status.setValue(statusObj.toString());
+                                if ((new Date()).getTime() - sdf.parse(statusProgressObj.getString("lastRun")).getTime() > (15 * 60 * 1000)) {
+                                    status.setValue("PAUSE");
                                     setupDao.saveOrUpdate(status);
                                     return true;
                                 }
@@ -6500,8 +6516,8 @@ public class WorkflowManagerImpl implements WorkflowManager {
                                 LogUtil.error(getClass().getName(), e, "");
                             }
                         }
-                        return false; 
-                    } else if ("PAUSE".equals(statusObj.getString("state"))) {
+                        return false;
+                    } else if ("PAUSE".equals(status.getValue())) {
                         LogUtil.info(WorkflowManagerImpl.class.getName(), "Process history record migration paused.");
                     }
                 }
