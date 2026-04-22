@@ -116,6 +116,10 @@
             }
         }
 
+        function validateFieldNoIdCheck() {
+            $("#create${builder.objectName}").submit();
+        }
+
         function closeDialog() {
             if (parent && parent.JPopup) {
                 parent.JPopup.hide("navCreateNewDialog");

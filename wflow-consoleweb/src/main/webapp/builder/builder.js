@@ -4642,12 +4642,8 @@ window._CustomBuilder = {
         // Prevent double override
         if (iframeWindow._validateIntercepted) return;
 
-        if (iframeWindow.validateField) {
-
-            var originalValidate = iframeWindow.validateField;
-
-            iframeWindow.validateField = function() {
-
+        function createInterceptionWrapper(originalFunction) {
+            return function() {
                 var hasChanges = localStorage.getItem("hasChanges");
 
                 if (hasChanges === 'true') {
@@ -4662,14 +4658,14 @@ window._CustomBuilder = {
                                 get_cbuilder_msg("ubuilder.saveCurrentBuilder.confirm"),
                                 function(){
                                     parent.CustomBuilder.save();
-                                    originalValidate.apply(iframeWindow, arguments);
+                                    originalFunction.apply(iframeWindow, arguments);
                                     setTimeout(() => {
                                         UI.alert(get_cbuilder_msg("ubuilder.previous.changes.saved"));
                                     },3000);
                                 },
                                 {
                                     cancelCallback: function(){
-                                        originalValidate.apply(iframeWindow, arguments);
+                                        originalFunction.apply(iframeWindow, arguments);
                                     },
                                     confirmButtonLabel: get_cbuilder_msg("ubuilder.save"),
                                     confirmButtonClass: 'dialog-btn-primary',
@@ -4686,10 +4682,25 @@ window._CustomBuilder = {
                     );
 
                 } else {
-                    originalValidate.apply(iframeWindow, arguments);
+                    originalFunction.apply(iframeWindow, arguments);
                 }
             };
+        }
 
+        // Intercept validateField if it exists
+        if (iframeWindow.validateField) {
+            var originalValidate = iframeWindow.validateField;
+            iframeWindow.validateField = createInterceptionWrapper(originalValidate);
+        }
+
+        // Intercept validateFieldNoValidation if it exists
+        if (iframeWindow.validateFieldNoIdCheck) {
+            var originalValidateNoIdCheck = iframeWindow.validateFieldNoIdCheck;
+            iframeWindow.validateFieldNoIdCheck = createInterceptionWrapper(originalValidateNoIdCheck);
+        }
+
+        // Mark as intercepted if any function was intercepted
+        if (iframeWindow.validateField || iframeWindow.validateFieldNoIdCheck) {
             iframeWindow._validateIntercepted = true;
         }    
 
