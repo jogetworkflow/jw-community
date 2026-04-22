@@ -739,6 +739,14 @@ body.quickEditModeActive .analyzer-page {
     background: lightgoldenrodyellow;
 }
 
+.hasAnalyzer .analyzer-page {
+    position: absolute;
+}
+
+body.rtl .hasAnalyzer .analyzer-page {
+    right: 0;
+}
+
 #adminBar .analyzer-page {
     margin: 4px 10px;
     background: #CFD8DC;
