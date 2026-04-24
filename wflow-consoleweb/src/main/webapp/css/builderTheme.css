@@ -40,6 +40,8 @@ body[builder-theme='dark'], body[system-theme='dark']{
     --theme-link-color-1: #6c757d;
     --theme-link-color-2: #AAAAAA;
     --theme-danger-color: #dc3545;
+    --theme-shading-top:#1d1d1d00;
+    --theme-shading-bottom:#1d1d1dcc;
 }  
 body {
     font-family: "Inter", sans-serif !important;
@@ -1212,6 +1214,13 @@ body[builder-theme]#cbuilder #top-panel .btn-group .btn span {
 body[builder-theme] .repeater-row .actions:last-child {
     border-left: 1px solid var(--theme-border-color-1);
     border-right: 0px;
+}
+body[builder-theme] .repeater-row.error{
+    border-bottom: 1px solid red;
+}
+
+body[builder-theme] .repeater-row.error + .repeater-row.error{
+    border-top: none;
 }
 body[builder-theme] .chosen-container-multi .chosen-choices {
     font-size: 13px;
@@ -2773,6 +2782,11 @@ body[builder-theme='dark'] .repeater-row > .actions > i,
 body[builder-theme='dark'] .repeater-row > .actions > a.expand > i, 
 body[builder-theme='dark'] .repeater-row > .actions > a.compress > i {
     color: #92929F !important;
+}
+body[builder-theme='dark'] .repeater-row.compress:after{
+    background: -moz-linear-gradient(top, var(--theme-shading-top) 0%, var(--theme-shading-bottom) 72%, var(--theme-shading-bottom) 100%);
+    background: -webkit-linear-gradient(top, var(--theme-shading-top) 0%,var(--theme-shading-bottom) 72%,var(--theme-shading-bottom) 100%);
+    background: linear-gradient(to bottom, var(--theme-shading-top) 0%,var(--theme-shading-bottom) 72%,var(--theme-shading-bottom) 100%);
 }
 body[builder-theme='dark'] .btn.pebutton {
     background: #2B2B40;
