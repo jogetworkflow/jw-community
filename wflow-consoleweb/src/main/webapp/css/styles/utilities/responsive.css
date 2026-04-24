@@ -1095,6 +1095,126 @@
     }
 }
 
+/* Filter Mobile */
+@media(max-width:767px) {
+    .filter_form:not(.popup) .filters>span,
+    .search_filter_popup .filters>span {
+        display: block !important;
+        width: 100% !important;
+    }
+
+    .filter_form:not(.popup) .filters .filter-cell,
+    .search_filter_popup .filters .filter-cell {
+        display: flex !important;
+        flex-direction: column;
+        align-items: stretch;
+        gap: 8px;
+        padding: 10px 0 15px !important;
+        margin-left: 0;
+        width: 100% !important;
+    }
+
+    .filter_form:not(.popup) .filters .filter-cell>input,
+    .filter_form:not(.popup) .filters .filter-cell>select:not([name$='-ps']),
+    .filter_form:not(.popup) .filters .filter-cell>textarea,
+    .filter_form:not(.popup) .filters .filter-cell .multiselect-native-select>.btn,
+    .filter_form:not(.popup) .filters .filter-cell input[type="submit"],
+    .search_filter_popup .filters .filter-cell>input,
+    .search_filter_popup .filters .filter-cell>select:not([name$='-ps']),
+    .search_filter_popup .filters .filter-cell>textarea,
+    .search_filter_popup .filters .filter-cell .multiselect-native-select>.btn,
+    .search_filter_popup .filters .filter-cell input[type="submit"],
+    .dataList .filters input:not([type="checkbox"]),
+    .dataList .filters select,
+    .dataList .filters textarea {
+        display: block !important;
+        width: 100% !important;
+        vertical-align: bottom !important;
+    }
+
+    .filter_form:not(.popup) .filters .filter-cell .input-group,
+    .search_filter_popup .filters .filter-cell .input-group {
+        width: 100% !important;
+        flex-wrap: wrap;
+        gap: 8px;
+    }
+
+    .filter_form:not(.popup) .filters .filter-cell .input-group>.form-control,
+    .filter_form:not(.popup) .filters .filter-cell .input-group>.custom-select,
+    .filter_form:not(.popup) .filters .filter-cell .input-group>.form-select,
+    .filter_form:not(.popup) .filters .filter-cell .input-group>.btn,
+    .search_filter_popup .filters .filter-cell .input-group>.form-control,
+    .search_filter_popup .filters .filter-cell .input-group>.custom-select,
+    .search_filter_popup .filters .filter-cell .input-group>.form-select,
+    .search_filter_popup .filters .filter-cell .input-group>.btn {
+        flex: 1 1 100%;
+        width: 100% !important;
+    }
+
+    .filter_form:not(.popup) .filters .filter-cell .bootstrap-select,
+    .filter_form:not(.popup) .filters .filter-cell .bootstrap-select>.dropdown-toggle,
+    .filter_form:not(.popup) .filters .filter-cell .select2-container,
+    .filter_form:not(.popup) .filters .filter-cell .select2-selection,
+    .search_filter_popup .filters .filter-cell .bootstrap-select,
+    .search_filter_popup .filters .filter-cell .bootstrap-select>.dropdown-toggle,
+    .search_filter_popup .filters .filter-cell .select2-container,
+    .search_filter_popup .filters .filter-cell .select2-selection {
+        width: 100% !important;
+    }
+
+    .filter_form:not(.popup) .filters .filter-cell+.filter-cell,
+    .search_filter_popup .filters .filter-cell+.filter-cell {
+        border-top: 1px solid #ddd;
+    }
+
+    .filter_form:not(.popup) .filters .filter-cell input,
+    .search_filter_popup .filters .filter-cell input {
+        margin: 0px !important;
+        padding-inline: 12px !important;
+    }
+
+    .filter_form:not(.popup) .filters .filter-cell .mobile_label,
+    .search_filter_popup .filters .filter-cell .mobile_label {
+        display: block;
+        font-size: 80%;
+        font-weight: bold;
+        margin-bottom: 5px;
+    }
+
+    .filter_form:not(.popup) .filters .filter-cell span[class*='label'],
+    .filter_form:not(.popup) .filters .filter-cell span[class*='Label'],
+    .search_filter_popup .filters .filter-cell span[class*='label'],
+    .search_filter_popup .filters .filter-cell span[class*='Label'] {
+        display: none !important;
+    }
+
+    body .filter-cell .hasDatepicker + a, body .filter-cell .hasDatepicker + img {
+        position: absolute !important;
+        top: 50% !important;
+        transform: translateY(-50%) !important;
+        inset-inline-end: 1px !important;
+        inset-inline-start: unset !important;
+    }
+
+    body .filter-cell .hasDatepicker + a + a, body .filter-cell .hasDatepicker + img + img {
+        position: absolute !important;
+        top: 50% !important;
+        transform: translateY(-50%) !important;
+        inset-inline-end: 25px !important;
+        inset-inline-start: unset !important;
+    }
+
+    body .filter-cell label ~ .hasDatepicker + a, body .filter-cell label ~ .hasDatepicker + img,
+    body .filter-cell label ~ .hasDatepicker + a + a, body .filter-cell label ~ .hasDatepicker + img + img {
+        top: 65% !important;
+    }
+
+    body .filter-cell .hasDatepicker + a > img,
+    body .dataList .filter-cell .close-icon:after {
+        margin: 0 !important;
+    }
+}
+/* End of Stylings */
 
 @media screen and (max-width:680px) {
     .ui-dialog {
