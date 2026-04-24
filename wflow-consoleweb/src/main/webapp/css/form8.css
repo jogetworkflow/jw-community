@@ -718,6 +718,10 @@ body.rtl .selector_element .selector_items {
 .form-fileupload-value li img {
     border: 1px solid #ced4da;
 }
+.form-fileupload .form-error-message {
+    display: inline;
+    margin: 1em;
+}
 
 /* grid */
 .grid table {
