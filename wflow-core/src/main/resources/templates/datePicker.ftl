@@ -158,6 +158,15 @@
         font-family: "Font Awesome 5 Free";
         font-weight: 900;
     }
+    
+    .disableddatepicker, input[persistablereadonly]{
+        cursor: not-allowed !important;
+    }
+
+    .disableddatepicker{
+        background: var(--jgt-input-colorBgContainerDisabled, #F5F5F5) !important;
+    }
+
 </style>
 </#if>
     <label field-tooltip="${elementParamName!}" class="label${classIdentifier!}" for="${elementParamName!}_${element.properties.elementUniqueKey!}">${label} <span class="form-cell-validator">${decoration}</span><#if element.properties.showUserTimeZone! == 'true' && userTimeZone?? && !(element.properties.readonly! == 'true' && element.properties.readonly! == 'readonly' && element.properties.readonlyLabel! == 'true') ><br/><span>(${userTimeZone!?html})</span></#if><#if error??> <span class="form-error-message">${error}</span></#if></label>
@@ -169,7 +178,7 @@
         <div class="form-cell-value"><span>${value!?html} <#if element.properties.showUserTimeZone! == 'true' && userTimeZone??>(${userTimeZone!?html})</#if></span></div>
         <input id="${elementParamName!}" name="${elementParamName!}" type="hidden" value="${value!?html}" />
     <#else>
-        <input id="${elementParamName!}_${element.properties.elementUniqueKey!}" style="<#if (element.properties.readonly! == 'true')>cursor:not-allowed;background:var(--jgt-input-colorBgContainerDisabled, #F5F5F5)<#else>background: initial;</#if>" class="datepicker-input" name="${elementParamName!}" type="text" <#if iconValue?? && iconValue == '' && element.properties.size?has_content> size="${element.properties.size!}"</#if> value="${value!?html}" class="${elementParamName!}<#if (element.properties.allowManual! != 'true' && element.properties.readonly! != 'true')> no-manual-input</#if> <#if error??>form-error-cell</#if>" <#if (element.properties.allowManual! != 'true' || element.properties.readonly! == 'true')>readonly</#if> <#if element.properties.readonly! == 'readonly'>readonly persistablereadonly</#if> placeholder="<#if (element.properties.placeholder! != '')>${element.properties.placeholder!?html}<#else>${displayFormat!?html}</#if>" />
+        <input id="${elementParamName!}_${element.properties.elementUniqueKey!}" style="background: initial;" name="${elementParamName!}" type="text" <#if iconValue?? && iconValue == '' && element.properties.size?has_content> size="${element.properties.size!}"</#if> value="${value!?html}" class="datepicker-input <#if element.properties.readonly! == 'true'> disableddatepicker </#if> ${elementParamName!}<#if (element.properties.allowManual! != 'true' && element.properties.readonly! != 'true')> no-manual-input</#if> <#if error??>form-error-cell</#if>" <#if (element.properties.allowManual! != 'true' || element.properties.readonly! == 'true')>readonly</#if> <#if element.properties.readonly! == 'readonly'>readonly persistablereadonly</#if> placeholder="<#if (element.properties.placeholder! != '')>${element.properties.placeholder!?html}<#else>${displayFormat!?html}</#if>" />
     </#if>
     <#if ((iconValue?? && iconValue != ""))>
         </div>
