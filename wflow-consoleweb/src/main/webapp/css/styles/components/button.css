@@ -6,6 +6,11 @@
     box-shadow: none;
 }
 
+.btn,
+.dataList td.rowaction_body.editCrudButton a{
+    border-radius: var(--global-borderRadius) !important;
+}
+
 /* Form Button */
 .form-edit-btn {
     position: absolute !important;
