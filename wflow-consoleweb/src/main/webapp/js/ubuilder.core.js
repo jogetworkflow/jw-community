@@ -106,15 +106,18 @@ UserviewBuilder = {
 
                     if (jsPreElement) {
                         var cmJs = jsPreElement.CodeMirror;
-
-                        if(cmJs.getValue() === ""){
-                            cmJs.setValue(savedJs);
-                        } else if(cmJs.getValue() !== "" && cmJs.getValue() !== savedJs){
-                            UI.confirm(get_cbuilder_msg("ubuilder.customJS.confirm"),
+                        var cmJsValue = cmJs.getValue();
+                        if(cmJs.getValue() !== savedJs){
+                              UI.confirm(get_cbuilder_msg("ubuilder.customJS.confirm"),
                                 () => {
                                     cmJs.setValue(savedJs);          
                                 }, {
-                                    confirmButtonLabel: get_cbuilder_msg("cbuilder.remove")
+                                    cancelCallback : () => {
+                                        cmJs.setValue(cmJsValue);
+                                    },
+                                    confirmButtonLabel: get_cbuilder_msg("cbuilder.keep"),
+                                    confirmButtonClass: 'dialog-btn-primary',
+                                    cancelButtonLabel: get_cbuilder_msg("cbuilder.remove")
                                 }
                             );
                         }
@@ -122,18 +125,20 @@ UserviewBuilder = {
     
                     if (cssPreElement) {
                         var cmCss = cssPreElement.CodeMirror;
-
-                        //first condition: if cmCss is null, assign cmCss value to savedCss
-                        if(cmCss.getValue() === ""){
-                            cmCss.setValue(savedCss);
-                        } else if(cmCss.getValue() !== "" && cmCss.getValue() !== savedCss){
-                            UI.confirm(get_cbuilder_msg("ubuilder.customCSS.confirm"),
+                        var cmCssValue = cmCss.getValue();
+                        if(cmCss.getValue() !== savedCss){
+                           UI.confirm(get_cbuilder_msg("ubuilder.customCSS.confirm"),
                                 () => {
                                     cmCss.setValue(savedCss);         
                                 }, {
-                                    confirmButtonLabel: get_cbuilder_msg("cbuilder.remove")
+                                    cancelCallback : () => {
+                                        cmCss.setValue(cmCssValue);
+                                    },                                    
+                                    confirmButtonLabel: get_cbuilder_msg("cbuilder.keep"),
+                                    confirmButtonClass: 'dialog-btn-primary',
+                                    cancelButtonLabel: get_cbuilder_msg("cbuilder.remove")
                                 }
-                            );
+                            );                        
                         }
                     }
 
