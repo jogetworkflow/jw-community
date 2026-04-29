@@ -38,6 +38,9 @@
                             options.acceptedFiles += "," + mime;
                         }
                     }
+                    options.acceptedFiles += ",android/allowCamera";
+                } else if (o.enableImageEditor || o.enableImageEditor==="") {
+                    options.acceptedFiles = "android/allowCamera,image/*";
                 }
                 if (o.maxSize !== "") {
                     try {
