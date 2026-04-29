@@ -649,6 +649,9 @@ body[builder-theme] .nv-tag-plus {
 .builder-type ul li {
     position: relative;
     overflow: visible;
+    display: grid;
+    grid-template-columns: 1fr auto;
+    grid-template-rows: auto auto;
 }
 /* .builder-actions a.delete and related styles removed as delete icon is gone */
 .builder-actions .item-actions-btn {
@@ -741,7 +744,8 @@ body[builder-theme='dark'] .item-actions-dropdown .dropdown-action-delete:hover 
 }
 
 .item-sublabel{
-    right: 30px !important;
+    right: 0 !important;
+    padding-right: 5px !important;
 }
 
 
@@ -755,12 +759,29 @@ a.item-link *:is(.item-label, .item-id) {
 }
 .builder-actions {
     right: 3px !important;
-    top: 50%;
-    transform: translateY(-50%);
+    top: unset;
+    transform: none;
     z-index: 3;
     display: flex;
     align-items: center;
+    grid-column: 2;
+    grid-row: 1;
+    align-self: center;
+    position: relative;
 }
+
+.item-link{
+    grid-column: 1;
+    grid-row: 1;
+}
+.builder-type ul li > :not(.item-link):not(.builder-actions){
+    grid-column: 1 / -1;
+    grid-row: 2;
+}
+.builder-type ul li > a{
+    padding-right: 0px;
+}
+
 body:has(.item-actions-dropdown.active) .builder-actions:has(.item-actions-dropdown:not(.active)) {
     z-index: 2;
 }
