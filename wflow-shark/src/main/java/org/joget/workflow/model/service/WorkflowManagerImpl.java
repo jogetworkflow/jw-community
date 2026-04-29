@@ -4546,7 +4546,7 @@ public class WorkflowManagerImpl implements SharkWorkflowManager {
             }
         } else {
             // complete assignment directly
-            result = assignmentCompleteActual(activityId, null);
+            result = assignmentCompleteActual(activityId, variableMap);
         }
         return result;
     }
@@ -5103,7 +5103,7 @@ public class WorkflowManagerImpl implements SharkWorkflowManager {
             sc = connect();
 
             WfAssignment a = getSharkAssignment(sc, activityId);
-            if (!JSPClientUtilities.isMine(sc, a)) {
+            if (a == null || !JSPClientUtilities.isMine(sc, a)) {
                 throw new Exception("I don't own activity " + activityId);
             }
 
@@ -5153,7 +5153,7 @@ public class WorkflowManagerImpl implements SharkWorkflowManager {
             sc = connect();
 
             WfAssignment a = getSharkAssignment(sc, activityId);
-            if (!JSPClientUtilities.isMine(sc, a)) {
+            if (a == null || !JSPClientUtilities.isMine(sc, a)) {
                 throw new Exception("I don't own activity " + activityId);
             }
 
