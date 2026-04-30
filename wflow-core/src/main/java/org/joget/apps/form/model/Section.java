@@ -23,6 +23,7 @@ public class Section extends Element implements FormBuilderEditable, FormContain
     protected Map<FormData, Boolean> continueValidations = new HashMap<FormData, Boolean>();
     private Collection<Map<String, String>> rules = null;
     private Map<String, Element> elements = new HashMap<String, Element>();
+    private String cachedRulesParameterName = null; 
 
     @Override
     public String getName() {
@@ -123,8 +124,17 @@ public class Section extends Element implements FormBuilderEditable, FormContain
     }
     
     protected Collection<Map<String, String>> getRules(FormData formData) {
+        // clear cache when custom parameter name changed 
+        // e.g when section is reused in subform repeater 
+        String currentParamName = getCustomParameterName();
+        if (rules != null && currentParamName != null && !currentParamName.equals(cachedRulesParameterName)) {
+            rules = null;
+            elements.clear();
+        }
+        
         if (rules == null) {
             rules = new ArrayList<Map<String, String>>();
+            cachedRulesParameterName = currentParamName;
             
             String[] fields = getPropertyString("visibilityControl").split(";", -1);
             String[] values = getPropertyString("visibilityValue").split(";", -1);
