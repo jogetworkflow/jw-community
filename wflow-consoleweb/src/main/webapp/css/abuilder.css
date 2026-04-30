@@ -36,7 +36,7 @@ body {--builder-left-panel-width: 0px !important;}
     display: none !important;
 }
 body.show-usages-mode .builder-type ul li.item:not(.usage_hide) {
-    display: block !important;
+    display: grid !important;
 }
 #builder_canvas .canvas-header { display:flex; margin-bottom: 10px; align-items: center; }
 #builder_canvas .search-container {display: flex; gap:5px; max-width: unset; flex: 1 1 auto; margin: 0px; padding: 3px; border: 1px solid var(--theme-border-color-1); border-radius: 8px; align-items: center; }
@@ -309,6 +309,8 @@ li:hover > .find-usage {
     line-height: 14px; 
     padding: 5px 10px 10px;
     padding-right: 25px;
+    grid-row: 1;
+    grid-column: 1 / -1;
 }
 li.item:has(.builder-actions > *:nth-child(3)) .nv-tags,
 li.item:has(.builder-actions > *:nth-child(3)) *:is(.item-label, .item-id) {
@@ -765,21 +767,24 @@ a.item-link *:is(.item-label, .item-id) {
     display: flex;
     align-items: center;
     grid-column: 2;
-    grid-row: 1;
+    grid-row: 2;
     align-self: center;
     position: relative;
 }
 
 .item-link{
     grid-column: 1;
-    grid-row: 1;
-}
-.builder-type ul li > :not(.item-link):not(.builder-actions){
-    grid-column: 1 / -1;
     grid-row: 2;
+}
+.builder-type ul li > :not(.item-link):not(.builder-actions):not(.nv-tags){
+    grid-column: 1 / -1;
+    grid-row: 3;
 }
 .builder-type ul li > a{
     padding-right: 0px;
+}
+.builder-type ul li.message{
+    display: block;
 }
 
 body:has(.item-actions-dropdown.active) .builder-actions:has(.item-actions-dropdown:not(.active)) {
