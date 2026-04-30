@@ -197,7 +197,9 @@ public class JSPClientUtilities {
    }
 
    public static boolean isMine(SharkConnection sConn, WfAssignment a) throws Exception {
-      return a.get_accepted_status();
+      String username = sConn.getResourceObject().resource_key();
+      String assignee = a.assignee().resource_key();
+      return username.equals(assignee);
    }
 
    public static void assignmentAccept(SharkConnection sConn, String activityId)
