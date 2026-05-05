@@ -1135,6 +1135,7 @@ body.rtl .selector_element .selector_items {
     overflow: visible !important;
     position: relative !important;
     top: 0 !important;
+    width: auto !important;
 }
 
 .handsontableInputHolder .handsontableEditor .ht_master .wtHolder {
@@ -1142,8 +1143,11 @@ body.rtl .selector_element .selector_items {
     max-height: 230px;
 }
 
+.handsontableInput {
+    box-shadow: inset 0 0 0 2px #5292f7 !important;
+}
+
 .ht_editor_visible .ht_master .wtHolder{
-    max-width: fit-content;
     overflow-x: hidden;
 }
 
