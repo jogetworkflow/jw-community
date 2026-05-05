@@ -24,7 +24,7 @@
             
             $(Nav.target).off("click", ".nv-tags .nv-tag");
             $(Nav.target).on("click", ".nv-tags .nv-tag", function(){
-                Nav.searchTag($(this));
+                Nav.searchTag($(this).clone());
                 event.preventDefault();
                 event.stopPropagation();
                 return false;
@@ -445,60 +445,57 @@
             }
         },
         searchTag: function(tag){
-            const $searchSuggestion = $(Nav.options.search).find(".search-suggestion");
-            const $span = $(tag);
-            const $div = $("<div>").append($span.contents());
+            if ($(Nav.options.search).find(".usage").length === 0) {
+                const $searchSuggestion = $(Nav.options.search).find(".search-suggestion");
+                const $span = $(tag);
 
-            if ($searchSuggestion.find(".tag-options").children().length === 0) {
-                var tags = Nav.getTagOptions();
+                if ($searchSuggestion.find(".tag-options").children().length === 0) {
+                    var tags = Nav.getTagOptions();
 
-                $(tags).each(function () {
-                    var $clone = $(this).clone().find("div.nv-tag");
-                    $clone.find("i.check").remove();
-                    
-                    $searchSuggestion.find(".tag-options").append(
-                        $("<li>").append($clone)
-                    );
-                });
-            }
+                    $(tags).each(function () {
+                        var $clone = $(this).clone().find("div.nv-tag");
+                        $clone.find("i.check").remove();
+                        
+                        $searchSuggestion.find(".tag-options").append(
+                            $("<li>").append($clone)
+                        );
+                    });
+                }
 
-            $.each($span[0].attributes, function () {
-                $div.attr(this.name, this.value);
-            });
-
-            $span.replaceWith($div);
-
-            const $sub = $('<div class="sub-search tag"><span>' + get_cbuilder_msg('cbuilder.tag') + '</span>:<li>' + $span[0].outerHTML + '</li> <input class="form-control form-control-sm component-search" style="display:none"><i class="fas fa-xmark remove-filter"></i></div>');
-            
-            $sub.find(".nv-tag").append("<i class='fas fa-xmark'> </i>");
-            $sub.find(".nv-tag span").remove();
-
-            $sub.find("i").on("click", function(){
-                $(this).closest("li").remove();
-                $sub.find("input").show();
-                $sub.find("input").focus();
-
-                $(Nav.options.search).find("input").trigger("change");
-            })
-
-            $sub.find(".remove-filter").off("click").on("click", function(){
-                $(this).parent().remove();
+                const $sub = $('<div class="sub-search tag"><span>' + get_cbuilder_msg('cbuilder.tag') + '</span>:<li>' + $span[0].outerHTML + '</li> <input class="form-control form-control-sm component-search" style="display:none"><i class="fas fa-xmark remove-filter"></i></div>');
                 
-                $(Nav.options.search).find("> input").trigger("focusout.search");
+                $sub.find(".nv-tag").append("<i class='fas fa-xmark'> </i>");
+                
+                $sub.find("i").on("click", function(){
+                    $(this).closest("li").remove();
+                    $sub.find("input").show();
+                    $sub.find("input").focus();
+
+                    $(Nav.options.search).find("input").trigger("change");
+                })
+
+                $sub.find(".remove-filter").off("click").on("click", function(){
+                    $(this).parent().remove();
+                    
+                    $(Nav.options.search).find("> input").trigger("focusout.search");
+                    $(Nav.options.search).find("> input").trigger("change");
+                })
+
+                $sub.find("input").off("focusin").on("focusin", function(e){
+                    $searchSuggestion.addClass("show");
+                    $(this).parent().addClass("active");
+
+                    $searchSuggestion.find(".options").addClass("hidden");
+                    $searchSuggestion.find(".tag-options").removeClass("hidden");
+                })
+
+                
+                $(Nav.options.search).find("> input").before($sub)
+
                 $(Nav.options.search).find("> input").trigger("change");
-            })
-
-            $sub.find("input").off("focusin").on("focusin", function(e){
-                $searchSuggestion.addClass("show");
-                $(this).parent().addClass("active");
-
-                $searchSuggestion.find(".options").addClass("hidden");
-                $searchSuggestion.find(".tag-options").removeClass("hidden");
-            })
-
-            $(Nav.options.search).find("> input").before($sub)
-
-            $(Nav.options.search).find("> input").trigger("change");
+            } else {
+                UI.alert(get_cbuilder_msg("abuilder.usageModeInputDisabled"));
+            }
         }
     };
     window.Nav = Nav;

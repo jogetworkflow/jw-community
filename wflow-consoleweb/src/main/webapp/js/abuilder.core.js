@@ -168,28 +168,55 @@ AppBuilder = {
             $searchSuggestion.removeClass("show");
         });
 
-        $("#builder_canvas").find('.search-container input').off("keydown input focusin").on("keydown input focusin", function(e){
-            // Controls keydown for traversing with keyboard
+        $("#builder_canvas").off("keydown input focusin", ".search-container input").on("keydown input focusin", ".search-container input", function(e){
+            // Check if usages mode is active and prevent input
+            if ($("body").hasClass("show-usages-mode")) {
+                e.preventDefault();
+                $(this).blur();
+                UI.alert(get_cbuilder_msg("abuilder.usageModeInputDisabled"));
+                return false;
+            }
+            
+            // Control keydown for traversing with keyboard
+            
+            // Store previous value for backspace detection
+            var currentValue = $(this).val();
             
             // Hide suggestion results that do not match
-            var searchText = $(this).val().toLowerCase();
+            var searchText = currentValue.toLowerCase();
 
             $searchSuggestionChildren.each(function(){
                 $(this).toggleClass("hidden", !$(this).text().toLowerCase().includes(searchText));
             })
             
             if ($searchSuggestionChildren.length !== $searchSuggestionChildren.filter("li.hidden").length) {
+                var pos = $(this).position();
+                $searchSuggestion.css({'left' : pos.left + 'px'});
                 $searchSuggestion.addClass("show");
                 $searchSuggestion.find(".options").removeClass("hidden");
             } else {
                 $searchSuggestion.removeClass("show");
             }
 
-            var index = $searchSuggestion.find("li.highlight").index();
             var direction = 0;
-            
             var $items = $searchSuggestion.children().children();
+            
+            if ($(this).closest(".sub-search").is(".tag")) {
+                $searchSuggestion.find(".options").addClass("hidden");
+                $searchSuggestion.find(".tag-options").removeClass("hidden");
+                $items = $searchSuggestion.find(".tag-options").children();
+            } else if ($(this).closest(".sub-search").length > 0) {
+                $searchSuggestion.removeClass("show");
+            } else {
+                $searchSuggestion.find(".options").removeClass("hidden");
+                $searchSuggestion.find(".tag-options").addClass("hidden");
+            }
+
+            // Calculate index after determining the correct $items set
+            var index = $items.filter("li.highlight").index();
+                        
             var total = $items.length;
+            var skip = false;
 
             switch (e.key) {
                 case "ArrowUp": // Up
@@ -201,6 +228,7 @@ AppBuilder = {
                     e.preventDefault();
                     break;
                 case 'Enter':
+                    skip = true;
                     $searchSuggestion.find("li.highlight").trigger("mousedown");
                     e.preventDefault();
                     break;
@@ -208,8 +236,10 @@ AppBuilder = {
                     return;
             }
 
-            if (index === -1) {
-                $items.eq(direction === 1 ? 0 : total - 1).addClass("highlight");
+            if (skip) { 
+                $searchSuggestion.find("li.highlight").removeClass("highlight") 
+            } else if (index === -1) {
+                $items.eq(0).addClass("highlight");
             } else {
                 $items.eq(index).removeClass("highlight");
 
@@ -221,9 +251,14 @@ AppBuilder = {
                 $items.eq(nextIndex).addClass("highlight");
             }
 
-            $searchSuggestion.find("li.highlight")[0].scrollIntoView({
-                block: "nearest"
-            });
+            var $highlighted = $searchSuggestion.find("li.highlight");
+
+            if ($highlighted.length > 0) {
+                $highlighted[0].scrollIntoView({
+                    block: "nearest",
+                    behavior: "auto"
+                });
+            }
         });
 
         function parseSearch(query) {
@@ -340,6 +375,9 @@ AppBuilder = {
                             const colorClass = classes.find(c => c.startsWith("tag-") && c !== "tag");
                             
                             match = filters['tag'].some(t => t === colorClass);
+
+                            // End early if match found
+                            if (match) return false;
                         })
                     }
 
@@ -363,11 +401,19 @@ AppBuilder = {
             }
         }
 
+        let prevSearchText = "";
         $("#builder_canvas").find('.search-container input').off("keyup change");
         $("#builder_canvas").find('.search-container input').on("keyup change", function(e){
+            // Check if usages mode is active and prevent input
+            if ($("body").hasClass("show-usages-mode")) {
+                e.preventDefault();
+                $(this).blur();
+                UI.alert(get_cbuilder_msg("abuilder.usageModeInputDisabled"));
+                return false;
+            }
 
             var searchText = $(this).val().toLowerCase();
-        
+
             if (searchText !== "") {
                 var tags = "";
                 if (searchText.indexOf("#") === 0) {
@@ -396,6 +442,16 @@ AppBuilder = {
                 $("#builder_canvas").find("li.item .overview_data.active_data.search_hide").removeClass("search_hide").show();
                 $searchSuggestionChildren.removeClass("hidden")
             }
+            
+            // Detect if backspace key was pressed on empty input
+            if ((e.which === 8 || e.keyCode === 8) && $(this).is('.component-search')) {
+                // Only remove filter if input was already empty before backspace (not deleting last character)
+                if (prevSearchText === '' && $(this).prev().length > 0) {
+                    $(this).prev().find(".remove-filter").click();
+                }
+            }
+            
+            if ($(this).is('.component-search')) prevSearchText = searchText;
 
             if (this.value !== "") {
                 $(this).next("button").show();
@@ -508,14 +564,13 @@ AppBuilder = {
         $searchSuggestion.append("<div class='tag-options'></div>");
         $searchSuggestion.find('.tag-options').append("");
         
-        $("body").off("mousedown", ".tag-options").on("mousedown", ".tag-options li", function() {
+        $("body").off("mousedown", ".tag-options li").on("mousedown", ".tag-options li", function() {
             var $subSearch = $(this).closest(".search-container").find(".sub-search.tag.active");
             $subSearch.find("input").hide();
 
             const $cloneLi = $(this).clone();
 
             $cloneLi.find(".nv-tag").append("<i class='fas fa-xmark'> </i>");
-            $cloneLi.find(".nv-tag span").remove();
 
             $cloneLi.find("i").on("click", function(){
                 $(this).closest("li").remove();
@@ -542,10 +597,9 @@ AppBuilder = {
 
         const $tagOptions = $searchSuggestion.find(".tag-options");
         $searchSuggestion.off("mousedown", "li.tag").on("mousedown", "li.tag", function(){
-            $searchSuggestion.parent().addClass("hidden");
-
             var obj = this;
-            $(this).addClass("hidden");
+
+            $searchSuggestion.parent().addClass("hidden");
 
             Nav.toggleInfo();
 
@@ -554,6 +608,8 @@ AppBuilder = {
 
                 var tags = Nav.getTagOptions();
 
+                $tagOptions.children().remove(); 
+                
                 $(tags).each(function () {
                     var $clone = $(this).clone().find("div.nv-tag");
                     $clone.find("i.check").remove();
@@ -565,6 +621,9 @@ AppBuilder = {
                 
                 $tagOptions.removeClass("hidden"); 
                 $tagOptions.parent().siblings("options").addClass("hidden");
+                setTimeout(function(){
+                    $searchSuggestion.scrollTop(0);
+                }, 150)
 
                 const $sub = $('<div class="sub-search tag"><span>' + get_cbuilder_msg('cbuilder.tag') + '</span>:<input class="form-control form-control-sm component-search"><i class="fas fa-xmark remove-filter"></i></div>');
                 
@@ -619,7 +678,7 @@ AppBuilder = {
 
                 $(this).addClass("hidden");
 
-                const builderIcon = $("body").find(".builder-type[data-builder-type='" + $(this).data("builder-type") + "'] .builder-title > span.icon").html();
+                const builderIcon = "<i class='fas fa-magnifying-glass'></i>";
 
                 const $sub = $('<div class="sub-search" data-builder-type="' + $(this).data("builder-type") + '"><span>' + builderIcon + ' ' + $(this).data("builder-type").charAt(0).toUpperCase() + $(this).data("builder-type").slice(1) + '</span>:<input data-builder="' + classIdentifier + '" class="form-control form-control-sm component-search"><i class="fas fa-xmark remove-filter"></i></div>');
 
@@ -763,62 +822,76 @@ AppBuilder = {
                 icon: '<i class="la la-binoculars"></i>',
                 action: "findUsage",
                 handler: function(item) {
-                    if ($("body").hasClass("show-usages-mode")) {
-                        $("#builder_canvas").find(".search-container .sub-search.usage .remove-filter").click();
+                    function handleUsage() {
+                        var currentBuilder = item;
+
+                        $("#builder_canvas").find(".search-container .sub-search .remove-filter").click();
                         $("body").removeClass("show-usages-mode");
-                    }
-                    var currentBuilder = item;
-                    Usages.getUsages(
-                        $(currentBuilder).data("id"),
-                        $(currentBuilder).data("builder-type"),
-                        {
-                            appId: CustomBuilder.appId,
-                            appVersion: CustomBuilder.appVersion,
-                            builder: $(currentBuilder).data("builder-type"),
-                            contextPath: CustomBuilder.contextPath,
-                            id: $(currentBuilder).data("id")
-                        },
-                        function(data){ 
-                            var usages = data.usages;
-                            
-                            $("body").addClass("show-usages-mode");
-                            $("body").find("div.builder-type li.item").addClass("usage_hide");
-                            $("body").find("div.builder-type li.item[data-id='" + $(item).data("id") + "']").removeClass("usage_hide");
 
-                            if (parseInt(data.size) > 0) {
-                                for (var i = 0; i < usages.length; i++) {
-                                    var usage = usages[i];
-                                    var builderType = usage.type;
-                                    var builderId = usage.where;
+                        Usages.getUsages(
+                            $(currentBuilder).data("id"),
+                            $(currentBuilder).data("builder-type"),
+                            {
+                                appId: CustomBuilder.appId,
+                                appVersion: CustomBuilder.appVersion,
+                                builder: $(currentBuilder).data("builder-type"),
+                                contextPath: CustomBuilder.contextPath,
+                                id: $(currentBuilder).data("id")
+                            },
+                            function(data){ 
+                                var usages = data.usages;
+                                
+                                $("body").addClass("show-usages-mode");
+                                $("body").find("div.builder-type li.item").addClass("usage_hide");
+                                $("body").find("div.builder-type li.item[data-id='" + $(item).data("id") + "']").removeClass("usage_hide");
 
-                                    if (builderType.includes('process_')) {
-                                        builderType = "process";
-                                        builderId = builderId.split("::")[0];
+                                if (parseInt(data.size) > 0) {
+                                    for (var i = 0; i < usages.length; i++) {
+                                        var usage = usages[i];
+                                        var builderType = usage.type;
+                                        var builderId = usage.where;
+
+                                        if (builderType.includes('process_')) {
+                                            builderType = "process";
+                                            builderId = builderId.split("::")[0];
+                                        }
+
+                                        var $items = $("div.builder-type[data-builder-type='" + builderType + "'] li.item");
+
+                                        $items.filter("[data-id='" + builderId + "']")
+                                            .removeClass("usage_hide");
                                     }
-
-                                    var $items = $("div.builder-type[data-builder-type='" + builderType + "'] li.item");
-
-                                    $items.filter("[data-id='" + builderId + "']")
-                                        .removeClass("usage_hide");
                                 }
+
+                                $("body").find(".builder-type").each(function(){
+                                    if ($(this).find(".item").length > 0 && $(this).find(".item").length === $(this).find(".item.usage_hide").length) $(this).find(".ul-wrapper > ul").append('<li class="no-result-message">' + get_cbuilder_msg('abuilder.noSearchResult') + '</li>');
+                                })
+                                
+                                var currentId = $(item).find(".item-label").text();
+                                var builderIcon = "<i class='la la-binoculars'></i>";
+                                var builderTitle = $(item).closest(".builder-type").data("builder-type");
+                                var builderStyle = "style='background-color:" + $(item).closest(".builder-type").find(".builder-title .icon").css('color') + ";'";
+
+                                const $sub = $('<div class="sub-search usage" ' + builderStyle + '><span>' + builderIcon + " " + builderTitle.charAt(0).toUpperCase() + builderTitle.slice(1) + '</span> : <b>' + currentId + '</b><i class="fas fa-xmark remove-filter"></i></div>');
+
+                                $sub.find(".remove-filter").off("click").on("click", function(){
+                                    $("body").removeClass("show-usages-mode");
+                                    $("body").find("div.builder-type li.item").removeClass("usage_hide");
+                                    $("body").find(".builder-type .no-result-message").remove()
+                                    $(this).parent().remove();
+                                })
+
+                                $("body").find(".search-container > input").before($sub);
                             }
-                            
-                            var currentId = $(item).find(".item-label").text();
-                            var builderIcon = $(item).closest(".builder-type").find(".builder-title > .icon").html();
-                            var builderTitle = $(item).closest(".builder-type").data("builder-type");
-                            var builderStyle = "style='background-color:" + $(item).closest(".builder-type").find(".builder-title .icon").css('color') + ";'";
-
-                            const $sub = $('<div class="sub-search usage" ' + builderStyle + '><span>' + builderIcon + " " + builderTitle.charAt(0).toUpperCase() + builderTitle.slice(1) + '</span> : <b>' + currentId + '</b><i class="fas fa-xmark remove-filter"></i></div>');
-
-                            $sub.find(".remove-filter").off("click").on("click", function(){
-                                $("body").removeClass("show-usages-mode");
-                                $("body").find("div.builder-type li.item").removeClass("usage_hide");
-                                $(this).parent().remove();
-                            })
-
-                            $("body").find(".search-container > input").before($sub);
-                        }
-                    );   
+                        );
+                    }
+                    
+                    if ($searchContainer.find(".sub-search").length > 0) {
+                        UI.confirm(get_cbuilder_msg("abuilder.usageConfirmation"), handleUsage);
+                    } else {
+                        handleUsage();
+                    }
+                       
                 }
             },
             {
@@ -1336,68 +1409,14 @@ AppBuilder = {
 
                             var $codeDetail = $(frameBody).find("#main-body-content #code_detail");
 
-                            codeEditorField = CodeMirror($codeDetail[0], {
-                                lineNumbers: true,
-                                mode: "text",
-                                matchBrackets: true,
-                                theme: "default",
-                                autoRefresh:true,
-                                gutters: ["CodeMirror-lint-markers", "CodeMirror-linenumbers", "CodeMirror-foldgutter"],
-                                lint: true,
-                                historyEventDelay: 100,
-                                autoCloseTags: true,
-                                autoCloseBrackets: true,
-                                foldGutter: true,
-                                lint: true,
-                                mode: "htmlmixed",
-                                lineWrapping: true,
-                                readOnly: true,
-                                highlightSelectionMatches: {annotateScrollbar: true, minChars: 1},
-                                extraKeys: {
-                                    "Ctrl-F": function(cm) {
-                                        cm.execCommand("find")
-                                        $codeDetail.find(".CodeMirror-advanced-dialog").css({display: 'block'})
-                                        var offsetTop = "0px"
-                                        if ($("body #top-panel").length > 0){
-                                            offsetTop = $("body #top-panel").outerHeight() + "px"
-                                        }
-
-                                        $codeDetail.find(".CodeMirror-advanced-dialog").draggable()
-                                    },
-                                    "Cmd-F": function(cm) {
-                                        cm.execCommand("find")
-                                        $codeDetail.find(".CodeMirror-advanced-dialog").css({display: 'block'})
-                                        var offsetTop = "0px"
-                                        if ($("body #top-panel").length > 0){
-                                            offsetTop = $("body #top-panel").outerHeight() + "px"
-                                        }
-
-                                        $codeDetail.find(".CodeMirror-advanced-dialog").draggable()
-                                    },
-                                    "Ctrl-=": function(cm) {
-                                        cm.increaseFontSize();
-                                    },
-                                    "Ctrl--": function(cm) {
-                                        cm.decreaseFontSize();
-                                    },
-                                    "Ctrl-/": function(cm) {
-                                        cm.toggleComment();
-                                    }
-                                }
-                            });
-                            
-                            $codeDetail.find("> .CodeMirror").css({height: "100%"});
-                            $(codeEditorField.getWrapperElement()).css("min-height", "100%");
-
-                            $codeDetail.find(".CodeMirror-advanced-dialog").css({display: 'none'});
+                            var isDark = false;
 
                             if (CustomBuilder.systemTheme === 'dark') { //support builder theme
-                                codeEditorField.setOption("theme", "ayu-mirage");
+                                isDark = true;
                             }
-                                                        
+
                             //update content
                             var content = $(detailLink).find(".more_detail_content").text();
-                            codeEditorField.setValue(content);
                             
                             //show the popup
                             JPopup.dialogboxes["overview_data_more_detail"].show();
@@ -1407,10 +1426,6 @@ AppBuilder = {
                             var headerHeight = $(frameBody).find("#main-body-header").outerHeight();
                             var mainBodyHeight = $(frameBody).find("#main-body-content").outerHeight() - headerHeight;
                             $(frameBody).css("padding-top", headerHeight + 'px');
-                            setTimeout(function () {
-                                $(frameBody).find("#main-body-content")[0].style.setProperty("height", (mainBodyHeight) + "px", "important");
-                                aceField.resize();
-                            }, 50);
                         };
                         
                         $("#builders")

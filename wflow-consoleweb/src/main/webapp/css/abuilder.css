@@ -39,10 +39,10 @@ body.show-usages-mode .builder-type ul li.item:not(.usage_hide) {
     display: grid !important;
 }
 #builder_canvas .canvas-header { display:flex; margin-bottom: 10px; align-items: center; }
-#builder_canvas .search-container {display: flex; gap:5px; max-width: unset; flex: 1 1 auto; margin: 0px; padding: 3px; border: 1px solid var(--theme-border-color-1); border-radius: 8px; align-items: center; }
+#builder_canvas .search-container {display: flex; gap:5px; max-width: unset; flex: 1 1 80%; margin: 0px; padding: 3px; border: 1px solid var(--theme-border-color-1); border-radius: 8px; align-items: center; flex-wrap: wrap; }
 #builder_canvas .search-container:has(input.component-search:focus) { outline: 0.15rem solid #009688; }
 #builder_canvas .search-container input.component-search:focus { outline: none; border: none; }
-#builder_canvas .search-container input { border:none; padding: 8; }
+#builder_canvas .search-container input { border:none; padding: 8; flex: 1; min-width: 0; }
 #builder_canvas .search-container:has(input.component-search:focus)::before {
     color: #009688;
 }
@@ -104,6 +104,12 @@ body[builder-theme='dark'] #builder_canvas .search-container > .search-suggestio
 #builder_canvas .search-container > .search-suggestion li:hover {
     background-color: #f3f4f6; 
     color: #111827;           
+}
+#builder_canvas .search-container > .search-suggestion .tag-options > li > .nv-tag {
+    max-width: 220px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 body[builder-theme='dark'] #builder_canvas .search-container > .search-suggestion li.highlight,
 body[builder-theme='dark'] #builder_canvas .search-container > .search-suggestion li:hover {
@@ -173,6 +179,14 @@ body[builder-theme='dark'] #builder_canvas .search-container > .sub-search {
 }
 #builder_canvas .search-container > .sub-search.tag .nv-tag {
     position: relative;
+    font-size: 13px;
+    margin: auto;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+#builder_canvas .search-container > .sub-search.tag .nv-tag:hover span {
+    opacity: 0.4;
 }
 #builder_canvas .search-container > .sub-search.tag > input {
     width:10px;
