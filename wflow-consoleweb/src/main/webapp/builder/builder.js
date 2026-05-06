@@ -746,6 +746,10 @@ window._CustomBuilder = {
                         $("#right-panel-content").find(".element-properties-header .btn-group").remove();
                     }
                 });
+            }else{
+                // Clean up lingering listeners and DOM buttons to prevent them bleeding into the Process Builder
+                $('#properties-tabs').off('shown.bs.tab');
+                $("#right-panel-content").find(".element-properties-header .btn-group").remove();
             }
         };
         

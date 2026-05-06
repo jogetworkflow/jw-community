@@ -363,6 +363,8 @@ FormBuilder = {
         
         builder.boxActionSetElement(event);
                 
+        // Set the form as the active element for style copy/paste
+        builder.selectedEl = builder.frameBody.find("form");
         $("body").removeClass("no-right-panel");
         $("#element-properties-tab-link").hide();
         $("#right-panel #element-properties-tab").find(".property-editor-container").remove();
