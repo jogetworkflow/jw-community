@@ -11785,9 +11785,20 @@ PropertyEditor.Type.CssStyle.prototype = {
                 for (var p in field.styleGroups[g].fields) {
                     properties[prefix + "-" + p] = "";
                 }
+                // compiled: pre-built CSS string per group used by Java to apply per-group inheritance.
+                // inherit:  per-group toggle state ("true"/"false") controlling label/input selector inclusion.
+                if (field.properties.inheritToggle) {
+                    properties[prefix + "-" + g + "-compiled"] = "";
+                    properties[prefix + "-" + g + "-inherit"] = "";
+                }
             }
-            
+
             $("#" + field.id + " .css-styles-container .style-group").each(function(){
+                var styleGroupKey = $(this).attr("data-style-group");
+                if (field.properties.inheritToggle) {
+                    // Save "true"/"false" so Java can determine per-group whether to include label/input selectors.
+                    properties[prefix + "-" + styleGroupKey + "-inherit"] = $(this).find(".style-inherit-check").prop("checked") ? "true" : "false";
+                }
                 var fields = $(this).data("fields");
                 if (fields !== undefined) {
                     $.each(fields, function(i, property) {
@@ -11799,12 +11810,48 @@ PropertyEditor.Type.CssStyle.prototype = {
                     });
                 }
             });
+
+            // Compile per-group CSS strings so Java can apply inheritance without knowing field membership.
+            if (field.properties.inheritToggle) {
+                for (var g in field.styleGroups) {
+                    var groupCss = "";
+                    for (var f in field.styleGroups[g].fields) {
+                        var val = properties[prefix + "-" + f];
+                        if (val !== undefined && val !== "") {
+                            if (f === "custom") {
+                                $.each(val.split(";"), function(i, part) {
+                                    part = part.trim();
+                                    if (part !== "") {
+                                        if (part.indexOf("!important") === -1) { part += " !important"; }
+                                        groupCss += part + ";";
+                                    }
+                                });
+                            } else {
+                                var cssVal = (f === "background-image") ? "url('" + val + "')" : val;
+                                groupCss += f + ":" + cssVal + " !important;";
+                            }
+                        }
+                    }
+                    properties[prefix + "-" + g + "-compiled"] = groupCss;
+                }
+            }
         } else {
             if (field.options.propertyValues !== undefined && field.options.propertyValues !== null) {
                 for (var g in field.styleGroups) {
                     for (var p in field.styleGroups[g].fields) {
                         if (field.options.propertyValues[prefix + "-" +p] !== undefined) {
                             properties[prefix + "-" + p] = field.options.propertyValues[prefix + "-" +p];
+                        }
+                    }
+                    // Pass through compiled/inherit keys only for fields that use them.
+                    if (field.properties.inheritToggle) {
+                        var compiledKey = prefix + "-" + g + "-compiled";
+                        if (field.options.propertyValues[compiledKey] !== undefined) {
+                            properties[compiledKey] = field.options.propertyValues[compiledKey];
+                        }
+                        var inheritKey = prefix + "-" + g + "-inherit";
+                        if (field.options.propertyValues[inheritKey] !== undefined) {
+                            properties[inheritKey] = field.options.propertyValues[inheritKey];
                         }
                     }
                 }
@@ -11931,10 +11978,24 @@ PropertyEditor.Type.CssStyle.prototype = {
                 gHtml += '<div class="'+group.fields[f].class+'">' + type.render() + '</div>';
             }
         }
-        var group = $('<div class="style-group" data-style-group="'+g+'"><i class="delete_action fas fa-trash"></i><h6>'+group.header+'</h6><div class="style-group-input-container">' + gHtml + '</div></div>');
+        // Render the inherit toggle only for fields that support it (e.g. not fieldLabel/fieldInput).
+        var inheritToggleHtml = "";
+        if (thisObj.properties.inheritToggle) {
+            inheritToggleHtml = '<label class="style-inherit-toggle" title="'+UI.escapeHTML(get_peditor_msg('style.inheritToggle'))+'"><input type="checkbox" class="style-inherit-check" checked><span class="toggle-track"><span class="toggle-thumb"></span></span></label>';
+        }
+        var group = $('<div class="style-group" data-style-group="'+g+'"><i class="delete_action fas fa-trash"></i>'+inheritToggleHtml+'<h6>'+group.header+'</h6><div class="style-group-input-container">' + gHtml + '</div></div>');
         $(container).append(group);
         $(group).data("fields", fields);
-        
+
+        if (thisObj.properties.inheritToggle) {
+            // Restore saved toggle state; default is ON (inherit enabled), so only act on explicit "false".
+            var inheritKey = thisObj.properties.name + "-" + g + "-inherit";
+            var inheritVal = (values !== undefined && values !== null) ? values[inheritKey] : undefined;
+            if (inheritVal === "false") {
+                $(group).find(".style-inherit-check").prop("checked", false);
+            }
+        }
+
         $(group).find("> h6").off("click").on("click", function(){
             $(this).toggleClass("collapsed");
         });

@@ -8795,11 +8795,14 @@ window._CustomBuilder.Builder = {
                     }
                     newPrefix += configs[j].prefix;
                 }
-                if (newPrefix !== "") {
-                    for (var k in p.properties) {
-                        if (p.properties[k].name) {
-                            p.properties[k].name = p.properties[k].name.replace('style', newPrefix+'-style');
-                        }
+                for (var k in p.properties) {
+                    if (p.properties[k].name && newPrefix !== "") {
+                        p.properties[k].name = p.properties[k].name.replace('style', newPrefix+'-style');
+                    }
+                    if (configs[j].inheritToggle !== undefined) {
+                        p.properties[k].inheritToggle = configs[j].inheritToggle;
+                    } else {
+                        delete p.properties[k].inheritToggle;
                     }
                 }
                 properties.push(p);

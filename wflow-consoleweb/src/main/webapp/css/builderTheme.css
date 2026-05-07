@@ -2157,7 +2157,7 @@ body[builder-theme] .css-styles-container .style-group {
 }
 body[builder-theme] .css-styles-container .style-group > i.delete_action {
     color: var(--theme-link-color-1);
-    top: 11px;
+    top: 13px;
 }
 body[builder-theme] .editor-panel-mode.narrow:not(.wider) .property-grid .property-input .property-type-grid-row-header:after, 
 body[builder-theme] .css-styles-container .style-group > h6:after {

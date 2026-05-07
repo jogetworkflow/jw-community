@@ -1430,6 +1430,48 @@ body.rtl .property-input > span.icon > span > span.dropdown{
 .css-styles-container .style-group > i.delete_action:hover{
     color:red;
 }
+.css-styles-container .style-group > .style-inherit-toggle {
+    position: absolute;
+    right: 55px;
+    top: 12px;
+    cursor: pointer;
+    z-index: 1;
+    margin: 0;
+    line-height: 1;
+}
+.rtl .css-styles-container .style-group > .style-inherit-toggle {
+    left: 55px;
+    right: auto;
+}
+.css-styles-container .style-group > .style-inherit-toggle input.style-inherit-check {
+    display: none;
+}
+.css-styles-container .style-group > .style-inherit-toggle .toggle-track {
+    display: inline-block;
+    width: 26px;
+    height: 14px;
+    background: var(--theme-link-color-1);
+    border-radius: 7px;
+    position: relative;
+    transition: background 0.2s;
+    vertical-align: middle;
+}
+.css-styles-container .style-group > .style-inherit-toggle .toggle-thumb {
+    position: absolute;
+    width: 10px;
+    height: 10px;
+    background: var(--theme-primary-color-1);
+    border-radius: 50%;
+    top: 2px;
+    left: 2px;
+    transition: transform 0.2s;
+}
+.css-styles-container .style-group > .style-inherit-toggle .style-inherit-check:checked + .toggle-track {
+    background: rgba(100,220,100,0.75);
+}
+.css-styles-container .style-group > .style-inherit-toggle .style-inherit-check:checked + .toggle-track .toggle-thumb {
+    transform: translateX(12px);
+}
 .css-styles-container .style-group .style-group-input-container{
     display: flex;
     flex-wrap: wrap;

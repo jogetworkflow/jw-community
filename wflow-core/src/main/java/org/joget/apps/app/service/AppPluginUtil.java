@@ -320,6 +320,7 @@ public class AppPluginUtil implements ApplicationContextAware {
                         || key.startsWith(prefix+"style-mobile-")
                         || key.startsWith(prefix+"style-tablet-")
                         || key.startsWith(prefix+"style-"))
+                     && !key.endsWith("-compiled") && !key.endsWith("-inherit")
                      && !properties.get(key).toString().isEmpty()) {
                 
                 String value = "";
@@ -380,7 +381,7 @@ public class AppPluginUtil implements ApplicationContextAware {
         return result;
     }
     
-    protected static String generateStyle(String value, String key, String prefix) {
+    public static String generateStyle(String value, String key, String prefix) {
         if (key.equals(prefix + "custom")) {
             String[] values = value.split(";");
             String temp = "";

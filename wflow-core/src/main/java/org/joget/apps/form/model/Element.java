@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Set;
 import org.joget.apps.app.service.AppPluginUtil;
@@ -348,45 +349,177 @@ public abstract class Element extends ExtDefaultPlugin implements PropertyEditab
         styles.put("DESKTOP", "");
         styles.put("TABLET", "");
         styles.put("MOBILE", "");
-        
-        String labelInputSelector = "";
-        String labelInputHoverSelector = "";
-        String[] keys = new String[]{""};
+
         if (applyToLabelAndField) {
-            keys = new String[]{"fieldLabel-", "fieldInput-"};
-        }
-        
-        String[] cssClass = getLabelAndInputSelector(styleClass, false);
-        String[] cssHoverClass = getLabelAndInputSelector(styleClass, true);
-        
-        for (int i = 0; i < keys.length; i++) {
-            if (applyToLabelAndField) {
-                labelInputSelector += ", " + cssClass[i];
-                labelInputHoverSelector += ", " + cssHoverClass[i];
+            if (hasCompiledGroupKeys()) {
+                // New format: per-group compiled CSS strings exist — apply with per-group inherit control.
+                generatePerGroupStyles(styleClass, styles);
+            } else {
+                // Legacy format: no compiled keys (element saved before per-group feature).
+                // Fall back to original behaviour: all CSS applied to element + label/input selectors.
+                String[] cssClass = getLabelAndInputSelector(styleClass, false);
+                String[] cssHoverClass = getLabelAndInputSelector(styleClass, true);
+                String labelInputSelector = ", " + cssClass[0] + ", " + cssClass[1];
+                String labelInputHoverSelector = ", " + cssHoverClass[0] + ", " + cssHoverClass[1];
+                if (!attrs.get("desktopStyle").isEmpty()) {
+                    styles.put("DESKTOP", styles.get("DESKTOP") + " ." + styleClass + labelInputSelector + "{" + attrs.get("desktopStyle") + "} ");
+                }
+                if (!attrs.get("tabletStyle").isEmpty()) {
+                    styles.put("TABLET", styles.get("TABLET") + " ." + styleClass + labelInputSelector + "{" + attrs.get("tabletStyle") + "} ");
+                }
+                if (!attrs.get("mobileStyle").isEmpty()) {
+                    styles.put("MOBILE", styles.get("MOBILE") + " ." + styleClass + labelInputSelector + "{" + attrs.get("mobileStyle") + "} ");
+                }
+                if (!attrs.get("hoverDesktopStyle").isEmpty()) {
+                    styles.put("DESKTOP", styles.get("DESKTOP") + " ." + styleClass + ":hover" + labelInputHoverSelector + "{" + attrs.get("hoverDesktopStyle") + "} ");
+                }
+                if (!attrs.get("hoverTabletStyle").isEmpty()) {
+                    styles.put("TABLET", styles.get("TABLET") + " ." + styleClass + ":hover" + labelInputHoverSelector + "{" + attrs.get("hoverTabletStyle") + "} ");
+                }
+                if (!attrs.get("hoverMobileStyle").isEmpty()) {
+                    styles.put("MOBILE", styles.get("MOBILE") + " ." + styleClass + ":hover" + labelInputHoverSelector + "{" + attrs.get("hoverMobileStyle") + "} ");
+                }
+            }
+        } else {
+            // Element-only mode: apply all compiled CSS to the element selector only.
+            if (!attrs.get("desktopStyle").isEmpty()) {
+                styles.put("DESKTOP", styles.get("DESKTOP") + " ." + styleClass + "{" + attrs.get("desktopStyle") + "} ");
+            }
+            if (!attrs.get("tabletStyle").isEmpty()) {
+                styles.put("TABLET", styles.get("TABLET") + " ." + styleClass + "{" + attrs.get("tabletStyle") + "} ");
+            }
+            if (!attrs.get("mobileStyle").isEmpty()) {
+                styles.put("MOBILE", styles.get("MOBILE") + " ." + styleClass + "{" + attrs.get("mobileStyle") + "} ");
+            }
+            if (!attrs.get("hoverDesktopStyle").isEmpty()) {
+                styles.put("DESKTOP", styles.get("DESKTOP") + " ." + styleClass + ":hover{" + attrs.get("hoverDesktopStyle") + "} ");
+            }
+            if (!attrs.get("hoverTabletStyle").isEmpty()) {
+                styles.put("TABLET", styles.get("TABLET") + " ." + styleClass + ":hover{" + attrs.get("hoverTabletStyle") + "} ");
+            }
+            if (!attrs.get("hoverMobileStyle").isEmpty()) {
+                styles.put("MOBILE", styles.get("MOBILE") + " ." + styleClass + ":hover{" + attrs.get("hoverMobileStyle") + "} ");
             }
         }
-        if (!attrs.get("desktopStyle").isEmpty()) {
-            styles.put("DESKTOP", styles.get("DESKTOP") + " ." + styleClass + labelInputSelector + "{" + attrs.get("desktopStyle") + "} ");
+
+        // Always apply explicit fieldLabel-* and fieldInput-* styles to their specific selectors.
+        addingLabelAndInputStyle(styleClass, styles);
+
+        return styles;
+    }
+
+    /** Returns true if this element has at least one JS-compiled per-group CSS key (new format). */
+    private boolean hasCompiledGroupKeys() {
+        for (String key : getProperties().keySet()) {
+            if (extractCompiledGroupName(key) != null) {
+                return true;
+            }
         }
-        if (!attrs.get("tabletStyle").isEmpty()) {
-            styles.put("TABLET", styles.get("TABLET") + " ." + styleClass + labelInputSelector + "{" + attrs.get("tabletStyle") + "} ");
+        return false;
+    }
+
+    /**
+     * Extracts the style group name from a compiled CSS property key, or returns null when the
+     * key is not a compiled key. Handles every viewport/state variant so that styling applied only
+     * on hover/tablet/mobile (with no desktop-normal style) is still detected as the new format:
+     *   style-{group}-compiled
+     *   style-tablet-{group}-compiled / style-mobile-{group}-compiled
+     *   style-hover-{group}-compiled
+     *   style-hover-tablet-{group}-compiled / style-hover-mobile-{group}-compiled
+     */
+    private String extractCompiledGroupName(String key) {
+        if (!key.startsWith("style-") || !key.endsWith("-compiled")) {
+            return null;
         }
-        if (!attrs.get("mobileStyle").isEmpty()) {
-            styles.put("MOBILE", styles.get("MOBILE") + " ." + styleClass + labelInputSelector + "{" + attrs.get("mobileStyle") + "} ");
+        String middle = key.substring("style-".length(), key.length() - "-compiled".length());
+        // Strip the optional state (hover) prefix, then the optional viewport (tablet/mobile) prefix.
+        if (middle.startsWith("hover-")) {
+            middle = middle.substring("hover-".length());
         }
-        if (!attrs.get("hoverDesktopStyle").isEmpty()) {
-            styles.put("DESKTOP", styles.get("DESKTOP") + " ." + styleClass + ":hover" + labelInputHoverSelector + "{" + attrs.get("hoverDesktopStyle") + "} ");
+        if (middle.startsWith("tablet-")) {
+            middle = middle.substring("tablet-".length());
+        } else if (middle.startsWith("mobile-")) {
+            middle = middle.substring("mobile-".length());
         }
-        if (!attrs.get("hoverTabletStyle").isEmpty()) {
-            styles.put("TABLET", styles.get("TABLET") + " ." + styleClass + ":hover" + labelInputHoverSelector + "{" + attrs.get("hoverTabletStyle") + "} ");
-        }
-        if (!attrs.get("hoverMobileStyle").isEmpty()) {
-            styles.put("MOBILE", styles.get("MOBILE") + " ." + styleClass + ":hover" + labelInputHoverSelector + "{" + attrs.get("hoverMobileStyle") + "} ");
+        return middle.isEmpty() ? null : middle;
+    }
+
+    private void generatePerGroupStyles(String styleClass, Map<String, String> styles) {
+        Map<String, Object> properties = getProperties();
+        String[] labelSelectors = getLabelAndInputSelector(styleClass, false);
+        String[] hoverLabelSelectors = getLabelAndInputSelector(styleClass, true);
+        String labelInputSelector = ", " + labelSelectors[0] + ", " + labelSelectors[1];
+        String labelInputHoverSelector = ", " + hoverLabelSelectors[0] + ", " + hoverLabelSelectors[1];
+
+        // Discover group names from compiled keys across ALL viewport/state variants
+        // (desktop, tablet, mobile, hover, hover-tablet, hover-mobile). A group styled only on
+        // hover (e.g. style-hover-border-compiled with no desktop-normal style-border-compiled)
+        // must still be discovered, otherwise its per-group inherit toggle would be ignored.
+        Set<String> groupNames = new LinkedHashSet<>();
+        for (String key : properties.keySet()) {
+            String groupName = extractCompiledGroupName(key);
+            if (groupName != null) {
+                groupNames.add(groupName);
+            }
         }
 
-        addingLabelAndInputStyle(styleClass, styles);
-        
-        return styles;
+        for (String groupName : groupNames) {
+            // Each viewport × state combination has its own inherit flag.
+            // "false" means the user explicitly disabled inheritance; anything else (including absent) defaults to true.
+            boolean inheritDesktop = isInheritEnabled(properties, "style-" + groupName + "-inherit");
+            boolean inheritTablet = isInheritEnabled(properties, "style-tablet-" + groupName + "-inherit");
+            boolean inheritMobile = isInheritEnabled(properties, "style-mobile-" + groupName + "-inherit");
+            boolean inheritHoverDesktop = isInheritEnabled(properties, "style-hover-" + groupName + "-inherit");
+            boolean inheritHoverTablet = isInheritEnabled(properties, "style-hover-tablet-" + groupName + "-inherit");
+            boolean inheritHoverMobile = isInheritEnabled(properties, "style-hover-mobile-" + groupName + "-inherit");
+
+            String base = "." + styleClass;
+            String baseHover = "." + styleClass + ":hover";
+
+            // Read the pre-compiled CSS strings for all six viewport × state combinations.
+            String desktopCss = getCompiledGroupCss(properties, "style-" + groupName + "-compiled");
+            String tabletCss = getCompiledGroupCss(properties, "style-tablet-" + groupName + "-compiled");
+            String mobileCss = getCompiledGroupCss(properties, "style-mobile-" + groupName + "-compiled");
+            String hoverDesktopCss = getCompiledGroupCss(properties, "style-hover-" + groupName + "-compiled");
+            String hoverTabletCss = getCompiledGroupCss(properties, "style-hover-tablet-" + groupName + "-compiled");
+            String hoverMobileCss = getCompiledGroupCss(properties, "style-hover-mobile-" + groupName + "-compiled");
+
+            if (!desktopCss.isEmpty()) {
+                styles.put("DESKTOP", styles.get("DESKTOP") + " " + (base + (inheritDesktop ? labelInputSelector : "")) + "{" + desktopCss + "} ");
+            }
+            if (!tabletCss.isEmpty()) {
+                styles.put("TABLET", styles.get("TABLET") + " " + (base + (inheritTablet ? labelInputSelector : "")) + "{" + tabletCss + "} ");
+            }
+            if (!mobileCss.isEmpty()) {
+                styles.put("MOBILE", styles.get("MOBILE") + " " + (base + (inheritMobile ? labelInputSelector : "")) + "{" + mobileCss + "} ");
+            }
+            if (!hoverDesktopCss.isEmpty()) {
+                styles.put("DESKTOP", styles.get("DESKTOP") + " " + (baseHover + (inheritHoverDesktop ? labelInputHoverSelector : "")) + "{" + hoverDesktopCss + "} ");
+            }
+            if (!hoverTabletCss.isEmpty()) {
+                styles.put("TABLET", styles.get("TABLET") + " " + (baseHover + (inheritHoverTablet ? labelInputHoverSelector : "")) + "{" + hoverTabletCss + "} ");
+            }
+            if (!hoverMobileCss.isEmpty()) {
+                styles.put("MOBILE", styles.get("MOBILE") + " " + (baseHover + (inheritHoverMobile ? labelInputHoverSelector : "")) + "{" + hoverMobileCss + "} ");
+            }
+        }
+    }
+
+    /**
+     * Returns the pre-compiled CSS string for the given property key, or an empty string if absent.
+     */
+    private String getCompiledGroupCss(Map<String, Object> properties, String key) {
+        Object val = properties.get(key);
+        return (val != null) ? val.toString() : "";
+    }
+
+    /**
+     * Returns true unless the property value is explicitly "false".
+     * Defaults to true (inherit ON) when the flag is absent.
+     */
+    private boolean isInheritEnabled(Map<String, Object> properties, String key) {
+        Object val = properties.get(key);
+        return !"false".equals(val != null ? val.toString() : "");
     }
     
     public String[] getLabelAndInputSelector(String styleClass, boolean isHover) {
@@ -398,7 +531,10 @@ public abstract class Element extends ExtDefaultPlugin implements PropertyEditab
             + "form.form-container ." + styleClass + " .form-cell-value > label, "
             + "form.form-container ." + styleClass + " .form-cell-value > label > i,"
             + "form.form-container ." + styleClass + " select option, "
-            + "form.form-container ." + styleClass + " div.richtexteditor"
+            + "form.form-container ." + styleClass + " div.richtexteditor, "
+            + "form.form-container ." + styleClass + " > label.label + div.input-group input, "
+            + "form.form-container ." + styleClass + " > label.label + div.input-group select, "
+            + "form.form-container ." + styleClass + " > label.label + div.input-group textarea"
         };
         if (isHover) {
             selector = new String[]{
@@ -409,9 +545,12 @@ public abstract class Element extends ExtDefaultPlugin implements PropertyEditab
                 + "form.form-container ." + styleClass + ":hover .form-cell-value > label, "
                 + "form.form-container ." + styleClass + ":hover .form-cell-value > label > i, "
                 + "form.form-container ." + styleClass + ":hover select option, "
-                + "form.form-container ." + styleClass + ":hover div.richtexteditor"
+                + "form.form-container ." + styleClass + ":hover div.richtexteditor, "
+                + "form.form-container ." + styleClass + ":hover > label.label + div.input-group input, "
+                + "form.form-container ." + styleClass + ":hover > label.label + div.input-group select, "
+                + "form.form-container ." + styleClass + ":hover > label.label + div.input-group textarea"
             };
-        } 
+        }
         return selector;
     }
     

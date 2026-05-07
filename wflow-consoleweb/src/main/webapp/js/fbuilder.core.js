@@ -665,7 +665,16 @@ FormBuilder = {
             var style;
             if (component.builderTemplate.valueStylePropertiesDefinition === undefined || component.builderTemplate.labelStylePropertiesDefinition === undefined) {
                 style = $.extend(true, [] , component.builderTemplate.stylePropertiesDefinition);
-                
+
+                // Enable the "Inherit to label & input" toggle for form-field element styling only.
+                $.each(style, function(i, page) {
+                    $.each(page.properties || [], function(k, prop) {
+                        if (prop.type === 'cssstyle') {
+                            prop.inheritToggle = true;
+                        }
+                    });
+                });
+
                 //tempory remove the last and adding label position for it
                 var other = style.pop();
                 other.properties.push({
@@ -693,15 +702,15 @@ FormBuilder = {
                     
                 component.builderTemplate.labelStylePropertiesDefinition = $.merge([], style);
                 component.builderTemplate.labelStylePropertiesDefinition = $.merge(component.builderTemplate.labelStylePropertiesDefinition, self.generateStylePropertiesDefinition("", [
-                        {'prefix' : 'fieldLabel', 'label' : get_cbuilder_msg('fbuilder.fieldLabel')}
+                        {'prefix' : 'fieldLabel', 'label' : get_cbuilder_msg('fbuilder.fieldLabel'), 'inheritToggle' : false}
                     ]));
                 component.builderTemplate.labelStylePropertiesDefinition = $.merge(component.builderTemplate.labelStylePropertiesDefinition, [other]);    
                 
                 
                 component.builderTemplate.valueStylePropertiesDefinition = $.merge([], style);
                 component.builderTemplate.valueStylePropertiesDefinition = $.merge(component.builderTemplate.valueStylePropertiesDefinition, self.generateStylePropertiesDefinition("", [
-                        {'prefix' : 'fieldLabel', 'label' : get_cbuilder_msg('fbuilder.fieldLabel')},
-                        {'prefix' : 'fieldInput', 'label' : get_cbuilder_msg('fbuilder.fieldInput')}
+                        {'prefix' : 'fieldLabel', 'label' : get_cbuilder_msg('fbuilder.fieldLabel'), 'inheritToggle' : false},
+                        {'prefix' : 'fieldInput', 'label' : get_cbuilder_msg('fbuilder.fieldInput'), 'inheritToggle' : false}
                     ]));
                 component.builderTemplate.valueStylePropertiesDefinition = $.merge(component.builderTemplate.valueStylePropertiesDefinition, [other]); 
             }
