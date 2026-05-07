@@ -1,6 +1,7 @@
 package org.joget.apps.app.service;
 
-import java.io.IOException;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpSession;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
@@ -11,15 +12,15 @@ import org.joget.apps.app.dao.AuditTrailDao;
 import org.joget.apps.app.model.AppDefinition;
 import org.joget.apps.app.model.AuditTrail;
 import org.joget.apps.app.model.PluginDefaultProperties;
-import org.joget.commons.util.CsvUtil;
+import org.joget.apps.app.model.AbstractAppVersionedObject;
 import org.joget.commons.util.LogUtil;
-import org.joget.commons.util.StringUtil;
 import org.joget.plugin.base.AuditTrailPlugin;
 import org.joget.plugin.base.Plugin;
 import org.joget.plugin.base.PluginManager;
 import org.joget.plugin.property.model.PropertyEditable;
 import org.joget.plugin.property.service.PropertyUtil;
 import org.joget.workflow.model.service.WorkflowUserManager;
+import org.joget.workflow.util.WorkflowUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
@@ -98,8 +99,70 @@ public class AuditTrailManagerImpl implements AuditTrailManager {
             auditTrail.setAppDef(appDef);
             auditTrail.setAppId(appDef.getId());
             auditTrail.setAppVersion(appDef.getVersion().toString());
+        } else if (args != null && args.length > 0) {
+            // try to retrieve from args
+            for (Object arg : args) {
+                if (arg instanceof AppDefinition) {
+                    AppDefinition appArg = (AppDefinition) arg;
+                    auditTrail.setAppId(appArg.getId());
+                    if (appArg.getVersion() != null) {
+                        auditTrail.setAppVersion(appArg.getVersion().toString());
+                    }
+                    break;
+                } else if (arg instanceof AbstractAppVersionedObject) {
+                    AbstractAppVersionedObject appArg = (AbstractAppVersionedObject) arg;
+                    auditTrail.setAppId(appArg.getAppId());
+                    if (appArg.getAppVersion() != null) {
+                        auditTrail.setAppVersion(appArg.getAppVersion().toString());
+                    }
+                    break;
+                }
+            }
         }
         
+        if (auditTrail.getAppId() == null || auditTrail.getAppId().isEmpty()) {
+            try {
+                HttpServletRequest request = WorkflowUtil.getHttpServletRequest();
+                if (request != null) {
+                    String savedUrl = null;
+                    HttpSession session = request.getSession(false);
+                    if (session != null) {
+                        Object savedRequest = session.getAttribute("SPRING_SECURITY_SAVED_REQUEST");
+                        if (savedRequest != null) {
+                            try {
+                                java.lang.reflect.Method getRedirectUrlMethod = savedRequest.getClass().getMethod("getRedirectUrl");
+                                savedUrl = (String) getRedirectUrlMethod.invoke(savedRequest);
+                            } catch (Exception e) {}
+                        }
+                    }
+                    if (savedUrl == null) {
+                        savedUrl = request.getHeader("referer");
+                    }
+                    if (savedUrl != null) {
+                        java.util.regex.Pattern pattern = java.util.regex.Pattern.compile("/web/(?:userview|ulogin|embed/userview|embed/ulogin|console/app)/([^/]+)/");
+                        java.util.regex.Matcher matcher = pattern.matcher(savedUrl);
+                        if (matcher.find()) {
+                            String appId = matcher.group(1);
+                            auditTrail.setAppId(appId);
+                            
+                            AppService appService = (AppService) AppUtil.getApplicationContext().getBean("appService");
+                            if (appService != null) {
+                                AppDefinition appDefFromUrl = appService.getPublishedAppDefinition(appId);
+                                if (appDefFromUrl != null) {
+                                    auditTrail.setAppDef(appDefFromUrl);
+                                    if (appDefFromUrl.getVersion() != null) {
+                                        auditTrail.setAppVersion(appDefFromUrl.getVersion().toString());
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            } catch (Exception e) {
+                // ignore
+            }
+        }
+
         if (dbLog(auditTrail)) {
             auditTrailDao.addAuditTrail(auditTrail);
         }

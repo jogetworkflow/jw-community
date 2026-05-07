@@ -374,6 +374,10 @@
     box-sizing: border-box;
 }
 
+.property-editor-container .withPrefix input[type="text"]{
+    width: 54%;
+}
+
 .property-input > span.icon > span{
     position: absolute;
     background: #ccc;
@@ -619,6 +623,18 @@ body.rtl .property-input > span.icon .property-icon-picker input.search{
     display: block !important;
 }
 
+.property-view .property-input:has(.file-picker-actions) .assist_icon {
+    right:50%;
+}
+body.rtl .property-input:has(.file-picker-actions) .assist_icon {
+    right:unset;
+    left:45px !important;
+}
+body.rtl.property-view .property-input:has(.file-picker-actions) .assist_icon {
+    right:unset;
+    left:50% !important;
+    padding-left: 0;
+}
 .property-gridinputelement{
     padding:5px 0px;
 }
@@ -826,10 +842,27 @@ body.rtl .property-editor-container input[type=text].image{
     padding-left: 45px;
     padding-right: 12px;
 }
-body.rtl .assist_icon{
+/* General RTL position for assist_icon */
+body.rtl .assist_icon {
     right: unset;
     padding-left:5px;
     left:0px;
+}
+/* Exclude assist_icon position for code editor on RTL */
+body.rtl .property-input:has(.ace_editor) .assist_icon,
+body.rtl .property-input:has(.CodeMirror) .assist_icon {
+    right: 0;
+    padding-left: 0;
+    left: unset;
+}
+/* assist_icon at TensorFlow input fields */
+body.rtl .property-input .tfiowrapper .input-fields > .assist_icon,
+body.rtl .perow.tfio-row.output .assist_icon,
+body.rtl .perow.tfio-row.input:not(:has(.ace_editor)) .input-fields > div > .assist_icon,
+body.rtl .perow.tfio-row.post:not(:has(.ace_editor)) .input-fields > div > .assist_icon  {
+    right: unset;
+    padding-left: 5px;
+    left: 0;
 }
 body.rtl .builder-link a.openbuilder,
 body.rtl .property-input a.elementHelplink{
@@ -874,7 +907,14 @@ body.rtl .property-editor-container .property-input textarea{
     float: right;
 }
 body.rtl .property-input .withPrefix{
-    display: unset !important;
+    display: flex !important;
+    flex-direction: row-reverse;
+}
+body.rtl .property-input .withPrefix .prefix{
+     border-radius: 0 0.25rem 0.25rem 0;
+}
+body.rtl .property-editor-container .withPrefix input[type="text"] {
+  padding-right: 66.5625px;
 }
 body.rtl .property-input > span.icon > span > span.dropdown{
     left: 5px;
@@ -1423,25 +1463,25 @@ body.rtl .property-input > span.icon > span > span.dropdown{
 .rtl .property-editor-container.narrow .property-input{
     direction: rtl;
 }
-.property-editor-container.narrow:not(.wider) input:not([type]),
-.property-editor-container.narrow:not(.wider) input[type=text],
-.property-editor-container.narrow:not(.wider) input[type=password],
-.property-editor-container.narrow:not(.wider) input[type=email],
-.property-editor-container.narrow:not(.wider) input[type=url],
-.property-editor-container.narrow:not(.wider) input[type=time],
-.property-editor-container.narrow:not(.wider) input[type=date],
-.property-editor-container.narrow:not(.wider) input[type=datetime],
-.property-editor-container.narrow:not(.wider) input[type=datetime-local],
-.property-editor-container.narrow:not(.wider) input[type=tel],
-.property-editor-container.narrow:not(.wider) input[type=number],
-.property-editor-container.narrow:not(.wider) input[type=search],
-.property-editor-container.narrow:not(.wider) input[type=file],
-.property-editor-container.narrow:not(.wider) .property-input select,
-.property-editor-container.narrow:not(.wider) .property-input textarea{
+.property-editor-container.narrow input:not([type]),
+.property-editor-container.narrow input[type=text],
+.property-editor-container.narrow input[type=password],
+.property-editor-container.narrow input[type=email],
+.property-editor-container.narrow input[type=url],
+.property-editor-container.narrow input[type=time],
+.property-editor-container.narrow input[type=date],
+.property-editor-container.narrow input[type=datetime],
+.property-editor-container.narrow input[type=datetime-local],
+.property-editor-container.narrow input[type=tel],
+.property-editor-container.narrow input[type=number],
+.property-editor-container.narrow input[type=search],
+.property-editor-container.narrow input[type=file],
+.property-editor-container.narrow .property-input select,
+.property-editor-container.narrow .property-input textarea{
     max-width: 100%;
     width: 100%;
 }
-.property-editor-container.narrow:not(.wider) .property-input > .chosen-container{
+.property-editor-container.narrow .property-input > .chosen-container{
     width: 100% !important;
     font-size: 11px;
     line-height: 1.5;
@@ -1577,6 +1617,61 @@ html .property-editor-container input[disabled] {
     border-radius: 5px;
     transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
 }
+.property-view .property-editor-container input:not([type]) ~ .assist_icon,
+.property-view .property-editor-container input[type=text] ~ .assist_icon,
+.property-view .property-editor-container input[type=password] ~ .assist_icon,
+.property-view .property-editor-container input[type=email] ~ .assist_icon,
+.property-view .property-editor-container input[type=url] ~ .assist_icon,
+.property-view .property-editor-container input[type=time] ~ .assist_icon,
+.property-view .property-editor-container input[type=date] ~ .assist_icon,
+.property-view .property-editor-container input[type=datetime] ~ .assist_icon,
+.property-view .property-editor-container input[type=datetime-local] ~ .assist_icon,
+.property-view .property-editor-container input[type=tel] ~ .assist_icon,
+.property-view .property-editor-container input[type=number] ~ .assist_icon,
+.property-view .property-editor-container input[type=search] ~ .assist_icon,
+.property-view .property-editor-container input[type=file] ~ .assist_icon,
+.property-view .property-editor-container select:not([class^=ui]) ~ .assist_icon {
+    left: 52%;
+}
+.property-view .property-editor-container textarea ~ .assist_icon,
+.dataBinder-builder-view .property-editor-container textarea ~ .assist_icon {
+    left: 93%;
+}
+.property-view .property-input > table tr td input ~ .assist_icon.assist_icon {
+    left: 80%;
+}
+.property-view [property-name="userMenu"] .property-input > table tr td input ~ .assist_icon {
+    left: 82%;
+}
+body.rtl.property-view [property-name="userMenu"] .property-input > table tr td input ~ .assist_icon.assist_icon {
+    left: unset !important;
+    right: 82% !important;
+}
+body.rtl.property-view .property-editor-container input:not([type]) ~ .assist_icon,
+body.rtl.property-view .property-editor-container input[type=text] ~ .assist_icon,
+body.rtl.property-view .property-editor-container input[type=password] ~ .assist_icon,
+body.rtl.property-view .property-editor-container input[type=email] ~ .assist_icon,
+body.rtl.property-view .property-editor-container input[type=url] ~ .assist_icon,
+body.rtl.property-view .property-editor-container input[type=time] ~ .assist_icon,
+body.rtl.property-view .property-editor-container input[type=date] ~ .assist_icon,
+body.rtl.property-view .property-editor-container input[type=datetime] ~ .assist_icon,
+body.rtl.property-view .property-editor-container input[type=datetime-local] ~ .assist_icon,
+body.rtl.property-view .property-editor-container input[type=tel] ~ .assist_icon,
+body.rtl.property-view .property-editor-container input[type=number] ~ .assist_icon,
+body.rtl.property-view .property-editor-container input[type=search] ~ .assist_icon,
+body.rtl.property-view .property-editor-container input[type=file] ~ .assist_icon,
+body.rtl.property-view .property-editor-container select:not([class^=ui]) ~ .assist_icon {
+    right: 52% !important;
+    left: unset !important;
+}
+body.rtl.property-view .property-editor-container textarea ~ .assist_icon,
+body.rtl.dataBinder-builder-view .property-editor-container textarea ~ .assist_icon {
+    right: 93% !important;
+    left: unset !important;
+}
+body.rtl.property-view .property-input > table tr td input ~ .assist_icon.assist_icon {
+    right: 80% !important;
+}
 .property-editor-container input[type=number].withUnitSlector{
     display: inline-block;
     width: 130px;
@@ -1654,6 +1749,42 @@ html .property-editor-container input[disabled] {
     min-width: 0;
     margin-right: 5px;
 }
+body.rtl .property-editor-container table input:not([type]),
+body.rtl .property-editor-container table input[type=text],
+body.rtl .property-editor-container table input[type=password],
+body.rtl .property-editor-container table input[type=email],
+body.rtl .property-editor-container table input[type=url],
+body.rtl .property-editor-container table input[type=time],
+body.rtl .property-editor-container table input[type=date],
+body.rtl .property-editor-container table input[type=datetime],
+body.rtl .property-editor-container table input[type=datetime-local],
+body.rtl .property-editor-container table input[type=tel],
+body.rtl .property-editor-container table input[type=number],
+body.rtl .property-editor-container table input[type=search],
+body.rtl .property-editor-container table input[type=file],
+body.rtl .property-editor-container table textarea,
+body.rtl .property-editor-container table select:not([class^=ui]),
+body.rtl .property-editor-container table .chosen-container-single .chosen-single,
+body.rtl .property-editor-container .pewrapper input:not([type]),
+body.rtl .property-editor-container .pewrapper input[type=text],
+body.rtl .property-editor-container .pewrapper input[type=password],
+body.rtl .property-editor-container .pewrapper input[type=email],
+body.rtl .property-editor-container .pewrapper input[type=url],
+body.rtl .property-editor-container .pewrapper input[type=time],
+body.rtl .property-editor-container .pewrapper input[type=date],
+body.rtl .property-editor-container .pewrapper input[type=datetime],
+body.rtl .property-editor-container .pewrapper input[type=datetime-local],
+body.rtl .property-editor-container .pewrapper input[type=tel],
+body.rtl .property-editor-container .pewrapper input[type=number],
+body.rtl .property-editor-container .pewrapper input[type=search],
+body.rtl .property-editor-container .pewrapper input[type=file],
+body.rtl .property-editor-container .pewrapper textarea,
+body.rtl .property-editor-container .pewrapper select:not([class^=ui]),
+body.rtl .property-editor-container .pewrapper .chosen-container-single .chosen-single {
+    margin-right: unset;
+    margin-left: 5px;
+}
+
 .property-editor-container select[multiple]:not([class^=ui]){
     height: auto;
     display: unset;
@@ -2427,6 +2558,8 @@ body .ui-dialog .button_form.editor-panel-mode #main-body-header {
 }
 #propertyAssistantDialog .title-bar .close{
     top: 8px;
+    right: 15px !important;
+    left: unset !important;
 }
 #propertyAssistant {
     padding: 20px;
@@ -2588,7 +2721,11 @@ body .ui-dialog .button_form.editor-panel-mode #main-body-header {
     opacity: 1;
 }
 .property-editor-container.narrow.wider .property-grid .assist_icon{
-    left: 92%;
+    right: 5px;
+}
+body.rtl .property-editor-container.narrow.wider .property-grid .assist_icon{
+    right: unset;
+    left: 0px;
 }
 .property-type-colorscheme .selector {
     position: relative;

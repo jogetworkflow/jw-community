@@ -983,6 +983,7 @@ div.section, .header > ol {
 .tree ol li {
     position: relative;
     margin-left: -15px;
+    padding-left: 3px;
     margin-bottom: 0.1rem;
     list-style: none;
     color: #fff;
@@ -1050,7 +1051,7 @@ div.section, .header > ol {
     left: 50px;
 }
 .tree ol li input + ol:before {
-    content:'\f107';
+    content:'\f105';
     left: 40px;
     top: 0px;
 }
@@ -1084,7 +1085,7 @@ div.section, .header > ol {
     height: auto;
 }
 .tree ol li input:checked + ol:before {
-    content:'\f105';
+    content:'\f107';
     position: absolute;
     top: -16px;
 }
@@ -1261,7 +1262,7 @@ body:not(.quick-nav-position-left) #builderToolbar {
 .permission-table .element-meta .element-icon > i, .permission-table .element-meta .element-icon > span,
 .tree ol li.tree-viewer-item label > i, .tree ol li.tree-viewer-item label > span{
     transform: scale(1);
-    top: 1px;
+    top: 3px;
     color: #ddd;
 }
 .permission-table .element-meta .element-icon > svg,

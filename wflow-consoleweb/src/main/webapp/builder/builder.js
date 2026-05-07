@@ -2348,7 +2348,7 @@ window._CustomBuilder = {
         } else if (CustomBuilder[currentView+"ViewBeforeClosed"] !== undefined) {
             CustomBuilder[currentView+"ViewBeforeClosed"]($("#"+currentView+"View.builder-view .builder-view-body"));
         }
-        $("body").removeClass(currentView+"-builder-view");
+        $("body").removeClass(currentView+"-builder-view property-view");
         $("body").removeClass("hide-tool");
         $("body").removeClass("view-control");
         $("[data-cbuilder-view]").removeClass("active-view active");
@@ -2391,6 +2391,9 @@ window._CustomBuilder = {
             $("#"+view+"View.builder-view").show();
             $(viewDiv).find('.builder-view-body').trigger("builder-view-show");
             $("body").addClass(view+"-builder-view");
+            if (view === "properties" || view === "dataBinder") {
+                $("body").addClass("property-view");
+            }
         }
     },
     
@@ -3477,7 +3480,9 @@ window._CustomBuilder = {
                 // fix duplicate xmlns
                 newsvg = newsvg.replace('xmlns="http://www.w3.org/1999/xhtml"', '');
                 // render
-                canvg($tempCanvas[0], newsvg);
+                const ctx = $tempCanvas[0].getContext('2d');
+                const v = window.canvg.Canvg.fromString(ctx, newsvg);
+                v.render();
             });
         }
         target = $(target)[0];

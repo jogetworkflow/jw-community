@@ -91,6 +91,12 @@ ProcessBuilder = {
                 });
                     
                 var id = window.location.hash.replace("#", "");
+
+                if (localStorage.getItem("addNewProcess") === "true") {
+                    localStorage.removeItem("addNewProcess");
+                    ProcessBuilder.addProcess();
+                    return;    
+                }
                 
                 //when no current process data or current process data is not match with the id in URL hash
                 if (ProcessBuilder.currentProcessData === null || ProcessBuilder.currentProcessData === undefined || (ProcessBuilder.currentProcessData.properties === undefined || (ProcessBuilder.currentProcessData.properties !== undefined && id !== ProcessBuilder.currentProcessData.properties.id))) {
@@ -2512,6 +2518,10 @@ ProcessBuilder = {
     load: function (data) {
         ProcessBuilder.updateProcessSelector();
         ProcessBuilder.viewProcess();
+        if (localStorage.getItem("addNewProcess") === "true") {
+            localStorage.removeItem("addNewProcess");
+            ProcessBuilder.addProcess();
+        }
     },
     
     /*

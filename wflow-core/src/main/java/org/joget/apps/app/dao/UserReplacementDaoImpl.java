@@ -64,7 +64,8 @@ public class UserReplacementDaoImpl extends AbstractSpringDao implements UserRep
         Collection<Object> params = new ArrayList<Object>();
         String condition = " where e.username = ? and ? between e.startDate and e.endDate ";
         condition += "and ((e.processIds like ? or e.processIds like ? or e.processIds like ? or e.processIds = ?) ";
-        condition += "or (e.processIds = '' and (e.appId like ? or e.appId like ? or e.appId like ? or e.appId = ?)))";
+        // add check processIds is null to support Oracle databases treating '' as null
+        condition += "or ((e.processIds = '' or e.processIds is null) and (e.appId like ? or e.appId like ? or e.appId like ? or e.appId = ?)))";
         params.add(username);
         params.add(now);
         params.add(pId + ";%");

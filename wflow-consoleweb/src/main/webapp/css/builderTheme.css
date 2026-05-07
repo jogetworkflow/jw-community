@@ -674,7 +674,7 @@ body[builder-theme] .tree ol li.tree-viewer-item label > span {
 body[builder-theme] .tree ol li input + ol:before, 
 body[builder-theme] .tree ol li label:before, 
 body[builder-theme] .tree ol li input:checked + ol:before {
-    color: #000;
+    color: var(--theme-link-color-1);
 }
 body[builder-theme]#cbuilder .nav-tabs .nav-item .nav-link > i {
     display: none;
@@ -685,8 +685,11 @@ body[builder-theme] #treeViewerView .builder-view-body, body[builder-theme] #xra
 body[builder-theme] .tree ol li label {
     font-size: 12px;
     padding-left: 35px;
+    z-index: 1;
 }
-body[builder-theme] .tree ol li:hover {
+body[builder-theme] .tree ol li:hover,
+body[builder-theme] .tree ol li label:hover::before,
+body[builder-theme] .tree ol li:hover label:before{  
     color: #000;
 }
 body[builder-theme] #builder-menu ul.app_tools li:has( a.active-view) {
@@ -2491,10 +2494,15 @@ body[builder-theme='dark']#cbuilder #top-panel .btn-group .btn.active-view{
 body[builder-theme='dark'] .builder-view {
     background: var(--theme-primary-color-1);
 }
-body[builder-theme='dark'] .tree ol li {
+body[builder-theme='dark'] .tree ol li,
+body[builder-theme='dark'] .tree ol li input + ol:before, 
+body[builder-theme='dark'] .tree ol li label:before, 
+body[builder-theme='dark'] .tree ol li input:checked + ol:before{
     color: var(--theme-input-color-1);
 }
-body[builder-theme='dark'] .tree ol li:hover {
+body[builder-theme='dark'] .tree ol li:hover,
+body[builder-theme='dark'] .tree ol li label:hover::before,
+body[builder-theme='dark'] .tree ol li:hover label:before{
     color: #fff;
 }
 body[builder-theme='dark'] .permission-table tbody tr.support-plugin,
@@ -2517,11 +2525,11 @@ body[builder-theme='dark'] .permission-table .element-meta .element-id {
     font-size: 70%;
 }
 body[builder-theme='dark'] .permission-table .authorized {
-    background: transparent;
+    background: #263026ab;
     color: var(--theme-label-color-1);
 }
 body[builder-theme='dark'] .permission-table .unauthorized {
-    background: transparent;
+    background: #2e26267a;
     color: var(--theme-label-color-1);
 }
 body[builder-theme='dark'] .permission_view .permission_rules .add_permission{
@@ -2530,9 +2538,31 @@ body[builder-theme='dark'] .permission_view .permission_rules .add_permission{
 body[builder-theme='dark'] .permission_view .permission-table .permission-plugin i.la-edit{
     color: rgba(var(--jgt-link-color-rgb), var(--jgt-link-opacity, 1));
 }
-body[builder-theme='dark'] .permission-table th.export, .permission-table td.export{
-    background: transparent;
+body[builder-theme='dark'] .permission-table th.export, body[builder-theme='dark'] .permission-table td.export{
+    background: #25454a9c !important;
     color: var(--theme-label-color-1);
+}
+body[builder-theme='dark'] .permission_view .permission_rule{
+    color: #ffff;
+}
+body[builder-theme='dark'] .permission-table .has-child .element-meta i.la-minus-square,
+body[builder-theme='dark'] .permission-table .has-child .element-meta i.la-plus-square{
+    color: var(--theme-label-color-1);
+}
+body[builder-theme='dark'] .permission_view .permission_rule:hover:not(.active) {
+    background: var(--theme-primary-color-3);
+}
+body[builder-theme='dark'] .permission-table .element-meta .element-label {
+    color: var(--theme-label-color-1);
+}
+body[builder-theme='dark'] .permission-table .element-meta .element-icon .image {
+    filter: brightness(0) invert(0.7);
+}
+body[builder-theme='dark'] #components_comphead_Page-Components_list .image {
+    filter: brightness(0) invert(0.7);
+}
+body[builder-theme='dark'] #components_comphead_Page-Components_list .image[style*='.gif'] {
+    filter: none;
 }
 body[builder-theme='dark'] #tableUsageView h5 #desc-tab .tableName {
     color: var(--theme-label-color-2);
@@ -2873,6 +2903,14 @@ body[builder-theme='dark'] .item_usages_container .usage_category h3 {
 body[builder-theme='dark'] .item_usages_container .usage_category {
     border: 1px solid var(--theme-border-color-1);
 }
+body[builder-theme='dark'] .item_usages_container pre{
+    background:  var(--theme-primary-color-3);
+    color: var(--theme-label-color-1);
+    border: 1px solid var(--theme-border-color-1);
+}
+body[builder-theme='dark'] .item_usages_container pre .keyword_highlight {
+    color: #212529;
+}
 body[builder-theme='dark'] .chosen-container-multi .chosen-choices {
     background-color: var(--theme-primary-color-1);
     border-color: var(--theme-border-color-1);
@@ -3155,6 +3193,10 @@ body[builder-theme='dark'] .sortingTable{
 }
 body[builder-theme] .nv-tags label {
     color: var(--theme-label-color-2);
+}
+
+body[builder-theme='dark'] .tree ol li.tree-viewer-item label > span.image{
+    filter: brightness(0) invert(1);
 }
 
 /* Add on builder CSS */

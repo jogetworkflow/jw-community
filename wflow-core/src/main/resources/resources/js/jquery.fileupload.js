@@ -161,6 +161,12 @@
                                 }
                             });
                         }
+                        // Replace a "file not found" entry if the uploaded file has the same name
+                        $(target).find(".form-fileupload-value").find("li").each(function() {
+                            if (!$(this).is($(file.previewElement)) && $(this).find(".form-error-message").length > 0 && $(this).find("input[name$='_path']").val() === resp.newFilename) {
+                                $(this).remove();
+                            }
+                        });
                         $(file.previewElement).find(".name").text(resp.newFilename);
                         $(file.previewElement).find(".progress").remove();
                         $(file.previewElement).find(".remove").show();

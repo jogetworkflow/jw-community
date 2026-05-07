@@ -1239,17 +1239,23 @@ public class StringUtil {
         }
         return newCondition;
     }
-    
+
     /**
-     * To fix the unclosed tags in the custom html
-     * @param content
-     * @return 
+     * Fixes unclosed HTML tags in an HTML snippet using Jsoup.
+     * <p>Note: This method is intended for HTML fragments (not full documents).
+     * Any document-level tags (e.g.: {@code <html>}, {@code <head>}, {@code <body>}) in the
+     * input will be stripped from the output.
+     *
+     * @param content the HTML snippet to fix
+     * @return the HTML snippet with unclosed tags properly closed,
+     *         or the original content if null, empty, or an error occurs
      */
     public static String fixUnclosedTags(String content) {
         if (content != null && !content.isEmpty()) {
             try {
                 Document doc = Jsoup.parseBodyFragment(content);
-                return doc.html();
+                doc.outputSettings().prettyPrint(false);
+                return doc.body().html();
             } catch (Exception e) {
                 LogUtil.error(StringUtil.class.getName(), e, "Not able to fix unclosed tags");
             }

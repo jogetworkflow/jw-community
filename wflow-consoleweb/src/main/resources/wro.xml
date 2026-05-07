@@ -40,7 +40,7 @@
         <css>/js/at/i18n.css</css>
         <css>/js/at/permission.css</css>
         <js>/js/html2canvas/rgbcolor.js</js>
-        <js>/js/html2canvas/canvg.js</js>
+        <js minimize="false">/js/canvg/canvg.js</js>
         <js>/js/html2canvas/html2canvas.js</js>
         <js>/js/at/usages.js</js>
         <js>/js/at/i18n.js</js>

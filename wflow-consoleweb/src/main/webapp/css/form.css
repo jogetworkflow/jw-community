@@ -544,6 +544,7 @@ body.rtl input.hasDatepicker {
 
 /* File upload */
 .form-fileupload {width:70%;}
+.form-fileupload .form-error-message { display: inline; margin: 1em; }
 ul.form-fileupload-value {padding0; margin: 0;}
 ul.form-fileupload-value li{display:block; margin-bottom: 5px;}
 ul.form-fileupload-value li .remove {color:#EA5858; display:inline-block; margin: 0 30px; text-decoration: none; cursor: pointer; opacity: 1}
