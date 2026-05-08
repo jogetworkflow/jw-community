@@ -683,6 +683,14 @@ public class AppUtil implements ApplicationContextAware {
         }
     }
 
+    public static void removeHashVariablePluginsFromRequest(AppDefinition appDef) {
+        HttpServletRequest request = WorkflowUtil.getHttpServletRequest();
+        if (request != null) {
+            String appId = appDef != null ? ("_" + appDef.getAppId()) : "";
+            request.removeAttribute("HASH_VARIABLE_PLUGIN_CACHE" + appId);
+        }
+    }
+
     /**
      * Used to parses Hash Variables found in the content and replace it to the Hash
      * Variable value

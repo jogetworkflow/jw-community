@@ -1963,7 +1963,11 @@ public class AppServiceImpl implements AppService {
         if (form != null) {
             try {
                 formData = formService.submitForm(form, formData, ignoreValidation);
-                
+
+                // clear hash variable plugins from the request after submitting form
+                AppDefinition appDef = AppUtil.getCurrentAppDefinition();
+                AppUtil.removeHashVariablePluginsFromRequest(appDef);
+
                 if (formData.getRequestParameter("_json") == null && formData.getRequestParameter("_nonce") == null) { //don't execute for embed form
                     FormUtil.executePostFormSubmissionProccessor(form, formData);
                 }

@@ -128,6 +128,7 @@ public class AppWorkflowHelper implements WorkflowHelper {
                         ((PropertyEditable) appPlugin).setProperties(propertiesMap);
                     }
                     appPlugin.execute(((PropertyEditable) appPlugin).getProperties());
+                    AppUtil.removeHashVariablePluginsFromRequest(appDef);
                 }
                 return true;
             }

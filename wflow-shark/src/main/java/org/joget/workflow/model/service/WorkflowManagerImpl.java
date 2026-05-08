@@ -5899,14 +5899,25 @@ public class WorkflowManagerImpl implements SharkWorkflowManager {
      */
     public List<String> getMigrationAssignmentUserList(String processId, String activityDefId) {
         String key = processId + "_" + activityDefId;
-        List<String> users = ((HashMap<String, List<String>>) migrationAssignmentUserList.get()).get(key);
+        HashMap<String, List<String>> userListMap = (HashMap<String, List<String>>) migrationAssignmentUserList.get();
         
         //remove after retrieved
+        List<String> users = userListMap.get(key);
         if (users != null) {
-            ((HashMap<String, List<String>>) migrationAssignmentUserList.get()).remove(key);
+            userListMap.remove(key);
+            return users;
+        }
+
+        // Fallback lookup mechanism in the case of truncated key
+        for (String storedKey : userListMap.keySet()) {
+            if (storedKey.startsWith(key)) {
+                users = userListMap.get(storedKey);
+                userListMap.remove(storedKey);
+                return users;
+            }
         }
         
-        return users;
+        return null;
     }
 
     protected PackageAdministration getSharkPackageAdmin(WMSessionHandle sessionHandle) throws Exception {

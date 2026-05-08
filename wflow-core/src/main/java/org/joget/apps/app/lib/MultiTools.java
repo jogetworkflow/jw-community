@@ -71,6 +71,8 @@ public class MultiTools extends DefaultApplicationPlugin implements ProcessMappi
             final String currentUser = workflowUserManager.getCurrentUsername();
         
             final PluginManager pluginManager = (PluginManager) AppUtil.getApplicationContext().getBean("pluginManager");
+
+            AppDefinition appDef = AppUtil.getCurrentAppDefinition();
                 
             if (runInSingleThread) {
                 newThread = new PluginThread(new Runnable() {
@@ -94,6 +96,8 @@ public class MultiTools extends DefaultApplicationPlugin implements ProcessMappi
                                             ((PropertyEditable) appPlugin).setProperties(propertiesMap);
                                         }
                                         appPlugin.execute(propertiesMap);
+                                        // clear hash variable plugins from the request after plugin execution
+                                        AppUtil.removeHashVariablePluginsFromRequest(appDef);
                                     }
                                 }
                             }
@@ -124,12 +128,16 @@ public class MultiTools extends DefaultApplicationPlugin implements ProcessMappi
                                             AppUtil.setCurrentAppDefinition((AppDefinition) properties.get("appDef"));
                                             workflowUserManager.setCurrentThreadUser(currentUser);
                                             appPlugin.execute(((PropertyEditable) appPlugin).getProperties());
+                                            // clear hash variable plugins from the request after plugin execution
+                                            AppUtil.removeHashVariablePluginsFromRequest(appDef);
                                         }
                                     });
                                     newThread.start();
                                     threads.add(newThread);
                                 } else {
                                     appPlugin.execute(((PropertyEditable) appPlugin).getProperties());
+                                    // clear hash variable plugins from the request after plugin execution
+                                    AppUtil.removeHashVariablePluginsFromRequest(appDef);
                                 }
                             }
                         }
