@@ -175,7 +175,7 @@ public class AuditTrailManagerImpl implements AuditTrailManager {
         
         if (c != null && m != null) {
             //login info
-            if (m.equals("authenticate") || m.equals("logout") || 
+            if (m.equals("authenticate") || m.equals("logout") || m.equals("validateHost") ||
                     c.startsWith("org.joget.apps.app.") || 
                     c.startsWith("org.joget.directory.dao.") || 
                     c.endsWith("WorkflowManagerImpl") || 
