@@ -133,7 +133,7 @@
         css += '.rulewrapper .buttons .sort{cursor:move;}';
         css += '.conditions-container .rulerow:after {content:""; border-top:2px solid #9aafbb; position:absolute; left: -6px; top: 50%; width: 5px; z-index:999;}';
         css += '.conditions-container .rulerow:last-child:before{content:""; border-left:2px solid #9aafbb; position:absolute; left: -6px; bottom:50%; height:1000px; z-index:999;}';
-        css += '.rulerow.rulewrapper{background:#edf2f5f2; border-color:#9aafbb; padding:2px 2px 2px 5px;}';
+        css += '.rulerow.rulewrapper{background:var(--theme-primary-color-2, #edf2f5f2); border-color:var(--theme-border-color-2, #9aafbb); padding:2px 2px 2px 5px;}';
         css += '.rulewrapper .revert{width: 15px; color:#ccc; cursor:pointer;}';
         css += '.rulewrapper .revert.checked{width: 15px; color:red;}';
         css += '.rulewrapper a.revert{position: absolute; left: -3px; top: 11px;}';
