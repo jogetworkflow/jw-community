@@ -567,43 +567,10 @@ public class AppWebController {
             error404(request, response);
             return;
         }
-        
-        ServletOutputStream stream = response.getOutputStream();
+
         String decodedFileName = fileName;
         File file = FileUtil.getFile(decodedFileName, tableName, primaryKeyValue);
-        if (file.isDirectory() || !file.exists()) {
-            response.sendError(HttpServletResponse.SC_NOT_FOUND);
-            response.setDateHeader("Expires", System.currentTimeMillis() + 0);
-            response.setHeader("Cache-Control", "no-cache, no-store");
-            return;
-        }
-        DataInputStream in = new DataInputStream(new FileInputStream(file));
-        byte[] bbuf = new byte[65536];
-
-        try {
-            String contentType = request.getSession().getServletContext().getMimeType(decodedFileName);
-            if (contentType != null) {
-                response.setContentType(contentType);
-            }
-            
-            // set attachment filename
-            String name = URLEncoder.encode(decodedFileName, "UTF8").replaceAll("\\+", "%20");
-            if (Boolean.valueOf(attachment).booleanValue()) {
-                response.setHeader("Content-Disposition", "attachment; filename=" + name + "; filename*=UTF-8''" + name);
-            } else {
-                response.setHeader("Content-Disposition", "inline; filename=" + name + "; filename*=UTF-8''" + name);
-            }
-
-            // send output
-            int length = 0;
-            while ((in != null) && ((length = in.read(bbuf)) != -1)) {
-                stream.write(bbuf, 0, length);
-            }
-        } finally {
-            in.close();
-            stream.flush();
-            stream.close();
-        }
+        streamFile(request, response, file, decodedFileName, attachment);
     }
     
     /**
@@ -673,6 +640,23 @@ public class AppWebController {
         }
 
         File file = AppResourceUtil.getFile(appId, version, decodedFileName);
+        streamFile(request, response, file, decodedFileName, attachment);
+    }
+
+    /**
+     * Streams a file to the response with HTTP Range request support.
+     * Required for inline video playback on iOS Safari, which
+     * send a Range probe and refuse playback unless the server responds with
+     * 206 Partial Content.
+     *
+     * @param request
+     * @param response
+     * @param file
+     * @param decodedFileName
+     * @param attachment
+     * @throws IOException
+     */
+    protected void streamFile(HttpServletRequest request, HttpServletResponse response, File file, String decodedFileName, String attachment) throws IOException {
         if (file == null || file.isDirectory() || !file.exists()) {
             response.sendError(HttpServletResponse.SC_NOT_FOUND);
             response.setDateHeader("Expires", System.currentTimeMillis() + 0);
