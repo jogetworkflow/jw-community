@@ -5,7 +5,10 @@
     .marketplace-btn {
         color: #0165fc !important;
         text-decoration: none !important;
-        margin-right: 15px;
+        margin-inline-end: 15px;
+        display: inline-flex;
+        align-items: center;
+        gap: 4px;
     }
     .marketplace-btn:hover {
         text-decoration: underline !important;
