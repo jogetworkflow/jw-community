@@ -2,6 +2,43 @@ Joget DX COMMUNITY
 ====================
 For more information, please refer to https://community.joget.org
 
+8.2.10
+======
+3089eefad Fixed: jw-community - Security - Prevent host spoofing on multi tenant environment. #2003 @8.2-SNAPSHOT
+e3bdc58dc Fixed: wflow-core - AppServiceImpl - Clear hash variable plugin cache after form submission to prevent stale data issues. #1757 @8.2-SNAPSHOT
+33c8bef0c Fixed: wflow-core - Multi Tools - Prevent stale data from being served to subsequent plugins due to request-level caching. #1834 T7495 @8.2-SNAPSHOT
+a90a27957 Fixed: wflow-wfengine - WorkflowManagerImpl - Component key mismatch during user ID retrieval from migrationAssignmentUserList ThreadLocal. T7526 #1845 @8.2-SNAPSHOT
+f329c56c1 Fixed: jw-community - Security - Upgraded Apache Tomcat to 9.0.117 to address CVE-2026-34486. #1952 @8.2-SNAPSHOT
+5d0793f76 Fixed: wflow-plugin-base - PluginManager - Replaced ReentrantReadWriteLock with ReentrantLock to resolve deadlock issues during plugin caching. #1990 @8.2-SNAPSHOT
+e9c045f49 Fixed: wflow-plugin-base - PluginManagerCache, ProfilePluginCache - Replaced non-thread-safe collections with concurrent utilities to improve concurrency and thread safety. #1990 @8.2-SNAPSHOT
+2f60cddaf Fixed: wflow-core - FormDataDaoImpl - fail to retrieve column when field name in the form is labelled as single digit #1677 @8.2-SNAPSHOT
+74783818b Fixed: wflow-consoleweb - Builder - Fixed an issue where the Permission tab table row color had too high opacity, preventing the hover color from displaying correctly. #1025 @8.2-SNAPSHOT
+c93fcadaf Fixed: wflow-consoleweb - Builder - Resolved the design icon visibility issue in the Tree/X-ray viewer under dark theme. #1025 @8.2-SNAPSHOT
+f2cd96841 Fixed: wflow-consoleweb - Builder - Resolved the export column background issue in the List Builder Permission tab when using the dark theme. #1025 @8.2-SNAPSHOT
+3e1b55d38 Fixed: wflow-consoleweb - Usage - Fixed the arrow button color is applied on DX9. #1025 @8.2-SNAPSHOT
+6897c1c63 Fixed: wflow-consoleweb - Tree Viewer - Change arrow direction for consistency when expanding and collapsing. #1025 @8.2-SNAPSHOT
+febea84a9 Fixed: wflow-consoleweb - Permission Table - Add background color for the Authorized and Unauthorized section in the dark theme. #1025 @8.2-SNAPSHOT
+46d92e13e Fixed: wflow-consoleweb - Usage - Seperate the styling for the arrow and the text & change the arrow direction for consistency. #1025 @8.2-SNAPSHOT
+5656e4342 Fixed: wflow-consoleweb - Usages Tab - Added dark theme to Usages Tab item content. #1025 @8.2-SNAPSHOT
+1e097df5e Fixed: wflow-consoleweb - Tree Viewer and X-ray Tab - Fixed Icon and arrow not visible while in Dark mode issue. #1025 @8.2-SNAPSHOT
+07b2598bd Fixed: wflow-consoleweb - Permissions Tab - Fixed background of empty export is showing up as white color issue while in dark theme. #1025 @8.2-SNAPSHOT
+5778060b8 Fixed: wflow-consoleweb - Permission Tab - Fixed Square Icon not visible when section is collaps issue. #1025 @8.2-SNAPSHOT
+6a9c3de58 Fixed: wflow-consoleweb - Permission Tab - Added missing Dark Theme CSS to Pemission Tab Elements. #1025 @8.2-SNAPSHOT
+942b01d22 Modified: wflow-commons - SetupManagerCache - Added defensive copy and null value handling to improve cache consistency. #1833 @8.2-SNAPSHOT
+924ada2a7 Fixed: wflow-consoleweb - Fixed unable to create a new process with "Add New" button #1502 @8.2-SNAPSHOT
+9dea31248 Fixed: wflow-consoleweb - Custom CSS - Fixed custom css in system settings is HTML-escaped, breaking selectors with special characters. #1862 @8.2-SNAPSHOT
+1b5d2754d Fixed: wflow-core - App Service - Fixed common table prefix only check for the same prefix table name. #1519 @8.2-SNAPSHOT
+1ed12dab2 Fixed: wflow-core - Color Admin Theme - Fixed Sidebar Menu Background (Active) color is not correctly apply. #1795 @8.2-SNAPSHOT
+425e64990 Fixed: wflow-core - FileUpload - Added handling for missing files and error message display. T7284 #1683 @8.2-SNAPSHOT
+8a20c5c07 Fixed: wflow-core - UserReplacementDaoImpl - Handle null processIds value in getUserTodayReplacedBy query for Oracle databases. T7587 #1865 @8.2-SNAPSHOT
+124339c2e Fixed: wflow-core, wflow-consoleweb, wflow-wfengine - Audit Trail - Fixed inconsistent appId Population in wf_audit_trail for Authentication and System Activities T7171 #1619. @8.2-SNAPSHOT
+472d1ab82 Modified: wflow-commons - pom.xml - Upgraded Log4j dependencies to 2.25.4. #1964 @8.2-SNAPSHOT
+794b7e62a Modified: wflow-consoleweb - canvg.js - Updated to v3.0.11. #1965 T7611 @8.2-SNAPSHOT
+707930861 Fixed: wflow-core - GridInnerDataStoreBinderWrapper - fixed deletion in nested grid T7609 #1906 @8.2-SNAPSHOT
+aeab15187 Fixed: wflow-commons - StringUtil - fixUnclosedTags method to retain only body content and disabling pretty print. #1885 T7348 @8.2-SNAPSHOT
+43e56ee7b Fixed: wflow-consoleweb - Property Assistant - Fixed property assistant icon not visible . #1407 @8.2-SNAPSHOT
+7bf173f8c Added: wflow-core - CustomBuilderCloneCallback - Allow CustomBuilders to process BuilderDefinitions during app cloning. #1822 T7493 @8.2-SNAPSHOT
+
 8.2.9
 =====
 3f78a752a Fixed: wflow-consoleweb - AppWebController - added HTTP Range request support for Safari video playback T7296 #1689 @8.2-SNAPSHOT
