@@ -116,6 +116,7 @@ public class CustomBuilderWebController {
         count = builderDefinitionDao.getBuilderDefinitionListCount(type, name, appDef);
 
         JSONObject jsonObject = new JSONObject();
+        jsonObject.put("data", new JSONArray());
         for (BuilderDefinition def : builderDefinitionList) {
             Map data = new HashMap();
             data.put("id", def.getId());
@@ -123,7 +124,7 @@ public class CustomBuilderWebController {
             data.put("type", def.getType());
             data.put("dateCreated", TimeZoneUtil.convertToTimeZone(def.getDateCreated(), null, AppUtil.getAppDateFormat()));
             data.put("dateModified", TimeZoneUtil.convertToTimeZone(def.getDateModified(), null, AppUtil.getAppDateFormat()));
-            jsonObject.accumulate("data", data);
+            jsonObject.append("data", data);
         }
 
         jsonObject.accumulate("total", count);

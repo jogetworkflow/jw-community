@@ -107,23 +107,23 @@ public class PluginJsonController {
             LogUtil.error(this.getClass().getName(), e, "");
         }
     }
-    
+
     @RequestMapping("/json/app/(*:appId)/(~:appVersion)/plugin/listInstalledBundle")
     public void pluginListAppInstalledBundle(Writer writer, @RequestParam(value = "appId") String appId, @RequestParam(value = "appVersion", required = false) String appVersion, @RequestParam(value = "className", required = false) String className, @RequestParam(value = "name", required = false) String filter, @RequestParam(value = "isUpdate", required = false) Boolean isUpdate, @RequestParam(value = "sort", required = false) String sort, @RequestParam(value = "desc", required = false) Boolean desc, @RequestParam(value = "start", required = false) Integer start, @RequestParam(value = "rows", required = false) Integer rows) throws JSONException, IOException {
         AppDefinition appDef = appService.getAppDefinition(appId, appVersion);
         AppUtil.setCurrentAppDefinition(appDef);
-        
+
         JSONObject jsonObject = MarketplaceUtil.getInstalledBundledList(appDef, filter, className, isUpdate, sort, desc, start, rows);
         AppUtil.writeJson(writer, jsonObject, null);
     }
-    
+
     @RequestMapping("/json/plugin/listBundlePlugins")
     public void pluginListBundlePlugins(Writer writer, @RequestParam(value = "pluginClass") String pluginClass, @RequestParam(value = "className", required = false) String className, @RequestParam(value = "name", required = false) String filter, @RequestParam(value = "sort", required = false) String sort, @RequestParam(value = "desc", required = false) Boolean desc, @RequestParam(value = "start", required = false) Integer start, @RequestParam(value = "rows", required = false) Integer rows) throws JSONException, IOException {
         List<Plugin> pluginList = null;
 
         try {
             pluginList = new ArrayList<Plugin>(pluginManager.listBundlePlugins(pluginClass));
-            
+
             writePluginsResponse(pluginList, filter, className, start, rows, false, writer);
         } catch (Exception e) {
             LogUtil.error(this.getClass().getName(), e, "");
@@ -248,12 +248,13 @@ public class PluginJsonController {
      */
     protected void writePluginsResponse(List<Plugin> pluginList, String filter, String className, int start, int rows, boolean checkUnintallable, Writer writer) throws ClassNotFoundException {
         JSONObject jsonObject = new JSONObject();
+        jsonObject.put("data", new JSONArray());
         int counter = 0;
-        
+
         //filter the list based on selected plugin type class
         if (className != null && !className.isEmpty()) {
             List<Plugin> filteredList = new ArrayList<>();
-            
+
             Class clazz = getClass(className);
             if (clazz != null) {
                 for (Plugin plugin : pluginList) {
@@ -262,10 +263,10 @@ public class PluginJsonController {
                     }
                 }
             }
-            
+
             pluginList = filteredList;
         }
-        
+
         Map<String, Plugin> sortedPluginList = sortPluginList(pluginList);
 
         Map<String, String> pluginType = PluginManager.getPluginType();
@@ -309,7 +310,7 @@ public class PluginJsonController {
                         data.put("uninstallable", (pluginManager.isOsgi(data.get("id").toString())) ? "<span class=\"tick\"></span>" : "");
                     }
 
-                    jsonObject.accumulate("data", data);
+                    jsonObject.append("data", data);
                 }
                 counter++;
             } catch (Exception ex) {

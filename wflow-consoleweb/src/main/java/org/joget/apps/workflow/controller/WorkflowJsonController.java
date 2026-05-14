@@ -69,11 +69,12 @@ public class WorkflowJsonController {
         Collection<WorkflowPackage> packageList = workflowManager.getPackageList();
 
         JSONObject jsonObject = new JSONObject();
+        jsonObject.put("data", new JSONArray());
         for (WorkflowPackage workflowPackage : packageList) {
             Map data = new HashMap();
             data.put("packageId", workflowPackage.getPackageId());
             data.put("packageName", workflowPackage.getPackageName());
-            jsonObject.accumulate("data", data);
+            jsonObject.append("data", data);
         }
 
         AppUtil.writeJson(writer, jsonObject, callback);
@@ -91,6 +92,7 @@ public class WorkflowJsonController {
 
         Integer total = processList.getTotal();
         JSONObject jsonObject = new JSONObject();
+        jsonObject.put("data", new JSONArray());
         for (WorkflowProcess process : processList) {
             Map data = new HashMap();
             String label = process.getName() + " ver " + process.getVersion();
@@ -100,7 +102,7 @@ public class WorkflowJsonController {
             data.put("name", process.getName());
             data.put("version", process.getVersion());
             data.put("label", label);
-            jsonObject.accumulate("data", data);
+            jsonObject.append("data", data);
         }
 
         jsonObject.accumulate("total", total);
@@ -148,10 +150,11 @@ public class WorkflowJsonController {
         }
 
         JSONObject jsonObject = new JSONObject();
+        jsonObject.put("data", new JSONArray());
         for (Iterator i = processMap.keySet().iterator(); i.hasNext();) {
             String processName = (String) i.next();
             Map data = (Map) processMap.get(processName);
-            jsonObject.accumulate("data", data);
+            jsonObject.append("data", data);
         }
 
         AppUtil.writeJson(writer, jsonObject, callback);
@@ -181,6 +184,7 @@ public class WorkflowJsonController {
 
         Integer total = workflowManager.getRunningProcessSize(packageId, processId, processName, version);
         JSONObject jsonObject = new JSONObject();
+        jsonObject.put("data", new JSONArray());
         for (WorkflowProcess workflowProcess : processList) {
             double serviceLevelMonitor = workflowManager.getServiceLevelMonitorForRunningProcess(workflowProcess.getInstanceId());
 
@@ -195,7 +199,7 @@ public class WorkflowJsonController {
 
             data.put("serviceLevelMonitor", WorkflowUtil.getServiceLevelIndicator(serviceLevelMonitor));
 
-            jsonObject.accumulate("data", data);
+            jsonObject.append("data", data);
         }
 
         jsonObject.accumulate("total", total);
@@ -216,6 +220,7 @@ public class WorkflowJsonController {
 
         Integer total = workflowManager.getCompletedProcessSize(packageId, processId, processName, version);
         JSONObject jsonObject = new JSONObject();
+        jsonObject.put("data", new JSONArray());
         for (WorkflowProcess workflowProcess : processList) {
             double serviceLevelMonitor = workflowManager.getServiceLevelMonitorForRunningProcess(workflowProcess.getInstanceId());
 
@@ -230,7 +235,7 @@ public class WorkflowJsonController {
 
             data.put("serviceLevelMonitor", WorkflowUtil.getServiceLevelIndicator(serviceLevelMonitor));
 
-            jsonObject.accumulate("data", data);
+            jsonObject.append("data", data);
         }
 
         jsonObject.accumulate("total", total);
@@ -247,6 +252,7 @@ public class WorkflowJsonController {
 
         Integer total = workflowManager.getActivitySize(processId);
         JSONObject jsonObject = new JSONObject();
+        jsonObject.put("data", new JSONArray());
         for (WorkflowActivity workflowActivity : activityList) {
             double serviceLevelMonitor = workflowManager.getServiceLevelMonitorForRunningActivity(workflowActivity.getId());
             Map data = new HashMap();
@@ -257,7 +263,7 @@ public class WorkflowJsonController {
 
             data.put("serviceLevelMonitor", WorkflowUtil.getServiceLevelIndicator(serviceLevelMonitor));
 
-            jsonObject.accumulate("data", data);
+            jsonObject.append("data", data);
         }
 
         jsonObject.accumulate("total", total);
@@ -445,6 +451,7 @@ public class WorkflowJsonController {
         Collection<ReportRow> processSla = reportManager.getWorkflowProcessSlaReport(appId, appVersion, null, null, null, null);
 
         JSONObject jsonObject = new JSONObject();
+        jsonObject.put("data", new JSONArray());
         for (ReportRow row : processSla) {
             Map data = new HashMap();
             data.put("processDefId", row.getId());
@@ -455,7 +462,7 @@ public class WorkflowJsonController {
             data.put("ratioOnTime", row.getRatioOnTime());
             data.put("serviceLevelMonitor", WorkflowUtil.getServiceLevelIndicator(row.getRatioOnTime()));
 
-            jsonObject.accumulate("data", data);
+            jsonObject.append("data", data);
         }
 
         jsonObject.accumulate("total", processSla.size());
@@ -467,6 +474,7 @@ public class WorkflowJsonController {
         Collection<ReportRow> activitySla = reportManager.getWorkflowActivitySlaReport(appId, appVersion, processDefId, null, null, null, null);
 
         JSONObject jsonObject = new JSONObject();
+        jsonObject.put("data", new JSONArray());
         for (ReportRow row : activitySla) {
             Map data = new HashMap();
             data.put("activityDefId", row.getId());
@@ -477,7 +485,7 @@ public class WorkflowJsonController {
             data.put("ratioOnTime", row.getRatioOnTime());
             data.put("serviceLevelMonitor", WorkflowUtil.getServiceLevelIndicator(row.getRatioOnTime()));
 
-            jsonObject.accumulate("data", data);
+            jsonObject.append("data", data);
         }
 
         jsonObject.accumulate("total", activitySla.size());
@@ -597,6 +605,7 @@ public class WorkflowJsonController {
         PagedList<WorkflowAssignment> assignmentList = workflowManager.getAssignmentPendingAndAcceptedList(packageId, processDefId, processId, sort, desc, start, rows);
         Integer total = assignmentList.getTotal();
         JSONObject jsonObject = new JSONObject();
+        jsonObject.put("data", new JSONArray());
 
         String format = AppUtil.getAppDateFormat();
         for (WorkflowAssignment assignment : assignmentList) {
@@ -618,7 +627,7 @@ public class WorkflowJsonController {
             data.put("label", assignment.getActivityName());
             data.put("description", assignment.getDescription());
 
-            jsonObject.accumulate("data", data);
+            jsonObject.append("data", data);
         }
 
         jsonObject.accumulate("total", total);
@@ -634,6 +643,7 @@ public class WorkflowJsonController {
         PagedList<WorkflowAssignment> assignmentList = workflowManager.getAssignmentPendingList(processId, sort, desc, start, rows);
         Integer total = assignmentList.getTotal();
         JSONObject jsonObject = new JSONObject();
+        jsonObject.put("data", new JSONArray());
 
         for (WorkflowAssignment assignment : assignmentList) {
             Map data = new HashMap();
@@ -653,7 +663,7 @@ public class WorkflowJsonController {
             data.put("label", assignment.getActivityName());
             data.put("description", assignment.getDescription());
 
-            jsonObject.accumulate("data", data);
+            jsonObject.append("data", data);
         }
 
         jsonObject.accumulate("total", total);
@@ -669,6 +679,7 @@ public class WorkflowJsonController {
         PagedList<WorkflowAssignment> assignmentList = workflowManager.getAssignmentAcceptedList(processId, sort, desc, start, rows);
         Integer total = assignmentList.getTotal();
         JSONObject jsonObject = new JSONObject();
+        jsonObject.put("data", new JSONArray());
         for (WorkflowAssignment assignment : assignmentList) {
             Map data = new HashMap();
             data.put("processId", assignment.getProcessId());
@@ -688,7 +699,7 @@ public class WorkflowJsonController {
             data.put("label", assignment.getActivityName());
             data.put("description", assignment.getDescription());
 
-            jsonObject.accumulate("data", data);
+            jsonObject.append("data", data);
         }
 
         jsonObject.accumulate("total", total);
@@ -727,10 +738,11 @@ public class WorkflowJsonController {
 
 
         JSONObject jsonObject = new JSONObject();
+        jsonObject.put("data", new JSONArray());
         for (Iterator i = processMap.keySet().iterator(); i.hasNext();) {
             String processName = (String) i.next();
             Map data = (Map) processMap.get(processName);
-            jsonObject.accumulate("data", data);
+            jsonObject.append("data", data);
         }
 
         AppUtil.writeJson(writer, jsonObject, callback);
@@ -763,10 +775,11 @@ public class WorkflowJsonController {
         }
 
         JSONObject jsonObject = new JSONObject();
+        jsonObject.put("data", new JSONArray());
         for (Iterator i = processMap.keySet().iterator(); i.hasNext();) {
             String processName = (String) i.next();
             Map data = (Map) processMap.get(processName);
-            jsonObject.accumulate("data", data);
+            jsonObject.append("data", data);
         }
 
         AppUtil.writeJson(writer, jsonObject, callback);
