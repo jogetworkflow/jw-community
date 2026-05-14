@@ -13,6 +13,7 @@ import org.joget.apps.app.model.AuditTrail;
 import org.joget.apps.app.service.AppUtil;
 import org.joget.commons.util.ResourceBundleUtil;
 import org.joget.commons.util.TimeZoneUtil;
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -66,6 +67,7 @@ public class AuditTrialJsonController {
         auditTrailList = auditTrailDao.getAuditTrails(condition, args.toArray(), sort, desc, start, rows);
 
         JSONObject jsonObject = new JSONObject();
+        jsonObject.put("data", new JSONArray());
         for (AuditTrail auditTrail : auditTrailList) {
             Map data = new HashMap();
             data.put("id", auditTrail.getId());
@@ -74,7 +76,7 @@ public class AuditTrialJsonController {
             data.put("method", ResourceBundleUtil.getMessage(auditTrail.getMethod(), auditTrail.getMethod()));
             data.put("message", auditTrail.getMessage());
             data.put("timestamp", TimeZoneUtil.convertToTimeZone(auditTrail.getTimestamp(), null, AppUtil.getAppDateFormat()));
-            jsonObject.accumulate("data", data);
+            jsonObject.append("data", data);
         }
         
         jsonObject.accumulate("total", auditTrailDao.count(condition, args.toArray()));

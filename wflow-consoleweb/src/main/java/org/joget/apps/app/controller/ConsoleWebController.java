@@ -1787,12 +1787,13 @@ public class ConsoleWebController {
         Long count = appDefinitionDao.countLatestVersions(null, null, name);
 
         JSONObject jsonObject = new JSONObject();
+        jsonObject.put("data", new JSONArray());
         for (AppDefinition appDef : appDefinitionList) {
             Map data = new HashMap();
             data.put("id", appDef.getId());
             data.put("name", appDef.getName());
             data.put("version", appDef.getVersion());
-            jsonObject.accumulate("data", data);
+            jsonObject.append("data", data);
         }
 
         jsonObject.accumulate("total", count);
@@ -1890,6 +1891,7 @@ public class ConsoleWebController {
         
         // generate JSON output
         JSONObject jsonObject = new JSONObject();
+        jsonObject.put("data", new JSONArray());
         if (newAppDefList != null && newAppDefList.size() > 0) {
             for (AppDefinition appDef : newAppDefList) {
                 Map data = new HashMap();
@@ -1898,7 +1900,7 @@ public class ConsoleWebController {
                 data.put("dateCreated", TimeZoneUtil.convertToTimeZone(appDef.getDateCreated(), null, AppUtil.getAppDateFormat()));
                 data.put("dateModified", TimeZoneUtil.convertToTimeZone(appDef.getDateModified(), null, AppUtil.getAppDateFormat()));
                 data.put("description", StringUtil.escapeString(appDef.getDescription(), StringUtil.TYPE_NL2BR));
-                jsonObject.accumulate("data", data);
+                jsonObject.append("data", data);
             }
         }
 
@@ -2421,6 +2423,7 @@ public class ConsoleWebController {
         }
 
         JSONObject jsonObject = new JSONObject();
+        jsonObject.put("data", new JSONArray());
         if (datalistDefinitionList != null && datalistDefinitionList.size() > 0) {
             for (DatalistDefinition datalistDefinition : datalistDefinitionList) {
                 Map data = new HashMap();
@@ -2429,7 +2432,7 @@ public class ConsoleWebController {
                 data.put("description", datalistDefinition.getDescription());
                 data.put("dateCreated", TimeZoneUtil.convertToTimeZone(datalistDefinition.getDateCreated(), null, AppUtil.getAppDateFormat()));
                 data.put("dateModified", TimeZoneUtil.convertToTimeZone(datalistDefinition.getDateModified(), null, AppUtil.getAppDateFormat()));
-                jsonObject.accumulate("data", data);
+                jsonObject.append("data", data);
             }
         }
 
@@ -2591,6 +2594,7 @@ public class ConsoleWebController {
         }
 
         JSONObject jsonObject = new JSONObject();
+        jsonObject.put("data", new JSONArray());
         if (userviewDefinitionList != null && userviewDefinitionList.size() > 0) {
             for (UserviewDefinition userviewDefinition : userviewDefinitionList) {
                 Map data = new HashMap();
@@ -2599,7 +2603,7 @@ public class ConsoleWebController {
                 data.put("description", userviewDefinition.getDescription());
                 data.put("dateCreated", TimeZoneUtil.convertToTimeZone(userviewDefinition.getDateCreated(), null, AppUtil.getAppDateFormat()));
                 data.put("dateModified", TimeZoneUtil.convertToTimeZone(userviewDefinition.getDateModified(), null, AppUtil.getAppDateFormat()));
-                jsonObject.accumulate("data", data);
+                jsonObject.append("data", data);
             }
         }
 
@@ -3004,13 +3008,14 @@ public class ConsoleWebController {
         }
 
         JSONObject jsonObject = new JSONObject();
+        jsonObject.put("data", new JSONArray());
         if (environmentVariableList != null && environmentVariableList.size() > 0) {
             for (EnvironmentVariable environmentVariable : environmentVariableList) {
                 Map data = new HashMap();
                 data.put("id", environmentVariable.getId());
                 data.put("value", environmentVariable.getValue());
                 data.put("remarks", environmentVariable.getRemarks());
-                jsonObject.accumulate("data", data);
+                jsonObject.append("data", data);
             }
         }
 
@@ -3126,6 +3131,7 @@ public class ConsoleWebController {
         }
 
         JSONObject jsonObject = new JSONObject();
+        jsonObject.put("data", new JSONArray());
         if (resources != null && resources.size() > 0) {
             for (AppResource r : resources) {
                 Map data = new HashMap();
@@ -3135,7 +3141,7 @@ public class ConsoleWebController {
                 Plugin p = pluginManager.getPlugin(r.getPermissionClass());
                 data.put("permissionClassLabel", (p != null)?p.getI18nLabel():"");
                 data.put("permissionProperties", r.getPermissionProperties());
-                jsonObject.accumulate("data", data);
+                jsonObject.append("data", data);
             }
         }
 
@@ -3290,6 +3296,7 @@ public class ConsoleWebController {
         }
 
         JSONObject jsonObject = new JSONObject();
+        jsonObject.put("data", new JSONArray());
         if (pluginDefaultPropertiesList != null && pluginDefaultPropertiesList.size() > 0) {
             for (PluginDefaultProperties pluginDefaultProperties : pluginDefaultPropertiesList) {
                 Map data = new HashMap();
@@ -3298,7 +3305,7 @@ public class ConsoleWebController {
                 if (p != null) {
                     data.put("pluginName", p.getI18nLabel());
                     data.put("pluginDescription", p.getI18nDescription());
-                    jsonObject.accumulate("data", data);
+                    jsonObject.append("data", data);
                 } else {
                     count--;
                 }
@@ -3518,6 +3525,7 @@ public class ConsoleWebController {
         count = formDefinitionDao.getFormDefinitionListCount(null, appDef);
 
         JSONObject jsonObject = new JSONObject();
+        jsonObject.put("data", new JSONArray());
         for (FormDefinition formDef : formDefinitionList) {
             Map data = new HashMap();
             data.put("id", formDef.getId());
@@ -3525,7 +3533,7 @@ public class ConsoleWebController {
             data.put("tableName", formDef.getTableName());
             data.put("dateCreated", TimeZoneUtil.convertToTimeZone(formDef.getDateCreated(), null, AppUtil.getAppDateFormat()));
             data.put("dateModified", TimeZoneUtil.convertToTimeZone(formDef.getDateModified(), null, AppUtil.getAppDateFormat()));
-            jsonObject.accumulate("data", data);
+            jsonObject.append("data", data);
         }
 
         jsonObject.accumulate("total", count);
@@ -4846,6 +4854,7 @@ public class ConsoleWebController {
         Long count = rbmDao.count(condition, param.toArray(new String[param.size()]));
 
         JSONObject jsonObject = new JSONObject();
+        jsonObject.put("data", new JSONArray());
         if (messageList != null && messageList.size() > 0) {
             for (ResourceBundleMessage message : messageList) {
                 Map data = new HashMap();
@@ -4853,7 +4862,7 @@ public class ConsoleWebController {
                 data.put("key", message.getKey());
                 data.put("locale", message.getLocale());
                 data.put("message", message.getMessage());
-                jsonObject.accumulate("data", data);
+                jsonObject.append("data", data);
             }
         }
 
@@ -4938,6 +4947,7 @@ public class ConsoleWebController {
         int count = workflowManager.getRunningProcessSize(appId, processId, processName, version, recordId, requester);
 
         JSONObject jsonObject = new JSONObject();
+        jsonObject.put("data", new JSONArray());
         for (WorkflowProcess workflowProcess : processList) {
             double serviceLevelMonitor = workflowManager.getServiceLevelValue(workflowProcess.getStartedTime(), workflowProcess.getFinishTime(), workflowProcess.getDue());
 
@@ -4953,7 +4963,7 @@ public class ConsoleWebController {
 
             data.put("serviceLevelMonitor", WorkflowUtil.getServiceLevelIndicator(serviceLevelMonitor));
 
-            jsonObject.accumulate("data", data);
+            jsonObject.append("data", data);
         }
 
         jsonObject.accumulate("total", count);
@@ -5075,6 +5085,7 @@ public class ConsoleWebController {
         }
 
         JSONObject jsonObject = new JSONObject();
+        jsonObject.put("data", new JSONArray());
         for (WorkflowProcess workflowProcess : processList) {
             double serviceLevelMonitor = workflowManager.getServiceLevelValue(workflowProcess.getStartedTime(), workflowProcess.getFinishTime(), workflowProcess.getDue());
 
@@ -5089,7 +5100,7 @@ public class ConsoleWebController {
             data.put("due", workflowProcess.getDue() != null ? TimeZoneUtil.convertToTimeZone(workflowProcess.getDue(), null, AppUtil.getAppDateFormat()) : "-");
             data.put("serviceLevelMonitor", WorkflowUtil.getServiceLevelIndicator(serviceLevelMonitor));
 
-            jsonObject.accumulate("data", data);
+            jsonObject.append("data", data);
         }
 
         jsonObject.accumulate("total", count);
@@ -5217,6 +5228,7 @@ public class ConsoleWebController {
 
         Integer total = workflowManager.getActivitySize(processId);
         JSONObject jsonObject = new JSONObject();
+        jsonObject.put("data", new JSONArray());
         for (WorkflowActivity workflowActivity : activityList) {
             double serviceLevelMonitor = workflowManager.getServiceLevelMonitorForRunningActivity(workflowActivity.getId());
             Map data = new HashMap();
@@ -5226,7 +5238,7 @@ public class ConsoleWebController {
             data.put("dateCreated", TimeZoneUtil.convertToTimeZone(workflowActivity.getCreatedTime(), null, AppUtil.getAppDateFormat()));
             data.put("serviceLevelMonitor", WorkflowUtil.getServiceLevelIndicator(serviceLevelMonitor));
 
-            jsonObject.accumulate("data", data);
+            jsonObject.append("data", data);
         }
 
         jsonObject.accumulate("total", total);
@@ -5359,6 +5371,7 @@ public class ConsoleWebController {
             return;
         }
         JSONObject jsonObject = new JSONObject();
+        jsonObject.put("data", new JSONArray());
         File[] files = LogUtil.tomcatLogFiles();
         List<Map> fileList = new ArrayList<Map>();
 
@@ -5388,7 +5401,7 @@ public class ConsoleWebController {
         PagedList<Map> pagedList = new PagedList<Map>(true, fileList, sort, desc, start, rows, fileList.size());
 
         for (Map file : pagedList) {
-            jsonObject.accumulate("data", file);
+            jsonObject.append("data", file);
         }
 
         jsonObject.accumulate("total", fileList.size());

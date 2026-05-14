@@ -229,8 +229,9 @@ public class PluginJsonController {
      */
     protected void writePluginsResponse(List<Plugin> pluginList, String filter, int start, int rows, boolean checkUnintallable, Writer writer) {
         Map<String, Plugin> sortedPluginList = sortPluginList(pluginList);
-        
+
         JSONObject jsonObject = new JSONObject();
+        jsonObject.put("data", new JSONArray());
         int counter = 0;
 
         Map<String, String> pluginType = PluginManager.getPluginType();
@@ -274,7 +275,7 @@ public class PluginJsonController {
                         data.put("uninstallable", (pluginManager.isOsgi(data.get("id").toString())) ? "<span class=\"tick\"></span>" : "");
                     }
 
-                    jsonObject.accumulate("data", data);
+                    jsonObject.append("data", data);
                 }
                 counter++;
             } catch (Exception ex) {

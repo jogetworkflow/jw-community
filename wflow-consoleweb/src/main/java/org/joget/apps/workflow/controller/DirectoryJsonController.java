@@ -95,13 +95,14 @@ public class DirectoryJsonController {
         organizations = getDirectoryManager().getOrganizationsByFilter(name, sort, desc, start, rows);
 
         JSONObject jsonObject = new JSONObject();
+        jsonObject.put("data", new JSONArray());
         if (organizations != null) {
             for (Organization organization : organizations) {
                 Map data = new HashMap();
                 data.put("id", organization.getId());
                 data.put("name", organization.getName());
                 data.put("description", organization.getDescription());
-                jsonObject.accumulate("data", data);
+                jsonObject.append("data", data);
             }
         }
 
@@ -129,6 +130,7 @@ public class DirectoryJsonController {
         departments = getDirectoryManager().getDepartmentsByOrganizationId(name, orgId, sort, desc, start, rows);
 
         JSONObject jsonObject = new JSONObject();
+        jsonObject.put("data", new JSONArray());
         if (departments != null) {
             for (Department department : departments) {
                 Map data = new HashMap();
@@ -137,7 +139,7 @@ public class DirectoryJsonController {
                 data.put("description", department.getDescription());
                 data.put("organization.name", (department.getOrganization() != null) ? department.getOrganization().getName() : "");
                 data.put("parent.name", (department.getParent() != null) ? department.getParent().getName() : "");
-                jsonObject.accumulate("data", data);
+                jsonObject.append("data", data);
             }
         }
 
@@ -161,13 +163,14 @@ public class DirectoryJsonController {
         departments = getDirectoryManager().getDepartmentsByParentId(name, deptId, sort, desc, start, rows);
 
         JSONObject jsonObject = new JSONObject();
+        jsonObject.put("data", new JSONArray());
         if (departments != null) {
             for (Department department : departments) {
                 Map data = new HashMap();
                 data.put("id", department.getId());
                 data.put("name", department.getName());
                 data.put("description", department.getDescription());
-                jsonObject.accumulate("data", data);
+                jsonObject.append("data", data);
             }
         }
 
@@ -191,13 +194,14 @@ public class DirectoryJsonController {
         grades = getDirectoryManager().getGradesByOrganizationId(name, orgId, sort, desc, start, rows);
 
         JSONObject jsonObject = new JSONObject();
+        jsonObject.put("data", new JSONArray());
         if (grades != null) {
             for (Grade grade : grades) {
                 Map data = new HashMap();
                 data.put("id", grade.getId());
                 data.put("name", grade.getName());
                 data.put("description", grade.getDescription());
-                jsonObject.accumulate("data", data);
+                jsonObject.append("data", data);
             }
         }
 
@@ -225,6 +229,7 @@ public class DirectoryJsonController {
         groups = getDirectoryManager().getGroupsByOrganizationId(name, orgId, sort, desc, start, rows);
 
         JSONObject jsonObject = new JSONObject();
+        jsonObject.put("data", new JSONArray());
         if (groups != null) {
             for (Group group : groups) {
                 Map data = new HashMap();
@@ -232,7 +237,7 @@ public class DirectoryJsonController {
                 data.put("name", group.getName());
                 data.put("description", group.getDescription());
                 data.put("organization.name", (group.getOrganization() != null) ? group.getOrganization().getName() : "");
-                jsonObject.accumulate("data", data);
+                jsonObject.append("data", data);
             }
         }
 
@@ -263,6 +268,7 @@ public class DirectoryJsonController {
         groups = getDirectoryManager().getGroupsByUserId(name, userId, orgId, inGroup, sort, desc, start, rows);
 
         JSONObject jsonObject = new JSONObject();
+        jsonObject.put("data", new JSONArray());
         if (groups != null) {
             for (Group group : groups) {
                 Map data = new HashMap();
@@ -270,7 +276,7 @@ public class DirectoryJsonController {
                 data.put("name", group.getName());
                 data.put("description", group.getDescription());
                 data.put("organization.name", (group.getOrganization() != null) ? group.getOrganization().getName() : "");
-                jsonObject.accumulate("data", data);
+                jsonObject.append("data", data);
             }
         }
 
@@ -318,6 +324,7 @@ public class DirectoryJsonController {
         users = getDirectoryManager().getUsers(name, orgId, deptId, gradeId, groupId, roleId, active, sort, desc, start, rows);
 
         JSONObject jsonObject = new JSONObject();
+        jsonObject.put("data", new JSONArray());
         if (users != null) {
             for (User user : users) {
                 Map data = new HashMap();
@@ -327,7 +334,7 @@ public class DirectoryJsonController {
                 data.put("lastName", user.getLastName());
                 data.put("email", user.getEmail());
                 data.put("active", (user.getActive() == 1)? ResourceBundleUtil.getMessage("console.directory.user.common.label.status.active") : ResourceBundleUtil.getMessage("console.directory.user.common.label.status.inactive"));
-                jsonObject.accumulate("data", data);
+                jsonObject.append("data", data);
             }
         }
 
@@ -358,6 +365,7 @@ public class DirectoryJsonController {
         users = getUserDao().getUsersNotInGroup(name, groupId, sort, desc, start, rows);
 
         JSONObject jsonObject = new JSONObject();
+        jsonObject.put("data", new JSONArray());
         if (users != null) {
             for (User user : users) {
                 Map data = new HashMap();
@@ -366,7 +374,7 @@ public class DirectoryJsonController {
                 data.put("firstName", user.getFirstName());
                 data.put("lastName", user.getLastName());
                 data.put("email", user.getEmail());
-                jsonObject.accumulate("data", data);
+                jsonObject.append("data", data);
             }
         }
 
@@ -453,6 +461,7 @@ public class DirectoryJsonController {
         employments = getDirectoryManager().getEmployments(name, orgId, deptId, gradeId, sort, desc, start, rows);
 
         JSONObject jsonObject = new JSONObject();
+        jsonObject.put("data", new JSONArray());
         if (employments != null) {
             for (Employment employment : employments) {
                 Map data = new HashMap();
@@ -465,7 +474,7 @@ public class DirectoryJsonController {
                 data.put("organization.name", (employment.getOrganization() != null) ? employment.getOrganization().getName() : "");
                 data.put("department.name", (employment.getDepartment() != null) ? employment.getDepartment().getName() : "");
                 data.put("grade.name", (employment.getGrade() != null) ? employment.getGrade().getName() : "");
-                jsonObject.accumulate("data", data);
+                jsonObject.append("data", data);
             }
         }
 
@@ -492,6 +501,7 @@ public class DirectoryJsonController {
         employments = employmentDao.getEmploymentsNotInOrganization(name, orgId, sort, desc, start, rows);
 
         JSONObject jsonObject = new JSONObject();
+        jsonObject.put("data", new JSONArray());
         if (employments != null) {
             for (Employment employment : employments) {
                 Map data = new HashMap();
@@ -501,7 +511,7 @@ public class DirectoryJsonController {
                 data.put("user.lastName", employment.getUser().getLastName());
                 data.put("employeeCode", employment.getEmployeeCode());
                 data.put("role", employment.getRole());
-                jsonObject.accumulate("data", data);
+                jsonObject.append("data", data);
             }
         }
 
@@ -528,6 +538,7 @@ public class DirectoryJsonController {
         employments = employmentDao.getEmploymentsNoHaveOrganization(name, sort, desc, start, rows);
 
         JSONObject jsonObject = new JSONObject();
+        jsonObject.put("data", new JSONArray());
         if (employments != null) {
             for (Employment employment : employments) {
                 Map data = new HashMap();
@@ -537,7 +548,7 @@ public class DirectoryJsonController {
                 data.put("user.lastName", employment.getUser().getLastName());
                 data.put("employeeCode", employment.getEmployeeCode());
                 data.put("role", employment.getRole());
-                jsonObject.accumulate("data", data);
+                jsonObject.append("data", data);
             }
         }
 
@@ -565,6 +576,7 @@ public class DirectoryJsonController {
         employments = employmentDao.getEmploymentsNotInDepartment(name, orgId, deptId, sort, desc, start, rows);
 
         JSONObject jsonObject = new JSONObject();
+        jsonObject.put("data", new JSONArray());
         if (employments != null) {
             for (Employment employment : employments) {
                 Map data = new HashMap();
@@ -576,7 +588,7 @@ public class DirectoryJsonController {
                 data.put("role", employment.getRole());
                 data.put("department.name", (employment.getDepartment() != null) ? employment.getDepartment().getName() : "");
                 data.put("grade.name", (employment.getGrade() != null) ? employment.getGrade().getName() : "");
-                jsonObject.accumulate("data", data);
+                jsonObject.append("data", data);
             }
         }
 
@@ -604,6 +616,7 @@ public class DirectoryJsonController {
         employments = employmentDao.getEmploymentsNotInGrade(name, orgId, gradeId, sort, desc, start, rows);
 
         JSONObject jsonObject = new JSONObject();
+        jsonObject.put("data", new JSONArray());
         if (employments != null) {
             for (Employment employment : employments) {
                 Map data = new HashMap();
@@ -615,7 +628,7 @@ public class DirectoryJsonController {
                 data.put("role", employment.getRole());
                 data.put("department.name", (employment.getDepartment() != null) ? employment.getDepartment().getName() : "");
                 data.put("grade.name", (employment.getGrade() != null) ? employment.getGrade().getName() : "");
-                jsonObject.accumulate("data", data);
+                jsonObject.append("data", data);
             }
         }
 
