@@ -80,10 +80,7 @@ public class Section extends Element implements FormBuilderEditable, FormContain
         Boolean continueValidation = continueValidations.get(formData);
         if (continueValidation == null) {
             if (!isHidden(formData)) {
-                // get the control element (where value changes the target)
-                String visibilityControl = getPropertyString("visibilityControl");
-
-                if (visibilityControl != null && !visibilityControl.isEmpty()) {
+                if (VisibilityControlUtil.hasVisibilityControl(this)) {
                     continueValidation = isMatch(formData);
                 } else {
                     continueValidation = super.continueValidation(formData);

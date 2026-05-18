@@ -865,8 +865,7 @@ public abstract class Element extends ExtDefaultPlugin implements PropertyEditab
         if (continueValidation == null) {
             if (!isHidden(formData)) {
                 // Check visibility control rules
-                String visibilityControl = getPropertyString("visibilityControl");
-                if (visibilityControl != null && !visibilityControl.isEmpty()) {
+                if (VisibilityControlUtil.hasVisibilityControl(this)) {
                     continueValidation = isVisibilityMatch(formData);
                 } else {
                     continueValidation = true;
