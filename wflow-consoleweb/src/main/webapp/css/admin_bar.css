@@ -19,7 +19,7 @@ html.adminBarShown {
     padding: 10px;
     box-shadow: #666 1px 1px 2px 1px;
     border-radius: 50%;
-    z-index: 100000050;
+    z-index: 10001;
     cursor: pointer;
     width: 20px;
     text-align: center;
