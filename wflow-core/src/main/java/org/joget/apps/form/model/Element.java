@@ -461,13 +461,22 @@ public abstract class Element extends ExtDefaultPlugin implements PropertyEditab
      * @param dataModel the dataModel
      */
     public void checkIfIconIsPresent(Map dataModel) {
-        if (getPropertyString("iconIncluded") != null && getPropertyString("iconIncluded").equals("true")) {
+        if (getPropertyString("iconIncluded") != null && getPropertyString("iconIncluded").equals("true")
+                && !"label".equals(getPropertyString("iconPosition"))) {
             dataModel.put("classIdentifier", " withIcon");
         }
 
         String label = getPropertyString("label");
         if (label == null) {
             dataModel.put("label", "");
+            dataModel.put("iconValue", "");
+            return;
+        }
+
+        // When iconPosition is "label", keep the icon HTML inside the label element
+        // instead of extracting it as an input-group prefix (iconValue).
+        if ("label".equals(getPropertyString("iconPosition"))) {
+            dataModel.put("label", label);
             dataModel.put("iconValue", "");
             return;
         }

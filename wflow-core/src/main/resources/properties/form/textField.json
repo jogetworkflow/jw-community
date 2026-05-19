@@ -15,6 +15,23 @@
         type : 'icon-textfield',
         required : 'True',
         value : '@@org.joget.apps.form.lib.TextField.pluginLabel@@'
+    },
+    {
+        name : 'iconPosition',
+        label : '@@form.textfield.iconPosition@@',
+        type : 'selectbox',
+        value : '',
+        control_field : 'label',
+        control_value : '^.*<i .*$',
+        control_use_regex : 'true',
+        options : [{
+            value : '',
+            label : '@@form.textfield.iconPosition.input@@'
+        },
+        {
+            value : 'label',
+            label : '@@form.textfield.iconPosition.label@@'
+        }]
     }]
 },
 {

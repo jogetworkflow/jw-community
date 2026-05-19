@@ -1071,19 +1071,6 @@ body .grid-action-header, body td.grid-action-cell {
     border-bottom: 1px solid #727272;
     box-shadow: 0 1px 0 0 #727272;
 }
-.form-cell > label.label.withIcon > i,
-.subform-cell > label.label.withIcon > i,
-.label-left.form-cell > label.label.withIcon > i,
-.label-left.subform-cell > label.label.withIcon > i{
-    border-bottom: 1px solid #555;
-}
-.form-cell > label.label:has(+ input:focus-visible) > i,
-.subform-cell > label.label:has(+ input:focus-visible) > i,
-.form-cell > label.label:has(+ select:focus-visible) > i,
-.subform-cell > label.label:has(+ select:focus-visible) > i{
-    border-bottom: 1px solid #3f51b5;
-    box-shadow: 0 1px 0 0 #3f51b5;
-}
 @media(min-width: 480px) {
     body .form-container .selector_items {
         margin-left:0px !important;

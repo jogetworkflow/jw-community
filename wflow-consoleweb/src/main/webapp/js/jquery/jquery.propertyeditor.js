@@ -7195,10 +7195,10 @@ PropertyEditor.Type.IconTextField.prototype = {
                         $('.removeIcon').show();
                         $(i).removeClass("open");
                         $("body").off("click.icon-picker");
-                        $("#" + this.id).trigger("change");
+                        $("#" + field.id).trigger("change");
                         return;
                     }
-                    
+
                     // Remove icon
                     if (target.is("i.removeIcon") || target.is("li.removeIcon")) {
                         iconElement.remove();
@@ -7208,6 +7208,7 @@ PropertyEditor.Type.IconTextField.prototype = {
                         $(i).find(".property-icon-picker").css('--icon-color', '');
                         $('.removeIcon').hide();
                         $('.remove-color').hide();
+                        $("#" + field.id).trigger("change");
                         return;
                     }
                 });
