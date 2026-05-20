@@ -185,7 +185,7 @@
         <property name="cacheManager" ref="cacheManager"/>
     </bean>
     
-    <bean id="fileManager" class="org.joget.commons.util.FileManager" depends-on="setupManager" lazy-init="true">
+    <bean id="fileManager" class="org.joget.commons.util.FileManager" depends-on="setupManager">
     </bean>
 
     <bean id="securityUtil" class="org.joget.commons.util.SecurityUtil">
