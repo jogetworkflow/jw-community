@@ -1136,6 +1136,8 @@ body.rtl .selector_element .selector_items {
     position: relative !important;
     top: 0 !important;
     width: auto !important;
+    min-width: 100%;
+    overflow-x: hidden;
 }
 
 .handsontableInputHolder .handsontableEditor .ht_master .wtHolder {
@@ -1149,6 +1151,8 @@ body.rtl .selector_element .selector_items {
 
 .ht_editor_visible .ht_master .wtHolder{
     overflow-x: hidden;
+    width: auto !important;
+    min-width: 100%;
 }
 
 .form-cell .handsontable table td,
