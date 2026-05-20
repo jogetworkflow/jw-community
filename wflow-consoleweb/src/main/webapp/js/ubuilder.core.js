@@ -103,12 +103,43 @@ UserviewBuilder = {
                 const observer = new MutationObserver((mutationsList, observer) => {
                     const jsPreElement = $("div[property-name='js'] > .property-input > div.code-editor > div > div.CodeMirror")[0];
                     const cssPreElement = $("div[property-name='css'] > .property-input > div.code-editor > div > div.CodeMirror")[0];
-
-                    if (jsPreElement) {
+                    
+                    if(jsPreElement && cssPreElement){
                         var cmJs = jsPreElement.CodeMirror;
                         var cmJsValue = cmJs.getValue();
-                        if(cmJs.getValue() !== savedJs){
-                              UI.confirm(get_cbuilder_msg("ubuilder.customJS.confirm"),
+                        var cmCss = cssPreElement.CodeMirror;
+                        var cmCssValue = cmCss.getValue();
+
+                        // if there are both custom css and custom js
+                        if((cmJsValue !== savedJs)&&(cmCss.getValue() !== savedCss)){
+                            //ask for js first
+                            UI.confirm(get_cbuilder_msg("ubuilder.customJS.confirm"),
+                                () => {
+                                    cmJs.setValue(savedJs);
+                                    //ask for css as well
+                                    UI.confirm(get_cbuilder_msg("ubuilder.customCSS.confirm"),
+                                        () => {
+                                            cmCss.setValue(savedCss);         
+                                        }, {
+                                            cancelCallback : () => {
+                                                cmCss.setValue(cmCssValue);
+                                            },                                    
+                                            confirmButtonLabel: get_cbuilder_msg("cbuilder.keep"),
+                                            confirmButtonClass: 'dialog-btn-primary',
+                                            cancelButtonLabel: get_cbuilder_msg("cbuilder.remove")
+                                        }
+                                    ); 
+                                }, {
+                                    cancelCallback : () => {
+                                        cmJs.setValue(cmJsValue);
+                                    },
+                                    confirmButtonLabel: get_cbuilder_msg("cbuilder.keep"),
+                                    confirmButtonClass: 'dialog-btn-primary',
+                                    cancelButtonLabel: get_cbuilder_msg("cbuilder.remove")
+                                }
+                            );
+                        } else if(cmJsValue !== savedJs){
+                            UI.confirm(get_cbuilder_msg("ubuilder.customJS.confirm"),
                                 () => {
                                     cmJs.setValue(savedJs);          
                                 }, {
@@ -120,26 +151,23 @@ UserviewBuilder = {
                                     cancelButtonLabel: get_cbuilder_msg("cbuilder.remove")
                                 }
                             );
+                        }  else if(cmCss.getValue() !== savedCss){
+                            UI.confirm(get_cbuilder_msg("ubuilder.customCSS.confirm"),
+                                    () => {
+                                        cmCss.setValue(savedCss);         
+                                    }, {
+                                        cancelCallback : () => {
+                                            cmCss.setValue(cmCssValue);
+                                        },                                    
+                                        confirmButtonLabel: get_cbuilder_msg("cbuilder.keep"),
+                                        confirmButtonClass: 'dialog-btn-primary',
+                                        cancelButtonLabel: get_cbuilder_msg("cbuilder.remove")
+                                    }
+                                );                        
+                        } else {
+                            console.log("CSS and JS Codemirror cant be found");
                         }
-                    }
-    
-                    if (cssPreElement) {
-                        var cmCss = cssPreElement.CodeMirror;
-                        var cmCssValue = cmCss.getValue();
-                        if(cmCss.getValue() !== savedCss){
-                           UI.confirm(get_cbuilder_msg("ubuilder.customCSS.confirm"),
-                                () => {
-                                    cmCss.setValue(savedCss);         
-                                }, {
-                                    cancelCallback : () => {
-                                        cmCss.setValue(cmCssValue);
-                                    },                                    
-                                    confirmButtonLabel: get_cbuilder_msg("cbuilder.keep"),
-                                    confirmButtonClass: 'dialog-btn-primary',
-                                    cancelButtonLabel: get_cbuilder_msg("cbuilder.remove")
-                                }
-                            );                        
-                        }
+
                     }
 
                     if (cssPreElement || jsPreElement) {
