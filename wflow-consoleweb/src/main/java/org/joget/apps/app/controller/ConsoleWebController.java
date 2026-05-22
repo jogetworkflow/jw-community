@@ -2949,19 +2949,24 @@ public class ConsoleWebController {
     }
 
     @RequestMapping("/console/app/(*:appId)/(~:version)/envVariable/edit/(*:id)")
-    public String consoleAppEnvVariableEdit(ModelMap map, @RequestParam String appId, @RequestParam(required = false) String version, @RequestParam("id") String id) {
+    public String consoleAppEnvVariableEdit(HttpServletResponse response, ModelMap map, @RequestParam String appId, @RequestParam(required = false) String version, @RequestParam("id") String id) throws IOException {
         AppDefinition appDef = appService.getAppDefinition(appId, version);
         map.addAttribute("appId", appDef.getId());
         map.addAttribute("appVersion", appDef.getVersion());
         map.addAttribute("appDefinition", appDef);
 
         EnvironmentVariable environmentVariable = environmentVariableDao.loadById(id, appDef);
+        if (environmentVariable == null) {
+            response.sendError(HttpServletResponse.SC_NOT_FOUND);
+            return null;
+        }
+        
         map.addAttribute("environmentVariable", environmentVariable);
         return "console/apps/envVariableEdit";
     }
 
     @RequestMapping(value = "/console/app/(*:appId)/(~:version)/envVariable/submit/(*:action)", method = RequestMethod.POST)
-    public String consoleAppEnvVariableSubmit(ModelMap map, @RequestParam("action") String action, @RequestParam String appId, @RequestParam(required = false) String version, @ModelAttribute("environmentVariable") EnvironmentVariable environmentVariable, BindingResult result) {
+    public String consoleAppEnvVariableSubmit(HttpServletResponse response, ModelMap map, @RequestParam("action") String action, @RequestParam String appId, @RequestParam(required = false) String version, @ModelAttribute("environmentVariable") EnvironmentVariable environmentVariable, BindingResult result) throws IOException {
         AppDefinition appDef = appService.getAppDefinition(appId, version);
         map.addAttribute("appId", appDef.getId());
         map.addAttribute("appVersion", appDef.getVersion());
@@ -2985,6 +2990,12 @@ public class ConsoleWebController {
                 }
             } else {
                 EnvironmentVariable o = environmentVariableDao.loadById(environmentVariable.getId(), appDef);
+                
+                if (o == null) {
+                    response.sendError(HttpServletResponse.SC_NOT_FOUND);
+                    return null;
+                }
+                
                 o.setRemarks(environmentVariable.getRemarks());
                 o.setValue(environmentVariable.getValue());
                 invalid = !environmentVariableDao.update(o);
@@ -3096,7 +3107,7 @@ public class ConsoleWebController {
     }
 
     @RequestMapping("/console/app/(*:appId)/(~:version)/resource/permission")
-    public String consoleAppResourcePermission(ModelMap map, @RequestParam String id, @RequestParam String appId, @RequestParam(required = false) String version, @RequestParam(required = false) Boolean upload) {
+    public String consoleAppResourcePermission(HttpServletResponse response, ModelMap map, @RequestParam String id, @RequestParam String appId, @RequestParam(required = false) String version, @RequestParam(required = false) Boolean upload) throws IOException {
         AppDefinition appDef = appService.getAppDefinition(appId, version);
         map.addAttribute("appId", appDef.getId());
         map.addAttribute("appVersion", appDef.getVersion());
@@ -3104,6 +3115,12 @@ public class ConsoleWebController {
         map.addAttribute("upload", upload);
 
         AppResource appResource = appResourceDao.loadById(id, appDef);
+        
+        if (appResource == null) {
+            response.sendError(HttpServletResponse.SC_NOT_FOUND);
+            return null;
+        }
+        
         map.addAttribute("appResource", appResource);
         map.addAttribute("properties", PropertyUtil.propertiesJsonLoadProcessing(appResource.getPermissionProperties()));
         
@@ -3111,13 +3128,19 @@ public class ConsoleWebController {
     }
 
     @RequestMapping(value = "/console/app/(*:appId)/(~:version)/resource/permission/submit", method = RequestMethod.POST)
-    public String consoleAppResourcePermissionSubmit(ModelMap map, @RequestParam String id, @RequestParam String appId, @RequestParam(required = false) String version, @RequestParam(required = false) String permissionProperties) {
+    public String consoleAppResourcePermissionSubmit(HttpServletResponse response, ModelMap map, @RequestParam String id, @RequestParam String appId, @RequestParam(required = false) String version, @RequestParam(required = false) String permissionProperties) throws IOException {
         AppDefinition appDef = appService.getAppDefinition(appId, version);
         map.addAttribute("appId", appDef.getId());
         map.addAttribute("appVersion", appDef.getVersion());
         map.addAttribute("appDefinition", appDef);
         
         AppResource appResource = appResourceDao.loadById(id, appDef);
+        
+        if (appResource == null) {
+            response.sendError(HttpServletResponse.SC_NOT_FOUND);
+            return null;
+        }
+        
         map.addAttribute("appResource", appResource);
         appResource.setPermissionProperties(PropertyUtil.propertiesJsonStoreProcessing(appResource.getPermissionProperties(), permissionProperties));
         Map<String, Object> value = PropertyUtil.getPropertiesValueFromJson(appResource.getPermissionProperties());
@@ -3233,7 +3256,7 @@ public class ConsoleWebController {
     }
 
     @RequestMapping(value = "/console/app/(*:param_appId)/(~:param_version)/pluginDefault/submit/(*:param_action)", method = RequestMethod.POST)
-    public String consoleAppPluginDefaultSubmit(ModelMap map, HttpServletRequest request, @RequestParam("param_action") String action, @RequestParam("param_appId") String appId, @RequestParam(value = "param_version", required = false) String version, @RequestParam("param_id") String id, @RequestParam(required = false) String pluginProperties) {
+    public String consoleAppPluginDefaultSubmit(ModelMap map, HttpServletResponse response, HttpServletRequest request, @RequestParam("param_action") String action, @RequestParam("param_appId") String appId, @RequestParam(value = "param_version", required = false) String version, @RequestParam("param_id") String id, @RequestParam(required = false) String pluginProperties) throws IOException {
         AppDefinition appDef = appService.getAppDefinition(appId, version);
         map.addAttribute("appId", appDef.getId());
         map.addAttribute("appVersion", appDef.getVersion());
@@ -3247,6 +3270,11 @@ public class ConsoleWebController {
             pluginDefaultProperties.setId(id);
         } else {
             pluginDefaultProperties = pluginDefaultPropertiesDao.loadById(id, appDef);
+        }
+        
+        if (pluginDefaultProperties == null) {
+            response.sendError(HttpServletResponse.SC_NOT_FOUND);
+            return null;
         }
 
         try {
@@ -4194,7 +4222,7 @@ public class ConsoleWebController {
     }
 
     @RequestMapping(value = "/console/app/(*:appId)/(~:version)/form/(*:formId)/update", method = RequestMethod.POST)
-    public String consoleFormUpdate(ModelMap map, @RequestParam(value = "appId") String appId, @RequestParam(value = "version", required = false) String version, @RequestParam(value = "formId") String formId, @RequestParam(value = "json") String json) {
+    public String consoleFormUpdate(ModelMap map, HttpServletResponse response, @RequestParam(value = "appId") String appId, @RequestParam(value = "version", required = false) String version, @RequestParam(value = "formId") String formId, @RequestParam(value = "json") String json) throws IOException {
         String result = checkVersionExist(map, appId, version);
         if (result != null) {
             return result;
@@ -4203,6 +4231,12 @@ public class ConsoleWebController {
 
         // load existing form definition and update fields
         FormDefinition formDef = formDefinitionDao.loadById(formId, appDef);
+        
+        if (formDef == null) {
+            response.sendError(HttpServletResponse.SC_NOT_FOUND);
+            return null;
+        }
+        
         Form form = (Form) formService.createElementFromJson(json);
         formDef.setName(form.getPropertyString("name"));
         formDef.setTableName(form.getPropertyString("tableName"));

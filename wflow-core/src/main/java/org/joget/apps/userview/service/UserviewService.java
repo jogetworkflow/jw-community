@@ -594,7 +594,11 @@ public class UserviewService {
         if (userviewId != null) {
             userviews = new ArrayList<UserviewDefinition>();
             UserviewDefinition userviewDef = userviewDefinitionDao.loadById(userviewId, appDef);
-            userviews.add(userviewDef);
+            if (userviewDef == null) {
+                LogUtil.warn(getClass().getName(), "userview '" + userviewId + "' not found");
+            } else {
+                userviews.add(userviewDef);
+            }
         } else {
             userviews = appDef.getUserviewDefinitionList();
         }
@@ -706,13 +710,17 @@ public class UserviewService {
                     if (!userviewList.isEmpty()) {
                         String userviewId = userviewList.iterator().next().getId();
                         defaultUserview = userviewDefinitionDao.loadById(userviewId, appDef);
-                        
-                        // save setting
-                        String value = defaultUserview.getAppId() + "/" + defaultUserview.getId();
-                        Setting newSetting = new Setting();
-                        newSetting.setProperty(defaultUserviewProperty);
-                        newSetting.setValue(value);
-                        setupManager.saveSetting(newSetting);                        
+
+                        if (defaultUserview == null) {
+                            LogUtil.warn(getClass().getName(), "default userview '" + userviewId + "' not found after app center import");
+                        } else {
+                            // save setting
+                            String value = defaultUserview.getAppId() + "/" + defaultUserview.getId();
+                            Setting newSetting = new Setting();
+                            newSetting.setProperty(defaultUserviewProperty);
+                            newSetting.setValue(value);
+                            setupManager.saveSetting(newSetting);      
+                        }
                     }
                 }
             } catch (Exception ex) {

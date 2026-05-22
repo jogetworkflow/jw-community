@@ -198,22 +198,27 @@ public class FormPdfUtil {
         FormDefinitionDao formDefinitionDao = (FormDefinitionDao) AppUtil.getApplicationContext().getBean("formDefinitionDao");
         FormService formService = (FormService) AppUtil.getApplicationContext().getBean("formService");
         FormDefinition formDef = formDefinitionDao.loadById(formId, appDef);
-        String formJson = formDef.getJson();
 
-        if (formJson != null) {
-            formJson = AppUtil.processHashVariable(formJson, assignment, StringUtil.TYPE_JSON, null, appDef);
-            form = (Form) formService.loadFormFromJson(formJson, formData);
-            
-            if (form != null) {
-                //set form to readonly
-                    FormUtil.setReadOnlyProperty(form, true, false);
+        if (formDef == null) {
+            LogUtil.warn(FormPdfUtil.class.getName(), "form '" + formId + "' not found");
+        } else {
+            String formJson = formDef.getJson();
 
-                if (hideEmpty != null && hideEmpty) {
-                    form = (Form) removeEmptyValueChild(form, form, formData);
-                }
+            if (formJson != null) {
+                formJson = AppUtil.processHashVariable(formJson, assignment, StringUtil.TYPE_JSON, null, appDef);
+                form = (Form) formService.loadFormFromJson(formJson, formData);
 
                 if (form != null) {
-                    html = formService.retrieveFormHtml(form, formData);
+                    //set form to readonly
+                        FormUtil.setReadOnlyProperty(form, true, false);
+
+                    if (hideEmpty != null && hideEmpty) {
+                        form = (Form) removeEmptyValueChild(form, form, formData);
+                    }
+
+                    if (form != null) {
+                        html = formService.retrieveFormHtml(form, formData);
+                    }
                 }
             }
         }

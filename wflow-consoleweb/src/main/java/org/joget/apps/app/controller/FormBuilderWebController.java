@@ -67,7 +67,7 @@ public class FormBuilderWebController {
     FormDataDao formDataDao;
     @Autowired
     SetupManager setupManager;
- 
+
     @RequestMapping("/console/app/(*:appId)/(~:version)/form/builder/(*:formId)")
     public String formBuilder(ModelMap model, HttpServletResponse response, @RequestParam("appId") String appId, @RequestParam(value = "version", required = false) String version, @RequestParam("formId") String formId, @RequestParam(required = false) String json) {
         // verify app version
@@ -140,7 +140,7 @@ public class FormBuilderWebController {
         
         String systemTheme = setupManager.getSettingValue("systemTheme");
         model.addAttribute("systemTheme", systemTheme);
-        
+
         response.addHeader("X-XSS-Protection", "0");
         
         return "fbuilder/formBuilder";
@@ -148,20 +148,26 @@ public class FormBuilderWebController {
     
     @RequestMapping(value = "/fbuilder/app/(*:appId)/(~:appVersion)/form/(*:formId)/save", method = RequestMethod.POST)
     @Transactional
-    public String save(Writer writer, @RequestParam("appId") String appId, @RequestParam(value = "appVersion", required = false) String version, @RequestParam("formId") String formId, @RequestParam(value = "json", required = false) String json) throws Exception {
+    public String save(Writer writer, HttpServletResponse response, @RequestParam("appId") String appId, @RequestParam(value = "appVersion", required = false) String version, @RequestParam("formId") String formId, @RequestParam(value = "json", required = false) String json) throws Exception {
         // verify app license
         ConsoleWebPlugin consoleWebPlugin = (ConsoleWebPlugin)pluginManager.getPlugin(ConsoleWebPlugin.class.getName());
         String page = consoleWebPlugin.verifyAppVersion(appId, version);
         if (page != null) {
             return page;
         }
-        
+
         //retrieve from request body if the json is send in file
         json = AppUtil.getSubmittedJsonDefinition(json);
 
         AppDefinition appDef = appService.getAppDefinition(appId, version);
         // load existing form definition and update fields
         FormDefinition formDef = formDefinitionDao.loadById(formId, appDef);
+
+        if (formDef == null) {
+            response.setStatus(HttpServletResponse.SC_NOT_FOUND);
+            return null;
+        }
+
         Form form = (Form) formService.createElementFromJson(json);
         formDef.setName(form.getPropertyString("name"));
         formDef.setTableName(form.getPropertyString("tableName"));
@@ -253,7 +259,7 @@ public class FormBuilderWebController {
             response.setStatus(HttpServletResponse.SC_NOT_FOUND);
             return null;
         }
-              
+
         AppUtil.setCurrentAppDefinition(appDef);
         return embedForm(model, request, response, buttonLabel, json, callback, callbackSetting, id, action, processId);
     }
@@ -267,8 +273,8 @@ public class FormBuilderWebController {
         if (appDef != null) {
             appId = appDef.getAppId();
             appVersion = appDef.getVersion().toString();
-        }  
-              
+        }
+
         boolean verified = false;
         String nonce = request.getParameter("_nonce");
 
@@ -287,12 +293,12 @@ public class FormBuilderWebController {
         if(id != null && !id.isEmpty()){
             formData.setPrimaryKeyValue(id);
         }
-        
+
         //set the process id for process related hash variable parsing
         if (processId != null && !processId.isEmpty()) {
             formData.setProcessId(processId);
         }
-        
+
         formData = formService.retrieveFormDataFromRequest(formData, request);
         String decryptedJson = SecurityUtil.decrypt(json);
         Form form = formService.loadFormFromJson(decryptedJson, formData);
@@ -400,7 +406,7 @@ public class FormBuilderWebController {
                     }
                 }
 
-                //should use the original request param map instead of the one modified by other form processing in form data. Retrieve it again from request 
+                //should use the original request param map instead of the one modified by other form processing in form data. Retrieve it again from request
                 FormData newFormData = new FormData();
                 newFormData = formService.retrieveFormDataFromRequest(newFormData, request);
                 //merge the data just in case there is new request parameter added for primary key of subform

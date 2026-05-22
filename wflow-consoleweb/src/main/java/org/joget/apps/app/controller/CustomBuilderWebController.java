@@ -351,6 +351,11 @@ public class CustomBuilderWebController {
                 builderJson = "{}";
             }
         } else {
+            if (builderDefinition == null) {
+                response.sendError(HttpServletResponse.SC_NOT_FOUND);
+                return null;
+            }
+            
             // get JSON from form definition
             builderJson = builderDefinition.getJson();
         }
@@ -392,6 +397,12 @@ public class CustomBuilderWebController {
 
         AppDefinition appDef = appService.getAppDefinition(appId, appVersion);
         BuilderDefinition def = builderDefinitionDao.loadById(id, appDef);
+        
+        if (def == null) {
+            response.sendError(HttpServletResponse.SC_NOT_FOUND);
+            return null;
+        }
+        
         def.setName(builder.getNameFromJSON(json));
         def.setDescription(builder.getDescriptionFromJSON(json));
         def.setJson(PropertyUtil.propertiesJsonStoreProcessing(def.getJson(), json));
