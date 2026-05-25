@@ -221,7 +221,7 @@ public abstract class Element extends ExtDefaultPlugin implements PropertyEditab
 
         // get value
         String id = getPropertyString(FormUtil.PROPERTY_ID);
-        if (id != null && !id.isEmpty()) {
+        if (id != null) {
             String value = FormUtil.getElementPropertyValue(this, formData);
             if (value != null) {
                 // set value into Properties and FormRowSet object

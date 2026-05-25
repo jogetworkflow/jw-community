@@ -1,23 +1,23 @@
 package org.joget.plugin.base;
 
 import freemarker.template.Template;
-import java.util.ArrayList;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.ResourceBundle;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 public class PluginManagerCache {
-    
-    private Map<Class, Map<String, Plugin>> pluginCache = new HashMap<Class, Map<String, Plugin>>();
-    private Map<String, Class> osgiPluginClassCache = new HashMap<String, Class>();
-    private List<String> noOsgiPluginClassCache = new ArrayList<String>();
-    private Map<String, Template> templateCache = new HashMap<String, Template>();
-    private List<String> noResourceBundleCache = new ArrayList<String>();
-    private Map<String, ResourceBundle> resourceBundleCache = new HashMap<String, ResourceBundle>();
-    private Map<String, CustomPluginInterface> customPluginInterfaces = new HashMap<String, CustomPluginInterface>();
-    private Date lastCleared = null;
+
+    private final Map<Class, Map<String, Plugin>> pluginCache = new ConcurrentHashMap<>();
+    private final Map<String, Class> osgiPluginClassCache = new ConcurrentHashMap<>();
+    private final List<String> noOsgiPluginClassCache = new CopyOnWriteArrayList<>();
+    private final Map<String, Template> templateCache = new ConcurrentHashMap<>();
+    private final List<String> noResourceBundleCache = new CopyOnWriteArrayList<>();
+    private final Map<String, ResourceBundle> resourceBundleCache = new ConcurrentHashMap<>();
+    private final Map<String, CustomPluginInterface> customPluginInterfaces = new ConcurrentHashMap<>();
+    private volatile Date lastCleared = null;
 
     public Map<Class, Map<String, Plugin>> getPluginCache() {
         return pluginCache;
@@ -46,7 +46,7 @@ public class PluginManagerCache {
     public Map<String, CustomPluginInterface> getCustomPluginInterfaces() {
         return customPluginInterfaces;
     }
-    
+
     public Date getLastCleared() {
         return lastCleared;
     }
@@ -54,7 +54,7 @@ public class PluginManagerCache {
     public void setLastCleared(Date lastCleared) {
         this.lastCleared = lastCleared;
     }
-    
+
     public void clearCache() {
         pluginCache.clear();
         osgiPluginClassCache.clear();
@@ -62,15 +62,14 @@ public class PluginManagerCache {
         templateCache.clear();
         resourceBundleCache.clear();
         noResourceBundleCache.clear();
-        lastCleared = new Date();    
+        lastCleared = new Date();
     }
-    
+
     public boolean isCleared(Date date) {
         Date clearedDate = lastCleared;
         if (clearedDate == null) {
             return false;
         }
-        
         return clearedDate.after(date);
     }
 }

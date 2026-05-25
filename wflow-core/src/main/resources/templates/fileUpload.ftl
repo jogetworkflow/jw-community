@@ -43,6 +43,18 @@
                     </li>
                 </#list>
             </#if>
+            <#if missingFilePaths??>
+                <#list missingFilePaths?keys as key>
+                    <li>
+                        <span class="name">${missingFilePaths[key]!?html}</span>
+                        <#if element.properties.readonly! != 'true'>
+                            <a class="remove">@@form.fileupload.remove@@</a>
+                        </#if>
+                        <span class="form-error-message">@@form.fileupload.fileNotFound@@</span>
+                        <input type="hidden" name="${elementParamName!}_path" value="${key!?html}"/>
+                    </li>
+                </#list>
+            </#if>
         </ul>
     <#if element.properties.readonly! != 'true' && element.properties.readonly! != 'readonly'>
         <div class="dz-message needsclick">

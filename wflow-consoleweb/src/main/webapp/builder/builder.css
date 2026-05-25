@@ -77,7 +77,8 @@ body:after{
     opacity: 0.3;
     transition: 0.35s display ease-in-out; 
 }
-body.initializing:after{
+body.initializing:after,
+body.process-initializing:after{
     display: block;
 }
 body.quick-nav-shown {
@@ -96,7 +97,8 @@ body.quick-nav-shown.quick-nav-position-left {
 #builder_loader .fa-stack-1x{
     font-size: 60%;
 }
-body.initializing #builder_loader{
+body.initializing #builder_loader,
+body.process-initializing #builder_loader {
     display: block !important;
 }
 
@@ -992,6 +994,7 @@ div.section, .header > ol {
 .tree ol li {
     position: relative;
     margin-left: -15px;
+    padding-left: 3px;
     margin-bottom: 0.1rem;
     list-style: none;
     color: #fff;
@@ -1059,7 +1062,7 @@ div.section, .header > ol {
     left: 50px;
 }
 .tree ol li input + ol:before {
-    content:'\f107';
+    content:'\f105';
     left: 40px;
     top: 0px;
 }
@@ -1093,7 +1096,7 @@ div.section, .header > ol {
     height: auto;
 }
 .tree ol li input:checked + ol:before {
-    content:'\f105';
+    content:'\f107';
     position: absolute;
     top: -16px;
 }
@@ -1276,7 +1279,7 @@ body.page-component-editor #builderToolbar {
 .visibility-table .element-meta .element-icon > i, .visibility-table .element-meta .element-icon > span,
 .tree ol li.tree-viewer-item label > i, .tree ol li.tree-viewer-item label > span{
     transform: scale(1);
-    top: 1px;
+    top: 3px;
     color: #ddd;
 }
 .permission-table .element-meta .element-icon > svg,

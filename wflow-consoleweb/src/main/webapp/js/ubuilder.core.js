@@ -82,19 +82,28 @@ UserviewBuilder = {
             UserviewBuilder.initThemeConfigPluginList();
         });
 
+        var previousTheme = null;
         var savedCss, savedJs = "";
         var propertiesViewInitilized = $("#propertiesView").length > 0 ? true : false;
         $("body").on("mouseenter", "div[property-name='theme'] > .property-input > div.chosen-container", function() {
             savedCss = $("div[property-name='css'] > .property-input > div.code-editor > div > div.CodeMirror")[0].CodeMirror.getValue();
             savedJs = $("div[property-name='js'] > .property-input > div.code-editor > div > div.CodeMirror")[0].CodeMirror.getValue();
         }).on("change", "div[property-name='theme'] > .property-input > select", function(e) {
+            var newTheme = $(this).val();
             if (!propertiesViewInitilized) {
                 propertiesViewInitilized = true;
+                previousTheme = newTheme;
+                return;
             } else {
+
+                if(newTheme === previousTheme) return;
+
+                previousTheme = newTheme;
+                
                 const observer = new MutationObserver((mutationsList, observer) => {
                     const jsPreElement = $("div[property-name='js'] > .property-input > div.code-editor > div > div.CodeMirror")[0];
                     const cssPreElement = $("div[property-name='css'] > .property-input > div.code-editor > div > div.CodeMirror")[0];
-    
+
                     if (jsPreElement) {
                         var cmJs = jsPreElement.CodeMirror;
 
@@ -130,12 +139,14 @@ UserviewBuilder = {
 
                     if (cssPreElement || jsPreElement) {
                         observer.disconnect();
+                        isThemeChanging = false;
                     }
                 });
-    
-                observer.observe(document.body, { childList: true, subtree: true });   
+
+                observer.observe($("#propertiesView")[0], { childList: true, subtree: true });
+            
             }
-        }); 
+        });
     },
     
     /*

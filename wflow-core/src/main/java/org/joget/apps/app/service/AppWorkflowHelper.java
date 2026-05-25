@@ -128,6 +128,7 @@ public class AppWorkflowHelper implements WorkflowHelper {
                         ((PropertyEditable) appPlugin).setProperties(propertiesMap);
                     }
                     appPlugin.execute(((PropertyEditable) appPlugin).getProperties());
+                    AppUtil.removeHashVariablePluginsFromRequest(appDef);
                 }
                 return true;
             }
@@ -914,5 +915,29 @@ public class AppWorkflowHelper implements WorkflowHelper {
     public void cleanForDeadline() {
         AuditTrailManager auditTrailManager = (AuditTrailManager) WorkflowUtil.getApplicationContext().getBean("auditTrailManager");
         auditTrailManager.clean();
+    }
+
+    @Override
+    public Object getAppDefinitionForWorkflowProcess(String processId) {
+        AppService appService = (AppService) AppUtil.getApplicationContext().getBean("appService");
+        return appService.getAppDefinitionForWorkflowProcess(processId);
+    }
+
+    @Override
+    public Object getAppDefinitionWithProcessDefId(String processDefId) {
+        AppService appService = (AppService) AppUtil.getApplicationContext().getBean("appService");
+        return appService.getAppDefinitionWithProcessDefId(processDefId);
+    }
+
+    @Override
+    public void setCurrentAppDefinition(Object appDef) {
+        if (appDef instanceof AppDefinition) {
+            AppUtil.setCurrentAppDefinition((AppDefinition) appDef);
+        }
+    }
+
+    @Override
+    public void resetAppDefinition() {
+        AppUtil.resetAppDefinition();
     }
 }

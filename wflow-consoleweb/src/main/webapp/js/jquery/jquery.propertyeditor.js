@@ -10247,6 +10247,24 @@ PropertyEditor.Type.CodeEditor.prototype = {
         thisObj.codeeditor.on("change", function(cm, change) {
             $('#' + thisObj.id).trigger("change");
         });
+        
+        var lastWidth = 0;
+        var lastHeight = 0;
+        var container = document.getElementById(thisObj.id);
+
+        setInterval(function () {
+            if (container && thisObj.codeeditor) {
+                var currentWidth = container.clientWidth;
+                var currentHeight = container.clientHeight;
+
+
+                if (currentWidth !== lastWidth || currentHeight !== lastHeight) {
+                    thisObj.codeeditor.refresh();
+                    lastWidth = currentWidth;
+                    lastHeight = currentHeight;
+                }
+            }
+        }, 100);
     },
     pageShown: function() {
         this.codeeditor.refresh();
@@ -12393,7 +12411,18 @@ PropertyAssistant = {
             if (!(e.ctrlKey && e.altKey)) {
                 keys[e.which] = true;
                 if (keys[17] === true && keys[16] === true && keys[18] !== true && keys[51] === true) {
-                    var field = $(element).find(":focus");
+                    
+                    //Use CodeMirror-focused
+                    var cm = $(".CodeMirror-focused").closest(".code-editor");
+                    var field;
+                
+                    if (cm.length > 0) {
+                        // for CodeMirror
+                        field = cm;
+                    } else {
+                        // for normal text area
+                        field = $(element).find(":focus");
+                    }
                     if ($(field).length > 0) {
                         PropertyAssistant.currentField = field[0];
                         PropertyAssistant.currentCaretPosition = PropertyAssistant.doGetCaretPosition(field[0]);
@@ -12440,10 +12469,21 @@ PropertyAssistant = {
                 PropertyAssistant.currentCaretPosition = PropertyAssistant.doGetCaretPosition(field[0]);
                 PropertyAssistant.showDialog();
             });
+
+            // Each focus increments a generation counter. The focusout cleanup checks this
+            // before running — if focus moved to another assisted field, the counter will have
+            // advanced and the stale timeout will abort instead of removing the new icon.
+            var cleanupGen = ($(element).data("assistGen") || 0) + 1;
+            $(element).data("assistGen", cleanupGen);
             
             $(field).off("focusout.assit");
             $(field).on("focusout.assit", function() {
+                var myGen = cleanupGen;
                 setTimeout(function(){
+                    // Abort if a newer focus event has already taken over
+                    if ($(element).data("assistGen") !== myGen) {
+                        return;
+                    }
                     $(field).off("focusout.assit");
                     $(container).find(".assist_icon").remove();
                     
@@ -12766,8 +12806,16 @@ PropertyAssistant = {
         var value = $(temp).text();
         if (value.trim() !== "") {
             if ($(PropertyAssistant.currentField).hasClass("ace_text-input") || $(PropertyAssistant.currentField).hasClass("ace_editor")) {
-                var id = $(PropertyAssistant.currentField).closest(".ace_editor").attr("id");
-                var codeeditor = ace.edit(id);
+                var $editor = $(PropertyAssistant.currentField).closest(".ace_editor");
+                var id = $editor.attr("id");
+                var codeeditor;
+                if (id != null) {
+                   //id exist, use id
+                    codeeditor = ace.edit(id);
+                } else {
+                    // id not exist, use DOM element
+                    codeeditor = ace.edit($editor[0]);
+                }
                 var old = codeeditor.getValue();
                 if (old !== "") {
                     value = " " + value;
@@ -13358,8 +13406,16 @@ PropertyAssistant = {
      */
     doGetCaretPosition : function(oField) {
         if ($(PropertyAssistant.currentField).hasClass("ace_text-input") || $(PropertyAssistant.currentField).hasClass("ace_editor")) {
-            var id = $(PropertyAssistant.currentField).closest(".ace_editor").attr("id");
-            var codeeditor = ace.edit(id);
+            var $editor = $(PropertyAssistant.currentField).closest(".ace_editor");
+            var id = $editor.attr("id");
+            var codeeditor;
+            if (id != null) {
+                   //id exist, use id
+                codeeditor = ace.edit(id);
+            } else {
+                 // id not exist, use DOM element
+                codeeditor = ace.edit($editor[0]);
+            }
             return codeeditor.getCursorPosition();
         } else if ($(PropertyAssistant.currentField).hasClass("code-editor")) {
             var codeeditor = $(PropertyAssistant.currentField).find(".CodeMirror")[0].CodeMirror;

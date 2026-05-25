@@ -39,6 +39,7 @@ import java.util.Properties;
 import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 import java.util.zip.ZipOutputStream;
@@ -58,6 +59,8 @@ import org.joget.apps.app.model.AppDefinition;
 import org.joget.apps.app.model.AppImportExportAwarePlugin;
 import org.joget.apps.app.model.AppResource;
 import org.joget.apps.app.model.BuilderDefinition;
+import org.joget.apps.app.model.CustomBuilder;
+import org.joget.apps.app.model.CustomBuilderCloneCallback;
 import org.joget.apps.app.model.DatalistDefinition;
 import org.joget.apps.app.model.EnvironmentVariable;
 import org.joget.apps.app.model.FormDefinition;
@@ -1298,8 +1301,22 @@ public class AppServiceImpl implements AppService {
                         }
                     }
                     
-                    //import
+                    // convert modified XML definitions into AppDefinition object
                     appDef = serializer.read(AppDefinition.class, new ByteArrayInputStream(appDefinitionXml), false);
+
+                    // perform pre-import CustomBuilder processing
+                    Collection<BuilderDefinition> builderDefinitions = appDef.getBuilderDefinitionList();
+                    Map<CustomBuilder, List<BuilderDefinition>> builderDefinitionMap = builderDefinitions.stream()
+                            .collect(Collectors.groupingBy(o -> CustomBuilderUtil.getBuilder(o.getType())));
+                    for (Entry<CustomBuilder, List<BuilderDefinition>> entry : builderDefinitionMap.entrySet()) {
+                        CustomBuilder key = entry.getKey();
+                        if (key instanceof CustomBuilderCloneCallback) {
+                            List<BuilderDefinition> value = entry.getValue();
+                            ((CustomBuilderCloneCallback) key).onClone(Collections.unmodifiableList(value), appDef);
+                        }
+                    }
+
+                    // import app
                     AppDefinition newAppDef = importAppDefinition(appDef, 1L, xpdl);
                     
                     AppResourceUtil.copyAppResources(copy.getAppId(), copy.getVersion().toString(), newAppDef.getAppId(), newAppDef.getVersion().toString());
@@ -1946,7 +1963,11 @@ public class AppServiceImpl implements AppService {
         if (form != null) {
             try {
                 formData = formService.submitForm(form, formData, ignoreValidation);
-                
+
+                // clear hash variable plugins from the request after submitting form
+                AppDefinition appDef = AppUtil.getCurrentAppDefinition();
+                AppUtil.removeHashVariablePluginsFromRequest(appDef);
+
                 if (formData.getRequestParameter("_json") == null && formData.getRequestParameter("_nonce") == null) { //don't execute for embed form
                     FormUtil.executePostFormSubmissionProccessor(form, formData);
                 }
@@ -2114,6 +2135,15 @@ public class AppServiceImpl implements AppService {
                 FormRow row = results.get(i);
                 String rowPrimaryKeyValue = row.getId();
 
+                // Remove empty key-value pairs
+                Iterator<Object> keyIterator = row.keySet().iterator();
+                while (keyIterator.hasNext()) {
+                    String key = (String) keyIterator.next();
+                    if (key == null || key.isEmpty()) {
+                        keyIterator.remove();
+                    }
+                }
+
                 // set id
                 if (rowPrimaryKeyValue == null || rowPrimaryKeyValue.trim().length() == 0) {
                     rowPrimaryKeyValue = primaryKeyValue;
@@ -2253,6 +2283,7 @@ public class AppServiceImpl implements AppService {
                 return null;
             }
             AppDefinition prevAppDef = appDefinitionDao.loadVersion(appId, previousVersion);
+            AppUtil.setCurrentAppDefinition(prevAppDef);
             prevAppDef.setPublished(Boolean.FALSE);
             appDefinitionDao.saveOrUpdate(prevAppDef);
         }
@@ -2267,6 +2298,7 @@ public class AppServiceImpl implements AppService {
             appDef = appDefinitionDao.loadVersion(appId, versionLong);
         }
         if (appDef != null) {
+            AppUtil.setCurrentAppDefinition(appDef);
             appDef.setPublished(Boolean.TRUE);
             appDefinitionDao.saveOrUpdate(appDef);
         }
@@ -2283,6 +2315,7 @@ public class AppServiceImpl implements AppService {
         AppDefinition prevAppDef = getPublishedAppDefinition(appId);
         // unset previous published version
         if (prevAppDef != null) {
+            AppUtil.setCurrentAppDefinition(prevAppDef);
             prevAppDef.setPublished(Boolean.FALSE);
             appDefinitionDao.saveOrUpdate(prevAppDef);
         }
@@ -3995,31 +4028,39 @@ public class AppServiceImpl implements AppService {
         if (appDef.getEnvironmentVariableList() != null) {
             for (EnvironmentVariable env : appDef.getEnvironmentVariableList()) {
                 if (env.getId().equals("table_prefix")) {
-                    prefix = env.getValue();
+                    if (env.getValue() != null) {
+                        prefix = env.getValue();
+                    }
                     break;
                 }
             }
         }
-        if (prefix.isEmpty()) {
-            List<String> tableNameList = (List<String>) formDefinitionDao.getTableNameList(appDef);
-            if (tableNameList != null && !tableNameList.isEmpty()) {
-                
-                String firstString = tableNameList.get(0);
-                int length = firstString.length();
-                
-                for (int i = 0; i < length; i++) {
-                    char c = firstString.charAt(i);
-                    for (int j = 1; j < tableNameList.size(); j++) {
-                        String compare = tableNameList.get(j);
-                        if (i >= compare.length() || compare.charAt(i) != c) {
-                            prefix = firstString.substring(0, i);
-                            break;
-                        }
-                    }
-                    if (!prefix.isEmpty()) {
-                        break; //prefix is already found
-                    }
-                }
+        
+        if (!prefix.isEmpty()) {
+            return prefix;
+        }
+
+        List<String> tableNameList = (List<String>) formDefinitionDao.getTableNameList(appDef);     
+        if (tableNameList == null || tableNameList.isEmpty() || tableNameList.size() == 1) {
+            return "";
+        }
+        
+        prefix = tableNameList.get(0);
+
+        for (int i = 1; i < tableNameList.size(); i++) {
+            String other = tableNameList.get(i);
+            int minLen = Math.min(prefix.length(), other.length());
+            int j = 0;
+
+            while (j < minLen && prefix.charAt(j) == other.charAt(j)) {
+                j++;
+            }
+
+            prefix = prefix.substring(0, j);
+
+            // Stop early when prefix is not the same
+            if (prefix.isEmpty()) {
+                break;
             }
         }
         return prefix;

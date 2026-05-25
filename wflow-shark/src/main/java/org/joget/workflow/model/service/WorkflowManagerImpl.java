@@ -2924,8 +2924,13 @@ public class WorkflowManagerImpl implements SharkWorkflowManager {
 
             // audit trail for aborted activity instances
             Collection<WorkflowActivity> activityList = getActivityList(processId, 0, 1000, null, false); //getProcessActivityInstanceList(processId);
+            Object appDef = getAppDefinitionForProcess(processId);
             for (WorkflowActivity activity : activityList) {
-                WorkflowUtil.addAuditTrail(this.getClass().getName(), "assignmentAbort", activity.getId(), new Class[]{activity.getId().getClass()}, new Object[]{activity.getId()}, null);
+                if (appDef != null) {
+                    WorkflowUtil.addAuditTrail(this.getClass().getName(), "assignmentAbort", activity.getId(), new Class[]{activity.getId().getClass(), appDef.getClass()}, new Object[]{activity.getId(), appDef}, null);
+                } else {
+                    WorkflowUtil.addAuditTrail(this.getClass().getName(), "assignmentAbort", activity.getId(), new Class[]{activity.getId().getClass()}, new Object[]{activity.getId()}, null);
+                }
             }
         } catch (Exception ex) {
             LogUtil.error(getClass().getName(), ex, "");
@@ -2940,6 +2945,18 @@ public class WorkflowManagerImpl implements SharkWorkflowManager {
         internalRemoveProcessOnComplete(processId);
         
         return aborted;
+    }
+    
+    protected Object getAppDefinitionForProcess(String processId) {
+        try {
+            WorkflowHelper workflowHelper = (WorkflowHelper) WorkflowUtil.getApplicationContext().getBean("workflowHelper");
+            if (workflowHelper != null) {
+                return workflowHelper.getAppDefinitionForWorkflowProcess(processId);
+            }
+        } catch (Exception e) {
+            // ignore
+        }
+        return null;
     }
 
     /**
@@ -5746,8 +5763,29 @@ public class WorkflowManagerImpl implements SharkWorkflowManager {
             }
 
             if (wfProcess != null && wfProcess.state().startsWith(SharkConstants.STATEPREFIX_CLOSED)) {
+                try {
+                    WorkflowHelper workflowHelper = (WorkflowHelper) WorkflowUtil.getApplicationContext().getBean("workflowHelper");
+                    if (workflowHelper != null) {
+                        Object appDef = workflowHelper.getAppDefinitionForWorkflowProcess(procInstanceId);
+                        if (appDef != null) {
+                            workflowHelper.setCurrentAppDefinition(appDef);
+                        }
+                    }
+                } catch (Exception e) {
+                    // ignore if app-related classes are not available
+                }
+                
                 WorkflowUtil.addAuditTrail(this.getClass().getName(), "processCompleted", procInstanceId, new Class[]{procInstanceId.getClass()}, new Object[]{procInstanceId}, null);
 
+                try {
+                    WorkflowHelper workflowHelper = (WorkflowHelper) WorkflowUtil.getApplicationContext().getBean("workflowHelper");
+                    if (workflowHelper != null) {
+                        workflowHelper.resetAppDefinition();
+                    }
+                } catch (Exception e) {
+                    // ignore
+                }
+                
                 String processOnCompletion = WorkflowUtil.getSystemSetupValue("deleteProcessOnCompletion");
                 if ("true".equalsIgnoreCase(processOnCompletion) || "archive".equalsIgnoreCase(processOnCompletion)) {
                     
@@ -5861,14 +5899,25 @@ public class WorkflowManagerImpl implements SharkWorkflowManager {
      */
     public List<String> getMigrationAssignmentUserList(String processId, String activityDefId) {
         String key = processId + "_" + activityDefId;
-        List<String> users = ((HashMap<String, List<String>>) migrationAssignmentUserList.get()).get(key);
+        HashMap<String, List<String>> userListMap = (HashMap<String, List<String>>) migrationAssignmentUserList.get();
         
         //remove after retrieved
+        List<String> users = userListMap.get(key);
         if (users != null) {
-            ((HashMap<String, List<String>>) migrationAssignmentUserList.get()).remove(key);
+            userListMap.remove(key);
+            return users;
+        }
+
+        // Fallback lookup mechanism in the case of truncated key
+        for (String storedKey : userListMap.keySet()) {
+            if (storedKey.startsWith(key)) {
+                users = userListMap.get(storedKey);
+                userListMap.remove(storedKey);
+                return users;
+            }
         }
         
-        return users;
+        return null;
     }
 
     protected PackageAdministration getSharkPackageAdmin(WMSessionHandle sessionHandle) throws Exception {
@@ -6321,6 +6370,22 @@ public class WorkflowManagerImpl implements SharkWorkflowManager {
                 LogUtil.error(getClass().getName(), e, "");
             }
         }
+        
+        try {
+            Object appDef = null;
+            WorkflowHelper workflowHelper = (WorkflowHelper) WorkflowUtil.getApplicationContext().getBean("workflowHelper");
+            if (workflowHelper != null) {
+                appDef = workflowHelper.getAppDefinitionWithProcessDefId(processDefId);
+            }
+            if (appDef != null) {
+                WorkflowUtil.addAuditTrail(this.getClass().getName(), "participantHasActivities", null, new Class[]{String.class, String.class, appDef.getClass()}, new Object[]{processDefId, participantId, appDef}, hasActivities);
+            } else {
+                WorkflowUtil.addAuditTrail(this.getClass().getName(), "participantHasActivities", null, new Class[]{String.class, String.class}, new Object[]{processDefId, participantId}, hasActivities);
+            }
+        } catch (Exception e) {
+            // ignore
+        }
+        
         return hasActivities;
     }
     

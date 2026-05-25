@@ -37,10 +37,10 @@ var Usages = {
                 var container = $(this).next(".usage_found");
                 if (container.is(":hidden")) {
                     container.show();
-                    toggle.find("i").removeClass("icon-angle-down").removeClass("fa-angle-down").addClass("icon-angle-up").addClass("fa-angle-up");
+                    toggle.find("i").removeClass("icon-angle-right").removeClass("fa-angle-right").addClass("icon-angle-down").addClass("fa-angle-down");
                 } else {
                     container.hide();
-                    toggle.find("i").removeClass("icon-angle-up").removeClass("fa-angle-up").addClass("icon-angle-down").addClass("fa-angle-down");
+                    toggle.find("i").removeClass("icon-angle-down").removeClass("fa-angle-down").addClass("icon-angle-right").addClass("fa-angle-right");
                 }
             });
         } else {
@@ -67,7 +67,7 @@ var Usages = {
                 $(el).append('<a>' + UI.escapeHTML(item.label) + '</a>');
             }
             if (item.found !== undefined && item.found.length > 0) {
-                el.append('<a class="found_toggle"><i class="icon-angle-down fas fa-angle-down"></i></a>');
+                el.append('<a class="found_toggle"><i class="icon-angle-right fas fa-angle-right"></i></a>');
                 var foundContainer = $('<ul class="usage_found" style="display:none"></ul>');
                 el.append(foundContainer);
                 for (var j in item.found) {
