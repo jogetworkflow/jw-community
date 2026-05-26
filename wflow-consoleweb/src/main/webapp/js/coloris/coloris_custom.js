@@ -553,33 +553,58 @@
      * Observes DOM changes to handle color picker open/close and update swatches/recent colors.
      */
     function startObserving() {
+
+        let wasOpen = false;
+
+        // Function to perform cleanup when picker closes
+        const onPickerClose = () => {
+            renderSwatches();
+            const input = currentInstance || document.querySelector('#clr-color-value');
+            if (input) {
+                input.removeEventListener('input', updateLatestColor);
+                input.removeEventListener('change', updateLatestColor);
+            }
+            if (lastPickedColor) {
+                saveRecentColors(lastPickedColor);
+            }
+            lastPickedColor = null;
+        };
+    
         const observer = new MutationObserver((mutations) => {
             mutations.forEach((mutation) => {
-                if (mutation.type === 'attributes' && mutation.attributeName === 'class') {
-                    const picker = mutation.target;
-                    if (picker && picker.classList && !picker.classList.contains('clr-open')) {
-                        renderSwatches();
-                        const input = currentInstance || document.querySelector('#clr-color-value');
-                        if (input) {
-                            input.removeEventListener('input', updateLatestColor);
-                            input.removeEventListener('change', updateLatestColor);
-                        }
-                        if (lastPickedColor) {
-                            saveRecentColors(lastPickedColor);
-                        }
-                        lastPickedColor = null;
+                if (mutation.type === 'attributes' && 
+                    mutation.attributeName === 'class' &&
+                    mutation.target.classList.contains('clr-picker')) {
+
+                    const isOpen = mutation.target.classList.contains('clr-open');
+
+                    //cleanup triggered only when closing the picker
+                    if (wasOpen && !isOpen) {
+                        onPickerClose();
                     }
+                    //Update state for next time
+                    wasOpen = isOpen;
+                    
                 }
             });
         });
+    
+        // Function to initiate observer when picker is available
+        const observePicker = () => {
+            const picker = document.querySelector('.clr-picker');
+            if (picker) {
+                observer.observe(picker, {
+                    attributes: true,
+                    attributeFilter: ['class'],
+                });
+            } else {
+                // Retry if picker doesn't exist yet
+                setTimeout(observePicker, 100);
+            }
+        };
+    
+        observePicker();
 
-        if (document.body) {
-            observer.observe(document.body, {
-                childList: true,
-                subtree: true,
-                attributes: true
-            });
-        }
     }
 
     /**
