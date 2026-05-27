@@ -132,6 +132,19 @@ UserviewBuilder = {
                                 }, {
                                     cancelCallback : () => {
                                         cmJs.setValue(cmJsValue);
+                                        //ask for css as well, if user choose remove in js prompt
+                                        UI.confirm(get_cbuilder_msg("ubuilder.customCSS.confirm"),
+                                            () => {
+                                                cmCss.setValue(savedCss);         
+                                            }, {
+                                                cancelCallback : () => {
+                                                    cmCss.setValue(cmCssValue);
+                                                },                                    
+                                                confirmButtonLabel: get_cbuilder_msg("cbuilder.keep"),
+                                                confirmButtonClass: 'dialog-btn-primary',
+                                                cancelButtonLabel: get_cbuilder_msg("cbuilder.remove")
+                                            }
+                                        );
                                     },
                                     confirmButtonLabel: get_cbuilder_msg("cbuilder.keep"),
                                     confirmButtonClass: 'dialog-btn-primary',
