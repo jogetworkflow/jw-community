@@ -576,6 +576,12 @@ public class UserviewBuilderWebController {
     
     @RequestMapping({"/json/console/app/(*:appId)/(~:version)/userview/builder/(*:userviewId)/json"})
     public void getUserviewJson(Writer writer, HttpServletResponse response, @RequestParam(value = "appId") String appId, @RequestParam(value = "version", required = false) String version, @RequestParam(value = "userviewId") String userviewId) throws IOException {
+        if ("_theme_preview_".equals(userviewId)) {
+            String dummyTheme = AppUtil.readPluginResource("org.joget.plugin.enterprise.BuilderTheme", "/resources/generator/userview/dummyThemePreview.json", null, false, null);
+            writer.write(PropertyUtil.propertiesJsonLoadProcessing(dummyTheme));
+            return;
+        }
+        
         AppDefinition appDef = appService.getAppDefinition(appId, version);
         if (appDef == null) {
             response.sendError(HttpServletResponse.SC_NOT_FOUND);
