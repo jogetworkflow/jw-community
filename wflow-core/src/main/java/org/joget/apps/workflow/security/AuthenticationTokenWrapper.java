@@ -101,6 +101,12 @@ public class AuthenticationTokenWrapper implements Authentication {
 
     public AuthenticationTokenWrapper(Authentication auth) {
         this.authentication = auth;
+        if (!HostManager.isVirtualHostEnabled()) {
+            // skip host-session binding when multitenancy is disabled
+            this.loginHost = null;
+            this.loginHostSignature = null;
+            return;
+        }
         if (auth instanceof AuthenticationTokenWrapper) {
             AuthenticationTokenWrapper wrapper = (AuthenticationTokenWrapper) auth;
             String name = getAuthenticationName(auth);
@@ -207,6 +213,9 @@ public class AuthenticationTokenWrapper implements Authentication {
     }
 
     private static boolean isValidSignedBinding(String loginHost, String signature, Authentication auth) {
+        if (!HostManager.isVirtualHostEnabled()) {
+            return true;
+        }
         if (auth == null) {
             return false;
         }
@@ -372,25 +381,36 @@ public class AuthenticationTokenWrapper implements Authentication {
         boolean allowed = INTERNAL_CALLER_STACK_WALKER.walk(frames -> {
             java.util.Iterator<StackFrame> it = frames.iterator();
             boolean internalFrame = false;
+            boolean internalReadObjectFrame = false;
+            boolean reflectiveReadObjectDispatch = false;
             while (it.hasNext()) {
-                Class<?> c = it.next().getDeclaringClass();
+                StackFrame frame = it.next();
+                Class<?> c = frame.getDeclaringClass();
                 if (c == SerializationProxy.class) {
                     return Boolean.TRUE;
                 }
                 if (c == AuthenticationTokenWrapper.class) {
                     internalFrame = true;
-                    continue;
-                }
-                String name = c.getName();
-                if (name.startsWith("java.lang.reflect.")
-                        || name.startsWith("jdk.internal.reflect.")
-                        || name.startsWith("java.lang.invoke.")) {
-                    if (internalFrame) {
-                        return Boolean.FALSE;
+                    if ("readObject".equals(frame.getMethodName())) {
+                        internalReadObjectFrame = true;
                     }
                     continue;
                 }
+                String name = c.getName();
+                if (isReflectionDispatchClass(name)) {
+                    if (internalFrame) {
+                        if (!internalReadObjectFrame) {
+                        return Boolean.FALSE;
+                    }
+                        reflectiveReadObjectDispatch = true;
+                    continue;
+                }
+                    continue;
+                }
                 if (internalFrame) {
+                    if (reflectiveReadObjectDispatch) {
+                        return isTrustedJavaDeserializationClass(c);
+                    }
                     return Boolean.TRUE;
                 }
                 return Boolean.FALSE;
@@ -400,6 +420,17 @@ public class AuthenticationTokenWrapper implements Authentication {
         if (!allowed) {
             throw new SecurityException("No permission to " + operation);
         }
+    }
+
+    private static boolean isReflectionDispatchClass(String className) {
+        return className.startsWith("java.lang.reflect.")
+                || className.startsWith("jdk.internal.reflect.")
+                || className.startsWith("java.lang.invoke.");
+    }
+
+    private static boolean isTrustedJavaDeserializationClass(Class<?> clazz) {
+        return clazz == ObjectInputStream.class
+                || clazz == java.io.ObjectStreamClass.class;
     }
 
     private static void requireTrustedSignedSessionCreationCaller() {
