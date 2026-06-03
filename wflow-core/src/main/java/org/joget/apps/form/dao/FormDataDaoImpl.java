@@ -1224,7 +1224,7 @@ public class FormDataDaoImpl extends HibernateDaoSupport implements FormDataDao 
         if (entityName.startsWith(FormDataDaoImpl.FORM_PREFIX_TABLE_NAME) //for load
                 || entityName.startsWith(FORM_PREFIX_ENTITY)) { //for store
             boolean tableExist = false;
-            
+
             //try to check the table is exist in database or not
             Session session = null;
             try {
@@ -1240,15 +1240,21 @@ public class FormDataDaoImpl extends HibernateDaoSupport implements FormDataDao 
                 q.list();
                 tableExist = true; //when no exception, the table is exist
             } catch (Exception e) {
-                LogUtil.debug(FormDataDaoImpl.class.getName(), "--- Form [" + entityName + "] schema not exist.");
+                if (isTableNotFoundException(e)) {
+                    LogUtil.debug(FormDataDaoImpl.class.getName(), "--- Form [" + entityName + "] schema not exist.");
+                } else {
+                    // unexpected error (e.g. connection failure): abort to avoid dropping an existing table
+                    LogUtil.debug(FormDataDaoImpl.class.getName(), "Error checking schema for [" + entityName + "] due to " + e.getMessage());
+                    throw (e instanceof HibernateException) ? (HibernateException) e : new HibernateException("Error checking schema for [" + entityName + "]", e);
+                }
             } finally {
                 closeSession(session);
             }
-            
+
             if (!tableExist) {
-                // table does not exist, create it
+                // table does not exist, create it. Use createOnly so Hibernate does NOT issue a DROP first.
                 try {
-                    new SchemaExport().create(EnumSet.of(TargetType.DATABASE), metadata);
+                    new SchemaExport().createOnly(EnumSet.of(TargetType.DATABASE), metadata);
                     LogUtil.debug(FormDataDaoImpl.class.getName(), "  --- Form [" + entityName + "] schema created");
                 } catch (Exception e) {
                     LogUtil.error(getClass().getName(), e, "Error creating schema");
@@ -1256,13 +1262,43 @@ public class FormDataDaoImpl extends HibernateDaoSupport implements FormDataDao 
             } else {
                 // table exists, update it
                 try {
-                    new SchemaUpdate().execute(EnumSet.of(TargetType.DATABASE), metadata);                
+                    new SchemaUpdate().execute(EnumSet.of(TargetType.DATABASE), metadata);
                 } catch (Exception e) {
                     LogUtil.error(getClass().getName(), e, "Error updating schema");
                 }
-                LogUtil.debug(FormDataDaoImpl.class.getName(), "  --- Form [" + entityName + "] schema updated");                
-            } 
-        }  
+                LogUtil.debug(FormDataDaoImpl.class.getName(), "  --- Form [" + entityName + "] schema updated");
+            }
+        }
+    }
+
+    /**
+     * Returns true only when the throwable chain contains a SQLException whose
+     * SQLState/error code unambiguously indicates "table or view does not exist".
+     * Any other failure (connection drop, timeout, lock wait, etc.) returns false
+     * so the caller will NOT proceed to (re)create the table.
+     */
+    protected static boolean isTableNotFoundException(Throwable e) {
+        for (Throwable t = e; t != null; t = t.getCause()) {
+            if (t instanceof java.sql.SQLException) {
+                java.sql.SQLException sqle = (java.sql.SQLException) t;
+                String state = sqle.getSQLState();
+                int code = sqle.getErrorCode();
+                if (state != null) {
+                    // 42S02: MySQL / MariaDB
+                    // 42P01: PostgreSQL
+                    // S0002: SQL Server
+                    if ("42S02".equals(state) || "42P01".equals(state)
+                             || "S0002".equals(state)) {
+                        return true;
+                    }
+                    // Oracle ORA-00942 "table or view does not exist"
+                    if ("42000".equals(state) && code == 942) {
+                        return true;
+                    }
+                }
+            }
+        }
+        return false;
     }
     
     /**
