@@ -1328,6 +1328,8 @@ window._CustomBuilder = {
 
             CustomBuilder.loadJson(CustomBuilder.undoStack.pop(), false);
             CustomBuilder.adjustJson();
+            // fire undo event to update permission editor
+             $('#cbuilder-json').trigger('undo');
             //enable redo button if it is disabled previously
             if(CustomBuilder.redoStack.length === 1){
                 $('#redo-btn').removeClass('disabled');
@@ -1362,6 +1364,8 @@ window._CustomBuilder = {
 
             CustomBuilder.loadJson(CustomBuilder.redoStack.pop(), false);
             CustomBuilder.adjustJson();
+            // fire redo event to update permission editor
+             $('#cbuilder-json').trigger('redo');
             //enable undo button if it is disabled previously
             if(CustomBuilder.undoStack.length === 1){
                 $('#undo-btn').removeClass('disabled');
@@ -2480,7 +2484,7 @@ window._CustomBuilder = {
         PermissionManager.render($(view));
         $(view).find(".dt-loading").remove();
 
-        $("#cbuilder-json").off("change.permissionViewInit");
+        $("#cbuilder-json").off("change.permissionViewInit  undo.permissionViewInit redo.permissionViewInit");
         $("#cbuilder-json").on("change.permissionViewInit", function () {
             if (!$("body").hasClass("permission-builder-view")) {
                 view.html("");
@@ -2488,6 +2492,11 @@ window._CustomBuilder = {
                 PermissionManager.render($(view));
                 $(view).find(".dt-loading").remove();
             }
+        });
+        //undo/redo events listener, always re-render to sync the UI with restored data
+        $("#cbuilder-json").on("undo.permissionViewInit redo.permissionViewInit", function () {
+            view.html("");
+            PermissionManager.render($(view));
         });
     },
     
@@ -2502,7 +2511,7 @@ window._CustomBuilder = {
             CustomBuilder.Builder.selectNode(CustomBuilder.Builder.selectedElBeforePermission);
         }
         
-        $("#cbuilder-json").off("change.permissionViewInit");
+        $("#cbuilder-json").off("change.permissionViewInit undo.permissionViewInit redo.permissionViewInit");
     },
     
     /*
@@ -4807,7 +4816,9 @@ window._CustomBuilder.Builder = {
      */
     selectNode:  function(node, dragging) {
         CustomBuilder.Builder.highlightEl = node;
-        CustomBuilder.Builder.selectNodeAndShowProperties(node, dragging, true);
+        //check if isViewerWithPE is active --> do not show properties panel
+        var showProperties = !CustomBuilder.isViewerWithPE;
+        CustomBuilder.Builder.selectNodeAndShowProperties(node, dragging, showProperties);
     },
     
     selectNodeAndShowProperties: function(node, dragging, show) {
