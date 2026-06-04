@@ -2,6 +2,28 @@ Joget DX COMMUNITY
 ====================
 For more information, please refer to https://community.joget.org
 
+9.1-BETA
+========
+de4f6261f (HEAD -> 9.1-RELEASE) Fixed: wflow-core - Security - Allow trusted session deserialization for signed auth wrapper @9.0-SNAPSHOT
+98e7e9c45 Fixed: wflow-core - Form Data - Avoid dropping existing form table when schema probe fails on transient DB errors. T7899 T6978 #2077 @8.2-SNAPSHOT
+d86f911b9 (origin/9.1-RELEASE) Fixed: wflow-consoleweb - Analyzer - Fixed X-admin Theme header is not visible when quick edit is enabled. #1628 @9.1-SNAPSHOT
+846f2705e Added: wflow-consoleweb - Visibility Tool - added rule counter, changed migrated rule convention to use sectionID #1740 @9.1-SNAPSHOT
+d4719f94b Modified: wflow-consoleweb - Visibility Tool - applied rule list opens editor for rule on click #1740 @9.1-SNAPSHOT
+6da507557 Fixed: wflow-consoleweb - Builder - Fixed issue where builder icon design still using the default theme #1877 @9.0-SNAPSHOT
+20dd656ce Fixed: wflow-consoleweb - App Plugin - fixed icon positions in LTR and RTL in app plugins page #1919 @9.1-SNAPSHOT
+455188814 Fixed: wflow-consoleweb - Plugin - added marketplace column to app composer plugin page, fix icon position in LTR and RTL #1919 @9.1-SNAPSHOT
+c574bf091 Fixed: wflow-consoleweb - Alert/Confirm - Fixed issues reported for the Alert and confirm dialog. #1966 @9.1-SNAPSHOT
+f23e85da9 Modified: wflow-consoleweb - File Upload/Image Upload - Updated icon of File Upload and Image Upload form fields. #1973 @9.1-SNAPSHOT
+50fb0fda1 Fixed: wflow-consoleweb - Theme Custom Styling - Included buttons among those affected by Border Radius styling in DX9 Builder Theme. #1973 @9.1-SNAPSHOT
+1a31a3f70 Fixed: wflow-consoleweb - Datalist Filters - Added missing CSS for Datalist Filters in DX9 Builder Theme Mobile view. #1973 @9.1-SNAPSHOT
+ef80e107f Fixed: wflow-core - Date Picker - Fixed Disabled/Readonly styling issue and input class issue. #1973 @9.1-SNAPSHOT
+c1239f0c7 Fixed: wflow-consoleweb - FInd Usage - Fixed issues found on Usage Enhancement #1982 @9.1-SNAPSHOT
+304ad3069 Modified: wflow-consoleweb - Builder - Modified the validateField override to take into account API builder as well #1984 @9.1-SNAPSHOT
+4a8b44372 Fixed: wflow-consoleweb - Spreadsheet - Fixed scrollbar appearing in Spreadsheet dropdown #1989 @9.1-SNAPSHOT
+6487778b1 Fixed: wflow-consoleweb - Builder copy and paste - Fixed copy and paste issue in builders. #1991 @9.1-SNAPSHOT
+5ae36d2d9 Fixed: wflow-consoleweb - Context Menu - Fixed tags overlapping with hash variables issue. #2008 @9.1-SNAPSHOT
+f66903141 Fixed: wflow-consoleweb - Context Menu Button - Fixed Context Menu Button overlapping with detail button. #2008 @9.1-SNAPSHOT
+
 9.0.7
 =====
 3646ca25a Fixed: jw-community - Security - Prevent host spoofing on multi tenant environment. #2003 @9.0-SNAPSHOT
