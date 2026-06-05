@@ -24,9 +24,6 @@ public abstract class AbstractVersionedObjectDao<T extends AbstractVersionedObje
     public T loadByUid(T uid) {
         Session session = findSession();
         T result = (T) session.get(getEntityName(), uid);
-        if (result != null) {
-            session.refresh(result);
-        }
         return result;
     }
 
@@ -40,9 +37,6 @@ public abstract class AbstractVersionedObjectDao<T extends AbstractVersionedObje
         Collection<T> versions = findLatestVersions(id, null, null, null, null, 0, 1);
         if (versions != null && !versions.isEmpty()) {
             result = versions.iterator().next();
-        }
-        if (result != null) {
-            findSession().refresh(result);
         }
         return result;
     }
@@ -73,9 +67,6 @@ public abstract class AbstractVersionedObjectDao<T extends AbstractVersionedObje
             if (resultList != null && !resultList.isEmpty()) {
                 result = resultList.iterator().next();
             }
-        }
-        if (result != null) {
-            findSession().refresh(result);
         }
         return result;
     }

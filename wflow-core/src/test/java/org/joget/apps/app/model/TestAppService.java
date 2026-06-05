@@ -8,6 +8,7 @@ import org.joget.apps.form.dao.FormDataDao;
 import org.springframework.transaction.annotation.Propagation;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Map;
 import junit.framework.Assert;
@@ -15,6 +16,7 @@ import org.apache.commons.io.FileUtils;
 import org.junit.runner.RunWith;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.joget.apps.app.dao.FormDefinitionDao;
 import org.joget.apps.app.dao.PackageDefinitionDao;
 import org.joget.apps.app.service.AppDevUtil;
 import org.joget.apps.app.service.AppService;
@@ -60,6 +62,8 @@ public class TestAppService {
     private AppService appService;
     @Autowired
     private PackageDefinitionDao packageDefinitionDao;
+    @Autowired
+    private FormDefinitionDao formDefinitionDao;
     @Autowired
     private WorkflowManager workflowManager;
     @Autowired
@@ -111,8 +115,8 @@ public class TestAppService {
             // verify package versions
             String currentVersion = workflowManager.getCurrentPackageVersion(TEST_APP_ID);
             AppDefinition loadedApp = appService.loadAppDefinition(TEST_APP_ID, TEST_APP_VERSION.toString());
-            PackageDefinition loadedPackage = loadedApp.getPackageDefinition();
-            assertTrue(currentVersion.equals(loadedPackage.getVersion().toString()));
+            PackageDefinition loadedPackage = packageDefinitionDao.loadAppPackageDefinition(loadedApp.getAppId(), loadedApp.getVersion());
+            assertTrue(loadedPackage != null && currentVersion.equals(loadedPackage.getVersion().toString()));
 
             // assign form mapping and save
             PackageActivityForm paf = new PackageActivityForm();
@@ -130,8 +134,8 @@ public class TestAppService {
             // verify new package version
             currentVersion = workflowManager.getCurrentPackageVersion(TEST_APP_ID);
             loadedApp = appService.loadAppDefinition(TEST_APP_ID, TEST_APP_VERSION.toString());
-            loadedPackage = loadedApp.getPackageDefinition();
-            assertTrue(currentVersion.equals(loadedPackage.getVersion().toString()));
+            loadedPackage = packageDefinitionDao.loadAppPackageDefinition(loadedApp.getAppId(), loadedApp.getVersion());
+            assertTrue(loadedPackage != null && currentVersion.equals(loadedPackage.getVersion().toString()));
 
             // verify updated form mapping
             PackageActivityForm loadedPaf = loadedPackage.getPackageActivityForm(TEST_PROCESS_DEF_ID, TEST_ACTIVITY_DEF_ID);
@@ -203,13 +207,14 @@ public class TestAppService {
             assertTrue(importedApp.getVersion() == TEST_APP_VERSION + 1);
             
             // verify form
-            Collection<FormDefinition> formDefList = importedApp.getFormDefinitionList();
+            Collection<FormDefinition> formDefList = formDefinitionDao.getFormDefinitionList(null, importedApp, null, null, null, null);
+            assertTrue(formDefList != null && !formDefList.isEmpty());
             FormDefinition importedFormDef = formDefList.iterator().next();
             assertTrue(TEST_FORM_ID.equals(importedFormDef.getId()));
-            
+
             // verify package version
             String currentVersion = workflowManager.getCurrentPackageVersion(TEST_APP_ID);
-            PackageDefinition importedPackage = importedApp.getPackageDefinition();
+            PackageDefinition importedPackage = packageDefinitionDao.loadAppPackageDefinition(importedApp.getAppId(), importedApp.getVersion());
             assertTrue(importedPackage != null && currentVersion.equals(importedPackage.getVersion().toString()));
 
             // verify updated form mapping
@@ -253,8 +258,8 @@ public class TestAppService {
             // verify package versions
             String currentVersion = workflowManager.getCurrentPackageVersion(TEST_APP_ID);
             AppDefinition loadedApp = appService.loadAppDefinition(TEST_APP_ID, TEST_APP_VERSION.toString());
-            PackageDefinition loadedPackage = loadedApp.getPackageDefinition();
-            assertTrue(currentVersion.equals(loadedPackage.getVersion().toString()));
+            PackageDefinition loadedPackage = packageDefinitionDao.loadAppPackageDefinition(loadedApp.getAppId(), loadedApp.getVersion());
+            assertTrue(loadedPackage != null && currentVersion.equals(loadedPackage.getVersion().toString()));
 
             // create forms
             createFormDefinition(appDef, TEST_FORM_ID, TEST_FORM_ID, TEST_APP_VERSION);
@@ -592,6 +597,11 @@ public class TestAppService {
 
         // save test form
         appService.createFormDefinition(appDef, formDef);
+
+        if (appDef.getFormDefinitionList() == null) {
+            appDef.setFormDefinitionList(new ArrayList<FormDefinition>());
+        }
+        appDef.getFormDefinitionList().add(formDef);
 
         return formDef;
     }
