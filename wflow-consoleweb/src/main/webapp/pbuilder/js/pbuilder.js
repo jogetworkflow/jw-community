@@ -7740,59 +7740,13 @@ ProcessBuilder = {
         $(view).html('');
         $(view).append('<pre id="xpdl_definition" style="height:100%"></pre><div class="sticky-buttons"><button class="upload-btn btn button btn-secondary">'+get_cbuilder_msg('pbuilder.label.uploadXpdl')+'</button> <button class="update-btn btn button btn-secondary">'+get_cbuilder_msg('cbuilder.update')+'</button></div>');
 
-        codeeditor = CodeMirror(document.getElementById("xpdl_definition"), {
-            lineNumbers: true,
-            mode: "text",
-            autoRefresh:true,
-            matchBrackets: true,
-            theme: "default",
-            gutters: ["CodeMirror-lint-markers", "CodeMirror-linenumbers", "CodeMirror-foldgutter"],
-            lint: true,
-            autoCloseTags: true,
-            autoCloseBrackets: true,
-            foldGutter: true,
-            lint: true,
-            lineWrapping: true,
-            highlightSelectionMatches: {annotateScrollbar: true, minChars: 1},
-            extraKeys: {
-                "Ctrl-F": function(cm) {
-                  cm.execCommand("replace")
-                  $('#xpdl_definition').find(".CodeMirror-advanced-dialog").css({position:"fixed", zIndex:"2147483647", top: $("body #top-panel").outerHeight() + "px", left:"calc(80% - 320px)", display: 'block'})
-                  $('#xpdl_definition').find(".CodeMirror-advanced-dialog").draggable({containment:'parent'})
-                },
-                "Cmd-F": function(cm) {
-                  cm.execCommand("replace")
-                  $('#xpdl_definition').find(".CodeMirror-advanced-dialog").css({position:"fixed", zIndex:"2147483647", top: $("body #top-panel").outerHeight() + "px", left:"calc(80% - 320px)", display: 'block'})
-                  $('#xpdl_definition').find(".CodeMirror-advanced-dialog").draggable({containment:'parent'})
-                },
-                "Ctrl-=": function(cm) {
-                  cm.increaseFontSize();
-                },
-                "Ctrl--": function(cm) {
-                  cm.decreaseFontSize();
-                },
-                "Ctrl-/": function(cm) {
-                  cm.toggleComment()
-                }
-              }
-          });
-
-        //Set Mode
-        codeeditor.setOption("mode", "xml");
-        
-        //Make the replace appear
-        codeeditor.execCommand("replace");
-
-        //Set dark theme if dark theme mode is activated
+        var isDark = false;
         if ($('body').attr('builder-theme') === "dark") {
-            codeeditor.setOption("theme", "ayu-mirage");
+            isDark = true;
         }
 
-        //Set height
-        $('#xpdl_definition').find(".CodeMirror-advanced-dialog").css({display: 'none'})
-        $("#xpdl_definition").find(".CodeMirror").css({"height":"auto"});
-        $('#xpdl_definition').find(".CodeMirror-scroll").css({"maxHeight":"100%", "minHeight":"100%"});
-
+        codeeditor = window.initCM6Editor("xpdl_definition", "", "xml", isDark);
+    
         codeeditor.setValue(ProcessBuilder.toXpdl())
         
         $(view).find("button.update-btn").on("click", function() {

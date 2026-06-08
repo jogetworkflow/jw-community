@@ -24,6 +24,11 @@
 <script type="text/javascript" src="${pageContext.request.contextPath}/js/jquery/jquery.propertyeditor.js?build=<fmt:message key="build.number"/>"></script>
 
 <script type="text/javascript" src="${pageContext.request.contextPath}/wro/codeMirror.min.js"></script>
+
+<script type="text/javascript" src="${pageContext.request.contextPath}/js/codemirror6/codemirror6-bundle.js"></script>
+<link rel="stylesheet" href="${pageContext.request.contextPath}/wro/codeMirror6.min.css" />
+
+
 <!-- For sql mode, it is separated, because putting it in wro.xml messes up the regular expression, -->
 <!-- as it will get combined together with the next line, which fails the regex after building -->
 <script type="text/javascript" src="${pageContext.request.contextPath}/js/codemirror/mode/sql/sql.js"></script>

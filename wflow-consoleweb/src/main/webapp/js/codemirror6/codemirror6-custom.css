@@ -1,0 +1,656 @@
+/* CodeMirror 6 Custom CSS */
+.code-editor.cm6-maximized {
+  position: fixed !important;
+  top: 80px !important;
+  left: 0 !important;
+  width: 100vw !important;
+  height: calc(100vh - 100px) !important;
+  background: #fff !important;
+  z-index: 9999 !important;
+  overflow: visible !important;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  margin: 0 !important;
+  padding: 0 !important;
+  border: none !important;
+  box-sizing: border-box !important;
+}
+
+
+.code-editor.cm6-maximized .cm-editor {
+  width: 100vw !important;
+  height: calc(100vh - 80px) !important;
+  min-width: 100vw !important;
+  min-height: calc(100vh - 120px) !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  overflow: visible !important;
+}
+
+
+.code-editor.cm6-maximized .cm-scroller {
+  height: 100% !important;
+  min-height: 100% !important;
+}
+
+body:has(#top-panel) .code-editor.cm6-maximized {
+    top: var(--builder-header-top-height, 85px) !important;
+}
+
+#top-panel {
+  position: fixed !important;
+}
+
+
+/* --- Helper Classes --- */
+.cm6-container {
+  display: block;
+  width: 100%;
+  height: 100%;
+  align-items: normal;
+  justify-content: normal;
+}
+
+/* --- Font Size Control --- */
+.cm-content,
+.cm-scroller {
+  font-size: var(--cm-font-size, 13px) !important;
+}
+
+
+/* --- Help Panel --- */
+#cm6-help-panel {
+    display: flex;
+    align-items: center;
+
+    padding: 12px 34px 12px 16px;
+
+    background: #ffffff;
+    border-bottom: 1px solid #ddd;
+
+    font-size: 14px;
+
+    box-shadow: inset 4px 0 0 #009265;
+    flex-wrap: wrap;
+    row-gap: 12px;
+
+    position: relative
+}
+
+.rtl #cm6-help-panel {
+    padding: 12px 16px 12px 34px;
+    box-shadow: inset -4px 0 0 #009265;
+}
+
+body[builder-theme='dark'] #cm6-help-panel {
+    background: #252526;
+    border-bottom: 1px solid #3c3c3c;
+}
+
+.cm6-help-title {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-right: 12px;
+}
+
+.cm6-help-title .cm6-help-icon {
+    color: #009265;
+}
+
+.cm6-help-title small {
+    display: block;
+    color: #888;
+    font-size: 10px;
+    letter-spacing: 1px;
+}
+
+.cm6-help-title strong {
+    display: block;
+}
+
+body[builder-theme='dark'] .cm6-help-title strong {
+    color: #888;
+}
+
+.cm6-help-icon {
+    width: 32px;
+    height: 32px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    border-radius: 8px;
+    background: #d9efe5;
+}
+
+.cm6-shortcut {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin-left: 12px;
+    margin-right: 12px;
+    color: #7c7c71;
+}
+
+.cm6-help-title + .cm6-shortcut {
+    border-left: 1.5px solid #eff1ef;
+    margin-left: 0px;
+    padding-left: 12px;
+}
+
+.cm6-shortcut kbd {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    
+    min-width: 28px;
+
+    padding: 3px 8px;
+
+    border: 1px solid #bbb;
+    border-radius: 5px;
+
+    background: #f7f9f7;
+
+    font-size: 12px;
+    font-family: inherit;
+    text-align: center;
+    color: #009265;
+
+    box-shadow:
+        inset 0 1px 0 rgba(255,255,255,.8),
+        0 1px 1px rgba(0,0,0,.08);
+}
+
+body[builder-theme='dark'] .cm6-shortcut kbd {
+    background: #333333;
+    border-color: #555555;
+    color: #d4d4d4;
+}
+
+#cm6-help-close {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    inset-inline-end: 8px;
+    background: none;
+    border: none;
+    font-size: 20px;
+    font-weight: bold;
+    color: #a4adaa;
+    cursor: pointer;
+    line-height: 1;
+}
+
+/* --- Light Theme (Custom) --- */
+.cm-theme-light {
+  height: 100%;
+  width: 100%;
+  background-color: #ffffff;
+  color: #24292e;
+}
+
+
+.cm-theme-light .cm-scroller {
+  overflow: auto;
+  font-family: 'Consolas', 'Menlo', 'Monaco', 'Courier New', monospace;
+  min-height: 100%;
+}
+
+
+.cm-theme-light .cm-content {
+  min-width: 100%;
+}
+
+
+.cm-theme-light .cm-gutters {
+  background-color: #f6f8fa;
+  color: #959da5;
+  border-right: 1px solid #dfe2e5;
+}
+
+
+/* --- Search Panel Theme --- */
+.cm-editor .cm-panel.cm-search {
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 4px !important;
+  padding: 2px 8px 6px 8px !important;
+  border-radius: 8px !important;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15) !important;
+  width: auto !important;
+  min-width: 240px !important;
+  max-width: 350px !important;
+  font-size: 13px !important;
+  position: absolute !important;
+  margin-bottom: 4px !important;
+  margin-top: 4px !important;
+  margin-left: 4px !important;
+  z-index: 100 !important;
+  box-sizing: border-box !important;
+  opacity: 1 !important;
+  pointer-events: auto !important;
+  isolation: isolate !important;
+  background-color: inherit !important;
+}
+
+.builder-view-body:has(#json_definition, #xpdl_definition) {
+    height:100% !important;
+}
+
+#json_definition .cm-editor .cm-panel.cm-search,
+#xpdl_definition .cm-editor .cm-panel.cm-search,
+.cm6-maximized .cm-editor .cm-panel.cm-search {
+  width: auto !important;
+  margin: 0 !important;
+  min-width: 300px !important;
+  top: 15% !important;
+  right: calc(300px + 10%) !important;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15) !important;
+  position: fixed !important;
+}
+
+.cm-editor .cm-panels {
+    position: absolute !important;
+    left: unset !important;
+    right: calc(10% + 300px);
+    border: none !important;
+    width: fit-content !important;
+    z-index: 9999 !important;
+}
+
+
+.cm-editor {
+  position: relative !important;
+}
+
+
+.cm-editor .cm-search-row1 {
+  display: flex !important;
+  align-items: center !important;
+  gap: 4px !important;
+}
+
+
+.cm-editor .cm-search-row2,
+.cm-editor .cm-search-row3 {
+  display: flex !important;
+  flex-direction: row !important;
+  align-items: center !important;
+  gap: 4px !important;
+  margin-left: 28px !important;
+}
+
+
+.cm-editor .cm-search-info,
+.cm-editor .cm-match-counter {
+  margin-top: 4px !important;
+  margin-left: 2px !important;
+  font-size: 12px !important;
+  color: #aaa !important;
+  font-style: italic !important;
+}
+
+
+.cm-editor .cm-search .cm-textfield {
+  border-radius: 3px !important;
+  padding: 2px 5px !important;
+  font-size: 13px !important;
+  min-width: 150px !important;
+  height: auto !important;
+}
+
+
+.cm-editor .cm-search .cm-button {
+  border-radius: 3px !important;
+  cursor: pointer !important;
+  padding: 2px 8px !important;
+  font-size: 14px !important;
+  background-image: none !important;
+  box-shadow: none !important;
+  text-transform: capitalize !important;
+  height: auto !important;
+}
+
+
+/* Toggle Button Styling */
+.cm-search-toggle {
+  background: none !important;
+  border: 1px solid transparent !important;
+  cursor: pointer !important;
+  font-size: 12px !important;
+  padding: 2px 4px !important;
+  color: inherit !important;
+  opacity: 0.7 !important;
+  margin: 0 2px !important;
+  border-radius: 3px !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  width: 20px !important;
+  height: 20px !important;
+  box-shadow: none;
+}
+
+
+.cm-search-toggle:hover {
+  opacity: 1 !important;
+  background-color: rgba(128, 128, 128, 0.1) !important;
+  border-color: rgba(128, 128, 128, 0.3) !important;
+}
+
+
+.cm-editor .cm-search button[name='next'],
+.cm-editor .cm-search button[name='prev'] {
+  font-size: 0 !important;
+  position: relative !important;
+  min-width: 24px !important;
+  border: none !important;
+  background-color: transparent !important;
+  padding: 0 !important;
+}
+
+
+.cm-editor .cm-search button[name='next']::after {
+  content: '\2193';
+  font-size: 16px !important;
+  line-height: 1 !important;
+}
+
+
+.cm-editor .cm-search button[name='prev']::after {
+  content: '\2191';
+  font-size: 16px !important;
+  line-height: 1 !important;
+}
+
+
+.cm-editor .cm-search button[name='replace'],
+.cm-editor .cm-search button[name='replaceAll'] {
+  font-size: 0 !important;
+  position: relative !important;
+  min-width: 24px !important;
+  width: 24px !important;
+  height: 24px !important;
+  padding: 0 !important;
+  display: inline-flex !important;
+  justify-content: center !important;
+  align-items: center !important;
+  overflow: visible !important;
+  background-color: transparent !important;
+  border-color: transparent !important;
+  box-shadow: none !important;
+}
+
+
+.cm-editor .cm-search button[name='replace']::after {
+  content: '\21C4' !important;
+  font-size: 18px !important;
+  font-weight: bold !important;
+  margin-top: -2px !important;
+}
+
+
+.cm-editor .cm-search button[name='replaceAll']::after {
+  content: '\21C4\A\21C4' !important;
+  white-space: pre !important;
+  font-size: 9px !important;
+  line-height: 9px !important;
+  font-weight: bold !important;
+  letter-spacing: 0px !important;
+  margin-top: 2px !important;
+  text-align: center !important;
+}
+
+
+.cm-theme-light .cm-search button[name='replace']:hover::after,
+.cm-theme-light .cm-search button[name='replaceAll']:hover::after,
+.cm-theme-light.cm-editor .cm-search button[name='replace']:hover::after,
+.cm-theme-light.cm-editor .cm-search button[name='replaceAll']:hover::after {
+  color: #222 !important;
+}
+
+
+.cm-theme-dark .cm-search button[name='replace']:hover::after,
+.cm-theme-dark .cm-search button[name='replaceAll']:hover::after,
+.cm-theme-dark.cm-editor .cm-search button[name='replace']:hover::after,
+.cm-theme-dark.cm-editor .cm-search button[name='replaceAll']:hover::after {
+  color: #fff !important;
+}
+
+
+.cm-editor .cm-search button[name='select'],
+.cm-editor .cm-search label {
+  display: none !important;
+}
+
+
+.cm-editor .cm-search button[name='close'] {
+  border: none !important;
+  background: none !important;
+  cursor: pointer !important;
+  font-size: 24px !important;
+  padding: 0 2px !important;
+  margin-left: auto !important;
+  position: static !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  height: 24px !important;
+  vertical-align: middle !important;
+  box-shadow: none !important;
+}
+
+
+/* Light Theme Search Overrides */
+.cm-theme-light .cm-panel.cm-search,
+.cm-theme-light.cm-editor .cm-panel.cm-search {
+  border: 1px solid #ddd !important;
+  background-color: #ffffff !important;
+}
+
+
+.cm-theme-light .cm-search .cm-textfield,
+.cm-theme-light.cm-editor .cm-search .cm-textfield {
+  border: 1px solid #ccc !important;
+  background-color: #fff !important;
+  color: #222 !important;
+}
+
+
+.cm-theme-light .cm-search .cm-button,
+.cm-theme-light.cm-editor .cm-search .cm-button {
+  border: 1px solid transparent !important;
+  background-color: transparent !important;
+  color: #555 !important;
+}
+
+
+.cm-theme-light .cm-search .cm-button:hover,
+.cm-theme-light.cm-editor .cm-search .cm-button:hover {
+  background-color: #f0f0f0 !important;
+  border-color: #ddd !important;
+}
+
+
+.cm-theme-light .cm-search button[name='next']:hover,
+.cm-theme-light .cm-search button[name='prev']:hover,
+.cm-theme-light.cm-editor .cm-search button[name='next']:hover,
+.cm-theme-light.cm-editor .cm-search button[name='prev']:hover {
+  background-color: #f0f0f0 !important;
+}
+
+
+.cm-theme-light .cm-search button[name='next']::after,
+.cm-theme-light .cm-search button[name='prev']::after,
+.cm-theme-light.cm-editor .cm-search button[name='next']::after,
+.cm-theme-light.cm-editor .cm-search button[name='prev']::after {
+  color: #222 !important;
+}
+
+
+.cm-theme-light .cm-search button[name='close'],
+.cm-theme-light.cm-editor .cm-search button[name='close'] {
+  color: #666 !important;
+}
+
+
+.cm-theme-light .cm-search button[name='close']:hover,
+.cm-theme-light.cm-editor .cm-search button[name='close']:hover {
+  color: #000 !important;
+}
+
+
+/* Dark Theme Search Overrides */
+.cm-theme-dark .cm-panel.cm-search,
+.cm-theme-dark.cm-editor .cm-panel.cm-search {
+  border: 1px solid #333 !important;
+  background-color: #23272e !important;
+}
+
+
+.cm-theme-dark .cm-search .cm-textfield,
+.cm-theme-dark.cm-editor .cm-search .cm-textfield {
+  border: 1px solid #444 !important;
+  background-color: #23272e !important;
+  color: #eee !important;
+}
+
+
+.cm-theme-dark .cm-search .cm-button,
+.cm-theme-dark.cm-editor .cm-search .cm-button {
+  border: 1px solid transparent !important;
+  background-color: transparent !important;
+  color: #eee !important;
+}
+
+
+.cm-theme-dark .cm-search .cm-button:hover,
+.cm-theme-dark.cm-editor .cm-search .cm-button:hover {
+  background-color: #2c313a !important;
+  border-color: #555 !important;
+}
+
+
+.cm-theme-dark .cm-search button[name='next']:hover,
+.cm-theme-dark .cm-search button[name='prev']:hover,
+.cm-theme-dark.cm-editor .cm-search button[name='next']:hover,
+.cm-theme-dark.cm-editor .cm-search button[name='prev']:hover {
+  background-color: #2c313a !important;
+}
+
+
+.cm-theme-dark .cm-search button[name='next']::after,
+.cm-theme-dark .cm-search button[name='prev']::after,
+.cm-theme-dark.cm-editor .cm-search button[name='next']::after,
+.cm-theme-dark.cm-editor .cm-search button[name='prev']::after {
+  color: #eee !important;
+}
+
+
+.cm-theme-dark .cm-search button[name='close'],
+.cm-theme-dark.cm-editor .cm-search button[name='close'] {
+  color: #aaa !important;
+}
+
+
+.cm-theme-dark .cm-search button[name='close']:hover,
+.cm-theme-dark.cm-editor .cm-search button[name='close']:hover {
+  color: #fff !important;
+}
+
+
+body[builder-theme] button {
+  box-shadow: none !important;
+}
+
+
+.cm-panels {
+  background-color: transparent !important;
+}
+
+
+#json_definition {
+  height: 100% !important;
+  display: block;
+  align-items: normal;
+  justify-content: normal;
+}
+
+
+#xpdl_definition {
+  height: 100% !important;
+  max-height: 100% !important;
+  overflow: auto !important;
+  box-sizing: border-box !important;
+  position: relative;
+  display: block;
+}
+
+
+#xpdl_definition.xpdl-loading {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+}
+
+
+.text-center {
+  text-align: center !important;
+}
+
+
+.ace_fullpage {
+  height: 100% !important;
+  overflow: auto !important;
+}
+
+
+.mt-2 {
+  margin-top: 10px !important;
+}
+
+
+/* Property Editor CodeEditor base styles */
+.code-editor {
+  height: fit-content;
+  min-height: 120px;
+  overflow: auto;
+  border-radius: 6px;
+  padding: 0;
+  border: none;
+  background-color: none;
+}
+
+.code-editor .cm-content {
+  min-height: 120px;
+  padding: 0px;
+}
+
+.code-editor .cm-content .cm-line {
+  min-height: 26px;
+  padding: 4px 2px 4px 6px;
+  height: fit-content;
+}
+
+.code-editor .cm-scroller {
+    min-height: 300px;
+    height: fit-content;
+}
+
+.code-editor .cm-gutters {
+    min-height: 300px !important;
+}
+
+.cm-scroller {
+  overflow-x: hidden !important;
+}
+.cm-content {
+  overflow-x: hidden !important;
+  word-break: break-word !important;
+}
+.code-editor,
+.cm-editor {
+  overflow-x: hidden !important;
+}
+

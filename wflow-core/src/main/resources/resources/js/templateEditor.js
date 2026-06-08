@@ -206,198 +206,25 @@
         if (this.value === null) {
             this.value = "";
         }
-        
-        this.codeeditor = CodeMirror(document.getElementById(this.id), {
-            lineNumbers: true,
-            mode: "text",
-            matchBrackets: true,
-            theme: "default",
-            autoRefresh:true,
-            gutters: ["CodeMirror-lint-markers", "CodeMirror-linenumbers", "CodeMirror-foldgutter"],
-            lint: true,
-            historyEventDelay: 100,
-            autoCloseTags: true,
-            autoCloseBrackets: true,
-            foldGutter: true,
-            lint: true,
-            lineWrapping: true,
-            highlightSelectionMatches: {annotateScrollbar: true, minChars: 1},
-            extraKeys: {
-                "Ctrl-F": function(cm) {
-                  cm.execCommand("replace")
-                  $('#' + thisObj.id).find(".CodeMirror-advanced-dialog").css({display: 'block'})
-                  var offsetTop = "0px"
-                  if ($("body #top-panel").length > 0){
-                    offsetTop = $("body #top-panel").outerHeight() + "px"
-                  }
-                  if (thisObj.codeeditor.getOption("fullScreen")){
-                    $('#' + thisObj.id).find(".CodeMirror-advanced-dialog").css({position:"fixed", zIndex:"2147483647", top: offsetTop, left:"calc(100%% - 320px)"});
-                  }
-                  else{
-                    $('#' + thisObj.id).find(".CodeMirror-advanced-dialog").css({position:"fixed", top:"0", left:"calc(100%% - 320px)", zIndex:"999", marginTop:"150px"});
-                  }
-                  $('#' + thisObj.id).find(".CodeMirror-advanced-dialog").draggable()
-                },
-                "Cmd-F": function(cm) {
-                  cm.execCommand("replace")
-                  $('#' + thisObj.id).find(".CodeMirror-advanced-dialog").css({display: 'block'})
-                  var offsetTop = "0px"
-                  if ($("body #top-panel").length > 0){
-                    offsetTop = $("body #top-panel").outerHeight() + "px"
-                  }
-                  if (thisObj.codeeditor.getOption("fullScreen")){
-                    $('#' + thisObj.id).find(".CodeMirror-advanced-dialog").css({position:"fixed", zIndex:"2147483647", top: offsetTop, left:"calc(100%% - 320px)"});
-                  }
-                  else{
-                    $('#' + thisObj.id).find(".CodeMirror-advanced-dialog").css({position:"fixed", top:"0", left:"calc(100%% - 320px)", zIndex:"999", marginTop:"150px"});
-                  }
-                  $('#' + thisObj.id).find(".CodeMirror-advanced-dialog").draggable()
-                },
-                "Ctrl-=": function(cm) {
-                  cm.increaseFontSize();
-                },
-                "Ctrl--": function(cm) {
-                  cm.decreaseFontSize();
-                },
-                "Ctrl-/": function(cm) {
-                  cm.toggleComment()
-                }
-            }
-        });
 
-        thisObj.codeeditor.execCommand("replace");
-        $('#' + thisObj.id).find(".CodeMirror-advanced-dialog").css({display: 'none'});
-
-        this.codeeditor.setValue(this.value);
-        this.codeeditor.setOption("mode", "htmlmixed");
-
+        var isDark = false;
         //Set dark theme if dark theme mode is activated
         if ($('body').attr('builder-theme') === "dark") {
-            this.codeeditor.setOption("theme", "ayu-mirage");
-        }
-
-        //Detect keydown for specific actions, such as f12 to toggle full screen mode, escape
-        //to exit full screen mode, and F1 to toggle help panel
-        //and Undo and Redo
-        $('#' + this.id).on('keydown', function(event) {
-            let isModifierPressed = event.ctrlKey || event.metaKey;
-            if (event.keyCode == 90 && isModifierPressed && !event.shiftKey){
-                thisObj.codeeditor.execCommand("undo")
-                event.preventDefault();
-                event.stopPropagation();
-            }
-            else if ((event.keyCode == 89 && isModifierPressed) || (event.keyCode == 90 && isModifierPressed && event.shiftKey)) {
-                thisObj.codeeditor.execCommand("redo")
-                event.preventDefault();
-                event.stopPropagation();
-            }
-            else if (event.key === "F1" && !thisObj.codeeditor.getOption("fullScreen")) {
-                if (panels[panelId]) {
-                    //Resets height
-                    thisObj.codeeditor.setSize(null, $("#" + thisObj.id).find(".CodeMirror").height()-1)
-                    panels[panelId].clear();
-                    delete panels[panelId];
-                    resetHeight();
-                } else {
-                    addPanel("top");
-                    resetHeight();
-                }
-                event.preventDefault();
-            }else if (event.key === "F1" && thisObj.codeeditor.getOption("fullScreen")) {
-                event.preventDefault();
-            }else if (event.key === 'F12' || (event.key === 'Escape' && thisObj.codeeditor.getOption("fullScreen"))){
-                if (thisObj.codeeditor.getOption("fullScreen")) {
-                    thisObj.codeeditor.setOption("fullScreen", false);
-                    $('#' + thisObj.id).find(".CodeMirror-advanced-dialog .row.find button:last").click();
-                    resetHeight();
-                    $('#' + thisObj.id).find(".CodeMirror-advanced-dialog").css({position:"sticky", top:"0px", zIndex:"10"});
-                    $('#'+thisObj.id).find(".CodeMirror").css({left: "", top: ""})
-                    event.stopPropagation();
-                }else{
-                    var offsetTop = "0px"
-                    var offsetLeft = "0px"
-                    if ($("body #top-panel").length > 0){
-                        offsetTop = $("body #top-panel").outerHeight() + "px"
-                    }
-                    if ($("body #quick-nav-bar").length > 0){
-                        offsetLeft = $("body #quick-nav-bar").outerWidth()+"px"
-                    }
-                    thisObj.codeeditor.setOption("fullScreen", true);
-                    $('#' + thisObj.id).find(".CodeMirror-advanced-dialog").css({position:"fixed", zIndex:"2147483647", top: offsetTop, left:"calc(100%% - 320px)", marginTop:"0px"})
-                    $('#'+thisObj.id).find(".CodeMirror").css({left: offsetLeft, top: offsetTop})
-                    $('#' + thisObj.id).find(".CodeMirror-advanced-dialog").draggable()
-                }
-                event.preventDefault();
-            }
-        });
-
-        var panels = {};
-        var panelId = "";
-
-        function makePanel(where) {
-            var node = document.createElement("div");
-            var label, div, msg;
-
-            node.id = "panel-" + thisObj.id;
-            node.className = "panel " + where;
-            
-            div = $("<div>")
-            msg = get_peditor_msg('peditor.codemirror.helpMessage')
-            msg.split(" | ").forEach(el =>{
-                div.append($("<span>").text(el))
-            })
-
-            label = div.appendTo(node);
-
-            label.css({
-                "color": "black",
-                "font-size": "12px",
-                "padding": "5px 10px",
-                "font-weight":"bold",
-                "display": "flex",
-                "flex-direction": "column"
-            })
-
-            $(node).css({
-                "background-color":"rgb(255, 250, 143)"
-            })
-
-            return node;
-        };
-
-        function resetHeight(){
-            //Make CodeMirror unscrollable, and height follows the code written 
-            $("#" + thisObj.id).find(".CodeMirror").css({"height":"auto", "minHeight":"300px"});
-            $("#" + thisObj.id).find(".CodeMirror-scroll").css({"maxHeight":"auto", "minHeight":"300px"});
-        }
-
-        function addPanel(where) {
-            var node = makePanel(where);
-            panelId = "panel-" + thisObj.id;
-            panels[panelId] = thisObj.codeeditor.addPanel(node, {position: where, stable: true});
+            isDark = true;
         }
         
+        this.codeeditor = window.initCM6Editor($("#" + this.id)[0], "", "html", isDark);
+
         this.codeeditor.setValue(this.value);
-
-        var tooltip = $("<span>").attr('title', get_peditor_msg('peditor.codemirror.tooltipTitle')).append(" <i class=\"zmdi zmdi-info-outline\"></i>");
-        
-        $("#"+thisObj.id).parent().parent().find(".property-label").append(tooltip);
-
-        resetHeight();
 
         $("#" + thisObj.id).closest(".property-editor-property-container").siblings(".property-editor-page-title").on("click", function(){
             setTimeout(function(){
                 thisObj.codeeditor.refresh();
             }, 1)
         })
-        
-        let debounceTimer;
 
         this.codeeditor.on("change", function(){
-            clearTimeout(debounceTimer);
-            debounceTimer = setTimeout(function() {
-                thisObj.updateSample();
-            }, 300); //Debounce to improve performance
+            thisObj.updateSample();
         });
 
         thisObj.updateSample();
@@ -541,6 +368,7 @@
         $(object).off("click", ".templates > div.tile");
         $(object).on("click", ".templates > div.tile", function() {
             var template = $(this).data('template');
+
             thisObj.codeeditor.setValue(template);
             
             $(object).dialog("close");

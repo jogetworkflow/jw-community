@@ -290,7 +290,10 @@
     <group name="dx8ColorAdminWithFont.min">
         <css>/fonts/Roboto/css/font.css</css>
         <css>classpath:resources/css/dx8ColorAdminTheme.css</css>
-    </group>    
+    </group>
+    <group name="codeMirror6.min">
+        <css>/js/codemirror6/codemirror6-custom.css</css>
+    </group>
     <group name="codeMirror.min">
         <!-- Required dependencies -->
         <js>/js/codemirror/lib/codemirror.js</js>

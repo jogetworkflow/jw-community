@@ -86,8 +86,8 @@ UserviewBuilder = {
         var savedCss, savedJs = "";
         var propertiesViewInitilized = $("#propertiesView").length > 0 ? true : false;
         $("body").on("mouseenter", "div[property-name='theme'] > .property-input > div.chosen-container", function() {
-            savedCss = $("div[property-name='css'] > .property-input > div.code-editor > div > div.CodeMirror")[0].CodeMirror.getValue();
-            savedJs = $("div[property-name='js'] > .property-input > div.code-editor > div > div.CodeMirror")[0].CodeMirror.getValue();
+            savedCss = $("div[property-name='css'] > .property-input > div.code-editor")[0].CodeMirror.getValue();
+            savedJs = $("div[property-name='js'] > .property-input > div.code-editor")[0].CodeMirror.getValue();
         }).on("change", "div[property-name='theme'] > .property-input > select", function(e) {
             var newTheme = $(this).val();
             if (!propertiesViewInitilized) {
@@ -101,10 +101,10 @@ UserviewBuilder = {
                 previousTheme = newTheme;
                 
                 const observer = new MutationObserver((mutationsList, observer) => {
-                    const jsPreElement = $("div[property-name='js'] > .property-input > div.code-editor > div > div.CodeMirror")[0];
-                    const cssPreElement = $("div[property-name='css'] > .property-input > div.code-editor > div > div.CodeMirror")[0];
-                    
-                    if(jsPreElement && cssPreElement){
+                    const jsPreElement = $("div[property-name='js'] > .property-input > div.code-editor")[0];
+                    const cssPreElement = $("div[property-name='css'] > .property-input > div.code-editor")[0];
+    
+                    if (jsPreElement) {
                         var cmJs = jsPreElement.CodeMirror;
                         var cmJsValue = cmJs.getValue();
                         var cmCss = cssPreElement.CodeMirror;

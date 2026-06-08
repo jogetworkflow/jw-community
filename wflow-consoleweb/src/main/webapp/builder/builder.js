@@ -837,7 +837,7 @@ window._CustomBuilder = {
             if (jsonReady) {
                 clearInterval(interval);
 
-                var cm = $("#json_definition").find(".CodeMirror");
+                var cm = $("#json_definition");
                 if (cm.length > 0) {
                     clearInterval(interval);
 
@@ -850,17 +850,20 @@ window._CustomBuilder = {
 
                     usageArray.forEach(function (pattern) {
 
-                        var cursor = cm.getSearchCursor(pattern, { line: 0, ch: 0 });
+                        var cursor = cm.getSearchCursor(pattern, { line: 0, ch: 0 });     
+                        cursor.next();
 
-                        while (cursor.findNext()) {
+                        while (!cursor.done) {
                             matches.push({
                                 text: pattern,
-                                from: cursor.from(),
-                                to: cursor.to()
+                                from: cursor.value.from,
+                                to: cursor.value.to
                             });
+                            cursor.next();
                         }
 
                     });
+                            
 
                     if (matches.length === 0) return;
 
@@ -3402,67 +3405,24 @@ window._CustomBuilder = {
             $(view).find("button.button").wrap('<div class="sticky-buttons">');
             $(view).prepend('<pre id="json_definition" style="height:100%"></pre>');
 
-            let codeeditor = CodeMirror(document.getElementById("json_definition"), {
-                lineNumbers: true,
-                mode: "text",
-                autoRefresh:true,
-                matchBrackets: true,
-                theme: "default",
-                gutters: ["CodeMirror-lint-markers", "CodeMirror-linenumbers", "CodeMirror-foldgutter"],
-                lint: true,
-                autoCloseTags: true,
-                autoCloseBrackets: true,
-                foldGutter: true,
-                lineWrapping: true,
-                highlightSelectionMatches: {annotateScrollbar: true, minChars: 1},
-                extraKeys: {
-                    "Ctrl-F": function(cm) {
-                        cm.execCommand("replace")
-                        $('#json_definition').find(".CodeMirror-advanced-dialog").css({position:"fixed", zIndex:"2147483647", top: $("body #top-panel").outerHeight() + "px", left:"calc(90% - 320px)", display: 'block'})
-                        $('#json_definition').find(".CodeMirror-advanced-dialog").draggable({containment: 'parent'})
-                    },
-                    "Cmd-F": function(cm) {
-                        cm.execCommand("replace")
-                        $('#json_definition').find(".CodeMirror-advanced-dialog").css({position:"fixed", zIndex:"2147483647", top: $("body #top-panel").outerHeight() + "px", left:"calc(90% - 320px)", display: 'block'})
-                        $('#json_definition').find(".CodeMirror-advanced-dialog").draggable({containment: 'parent'})
-                    },
-                    "Ctrl-=": function(cm) {
-                      cm.increaseFontSize();
-                    },
-                    "Ctrl--": function(cm) {
-                      cm.decreaseFontSize();
-                    },
-                    "Ctrl-/": function(cm) {
-                      cm.toggleComment()
-                    }
-                  }
-              });
-
-            //Set Mode
-            codeeditor.setOption("mode", "application/json");
-    
-            setTimeout(() => codeeditor.refresh(), 0); // fix for render delay
-    
-            //Set height
-            $('#json_definition').find(".CodeMirror-advanced-dialog").css({display: 'none'})
-            $("#json_definition").find(".CodeMirror").css({"height":"100%"});
-            $('#json_definition').find(".CodeMirror-scroll").css({"maxHeight":"100%", "minHeight":"100%"});
-
-            //Set dark theme if dark theme mode is activated
+            var isDark = false;
             if ($('body').attr('builder-theme') === "dark") {
-                codeeditor.setOption("theme", "ayu-mirage");
+                isDark = true;
             }
-    
+
+            let codeeditor = window.initCM6Editor("json_definition", "", "json", isDark);
+
             var textarea = $("#cbuilder-info").find('textarea[name="json"]').hide();
             $(textarea).on("change", function() {
                 if (!CustomBuilder.editorSilentChange) {
                     CustomBuilder.editorSilentChange = true;
                     var jsonObj = JSON.decode($(this).val());
-                    codeeditor.setValue(JSON.stringify(jsonObj, null, 4))
-                    codeeditor.refresh()
+                    codeeditor.setValue(JSON.stringify(jsonObj, null, 4));
+                    codeeditor.refresh();
                     CustomBuilder.editorSilentChange = false;
                 }
             });
+
             $(textarea).trigger("change");
             codeeditor.on('change', function(){
                 if (!CustomBuilder.editorSilentChange) {
@@ -6225,7 +6185,7 @@ window._CustomBuilder.Builder = {
                                             //copy the value from property editor
                                             var value = "";
                                             if ($(pfield).hasClass('property-type-codeeditor')) {
-                                                value = $(pfield).find('.CodeMirror')[0].CodeMirror.getValue();
+                                                value = $(pfield).find('.cm6-container')[0].CodeMirror.getValue();
                                             } else if ($(pfield).hasClass('property-type-htmleditor')) {
                                                 value = tinymce.get($(pfield).find('textarea').attr('id')).getContent();
                                             } else {
@@ -6248,7 +6208,7 @@ window._CustomBuilder.Builder = {
                                                     $(pfield).addClass("syncInlineValue");
                                                     var value = "";
                                                     if ($(pfield).hasClass('property-type-codeeditor')) {
-                                                        value = $(pfield).find('.CodeMirror')[0].CodeMirror.getValue();
+                                                        value = $(pfield).find('.cm6-container')[0].CodeMirror.getValue();
                                                     } else if ($(pfield).hasClass('property-type-htmleditor')) {
                                                         value = tinymce.get($(pfield).find('textarea').attr('id')).getContent();
                                                     } else {
@@ -6300,7 +6260,7 @@ window._CustomBuilder.Builder = {
             $(field).addClass("syncPropValue");
 
             if ($(field).hasClass('property-type-codeeditor')) {
-                value = $(field).find('.CodeMirror')[0].CodeMirror.setValue(content);
+                value = $(field).find('.cm6-container')[0].CodeMirror.setValue(content);
             } else if ($(field).hasClass('property-type-htmleditor')) {
                 tinymce.get($(field).find('textarea').attr('id')).setContent(content);
             } else {
