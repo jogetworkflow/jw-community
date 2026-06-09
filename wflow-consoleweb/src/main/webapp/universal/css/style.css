@@ -1774,8 +1774,8 @@ body.rtl .InformationTileComponent small {
     border-top: 5px solid #ffffff !important
 }
 
-body #form-canvas .form-section:not(#section-actions),
-body #form-canvas .subform-section:not(#section-actions) {
+body #form-canvas .form-section:not(#section-actions):has(.form-section-title.collapsible),
+body #form-canvas .subform-section:not(#section-actions):has(.form-section-title.collapsible) {
     border: 1px solid rgba(59, 89, 152, 0.8);
 }
 

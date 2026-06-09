@@ -1755,6 +1755,9 @@ legend, main #form-canvas .form-section-title span, main #form-canvas .subform-s
     color: #555;
     padding-left: 4px;
     font-size: 18px;
+}
+main #form-canvas .form-section-title.collapsible span,
+main #form-canvas .subform-section-title.collapsible span {
     border-bottom: 1px solid #ddd;
 }
 div#section-actions.form-section, div#section-actions.subform-section{

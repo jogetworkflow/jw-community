@@ -1593,8 +1593,12 @@ body.rtl div.ui-timepicker-div dl dd > * > select {
 }
 
 .form-section > div.form-section-title, .subform-section > div.form-section-title {
-    border-bottom: 1px solid var(--field-border-color);
+    border-bottom: 0px;
     margin-bottom: var(--form-section-title-spacing);
+}
+
+.form-section > div.form-section-title.collapsible, .subform-section > div.form-section-title.collapsible {
+    border-bottom: 1px solid var(--field-border-color);
     border-top-left-radius: 11px;
     border-top-right-radius: 11px;
 }
@@ -1606,8 +1610,8 @@ body.rtl div.ui-timepicker-div dl dd > * > select {
     border-top-right-radius: 11px !important;
 }
 
-body #form-canvas .form-section:not(#section-actions),
-body #form-canvas .subform-section:not(#section-actions) {
+body #form-canvas .form-section:not(#section-actions):has(.form-section-title.collapsible),
+body #form-canvas .subform-section:not(#section-actions):has(.form-section-title.collapsible) {
     border: 1px solid var(--field-border-color);
     border-radius: 12px;
     margin-bottom: 20px;
