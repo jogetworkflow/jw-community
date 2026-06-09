@@ -18,6 +18,13 @@ body.rtl #form-canvas .form-cell label.label{
 #form-canvas textarea {
     font-size: 13px;
 }
+.form-cell > label.label + input:has(+ .numeric_field_controls) {
+    padding-right: 30px;
+}
+body.rtl .form-cell > label.label + input:has(+ .numeric_field_controls){
+    padding-left: 30px;
+    padding-right: 0px;
+}
 textarea{
     white-space: pre-wrap !important;
 }
@@ -105,6 +112,10 @@ textarea{
     width: 100%;
     max-width: 100%;
     float:none;
+}
+.label-top.form-cell > label.label, .label-top.subform-cell > label.label {
+    width: 100%;
+    float: none;
 }
 @media (max-width: 991px) and (min-width : 768px) {
     .tablet-label-top > .label{
@@ -381,6 +392,9 @@ img.ui-datepicker-trigger {
     left: 15px;
     bottom: 0px;
 }
+.adgrid .datapicker-native.ui-screen-hidden{
+    bottom: unset;
+}
 body input.no-manual-input{
     cursor: text;
     background-color: #fff;
@@ -389,21 +403,35 @@ body input.no-manual-input{
     z-index: 4;
 }
 .datapicker-native.ui-screen-hidden.ios {
-    right: 15px;
+    right: 0px;
+    left: 0px;
     top: unset;
-    bottom: 0px;
+    bottom: unset;
     z-index: 2;
     opacity: 0;
     width: auto;
     visibility: unset;  
 }
+body.rtl .datapicker-native.ui-screen-hidden.ios{
+    width: 25px;
+    right: unset;
+}
 .datapicker-native.ui-screen-hidden.ios input{
     width:100%;
     -webkit-appearance: none;
+    padding:0px;
 }
 .datapicker-native.ui-screen-hidden.ios.manual{
     left:unset;
     width: 25px;
+}
+body.rtl .datapicker-native.ui-screen-hidden.ios.manual{
+    left: 0px;
+}
+
+/* Advanced Grid - datepicker */
+body.rtl .adgrid .datapicker-native.ui-screen-hidden.ios.manual{
+    right: unset;
 }
 
 .trigger:hover, .close-icon:hover{
@@ -412,9 +440,10 @@ body input.no-manual-input{
 
 /* File upload */
 .form-fileupload {width:70%;}
+.form-fileupload .form-error-message { display: inline; margin: 1em; }
 ul.form-fileupload-value {padding0; margin: 0;}
 ul.form-fileupload-value li{display:block; margin-bottom: 5px;}
-ul.form-fileupload-value li .remove {color:red; display:inline-block; margin: 0 30px;}
+ul.form-fileupload-value li .remove {color:#EA5858; display:inline-block; margin: 0 30px; text-decoration: none; cursor: pointer; opacity: 1}
 ul.form-fileupload-value li a {display: inline-block;}
 
 /* grid */
@@ -478,6 +507,29 @@ ul.form-fileupload-value li a {display: inline-block;}
 .pq-grid-toolbar .ui-button .ui-icon {display: inline-block; vertical-align: sub;}
 .pq-grid-toolbar .ui-button{background-image: linear-gradient(#fefefe,#e6e6e6); border: 1px solid #e6e6e6; padding: 5px 11px;}
 
+body.rtl tr td.pq-grid-cell:last-of-type {
+    border-left: 1px solid #d0d0d0;
+}
+body.rtl .pq-grid td.pq-grid-col:last-of-type{
+    border-left: 1px solid #cfcfcf;
+}
+
+.grid.adgrid .pq-grid-number-col{
+    border-left: 1px solid transparent;
+    border-right: 1px solid #CFCFCF;
+}
+body.rtl .grid.adgrid .pq-grid-number-col{
+    border-right: 1px solid transparent;
+    border-left: 1px solid #cfcfcf;
+}
+.pq-grid-row{
+    border-left: 1px solid #e4ecf7;
+    border-right: 1px solid #cfcfcf;
+}
+body.rtl .pq-grid-row{
+    border-left: 1px solid #cfcfcf;
+    border-right: 1px solid #e4ecf7;
+}
 /* form grid & list grid */
 .pg-navigator .pg-current {
     font-weight : bold;
@@ -585,6 +637,7 @@ body.rtl #${elementParamName!}_multiPagedForm_${element.properties.elementUnique
 .multiPagedForm .page-nav-panel .nav_item.current button{
     font-weight: bold;
     color: #000;
+    display: block !important;
 }
 
 .multiPagedForm.tab .page-nav-panel .nav_item{
@@ -603,7 +656,7 @@ body.rtl #${elementParamName!}_multiPagedForm_${element.properties.elementUnique
 
 .rtl .multiPagedForm.wizard .page-nav-panel .nav_item {
     float: right;
-    padding-left:15px;
+    padding-left:0px;
     padding-right:auto;
 }
 
@@ -662,6 +715,11 @@ body.rtl #${elementParamName!}_multiPagedForm_${element.properties.elementUnique
     display:none;
 }
 
+.multiPagedForm .page-nav-panel ul {
+    overflow-x: auto;
+    overflow-y: hidden;
+}
+
 .mpf-container .subform-section{
     background:transparent;
 }
@@ -673,11 +731,13 @@ body.rtl #${elementParamName!}_multiPagedForm_${element.properties.elementUnique
 @media (max-width: 767px) {
     .multiPagedForm .page-nav-panel.bottom{
         display:block;
+        margin-top: 10px;
+        margin-bottom: 0px !important;
     }
     
     .multiPagedForm .page-nav-panel ul {
-        padding:0;
-        margin:0;
+        padding:0 !important;
+        margin:0 !important;
     }
     
     .multiPagedForm .page-button-panel,
@@ -715,8 +775,6 @@ body.rtl #${elementParamName!}_multiPagedForm_${element.properties.elementUnique
         float:none;
         display:block;
         width: 100%;
-        background: #f5f5f5;
-        border:#ddd solid 1px;
         padding:8px;
         margin:0;
         margin-bottom: 3px;
@@ -847,7 +905,14 @@ body.rtl .label-top .selector_item{
 .htMobileEditorContainer .positionControls {right: -12px; top: 48px;}
 .htMobileEditorContainer .inputs textarea {height: 25px !important; width: auto; max-width:none;}
 .handsontable .htAutocompleteArrow, .handsontable .columnSorting::after {font-family: sans-serif;}
-.spreadsheet_container, .spreadsheet {width:100%; overflow:visible !important; color:#000;}
+.spreadsheet_container {
+    position: relative;
+    z-index: 2;
+}
+.spreadsheet_container:has(.handsontableInputHolder.ht_editor_visible),
+.spreadsheet_container > .spreadsheet {width: 100%; overflow: visible !important; color: inherit;}
+.spreadsheet_container {overflow: hidden !important;}
+.handsontableInputHolder.ht_editor_visible {overflow: hidden;}
 .spreadsheet_container.resize {overflow:hidden !important; max-width: 100% !important; opacity: 0.4;}
 .spreadsheet_container.resize .wtHolder {
     -ms-overflow-style: none;  /* Internet Explorer 10+ */
@@ -856,13 +921,25 @@ body.rtl .label-top .selector_item{
 .spreadsheet_container.resize .wtHolder::-webkit-scrollbar { 
     display: none;  /* Safari and Chrome */
 }
-.handsontable .file_delete {color:red; display:inline-block; margin:0 10px; cursor:pointer;}
-.handsontableInputHolder .handsontableEditor {height: auto !important; overflow: visible !important; position: relative !important; top: 0 !important;}
+.handsontable .file_delete {color:#EA5858; display:inline-block; margin:0 10px; cursor:pointer;}
+.handsontableInputHolder .handsontableEditor {
+    height: auto !important; 
+    overflow: visible !important; 
+    position: relative !important; 
+    top: 0 !important;
+    width: auto !important;
+    min-width: 100%;
+}
 .handsontableInputHolder .handsontableEditor .ht_master .wtHolder {height: auto !important; max-height: 230px;}
 .form-cell .handsontable table td, .form-cell .handsontable table th, .subform-cell .handsontable table td, .subform-cell .handsontable table th {padding: 0 4px;}
 body.rtl .ht_clone_left, body.rtl .ht_clone_top, body.rtl .ht_clone_top_left_corner  { left: unset !important; right:0;}
-body.rtl .handsontableInputHolder textarea {position:absolute; left:0}
 body.rtl .handsontable .htCore tr th:last-child, body.rtl .handsontable .htCore tr td:last-child {border-left-width:1px !important;}
+
+.ht_editor_visible .ht_master .wtHolder{
+    width: auto !important;
+    min-width: 100%;
+    overflow-x: hidden;
+}
 
 .form-edit-btn{
     position: absolute !important;
@@ -877,6 +954,12 @@ body.rtl .form-edit-btn{
 }
 .form-edit-btn.bottom{
     bottom:30px;
+}
+@media print {
+    .spreadsheet_container, .spreadsheet {
+        overflow: hidden !important;
+        width: 100% !important;
+    }
 }
 
 /* process enhancement comments*/
@@ -929,5 +1012,18 @@ body.rtl .numeric_field_control {left:10px; right:auto;}
 
 /* datepicker */
 body.rtl #form-canvas .form-cell .label {
+    text-align: right;
+}
+
+body.rtl ul.form-fileupload-value li .name{
+    direction: ltr;
+    unicode-bidi: isolate;
+}
+body.rtl .handsontable .filename_container .filename {
+    direction: ltr;
+    unicode-bidi: isolate;
+}
+body.rtl input.hasDatepicker {
+    direction: ltr;
     text-align: right;
 }

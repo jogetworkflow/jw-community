@@ -11,6 +11,7 @@ import org.joget.apps.app.dao.AuditTrailDao;
 import org.joget.apps.app.model.AppDefinition;
 import org.joget.apps.app.model.AuditTrail;
 import org.joget.apps.app.model.PluginDefaultProperties;
+import org.joget.apps.app.model.AbstractAppVersionedObject;
 import org.joget.commons.util.CsvUtil;
 import org.joget.commons.util.LogUtil;
 import org.joget.commons.util.StringUtil;
@@ -96,8 +97,70 @@ public class AuditTrailManagerImpl implements AuditTrailManager {
             auditTrail.setAppDef(appDef);
             auditTrail.setAppId(appDef.getId());
             auditTrail.setAppVersion(appDef.getVersion().toString());
+        } else if (args != null && args.length > 0) {
+            // try to retrieve from args
+            for (Object arg : args) {
+                if (arg instanceof AppDefinition) {
+                    AppDefinition appArg = (AppDefinition) arg;
+                    auditTrail.setAppId(appArg.getId());
+                    if (appArg.getVersion() != null) {
+                        auditTrail.setAppVersion(appArg.getVersion().toString());
+                    }
+                    break;
+                } else if (arg instanceof AbstractAppVersionedObject) {
+                    AbstractAppVersionedObject appArg = (AbstractAppVersionedObject) arg;
+                    auditTrail.setAppId(appArg.getAppId());
+                    if (appArg.getAppVersion() != null) {
+                        auditTrail.setAppVersion(appArg.getAppVersion().toString());
+                    }
+                    break;
+                }
+            }
         }
         
+        if (auditTrail.getAppId() == null || auditTrail.getAppId().isEmpty()) {
+            try {
+                javax.servlet.http.HttpServletRequest request = org.joget.workflow.util.WorkflowUtil.getHttpServletRequest();
+                if (request != null) {
+                    String savedUrl = null;
+                    javax.servlet.http.HttpSession session = request.getSession(false);
+                    if (session != null) {
+                        Object savedRequest = session.getAttribute("SPRING_SECURITY_SAVED_REQUEST");
+                        if (savedRequest != null) {
+                            try {
+                                java.lang.reflect.Method getRedirectUrlMethod = savedRequest.getClass().getMethod("getRedirectUrl");
+                                savedUrl = (String) getRedirectUrlMethod.invoke(savedRequest);
+                            } catch (Exception e) {}
+                        }
+                    }
+                    if (savedUrl == null) {
+                        savedUrl = request.getHeader("referer");
+                    }
+                    if (savedUrl != null) {
+                        java.util.regex.Pattern pattern = java.util.regex.Pattern.compile("/web/(?:userview|ulogin|embed/userview|embed/ulogin|console/app)/([^/]+)/");
+                        java.util.regex.Matcher matcher = pattern.matcher(savedUrl);
+                        if (matcher.find()) {
+                            String appId = matcher.group(1);
+                            auditTrail.setAppId(appId);
+                            
+                            AppService appService = (AppService) AppUtil.getApplicationContext().getBean("appService");
+                            if (appService != null) {
+                                AppDefinition appDefFromUrl = appService.getPublishedAppDefinition(appId);
+                                if (appDefFromUrl != null) {
+                                    auditTrail.setAppDef(appDefFromUrl);
+                                    if (appDefFromUrl.getVersion() != null) {
+                                        auditTrail.setAppVersion(appDefFromUrl.getVersion().toString());
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            } catch (Exception e) {
+                // ignore
+            }
+        }
+
         if (dbLog(auditTrail)) {
             auditTrailDao.addAuditTrail(auditTrail);
         }
@@ -110,7 +173,7 @@ public class AuditTrailManagerImpl implements AuditTrailManager {
         
         if (c != null && m != null) {
             //login info
-            if (m.equals("authenticate") || m.equals("logout") || 
+            if (m.equals("authenticate") || m.equals("logout") || m.equals("validateHost") ||
                     c.startsWith("org.joget.apps.app.") || 
                     c.startsWith("org.joget.directory.dao.") || 
                     c.endsWith("WorkflowManagerImpl") || 
@@ -155,14 +218,8 @@ public class AuditTrailManagerImpl implements AuditTrailManager {
                                 AuditTrailPlugin plugin = (AuditTrailPlugin) plugins.get(prop.getPluginName());
                                 Map propertiesMap = new HashMap();
 
-                                if (!(plugin instanceof PropertyEditable)) {
-                                    try {
-                                        propertiesMap = CsvUtil.getPluginPropertyMap(prop.getPluginProperties());
-                                    } catch (IOException e) {}
-                                } else {
-                                    String json = prop.getPluginProperties();
-                                    propertiesMap = PropertyUtil.getPropertiesValueFromJson(json);
-                                }
+                                String json = prop.getPluginProperties();
+                                propertiesMap = PropertyUtil.getPropertiesValueFromJson(json);
 
                                 propertiesMap.put(AUDIT_TRAIL_PLUGIN_NAME, prop.getPluginName());
                                 propertiesList.add(propertiesMap);

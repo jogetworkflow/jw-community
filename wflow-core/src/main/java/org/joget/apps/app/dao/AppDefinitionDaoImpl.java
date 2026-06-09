@@ -146,7 +146,8 @@ public class AppDefinitionDaoImpl extends AbstractVersionedObjectDao<AppDefiniti
         String query = "SELECT e FROM " + getEntityName() + " e WHERE 1=1 AND e.published = true";
 
         if (sort != null && !sort.equals("")) {
-            query += " ORDER BY " + sort;
+            String filteredSort = filterSpace(sort);
+            query += " ORDER BY " + filteredSort;
 
             if (desc) {
                 query += " DESC";

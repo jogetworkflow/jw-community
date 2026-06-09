@@ -8,6 +8,7 @@ public class SharkActivity {
     private String processDefId;
     private String processId;
     private String resourceId;
+    private String performer; 
     
     private SharkActivityState state;
 
@@ -74,4 +75,13 @@ public class SharkActivity {
     public void setResourceId(String resourceId) {
         this.resourceId = resourceId;
     }
+
+    public String getPerformer() {
+        return performer;
+    }
+
+    public void setPerformer(String performer) {
+        this.performer = performer;
+    }
+    
 }

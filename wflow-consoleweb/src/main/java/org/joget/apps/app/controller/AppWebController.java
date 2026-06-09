@@ -2,6 +2,7 @@ package org.joget.apps.app.controller;
 
 import java.io.DataInputStream;
 import java.io.File;
+import java.io.RandomAccessFile;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
@@ -191,6 +192,14 @@ public class AppWebController {
         appId = SecurityUtil.validateStringInput(appId);        
         recordId = SecurityUtil.validateStringInput(recordId);        
         processDefId = WorkflowUtil.getProcessDefIdWithoutVersion(processDefId);
+        
+        //get published version if not mentioned
+        if (version == null || version.isEmpty()) {
+            Long appVersion = appService.getPublishedVersion(appId);
+            if (appVersion != null) {
+                version = appVersion.toString();
+            }
+        }
 
         // set app and process details
         AppDefinition appDef = appService.getAppDefinition(appId, version);
@@ -290,8 +299,13 @@ public class AppWebController {
             // get app
             AppDefinition appDef = null;
             if (appId != null && !appId.isEmpty()) {
+                
+                //get published version if not mentioned
                 if (version == null || version.isEmpty()) {
-                    version = appService.getPublishedVersion(appId).toString();
+                    Long appVersion = appService.getPublishedVersion(appId);
+                    if (appVersion != null) {
+                        version = appVersion.toString();
+                    }
                 }
                 appDef = appService.getAppDefinition(appId, version);
             } else {
@@ -351,6 +365,15 @@ public class AppWebController {
         SecurityUtil.validateStringInput(activityId);
         AppDefinition appDef = null;
         if (appId != null && !appId.isEmpty()) {
+            
+            //get published version if not mentioned
+            if (version == null || version.isEmpty()) {
+                Long appVersion = appService.getPublishedVersion(appId);
+                if (appVersion != null) {
+                    version = appVersion.toString();
+                }
+            }
+            
             appDef = appService.getAppDefinition(appId, version);
         } else {
             appDef = appService.getAppDefinitionForWorkflowActivity(activityId);
@@ -451,6 +474,14 @@ public class AppWebController {
                     && primaryKeyValue != null && !primaryKeyValue.isEmpty() 
                     && fileName != null && !fileName.isEmpty()) {
                 
+                //get published version if not mentioned
+                if (version == null || version.isEmpty()) {
+                    Long appVersion = appService.getPublishedVersion(appId);
+                    if (appVersion != null) {
+                        version = appVersion.toString();
+                    }
+                }
+                
                 appDef = appService.getAppDefinition(appId, version);
                 FormDefinition formDef = formDefinitionDao.loadById(formDefId, appDef);
                 
@@ -539,11 +570,6 @@ public class AppWebController {
         
         ServletOutputStream stream = response.getOutputStream();
         String decodedFileName = fileName;
-        try {
-            decodedFileName = URLDecoder.decode(fileName, "UTF8");
-        } catch (UnsupportedEncodingException e) {
-            // ignore
-        }
         File file = FileUtil.getFile(decodedFileName, tableName, primaryKeyValue);
         if (file.isDirectory() || !file.exists()) {
             response.sendError(HttpServletResponse.SC_NOT_FOUND);
@@ -645,8 +671,7 @@ public class AppWebController {
             error404(request, response);
             return;
         }
-        
-        ServletOutputStream stream = response.getOutputStream();
+
         File file = AppResourceUtil.getFile(appId, version, decodedFileName);
         if (file == null || file.isDirectory() || !file.exists()) {
             response.sendError(HttpServletResponse.SC_NOT_FOUND);
@@ -654,32 +679,110 @@ public class AppWebController {
             response.setHeader("Cache-Control", "no-cache, no-store");
             return;
         }
-        DataInputStream in = new DataInputStream(new FileInputStream(file));
-        byte[] bbuf = new byte[65536];
 
-        try {
-            String contentType = request.getSession().getServletContext().getMimeType(decodedFileName);
-            if (contentType != null) {
-                response.setContentType(contentType);
-            }
-            
-            // set attachment filename
-            String name = URLEncoder.encode(decodedFileName, "UTF8").replaceAll("\\+", "%20");
-            if (Boolean.valueOf(attachment).booleanValue()) {
-                response.setHeader("Content-Disposition", "attachment; filename=" + name + "; filename*=UTF-8''" + name);
-            } else {
-                response.setHeader("Content-Disposition", "inline; filename=" + name + "; filename*=UTF-8''" + name);
+        long fileLength = file.length();
+        // Set content type
+        String contentType = request.getSession().getServletContext().getMimeType(decodedFileName);
+        if (contentType != null) {
+            response.setContentType(contentType);
+        }
+
+        // Set attachment filename
+        String name = URLEncoder.encode(decodedFileName, "UTF8").replaceAll("\\+", "%20");
+        if (Boolean.valueOf(attachment).booleanValue()) {
+            response.setHeader("Content-Disposition", "attachment; filename=" + name + "; filename*=UTF-8''" + name);
+        } else {
+            response.setHeader("Content-Disposition", "inline; filename=" + name + "; filename*=UTF-8''" + name);
+        }
+        response.setHeader("Accept-Ranges", "bytes");
+
+        // Check for Range header
+        String rangeHeader = request.getHeader("Range");
+        if (rangeHeader != null && rangeHeader.startsWith("bytes=")) {
+            String rangeValue = rangeHeader.substring(6).trim(); // after "bytes="
+
+            long rangeStart;
+            long rangeEnd;
+
+            try {
+                if (rangeValue.isEmpty() || "-".equals(rangeValue)) {
+                    throw new IllegalArgumentException("Invalid Range");
+                }
+
+                if (rangeValue.startsWith("-")) {
+                    // Suffix range: bytes=-500 (last 500 bytes)
+                    long suffixLength = Long.parseLong(rangeValue.substring(1).trim());
+                    if (suffixLength <= 0) {
+                        throw new IllegalArgumentException("Invalid suffix");
+                    }
+                    rangeStart = Math.max(0, fileLength - suffixLength);
+                    rangeEnd = fileLength - 1;
+                } else if (rangeValue.endsWith("-")) {
+                    // Open-ended: bytes=500-
+                    rangeStart = Long.parseLong(rangeValue.substring(0, rangeValue.length() - 1).trim());
+                    rangeEnd = fileLength - 1;
+                } else {
+                    // Explicit: bytes=500-999
+                    int dashIdx = rangeValue.indexOf('-');
+                    if (dashIdx <= 0 || dashIdx == rangeValue.length() - 1) {
+                        throw new IllegalArgumentException("Invalid range format");
+                    }
+                    rangeStart = Long.parseLong(rangeValue.substring(0, dashIdx).trim());
+                    rangeEnd = Long.parseLong(rangeValue.substring(dashIdx + 1).trim());
+                }
+            } catch (Exception ex) {
+                response.setStatus(HttpServletResponse.SC_REQUESTED_RANGE_NOT_SATISFIABLE);
+                response.setHeader("Content-Range", "bytes */" + fileLength);
+                return;
             }
 
-            // send output
-            int length = 0;
-            while ((in != null) && ((length = in.read(bbuf)) != -1)) {
-                stream.write(bbuf, 0, length);
+            // Validate range
+            if (rangeStart < 0 || rangeStart >= fileLength || rangeEnd < rangeStart) {
+                response.setStatus(HttpServletResponse.SC_REQUESTED_RANGE_NOT_SATISFIABLE);
+                response.setHeader("Content-Range", "bytes */" + fileLength);
+                return;
             }
-        } finally {
-            in.close();
-            stream.flush();
-            stream.close();
+
+            if (rangeEnd >= fileLength) {
+                rangeEnd = fileLength - 1;
+            }
+
+            long contentLength = rangeEnd - rangeStart + 1;
+
+            // Set 206 Partial Content response
+            response.setStatus(HttpServletResponse.SC_PARTIAL_CONTENT); // 206
+            response.setHeader("Content-Range", "bytes " + rangeStart + "-" + rangeEnd + "/" + fileLength);
+            response.setContentLengthLong(contentLength);
+
+            // Stream the requested range
+            try (RandomAccessFile raf = new RandomAccessFile(file, "r");
+                 ServletOutputStream stream = response.getOutputStream()) {
+                raf.seek(rangeStart);
+                byte[] buffer = new byte[65536];
+                long remaining = contentLength;
+                while (remaining > 0) {
+                    int read = raf.read(buffer, 0, (int) Math.min(buffer.length, remaining));
+                    if (read == -1) {
+                        break;
+                    }
+                    stream.write(buffer, 0, read);
+                    remaining -= read;
+                }
+                stream.flush();
+            }
+        } else {
+            // No Range header - return full file with 200 OK
+            response.setContentLengthLong(fileLength);
+
+            try (DataInputStream in = new DataInputStream(new FileInputStream(file));
+                 ServletOutputStream stream = response.getOutputStream()) {
+                byte[] buffer = new byte[65536];
+                int length;
+                while ((length = in.read(buffer)) != -1) {
+                    stream.write(buffer, 0, length);
+                }
+                stream.flush();
+            }
         }
     }
     

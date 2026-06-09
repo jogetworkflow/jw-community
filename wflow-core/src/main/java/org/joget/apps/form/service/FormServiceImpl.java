@@ -19,6 +19,7 @@ import org.joget.apps.form.model.Form;
 import org.joget.apps.form.model.FormData;
 import org.joget.apps.form.model.Element;
 import org.joget.apps.form.model.FormBinder;
+import org.joget.apps.form.model.FormLoadBinder;
 import org.joget.apps.form.model.FormRow;
 import org.joget.apps.form.model.FormRowSet;
 import org.joget.apps.form.model.FormStoreBinder;
@@ -485,6 +486,37 @@ public class FormServiceImpl implements FormService {
     public FormData executeFormActions(Form form, FormData formData) {
         FormData updatedFormData = formData;
         updatedFormData = FormUtil.executeActions(form, form, formData);
+        
+        //update stored data back to load binder when load binder data have referenceTable & referenceKey
+        //this is due to there is a cache reference to previous loaded data.
+        for (Map.Entry<FormLoadBinder,FormRowSet>  entry : formData.getLoadBinderMap().entrySet()) {
+            FormRowSet loadBinderFormRowSet = entry.getValue();
+            
+            if (!loadBinderFormRowSet.isEmpty() 
+                    && !loadBinderFormRowSet.isMultiRow()
+                    && loadBinderFormRowSet.getReferenceTable() != null 
+                    && loadBinderFormRowSet.getReferenceKey() != null) {
+                
+                Element element = ((FormBinder) entry.getKey()).getElement();
+                
+                FormStoreBinder storeBinder = element.getStoreBinder();
+                FormRowSet storeBinderFormRowSet = formData.getStoreBinderData(storeBinder);
+                
+                if (storeBinderFormRowSet != null && !storeBinderFormRowSet.isMultiRow() 
+                        && !storeBinderFormRowSet.isEmpty()) {
+                    
+                    //only merge the FormRow to maintain the same FormRowSet object
+                    FormRow loadRow = loadBinderFormRowSet.get(0);
+                    FormRow storeRow = storeBinderFormRowSet.get(0);
+
+                    if (loadRow.getId() != null && loadRow.getId().equals(storeRow.getId())) {
+                        //merge storeRow to loadRow
+                        loadRow.putAll(storeRow);
+                    }
+                }
+            }
+        }
+        
         HttpServletRequest request = WorkflowUtil.getHttpServletRequest();
         if (request != null) {
             request.setAttribute("id", updatedFormData.getPrimaryKeyValue());

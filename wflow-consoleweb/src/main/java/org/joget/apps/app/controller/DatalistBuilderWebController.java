@@ -36,6 +36,7 @@ import org.joget.apps.datalist.model.DataListFilterType;
 import org.joget.apps.datalist.model.DataListTemplate;
 import org.joget.apps.datalist.service.DataListDecorator;
 import org.joget.apps.datalist.service.DataListService;
+import org.joget.apps.datalist.service.DataListUtil;
 import org.joget.apps.datalist.service.JsonUtil;
 import org.joget.apps.ext.ConsoleWebPlugin;
 import org.joget.apps.form.service.FormUtil;
@@ -62,6 +63,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.joget.apps.datalist.model.DataListDisplayColumn;
 import org.joget.apps.datalist.model.DataListDisplayColumnProxy;
 import org.joget.commons.util.SetupManager;
+import org.joget.apps.form.model.AutoCaseHandleCapable;
 
 @Controller
 public class DatalistBuilderWebController {
@@ -109,6 +111,25 @@ public class DatalistBuilderWebController {
             // get JSON from form definition
             listJson = datalist.getJson();
         }
+        
+        try {
+            JSONObject obj = new JSONObject(listJson);
+            JSONObject binder = obj.optJSONObject("binder");
+            JSONObject props = binder.optJSONObject("properties");
+
+            // Check if autoCaseHandle is enabled in the binder's properties
+            if (props != null && "true".equalsIgnoreCase(props.optString("autoCaseHandle"))) {
+                // Retrieve the plugin instance by class name
+                PluginManager pm = (PluginManager) AppUtil.getApplicationContext().getBean("pluginManager");
+                Plugin plugin = pm.getPlugin(binder.optString("className"));
+                // If the plugin supports auto-case handling, process the JSON
+                if (plugin instanceof AutoCaseHandleCapable) {
+                    listJson = ((AutoCaseHandleCapable) plugin).autoCaseHandleEnabled(obj);
+                }
+            }
+        } catch (Exception e) {
+            LogUtil.error(DatalistBuilderWebController.class.getName(), e, "");
+        }
 
         map.addAttribute("id", id);
         map.addAttribute("filterParam", new ParamEncoder(id).encodeParameterName(DataList.PARAMETER_FILTER_PREFIX));
@@ -142,6 +163,9 @@ public class DatalistBuilderWebController {
         datalist.setName(dlist.getName());
         datalist.setDescription(dlist.getDescription());
         datalist.setJson(PropertyUtil.propertiesJsonStoreProcessing(datalist.getJson(), json));
+
+        // ensure JSON ID is equal to definition ID
+        DataListUtil.validateDefinitionIdWithJson(datalist);
 
         boolean success = datalistDefinitionDao.update(datalist);
         JSONObject jsonObject = new JSONObject();

@@ -37,10 +37,16 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.web.servlet.LocaleContextResolver;
 import org.joget.apps.app.web.LocalLocaleResolver;
+import java.time.format.DateTimeFormatter;
+import java.time.LocalTime;
 
 public class UserProfileMenu extends UserviewMenu {
     
-    private static final SimpleDateFormat EN = new SimpleDateFormat("HH", new Locale("en"));
+    private static final DateTimeFormatter EN = DateTimeFormatter.ofPattern("HH", Locale.ENGLISH);
+    
+    public String formatCurrentTime() {
+        return LocalTime.now().format(EN);
+    }
 
     @Override
     public String getClassName() {
@@ -233,12 +239,12 @@ public class UserProfileMenu extends UserviewMenu {
             String v = getRequestParameterString(f);
             if (v != null) {
                 if (v.length() > 50) {
-                    errors.add(ResourceBundleUtil.getMessage("form.defaultvalidator.err.invalid"));
+                    errors.add(ResourceBundleUtil.getMessage("form.defaultvalidator.err.invalidInputCharacter"));
                     break;
                 }
                 String e = StringUtil.unescapeString(StringUtil.stripAllHtmlTag(v), StringUtil.TYPE_HTML, null);
                 if (!e.equals(v)) {
-                    errors.add(ResourceBundleUtil.getMessage("form.defaultvalidator.err.invalid"));
+                    errors.add(ResourceBundleUtil.getMessage("form.defaultvalidator.err.invalidInputCharacter"));
                     break;
                 }
             }
@@ -407,9 +413,14 @@ public class UserProfileMenu extends UserviewMenu {
                         localeObj = LocaleContextHolder.getLocale();
                         break;
                 }
-                SimpleDateFormat sdf = new SimpleDateFormat("HH", localeObj);
-
-                return !EN.format(t).equals(sdf.format(t));
+                // Create a formatter for the provided locale
+                DateTimeFormatter localFormatter = DateTimeFormatter.ofPattern("HH", localeObj);
+                
+                // Get current time
+                LocalTime now = LocalTime.now();
+                
+                // Compare output of English formatter with locale-specific formatter
+                return !now.format(EN).equals(now.format(localFormatter));
             }
         } catch (Exception e) {
             LogUtil.warn(getClassName(), e.getMessage());

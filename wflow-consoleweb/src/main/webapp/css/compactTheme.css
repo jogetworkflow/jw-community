@@ -235,9 +235,56 @@ body.compact-mode #sidebar .nav > li > a.menu-link > span.badge{
     margin-top: 4px;
 }
 
-body.compact-mode .hasDatepicker + a,
-body.compact-mode .hasDatepicker + a + a{
-    top: 5px;
+/*for size ABOVE tablet threshold*/
+@media screen and (min-width: 768px) {
+    /*default mode for S,M,L Font Size*/
+    body.compact-mode .hasDatepicker + a,
+    body.compact-mode .hasDatepicker + a + a,
+    body.compact-mode .label-top.form-container .label-left.form-cell .hasDatepicker + a,
+    body.compact-mode .label-top.form-container .label-left.form-cell .hasDatepicker + a + a{
+        top: 0.3rem;
+    }
+
+    /*Top label option for S Font Size*/
+    body.compact-mode .label-top .hasDatepicker + a,
+    body.compact-mode .label-top .hasDatepicker + a + a {
+        top: auto;
+        bottom: 0.25rem;
+    }
+    /*Top label option for M Font Size*/
+    body.compact-mode.mediumFontSize .label-top .hasDatepicker + a,
+    body.compact-mode.mediumFontSize .label-top .hasDatepicker + a + a {
+        top: auto;
+        bottom: 0.5rem;
+    }
+    /*Top label option for L Font Size*/
+    body.compact-mode.largeFontSize .label-top .hasDatepicker + a,
+    body.compact-mode.largeFontSize .label-top .hasDatepicker + a + a {
+        top: auto;
+        bottom: 0.75rem;
+    }
+}
+
+/*for size BELOW tablet threshold*/
+@media screen and (max-width: 767px) {
+    /*to adjust icon position on compact-mode (S size))*/
+    body.compact-mode .hasDatepicker + a,
+    body.compact-mode .hasDatepicker + a + a {
+        top: auto;
+        bottom: 0.25rem;
+    }
+    /*to adjust icon position on compact-mode (M size)*/
+    body.compact-mode.mediumFontSize .hasDatepicker + a,
+    body.compact-mode.mediumFontSize .hasDatepicker + a + a {
+        top: auto;
+        bottom: 0.5rem;
+    }
+    /*to adjust icon position on compact-mode (L size)*/
+    body.compact-mode.largeFontSize .hasDatepicker + a,
+    body.compact-mode.largeFontSize .hasDatepicker + a + a {
+        top: auto;
+        bottom: 0.75rem;
+    }
 }
 
 body.compact-mode .form-cell > label.label,

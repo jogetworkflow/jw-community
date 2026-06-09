@@ -57,44 +57,6 @@ body{
     overflow: hidden;
     background: #fff;
 }
-.page{
-    text-align: center;
-
-}
-.page a{
-    display: inline-block;
-    background: #fff;
-    color: #888;
-    padding: 5px;
-    min-width: 15px;
-    border: 1px solid #E2E2E2;
-
-}
-.page span{
-    display: inline-block;
-    padding: 5px;
-    min-width: 15px;
-    border: 1px solid #E2E2E2;
-}
-.page span.current{
-    display: inline-block;
-    background: #009688;
-    color: #fff;
-    padding: 5px;
-    min-width: 15px;
-    border: 1px solid #009688;
-}
-.page .pagination li{
-    display: inline-block;
-    margin-right: 5px;
-    text-align: center;
-}
-.page .pagination li.active span{
-    background: #009688;
-    color: #fff;
-    border: 1px solid #009688;
-
-}
 
 /*登录样式*/
 /*头部*/

@@ -142,7 +142,7 @@ public class JsonResponseFilter implements Filter {
                     }
                     wrappedResponse.setHeader("Access-Control-Allow-Origin", origin);
                     wrappedResponse.setHeader("Access-Control-Allow-Credentials", "true");
-                    wrappedResponse.setHeader("Access-Control-Allow-Headers", "Content-Type, authorization, owasp_csrftoken");
+                    wrappedResponse.setHeader("Access-Control-Allow-Headers", "Content-Type, authorization, owasp-csrftoken, owasp_csrftoken");
                 }
             }
             

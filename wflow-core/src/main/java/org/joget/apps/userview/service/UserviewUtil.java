@@ -42,6 +42,7 @@ import javax.servlet.http.HttpServletResponseWrapper;
 import java.io.File;
 import java.io.StringWriter;
 import java.util.*;
+import org.joget.apps.app.service.AppDevUtil;
 import org.joget.commons.util.StringUtil;
 
 /**
@@ -376,36 +377,7 @@ public class UserviewUtil implements ApplicationContextAware, ServletContextAwar
                 Collection<Plugin> pluginList = pluginManager.list(PwaOfflineResources.class);
 
                 if (pluginList != null && !pluginList.isEmpty()) {
-                    String concatAppDef = "";
-                    if (appDef.getFormDefinitionList() != null) {
-                        for (FormDefinition o : appDef.getFormDefinitionList()) {
-                            concatAppDef += o.getJson() + "~~~";
-                        }
-                    }
-                    if (appDef.getDatalistDefinitionList() != null) {
-                        for (DatalistDefinition o : appDef.getDatalistDefinitionList()) {
-                            concatAppDef += o.getJson() + "~~~";
-                        }
-                    }
-                    if (appDef.getUserviewDefinitionList() != null) {
-                        for (UserviewDefinition o : appDef.getUserviewDefinitionList()) {
-                            concatAppDef += o.getJson() + "~~~";
-                        }
-                    }
-                    if (appDef.getBuilderDefinitionList() != null) {
-                        for (BuilderDefinition o : appDef.getBuilderDefinitionList()) {
-                            concatAppDef += o.getJson() + "~~~";
-                        }
-                    }
-                    PackageDefinition packageDef = appDef.getPackageDefinition();
-                    if (packageDef != null) {
-                        if (packageDef.getPackageActivityPluginMap() != null) {
-                            for (PackageActivityPlugin o : packageDef.getPackageActivityPluginMap().values()) {
-                                concatAppDef += o.getPluginName() + "~~~";
-                                concatAppDef += o.getPluginProperties() + "~~~";
-                            }
-                        }
-                    }
+                    String concatAppDef = AppDevUtil.getConcatAppDef(appDef);
                     
                     // look for plugins used in any definition file
                     Set<String> temp = null;
@@ -554,5 +526,43 @@ public class UserviewUtil implements ApplicationContextAware, ServletContextAwar
             href = DataListDecorator.generateLinkAndMergeParams(hrefParam, hrefColumn, href, "", row);
             urls.add(href);
         }
+    }
+
+    /**
+     * Ensures that the JSON's ID is equal to the definition's ID.
+     *
+     * <p>If not equal, updates the JSON with the definition's ID.
+     *
+     * @param definition the object to validate
+     */
+    public static void validateDefinitionIdWithJson(UserviewDefinition definition) {
+        Objects.requireNonNull(definition, "UserviewDefinition cannot be null");
+        Objects.requireNonNull(definition.getJson(), "UserviewDefinition JSON cannot be null");
+
+        JSONObject jsonObject = new JSONObject(definition.getJson());
+        JSONObject properties = getOrCreateJSONObject(jsonObject, "properties");
+        properties.put("id", definition.getId());
+
+        JSONObject setting = getOrCreateJSONObject(jsonObject, "setting");
+        JSONObject settingProperties = getOrCreateJSONObject(setting, "properties");
+        settingProperties.put("userviewId", definition.getId());
+
+        definition.setJson(jsonObject.toString());
+    }
+
+    /**
+     * Returns the child JSONObject for the given key, creating and attaching a new one if absent.
+     *
+     * @param parent JSONObject to operate on
+     * @param key    the key to access
+     * @return the JSONObject associated with the key
+     */
+    private static JSONObject getOrCreateJSONObject(JSONObject parent, String key) {
+        JSONObject value = parent.optJSONObject(key);
+        if (value == null) {
+            value = new JSONObject();
+            parent.put(key, value);
+        }
+        return value;
     }
 }

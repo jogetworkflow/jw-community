@@ -208,15 +208,19 @@
             </div>
         </form>
         <script type="text/javascript">
-
             function validateField(){
                 var valid = true;
                 var alertString = "";
+                const firstName = $("#firstName").val();
+                const lastName = $("#lastName").val();
                 <#if element.properties.f_firstName! != 'hide'>
-                    if($("#firstName").val() == ""){
+                    if(firstName == ""){
                         alertString += '@@User.firstName[not.blank]@@';
                         valid = false;
-                    }
+                    } else if (!UI.isValidInput(firstName) || !UI.isValidInput(lastName)) {
+                        alertString += '@@console.directory.user.error.label.nameInvalid@@';
+                        valid = false;
+                    }            
                 </#if>
                 <#if element.properties.f_password! != 'hide'>
                     if($("#password").val() != $("#confirmPassword").val()){
@@ -255,6 +259,7 @@
                     }
                 </#if>
             }
+                
 
             // show/hide the field based on current locale and the chosen locale
             function updateWesternDigitDateField() {

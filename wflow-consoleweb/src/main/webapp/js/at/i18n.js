@@ -3,10 +3,13 @@ I18nEditor = {
     retrieveLabels : function (keys, labels, jsonObj, keywords, options) {
         for (var key in jsonObj) {
             if (!(options.skip && options.skip(key, jsonObj, keys, labels, options))) {
-                if ($.inArray(key, keywords) !== -1) {
-                    if ($.inArray(jsonObj[key], keys) === -1) {
+                const isAnyKeywordSubstringOfKey = keywords.some(substr => key.toLowerCase().includes(substr.toLowerCase()));
+                if (isAnyKeywordSubstringOfKey) {
+                    // tests whether key is only #i18n.xxx# hash
+                    const keyContainsI18nHash = /^\s*#i18n\.[^#]+#\s*$/.test(jsonObj[key]);
+                    if (!keyContainsI18nHash && $.inArray(jsonObj[key], keys) === -1) {
                         var lkey = jsonObj[key],
-                        label = jsonObj[key];
+                            label = jsonObj[key];
 
                         if (options.key) {
                             lkey = options.key(lkey, jsonObj, options);
@@ -76,7 +79,7 @@ I18nEditor = {
             $(container).attr("id", "i18n_container" + (new Date).getTime());
         }
 
-        $(container).append('<div class="sticky_header"><div class="sticky_container"><table class="i18n_table"><thead><tr><th><div class="search-container"><input class="form-control form-control-sm component-search" placeholder="'+get_cbuilder_msg('cbuilder.search')+'" type="text"><button class="clear-backspace"><i class="la la-close"></i></button></div></th><th class="lang1"><div></div></th><th class="lang2"><div></div></th></tr></thead><tbody></tbody></table></div></div>');
+        $(container).append('<div class="sticky_header"><div class="sticky_container"><table class="i18n_table"><thead><tr><th><div class="search-container"><input class="form-control form-control-sm component-search" placeholder="'+get_cbuilder_msg('cbuilder.search')+'" type="text"><button class="clear-backspace"><i class="la la-close"></i></button></div></th><th class="lang1 lang" data-lang="lang1"><div></div></th><th class="lang2 lang" data-lang="lang2"><div></div></th></tr></thead><tbody></tbody></table></div></div>');
         var $table = $(container).find(".i18n_table");
 
         $table.data("options", options);
@@ -130,7 +133,7 @@ I18nEditor = {
                 if (i % 2 === 0) {
                     css = "even";
                 }
-                $table.find("tbody").append('<tr class="'+css+'"><td class="label"><span>'+UI.escapeHTML(label)+'</span><textarea name="i18n_key_'+l+'" style="display:none">'+key+'</textarea></td><td class="lang1"></td><td class="lang2"></td></tr>');
+                I18nEditor.appendI18nTableRow($table, key, label, css, l);
                 i++;
             }
         } else {
@@ -159,6 +162,22 @@ I18nEditor = {
                 $(".i18n_table #lang1").val("en_US").trigger("chosen:updated").trigger("change");
             }
         }
+    },
+    appendI18nTableRow: function ($table, key, label, css, index) {
+        if (!index) {
+            const $tr = $table.find('tbody tr');
+            index = $tr.length - 1;
+        }
+        if (!css || css.trim() === '') {
+            css = index % 2 === 0 ? 'even' : 'odd';
+        }
+        // escape html characters
+        key = key.replace(/&/g, '&amp;')
+            .replace(/"/g, '&quot;')
+            .replace(/'/g, '&apos;')
+            .replace(/</g, '&lt;')
+            .replace(/>/g, '&gt;');
+        $table.find("tbody").append('<tr class="' + css + '" i18n-key="' + key + '"><td class="label"><span>' + UI.escapeHTML(label) + '</span><textarea name="i18n_key_' + index + '" style="display:none">' + key + '</textarea></td><td class="lang1"></td><td class="lang2"></td></tr>');
     },
     renderLocaleSelector : function(container, header, id, options) {
         $(header).append('<select id="' + id + '" data-placeholder="' + get_advtool_msg('i18n.editor.chooseLocale') + '"><option></option></select>');
@@ -196,7 +215,7 @@ I18nEditor = {
         if (options === undefined) {
             options = $(container).find(".i18n_table").data("options");
         }
-        
+
         if ($(container).find("select#"+id).val() !== locale) {
             $(container).find("select#"+id).val(locale).trigger("change").trigger("chosen:updated");
             return;
@@ -205,10 +224,42 @@ I18nEditor = {
         if (locale === "") {
             $(container).find("td."+id).html("");
         } else {
+            const $container = $(container);
+            const $table = $container.find('table.i18n_table');
+            const insertLocaleTextarea = function($tr, refreshColumnOnly) {
+                const key = $tr.find("td.label textarea").val() + "_" + locale;
+                const langs = refreshColumnOnly ? $table.find("thead th." + id) : $table.find("thead th.lang");
+                langs.each(function(i, th) {
+                    const $elem = $(th);
+                    const lang = $elem.data("lang");
+                    const shouldAddTextarea = $tr.find("td." + lang + " textarea").length === 0 && $elem.find('.chosen-container .chosen-default').length === 0;
+                    if (refreshColumnOnly || shouldAddTextarea) {
+                        $tr.find("td." + lang).html('<textarea></textarea>');
+                        const $ta = $tr.find("td." + lang + " textarea");
+                        $ta.attr("rel", key.toLowerCase());
+                        $ta.data("original", "");
+                    }
+                });
+            }
+            const insertData = function(message) {
+                const mKey = message.messageKey.replace(/"/g, '\\"');
+                const hasRow = $table.find('tbody tr[i18n-key="' + mKey + '"]').length > 0;
+                if (!hasRow) {
+                    return false;
+                }
+                const mId = message.id.replace(/"/g, '\\"').toLowerCase();
+                const $field = $container.find('td.' + id + ' textarea[rel="' + mId + '"]');
+                if ($field.attr("rel") === message.id.toLowerCase()) {
+                    const v = message.message || "";
+                    $field.val(v);
+                    $field.data("original", v);
+                    return true;
+                }
+                return false;
+            }
+            // insert text areas for each row first
             $(container).find("tbody tr:not(.addnew)").each(function(i, tr){
-                var key = $(tr).find("td.label textarea").val() + "_" + locale;
-                $(tr).find("td."+id).html('<textarea></textarea>');
-                $(tr).find("td."+id+" textarea").attr("rel", key.toLowerCase());
+                insertLocaleTextarea($(tr), true);
             });
             $.ajax({
                 url: options.contextPath + '/web/json/console/app/'+options.appId+'/'+options.appVersion+'/message/list',
@@ -220,10 +271,13 @@ I18nEditor = {
                     if (response.total > 0) {
                         for (var i in response.data) {
                             var message = response.data[i];
-                            var mid = message.id.replace(new RegExp('"', 'g'), "\\\"").toLowerCase();
-                            var field = $(container).find('td.'+id+' textarea[rel="'+mid+'"]');
-                            if ($(field).attr("rel") === message.id.toLowerCase()) {
-                                $(field).val(message.message);
+                            // try insert data, if cannot means row not exist -> create new row
+                            if (!insertData(message)) {
+                                const key = message.messageKey;
+                                I18nEditor.appendI18nTableRow($table, key, key);
+                                const $tr = $table.find('tr[i18n-key="' + key.replace(/"/g, '\\"') + '"]');
+                                insertLocaleTextarea($tr);
+                                insertData(message);
                             }
                         }
                     }
@@ -236,14 +290,18 @@ I18nEditor = {
         $(button).after('<i class="las la-spinner la-2x la-spin" style="color:#000;opacity:0.3"></i>');
         var data = [];
         $(container).find('td.'+id+' textarea').each(function(){
-            var id = $(this).attr("rel");
-            var key = $(this).closest("tr").find("td.label textarea").val();
-            var val = $(this).val();
-            data.push({
-                id : id,
-                key : key,
-                value : val
-            });
+            var $ta = $(this);
+            var id = $ta.attr("rel");
+            var key = $ta.closest("tr").find("td.label textarea").val();
+            var val = ($ta.val() || "");
+            var orig = ($ta.data("original") || "");
+            if (val !== orig) {
+                data.push({ 
+                    id : id, 
+                    key : key, 
+                    value : val 
+                });
+            }
         });
         $.ajax({
             type: "POST",
@@ -256,6 +314,12 @@ I18nEditor = {
         }).done(function() {
             $(button).next().remove();
             $(button).after('<span style="color:green;"> '+get_advtool_msg('i18n.editor.saved')+'</span>');
+            for (var i=0;i<data.length;i++){
+                var rel = data[i].id.replace(/"/g, '\\"').toLowerCase();
+                $(container).find('td.'+id+' textarea[rel="'+rel+'"]').each(function(){
+                    $(this).data("original", $(this).val() || "");
+                });
+            }
         }).fail(function() {
             $(button).next().remove();
             $(button).after('<span style="color:red;"> '+get_advtool_msg('i18n.editor.error')+'</span>');

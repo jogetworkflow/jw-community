@@ -2,10 +2,14 @@
 <%@ page import="org.joget.directory.model.service.DirectoryUtil"%>
 <%@ page import="org.joget.commons.util.SecurityUtil"%>
 <%@ page import="org.joget.workflow.util.WorkflowUtil"%>
+<%@ page import="org.joget.apps.app.service.AppUtil"%>
 
 <%
     String theme = WorkflowUtil.getSystemSetupValue("systemTheme");
     pageContext.setAttribute("theme", theme);
+    
+    String lang = AppUtil.getAppLocale();
+    pageContext.setAttribute("lang", lang);
 %>
 
 <c:if test="${!jsonUiInRequest}">
@@ -14,7 +18,7 @@
 
     <script type="text/javascript" src="${pageContext.request.contextPath}/wro/common.preload.js?build=<fmt:message key="build.number"/>"></script>
     <script type="text/javascript" src="${pageContext.request.contextPath}/wro/common.js?build=<fmt:message key="build.number"/>"></script>
-    <script>loadCSS("${pageContext.request.contextPath}/wro/common.css")</script>
+    <script>loadCSS("${pageContext.request.contextPath}/wro/common.css?build=<fmt:message key='build.number'/>")</script>
 
     <c:set var="jsonUiInRequest" scope="request" value="true"/>
     
@@ -50,7 +54,7 @@
         ConnectionManager.tokenValue = "<%= SecurityUtil.getCsrfTokenValue(request) %>";
         JPopup.tokenName = "<%= SecurityUtil.getCsrfTokenName() %>";
         JPopup.tokenValue = "<%= SecurityUtil.getCsrfTokenValue(request) %>";
-        UI.locale = "<c:out value="${currentLocale}"/>";
+        UI.locale = "<c:out value="${lang}"/>";
         UI.theme = "<c:out value="${theme}"/>";
         
         if(window.parent.UI.theme === ""){

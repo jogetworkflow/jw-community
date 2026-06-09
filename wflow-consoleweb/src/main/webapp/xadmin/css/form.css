@@ -505,7 +505,7 @@ body label > input[type=checkbox] + i{
     height: 16px;
     margin-right: 5px;
     position: relative;
-    top: 4px;
+    vertical-align: middle;
     color:transparent;
 }
 body .select_checkbox label > [type="checkbox"]:checked + i,
@@ -527,9 +527,9 @@ body label > input[type=checkbox] + i:after {
     -webkit-text-stroke-width: 0.2px;
     -moz-osx-font-smoothing: grayscale;
     position: absolute;
-    left: 2px;
+    left: 1px;
     line-height: 12px;
-    top: 3px;
+    top: 1px;
 }
 body .select_checkbox label > [type="checkbox"]:checked:disabled + i,
 body label > input[type=checkbox]:checked:disabled + i{
@@ -673,6 +673,23 @@ body .hasDatepicker + a, body .hasDatepicker + img {
     display: inline-block;
     cursor: pointer;
 }
+body input.hasDatepicker {
+    width: 50%;
+}
+.datapicker-native.ui-screen-hidden.ios {
+    right: 15px;
+}
+body.rtl .datapicker-native.ui-screen-hidden.ios,
+body.rtl .datapicker-native.ui-screen-hidden.ios.manual {
+    left: 15px;
+}
+
+/* Advanced Grid - datepicker */
+body .adgrid input.hasDatepicker {
+    width: 85%;
+    max-width: 75%;
+}
+
 body .filter-cell .hasDatepicker + a, body .filter-cell .hasDatepicker + img {
     right: auto;
     margin-left: -21px;
@@ -1039,6 +1056,14 @@ body .handsontable input, .handsontable textarea{
         left: -22px;
         top: 32px;
     }
+    body.rtl #form-canvas .adgrid .hasDatepicker + a {
+        left: 20px;
+        top: 6px;
+    }
+    body.rtl #form-canvas .adgrid .hasDatepicker + a + a:after {
+        left: -22px;
+        top: 6px;
+    }
 }
 
 .form-edit-btn{
@@ -1054,6 +1079,13 @@ body.rtl .form-edit-btn{
     bottom: 31px;
 }
 
+.form-cell-value label:has(input[type="checkbox"]),
+.subform-cell-value label:has(input[type="checkbox"]),
+.form-cell-value label:has(input[type="radio"]),
+.subform-cell-value label:has(input[type="radio"]){
+    line-height: 1.5;
+}
+
 /* numeric field */
 .numeric_field_controls {top: -1px;}
 .label-top .numeric_field_controls {bottom: 49px; top: auto;}
@@ -1066,12 +1098,22 @@ body.rtl .form-edit-btn{
 body.rtl form.label-left .form-cell.label-top > label{
     float:none;
 }
+body.rtl .form-cell > label.label + input:has(+ .numeric_field_controls){
+    padding-right: 10px;
+}
 
 /* fields with top-aligned label */
 body #form-canvas .label-top .label {
     text-align: left;
 }
-body #form-canvas .label-top .hasDatepicker {
+.label-top.form-cell > label.label + .hasDatepicker,
+.label-top.subform-cell > label.label + .hasDatepicker,
+.label-top.form-cell > label.label + .ui-screen-hidden + .hasDatepicker,
+.label-top.subform-cell > label.label + .ui-screen-hidden + .hasDatepicker,
+form.label-top .form-cell:not(.label-left) > label.label + .hasDatepicker,
+form.label-top .subform-cell:not(.label-left) > label.label + .hasDatepicker,
+form.label-top .form-cell:not(.label-left) > label.label + .ui-screen-hidden + .hasDatepicker,
+form.label-top .subform-cell:not(.label-left) > label.label + .ui-screen-hidden + .hasDatepicker {
     width: calc(100% - 42px);
 }
 

@@ -42,7 +42,7 @@
         <dependency>
             <groupId>com.microsoft.sqlserver</groupId>
             <artifactId>mssql-jdbc</artifactId>
-            <version>9.4.0.jre8</version>
+            <version>10.2.4.jre8</version>
             <scope>runtime</scope>
         </dependency>
         <dependency>
@@ -50,6 +50,12 @@
             <artifactId>postgresql</artifactId>
             <version>42.6.1</version>
             <scope>runtime</scope>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.checkerframework</groupId>
+                    <artifactId>checker-qual</artifactId>	
+                </exclusion>	
+           </exclusions>
         </dependency>
     </dependencies>
     <distributionManagement>

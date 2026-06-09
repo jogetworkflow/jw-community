@@ -75,9 +75,6 @@ public class WorkflowHttpAuthProcessingFilter extends UsernamePasswordAuthentica
 
         Boolean requiresAuthentication;
         try {
-            // Reset profile and set hostname
-            HostManager.initHost();
-
             // clear current user
             workflowUserManager.clearCurrentThreadUser();
             
@@ -100,13 +97,14 @@ public class WorkflowHttpAuthProcessingFilter extends UsernamePasswordAuthentica
                 chain.doFilter(request, response);
             }
         } finally {
+            
             /*
             // Uncomment this block to force JSON API requests to authenticate on every call
             String uri = request.getRequestURI();
             if (requiresAuthentication && uri.startsWith(request.getContextPath() + "/web/json") && !uri.contains("/web/json/directory/user/sso")) {
                 // don't store authentication in session for json calls
                 SecurityContextHolder.getContext().setAuthentication(null);
-            }            
+            }
             */
 
             UserSecurity us = DirectoryUtil.getUserSecurity();
@@ -276,7 +274,7 @@ public class WorkflowHttpAuthProcessingFilter extends UsernamePasswordAuthentica
                     try {
                         UsernamePasswordAuthenticationToken authRequest = new UsernamePasswordAuthenticationToken(username.trim(), password);
                         super.setDetails(request, authRequest);
-
+                        
                         auth = getAuthenticationManager().authenticate(authRequest);
 
                         ((AuthenticationTokenWrapper)auth).clearCredentials();

@@ -317,12 +317,36 @@
         }
     }
     $(document).ready(function() {
+        $("form[name='form_${dataListId}']").on(
+            "click",
+            "tbody .select_checkbox input[type='checkbox']",
+            function () {
+                var $form = $(this).closest("form");
+                var value = $(this).val();
+                var checked = $(this).is(":checked");
+
+                // sync left + right checkbox for the same row (same value)
+                $form
+                    .find("tbody .select_checkbox input[type='checkbox'][value='" + value + "']")
+                    .prop("checked", checked);
+
+                // update ALL header checkboxes
+                var $rows = $form.find("tbody .select_checkbox input[type='checkbox']");
+                var $headers = $form.find("thead .select_checkbox input[type='checkbox']");
+
+                var allChecked =
+                    $rows.length > 0 &&
+                    $rows.filter(":checked").length === $rows.length;
+
+                $headers.prop("checked", allChecked);
+            }
+        );
         $("#filters_${dataListId}").submit(function(e) {
             e.preventDefault();
             $("#filters_${dataListId}").removeClass("show");
             DataListUtil.submitForm(this);
         });
-        $('.mobile_search_trigger').off("click").on("click", function(){
+        $('#filters_${dataListId} > .mobile_search_trigger').off("click").on("click", function(){
             $("#filters_${dataListId}").toggleClass("show");
         });
         $(".exportlinks a").attr("target", "_blank"); //download in new page so that it won't block access
@@ -432,12 +456,11 @@
         }
     });
     function toggleAll(element) {
-        var table = $(element).closest("form");
-        if ($(element).is(":checked")) {
-            $(table).find("input[type=checkbox]").prop("checked", true);
-        } else {
-            $(table).find("input[type=checkbox]").prop("checked", false);
-        }
+        var $form = $(element).closest("form");
+        var checked = $(element).is(":checked");
+
+        $form.find("thead .select_checkbox input[type=checkbox]").prop("checked", checked);
+        $form.find("tbody .select_checkbox input[type=checkbox]").prop("checked", checked);
     }
     function showConfirm(element, message) {
         var table = $(element).closest("form");

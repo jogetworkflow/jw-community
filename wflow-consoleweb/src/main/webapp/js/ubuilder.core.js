@@ -1269,12 +1269,32 @@ UserviewBuilder = {
             });
         }
     },
+
+    /*
+     * helper function to separate out icon and label
+     */
+    splitIconAndText : function(input) {
+        const iconRegex = /^<i[^>]*><\/i>/;
+        const match = input.match(iconRegex);
+        
+        if (match) {
+            const icon = match[0];
+            const label = input.slice(match[0].length).trim();
+            return { icon, label };
+        } else {
+            return { icon: null, label: input.trim() };
+        }
+    },
     
     /*
      * used to render category. Called from UserviewBuilder.renderElement
      */
     renderCategory : function(element, elementObj, component, callback) {
-        var html = '<li id="'+elementObj.properties.id+'" class="category toggled"><a class="dropdown"><span>'+elementObj.properties.label+'</span></a><ul class="menu-container" data-cbuilder-menus></ul></li>';
+        var {icon, label} = UserviewBuilder.splitIconAndText(elementObj.properties.label);
+        var span = $('<span>');
+        span.append(icon);
+        span.append(UI.stripHtmlRelaxed(label));
+        var html = '<li id="'+elementObj.properties.id+'" class="category toggled"><a class="dropdown">' + span.prop('outerHTML') + '</a><ul class="menu-container" data-cbuilder-menus></ul></li>';
         var category = $(html);
         $(element).replaceWith(category);
         callback(category);
@@ -2168,7 +2188,7 @@ UserviewBuilder = {
             menuId = "";
         }
         
-        $('#cbuilder-preview [name=OWASP_CSRFTOKEN]').val(ConnectionManager.tokenValue);
+        $('#cbuilder-preview [name=OWASP-CSRFTOKEN]').val(ConnectionManager.tokenValue);
         $('#cbuilder-preview').attr("action", CustomBuilder.previewUrl + menuId);
         $('#cbuilder-preview').attr("target", "preview-iframe");
         $('#cbuilder-preview').submit();
@@ -2312,7 +2332,7 @@ UserviewBuilder = {
             }
         }
         
-        $('#cbuilder-preview [name=OWASP_CSRFTOKEN]').val(ConnectionManager.tokenValue);
+        $('#cbuilder-preview [name=OWASP-CSRFTOKEN]').val(ConnectionManager.tokenValue);
         $('#cbuilder-preview').attr("action", CustomBuilder.previewUrl + menuId);
         $('#cbuilder-preview').attr("target", "preview-screenshot-iframe");
         $('#cbuilder-preview').submit();

@@ -103,12 +103,18 @@
                     if (o.datePickerType === "dateTime") {
                         $(element).datetimepicker(o);
                         createNativeField($(element), "datetime-local", o);
+                        if (o.isBE !== undefined && o.isBE) {
+                            var option = $(element).datetimepicker("option");
+                        }
                     } else if (o.datePickerType === "timeOnly") {
                         $(element).timepicker(o);
                         createNativeField($(element), "time", o);
                     } else {
                         $(element).datepicker(o);
                         createNativeField($(element), "date", o);
+                        if (o.isBE !== undefined && o.isBE) {
+                            var option = $(element).datepicker("option");
+                        }
                     }
 
                     if($.placeholder) {

@@ -26,7 +26,7 @@
         <div id="builder_canvas" class="process_graph">
         </div>
         <textarea id="json" name="json" rows="12" cols="30" style="display:none;"><c:out value="${json}" escapeXml="true"/></textarea>
-        <script type="text/javascript" src="${pageContext.request.contextPath}/js/builderutil.js"></script>
+        <script type="module" src="${pageContext.request.contextPath}/js/builderutil.js"></script>
         <script>
             /*** Handle jQuery plugin naming conflict between jQuery UI and Bootstrap ***/
             $.widget.bridge('uibutton', $.ui.button);
@@ -34,7 +34,7 @@
         </script>
         <script src="${pageContext.request.contextPath}/web/console/i18n/advtool?build=<fmt:message key="build.number"/>"></script>
         <script data-cbuilder-script type="text/javascript" src="${pageContext.request.contextPath}/web/console/i18n/cbuilder?type=process&build=<fmt:message key="build.number"/>"></script>
-        <script type="text/javascript" src="${pageContext.request.contextPath}/builder/builder.js"></script>
+        <script type="module" src="${pageContext.request.contextPath}/builder/builder.js"></script>
         <script src="${pageContext.request.contextPath}/pbuilder/js/jquery.jsPlumb-1.6.4-min.js"></script>
         <script src="${pageContext.request.contextPath}/pbuilder/js/pbuilder.js?build=<fmt:message key="build.number"/>"></script>
         <script data-cbuilder-script>

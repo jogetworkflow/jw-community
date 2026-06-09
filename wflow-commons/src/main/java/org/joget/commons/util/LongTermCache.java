@@ -22,7 +22,7 @@ public class LongTermCache {
         Element element = null;
         element = cache.get(key);
         Long lastClear = getLastClearTime(key);
-        if (element != null && lastClear != null && element.getCreationTime() < lastClear) {
+        if (element != null && lastClear != null && element.getCreationTime() <= lastClear) {
             cache.remove(key);
             LogUtil.debug(LongTermCache.class.getName(), key + " need to refresh.");
             element = null;
@@ -46,11 +46,34 @@ public class LongTermCache {
         for (String k : keys) {
             if (k.startsWith(prefix)) {
                 cache.remove(k);
+                setupManager.updateSetting("CACHE_LAST_CLEAR_" + k, Long.toString((new Date()).getTime()));
             }
         }
         LogUtil.debug(LongTermCache.class.getName(), "All caches with `"+prefix+"` prefix are removed.");
     }
+
+    public void putObject(String key, Object value) {
+        putObject(key, value, null);
+    }
     
+    /**
+     * This is used for long processing time cache data. 
+     * Keep its requesting time instead of cache creation time to prevent stale cache
+     * 
+     * @param key
+     * @param value
+     * @param requestTime 
+     */
+    public void putObject(String key, Object value, Date requestTime) {
+        Element element = new Element(key, value);
+        
+        if (requestTime != null) {
+            element.getElementEvictionData().setCreationTime(requestTime.getTime());
+        }
+        
+        put(element);
+    }
+   
     public void put(Element element) {
         cache.put(element);
         LogUtil.debug(LongTermCache.class.getName(), element.getObjectKey() + " is refreshed.");

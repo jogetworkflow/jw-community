@@ -57,15 +57,11 @@ import org.joget.apps.app.model.EnvironmentVariable;
 import org.joget.apps.app.model.FormDefinition;
 import org.joget.apps.app.model.Message;
 import org.joget.apps.app.model.PackageActivityForm;
-import org.joget.apps.app.model.PackageActivityPlugin;
 import org.joget.apps.app.model.PackageDefinition;
-import org.joget.apps.app.model.PackageParticipant;
 import org.joget.apps.app.model.PluginDefaultProperties;
 import org.joget.apps.app.model.UserviewDefinition;
 import org.joget.apps.app.model.DatalistDefinition;
 import org.joget.apps.app.model.ImportAppException;
-import org.joget.apps.app.model.ProcessFormModifier;
-import org.joget.apps.app.model.StartProcessFormModifier;
 import org.joget.apps.app.service.AppDevUtil;
 import static org.joget.apps.app.service.AppDevUtil.PROPERTY_GIT_PASSWORD;
 import static org.joget.apps.app.service.AppDevUtil.PROPERTY_GIT_URI;
@@ -1008,8 +1004,11 @@ public class ConsoleWebController {
                     boolean passwordReset = false;
 
                     u = userDao.getUserById(user.getId());
-                    u.setFirstName(user.getFirstName());
-                    u.setLastName(user.getLastName());
+                    String firstName = StringUtil.stripAllHtmlTag(StringUtil.unescapeString(user.getFirstName(), StringUtil.TYPE_HTML, null));
+                    String lastName = StringUtil.stripAllHtmlTag(StringUtil.unescapeString(user.getLastName(), StringUtil.TYPE_HTML, null));
+                                                
+                    u.setFirstName(firstName);
+                    u.setLastName(lastName);
                     u.setEmail(user.getEmail());
                     if (user.getPassword() != null && !user.getPassword().trim().isEmpty()) {
                         u.setConfirmPassword(user.getPassword());
@@ -1117,10 +1116,13 @@ public class ConsoleWebController {
                     employment = new Employment();
                 }
             }
+            
+            String sanitizedEmployeeCode = StringUtil.stripAllHtmlTag(StringUtil.unescapeString(employeeCode, StringUtil.TYPE_HTML, null));
+            String sanitizedEmployeeRole = StringUtil.stripAllHtmlTag(StringUtil.unescapeString(employeeRole, StringUtil.TYPE_HTML, null));
 
             employment.setUserId(user.getId());
-            employment.setEmployeeCode(employeeCode);
-            employment.setRole(employeeRole);
+            employment.setEmployeeCode(sanitizedEmployeeCode);
+            employment.setRole(sanitizedEmployeeRole);
             DateFormat df = new SimpleDateFormat("yyyy-MM-dd");
             try {
                 if (employeeStartDate != null && employeeStartDate.trim().length() > 0) {
@@ -1421,8 +1423,11 @@ public class ConsoleWebController {
             return "console/profile";
         } else {
             if (currentUser.getUsername().equals(user.getUsername())) {
-                currentUser.setFirstName(user.getFirstName());
-                currentUser.setLastName(user.getLastName());
+                String firstName = StringUtil.stripAllHtmlTag(StringUtil.unescapeString(user.getFirstName(), StringUtil.TYPE_HTML, null));
+                String lastName = StringUtil.stripAllHtmlTag(StringUtil.unescapeString(user.getLastName(), StringUtil.TYPE_HTML, null));
+                            
+                currentUser.setFirstName(firstName);
+                currentUser.setLastName(lastName);               
                 currentUser.setEmail(user.getEmail());
                 currentUser.setTimeZone(user.getTimeZone());
                 currentUser.setLocale(user.getLocale());
@@ -1710,9 +1715,14 @@ public class ConsoleWebController {
 
     @RequestMapping(value = "/console/app/(*:appId)/version/new", method = RequestMethod.POST)
     @Transactional
-    public String consoleAppCreate(@RequestParam(value = "appId") String appId, @RequestParam(value = "version", required = false) Long version) {
+    public void consoleAppCreate(Writer writer, @RequestParam(value = "appId") String appId, @RequestParam(value = "version", required = false) Long version)  throws IOException, JSONException {
         AppDefinition appDef = appService.createNewAppDefinitionVersion(appId, version);
-        return "console/apps/dialogClose";
+        
+        JSONObject jsonObject = new JSONObject();
+        jsonObject.put("appId", appDef.getAppId());
+        jsonObject.put("appVersion", appDef.getVersion().toString());
+        
+        AppUtil.writeJson(writer, jsonObject, null);
     }
 
     @RequestMapping(value = "/console/app/(*:appId)/(~:version)/publish", method = RequestMethod.POST)
@@ -1909,6 +1919,7 @@ public class ConsoleWebController {
             }
         } catch (ImportAppException e) {
             errors.add(e.getMessage());
+            LogUtil.error(getClass().getName(), e, "Unable to import app");
         }
 
         if (appDef == null || !errors.isEmpty()) {
@@ -2117,666 +2128,6 @@ public class ConsoleWebController {
         }
 
         return activity;
-    }
-
-    @RequestMapping("/console/app/(*:appId)/(~:version)/processes/(*:processDefId)/activity/(*:activityDefId)/form")
-    public String consoleActivityForm(ModelMap map, @RequestParam("appId") String appId, @RequestParam(required = false) String version, @RequestParam String processDefId, @RequestParam String activityDefId) {
-        AppDefinition appDef = appService.getAppDefinition(appId, version);
-        map.addAttribute("appId", appDef.getId());
-        map.addAttribute("appVersion", appDef.getVersion());
-        map.addAttribute("appDefinition", appDef);
-
-        WorkflowProcess process = workflowManager.getProcess(processDefId);
-        WorkflowActivity activity = workflowManager.getProcessActivityDefinition(processDefId, activityDefId);
-
-        if (activityDefId.equals(WorkflowUtil.ACTIVITY_DEF_ID_RUN_PROCESS)) {
-            activity = new WorkflowActivity();
-            activity.setId(WorkflowUtil.ACTIVITY_DEF_ID_RUN_PROCESS);
-            activity.setName("Run Process");
-        }
-
-        PackageDefinition packageDef = appDef.getPackageDefinition();
-        String processDefIdWithoutVersion = WorkflowUtil.getProcessDefIdWithoutVersion(processDefId);
-        PackageActivityForm activityForm = packageDef.getPackageActivityForm(processDefIdWithoutVersion, activityDefId);
-        if (activityForm != null && PackageActivityForm.ACTIVITY_FORM_TYPE_EXTERNAL.equals(activityForm.getType())) {
-            map.addAttribute("externalFormUrl", activityForm.getFormUrl());
-            map.addAttribute("externalFormIFrameStyle", activityForm.getFormIFrameStyle());
-        }
-
-        map.addAttribute("process", process);
-        map.addAttribute("activity", activity);
-
-        return "console/apps/activityFormAdd";
-    }
-
-    @RequestMapping(value = "/console/app/(*:appId)/(~:version)/processes/(*:processDefId)/activity/(*:activityDefId)/form/submit", method = RequestMethod.POST)
-    public String consoleActivityFormSubmit(
-            ModelMap map,
-            @RequestParam String appId,
-            @RequestParam(required = false) String version,
-            @RequestParam String processDefId,
-            @RequestParam String activityDefId,
-            @RequestParam(value = "id", required = false) String formId,
-            @RequestParam(value = "type", required = false) String type,
-            @RequestParam(value = "externalFormUrl", required = false) String externalFormUrl,
-            @RequestParam(value = "externalFormIFrameStyle", required = false) String externalFormIFrameStyle) throws UnsupportedEncodingException {
-
-        AppDefinition appDef = appService.getAppDefinition(appId, version);
-        PackageDefinition packageDef = appDef.getPackageDefinition();
-        boolean autoContinue = false;
-        if (packageDef != null) {
-            autoContinue = appService.isActivityAutoContinue(packageDef.getId(), packageDef.getVersion().toString(), processDefId, activityDefId);
-        }
-        processDefId = WorkflowUtil.getProcessDefIdWithoutVersion(processDefId);
-        activityDefId = SecurityUtil.validateStringInput(activityDefId);
-        PackageActivityForm activityForm = new PackageActivityForm();
-        activityForm.setProcessDefId(processDefId);
-        activityForm.setActivityDefId(activityDefId);
-        if (PackageActivityForm.ACTIVITY_FORM_TYPE_EXTERNAL.equals(type) && externalFormUrl != null) {
-            activityForm.setType(PackageActivityForm.ACTIVITY_FORM_TYPE_EXTERNAL);
-            activityForm.setFormUrl(externalFormUrl);
-            activityForm.setFormIFrameStyle(externalFormIFrameStyle);
-        } else {
-            activityForm.setType(PackageActivityForm.ACTIVITY_FORM_TYPE_SINGLE);
-            activityForm.setFormId(formId);
-        }
-        activityForm.setAutoContinue(autoContinue);
-
-        packageDefinitionDao.addAppActivityForm(appId, appDef.getVersion(), activityForm);
-
-        map.addAttribute("activityDefId", activityDefId);
-        map.addAttribute("processDefId", URLEncoder.encode(processDefId, "UTF-8"));
-
-        return "console/apps/activityFormAddSuccess";
-    }
-
-    @RequestMapping(value = "/console/app/(*:appId)/(~:version)/processes/(*:processDefId)/activity/(*:activityDefId)/form/remove", method = RequestMethod.POST)
-    public String consoleActivityFormRemove(ModelMap map, @RequestParam("appId") String appId, @RequestParam(required = false) String version, @RequestParam String processDefId, @RequestParam String activityDefId) throws UnsupportedEncodingException {
-        AppDefinition appDef = appService.getAppDefinition(appId, version);
-        PackageDefinition packageDef = appDef.getPackageDefinition();
-
-        // check for existing auto continue flag
-        boolean autoContinue = false;
-        if (packageDef != null) {
-            autoContinue = appService.isActivityAutoContinue(packageDef.getId(), packageDef.getVersion().toString(), processDefId, activityDefId);
-        }
-
-        // remove mapping
-        processDefId = SecurityUtil.validateStringInput(processDefId);
-        activityDefId = SecurityUtil.validateStringInput(activityDefId);
-        packageDefinitionDao.removeAppActivityForm(appId, appDef.getVersion(), processDefId, activityDefId);
-
-        if (autoContinue) {
-            // save autoContinue flag
-            PackageActivityForm paf = new PackageActivityForm();
-            paf.setProcessDefId(processDefId);
-            paf.setActivityDefId(activityDefId);
-            paf.setAutoContinue(autoContinue);
-            packageDefinitionDao.addAppActivityForm(appId, appDef.getVersion(), paf);
-        }
-
-        map.addAttribute("activityDefId", activityDefId);
-        map.addAttribute("processDefId", URLEncoder.encode(processDefId, "UTF-8"));
-        return "console/apps/activityFormRemoveSuccess";
-    }
-
-    @RequestMapping(value = "/console/app/(*:appId)/(~:version)/processes/(*:processDefId)/activity/(*:activityDefId)/continue", method = RequestMethod.POST)
-    public void consoleActivityContinueSubmit(Writer writer, @RequestParam(value = "callback", required = false) String callback, @RequestParam("appId") String appId, @RequestParam(required = false) String version, @RequestParam String processDefId, @RequestParam String activityDefId, @RequestParam String auto) throws JSONException, IOException {
-        AppDefinition appDef = appService.getAppDefinition(appId, version);
-        PackageDefinition packageDef = appDef.getPackageDefinition();
-
-        // set and save
-        PackageActivityForm paf = packageDef.getPackageActivityForm(processDefId, activityDefId);
-        if (paf == null) {
-            paf = new PackageActivityForm();
-            paf.setProcessDefId(processDefId);
-            paf.setActivityDefId(activityDefId);
-        }
-        boolean autoContinue = Boolean.parseBoolean(auto);
-        paf.setAutoContinue(autoContinue);
-        packageDefinitionDao.addAppActivityForm(appId, appDef.getVersion(), paf);
-
-        // write output
-        JSONObject jsonObject = new JSONObject();
-        jsonObject.accumulate("auto", autoContinue);
-        AppUtil.writeJson(writer, jsonObject, callback);
-    }
-    
-    @RequestMapping(value = "/console/app/(*:appId)/(~:version)/processes/(*:processDefId)/activity/(*:activityDefId)/draft", method = RequestMethod.POST)
-    public void consoleActivitySaveAsDraftSubmit(Writer writer, @RequestParam(value = "callback", required = false) String callback, @RequestParam("appId") String appId, @RequestParam(required = false) String version, @RequestParam String processDefId, @RequestParam String activityDefId, @RequestParam String disable) throws JSONException, IOException {
-        AppDefinition appDef = appService.getAppDefinition(appId, version);
-        PackageDefinition packageDef = appDef.getPackageDefinition();
-
-        // set and save
-        PackageActivityForm paf = packageDef.getPackageActivityForm(processDefId, activityDefId);
-        if (paf == null) {
-            paf = new PackageActivityForm();
-            paf.setProcessDefId(processDefId);
-            paf.setActivityDefId(activityDefId);
-        }
-        boolean disableSaveAsDraft = Boolean.parseBoolean(disable);
-        paf.setDisableSaveAsDraft(disableSaveAsDraft);
-        packageDefinitionDao.addAppActivityForm(appId, appDef.getVersion(), paf);
-
-        // write output
-        JSONObject jsonObject = new JSONObject();
-        jsonObject.accumulate("disable", disableSaveAsDraft);
-        AppUtil.writeJson(writer, jsonObject, callback);
-    }
-
-    @RequestMapping("/console/app/(*:appId)/(~:version)/processes/(*:processDefId)/activity/(*:activityDefId)/plugin")
-    public String consoleActivityPlugin(ModelMap map, @RequestParam("appId") String appId, @RequestParam(required = false) String version, @RequestParam String processDefId, @RequestParam String activityDefId) throws UnsupportedEncodingException {
-        AppDefinition appDef = appService.getAppDefinition(appId, version);
-        map.addAttribute("appId", appDef.getId());
-        map.addAttribute("appVersion", appDef.getVersion());
-        map.addAttribute("appDefinition", appDef);
-
-        WorkflowProcess process = workflowManager.getProcess(processDefId);
-        WorkflowActivity activity = workflowManager.getProcessActivityDefinition(processDefId, activityDefId);
-        map.addAttribute("process", process);
-        map.addAttribute("activity", activity);
-        map.addAttribute("activityDefId", activityDefId);
-        map.addAttribute("processDefId", URLEncoder.encode(processDefId, "UTF-8"));
-        return "console/apps/activityPluginAdd";
-    }
-    
-    @RequestMapping("/console/app/(*:appId)/(~:version)/processes/(*:processDefId)/route/(*:activityDefId)/plugin")
-    public String consoleRoutePlugin(ModelMap map, @RequestParam("appId") String appId, @RequestParam(required = false) String version, @RequestParam String processDefId, @RequestParam String activityDefId) throws UnsupportedEncodingException {
-        AppDefinition appDef = appService.getAppDefinition(appId, version);
-        map.addAttribute("appId", appDef.getId());
-        map.addAttribute("appVersion", appDef.getVersion());
-        map.addAttribute("appDefinition", appDef);
-
-        WorkflowProcess process = workflowManager.getProcess(processDefId);
-        WorkflowActivity activity = workflowManager.getProcessActivityDefinition(processDefId, activityDefId);
-        map.addAttribute("process", process);
-        map.addAttribute("activity", activity);
-        map.addAttribute("activityDefId", activityDefId);
-        map.addAttribute("processDefId", URLEncoder.encode(processDefId, "UTF-8"));
-        return "console/apps/routePluginAdd";
-    }
-    
-    @RequestMapping("/console/app/(*:appId)/(~:version)/processes/(*:processDefId)/activityForm/(*:activityDefId)/plugin")
-    public String consoleActivityFormPlugin(ModelMap map, @RequestParam("appId") String appId, @RequestParam(required = false) String version, @RequestParam String processDefId, @RequestParam String activityDefId) throws UnsupportedEncodingException {
-        AppDefinition appDef = appService.getAppDefinition(appId, version);
-        map.addAttribute("appId", appDef.getId());
-        map.addAttribute("appVersion", appDef.getVersion());
-        map.addAttribute("appDefinition", appDef);
-
-        WorkflowProcess process = workflowManager.getProcess(processDefId);
-        WorkflowActivity activity = workflowManager.getProcessActivityDefinition(processDefId, activityDefId);
-        map.addAttribute("process", process);
-        map.addAttribute("activity", activity);
-        map.addAttribute("activityDefId", activityDefId);
-        map.addAttribute("processDefId", URLEncoder.encode(processDefId, "UTF-8"));
-        
-        if (WorkflowUtil.ACTIVITY_DEF_ID_RUN_PROCESS.equals(activityDefId)) {
-            map.addAttribute("pluginClass", "org.joget.apps.app.model.StartProcessFormModifier");
-        } else {
-            map.addAttribute("pluginClass", "org.joget.apps.app.model.ProcessFormModifier");
-        }
-        
-        return "console/apps/activityFormPluginAdd";
-    }
-
-    @RequestMapping(value = "/console/app/(*:appId)/(~:version)/processes/(*:processDefId)/(*:activityType)/(*:activityDefId)/plugin/submit", method = RequestMethod.POST)
-    public String consoleActivityPluginSubmit(ModelMap map, @RequestParam("appId") String appId, @RequestParam(required = false) String version, @RequestParam String processDefId, @RequestParam String activityType, @RequestParam String activityDefId, @RequestParam("id") String pluginName) throws UnsupportedEncodingException {
-        AppDefinition appDef = appService.getAppDefinition(appId, version);
-        map.addAttribute("appId", appDef.getId());
-        map.addAttribute("appVersion", appDef.getVersion());
-        map.addAttribute("appDefinition", appDef);
-
-        PackageActivityPlugin activityPlugin = new PackageActivityPlugin();
-        activityPlugin.setProcessDefId(processDefId);
-        activityPlugin.setActivityDefId(activityDefId);
-        activityPlugin.setPluginName(pluginName);
-
-        packageDefinitionDao.addAppActivityPlugin(appId, appDef.getVersion(), activityPlugin);
-        
-        map.addAttribute("activityType", activityType);
-        map.addAttribute("activityDefId", activityDefId);
-        map.addAttribute("processDefId", URLEncoder.encode(processDefId, "UTF-8"));
-        map.addAttribute("pluginName", URLEncoder.encode(pluginName, "UTF-8"));
-        return "console/apps/activityPluginAddSuccess";
-    }
-
-    @RequestMapping(value = "/console/app/(*:appId)/(~:version)/processes/(*:processDefId)/activity/(*:activityDefId)/plugin/remove", method = RequestMethod.POST)
-    public String consoleActivityPluginRemove(ModelMap map, @RequestParam("appId") String appId, @RequestParam(required = false) String version, @RequestParam String processDefId, @RequestParam String activityDefId) throws UnsupportedEncodingException {
-        AppDefinition appDef = appService.getAppDefinition(appId, version);
-        packageDefinitionDao.removeAppActivityPlugin(appId, appDef.getVersion(), processDefId, activityDefId);
-        map.addAttribute("activityDefId", activityDefId);
-        map.addAttribute("processDefId", URLEncoder.encode(processDefId, "UTF-8"));
-        return "console/apps/activityFormRemoveSuccess";
-    }
-    
-    @RequestMapping("/console/app/(*:appId)/(~:version)/processes/(*:processDefId)/(*:activityType)/(*:activityDefId)/plugin/configure")
-    public String consoleActivityPluginConfigure(ModelMap map, HttpServletRequest request, @RequestParam("appId") String appId, @RequestParam(required = false) String version, @RequestParam String processDefId, @RequestParam String activityType, @RequestParam String activityDefId, @RequestParam("param_tab") String tab, @RequestParam(value = "pluginname", required = false) String pluginName) throws IOException {
-        AppDefinition appDef = appService.getAppDefinition(appId, version);
-        PackageDefinition packageDef = appDef.getPackageDefinition();
-        tab = SecurityUtil.validateStringInput(tab);
-        String processDefIdWithVersion = processDefId;
-
-        if (packageDef != null) {
-            activityDefId = SecurityUtil.validateStringInput(activityDefId);
-            processDefIdWithVersion = WorkflowUtil.getProcessDefIdWithoutVersion(processDefId);
-            PackageActivityPlugin activityPlugin = packageDef.getPackageActivityPlugin(processDefIdWithVersion, activityDefId);
-            
-            if (activityPlugin == null || (pluginName != null && !pluginName.isEmpty())) {
-                activityPlugin = new PackageActivityPlugin();
-                activityPlugin.setProcessDefId(processDefIdWithVersion);
-                activityPlugin.setActivityDefId(activityDefId);
-                activityPlugin.setPluginName(pluginName);
-            }
-            
-            Plugin plugin = pluginManager.getPlugin(activityPlugin.getPluginName());
-          
-            if (activityPlugin.getPluginProperties() != null && activityPlugin.getPluginProperties().trim().length() > 0) {
-                if (!(plugin instanceof PropertyEditable)) {
-                    Map propertyMap = new HashMap();
-                    propertyMap = CsvUtil.getPluginPropertyMap(activityPlugin.getPluginProperties());
-                    map.addAttribute("propertyMap", propertyMap);
-                } else {
-                    map.addAttribute("properties", PropertyUtil.propertiesJsonLoadProcessing(activityPlugin.getPluginProperties()));
-                }
-            }
-
-            if (plugin != null) {
-                PluginDefaultProperties pluginDefaultProperties = pluginDefaultPropertiesDao.loadById(activityPlugin.getPluginName(), appDef);
-
-                if (pluginDefaultProperties != null) {
-                    if (!(plugin instanceof PropertyEditable)) {
-                        Map defaultPropertyMap = new HashMap();
-
-                        String properties = pluginDefaultProperties.getPluginProperties();
-                        if (properties != null && properties.trim().length() > 0) {
-                            defaultPropertyMap = CsvUtil.getPluginPropertyMap(properties);
-                        }
-                        map.addAttribute("defaultPropertyMap", defaultPropertyMap);
-                    } else {
-                        map.addAttribute("defaultProperties", PropertyUtil.propertiesJsonLoadProcessing(pluginDefaultProperties.getPluginProperties()));
-                    }
-                }
-            }
-
-            if (plugin instanceof PropertyEditable) {
-                PropertyEditable pe = (PropertyEditable) plugin;
-                map.addAttribute("propertyEditable", pe);
-                map.addAttribute("propertiesDefinition", PropertyUtil.injectHelpLink(plugin.getHelpLink(), pe.getPropertyOptions()));
-            }
-
-            map.addAttribute("appDef", appDef);
-            map.addAttribute("plugin", plugin);
-            
-            try {
-                processDefId =  URLEncoder.encode(processDefId, "UTF-8");
-            } catch (UnsupportedEncodingException e) {}
-
-            String url = request.getContextPath() + "/web/console/app/" + appDef.getId() + "/" + appDef.getVersion() + "/processes/" + StringEscapeUtils.escapeHtml(processDefId) + "/" + StringEscapeUtils.escapeHtml(activityType) + "/" + StringEscapeUtils.escapeHtml(activityDefId) + "/plugin/configure/submit?param_activityPluginId=" + activityPlugin.getUid()+"&param_tab="+tab;
-            if (pluginName != null) {
-                url += "&pluginname="+URLEncoder.encode(pluginName, "UTF-8");
-            }
-            map.addAttribute("actionUrl", url);
-            
-            boolean showCancel = true;
-            
-            if ("activityForm".equalsIgnoreCase(activityType)) {
-                if(WorkflowUtil.ACTIVITY_DEF_ID_RUN_PROCESS.equals(activityDefId)) {
-                    Map<String, Plugin> modifierPluginMap = pluginManager.loadPluginMap(StartProcessFormModifier.class);
-                    if (modifierPluginMap.size() == 1) {
-                        showCancel = false;
-                    }
-                } else {
-                    Map<String, Plugin> modifierPluginMap = pluginManager.loadPluginMap(ProcessFormModifier.class);
-                    if (modifierPluginMap.size() == 1) {
-                        showCancel = false;
-                    }
-                }
-            }
-            
-            if (showCancel) {
-                String cancelUrl = request.getContextPath() + "/web/console/app/" + appDef.getId() + "/" + appDef.getVersion() + "/processes/" + StringEscapeUtils.escapeHtml(processDefId) + "/" + StringEscapeUtils.escapeHtml(activityType) + "/" + StringEscapeUtils.escapeHtml(activityDefId) + "/plugin?title="+URLEncoder.encode(request.getParameter("title"), "UTF-8");
-                map.addAttribute("cancelUrl", cancelUrl);
-
-                map.addAttribute("cancelLabel", "console.process.config.label.mapTools.changePlugin");
-            }
-        }
-
-        return "console/plugin/pluginConfig";
-    }
-
-    @RequestMapping(value = "/console/app/(*:param_appId)/(~:param_version)/processes/(*:param_processDefId)/(*:activityType)/(*:param_activityDefId)/plugin/configure/submit", method = RequestMethod.POST)
-    @Transactional
-    public String consoleActivityPluginConfigureSubmit(ModelMap map, @RequestParam("param_appId") String appId, @RequestParam(value = "param_version", required = false) String version, @RequestParam("param_processDefId") String processDefId, @RequestParam String activityType, @RequestParam("param_activityDefId") String activityDefId, @RequestParam("param_tab") String tab, @RequestParam(value = "pluginProperties", required = false) String pluginProperties, HttpServletRequest request, @RequestParam(value = "pluginname", required = false) String pluginName) throws IOException {
-        AppDefinition appDef = appService.loadAppDefinition(appId, version);
-        PackageDefinition packageDef = appDef.getPackageDefinition();
-        processDefId = SecurityUtil.validateStringInput(processDefId);
-        String processDefIdWithVersion = WorkflowUtil.getProcessDefIdWithoutVersion(processDefId);
-        activityDefId = SecurityUtil.validateStringInput(activityDefId);
-        tab = SecurityUtil.validateStringInput(tab);
-        PackageActivityPlugin activityPlugin = packageDef.getPackageActivityPlugin(processDefIdWithVersion, activityDefId);
-        
-        if (activityPlugin == null || (pluginName != null && !pluginName.isEmpty())) {
-            activityPlugin = new PackageActivityPlugin();
-            activityPlugin.setProcessDefId(processDefIdWithVersion);
-            activityPlugin.setActivityDefId(activityDefId);
-            activityPlugin.setPluginName(pluginName);
-                
-            packageDefinitionDao.addAppActivityPlugin(appId, appDef.getVersion(), activityPlugin);
-        }
-        
-        if (activityPlugin != null) {
-            if (pluginProperties == null) {
-                //request params
-                Map<String, String> propertyMap = new HashMap();
-                Enumeration<String> e = request.getParameterNames();
-                while (e.hasMoreElements()) {
-                    String paramName = e.nextElement();
-
-                    if (!paramName.startsWith("param_")) {
-                        String[] paramValue = (String[]) request.getParameterValues(paramName);
-                        propertyMap.put(paramName, CsvUtil.getDeliminatedString(paramValue));
-                    }
-                }
-
-                // form csv properties
-                StringWriter sw = new StringWriter();
-                try {
-                    CSVWriter writer = new CSVWriter(sw);
-                    Iterator it = propertyMap.entrySet().iterator();
-                    while (it.hasNext()) {
-                        Map.Entry<String, String> pairs = (Map.Entry) it.next();
-                        writer.writeNext(new String[]{pairs.getKey(), pairs.getValue()});
-                    }
-                    writer.close();
-                } catch (Exception ex) {
-                    LogUtil.error(getClass().getName(), ex, "");
-                }
-                String pluginProps = sw.toString();
-                activityPlugin.setPluginProperties(pluginProps);
-            } else {
-                activityPlugin.setPluginProperties(PropertyUtil.propertiesJsonStoreProcessing(activityPlugin.getPluginProperties(), pluginProperties));
-            }
-            packageDef.addPackageActivityPlugin(activityPlugin);
-        }
-
-        // update and save
-        packageDefinitionDao.saveOrUpdate(packageDef);
-
-        map.addAttribute("activityDefId", activityDefId);
-        map.addAttribute("processDefId", URLEncoder.encode(processDefIdWithVersion, "UTF-8"));
-        
-        map.addAttribute("tab", tab);
-
-        return "console/apps/activityPluginConfigSuccess";
-    }
-
-    @RequestMapping("/console/app/(*:appId)/(~:version)/processes/(*:processDefId)/participant/(*:participantId)")
-    public String consoleParticipant(ModelMap map, @RequestParam("appId") String appId, @RequestParam(required = false) String version, @RequestParam String processDefId, @RequestParam String participantId) throws UnsupportedEncodingException {
-        AppDefinition appDef = appService.getAppDefinition(appId, version);
-        map.addAttribute("appId", appDef.getId());
-        map.addAttribute("appVersion", appDef.getVersion());
-        map.addAttribute("appDefinition", appDef);
-
-        String processIdWithoutVersion = WorkflowUtil.getProcessDefIdWithoutVersion(processDefId);
-        map.addAttribute("processDefId", processIdWithoutVersion);
-        map.addAttribute("participantId", participantId);
-
-        //get activity list
-        Collection<WorkflowActivity> activityList = workflowManager.getProcessActivityDefinitionList(processDefId);
-
-        //add 'Run Process' activity to activityList
-        WorkflowActivity runProcessActivity = new WorkflowActivity();
-        runProcessActivity.setId(WorkflowUtil.ACTIVITY_DEF_ID_RUN_PROCESS);
-        runProcessActivity.setName("Run Process");
-        runProcessActivity.setType("normal");
-        activityList.add(runProcessActivity);
-
-        //remove route & tool
-        Iterator iterator = activityList.iterator();
-        while (iterator.hasNext()) {
-            WorkflowActivity activity = (WorkflowActivity) iterator.next();
-            if ((activity.getType().equals(WorkflowActivity.TYPE_ROUTE)) || (activity.getType().equals(WorkflowActivity.TYPE_TOOL))) {
-                iterator.remove();
-            }
-        }
-        map.addAttribute("activityList", activityList);
-
-        //get variable list
-        Collection<WorkflowVariable> variableList = workflowManager.getProcessVariableDefinitionList(processDefId);
-        map.addAttribute("variableList", variableList);
-
-        Collection<Organization> organizations = null;
-        if (DirectoryUtil.isExtDirectoryManager()) {
-            organizations = directoryManager.getOrganizationsByFilter(null, "name", false, null, null);
-        }
-        map.addAttribute("organizations", organizations);
-        map.addAttribute("isExtDirectoryManager", DirectoryUtil.isExtDirectoryManager());
-
-        return "console/apps/participantAdd";
-    }
-
-    @RequestMapping(value = "/console/app/(*:param_appId)/(~:param_version)/processes/(*:param_processDefId)/participant/(*:param_participantId)/submit/(*:param_type)", method = RequestMethod.POST)
-    public String consoleParticipantSubmit(
-            ModelMap map,
-            HttpServletRequest request,
-            @RequestParam("param_appId") String appId,
-            @RequestParam(value = "param_version", required = false) String version,
-            @RequestParam("param_processDefId") String processDefId,
-            @RequestParam("param_participantId") String participantId,
-            @RequestParam("param_type") String type,
-            @RequestParam(value = "param_value", required = false) String value,
-            @RequestParam(value = "pluginProperties", required = false) String pluginProperties) throws UnsupportedEncodingException {
-
-        PackageParticipant participant = new PackageParticipant();
-        participant.setProcessDefId(processDefId);
-        participant.setParticipantId(participantId);
-
-        AppDefinition appDef = appService.getAppDefinition(appId, version);
-        PackageDefinition packageDef = appDef.getPackageDefinition();
-
-        if (PackageParticipant.TYPE_PLUGIN.equals(type)) {
-            if (pluginProperties == null) {
-                //request params
-                Map<String, String> propertyMap = new HashMap();
-                Enumeration<String> e = request.getParameterNames();
-                while (e.hasMoreElements()) {
-                    String paramName = e.nextElement();
-
-                    if (!paramName.startsWith("param_")) {
-                        String[] paramValue = (String[]) request.getParameterValues(paramName);
-                        propertyMap.put(paramName, CsvUtil.getDeliminatedString(paramValue));
-                    }
-                }
-
-                // form csv properties
-                StringWriter sw = new StringWriter();
-                try {
-                    CSVWriter writer = new CSVWriter(sw);
-                    Iterator it = propertyMap.entrySet().iterator();
-                    while (it.hasNext()) {
-                        Map.Entry<String, String> pairs = (Map.Entry) it.next();
-                        writer.writeNext(new String[]{pairs.getKey(), pairs.getValue()});
-                    }
-                    writer.close();
-                } catch (Exception ex) {
-                    LogUtil.error(getClass().getName(), ex, "");
-                }
-                String pluginProps = sw.toString();
-                participant.setPluginProperties(pluginProps);
-            } else {
-                PackageParticipant participantExisting = packageDef.getPackageParticipant(processDefId, participantId);
-                String oldJson = "";
-                if (participantExisting != null && PackageParticipant.TYPE_PLUGIN.equals(participantExisting.getType())) {
-                    oldJson = participantExisting.getPluginProperties();
-                }
-                
-                participant.setPluginProperties(PropertyUtil.propertiesJsonStoreProcessing(oldJson, pluginProperties));
-            }
-        } else if ((PackageParticipant.TYPE_GROUP.equals(type) || PackageParticipant.TYPE_USER.equals(type)) && packageDef != null) {
-            //Using Set to prevent duplicate value
-            Set values = new HashSet();
-            StringTokenizer valueToken = new StringTokenizer(value, ",");
-            while (valueToken.hasMoreTokens()) {
-                values.add((String) valueToken.nextElement());
-            }
-            
-            PackageParticipant participantExisting = packageDef.getPackageParticipant(processDefId, participantId);
-            if (participantExisting != null && participantExisting.getValue() != null) {
-                
-                StringTokenizer existingValueToken = (type.equals(participantExisting.getType())) ? new StringTokenizer(participantExisting.getValue().replaceAll(";", ","), ",") : null;
-                while (existingValueToken != null && existingValueToken.hasMoreTokens()) {
-                    values.add((String) existingValueToken.nextElement());
-                }
-            }
-
-            //Convert Set to String
-            value = "";
-            Iterator i = values.iterator();
-            while (i.hasNext()) {
-                value += i.next().toString() + ',';
-            }
-            if (value.length() > 0) {
-                value = value.substring(0, value.length() - 1);
-            }
-        }
-        participant.setType(type);
-        participant.setValue(value);
-
-        packageDefinitionDao.addAppParticipant(appDef.getId(), appDef.getVersion(), participant);
-
-        map.addAttribute("appId", appDef.getId());
-        map.addAttribute("appVersion", appDef.getVersion());
-        map.addAttribute("appDefinition", appDef);
-        map.addAttribute("participantId", participantId);
-        map.addAttribute("processDefId", URLEncoder.encode(processDefId, "UTF-8"));
-
-        if (PackageParticipant.TYPE_PLUGIN.equals(type)) {
-            return "console/apps/participantPluginConfigSuccess";
-        } else {
-            return "console/apps/participantAddSuccess";
-        }
-    }
-    
-    @RequestMapping("/console/app/(*:appId)/(~:version)/processes/(*:processDefId)/participant/(*:participantId)/pconfigure")
-    public String consoleParticipantPluginConfigure(
-            ModelMap map,
-            HttpServletRequest request,
-            @RequestParam String appId,
-            @RequestParam(required = false) String version,
-            @RequestParam String processDefId,
-            @RequestParam String participantId,
-            @RequestParam(value = "value", required = false) String value) throws UnsupportedEncodingException, IOException {
-
-        Plugin plugin = null;
-
-        AppDefinition appDef = appService.getAppDefinition(appId, version);
-        PackageDefinition packageDef = appDef.getPackageDefinition();
-        String processDefIdWithoutVersion = WorkflowUtil.getProcessDefIdWithoutVersion(processDefId);
-        participantId = SecurityUtil.validateStringInput(participantId);
-
-        if (value != null && value.trim().length() > 0) {
-            plugin = pluginManager.getPlugin(value);
-        } else {
-            if (packageDef != null) {
-                PackageParticipant participant = packageDef.getPackageParticipant(processDefIdWithoutVersion, participantId);
-                plugin = pluginManager.getPlugin(participant.getValue());
-
-                if (participant.getPluginProperties() != null && participant.getPluginProperties().trim().length() > 0) {
-                    if (!(plugin instanceof PropertyEditable)) {
-                        Map propertyMap = new HashMap();
-                        propertyMap = CsvUtil.getPluginPropertyMap(participant.getPluginProperties());
-                        map.addAttribute("propertyMap", propertyMap);
-                    } else {
-                        map.addAttribute("properties", PropertyUtil.propertiesJsonLoadProcessing(participant.getPluginProperties()));
-                    }
-                }
-            }
-        }
-
-        if (plugin != null) {
-            PluginDefaultProperties pluginDefaultProperties = pluginDefaultPropertiesDao.loadById(value, appDef);
-
-            if (pluginDefaultProperties != null) {
-                if (!(plugin instanceof PropertyEditable)) {
-                    Map defaultPropertyMap = new HashMap();
-
-                    String properties = pluginDefaultProperties.getPluginProperties();
-                    if (properties != null && properties.trim().length() > 0) {
-                        defaultPropertyMap = CsvUtil.getPluginPropertyMap(properties);
-                    }
-                    map.addAttribute("defaultPropertyMap", defaultPropertyMap);
-                } else {
-                    map.addAttribute("defaultProperties", PropertyUtil.propertiesJsonLoadProcessing(pluginDefaultProperties.getPluginProperties()));
-                }
-            }
-            if (plugin instanceof PropertyEditable) {
-                PropertyEditable pe = (PropertyEditable) plugin;
-                map.addAttribute("propertyEditable", pe);
-                map.addAttribute("propertiesDefinition", PropertyUtil.injectHelpLink(plugin.getHelpLink(), pe.getPropertyOptions()));
-            }
-
-            String url = request.getContextPath() + "/web/console/app/" + appDef.getId() + "/" + appDef.getVersion() + "/processes/" + StringEscapeUtils.escapeHtml(processDefIdWithoutVersion) + "/participant/" + StringEscapeUtils.escapeHtml(participantId) + "/submit/plugin?param_value=" + ClassUtils.getUserClass(plugin).getName();
-
-            map.addAttribute("appDef", appDef);
-            map.addAttribute("plugin", plugin);
-            map.addAttribute("actionUrl", url);
-            
-            try {
-                processDefId =  URLEncoder.encode(processDefId, "UTF-8");
-            } catch (UnsupportedEncodingException e) {}
-            
-            String cancelUrl = request.getContextPath() + "/web/console/app/" + appDef.getId() + "/" + appDef.getVersion() + "/processes/" + StringEscapeUtils.escapeHtml(processDefId) + "/participant/" + StringEscapeUtils.escapeHtml(participantId) + "?tab=plugin&title="+URLEncoder.encode(request.getParameter("title"), "UTF-8");
-            map.addAttribute("cancelUrl", cancelUrl);
-            map.addAttribute("cancelLabel", "console.process.config.label.mapTools.changePlugin");
-        }
-
-        return "console/plugin/pluginConfig";
-    }
-
-    @RequestMapping(value = "/console/app/(*:appId)/(~:version)/processes/(*:processDefId)/participant/(*:participantId)/remove", method = RequestMethod.POST)
-    @Transactional
-    public String consoleParticipantRemove(ModelMap map,
-            @RequestParam String appId,
-            @RequestParam(required = false) String version,
-            @RequestParam String processDefId,
-            @RequestParam String participantId,
-            @RequestParam(value = "type", required = false) String type,
-            @RequestParam(value = "value", required = false) String value) throws UnsupportedEncodingException {
-
-        AppDefinition appDef = appService.getAppDefinition(appId, version);
-        PackageDefinition packageDef = appDef.getPackageDefinition();
-        processDefId = WorkflowUtil.getProcessDefIdWithoutVersion(processDefId);
-
-        if ((PackageParticipant.TYPE_USER.equals(type) || PackageParticipant.TYPE_GROUP.equals(type)) && value != null) {
-            PackageParticipant participantExisting = packageDef.getPackageParticipant(processDefId, participantId);
-            if (participantExisting != null && participantExisting.getValue() != null) {
-                //Using Set to prevent duplicate value
-                Set values = new HashSet();
-                StringTokenizer existingValueToken = new StringTokenizer(participantExisting.getValue().replaceAll(";", ","), ",");
-                while (existingValueToken.hasMoreTokens()) {
-                    String temp = (String) existingValueToken.nextElement();
-                    if (!temp.equals(value)) {
-                        values.add(temp);
-                    }
-                }
-
-                //Convert Set to String
-                String result = "";
-                Iterator i = values.iterator();
-                while (i.hasNext()) {
-                    result += i.next().toString() + ',';
-                }
-                if (value.length() > 0) {
-                    result = result.substring(0, result.length() - 1);
-                }
-                participantExisting.setValue(result);
-                packageDefinitionDao.addAppParticipant(appId, appDef.getVersion(), participantExisting);
-            }
-        } else {
-            packageDefinitionDao.removeAppParticipant(appId, appDef.getVersion(), processDefId, participantId);
-        }
-
-        return "console/apps/participantAdd";
     }
 
     @RequestMapping("/console/app/(*:appId)/(~:version)/datalists")
@@ -3178,37 +2529,23 @@ public class ConsoleWebController {
         return "console/apps/resources";
     }
     
+    @Transactional
     @RequestMapping(value = "/json/console/app/(*:appId)/(~:version)/message/submit", method = RequestMethod.POST)
     public void consoleAppMessageJsonSubmit(HttpServletResponse response, @RequestParam String appId, @RequestParam(required = false) String version, @RequestParam String data, @RequestParam String locale) throws IOException {
         try {
             AppDefinition appDef = appService.getAppDefinition(appId, version);
 
             JSONArray array = new JSONArray(data);
+            Map<String,String> changes = new LinkedHashMap<String,String>(array.length());
             for (int i = 0; i < array.length(); i++) {
                 JSONObject obj = (JSONObject) array.get(i);
-                String key = obj.get("key").toString();
-                String id = key + "_" + locale;
-                String value = obj.get("value").toString();
-
-                // check exist
-                Message m = messageDao.loadById(id, appDef);
-                if (m != null) {
-                    if (value == null || (value != null && value.isEmpty())) {
-                        messageDao.delete(id, appDef);
-                    } else {
-                        m.setMessage(value);
-                        messageDao.update(m);
-                    }
-                } else if (value != null && !value.isEmpty()) {
-                    m = new Message();
-                    m.setAppDefinition(appDef);
-                    m.setId(id);
-                    m.setLocale(locale);
-                    m.setMessageKey(key);
-                    m.setMessage(value);
-                    messageDao.add(m);
+                String key = obj.optString("key", "");
+                String value = obj.isNull("value") ? "" : obj.optString("value", "");
+                if (key != null && !key.isEmpty()) {
+                    changes.put(key, value);
                 }
             }
+            messageDao.batchedBulkChange(appDef, locale, changes);
         } catch (Exception e) {
             response.sendError(HttpServletResponse.SC_BAD_REQUEST, e.getLocalizedMessage());
         }
@@ -3648,19 +2985,16 @@ public class ConsoleWebController {
         PluginDefaultProperties pluginDefaultProperties = pluginDefaultPropertiesDao.loadById(id, appDef);
         
         if (pluginDefaultProperties != null && pluginDefaultProperties.getPluginProperties() != null && pluginDefaultProperties.getPluginProperties().trim().length() > 0) {
-            if (!(plugin instanceof PropertyEditable)) {
-                Map propertyMap = new HashMap();
-                propertyMap = CsvUtil.getPluginPropertyMap(pluginDefaultProperties.getPluginProperties());
-                map.addAttribute("propertyMap", propertyMap);
-            } else {
-                map.addAttribute("properties", PropertyUtil.propertiesJsonLoadProcessing(pluginDefaultProperties.getPluginProperties()));
-            }
+            String propertiseValue = PropertyUtil.parsePluginProperties(pluginDefaultProperties.getPluginProperties()).toString();
+            map.addAttribute("properties", PropertyUtil.propertiesJsonLoadProcessing(propertiseValue));
         }
 
         if (plugin instanceof PropertyEditable) {
             PropertyEditable pe = (PropertyEditable) plugin;
             map.addAttribute("propertyEditable", pe);
             map.addAttribute("propertiesDefinition", PropertyUtil.injectHelpLink(plugin.getHelpLink(), pe.getPropertyOptions()));
+        } else {
+            map.addAttribute("propertiesDefinition", PropertyUtil.getConvertedPropertyOptions(plugin));
         }
 
         String url = request.getContextPath() + "/web/console/app/" + appDef.getId() + "/" + appDef.getVersion() + "/pluginDefault/submit/";
@@ -3883,8 +3217,6 @@ public class ConsoleWebController {
         }
         map.addAttribute("properties", PropertyUtil.propertiesJsonLoadProcessing(properties));
         
-        AppUtil.findMissingPlugins(appDef);
-        
         ConsoleWebPlugin consoleWebPlugin = (ConsoleWebPlugin)pluginManager.getPlugin(ConsoleWebPlugin.class.getName());
 
         // get app info
@@ -3911,7 +3243,39 @@ public class ConsoleWebController {
         
         AppUtil.writeJson(writer, jsonObject, callback);
     }
-    
+
+    //Add a method to check for generated environment variables
+    private List<String> findGeneratedEnvVars(AppDefinition appDef) {
+        List<String> generatedIds = new ArrayList<>();
+        if (appDef != null && appDef.getEnvironmentVariableList() != null) {
+            for (EnvironmentVariable envVar : appDef.getEnvironmentVariableList()) {
+                if (envVar.getId() != null && envVar.getId().startsWith("__gen_missing_id_")) {
+                    generatedIds.add(envVar.getId());
+                }
+            }
+        }
+        return generatedIds;
+    }
+
+    //Add a new REST endpoint for checking generated environment variables
+    @RequestMapping("/json/console/app/(*:appId)/(~:version)/builders/missingEnvVars")
+    public void consoleBuilderMissingEnvVars(Writer writer, @RequestParam String appId, @RequestParam(required = false) String version, @RequestParam(value = "callback", required = false) String callback) throws IOException, JSONException {
+        AppDefinition appDef = appService.getAppDefinition(appId, version);
+
+        JSONObject jsonObject = new JSONObject();
+        if (appDef != null) {
+            List<String> generatedEnvVars = findGeneratedEnvVars(appDef);
+            jsonObject.accumulate("result", generatedEnvVars);
+            if (!generatedEnvVars.isEmpty()) {
+                jsonObject.accumulate("error",  ResourceBundleUtil.getMessage("dependency.tree.warning.MissingAppVariable"));
+            }
+        } else {
+            jsonObject.accumulate("error", "App not found!");
+        }
+
+        AppUtil.writeJson(writer, jsonObject, callback);
+    }
+
     @RequestMapping("/json/console/app/(*:appId)/(~:version)/builders/overview")
     public void consoleBuilderOverview(Writer writer, @RequestParam String appId, @RequestParam(required = false) String version, @RequestParam(value = "callback", required = false) String callback) throws IOException, JSONException {
         AppDefinition appDef = appService.getAppDefinition(appId, version);
@@ -4704,13 +4068,20 @@ public class ConsoleWebController {
         map.addAttribute("userSecurity", us);
         
         // userviews to select app center
+        boolean appExists = false;
+        String defaultUserview = settingMap.getOrDefault("defaultUserview", "");
         Collection<UserviewDefinition> userviewDefinitionList = new ArrayList<UserviewDefinition>();
-        Collection<AppDefinition> appDefinitionList = appDefinitionDao.findLatestVersions(null, null, null, "name", Boolean.FALSE, null, null);
+        Collection<AppDefinition> appDefinitionList = appDefinitionDao.findPublishedApps("name", Boolean.FALSE, null, null);
         for (Iterator<AppDefinition> i = appDefinitionList.iterator(); i.hasNext();) {
             AppDefinition appDef = i.next();
             userviewDefinitionList.addAll(appDef.getUserviewDefinitionList());
-            map.addAttribute("userviewDefinitionList", userviewDefinitionList);
-        }        
+            if (!appExists && defaultUserview.startsWith(appDef.getId())) {
+                appExists = true;
+            }
+        }
+        map.addAttribute("userviewDefinitionList", userviewDefinitionList);
+        // ensuring that the select box is empty if no app is published
+        map.addAttribute("appExists", appExists);
         return "console/setting/general";
     }
 
@@ -4755,7 +4126,7 @@ public class ConsoleWebController {
             String paramName = (String) e.nextElement();
             String paramValue = request.getParameter(paramName);
             
-            if ("OWASP_CSRFTOKEN".equals(paramName)) {
+            if ("OWASP-CSRFTOKEN".equals(paramName)) {
                 continue;
             }
 
@@ -4814,9 +4185,6 @@ public class ConsoleWebController {
                 setupManager.saveSetting(setting);
             }
         }
-
-        //clear all caches & update the settings
-        setupManager.clearCache();
         
         //only reset the locale when setting changed
         if (localeChanged) {
@@ -4971,19 +4339,23 @@ public class ConsoleWebController {
             } else {
                 properties = setupManager.getSettingValue(DirectoryUtil.IMPL_PROPERTIES);
             }
-
-            if (!(plugin instanceof PropertyEditable)) {
-                Map propertyMap = new HashMap();
-                propertyMap = CsvUtil.getPluginPropertyMap(properties);
-                map.addAttribute("propertyMap", propertyMap);
-            } else {
-                map.addAttribute("properties", PropertyUtil.propertiesJsonLoadProcessing(properties));
+            String activeDirectoryManagerImpl = setupManager.getSettingValue("directoryManagerImpl");
+            if (activeDirectoryManagerImpl == null || !directoryManagerImpl.equals(activeDirectoryManagerImpl)) {
+                properties = "";
             }
+
+            String propertiseValue = properties;
+            if (propertiseValue != null && !propertiseValue.isEmpty()) {
+                propertiseValue = PropertyUtil.parsePluginProperties(propertiseValue).toString();
+            }
+            map.addAttribute("properties", PropertyUtil.propertiesJsonLoadProcessing(propertiseValue));
 
             if (plugin instanceof PropertyEditable) {
                 PropertyEditable pe = (PropertyEditable) plugin;
                 map.addAttribute("propertyEditable", pe);
                 map.addAttribute("propertiesDefinition", PropertyUtil.injectHelpLink(plugin.getHelpLink(), pe.getPropertyOptions()));
+            } else {
+                map.addAttribute("propertiesDefinition", PropertyUtil.getConvertedPropertyOptions(plugin));
             }
 
             map.addAttribute("plugin", plugin);
@@ -5071,7 +4443,6 @@ public class ConsoleWebController {
 
     @RequestMapping(value = "/console/setting/plugin/refresh", method = RequestMethod.POST)
     public void consoleSettingPluginRefresh(Writer writer) {
-        setupManager.clearCache();
         pluginManager.refresh();
     }
 

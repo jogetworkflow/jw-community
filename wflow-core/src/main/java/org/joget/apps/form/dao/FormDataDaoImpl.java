@@ -1344,6 +1344,8 @@ public class FormDataDaoImpl extends HibernateDaoSupport implements FormDataDao 
         columnList = formColumnCache.get(tableName);
         indexesList = formColumnCache.getIndexes(tableName);
         if (columnList == null) {
+            Date requestTime = new Date();
+            
             LogUtil.debug(FormDataDaoImpl.class.getName(), "======== Build Form Column Cache for table \""+ tableName +"\" START ========");
             columnList = new HashSet<String>();
             indexesList = new HashSet<String>();
@@ -1433,8 +1435,8 @@ public class FormDataDaoImpl extends HibernateDaoSupport implements FormDataDao 
                 columnList.remove(FormUtil.PROPERTY_MODIFIED_BY_NAME);
 
                 LogUtil.debug(FormDataDaoImpl.class.getName(), "All Columns - " + columnList.toString());
-                formColumnCache.put(tableName, columnList);
-                formColumnCache.putIndexes(tableName, indexesList);
+                formColumnCache.put(tableName, columnList, requestTime);
+                formColumnCache.putIndexes(tableName, indexesList, requestTime);
             }
             LogUtil.debug(FormDataDaoImpl.class.getName(), "======== Build Form Column Cache for table \""+ tableName +"\" END   ========");
         }
@@ -1795,7 +1797,7 @@ public class FormDataDaoImpl extends HibernateDaoSupport implements FormDataDao 
                 return result;
             }
                 
-            Pattern pattern = Pattern.compile("(\\w+\\.customProperties\\.)([0-9]\\w+)");
+            Pattern pattern = Pattern.compile("(\\w+\\.customProperties\\.)([0-9]\\w*)");
             Matcher matcher = pattern.matcher(query);
             while (matcher.find()) {
                 query = query.replaceAll(StringUtil.escapeRegex(matcher.group()), StringUtil.escapeRegex(matcher.group(1)) + "t__" + StringUtil.escapeRegex(matcher.group(2)));

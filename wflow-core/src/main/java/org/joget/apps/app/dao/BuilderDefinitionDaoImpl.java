@@ -160,25 +160,43 @@ public class BuilderDefinitionDaoImpl extends AbstractAppVersionedObjectDao<Buil
         cache.remove(getCacheKey(object.getId(), object.getAppId(), object.getAppVersion()), object.getAppDefinition());
         return result;
     }
-
+    
     @Override
     public boolean delete(String id, AppDefinition appDef) {
+        BuilderDefinition obj = loadById(id, appDef);
+        return delete(obj);
+    }
+
+    /**
+     * Delete the object directly without another load. This is needed to delete an object from a collection using find. Else, it will 
+     * causing session EntityExistsException when delete by id.
+     * 
+     * @param obj
+     * @return 
+     */
+    @Override
+    public boolean delete(BuilderDefinition obj) {
         boolean result = false;
         try {
-            BuilderDefinition obj = loadById(id, appDef);
-
-            // detach from app
             if (obj != null) {
-                Collection<BuilderDefinition> list = appDef.getBuilderDefinitionList();
-                for (BuilderDefinition object : list) {
-                    if (obj.getId().equals(object.getId())) {
-                        list.remove(obj);
+                String id = obj.getId();
+                AppDefinition appDef = obj.getAppDefinition();
+
+                // delete obj
+                Collection<BuilderDefinition> builderDefs = appDef.getBuilderDefinitionList();
+                for (BuilderDefinition b : builderDefs) {
+                    // same object in memory, don't to do anything
+                    if (obj == b) {
+                        break;
+                    }
+                    // get updated definition object because appDefinitionDao.updateDateModified() calls session.refresh()
+                    // which will instantiate new objects for all definitions in appDef.
+                    if (id.equals(b.getId())) {
+                        obj = b;
                         break;
                     }
                 }
-                obj.setAppDefinition(null);
-
-                // delete obj
+                builderDefs.remove(obj);
                 super.delete(getEntityName(), obj);
                 appDefinitionDao.updateDateModified(appDef);
                 result = true;

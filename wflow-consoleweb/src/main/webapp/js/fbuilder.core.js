@@ -104,9 +104,10 @@ FormBuilder = {
             for (var i in propertyOptions) {
                 if (propertyOptions[i].properties !== null && propertyOptions[i].properties !== undefined) {
                     for (var j in propertyOptions[i].properties) {
-                        if (propertyOptions[i].properties[j].name === "id" && propertyOptions[i].properties[j].js_validation === undefined) {
+                        if (propertyOptions[i].properties[j].name === "id" && propertyOptions[i].properties[j].js_validation === undefined && propertyOptions[i].properties[j].type !== "readonly") {
                             propertyOptions[i].properties[j].js_validation = 'FormBuilder.validateFieldId';
                             propertyOptions[i].properties[j].id_suggestion = "label";
+                            propertyOptions[i].properties[j].checkIdLength = "true";
                             found++;
                             idPos = j;
                         }
@@ -1432,9 +1433,17 @@ FormBuilder = {
     /*
      * Utility method to validate the field id to prevent having the same with reserve keywords
      */
-    validateFieldId: function(name, value) {
-        if ($.inArray(value, ["appId","appVersion","version","userviewId","menuId","key","embed"]) >= 0) {
+    validateFieldId: function(name, value, $target, obj) {
+//        change value to lower case
+        let inputValue = value.toLowerCase();
+        if ($.inArray(inputValue, ["appid","appversion","version","userviewid","menuid","key","embed","primarykey"]) >= 0) {
             return get_cbuilder_msg("fbuilder.reserveIds");
+        }
+        const checkIdLength = obj && obj.properties.checkIdLength !== undefined && obj.properties.checkIdLength.toLowerCase() === 'true'
+            && obj.editorObject.element.id === 'element-properties-tab'; // only true if in properties panel
+        if (checkIdLength && $target && value.length > PropertyEditor.Util.databaseColumnNameLimit) {
+            const text = get_cbuilder_msg('cbuilder.warn.idLength');
+            PropertyEditor.Util.addFieldWarning($target, text);
         }
         return null;    
     },

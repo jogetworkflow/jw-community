@@ -225,6 +225,14 @@ PropertyEditor.Popup = {
 
 /* Utility Functions */
 PropertyEditor.Util = {
+    /**
+     * Column name limit is based on the lowest of Postgres, MySQL, MariaDB, Oracle >12.2, SQL Server
+     *
+     * Currently based on Postgres default of 63: https://www.postgresql.org/docs/current/sql-syntax-lexical.html#SQL-SYNTAX-IDENTIFIERS.
+     *
+     * So, set 60 as the lower bound to take into account of c_ prefix.
+     */
+    databaseColumnNameLimit: 60,
     resources: {},
     cachedAjaxCalls: {},
     timeCachedAjaxCalls: {},
@@ -795,9 +803,19 @@ PropertyEditor.Util = {
         } else if (window['Aromanize'] !== undefined) { //for Korean
             text = window['Aromanize'].romanize(text);
         }
+        //get idSuggestionFormat that was previously set
+        let idSuggestionFormat =  field.options.idSuggestionFormat;
+
         if (getSlug !== undefined) {
+            //snake case
             var lang = UI.locale.substring(0,2); 
             text = getSlug(text, { separator: "_",  truncate: 30, lang:lang});
+            //camel case for Process builder
+            if (idSuggestionFormat === "camelCase") {
+                text = text
+                        .toLowerCase()
+                        .replace(/[^a-zA-Z0-9]+(.)/g, (_, chr) => chr.toUpperCase());
+            }
         }
         
         var data = field.getData(true);
@@ -1549,6 +1567,30 @@ PropertyEditor.Util = {
         } else {
             callback();
         }
+    },
+    addFieldWarning: function($target, text) {
+        const $warnings = $target.find('.property-editor-warning');
+        let hasWarning = false;
+        $warnings.each(function() {
+            if (this.innerHTML === text) {
+                hasWarning = true;
+                return false; // break
+            }
+        });
+        if (!hasWarning) {
+            return $target.append(PropertyEditor.Util.getFieldWarningHtml(text));
+        }
+        return $target;
+    },
+    removeFieldWarning: function($target, text) {
+        const $warnings = $target.find('.property-editor-warning');
+        $warnings.filter(function() {
+            return $(this).text() === text;
+        }).remove();
+        return $target;
+    },
+    getFieldWarningHtml: function(text) {
+        return `<div class="property-editor-warning">${text}</div>`
     }
 };
 
@@ -1770,10 +1812,13 @@ PropertyEditor.Model.Editor.prototype = {
                 var pageLine = $(pageContainer).offset().top + ($(pageContainer).height() * 0.3);
                 var currentOffset = $(pageContainer).find('.current').offset().top;
                 var nextOffset = currentOffset + $(pageContainer).find('.current').height();
-                if (nextOffset < pageLine) {
-                    $thisObject.nextPage(false, false);
-                } else if (currentOffset > pageLine) {
-                    $thisObject.prevPage(false, false);
+                // If there is no active chosen-container
+                if ($(pageContainer).find('.chosen-container-active').length === 0) {
+                    if (nextOffset < pageLine) {
+                        $thisObject.nextPage(false, false);
+                    } else if (currentOffset > pageLine) {
+                        $thisObject.prevPage(false, false);
+                    }
                 }
             }
         });
@@ -2794,7 +2839,7 @@ PropertyEditor.Model.Type.prototype = {
         if (this.properties.js_validation !== undefined && this.properties.js_validation !== '') {
             var func = PropertyEditor.Util.getFunction(this.properties.js_validation);
             if ($.isFunction(func)) {
-                var errorMsg = func(this.properties.name, value);
+                var errorMsg = func(this.properties.name, value, wrapper, this);
 
                 if (errorMsg !== null && errorMsg !== "") {
                     var obj2 = new Object();
@@ -2941,8 +2986,53 @@ PropertyEditor.Model.Type.prototype = {
         }
         
         html += this.renderDefault();
+        html += this.renderFieldWarnings();
         html += '</div>';
         return html;
+    },
+    renderFieldWarnings: function() {
+        // some databases may have different column name lengths
+        let value = "";
+        const checkIdLength = this.properties.checkIdLength !== undefined && this.properties.checkIdLength.toLowerCase() === 'true'
+            && this.editorObject.element.id === 'element-properties-tab'; // only true if in properties panel
+        if (checkIdLength) {
+            // bind oninput event
+            const script =
+                `$('#${this.id}').on('input', function() {
+                    const text = get_cbuilder_msg('cbuilder.warn.idLength');
+                    if (this.value.length > PropertyEditor.Util.databaseColumnNameLimit) {
+                        PropertyEditor.Util.addFieldWarning($('#${this.id}_input'), text);
+                    } else {
+                        PropertyEditor.Util.removeFieldWarning($('#${this.id}_input'), text);
+                    }
+                });`
+            // add label now
+            if (this.properties.name === 'id' && this.value.length > PropertyEditor.Util.databaseColumnNameLimit) {
+                const text = get_cbuilder_msg('cbuilder.warn.idLength');
+                value += PropertyEditor.Util.getFieldWarningHtml(text);
+            }
+            value += `<script>${script}</script>`;
+        }
+
+         if (this.properties.name === 'id' && this.properties.js_validation !== undefined && typeof CustomBuilder !== "undefined" && CustomBuilder?.builderType === 'form') {
+            const numericScript =
+                `$('#${this.id}').on('input', function() {
+                    const numericText = get_cbuilder_msg('fbuilder.warn.numericIdStart');
+                    if (/^\\d/.test(this.value)) {
+                        PropertyEditor.Util.addFieldWarning($('#${this.id}_input'), numericText);
+                    } else {
+                        PropertyEditor.Util.removeFieldWarning($('#${this.id}_input'), numericText);
+                    }
+                });`
+            // show warning immediately if current value starts with a digit
+            if (/^\d/.test(this.value)) {
+                const numericText = get_cbuilder_msg('fbuilder.warn.numericIdStart');
+                value += PropertyEditor.Util.getFieldWarningHtml(numericText);
+            }
+            value += `<script>${numericScript}</script>`;
+        }
+
+        return value;
     },
     renderField: function() {
         return "";
@@ -6170,7 +6260,7 @@ PropertyEditor.Type.IconTextField.prototype = {
             if (this.properties.iconOnly !== undefined && this.properties.iconOnly === "true") {
                 value = iconValue;
             } else {
-                if (iconValue !== "") {
+                if (iconValue !== "" && value !== "") {
                     value = iconValue + " " + value;
                 }
             }
@@ -6372,7 +6462,7 @@ PropertyEditor.Type.Number.prototype = {
         var cssClass = "";
         if (this.properties.mode === "css_unit") {
             cssClass = "withUnitSlector";
-            var unit = ['em', 'px', '%', 'rem', 'auto'];
+            var unit = ['rem', 'em', 'px', '%', 'auto'];
             
             var unitValue = 'px';
             for (var i in unit) {
@@ -6865,7 +6955,7 @@ PropertyEditor.Type.SelectBox.prototype = {
             }
             $.each(this.properties.options, function(i, option) {
                 var selected = "";
-                if (value === option.value) {
+                if (value === option.value || (!selected && option.selected)) {
                     selected = " selected";
                 }
                 html += '<option value="' + PropertyEditor.Util.escapeHtmlTag(option.value) + '"' + selected + '>' + PropertyEditor.Util.escapeHtmlTag(option.label) + '</option>';
@@ -7693,7 +7783,11 @@ PropertyEditor.Type.Grid.prototype = {
                 });
 
                 var html = "";
-                $.each(options, function(i, option) {
+                var selectedValue = "";
+                $.each(options, function (i, option) {
+                    if (option.selected) {
+                        selectedValue = option.value;
+                    }
                     html += '<option value="' + PropertyEditor.Util.escapeHtmlTag(option.value) + '">' + PropertyEditor.Util.escapeHtmlTag(option.label) + '</option>';
                 });
                 var change = false;
@@ -7728,7 +7822,11 @@ PropertyEditor.Type.Grid.prototype = {
                     }
 
                     if ($(this).hasClass("initFullWidthChosen")) {
-                        $(this).val(val);
+                        if (selectedValue) {
+                            $(this).val(selectedValue);
+                        } else {
+                            $(this).val(val);
+                        }
                         $(this).trigger("chosen:updated");
                     }
                     if ($(this).val() !== val) {
@@ -9386,7 +9484,7 @@ PropertyEditor.Type.ElementSelect.prototype = {
             data: "value=" + encodeURIComponent(value),
             dataType: "text",
             headers: {
-                call_reference : thisObj.properties.options_ajax
+                "call-reference" : thisObj.properties.options_ajax
             },
             success: function(response) {
                 if (response !== null && response !== undefined && response !== "") {
@@ -9489,10 +9587,15 @@ PropertyEditor.Type.ElementMultiSelect.prototype = {
             $("#" + thisObj.id + "_input .error").removeClass("error");
             $("#" + thisObj.id + "_input .property-input-error").remove();
 
-            $("#" + thisObj.id + "_input  > div > .repeater-rows-container > .repeater-row").each(function(i){
-                var deffers = thisObj.validateRow($(this), value[i], errors, checkEncryption);
-                if (deffers !== null && deffers !== undefined && deffers.length > 0) {
-                    deferreds = $.merge(deferreds, deffers);
+            let i = 0; //for retrieve the data of the position which ignored empty selection
+            $("#" + thisObj.id + "_input  > div > .repeater-rows-container > .repeater-row").each(function(){
+                var field = $(this).find("> .inputs > .inputs-container > select");
+                if (field.val() !== "") { //check for non empty value selection
+                    var deffers = thisObj.validateRow($(this), value[i], errors, checkEncryption);
+                    if (deffers !== null && deffers !== undefined && deffers.length > 0) {
+                        deferreds = $.merge(deferreds, deffers);
+                    }
+                    i++;
                 }
             });
         }
@@ -9531,7 +9634,8 @@ PropertyEditor.Type.ElementMultiSelect.prototype = {
             var arr = [];
             $("#" + this.id + "_input  > div > .repeater-rows-container > .repeater-row").each(function(){
                 var temp = thisObj.getRow($(this), useDefault);
-                if (temp !== null) {
+                if (temp !== null 
+                        && temp.className !== "") { //make sure it is not empty selection before add it to data
                     arr.push(thisObj.getRow($(this), useDefault));
                 }
             });
@@ -9543,7 +9647,7 @@ PropertyEditor.Type.ElementMultiSelect.prototype = {
     },
     getRow: function(row, useDefault) {
         var thisObj = this;
-        var field = $(row).find("select");
+        var field = $(row).find("> .inputs > .inputs-container > select"); //more specify selection in case there is another select box under the element proeprties
         var id = $(field).attr("id");
         var anchor = $(this.editor).find(".anchor[anchorField=\"" + id + "\"]");
         
@@ -9982,7 +10086,7 @@ PropertyEditor.Type.ElementMultiSelect.prototype = {
             data: "value=" + encodeURIComponent(value),
             dataType: "text",
             headers: {
-                call_reference : thisObj.properties.options_ajax
+                "call-reference" : thisObj.properties.options_ajax
             },
             success: function(response) {
                 if (response !== null && !((typeof response) === "undefined") && response !== "") {
@@ -11026,10 +11130,21 @@ PropertyAssistant = {
                 PropertyAssistant.currentCaretPosition = PropertyAssistant.doGetCaretPosition(field[0]);
                 PropertyAssistant.showDialog();
             });
+
+            // Each focus increments a generation counter. The focusout cleanup checks this
+            // before running — if focus moved to another assisted field, the counter will have
+            // advanced and the stale timeout will abort instead of removing the new icon.
+            var cleanupGen = ($(element).data("assistGen") || 0) + 1;
+            $(element).data("assistGen", cleanupGen);
             
             $(field).off("focusout.assit");
             $(field).on("focusout.assit", function() {
+                var myGen = cleanupGen;
                 setTimeout(function(){
+                    // Abort if a newer focus event has already taken over
+                    if ($(element).data("assistGen") !== myGen) {
+                        return;
+                    }
                     $(field).off("focusout.assit");
                     $(container).find(".assist_icon").remove();
                     
@@ -11345,8 +11460,16 @@ PropertyAssistant = {
         var value = $(temp).text();
         if (value.trim() !== "") {
             if ($(PropertyAssistant.currentField).hasClass("ace_text-input") || $(PropertyAssistant.currentField).hasClass("ace_editor")) {
-                var id = $(PropertyAssistant.currentField).closest(".ace_editor").attr("id");
-                var codeeditor = ace.edit(id);
+                var $editor = $(PropertyAssistant.currentField).closest(".ace_editor");
+                var id = $editor.attr("id");
+                var codeeditor;
+                if (id != null) {
+                   //id exist, use id
+                    codeeditor = ace.edit(id);
+                } else {
+                    // id not exist, use DOM element
+                    codeeditor = ace.edit($editor[0]);
+                }
                 var old = codeeditor.getValue();
                 if (old !== "") {
                     value = " " + value;
@@ -11930,8 +12053,16 @@ PropertyAssistant = {
      */
     doGetCaretPosition : function(oField) {
         if ($(PropertyAssistant.currentField).hasClass("ace_text-input") || $(PropertyAssistant.currentField).hasClass("ace_editor")) {
-            var id = $(PropertyAssistant.currentField).closest(".ace_editor").attr("id");
-            var codeeditor = ace.edit(id);
+            var $editor = $(PropertyAssistant.currentField).closest(".ace_editor");
+            var id = $editor.attr("id");
+            var codeeditor;
+            if (id != null) {
+                   //id exist, use id
+                codeeditor = ace.edit(id);
+            } else {
+                 // id not exist, use DOM element
+                codeeditor = ace.edit($editor[0]);
+            }
             return codeeditor.getCursorPosition();
         } else {
             // Initialize

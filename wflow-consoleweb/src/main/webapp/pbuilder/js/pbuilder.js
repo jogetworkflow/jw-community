@@ -14,6 +14,16 @@ ProcessBuilder = {
                 alert(get_cbuilder_msg("cbuilder.pleaseSaveChangeToContinue"));
             } else {
                 var url = CustomBuilder.contextPath + '/web/client/app' + CustomBuilder.appPath + '/process/' + ProcessBuilder.currentProcessData.properties.id;
+                if ($('body').attr('builder-theme') === undefined){
+                    url += "?__a_="+CustomBuilder.appId+"&__u_=_builder_classic_mode";
+                }
+                if ($('body').attr('builder-theme') === "light") {
+                    url += "?__a_="+CustomBuilder.appId+"&__u_=_builder_light_mode";
+                }
+                //dark mode
+                if ($('body').attr('builder-theme') === "dark") {
+                    url += "?__a_="+CustomBuilder.appId+"&__u_=_builder_dark_mode";
+                }
                 JPopup.show("runProcessDialog", url, {}, "");
             }
             return false;
@@ -82,6 +92,12 @@ ProcessBuilder = {
             $(window).off('hashchange');
             $(window).on('hashchange', function(){
                 var id = window.location.hash.replace("#", "");
+
+                if (localStorage.getItem("addNewProcess") === "true") {
+                    localStorage.removeItem("addNewProcess");
+                    ProcessBuilder.addProcess();
+                    return;    
+                }
                 
                 //when no current process data or current process data is not match with the id in URL hash
                 if (ProcessBuilder.currentProcessData === null || ProcessBuilder.currentProcessData === undefined || (ProcessBuilder.currentProcessData.properties === undefined || (ProcessBuilder.currentProcessData.properties !== undefined && id !== ProcessBuilder.currentProcessData.properties.id))) {
@@ -160,6 +176,10 @@ ProcessBuilder = {
     load: function (data) {
         ProcessBuilder.updateProcessSelector();
         ProcessBuilder.viewProcess();
+        if (localStorage.getItem("addNewProcess") === "true") {
+            localStorage.removeItem("addNewProcess");
+            ProcessBuilder.addProcess();
+        }
     },
     
     /*
@@ -1200,7 +1220,7 @@ ProcessBuilder = {
                 mapping.properties = $.extend(true, mapping.properties, activity.properties['tools'][0]['properties']);
             } else if ((activity.properties['tools'] === undefined || activity.properties['tools'].length === 0) && mapping !== undefined) {
                 delete CustomBuilder.data['activityPlugins'][id];
-            } else {
+            } else if(activity.properties['tools'] !== undefined && activity.properties['tools'].length > 0) {
                 //use multi tools
                 if (mapping === undefined) {
                     mapping = {};
@@ -2041,10 +2061,12 @@ ProcessBuilder = {
                             }]
                         },{
                             key: 'deadlineLimit',
-                            label: get_cbuilder_msg("pbuilder.label.deadlineLimit")
+                            label: get_cbuilder_msg("pbuilder.label.deadlineLimit"),
+                            required: 'true'
                         },{
                             key: 'exceptionName',
-                            label: get_cbuilder_msg("pbuilder.label.exceptionName")
+                            label: get_cbuilder_msg("pbuilder.label.exceptionName"),
+                            required: 'true'
                         }]
                     }]
                 },{
@@ -4790,27 +4812,31 @@ ProcessBuilder = {
         
     /*
      * Convert object to xml
-     */                
+     */
     obj2Xml : function(obj, name, level) {
         var xml = '';
         var selfClosing = false;
-        
+
         var attrs = '';
         var body = '';
-        
+
         var space = '';
         if (level > 0) {
             for (var i = 0; i < (level * 4); i++) {
                 space += ' ';
             }
         }
-        
+
+        let textContent = false;
         if (typeof obj === "object" && !(obj instanceof String)) {
             for (var prop in obj) {
                 if (prop === "-self-closing") {
                     selfClosing = obj['-self-closing'];
                 } else if (prop.indexOf("-") === 0) {
                     attrs += " " + prop.substring(1) + "=\"" + ProcessBuilder.escapeXml(obj[prop]) + "\"";
+                } else if (prop.indexOf("#text") === 0) {
+                    body += ProcessBuilder.escapeXml(obj[prop]);
+                    textContent = true;
                 } else if (prop.indexOf("#") === 0) {
                     //ignore
                 } else if (obj[prop] instanceof Array) {
@@ -4826,21 +4852,21 @@ ProcessBuilder = {
         } else {
             body = obj;
         }
-        
+
         if (name !== "") {
             if (selfClosing) {
                 xml = space + "<" + name + attrs + "/>\n";
             } else if (typeof obj !== "object" || obj instanceof String) {
                 xml = space + "<" + name + ">" + body + "</" + name + ">\n";
             } else {
-                xml = space + "<" + name + attrs + ">\n" + body + space + "</" + name + ">\n";
+                xml = space + "<" + name + attrs + ">" + (textContent ? "" : "\n") + body + (textContent ? "" : space) +"</" + name + ">\n";
             }
         } else {
             xml = body;
         }
         return xml
-    },        
-    
+    },
+
     /*
      * Generate xpdl from the json def
      */
@@ -4887,13 +4913,15 @@ ProcessBuilder = {
             success: function(response) {
                 if (response !== null && response !== undefined && response !== "") {
                     try {
-                        var data = eval(response);
+                        var data = response;
                         if (data !== null && data["Package"] !== undefined) {
                             CustomBuilder.data.xpdl["Package"] = data["Package"];
                             var json = JSON.encode(CustomBuilder.data);
                             CustomBuilder.loadJson(json, true); //update through loadJson addToUndo to make sure package id does not change.
                         }
-                    } catch (err) {}
+                    } catch (e) {
+                        console.log("Encountered an error in the request: ", e);
+                    }
                 }  
                 if (callback) {
                     callback();
@@ -5006,6 +5034,8 @@ ProcessBuilder = {
     saveEditProperties : function(container, elementProperty, elementObj, element) {
         if (elementProperty.id !== $(element).attr("id") && elementObj.className !== "process") {
             var self = CustomBuilder.Builder;
+            var oldElementId = $(element).attr("id");
+            var newElementId = elementProperty.id;
 
             ProcessBuilder.jsPlumb.unbind("connection");
             ProcessBuilder.jsPlumb.unbind("connectionDetached");
@@ -5033,6 +5063,24 @@ ProcessBuilder = {
                 }
                 ProcessBuilder.jsPlumb.detach(targetConnSet[i]);
                 transition.push(data);
+            }
+
+            // Update mappings on save
+            var processId = ProcessBuilder.currentProcessData.properties.id;
+            var participantMapping = CustomBuilder.data['participants'][processId + "::" + oldElementId];
+            if (participantMapping) {
+                delete CustomBuilder.data['participants'][processId + "::" + oldElementId];
+                CustomBuilder.data['participants'][processId + "::" + newElementId] = participantMapping;
+            }
+            var pluginMapping = CustomBuilder.data['activityPlugins'][processId + "::" + oldElementId];
+            if (pluginMapping) {
+                delete CustomBuilder.data['activityPlugins'][processId + "::" + oldElementId];
+                CustomBuilder.data['activityPlugins'][processId + "::" + newElementId] = pluginMapping;
+            }
+            var formMapping = CustomBuilder.data['activityForms'][processId + "::" + oldElementId];
+            if (formMapping) {
+                delete CustomBuilder.data['activityForms'][processId + "::" + oldElementId];
+                CustomBuilder.data['activityForms'][processId + "::" + newElementId] = formMapping;
             }
 
             $(element).attr("id", elementProperty.id);

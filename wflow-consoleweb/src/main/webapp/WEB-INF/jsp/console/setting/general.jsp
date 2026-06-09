@@ -55,6 +55,7 @@
                         <label for="defaultUserview"><fmt:message key="console.setting.general.label.defaultUserview"/></label>
                         <span class="form-input">
                             <select id="defaultUserview" name="defaultUserview">
+                                <option value="" <c:if test="${!appExists}">selected</c:if>></option>
                                 <c:set var="prevAppName" value="" />
                                 <c:forEach var="userviewDef" items="${userviewDefinitionList}">
                                     <c:set var="userviewPath" value="${userviewDef.appId}/${userviewDef.id}" />
@@ -66,7 +67,7 @@
                                         <c:set var="prevAppName" value="${appName}" />
                                         <optgroup label="<ui:stripTag html="${prevAppName}"/>">
                                     </c:if>
-                                    <c:set var="selected"><c:if test="${userviewPath == settingMap['defaultUserview']}"> selected</c:if></c:set>
+                                    <c:set var="selected"><c:if test="${appExists && userviewPath == settingMap['defaultUserview']}"> selected</c:if></c:set>
                                     <option value="${userviewPath}" ${selected}><ui:stripTag html="${userviewDef.name}"/></option>
                                 </c:forEach>
                                 </optgroup>
@@ -594,8 +595,12 @@
     function getLoginHash(username, password) {
         var callback = {
             success : function(o) {
-	            var o = eval("(" + o + ")");
-                $('#masterLoginHash').text(o.hash);
+                try {
+                    var o = JSON.parse(o);
+                    $('#masterLoginHash').text(o.hash);
+                } catch (e) {
+                    console.error("Encountered an error in the request: ", e);
+                }
             }
         }
         var params = "username=" + username + "&password=" + password;

@@ -29,13 +29,11 @@ import org.joget.apps.form.model.FormData;
 import org.joget.apps.form.model.FormPermission;
 import org.joget.apps.form.model.FormRow;
 import org.joget.apps.form.model.FormRowSet;
+import org.joget.apps.form.service.FileUtil;
 import org.joget.apps.form.service.FormUtil;
 import org.joget.apps.userview.model.Permission;
 import org.joget.apps.userview.model.PwaOfflineResources;
-import org.joget.commons.util.FileManager;
-import org.joget.commons.util.FileStore;
-import org.joget.commons.util.ResourceBundleUtil;
-import org.joget.commons.util.SecurityUtil;
+import org.joget.commons.util.*;
 import org.joget.directory.model.User;
 import org.joget.plugin.base.PluginManager;
 import org.joget.plugin.base.PluginWebSupport;
@@ -70,6 +68,7 @@ public class FileUpload extends Element implements FormBuilderPaletteElement, Fi
         
         Map<String, String> tempFilePaths = new LinkedHashMap<String, String>();
         Map<String, String> filePaths = new LinkedHashMap<String, String>();
+        Map<String, String> missingFilePaths = new LinkedHashMap<String, String>();
         
         String primaryKeyValue = getPrimaryKeyValue(formData);
         String filePathPostfix = "_path";
@@ -89,9 +88,11 @@ public class FileUpload extends Element implements FormBuilderPaletteElement, Fi
         }
         
         String formDefId = "";
+        String tableName = "";
         Form form = FormUtil.findRootForm(this);
         if (form != null) {
             formDefId = form.getPropertyString(FormUtil.PROPERTY_ID);
+            tableName = form.getPropertyString(FormUtil.PROPERTY_TABLE_NAME);
         }
         String appId = "";
         String appVersion = "";
@@ -110,6 +111,17 @@ public class FileUpload extends Element implements FormBuilderPaletteElement, Fi
             if (file != null) {
                 tempFilePaths.put(value, file.getName());
             } else if (value != null && !value.isEmpty()) {
+                // check if the file actually exists on disk
+                try {
+                    File existingFile = FileUtil.getFile(value, tableName, primaryKeyValue);
+                    if (!existingFile.exists()) {
+                        missingFilePaths.put(value, value);
+                        continue;
+                    }
+                } catch (Exception ex) {
+                    // ignore, fall through to render as download link
+                }
+
                 // determine actual path for the file uploads
                 String fileName = value;
                 String encodedFileName = fileName;
@@ -120,7 +132,7 @@ public class FileUpload extends Element implements FormBuilderPaletteElement, Fi
                         // ignore
                     }
                 }
-                
+
                 String filePath = "/web/client/app/" + appId + "/" + appVersion + "/form/download/" + formDefId + "/" + primaryKeyValue + "/" + encodedFileName + ".";
                 if (Boolean.valueOf(getPropertyString("attachment")).booleanValue()) {
                     filePath += "?attachment=true";
@@ -134,6 +146,9 @@ public class FileUpload extends Element implements FormBuilderPaletteElement, Fi
         }
         if (!filePaths.isEmpty()) {
             dataModel.put("filePaths", filePaths);
+        }
+        if (!missingFilePaths.isEmpty()) {
+            dataModel.put("missingFilePaths", missingFilePaths);
         }
         
         String html = FormUtil.generateElementHtml(this, formData, template, dataModel);
@@ -149,11 +164,16 @@ public class FileUpload extends Element implements FormBuilderPaletteElement, Fi
             String[] tempDropzone = formData.getRequestParameterValues(id + filePathPostfix); //this is for dropzone upload
             
             List<String> filenames = new ArrayList<String>();
+            List<String> missingFilenames = new ArrayList<String>();
             if (tempFilenames != null && tempFilenames.length > 0) {
                 filenames.addAll(Arrays.asList(tempFilenames));
             }
 
             if (tempDropzone != null && tempDropzone.length > 0) {
+                String primaryKeyValue = getPrimaryKeyValue(formData);
+                Form form = FormUtil.findRootForm(this);
+                String tableName = form != null ? form.getPropertyString(FormUtil.PROPERTY_TABLE_NAME) : "";
+
                 for (String tempPath : tempDropzone) {
                     //validate to check the temp file is exist before add it
                     if (tempPath.contains(File.separator)) {
@@ -162,7 +182,20 @@ public class FileUpload extends Element implements FormBuilderPaletteElement, Fi
                             filenames.add(tempPath);
                         }
                     } else {
-                        filenames.add(tempPath);
+                        // existing filename (from DB), verify it actually exists on disk
+                        try {
+                            File existingFile = FileUtil.getFile(tempPath, tableName, primaryKeyValue);
+                            if (existingFile != null && existingFile.exists()) {
+                                filenames.add(tempPath);
+                            } else {
+                                // file missing from filesystem: excluded from validation values but
+                                // tracked separately so the DB reference is retained on save
+                                missingFilenames.add(tempPath);
+                            }
+                        } catch (Exception ex) {
+                            LogUtil.error(getClass().getName(), ex, "Error checking file existence for: " + tempPath);
+                            filenames.add(tempPath); // cannot determine existence, treat as valid
+                        }
                     }
                 }
             }
@@ -173,6 +206,9 @@ public class FileUpload extends Element implements FormBuilderPaletteElement, Fi
                 formData.addRequestParameterValues(id, new String[]{filenames.get(0)});
             } else {
                 formData.addRequestParameterValues(id, filenames.toArray(new String[]{}));
+            }
+            if (!missingFilenames.isEmpty()) {
+                formData.addRequestParameterValues(id + "_missing_ref", missingFilenames.toArray(new String[]{}));
             }
         }
         return formData;
@@ -185,7 +221,9 @@ public class FileUpload extends Element implements FormBuilderPaletteElement, Fi
         String id = getPropertyString(FormUtil.PROPERTY_ID);
         
         Set<String> remove = null;
-        if ("true".equals(getPropertyString("removeFile"))) {
+        boolean removeFile = "true".equals(getPropertyString("removeFile"));
+
+        if (removeFile) {
             remove = new HashSet<String>();
             Form form = FormUtil.findRootForm(this);
             String originalValues = formData.getLoadBinderDataProperty(form, id);
@@ -220,16 +258,52 @@ public class FileUpload extends Element implements FormBuilderPaletteElement, Fi
                 if (!filePaths.isEmpty()) {
                     result.putTempFilePath(id, filePaths.toArray(new String[]{}));
                 }
-                
+
+                // re-append missing file references so they are retained in DB
+                String[] missingRefs = formData.getRequestParameterValues(id + "_missing_ref");
+                if (missingRefs != null && missingRefs.length > 0) {
+                    resultedValue.removeIf(String::isEmpty);
+
+                    // predict the final names of incoming temp uploads (same logic as checkAndUpdateFileName)
+                    // to avoid re-adding a missing ref that is already being resolved by a new upload
+                    Set<String> predictedTempNames = new HashSet<>();
+                    if (!filePaths.isEmpty()) {
+                        String primaryKeyValue = getPrimaryKeyValue(formData);
+                        Form rootForm = FormUtil.findRootForm(this);
+                        String tempTableName = rootForm != null ? rootForm.getPropertyString(FormUtil.PROPERTY_TABLE_NAME) : "";
+                        String uploadPath = FileUtil.getUploadPath(tempTableName, primaryKeyValue);
+                        Set<String> existedFileNames = new HashSet<>();
+                        for (String path : filePaths) {
+                            File tempFile = FileManager.getFileByPath(path);
+                            if (tempFile != null) {
+                                String predicted = FileUtil.validateFileName(tempFile.getName(), uploadPath, existedFileNames, removeFile);
+                                predictedTempNames.add(predicted);
+                                existedFileNames.add(predicted);
+                            }
+                        }
+                    }
+
+                    for (String missingRef : missingRefs) {
+                        if (!missingRef.isEmpty() && !resultedValue.contains(missingRef) && !predictedTempNames.contains(missingRef)) {
+                            resultedValue.add(missingRef);
+                            if (remove != null) {
+                                remove.remove(missingRef);
+                            }
+                        }
+                    }
+                }
+
                 if (remove != null) {
                     result.putDeleteFilePath(id, remove.toArray(new String[]{}));
                 }
-                
+
                 // formulate values
                 String delimitedValue = FormUtil.generateElementPropertyValues(resultedValue.toArray(new String[]{}));
                 String paramName = FormUtil.getElementParameterName(this);
-                formData.addRequestParameterValues(paramName, resultedValue.toArray(new String[]{}));
-                        
+                                     
+                // do not allow duplicate if delete actual file is checked
+                formData.addRequestParameterValues(paramName,resultedValue.toArray(new String[]{}),!removeFile);               
+                            
                 // set value into Properties and FormRowSet object
                 result.setProperty(id, delimitedValue);
                 rowSet = new FormRowSet();

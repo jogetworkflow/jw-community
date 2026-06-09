@@ -1,19 +1,24 @@
 package org.joget.apps.datalist.lib;
 
+import java.io.File;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import javax.servlet.http.HttpServletRequest;
 import org.apache.commons.lang.StringUtils;
 import org.joget.apps.app.model.AppDefinition;
+import org.joget.apps.app.service.AppService;
 import org.joget.apps.app.service.AppUtil;
 import org.joget.apps.datalist.model.DataList;
 import org.joget.apps.datalist.model.DataListColumn;
 import org.joget.apps.datalist.model.DataListColumnFormatDefault;
 import org.joget.apps.datalist.service.DataListService;
+import org.joget.apps.form.service.FileUtil;
+import org.joget.commons.util.FileManager;
+import org.joget.commons.util.LogUtil;
 import org.joget.workflow.util.WorkflowUtil;
 
 public class ImageFormatter extends DataListColumnFormatDefault{
-    
+
     @Override
     public String getName() {
         return "Image Formatter";
@@ -33,7 +38,7 @@ public class ImageFormatter extends DataListColumnFormatDefault{
     public String getLabel() {
         return "Image Formatter";
     }
-    
+
     @Override
     public String getClassName() {
         return this.getClass().getName();
@@ -47,11 +52,11 @@ public class ImageFormatter extends DataListColumnFormatDefault{
     @Override
     public String format(DataList dataList, DataListColumn column, Object row, Object value) {
         String result = "";
-        
+
         String height = getPropertyString("height");
         String width = getPropertyString("width");
         String style = "";
-        
+
         if(!height.isEmpty() && !width.isEmpty()) {
             if (StringUtils.isNumeric(width)){
                 width = width + "px";
@@ -62,22 +67,40 @@ public class ImageFormatter extends DataListColumnFormatDefault{
             } else {
                 if (StringUtils.isNumeric(height)) {
                     height = height + "px";
-                }             
+                }
                 style = "height:"+height+";width:"+width+";background-size:cover;background-repeat: no-repeat;display:inline-block;";
             }
         }
-        
+
         String fullsize = getPropertyString("imagefullsize");
-        
+
         if (value != null && !((String) value).isEmpty()) {
             String imageSrc = getPropertyString("imageSrc");
-            
+
             if ("form".equalsIgnoreCase(imageSrc)) {
                 String formDefId = getPropertyString("formDefId");
                 AppDefinition appDef = AppUtil.getCurrentAppDefinition();
-                
-                String id = (String) DataListService.evaluateColumnValueFromRow(row, dataList.getBinder().getPrimaryKeyColumnName());
-                
+
+                // Get the record ID with improved logic
+                String recordId = getPropertyString("recordId");
+                String id = null;
+
+                if (recordId != null && !recordId.isEmpty()) {
+                    // Use the specified column
+                    id = (String) DataListService.evaluateColumnValueFromRow(row, recordId);
+                } else {
+                    // Try default primary key column
+                    id = (String) DataListService.evaluateColumnValueFromRow(row,dataList.getBinder().getPrimaryKeyColumnName());
+                }
+
+                // If we still don't have an ID, log error and skip processing
+                if (id == null || id.isEmpty()) {
+                    LogUtil.warn(getClassName(),
+                        "Image formatter skipped: unable to resolve record ID. " +
+                        "If this list uses a joined table, please ensure 'Record ID Column' is configured correctly.");
+                    return result;
+                }
+
                 HttpServletRequest request = WorkflowUtil.getHttpServletRequest();
 
                 //suport for multi values
@@ -86,33 +109,55 @@ public class ImageFormatter extends DataListColumnFormatDefault{
                         // determine actual path for the file uploads
                         String fileName = v;
                         String encodedFileName = fileName;
+                        boolean thumbnailExist = false;
 
                         try {
                             encodedFileName = URLEncoder.encode(fileName, "UTF8").replaceAll("\\+", "%20");
                         } catch (UnsupportedEncodingException ex) {
                             // ignore
                         }
+
+                        AppService appService = (AppService) AppUtil.getApplicationContext().getBean("appService");
                         
-                        String imgPath = request.getContextPath() + "/web/client/app/" + appDef.getAppId() + "/" + appDef.getVersion().toString() + "/form/download/" + formDefId + "/" + id + "/" + encodedFileName + ".";
-                        
+                        try {
+                            File thumbnail = FileUtil.getFile(encodedFileName + FileManager.THUMBNAIL_EXT, appService.getFormTableName(appDef, formDefId), id);
+
+                            // Use thumbnail image to load in list
+                            thumbnailExist = thumbnail.exists();
+                        } catch (Exception e) {
+                            LogUtil.error(FileUtil.class.getName(), e, encodedFileName);
+                        }
+
+                        // Add timestamp to the image URL to avoid caching issues
+                        String timestamp = ".?timestamp=" + String.valueOf(System.currentTimeMillis());
+                        String suffix = "";
+
+                        String imgPath = request.getContextPath() + "/web/client/app/" + appDef.getAppId() + "/" + appDef.getVersion().toString() + "/form/download/" + formDefId + "/" + id + "/" + encodedFileName;
+
                         if (!result.isEmpty()) {
                             result += " ";
                         }
-                        
+
                         if(!fullsize.isEmpty()){
-                            result += "<a href=\""+imgPath+"\" target=\"_blank\" \"> "; 
+                            result += "<a href=\""+imgPath + timestamp + "\" target=\"_blank\" \"> "; 
                         }
-                        
+
+                        if (thumbnailExist) {
+                            suffix = FileManager.THUMBNAIL_EXT;
+                        }
+
+                        imgPath += suffix + timestamp;
+
                         if(!height.isEmpty() && !width.isEmpty()){
                             result += "<div style=\"background-image:url('"+imgPath+"');"+style+"\" /></div>";  
                         }else{
-                            result += "<img src=\""+imgPath+"thumb.jpg.\" />";
+                            result += "<img src=\""+imgPath+"\" />";
                         }
-                        
+
                         if(!fullsize.isEmpty()){
                             result += "</a> ";   
                         }
-                         
+
                     }
                 }
             } else {
@@ -122,17 +167,21 @@ public class ImageFormatter extends DataListColumnFormatDefault{
                         if (!result.isEmpty()) {
                             result += " ";
                         }
-                        
-                        if(!fullsize.isEmpty()){
-                            result += "<a href=\""+v+"\" target=\"_blank\" \"> ";                            
+
+                        // Add timestamp to the image URL to avoid caching issues
+                        String timestamp = String.valueOf(System.currentTimeMillis());
+                        String imgPathWithTimestamp = v + "?timestamp=" + timestamp;
+
+                        if (!fullsize.isEmpty()) {
+                            result += "<a href=\"" + imgPathWithTimestamp + "\" target=\"_blank\" \"> ";
                         }
-                        
-                        if(!height.isEmpty() && !width.isEmpty()){
-                            result += "<div style=\"background-image:url('"+v+"');"+style+"\" /></div>";   
+
+                        if (!height.isEmpty() && !width.isEmpty()) {
+                            result += "<div style=\"background-image:url('" + imgPathWithTimestamp + "');" + style + "\" /></div>";
                         } else {
-                            result += "<img src=\""+v+"\"/>";  
+                            result += "<img src=\"" + imgPathWithTimestamp + "\"/>";
                         }
-                        
+
                         if(!fullsize.isEmpty()){
                             result += "</a> ";                            
                         }
@@ -140,19 +189,22 @@ public class ImageFormatter extends DataListColumnFormatDefault{
                 }
             }
         }
-        
+
         if (result.isEmpty() && !getPropertyString("defaultImage").isEmpty()) {
-            
-            if(!fullsize.isEmpty()){
-                result += "<a href=\""+getPropertyString("defaultImage")+"\" target=\"_blank\" \"> "; 
+
+            String timestamp = String.valueOf(System.currentTimeMillis());
+            String defaultImgPath = getPropertyString("defaultImage") + "?timestamp=" + timestamp;
+
+            if (!fullsize.isEmpty()) {
+                result += "<a href=\"" + defaultImgPath + "\" target=\"_blank\" \"> ";
             }
-            
-            if(!height.isEmpty() && !width.isEmpty()){
-                result += "<div style=\"background-image:url('"+getPropertyString("defaultImage")+"');"+style+"\" /></div>";   
+
+            if (!height.isEmpty() && !width.isEmpty()) {
+                result += "<div style=\"background-image:url('" + defaultImgPath + "');" + style + "\" /></div>";
             } else {
-                result += "<img src=\""+getPropertyString("defaultImage")+"\" "+style+">";  
+                result += "<img src=\"" + defaultImgPath + "\" " + style + ">";
             }
-            
+
             if(!fullsize.isEmpty()){
                 result += "</a> ";                            
             }

@@ -26,6 +26,14 @@
 .form-column > .subform-cell > .subform-container > .subform-section {
     z-index: 2;
 }
+/* Fix for spreadsheet and chosen dropdown being blocked by subform-section sibling */
+.form-column>.form-cell>.subform-container>.subform-section:has(.spreadsheet), 
+.form-column>.subform-cell>.subform-container>.subform-section:has(.spreadsheet),
+.form-column>.form-cell>.subform-container>.subform-section:has(.chosen-container.chosen-with-drop), 
+.form-column>.subform-cell>.subform-container>.subform-section:has(.chosen-container.chosen-with-drop) {
+    z-index: 3;
+}
+/* End of Fix */
 .form-section-title,
 .subform-section-title{
     padding: 0.75rem 0.7rem;
@@ -122,11 +130,43 @@ body .subform-cell > .subform-container.has-frame, .form-cell > .subform-contain
     width: 100%;
     float: none !important;
 }
-/* For datepicker trigger and close field icons */
+
+/* Top-label for S-Size in Normal Mode*/
 .label-top .hasDatepicker + a, .label-top .hasDatepicker + a + a {
-    top: unset;
-    bottom: 7px;
+    top: auto;
+    bottom: 0.5rem;
 }
+/* Top-label for M-Size in Normal Mode*/
+.mediumFontSize .label-top .hasDatepicker + a, .mediumFontSize .label-top .hasDatepicker + a + a {
+    top: auto;
+    bottom: 0.7rem;
+}
+/* Top-label for L-Size in Normal Mode*/
+.largeFontSize .label-top .hasDatepicker + a, .largeFontSize .label-top .hasDatepicker + a + a {
+    top: auto;
+    bottom: 1rem;
+}
+
+/*Consistent datepicker icon spacing for M Font Size*/
+.mediumFontSize .hasDatepicker + a + a {
+    right: 2.8rem;
+}
+/*Consistent datepicker icon spacing for L Font Size*/
+.largeFontSize .hasDatepicker + a + a {
+    right: 3rem;
+}
+
+/*Consistent datepicker icon spacing for M Font Size*/
+body.rtl.mediumFontSize .hasDatepicker + a + a {
+    right: auto;
+    left: 2.8rem;
+}
+/*Consistent datepicker icon spacing for L Font Size*/
+body.rtl.largeFontSize .hasDatepicker + a + a {
+    right: auto;
+    left: 3rem;
+}
+
 .form-cell > label.label + *:not(.ui-screen-hidden),
 .subform-cell > label.label + *:not(.ui-screen-hidden),
 .form-cell > label.label + .ui-screen-hidden + *,
@@ -333,11 +373,18 @@ body input[readonly] {
     float: left;
     width: 70%;
 }
+body.rtl .form-container [class*=form-cell-value] {
+    padding: 6px 0px 10px 1px;   
+}
 .form-cell-value > label,
 .subform-cell-value > label{
     display: block;
     float: left;
     width: 50%;
+}
+body.rtl .form-cell-value > label, 
+body.rtl .subform-cell-value > label {
+    float: right;
 }
 @media screen and (max-width: 480px) {
     .form-container [class*=form-cell-value]{
@@ -380,7 +427,9 @@ div.pq-grid * {
 .print-button {
     float: right;
 }
-
+body.rtl .print-button {
+    float: left;
+}
 /* chosen */
 
 
@@ -459,13 +508,33 @@ body input.no-manual-input{
     width: auto;
     visibility: unset;  
 }
+body.rtl .datapicker-native.ui-screen-hidden.ios{
+    width: 25px;
+    right: unset;
+}
 .datapicker-native.ui-screen-hidden.ios input{
     width:100%;
     -webkit-appearance: none;
+    padding: 0px;
 }
 .datapicker-native.ui-screen-hidden.ios.manual{
     left:unset;
     width: 25px;
+}
+body.rtl .datapicker-native.ui-screen-hidden.ios.manual{
+    left: 15px;
+}
+
+/* Advanced Grid - datepicker */
+.adgrid .datapicker-native.ui-screen-hidden.ios{
+    bottom: unset;
+}
+.adgrid .datapicker-native.ui-screen-hidden.ios.manual{
+    right: 6px;
+}
+body.rtl .adgrid .datapicker-native.ui-screen-hidden.ios.manual{
+    left: 6px;
+    right: unset;
 }
 
 /* subform */
@@ -552,7 +621,7 @@ body input.no-manual-input{
     transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
 }
 .selector_element .selector_button, .selector_element .selector_button:hover{
-    height: 30px;
+    height: 100%;
     padding: 2px 12px !important;
     line-height: 1.5;
     color: #495057;
@@ -564,8 +633,13 @@ body input.no-manual-input{
     box-shadow: none;
     font-size: inherit;
     position: absolute;
-    top: -1px;
     right: -1px;
+    max-height: 34px;
+}
+body.rtl .selector_element .selector_button, 
+body.rtl .selector_element .selector_button:hover {
+    left: 0px;
+    right: unset;
 }
 .selector_element .selector_button:hover{
     background-color: #ced4da;
@@ -573,6 +647,10 @@ body input.no-manual-input{
 .selector_element .selector_items {
     display: block;
     padding-right: 60px;
+}
+body.rtl .selector_element .selector_items {
+    padding-left: 60px;
+    padding-right: 0px;
 }
 .selector_element .selector_items .selector_item {
     display: inline-block;
@@ -623,10 +701,12 @@ body input.no-manual-input{
     background-clip: padding-box;
 }
 .form-fileupload a.remove {
-    color: #f8d7da;
+    color: #EA5858;
+    cursor: pointer;
 }
 .form-fileupload a.remove:hover {
-    color: #dc3545;
+    color: #EA5858;
+    text-decoration: none;
 }
 .form-fileupload-value {
     list-style: none;
@@ -637,6 +717,10 @@ body input.no-manual-input{
 }
 .form-fileupload-value li img {
     border: 1px solid #ced4da;
+}
+.form-fileupload .form-error-message {
+    display: inline;
+    margin: 1em;
 }
 
 /* grid */
@@ -800,11 +884,19 @@ body input.no-manual-input{
 .handsontable .columnSorting::after {
     font-family: sans-serif;
 }
-.spreadsheet_container, 
-.spreadsheet {
-    width:100%;  
-    overflow:visible !important; 
-    color:inherit;
+.spreadsheet_container:has(.handsontableInputHolder.ht_editor_visible),
+.spreadsheet_container > .spreadsheet {
+    width: 100%;
+    overflow: visible !important;
+    color: inherit;
+}
+
+.spreadsheet_container {
+    overflow: hidden !important;
+}
+
+.handsontableInputHolder.ht_editor_visible {
+    overflow: hidden;
 }
 .spreadsheet_container.resize {
     overflow:hidden !important; 
@@ -819,20 +911,18 @@ body input.no-manual-input{
     display: none;  /* Safari and Chrome */
 }
 .handsontable .file_delete {
-    color: #dc3545;
+    color: #EA5858;
     display:inline-block; 
     margin:0 10px; 
     cursor:pointer;
-    opacity: 0.5;
-}
-.handsontable .file_delete:hover{
-    opacity: 1;
 }
 .handsontableInputHolder .handsontableEditor {
     height: auto !important; 
     overflow: visible !important; 
     position: relative !important; 
     top: 0 !important;
+    width: auto !important; /* Add this */
+    min-width: 100%; /* Add this */
 }
 .handsontableInputHolder .handsontableEditor .ht_master .wtHolder {
     height: auto !important; 
@@ -849,10 +939,6 @@ body.rtl .ht_clone_top,
 body.rtl .ht_clone_top_left_corner  { 
     left: unset !important; 
     right:0;
-}
-body.rtl .handsontableInputHolder textarea {
-    position:absolute; 
-    left:0
 }
 body.rtl .handsontable .htCore tr th:last-child, 
 body.rtl .handsontable .htCore tr td:last-child {
@@ -872,7 +958,18 @@ body.rtl .handsontable .htCore tr td:last-child {
 .spreadsheet .handsontable.ht_clone_top_left_corner table.htCore th{
     border-top: 1px solid #ced4da !important;
 } 
+@media print {
+    .spreadsheet_container, .spreadsheet {
+        overflow: hidden !important;
+        width: 100% !important;
+    }
+}
 
+.ht_editor_visible .ht_master .wtHolder{
+    width: auto !important;
+    min-width: 100%;
+    overflow-x: hidden;
+}
 
 /* other */
 .calculationField_value {
@@ -912,6 +1009,10 @@ body.rtl .calculationField_value {
 }
 .multiPagedForm .page-nav-panel.bottom{
     display:none;
+}
+.multiPagedForm .page-nav-panel ul {
+    overflow-y: hidden;
+    overflow-x: auto;
 }
 .multiPagedForm .page-nav-panel .nav_item.error button span{
     color: red;
@@ -958,6 +1059,13 @@ body.rtl .calculationField_value {
     margin-bottom: -1px;
 }
 @media (min-width: 768px) {
+    .multiPagedForm .page-nav-panel .nav_item button span {
+        display: block;
+        max-width: 250px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
     .multiPagedForm.wizard .page-nav-panel {
         text-align: center;
         margin-bottom: 5px;
@@ -966,8 +1074,14 @@ body.rtl .calculationField_value {
     .multiPagedForm.wizard .page-nav-panel .nav_item{
         display: inline-block;
         position:relative;
-        padding: 0 15px;
+        padding: 1px 15px;
+        padding-bottom: 8px;
         cursor: pointer;
+        float: left;
+    }
+    .rtl .multiPagedForm.wizard .page-nav-panel .nav_item {
+        padding-left: 15px;
+        padding-right: 15px;
     }
     .multiPagedForm.wizard .page-nav-panel .nav_item::before {
         counter-increment: nav-item;                   
@@ -991,6 +1105,10 @@ body.rtl .calculationField_value {
         top: 15px;
         right: -2px;
     }
+    body.rtl .multiPagedForm.wizard .page-nav-panel .nav_item::after {
+        left: -2px;
+        right: unset;
+    }
     .multiPagedForm.wizard .page-nav-panel .nav_item:last-child::after {
         display:none;
     }
@@ -1001,6 +1119,10 @@ body.rtl .calculationField_value {
         border-bottom: 1px solid #dee2e6;
         top: 15px;
         left: -2px;
+    }
+    body.rtl .multiPagedForm.wizard .page-nav-panel .nav_item button::after{
+        right: -2px;
+        left: unset;
     }
     .multiPagedForm.wizard .page-nav-panel .nav_item:first-child button::after {
         display:none;
@@ -1026,8 +1148,6 @@ body.rtl .calculationField_value {
 }
 .rtl .multiPagedForm.wizard .page-nav-panel .nav_item {
     float: right;
-    padding-left:15px;
-    padding-right:auto;
 }
 .rtl .multiPagedForm.wizard .page-nav-panel button{
     float:right;
@@ -1201,7 +1321,30 @@ body.rtl .calculationField_value {
     background-color: #6c757d;
     border-color: #6c757d;
 }
-
+body.rtl tr td.pq-grid-cell:last-of-type {
+    border-left: 1px solid #d0d0d0;
+}
+body.rtl .pq-grid td.pq-grid-col:last-of-type{
+    border-left: 1px solid #cfcfcf;
+}
+.grid.adgrid .pq-grid-number-col{
+    border-left: 1px solid transparent;
+}
+body.rtl .grid.adgrid .pq-grid-number-col{
+    border-right: 1px solid transparent;
+    border-left: 1px solid #cfcfcf;
+}
+.pq-grid-row{
+    border-left: 1px solid transparent;
+}
+body.rtl .grid.adgrid .editor-cell .hasDatepicker + a {
+    left: 8px !important;
+    right: unset;
+}
+body.rtl .grid.adgrid .editor-cell .hasDatepicker + a + a{
+    left: 30px;
+    right: unset;
+}
 @media screen and (max-width: 767px) {
     .form-cell > label.label,
     .subform-cell > label.label,
@@ -1215,19 +1358,39 @@ body.rtl .calculationField_value {
         max-width: 100%;
         float: none;
     }
-    .hasDatepicker + a{
-        top: unset;
-        bottom: 7px;
+
+    /*Icon position for small font size*/
+    .hasDatepicker + a, .hasDatepicker + a + a {
+        top: auto;
+        bottom: 0.5rem;
     }
-    .hasDatepicker + a + a{
-        top: unset;
-        bottom: 6px;
+    /*Icon position for medium font size*/
+    .mediumFontSize .hasDatepicker + a, .mediumFontSize .hasDatepicker + a + a {
+        top: auto;
+        bottom: 0.7rem;
+    }
+    /*Icon position for large font size*/
+    .largeFontSize .hasDatepicker + a, .largeFontSize .hasDatepicker + a + a {
+        top: auto;
+        bottom: 1rem;
     }
 
     .form-column, .subform-column{
         width:100% !important;
     }
 }
+
+@media screen and (min-width: 767px) {
+    .label-top.form-container .label-left.form-cell .hasDatepicker + a{
+        top: 0.563rem;
+        bottom: unset;
+    }   
+    
+    .label-top.form-container .label-left.form-cell .hasDatepicker + a + a{
+        top: 0.625rem;
+    }
+}
+
 @media screen and (max-width: 39.9375em) {
     .grid table td,
     .grid table tr.grid-row + tr.grid-row {
@@ -1338,9 +1501,12 @@ body.rtl .subform-cell > label.label{
 }
 .form-cell > label.label + input:has(+ .numeric_field_controls ){
     display: inline-block;
+    padding-right: 30px;
 }
 body.rtl .form-cell > label.label + input:has(+ .numeric_field_controls){
     float: none;
+    padding-left: 30px;
+    padding-right: 12px;
 }
 .label-top.form-cell > label.label + input[size] + .numeric_field_controls,
 form.label-top .form-cell > label.label + input[size] + .numeric_field_controls{
@@ -1352,4 +1518,29 @@ body.rtl form.label-top .form-cell > label.label + input[size] + .numeric_field_
 }
 .numeric_field_controls.disabled{
     display: none;
+}
+body.popupBody.builder-popup .form-section-title,
+body.popupBody.builder-popup .subform-section-title{
+    margin-bottom: 15px;
+}
+body.rtl ul.form-fileupload-value li .remove{
+     display: inline-block;
+}
+body.rtl ul.form-fileupload-value li .remove{
+    display: inline-block;
+}
+body.rtl ul.form-fileupload-value li .name{
+    direction: ltr;
+    unicode-bidi: isolate;
+}
+body.rtl .handsontable .filename_container .filename {
+    direction: ltr;
+    unicode-bidi: isolate;
+}
+body.rtl input.hasDatepicker {
+     direction: ltr;
+     text-align: right;
+}
+body.rtl .chosen-container-multi.chosen-rtl .chosen-choices li.search-choice{
+    margin: 6px 5px 0 0;
 }

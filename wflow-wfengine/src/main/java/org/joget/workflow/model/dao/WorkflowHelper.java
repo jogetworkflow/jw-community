@@ -143,4 +143,29 @@ public interface WorkflowHelper {
      * Clean all the cache cache for deadline
      */
     void cleanForDeadline();
+
+    /**
+     * Get app definition for a process instance
+     * @param processId
+     * @return
+     */
+    Object getAppDefinitionForWorkflowProcess(String processId);
+
+    /**
+     * Get app definition with a process definition ID
+     * @param processDefId
+     * @return
+     */
+    Object getAppDefinitionWithProcessDefId(String processDefId);
+
+    /**
+     * Set the current app definition
+     * @param appDef
+     */
+    void setCurrentAppDefinition(Object appDef);
+
+    /**
+     * Reset the current app definition
+     */
+    void resetAppDefinition();
 }

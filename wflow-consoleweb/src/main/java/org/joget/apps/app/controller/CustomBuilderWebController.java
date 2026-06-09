@@ -395,6 +395,9 @@ public class CustomBuilderWebController {
         def.setDescription(builder.getDescriptionFromJSON(json));
         def.setJson(PropertyUtil.propertiesJsonStoreProcessing(def.getJson(), json));
 
+        // ensure JSON ID is equal to definition ID
+        CustomBuilderUtil.validateDefinitionIdWithJson(def);
+
         boolean success = builderDefinitionDao.update(def);
         jsonObject.put("success", success);
         jsonObject.put("data", PropertyUtil.propertiesJsonLoadProcessing(def.getJson()));

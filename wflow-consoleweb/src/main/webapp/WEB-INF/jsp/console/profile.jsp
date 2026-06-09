@@ -26,8 +26,8 @@
                     <span class="form-input"><c:out value="${user.username}"/></span>
                 </div>
                 <div class="form-row">
-                    <label for="field1"><fmt:message key="console.directory.user.common.label.firstName"/></label>
-                    <span class="form-input"><form:input path="firstName" cssErrorClass="form-input-error" /> *</span>
+                    <label for="field1"><fmt:message key="console.directory.user.common.label.firstName"/> <span class="mandatory">*</span></label>
+                    <span class="form-input"><form:input path="firstName" cssErrorClass="form-input-error" /></span>
                 </div>
                 <div class="form-row">
                     <label for="field1"><fmt:message key="console.directory.user.common.label.lastName"/></label>
@@ -85,8 +85,8 @@
             <fieldset>
                 <legend><fmt:message key="console.directory.user.common.label.authentication"/></legend>
                 <div class="form-row">
-                    <label for="field1"><fmt:message key="console.directory.user.common.label.oldPassword"/></label>
-                    <span class="form-input"><form:password path="oldPassword" cssErrorClass="form-input-error" autocomplete="off" /> *</span>
+                    <label for="field1"><fmt:message key="console.directory.user.common.label.oldPassword"/> <span class="mandatory">*</span></label>
+                    <span class="form-input"><form:password path="oldPassword" cssErrorClass="form-input-error" autocomplete="off" /></span>
                 </div>
             </fieldset>       
             ${userProfileFooter}    
@@ -96,16 +96,23 @@
             </div>
         </form:form>
     </div>
-
+    
     <script type="text/javascript">
 
         function validateField(){
-            var valid = true;
-            var alertString = "";
-            if($("#firstName").val() == ""){
+            let valid = true;
+            let alertString = "";             
+            const firstName = $("#firstName").val();
+            const lastName = $("#lastName").val();
+    
+            if(firstName == ""){
                 alertString += '<ui:msgEscJS key="User.firstName[not.blank]"/>';
                 valid = false;
-            }
+            } else if (!UI.isValidInput(firstName) || !UI.isValidInput(lastName)) {
+                alertString += '<ui:msgEscJS key="console.directory.user.error.label.nameInvalid"/>';
+                valid = false;
+            }  
+            
             if($("#password").val() != $("#confirmPassword").val()){
                 if(alertString != ""){
                     alertString += '\n';
@@ -113,19 +120,30 @@
                 alertString += '<ui:msgEscJS key="console.directory.user.error.label.passwordNotMatch"/>';
                 valid = false;
             }
+            
+            UI.validateEmail('#email', true, function(isValid) {
+                if (!isValid) {
+                    if (alertString != "") {
+                        alertString += '\n';
+                    }
+                    alertString += '<ui:msgEscJS key="console.directory.user.error.label.invalidEmailFormat"/>';
+                    valid = false;
+                }
 
-            if(valid){
-                $("#profile").submit();
-            }else{
-                alert(alertString);
-            }
+                if(valid){
+                    $("#profile").submit();
+                }else{
+                    alert(alertString);
+                }
+            });
         }
-
+         
         function closeDialog() {
             if (parent && parent.PopupDialog.closeDialog) {
                 parent.PopupDialog.closeDialog();
             }
             return false;
         }
+        
     </script>
 <commons:popupFooter />

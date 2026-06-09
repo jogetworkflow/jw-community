@@ -160,47 +160,41 @@ public class PropertyJsonController {
     @RequestMapping("/property/json/getPropertyOptions")
     public void getProperties(HttpServletRequest request, Writer writer, @RequestParam("value") String value) throws Exception {
         String json = "";
-        PropertyEditable element = (PropertyEditable) pluginManager.getPlugin(value);
-        String callReference = request.getHeader("call_reference");
-        if (element != null 
-                && callReference != null
-                && (callReference.contains("classname=org.joget.apps.form.model.FormLoadElementBinder")
-                    || callReference.contains("classname=org.joget.apps.form.model.FormStoreElementBinder")
-                    || callReference.contains("classname=org.joget.apps.form.model.FormLoadMultiRowElementBinder")
-                    || callReference.contains("classname=org.joget.apps.form.model.FormStoreMultiRowElementBinder")) 
-                && element.getPropertyOptions() != null && !element.getPropertyOptions().isEmpty()) {
-            json = FormUtil.injectBinderExtraProperties((FormBinder) element);
-        } else if (element != null) {
-            json = element.getPropertyOptions();
+        Plugin plugin = (Plugin) pluginManager.getPlugin(value);
+        if (plugin instanceof PropertyEditable) {
+            PropertyEditable element = (PropertyEditable) plugin;
+            String callReference = request.getHeader("call-reference");
+            if (callReference != null
+                    && (callReference.contains("classname=org.joget.apps.form.model.FormLoadElementBinder")
+                        || callReference.contains("classname=org.joget.apps.form.model.FormStoreElementBinder")
+                        || callReference.contains("classname=org.joget.apps.form.model.FormLoadMultiRowElementBinder")
+                        || callReference.contains("classname=org.joget.apps.form.model.FormStoreMultiRowElementBinder")) 
+                    && element.getPropertyOptions() != null && !element.getPropertyOptions().isEmpty()) {
+                json = FormUtil.injectBinderExtraProperties((FormBinder) element);
+            } else {
+                json = element.getPropertyOptions();
+            }
+        } else if (plugin != null) {
+            json = PropertyUtil.getConvertedPropertyOptions(plugin);
+        }
+        
+        //make sure the json is valid format, regression of 1e093147
+        if (json == null || json.isEmpty()) {
+            json = "[]";
         }
 
         writer.write(json);
     }
     
     @RequestMapping("/property/json/(*:appId)/(~:version)/getPropertyOptions")
-    public void getProperties(HttpServletRequest request, Writer writer, @RequestParam(value = "appId", required = true) String appId, @RequestParam(value = "version", required = false) String version, @RequestParam("value") String value, @RequestParam(value = "callback", required = false) String callback) throws IOException {
+    public void getProperties(HttpServletRequest request, Writer writer, @RequestParam(value = "appId", required = true) String appId, @RequestParam(value = "version", required = false) String version, @RequestParam("value") String value, @RequestParam(value = "callback", required = false) String callback) throws IOException, Exception {
         if (appId != null && !appId.trim().isEmpty()) {
             appService.getAppDefinition(appId, version);
         }
 
-        String json = "";
-        PropertyEditable element = (PropertyEditable) pluginManager.getPlugin(value);
-        String callReference = request.getHeader("call_reference");
-        if (element != null 
-                && callReference != null
-                && (callReference.contains("classname=org.joget.apps.form.model.FormLoadElementBinder")
-                    || callReference.contains("classname=org.joget.apps.form.model.FormStoreElementBinder")
-                    || callReference.contains("classname=org.joget.apps.form.model.FormLoadMultiRowElementBinder")
-                    || callReference.contains("classname=org.joget.apps.form.model.FormStoreMultiRowElementBinder")) 
-                && element.getPropertyOptions() != null && !element.getPropertyOptions().isEmpty()) {
-            json = FormUtil.injectBinderExtraProperties((FormBinder) element);
-        } else if (element != null) {
-            json = element.getPropertyOptions();
-        }
-
-        writer.write(json);        
+        getProperties(request, writer, value);      
     }
-    
+
     @RequestMapping("/property/json/(*:appId)/(~:version)/getDefaultProperties")
     public void getDefaultProperties(Writer writer, @RequestParam(value = "appId", required = true) String appId, @RequestParam(value = "version", required = false) String version, @RequestParam("value") String value, @RequestParam(value = "callback", required = false) String callback) throws IOException {
         String json = "";

@@ -115,6 +115,18 @@ public class GridInnerDataStoreBinderWrapper extends FormBinder implements FormS
     public void handleDeletedRows(Element element, FormRowSet rows, FormData formData, boolean deleteGrid, boolean deleteSubform, boolean abortProcess, boolean deleteFiles) {
         //get load binder data of this element
         FormRowSet loadedRows = formData.getLoadBinderData(element);
+        //lazy load binder data if not yet loaded
+        if (loadedRows == null) {
+            FormLoadBinder loadBinder = element.getLoadBinder();
+            if (loadBinder != null) {
+                String primaryKeyValue = element.getPrimaryKeyValue(formData);
+                loadedRows = loadBinder.load(element, primaryKeyValue, formData);
+                if (loadedRows != null) {
+                    formData.setLoadBinderData(loadBinder, loadedRows);
+                }
+            }
+        }
+
         Set<String> ids = new HashSet<String>();
         if (loadedRows != null && !loadedRows.isEmpty()) {
             for (FormRow r : loadedRows) {

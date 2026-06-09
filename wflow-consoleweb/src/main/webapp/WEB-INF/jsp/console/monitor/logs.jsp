@@ -29,6 +29,8 @@
                        jsonData="data"
                        rowsPerPage="15"
                        width="100%"
+                       sort="date"
+                       desc="true"
                        href="${pageContext.request.contextPath}/web/console/monitor/log/"
                        hrefDialogWindowName="_blank"
                        hrefParam="filename"
@@ -38,7 +40,7 @@
                        fields="['filename', 'filesize', 'date']"
                        column1="{key: 'filename', label: 'console.monitoring.logs.label.filename', sortable: false}"
                        column2="{key: 'filesize', label: 'console.monitoring.logs.label.filesize', sortable: false}"
-                       column3="{key: 'date', label: 'console.monitoring.logs.label.date', sortable: false}"
+                       column3="{key: 'date', label: 'console.monitoring.logs.label.date', sortable: true}"
                        />
         </div>
         </c:if>

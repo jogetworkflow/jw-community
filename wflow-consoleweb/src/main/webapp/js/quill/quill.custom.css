@@ -5,11 +5,14 @@
   right:0;
 }
 .ql-container.ql-bubble .ql-editor {
-    padding: 5px 0px;
+    padding: 12px 15px;
 }
 .ql-container.ql-bubble .ql-editor.ql-blank::before{
-    left:0px;
-    right:0px;
+    left:15px;
+    right:15px;
+}
+.ql-bubble .ql-tooltip-editor input[type=text]{
+    max-width: 100%;
 }
 body.rtl .ql-font .ql-picker-label,
 body.rtl .ql-header .ql-picker-label {

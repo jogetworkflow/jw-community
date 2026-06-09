@@ -54,6 +54,8 @@ $(document).ready(function () {
         // format navigation on page resize
         let id;
         $(window).resize(function() {
+            $("header.navbar, nav#navigation").css({'overflow' : 'hidden'});
+
             let firstItemLength;
             let menuItemId = $(navItems[0]).prop('id');
             if ($(window).outerWidth() >= menuBreakpoint){
@@ -91,6 +93,34 @@ $(document).ready(function () {
                 winWidth = $(window).width();
                 setTimeout(formatNav, 150);
             }
+            
+            if ($("ul#category-container li#menu-more").css('display') === 'none') {
+                var $lastCategory = $("ul#category-container > li.category.last");
+
+                $lastCategory.find("ul.menu-container").css({
+                    "position" : "absolute",
+                    "visibility" : "hidden",
+                    "opacity" : "0",
+                    "display" : "block"
+                })
+
+                if($lastCategory.offset().left - 200 < 0) {
+                    $lastCategory.find("> ul.menu-container").addClass("over-right");
+                }else if($lastCategory.offset().left + 200 > $(window).width()) {
+                    $lastCategory.find("> ul.menu-container").addClass("over-left");
+                }
+
+                $lastCategory.find("ul.menu-container").css({
+                    "position" : "",
+                    "visibility" : "",
+                    "opacity" : "",
+                    "display" : ""
+                })
+            }
+
+            setTimeout(function(){
+                $("header.navbar, nav#navigation").css({'overflow' : 'visible'});
+            }, 300);
         }
         let resizeTimer;
         const sidebar = $("#sidebar")[0];
@@ -139,7 +169,11 @@ $(document).ready(function () {
             }, 500);
         };
         const observer = new ResizeObserver(debounceResize);
-        observer.observe(sidebar);
+        try {
+            observer.observe(sidebar);
+        } catch (e) {
+            console.error(e);
+        }
         function resizeMenuWidth (callback, checkWidth){
             // header title and header nav button container width
             const headerLinkWidth = $('#header-link').outerWidth(true);

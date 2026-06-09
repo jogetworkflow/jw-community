@@ -1,5 +1,7 @@
 package org.joget.workflow.model.service;
 
+import org.enhydra.shark.api.internal.repositorypersistence.RepositoryException;
+import org.enhydra.shark.xpdl.elements.Activity;
 import org.joget.commons.util.LogUtil;
 import org.joget.commons.util.SetupManager;
 import org.joget.workflow.model.*;
@@ -8,10 +10,7 @@ import com.lutris.dods.builder.generator.query.NonUniqueQueryException;
 import com.lutris.dods.builder.generator.query.QueryException;
 import java.text.SimpleDateFormat;
 import java.lang.reflect.Field;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Iterator;
-import java.util.Map;
+import java.util.*;
 
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
@@ -49,14 +48,7 @@ import org.enhydra.shark.utilities.WMEntityUtilities;
 
 import org.joget.workflow.shark.JSPClientUtilities;
 import org.joget.workflow.util.WorkflowUtil;
-import java.util.Arrays;
-import java.util.Calendar;
-import java.util.Collections;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Set;
-import java.util.TreeMap;
+
 import javax.transaction.TransactionManager;
 import org.apache.commons.collections.SequencedHashMap;
 import org.apache.commons.lang.StringEscapeUtils;
@@ -354,7 +346,13 @@ public class WorkflowManagerImpl implements WorkflowManager {
 
             WMSessionHandle sessionHandle = sc.getSessionHandle();
             PackageAdministration pa = getSharkPackageAdmin(sessionHandle);
-            WMEntity entity = pa.getPackageEntity(sessionHandle, packageId, version);
+            WMEntity entity;
+            try {
+                entity = pa.getPackageEntity(sessionHandle, packageId, version);
+            } catch (RepositoryException e) {
+                // thrown when no package found. if no package found this method should return null
+                return null;
+            }
             workflowPackage = new WorkflowPackage();
             workflowPackage.setPackageId(packageId);
             workflowPackage.setPackageName(entity.getName());
@@ -1372,7 +1370,7 @@ public class WorkflowManagerImpl implements WorkflowManager {
     public Collection<WorkflowActivity> getActivityList(String processId, Integer start, Integer rows, String sort, Boolean desc) {
 
         SharkConnection sc = null;
-        Collection<WorkflowActivity> activityList = new ArrayList<WorkflowActivity>();
+        List<WorkflowActivity> activityList = new ArrayList<>();
 
         int activitySize = 0;
 
@@ -1403,12 +1401,16 @@ public class WorkflowManagerImpl implements WorkflowManager {
                 if (desc == null) {
                     desc = false;
                 }
-                if (sort.equals("id")) {
-                    filter = aieb.setOrderById(sessionHandle, filter, !desc);
-                } else if (sort.equals("name")) {
-                    filter = aieb.setOrderByName(sessionHandle, filter, !desc);
-                } else {	
-                    filter = aieb.setOrderByActivatedTime(sessionHandle, filter, !desc);
+                switch (sort) {
+                    case "id":
+                        filter = aieb.setOrderById(sessionHandle, filter, !desc);
+                        break;
+                    case "name":
+                        filter = aieb.setOrderByName(sessionHandle, filter, !desc);
+                        break;
+                    default:
+                        filter = aieb.setOrderByActivatedTime(sessionHandle, filter, !desc);
+                        break;
                 }
             }
 
@@ -1442,6 +1444,11 @@ public class WorkflowManagerImpl implements WorkflowManager {
                 activityList.add(workflowActivity);
             }
 
+            // if "state" is the sort field, sort it after the query
+            if ("state".equals(sort)) {
+                Comparator<WorkflowActivity> comparator = Comparator.comparing(WorkflowActivity::getState);
+                activityList.sort(desc ? comparator.reversed() : comparator);
+            }
 
         } catch (Exception ex) {
 
@@ -2887,8 +2894,13 @@ public class WorkflowManagerImpl implements WorkflowManager {
 
             // audit trail for aborted activity instances
             Collection<WorkflowActivity> activityList = getActivityList(processId, 0, 1000, null, false); //getProcessActivityInstanceList(processId);
+            Object appDef = getAppDefinitionForProcess(processId);
             for (WorkflowActivity activity : activityList) {
-                WorkflowUtil.addAuditTrail(this.getClass().getName(), "assignmentAbort", activity.getId(), new Class[]{activity.getId().getClass()}, new Object[]{activity.getId()}, null);
+                if (appDef != null) {
+                    WorkflowUtil.addAuditTrail(this.getClass().getName(), "assignmentAbort", activity.getId(), new Class[]{activity.getId().getClass(), appDef.getClass()}, new Object[]{activity.getId(), appDef}, null);
+                } else {
+                    WorkflowUtil.addAuditTrail(this.getClass().getName(), "assignmentAbort", activity.getId(), new Class[]{activity.getId().getClass()}, new Object[]{activity.getId()}, null);
+                }
             }
         } catch (Exception ex) {
             LogUtil.error(getClass().getName(), ex, "");
@@ -2903,6 +2915,18 @@ public class WorkflowManagerImpl implements WorkflowManager {
         internalRemoveProcessOnComplete(processId);
         
         return aborted;
+    }
+    
+    protected Object getAppDefinitionForProcess(String processId) {
+        try {
+            WorkflowHelper workflowHelper = (WorkflowHelper) WorkflowUtil.getApplicationContext().getBean("workflowHelper");
+            if (workflowHelper != null) {
+                return workflowHelper.getAppDefinitionForWorkflowProcess(processId);
+            }
+        } catch (Exception e) {
+            // ignore
+        }
+        return null;
     }
 
     /**
@@ -5170,35 +5194,47 @@ public class WorkflowManagerImpl implements WorkflowManager {
     }
     
     /**
-     * Internal method used to recover stuck tool activities due to improper shutdown
+     * Internal method used to recover stuck activities (tool, route, subflow) due to improper shutdown
      */
     @Override
     public void internalRecoverStuckToolActivities() {
-        final Collection<Object[]> stuckTools = workflowAssignmentDao.getStuckTools();
-        if (stuckTools != null && !stuckTools.isEmpty()) {
-            LogUtil.info(WorkflowManagerImpl.class.getName(), "Found " + stuckTools.size() + " stuck tool. Trying recover it...");
-            
-            Thread stuckToolsRecover = new PluginThread(new Runnable() {
+        final Collection<Object[]> stuckActivities = workflowAssignmentDao.getStuckTools();
+        if (stuckActivities != null && !stuckActivities.isEmpty()) {
+            Thread stuckActivitiesRecover = new PluginThread(new Runnable() {
 
                 @Override
                 public void run() {
+                    //add delay to wait for other beans (AppPluginUtil & AppUtil) ready
+                    try {
+                        ApplicationContext ac = null;
+                        do {
+                            Thread.sleep(5000);
+                            ac = WorkflowUtil.getApplicationContext();
+                        } while (ac == null);
+                    } catch (Exception e) {}
+                    LogUtil.info(WorkflowManagerImpl.class.getName(), "Found possible stuck activities. Trying to recover it...");
+                    
                     transactionTemplate.execute(new TransactionCallbackWithoutResult() {
 
                         protected void doInTransactionWithoutResult(TransactionStatus transactionStatus) {
                             SharkConnection sc = null;
-
+                            int recorvered = 0;
+                            
                             try {
                                 sc = connect();
                                 WMSessionHandle sessionHandle = sc.getSessionHandle();
-
-                                for (Object[] sa : stuckTools) {
+                                
+                                for (Object[] sa : stuckActivities) {
                                     try {
                                         CustomWfActivityWrapper wrapper = new CustomWfActivityWrapper(sessionHandle, sa[0].toString(), sa[1].toString(), sa[2].toString());
                                         wrapper.getProcessImpl().setReadOnly(false);
                                         CustomWfActivityImpl activity = (CustomWfActivityImpl) wrapper.getActivityImpl();
-                                        activity.restartToolActivity(sessionHandle);
+                                        if (activity.recoverStuckActivity(sessionHandle)){
+                                            LogUtil.info(WorkflowManagerImpl.class.getName(), "Recovered " + sa[2].toString());
+                                            recorvered++;
+                                        }
                                     } catch (Exception e) {
-                                        LogUtil.error(getClass().getName(), e, "Fail to restart tool " + sa[2].toString());
+                                        LogUtil.error(getClass().getName(), e, "Fail to restart activity " + sa[2].toString());
                                     }
                                 }
                             } catch (Exception ex) {
@@ -5210,12 +5246,14 @@ public class WorkflowManagerImpl implements WorkflowManager {
                                     LogUtil.error(getClass().getName(), e, "");
                                 }
                             }
+                            
+                            LogUtil.info(WorkflowManagerImpl.class.getName(), "Recovered " + recorvered + " stuck activities");
                         }
                     });
                 }
             });
-            stuckToolsRecover.setDaemon(true);
-            stuckToolsRecover.start();
+            stuckActivitiesRecover.setDaemon(true);
+            stuckActivitiesRecover.start();
         }
     }
 
@@ -5356,8 +5394,29 @@ public class WorkflowManagerImpl implements WorkflowManager {
             }
 
             if (wfProcess != null && wfProcess.state().startsWith(SharkConstants.STATEPREFIX_CLOSED)) {
+                try {
+                    WorkflowHelper workflowHelper = (WorkflowHelper) WorkflowUtil.getApplicationContext().getBean("workflowHelper");
+                    if (workflowHelper != null) {
+                        Object appDef = workflowHelper.getAppDefinitionForWorkflowProcess(procInstanceId);
+                        if (appDef != null) {
+                            workflowHelper.setCurrentAppDefinition(appDef);
+                        }
+                    }
+                } catch (Exception e) {
+                    // ignore if app-related classes are not available
+                }
+                
                 WorkflowUtil.addAuditTrail(this.getClass().getName(), "processCompleted", procInstanceId, new Class[]{procInstanceId.getClass()}, new Object[]{procInstanceId}, null);
 
+                try {
+                    WorkflowHelper workflowHelper = (WorkflowHelper) WorkflowUtil.getApplicationContext().getBean("workflowHelper");
+                    if (workflowHelper != null) {
+                        workflowHelper.resetAppDefinition();
+                    }
+                } catch (Exception e) {
+                    // ignore
+                }
+                
                 String processOnCompletion = WorkflowUtil.getSystemSetupValue("deleteProcessOnCompletion");
                 if ("true".equalsIgnoreCase(processOnCompletion) || "archive".equalsIgnoreCase(processOnCompletion)) {
                     
@@ -5471,14 +5530,25 @@ public class WorkflowManagerImpl implements WorkflowManager {
      */
     public List<String> getMigrationAssignmentUserList(String processId, String activityDefId) {
         String key = processId + "_" + activityDefId;
-        List<String> users = ((HashMap<String, List<String>>) migrationAssignmentUserList.get()).get(key);
+        HashMap<String, List<String>> userListMap = (HashMap<String, List<String>>) migrationAssignmentUserList.get();
         
         //remove after retrieved
+        List<String> users = userListMap.get(key);
         if (users != null) {
-            ((HashMap<String, List<String>>) migrationAssignmentUserList.get()).remove(key);
+            userListMap.remove(key);
+            return users;
+        }
+
+        // Fallback lookup mechanism in the case of truncated key
+        for (String storedKey : userListMap.keySet()) {
+            if (storedKey.startsWith(key)) {
+                users = userListMap.get(storedKey);
+                userListMap.remove(storedKey);
+                return users;
+            }
         }
         
-        return users;
+        return null;
     }
 
     protected PackageAdministration getSharkPackageAdmin(WMSessionHandle sessionHandle) throws Exception {
@@ -5609,7 +5679,7 @@ public class WorkflowManagerImpl implements WorkflowManager {
             XPDLBrowser xpdl = shark.getXPDLBrowser();
             
             org.enhydra.shark.xpdl.elements.WorkflowProcess wp = SharkUtil.getWorkflowProcess(sessionHandle, processDefId);
-            org.enhydra.shark.xpdl.elements.Activity wa = wp.getActivity(activityDefId);
+            Activity wa = wp.getActivity(activityDefId);
             
             //get limit
             double limit = -1;
@@ -5931,6 +6001,22 @@ public class WorkflowManagerImpl implements WorkflowManager {
                 LogUtil.error(getClass().getName(), e, "");
             }
         }
+        
+        try {
+            Object appDef = null;
+            WorkflowHelper workflowHelper = (WorkflowHelper) WorkflowUtil.getApplicationContext().getBean("workflowHelper");
+            if (workflowHelper != null) {
+                appDef = workflowHelper.getAppDefinitionWithProcessDefId(processDefId);
+            }
+            if (appDef != null) {
+                WorkflowUtil.addAuditTrail(this.getClass().getName(), "participantHasActivities", null, new Class[]{String.class, String.class, appDef.getClass()}, new Object[]{processDefId, participantId, appDef}, hasActivities);
+            } else {
+                WorkflowUtil.addAuditTrail(this.getClass().getName(), "participantHasActivities", null, new Class[]{String.class, String.class}, new Object[]{processDefId, participantId}, hasActivities);
+            }
+        } catch (Exception e) {
+            // ignore
+        }
+        
         return hasActivities;
     }
     
@@ -5956,11 +6042,14 @@ public class WorkflowManagerImpl implements WorkflowManager {
         
         WorkflowProcessLink link = workflowProcessLinkDao.getWorkflowProcessLinkHistory(history.getProcessId());
         if (link == null) {
-            link = new WorkflowProcessLink();
-            link.setProcessId(history.getProcessId());
-            link.setParentProcessId(history.getProcessId());
-            link.setOriginProcessId(history.getProcessId());
-            
+            //For first time migration, get from process link table
+            link = workflowProcessLinkDao.getWorkflowProcessLink(history.getProcessId());         
+            if (link == null) {
+                link = new WorkflowProcessLink();
+                link.setProcessId(history.getProcessId());
+                link.setParentProcessId(history.getProcessId());
+                link.setOriginProcessId(history.getProcessId());
+            }           
             workflowProcessLinkDao.addWorkflowProcessLinkHistory(link);
         }
         history.setLink(link);

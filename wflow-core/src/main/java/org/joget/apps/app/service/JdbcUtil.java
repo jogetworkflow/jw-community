@@ -10,6 +10,7 @@ import net.sf.ehcache.CacheManager;
 import net.sf.ehcache.Element;
 import org.apache.commons.dbcp2.BasicDataSource;
 import org.apache.commons.dbcp2.BasicDataSourceFactory;
+import org.joget.commons.util.DynamicDataSource;
 import org.joget.commons.util.DynamicDataSourceManager;
 import org.joget.commons.util.LogUtil;
 
@@ -69,6 +70,8 @@ public class JdbcUtil {
         String cacheKey = "DATASOURCE-CACHE-" + DynamicDataSourceManager.getCurrentProfile() + "::" + driver + "::" + url + "::" + username + "::" + password + "::" + (customProps != null?customProps:"");
         
         Element cachedDataSource = cache.get(cacheKey);
+
+        url = DynamicDataSource.convertSqlServerUrlWithEncryptParam(driver, url);
 
         BasicDataSource dataSource = null;
         if (cachedDataSource == null) {

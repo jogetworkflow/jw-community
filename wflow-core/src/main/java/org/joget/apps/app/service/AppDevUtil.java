@@ -6,12 +6,14 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.Serializable;
 import java.io.UnsupportedEncodingException;
 import java.net.URISyntaxException;
 import java.nio.file.Files;
 import java.nio.file.NoSuchFileException;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 import javax.servlet.http.HttpServletRequest;
@@ -95,6 +97,7 @@ public class AppDevUtil {
     public static final String ATTRIBUTE_GIT_COMMIT_REQUEST = "GIT_COMMIT_REQUEST";
     public static final String ATTRIBUTE_GIT_SYNC_APP = "GIT_SYNC_APP";
     public static final String PROPERTY_GIT_CONFIG_AUTO_SYNC = "gitConfigAutoSync";
+    private static final String CONCAT_APP_DEF = "CONCAT_APP_DEF";
     
     public static Map<String, Set<String>> workingPulls = new HashMap<String, Set<String>>();
     protected static Random random = new Random();
@@ -105,6 +108,8 @@ public class AppDevUtil {
     private static final boolean GIT_DISABLED;
     private static Set<String> prevFileNames = null;
     private static int prevFileCount = -1;
+    
+    private static final Map<String, Object> GIT_LOCKS = new ConcurrentHashMap<>();
     
     static {
         GIT_DISABLED = "true".equalsIgnoreCase(System.getProperty("git.disabled"));
@@ -943,6 +948,14 @@ public class AppDevUtil {
         return gitCommitHelper;  
     }
     
+    
+    /** 
+     * Returns a lock object per appId for serializing Git operations. 
+     */
+    public static Object getAppLock(String appId) {
+        return GIT_LOCKS.computeIfAbsent(appId, k -> new Object());
+    }
+    
     public static void fileSave(AppDefinition appDef, String path, String fileContents, String commitMessage) {
         HttpServletRequest request = WorkflowUtil.getHttpServletRequest();
         if (request == null) {
@@ -953,7 +966,7 @@ public class AppDevUtil {
         if (fileContents == null) {
             fileContents = "";
         }
-        
+
         path = SecurityUtil.normalizedFileName(path);
         fileContents = compatibleNewline(fileContents);
         
@@ -972,7 +985,7 @@ public class AppDevUtil {
                 AppDevUtil.gitCommit(appDef, git, gitCommitHelper.getWorkingDir(), "Initial commit for " + gitBranch);
                 AppDevUtil.gitRenameBranch(git, gitBranch);
             }
-    
+
             // check for content changes
             File file = new File(gitCommitHelper.getWorkingDir(), path);
             boolean toSave = true;
@@ -984,7 +997,7 @@ public class AppDevUtil {
             } catch(NoSuchFileException e) {
                 // ignore
             }
-             
+
             if (toSave) {
                 // save file contents
                 FileUtils.writeStringToFile(file, fileContents, "UTF-8");
@@ -1000,8 +1013,8 @@ public class AppDevUtil {
         } catch (IOException | GitAPIException ex) {
             LogUtil.error(AppDevUtil.class.getName(), ex, ex.getMessage());
         }
-    }    
-    
+    }
+
     public static void fileDelete(AppDefinition appDefinition, String path, String commitMessage) {
         HttpServletRequest request = WorkflowUtil.getHttpServletRequest();
         if (request == null) {
@@ -1482,30 +1495,7 @@ public class AppDevUtil {
             // copy plugins
             targetDir.mkdirs();
 
-            // combine all definitions into a string for matching
-            String concatAppDef = "";
-            if (appDef.getFormDefinitionList() != null) {
-                for (FormDefinition o : appDef.getFormDefinitionList()) {
-                    concatAppDef += o.getJson() + "~~~";
-                }
-            }
-            if (appDef.getDatalistDefinitionList() != null) {
-                for (DatalistDefinition o : appDef.getDatalistDefinitionList()) {
-                    concatAppDef += o.getJson() + "~~~";
-                }
-            }
-            if (appDef.getUserviewDefinitionList() != null) {
-                for (UserviewDefinition o : appDef.getUserviewDefinitionList()) {
-                    concatAppDef += o.getJson() + "~~~";
-                }
-            }
-            if (appDef.getBuilderDefinitionList() != null) {
-                for (BuilderDefinition o : appDef.getBuilderDefinitionList()) {
-                    concatAppDef += o.getJson() + "~~~";
-                }
-            }
-            concatAppDef += AppDevUtil.workingFileReadToString(appDef, "appDefinition.xml") + "~~~";
-            concatAppDef += AppDevUtil.workingFileReadToString(appDef, "appConfig.xml") + "~~~";
+            String concatAppDef = AppDevUtil.getConcatAppDef(appDef);
             
             // look for plugins used in any definition file
             for (Plugin plugin: pluginList) {
@@ -2119,45 +2109,63 @@ public class AppDevUtil {
     }
     
     public static String getConcatAppDef(AppDefinition appDef) {
-        // combine all definitions into a string for matching
-        String concatAppDef = "";
-        if (appDef.getFormDefinitionList() != null) {
-            for (FormDefinition o : appDef.getFormDefinitionList()) {
-                concatAppDef += o.getJson() + "~~~";
-            }
-        }
-        if (appDef.getDatalistDefinitionList() != null) {
-            for (DatalistDefinition o : appDef.getDatalistDefinitionList()) {
-                concatAppDef += o.getJson() + "~~~";
-            }
-        }
-        if (appDef.getUserviewDefinitionList() != null) {
-            for (UserviewDefinition o : appDef.getUserviewDefinitionList()) {
-                concatAppDef += o.getJson() + "~~~";
-            }
-        }
-        if (appDef.getBuilderDefinitionList() != null) {
-            for (BuilderDefinition o : appDef.getBuilderDefinitionList()) {
-                concatAppDef += o.getJson() + "~~~";
-            }
-        }
-        PackageDefinition packageDef = appDef.getPackageDefinition();
-        if (packageDef != null) {
-            if (packageDef.getPackageActivityPluginMap() != null) {
-                for (PackageActivityPlugin o : packageDef.getPackageActivityPluginMap().values()) {
-                    concatAppDef += o.getPluginName() + "~~~";
-                    concatAppDef += o.getPluginProperties() + "~~~";
-                }
-            }
-            if (packageDef.getPackageParticipantMap() != null) {
-                for (PackageParticipant o : packageDef.getPackageParticipantMap().values()) {
-                    concatAppDef += o.getValue() + "~~~";
-                    concatAppDef += o.getPluginProperties() + "~~~";
-                }
-            }
-        }
+        AppDefCache cache = (AppDefCache) AppUtil.getApplicationContext().getBean("appFluCache");
         
-        return concatAppDef;
+        String cacheKey = CONCAT_APP_DEF + ":" + appDef.getAppId() + ":" + appDef.getVersion().toString();
+        
+        Element element = cache.get(cacheKey, appDef);
+        if (element == null) {
+            // combine all definitions into a string for matching
+            StringBuilder concatAppDef = new StringBuilder();
+            if (appDef.getFormDefinitionList() != null) {
+                for (FormDefinition o : appDef.getFormDefinitionList()) {
+                    concatAppDef.append(o.getJson()).append("~~~");
+                }
+            }
+            if (appDef.getDatalistDefinitionList() != null) {
+                for (DatalistDefinition o : appDef.getDatalistDefinitionList()) {
+                    concatAppDef.append(o.getJson()).append("~~~");
+                }
+            }
+            if (appDef.getUserviewDefinitionList() != null) {
+                for (UserviewDefinition o : appDef.getUserviewDefinitionList()) {
+                    concatAppDef.append(o.getJson()).append("~~~");
+                }
+            }
+            if (appDef.getBuilderDefinitionList() != null) {
+                for (BuilderDefinition o : appDef.getBuilderDefinitionList()) {
+                    concatAppDef.append(o.getJson()).append("~~~");
+                }
+            }
+            PackageDefinition packageDef = appDef.getPackageDefinition();
+            if (packageDef != null) {
+                if (packageDef.getPackageActivityPluginMap() != null) {
+                    for (PackageActivityPlugin o : packageDef.getPackageActivityPluginMap().values()) {
+                        concatAppDef.append("\"className\":\"").append(o.getPluginName()).append("\"~~~");
+                        concatAppDef.append(o.getPluginProperties()).append("~~~");
+                    }
+                }
+                if (packageDef.getPackageParticipantMap() != null) {
+                    for (PackageParticipant o : packageDef.getPackageParticipantMap().values()) {
+                        if (o.getType() != null && PackageParticipant.TYPE_PLUGIN.equals(o.getType())) {
+                            concatAppDef.append("\"className\":\"").append(o.getValue()).append("\"~~~");
+                        } else {
+                            concatAppDef.append(o.getValue()).append("~~~");
+                        }
+                        concatAppDef.append(o.getPluginProperties()).append("~~~");
+                    }
+                }
+            }
+            
+            String result = concatAppDef.toString();
+            
+            element = new Element(cacheKey, (Serializable) result);
+            cache.put(element, appDef);
+            
+            return result;
+        } else {
+            return (String) element.getObjectValue();
+        }
     }
 
     /**

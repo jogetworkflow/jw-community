@@ -12,6 +12,7 @@ import org.joget.workflow.model.WorkflowAssignment;
 import org.joget.workflow.model.WorkflowDeadline;
 import org.joget.workflow.model.dao.WorkflowHelper;
 import org.joget.workflow.util.WorkflowUtil;
+import org.json.JSONObject;
 import org.mozilla.javascript.Scriptable;
 import org.springframework.context.ApplicationContext;
 
@@ -54,10 +55,7 @@ import org.springframework.context.ApplicationContext;
         try {
             return ((Boolean) eval).booleanValue();
         } catch (Exception ex) {
-            cus.error(shandle, LOG_CHANNEL, "JavaScriptEvaluator -> The result of condition "
-                    + condition + " cannot be converted to boolean");
-            cus.error(shandle, "JavaScriptEvaluator -> The result of condition "
-                    + condition + " cannot be converted to boolean");
+            logError(shandle, procId, actId, condition, "The result of condition cannot be converted to boolean.");
             throw ex;
         }
 
@@ -130,11 +128,7 @@ import org.springframework.context.ApplicationContext;
             return eval;
 
         } catch (Exception ex) {
-            cus.error(shandle, LOG_CHANNEL, "JavaScriptEvaluator -> The result of expression "
-                    + expr + " can't be evaluated - error message="
-                    + ex.getMessage());
-            cus.error(shandle, "JavaScriptEvaluator -> The result of expression "
-                    + expr + " can't be evaluated - error message=" + ex.getMessage());
+            logError(shandle, procId, actId, expr, "Result cannot be evaluated");
             if (ex instanceof Exception) {
                 throw (Exception) ex;
             }
@@ -161,5 +155,14 @@ import org.springframework.context.ApplicationContext;
         if (actId != null) {
             scope.put(SharkConstants.ACT_KEY, scope, actId);
         }
+    }
+    
+    private void logError(WMSessionHandle shandle, String proId, String actId, String expr, String message) {
+        JSONObject jObj = new JSONObject();
+        jObj.put("proId", proId);
+        jObj.put("actId", actId);
+        jObj.put("expr", expr);
+        jObj.put("m", message);
+        cus.error(shandle, LOG_CHANNEL, jObj.toString());
     }
 }

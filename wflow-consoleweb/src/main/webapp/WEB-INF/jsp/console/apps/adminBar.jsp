@@ -51,7 +51,7 @@
                 </div>
             </div>
             <c:if test="${!empty envName}">
-                <span id="environmentName"><span><c:out value="${envName}"/></span></span>
+                <span id="environmentName" title="<c:out value="${envName}"/>"><span><c:out value="${envName}"/></span></span>
             </c:if>
         </div>
             
@@ -59,7 +59,7 @@
             <i class="fas fa-pencil-alt"></i>
         </div>    
             
-        <script src="${pageContext.request.contextPath}/js/adminBar.js"></script>
+        <script src="${pageContext.request.contextPath}/js/adminBar.js?build=<fmt:message key="build.number"/>"></script>
         <script>
             AdminBar.cookiePath = '${pageContext.request.contextPath}/';
             <c:if test="${param.webConsole == 'true'}">

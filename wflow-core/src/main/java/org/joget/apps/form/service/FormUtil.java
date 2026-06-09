@@ -14,6 +14,8 @@ import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
+import java.util.Optional;
 import java.util.Set;
 import java.util.Stack;
 import java.util.StringTokenizer;
@@ -2434,13 +2436,21 @@ public class FormUtil implements ApplicationContextAware {
         String json = "[]";
         try {
             JSONArray jsonArray = new JSONArray();
-            
+
             for (FormRow r : rows) {
                 JSONObject obj = new JSONObject();
-                
+
                 for (Object p : r.getCustomProperties().keySet()) {
-                    obj.put(p.toString(), r.getProperty(p.toString()));
+                    String key = (p != null) ? p.toString().trim() : null;
+                    
+                    // Skip empty or invalid keys
+                    if (key == null || key.isEmpty()) {
+                        continue;
+                    }
+
+                    obj.put(key, r.getProperty(key));
                 }
+                
                 if (r.getDateCreated() != null) {
                     if (isExport) {
                         obj.put(FormUtil.PROPERTY_DATE_CREATED, TimeZoneUtil.convertToTimeZone(r.getDateCreated(), TimeZone.getDefault().getID(), "yyyy-MM-dd HH:mm:ss"));
@@ -2455,7 +2465,7 @@ public class FormUtil implements ApplicationContextAware {
                         obj.put(FormUtil.PROPERTY_DATE_MODIFIED, TimeZoneUtil.convertToTimeZone(r.getDateModified(), null, AppUtil.getAppDateFormat()));
                     }
                 }
-                
+
                 if (r.getTempFilePathMap() != null && !r.getTempFilePathMap().isEmpty()) {
                     JSONObject filePaths = new JSONObject();
                     for (Object f : r.getTempFilePathMap().keySet()) {
@@ -2725,5 +2735,30 @@ public class FormUtil implements ApplicationContextAware {
             }
         }
         return true;
+    }
+
+    /**
+     * Ensures that the JSON's ID is equal to the definition's ID.
+     *
+     * <p>If not equal, updates the JSON with the definition's ID.
+     *
+     * @param definition the object to validate
+     */
+    public static void validateDefinitionIdWithJson(FormDefinition definition) {
+        Objects.requireNonNull(definition, "FormDefinition cannot be null");
+        Objects.requireNonNull(definition.getJson(), "FormDefinition JSON cannot be null");
+
+        JSONObject jsonObject = new JSONObject(definition.getJson());
+        JSONObject properties = Optional.ofNullable(jsonObject.optJSONObject("properties"))
+                .orElseGet(JSONObject::new);
+
+        properties.put("id", definition.getId());
+        jsonObject.put("properties", properties);
+
+        definition.setJson(jsonObject.toString());
+    }
+
+    public static void validateDefinitionIdWithJsonForImport(FormDefinition formDefinition) {
+        validateDefinitionIdWithJson(formDefinition);
     }
 }

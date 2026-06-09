@@ -5,7 +5,8 @@ import java.io.File;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
-import net.sf.ehcache.Cache;
+import java.util.concurrent.CompletableFuture;
+
 import net.sf.ehcache.Element;
 
 /**
@@ -65,29 +66,24 @@ public class SetupManager {
 
     private SetupDao setupDao;
     private SetupManagerHelper setupManagerHelper;
-    private Cache cache;
 
     /**
-     * Method used by system to set cache object
-     * @param cache 
+     * Cache mapping: String -> Setting
      */
-    public void setCache(Cache cache) {
-        this.cache = cache;
-        if (cache != null) {
-            LogUtil.info(getClass().getName(), "Initializing setup cache");
-        }
-    }
-    
+    private SetupManagerCache cache;
+
     /**
-     * Method used by system to clear cache
+     * Method used by system to clear cache.
+     *
+     * <p>The cache is intended to be long-lived, and only refreshes when the table is updated.
+     * Please avoid clearing the cache manually to prevent unnecessary and potentially heavy database calls.</p>
+     *
+     * @deprecated This method was used to clear the cache after running {@link #saveSetting(Setting)}.
+     * The implementation of {@code saveSetting(Setting)} has since been changed to update the cache.
      */
+    @Deprecated
     public void clearCache() {
-        if (cache != null) {
-            synchronized(cache) {
-                String profile = DynamicDataSourceManager.getCurrentProfile();
-                cache.remove(profile);
-            }
-        }
+        cache.clearCache();
     }
 
     public SetupManagerHelper getSetupManagerHelper() {
@@ -97,33 +93,21 @@ public class SetupManager {
     public void setSetupManagerHelper(SetupManagerHelper setupManagerHelper) {
         this.setupManagerHelper = setupManagerHelper;
     }
-    
+
     /**
-     * Method used by system to refresh cache 
+     * Method used by system to refresh entire cache for the current profile.
+     *
+     * @deprecated The cache is intended to be long-lived, and only refreshes when the table is updated.
+     * Please avoid clearing the cache manually to prevent unnecessary and potentially heavy database calls.
+     * @return {@link CompletableFuture} if there is a requirement to wait for cache to refresh.
      */
-    public void refreshCache() {
-        if (cache != null) {
-            synchronized(cache) {
-                String profile = DynamicDataSourceManager.getCurrentProfile();
-                LogUtil.debug(getClass().getName(), "Refreshing setup cache for " + profile);
-                cache.remove(profile);
-                Collection<Setting> settings = getSetupDao().find("", null, null, null, null, null);
-                Map<String, Setting> settingMap = new HashMap<String, Setting>();
-                for (Setting setting: settings) {
-                    settingMap.put(setting.getProperty(), setting);
-                }
-                
-                getSetupManagerHelper().checkSettingChanges(settingMap);
-                
-                Element element = new Element(profile, settingMap);
-                cache.put(element);
-            }
-        }
+    @Deprecated
+    public CompletableFuture<Void> refreshCache() {
+        return cache.refreshCache();
     }
     
     /**
      * Create or update a system setting
-     * @param setting 
      */
     public void updateSetting(String property, String value) {
         Setting setting = getSettingByProperty(property);
@@ -141,8 +125,11 @@ public class SetupManager {
      */
     public void saveSetting(Setting setting) {
         getSetupDao().saveOrUpdate(setting);
-        clearCache();
-        
+        cache.updateCache(setting);
+
+        Map<String, Setting> settingMap = new HashMap<>();
+        settingMap.put(setting.getProperty(), setting);
+        getSetupManagerHelper().checkSettingChanges(settingMap);
         getSetupManagerHelper().auditSettingChange(setting);
     }
 
@@ -159,7 +146,7 @@ public class SetupManager {
         String condition = "";
         String[] params = {};
 
-        if (propertyFilter != null && propertyFilter.trim().length() > 0) {
+        if (propertyFilter != null && !propertyFilter.trim().isEmpty()) {
             propertyFilter = "%" + propertyFilter + "%";
             condition = "WHERE property LIKE ?";
             params = new String[]{propertyFilter};
@@ -175,27 +162,12 @@ public class SetupManager {
      */
     public Setting getSettingByProperty(String property) {
         if (cache != null) {
-            Setting setting = null;
-            synchronized(cache) {
-                Element element = null;
-                String profile = DynamicDataSourceManager.getCurrentProfile();
-                element = cache.get(profile);
-                if (element == null) {
-                    refreshCache();
-                    element = cache.get(profile);
-                }
-                if (element != null) {
-                    Map<String, Setting> settingMap = (Map<String, Setting>)element.getValue();
-                    setting = settingMap.get(property);
-                }
-            }
-            return setting;
-        } else {
-            Collection<Setting> result = getSetupDao().find("WHERE property = ?",
-                    new String[]{property},
-                    null, null, null, null);
-            return (result.isEmpty()) ? null : result.iterator().next();
+            return cache.get(property);
         }
+        Collection<Setting> result = getSetupDao().find("WHERE property = ?",
+                new String[]{property},
+                null, null, null, null);
+        return (result.isEmpty()) ? null : result.iterator().next();
     }
 
     /**
@@ -203,7 +175,7 @@ public class SetupManager {
      * @param property
      * @return 
      */
-    public String getSettingValue(String property) {        
+    public String getSettingValue(String property) {
         Setting setting = getSettingByProperty(property);
         String value = (setting != null) ? setting.getValue() : null;
         return value;
@@ -218,6 +190,7 @@ public class SetupManager {
         if (setting != null) {
             getSetupDao().delete(setting);
             setting.setValue(null);
+            cache.updateCache(setting);
         }
         getSetupManagerHelper().auditSettingChange(setting);
     }
@@ -240,5 +213,9 @@ public class SetupManager {
     
     public static boolean isSecureMode() {
         return HostManager.isVirtualHostEnabled() || "true".equalsIgnoreCase(System.getProperty(SYSTEM_PROPERTY_WFLOW_SECURE));
+    }
+
+    public void setCache(SetupManagerCache cache) {
+        this.cache = cache;
     }
 }

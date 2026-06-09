@@ -136,7 +136,7 @@ public class UserviewThemeProcesser {
     public String getHtml() {
         HttpServletRequest request = WorkflowUtil.getHttpServletRequest();
         if (request != null) {
-            String componentId = WorkflowUtil.getHttpServletRequest().getHeader("__ajax_component");
+            String componentId = WorkflowUtil.getHttpServletRequest().getHeader("ajax-component");
             if (componentId != null) {
                 return getComponentHtml(componentId);
             }
@@ -206,7 +206,7 @@ public class UserviewThemeProcesser {
         }
         
         if (request != null) {
-            if("true".equalsIgnoreCase(request.getHeader("__ajax_menu_count"))) {
+            if("true".equalsIgnoreCase(request.getHeader("ajax-menu-count"))) {
                 return getAjaxMenusCount(data);
             }
         }
@@ -384,7 +384,7 @@ public class UserviewThemeProcesser {
         String bn = ResourceBundleUtil.getMessage("build.number");
         String html = "<script type=\"text/javascript\" src=\"" + cp + "/wro/common.preload.js?build=" + bn + "\"></script>\n"
                 + "<script type=\"text/javascript\" src=\"" + cp + "/wro/common.js?build=" + bn + "\" defer></script>\n"
-                + "<script>loadCSS(\"" + cp + "/wro/common.css" + "\")</script>\n"
+                + "<script>loadCSS(\"" + cp + "/wro/common.css?build=" + bn + "\")</script>\n"
                 + "<script type=\"text/javascript\">\n";
 
         UserSecurity us = DirectoryUtil.getUserSecurity();
@@ -705,7 +705,7 @@ public class UserviewThemeProcesser {
                     return customContent;
                 } else if (userview.getCurrent() != null) {
                     if (isQuickEditEnabled) {
-                        String label = ResourceBundleUtil.getMessage("adminBar.label.page") + ": " + userview.getCurrent().getPropertyString("label");
+                        String label = ResourceBundleUtil.getMessage("adminBar.label.page") + ": " + StringUtil.stripHtmlRelaxed(userview.getCurrent().getPropertyString("label"));
                         String url = request.getContextPath() + "/web/console/app/" + userview.getParamString("appId") + "/" + userview.getParamString("appVersion") + "/userview/builder/" + userview.getPropertyString("id") + "?menuId=" + userview.getCurrent().getPropertyString("id");
                         content += "<div class=\"quickEdit\" style=\"display: none\">\n";
                         content += "    <a href=\"" + url + "\" target=\"_blank\"><i class=\"fas fa-pencil-alt\"></i> " + label + "</a>\n";

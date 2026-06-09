@@ -1,7 +1,8 @@
 package org.joget.plugin.base;
 
-import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+
 import org.joget.commons.util.DynamicDataSourceManager;
 import org.joget.commons.util.LogUtil;
 
@@ -10,7 +11,7 @@ import org.joget.commons.util.LogUtil;
  */
 public class ProfilePluginCache {
 
-    private Map<String, PluginManagerCache> profileCacheMap = new HashMap<String, PluginManagerCache>();
+    private final Map<String, PluginManagerCache> profileCacheMap = new ConcurrentHashMap<>();
     
     /**
      * Retrieve the cache for the current profile.
@@ -26,11 +27,6 @@ public class ProfilePluginCache {
         if (profile == null) {
             profile = DynamicDataSourceManager.DEFAULT_PROFILE;
         }
-        PluginManagerCache cache = profileCacheMap.get(profile);
-        if (cache == null) {
-            cache = new PluginManagerCache();
-            profileCacheMap.put(profile, cache);
-        }
-        return cache;
+        return profileCacheMap.computeIfAbsent(profile, k -> new PluginManagerCache());
     }
 }

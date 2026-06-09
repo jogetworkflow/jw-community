@@ -1,6 +1,6 @@
 /**
  * @license BSD
- * @copyright 2014-2023 hizzgdev@163.com
+ * @copyright 2014-2025 hizzgdev@163.com
  * 
  * Project Home:
  *   https://github.com/hizzgdev/jsmind/
@@ -64,8 +64,6 @@ jmexpander {
     border-width: 1px;
     border-style: solid;
     cursor: pointer;
-    font-family: sans-serif;
-    box-sizing: content-box;
 }
 
 .jmnode-overflow-wrap jmnodes {

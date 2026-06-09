@@ -1,10 +1,6 @@
 package org.enhydra.shark;
 
-import com.lutris.appserver.server.sql.CachedDBTransaction;
-import com.lutris.appserver.server.sql.DBTransaction;
 import com.lutris.dods.builder.generator.query.DataObjectException;
-import com.lutris.util.ConfigException;
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -15,7 +11,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import org.enhydra.dods.DODS;
 import org.enhydra.shark.api.client.wfmc.wapi.WMSessionHandle;
 import org.enhydra.shark.api.client.wfmodel.CannotAcceptSuspended;
 import org.enhydra.shark.api.client.wfmodel.CannotComplete;
@@ -24,6 +19,7 @@ import org.enhydra.shark.api.client.wfmodel.InvalidState;
 import org.enhydra.shark.api.client.wfmodel.ResultNotAvailable;
 import org.enhydra.shark.api.client.wfmodel.TransitionNotAllowed;
 import org.enhydra.shark.api.client.wfmodel.UpdateNotAllowed;
+import org.enhydra.shark.api.common.SharkConstants;
 import org.enhydra.shark.api.internal.instancepersistence.ActivityPersistenceObject;
 import org.enhydra.shark.api.internal.instancepersistence.ActivityVariablePersistenceObject;
 import org.enhydra.shark.api.internal.instancepersistence.DeadlinePersistenceObject;
@@ -33,7 +29,6 @@ import org.enhydra.shark.api.internal.working.WfActivityInternal;
 import org.enhydra.shark.api.internal.working.WfAssignmentInternal;
 import org.enhydra.shark.api.internal.working.WfProcessInternal;
 import org.enhydra.shark.api.internal.working.WfResourceInternal;
-import org.enhydra.shark.instancepersistence.data.ActivityDO;
 import org.enhydra.shark.xpdl.XMLCollectionElement;
 import org.enhydra.shark.xpdl.XPDLConstants;
 import org.enhydra.shark.xpdl.elements.Activity;
@@ -428,18 +423,27 @@ public class CustomWfActivityImpl extends WfActivityImpl {
     }
     
     /**
-     * Check and restart the tool activity
+     * Check and restart the stuck activity
      * @param shandle
+     * @return 
      * @throws Exception 
      */
-    public void restartToolActivity(WMSessionHandle shandle) throws Exception {
+    public boolean recoverStuckActivity(WMSessionHandle shandle) throws Exception {
         Activity act = getActivityDefinition(shandle);
         if (act != null) {
             int type = act.getActivityType();
-            if (type == XPDLConstants.ACTIVITY_TYPE_TOOL) {
-                startActivity(shandle);
+            if (type == XPDLConstants.ACTIVITY_TYPE_TOOL
+                    || type == XPDLConstants.ACTIVITY_TYPE_ROUTE
+                    || type == XPDLConstants.ACTIVITY_TYPE_SUBFLOW) {
+                if (SharkConstants.STATE_OPEN_RUNNING.equals(state)) {
+                    finish(shandle);
+                } else {
+                    startActivity(shandle);
+                }
+                return true;
             }
         }
+        return false;
     }
     
     @Override

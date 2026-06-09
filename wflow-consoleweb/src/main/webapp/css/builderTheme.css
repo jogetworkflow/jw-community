@@ -642,7 +642,7 @@ body[builder-theme] .tree ol li.tree-viewer-item label > span {
 body[builder-theme] .tree ol li input + ol:before, 
 body[builder-theme] .tree ol li label:before, 
 body[builder-theme] .tree ol li input:checked + ol:before {
-    color: #000;
+    color: var(--theme-link-color-1);
 }
 body[builder-theme]#cbuilder .nav-tabs .nav-item .nav-link > i {
     display: none;
@@ -653,8 +653,11 @@ body[builder-theme] #treeViewerView .builder-view-body, body[builder-theme] #xra
 body[builder-theme] .tree ol li label {
     font-size: 14px;
     padding-left: 35px;
+    z-index: 1;
 }
-body[builder-theme] .tree ol li:hover {
+body[builder-theme] .tree ol li:hover,
+body[builder-theme] .tree ol li label:hover::before,
+body[builder-theme] .tree ol li:hover label:before{  
     color: #000;
 }
 body[builder-theme] #builder-menu ul.app_tools li:has( a.active-view) {
@@ -1094,6 +1097,9 @@ body[builder-theme] .chosen-container-single .chosen-search input[type="text"] {
 body[builder-theme] .page-button-navigation{
     float: left;
 }
+body[builder-theme].rtl .page-button-navigation{
+    float: right;
+}
 body[builder-theme] .editor-panel-mode .element-pages > .property-editor-page:not(.collapsed):nth-child(2) ~ .property-editor-page > .property-editor-page-title{
     background: var(--theme-primary-color-3);
     border: 1px solid var(--theme-border-color-1);
@@ -1191,9 +1197,12 @@ body[builder-theme] .single-page .property-editor-nav .property-editor-page-step
 }
 body[builder-theme] .property-input > table tr th.property-type-grid-action-column, body[builder-theme] .property-input > table tr td.property-type-grid-action-column{
     border: 0;
+}
+body[builder-theme] .property-input > table tr th.property-type-grid-action-column a,
+body[builder-theme] .property-input > table tr td.property-type-grid-action-column a{
     visibility: hidden;
 }
-body[builder-theme] .property-input > table tr:hover th.property-type-grid-action-column, body[builder-theme] .property-input > table tr:hover  td.property-type-grid-action-column{
+body[builder-theme] .property-input > table tr:hover th.property-type-grid-action-column, body[builder-theme] .property-input > table tr:hover  td.property-type-grid-action-column a{
     visibility: visible;
 }
 body[builder-theme] .editor-panel-mode .property-editor-page:not(.collapsed) .property-editor-page-title:after{
@@ -1273,6 +1282,7 @@ body[builder-theme] .property-editor-container input.image + .file-picker-action
     padding: 3px 9px 3px 12px;
     top: -2px;
     position: relative;
+    height: 30px;
 }
 body[builder-theme] .property-editor-container input.image + .file-picker-actions .clearfile{
     top:4px;
@@ -1366,9 +1376,6 @@ body[builder-theme] .property-type-selectbox:hover .builder-link a.builderAddNew
 body[builder-theme] .editor-panel-mode.narrow:not(.wider) .property-input > table.grid .property-type-grid-action-column{
     visibility: hidden;
 }
-body[builder-theme].rtl .editor-panel-mode.narrow:not(.wider) .property-input > table.grid .property-type-grid-action-column{
-    margin-bottom: 20px;
-}
 body[builder-theme] .editor-panel-mode.narrow:not(.wider) .property-input > table.grid tr:hover .property-type-grid-action-column{
     visibility: visible;
 }
@@ -1378,7 +1385,7 @@ body[builder-theme] .editor-panel-mode .elementmultiselect > .repeater-row > .ac
 body[builder-theme] .editor-panel-mode .elementmultiselect > .repeater-row:hover > .actions.rowbuttons{
     visibility: visible;
 }
-body[builder-theme] .repeater-row .actions.rowbuttons .addrow{
+body[builder-theme] .editor-panel-mode .elementmultiselect > .repeater-row:hover .actions.rowbuttons .addrow{
     display: block;
 }
 body[builder-theme] .chosen-container-single .chosen-single abbr {
@@ -1731,9 +1738,8 @@ body[builder-theme].popupBody{
     font-family: -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,"Noto Sans",sans-serif,"Apple Color Emoji","Segoe UI Emoji","Segoe UI Symbol","Noto Color Emoji";
 }
 body[builder-theme] .ui-dialog .ui-dialog-content {
-    padding: 0px !important;
-    border-radius: 3px;
-    border: 1px solid var(--theme-border-color-1);
+    border-radius: 0px;
+    border: 0px;
 }
 body[builder-theme] .ui-dialog{
     padding: 0px;
@@ -1792,6 +1798,12 @@ body[builder-theme].popupBody #generate-btn{
     margin-left: 4px;
     height: 36px;
 }
+body[builder-theme].popupBody.rtl .form-buttons input[type='button'],
+body[builder-theme].popupBody.rtl .form-buttons input[type='submit'],
+body[builder-theme].popupBody.rtl .page-button-action input[type='button'],
+body[builder-theme].popupBody.rtl #generate-btn{
+    float: left;
+}
 body[builder-theme].popupBody #main-body-content{
     height: calc(100% - 90px) !important;
 }
@@ -1804,6 +1816,9 @@ body[builder-theme].popupBody #main-body-content:has(> div#JsonDataTable_pluginL
 body[builder-theme].popupBody div.property-editor-page-button-panel > div.page-button-action > input.page-button-save{
     float: right;
 }
+body[builder-theme].rtl.popupBody div.property-editor-page-button-panel > div.page-button-action > input.page-button-save{
+    float: left;
+}
 body[builder-theme].popupBody .pluginConfig .compress i, body[builder-theme].popupBody .pluginConfig .expand i {
     margin-top: 4px;
 }
@@ -1812,6 +1827,9 @@ body[builder-theme].popupBody .single-page .property-editor-pages > .property-ed
 }
 body[builder-theme] .page-button-navigation + .page-button-action{
     float: right;
+}
+body[builder-theme].rtl .page-button-navigation + .page-button-action{
+    float: left;
 }
 body[builder-theme].popupBody .pluginConfig .property-editor-container {
     height: calc(100% - 0px) !important;
@@ -1943,6 +1961,10 @@ body[builder-theme] .property-input .multiple_option label {
 body[builder-theme].popupBody #main-body-header i{
     margin-right: 5px;
 }
+body[builder-theme].popupBody.rtl #main-body-header i{
+    margin-left: 5px;
+    margin-right: 0px;
+}
 body[builder-theme] .css-styles-container .style-group > h6 {
     background: var(--theme-primary-color-3);
     color: var(--theme-label-color-2);
@@ -2009,7 +2031,7 @@ body[builder-theme].popupBody #advancedView > h5{
     text-transform: none;
     font-size: 15px;
 }
-body[builder-theme].popupBody a:not(.btn) {
+body[builder-theme].popupBody a:not(.btn):not(.chosen-single) {
     color: var(--theme-active-color-2);
 }
 body[builder-theme] .apmtable tr.row > td, 
@@ -2296,7 +2318,7 @@ body[builder-theme='dark'] #left-panel-toogle {
 }
 /* scrollbar */
 body[builder-theme='dark'] * {
-    scrollbar-color: rgba(0, 0, 0, 0.1) var(--theme-primary-color-2);
+    scrollbar-color: #888 #2a2a2a;
     scrollbar-width: thin; 
 }
 body[builder-theme='dark'] *::-webkit-scrollbar {
@@ -2359,10 +2381,15 @@ body[builder-theme='dark']#cbuilder #top-panel .btn-group .btn.active-view{
 body[builder-theme='dark'] .builder-view {
     background: var(--theme-primary-color-1);
 }
-body[builder-theme='dark'] .tree ol li {
+body[builder-theme='dark'] .tree ol li,
+body[builder-theme='dark'] .tree ol li input + ol:before, 
+body[builder-theme='dark'] .tree ol li label:before, 
+body[builder-theme='dark'] .tree ol li input:checked + ol:before{
     color: var(--theme-input-color-1);
 }
-body[builder-theme='dark'] .tree ol li:hover {
+body[builder-theme='dark'] .tree ol li:hover,
+body[builder-theme='dark'] .tree ol li label:hover::before,
+body[builder-theme='dark'] .tree ol li:hover label:before{
     color: #fff;
 }
 body[builder-theme='dark'] .permission-table tbody tr.support-plugin,
@@ -2385,16 +2412,38 @@ body[builder-theme='dark'] .permission-table .element-meta .element-id {
     font-size: 70%;
 }
 body[builder-theme='dark'] .permission-table .authorized {
-    background: transparent;
+    background: #263026ab;
     color: var(--theme-label-color-1);
 }
 body[builder-theme='dark'] .permission-table .unauthorized {
-    background: transparent;
+    background: #2e26267a;
     color: var(--theme-label-color-1);
 }
-body[builder-theme='dark'] .permission-table th.export, .permission-table td.export{
-    background: transparent;
+body[builder-theme='dark'] .permission-table th.export, body[builder-theme='dark'] .permission-table td.export{
+    background: #25454a9c !important;
     color: var(--theme-label-color-1);
+}
+body[builder-theme='dark'] .permission_view .permission_rule{
+    color: #ffff;
+}
+body[builder-theme='dark'] .permission-table .has-child .element-meta i.la-minus-square,
+body[builder-theme='dark'] .permission-table .has-child .element-meta i.la-plus-square{
+    color: var(--theme-label-color-1);
+}
+body[builder-theme='dark'] .permission_view .permission_rule:hover:not(.active) {
+    background: var(--theme-primary-color-3);
+}
+body[builder-theme='dark'] .permission-table .element-meta .element-label {
+    color: var(--theme-label-color-1);
+}
+body[builder-theme='dark'] .permission-table .element-meta .element-icon .image {
+    filter: brightness(0) invert(0.7);
+}
+body[builder-theme='dark'] #components_comphead_Page-Components_list .image {
+    filter: brightness(0) invert(0.7);
+}
+body[builder-theme='dark'] #components_comphead_Page-Components_list .image[style*='.gif'] {
+    filter: none;
 }
 body[builder-theme='dark'] #tableUsageView h5 #desc-tab .tableName {
     color: var(--theme-label-color-2);
@@ -2730,6 +2779,14 @@ body[builder-theme='dark'] .item_usages_container .usage_category h3 {
 body[builder-theme='dark'] .item_usages_container .usage_category {
     border: 1px solid var(--theme-border-color-1);
 }
+body[builder-theme='dark'] .item_usages_container pre{
+    background:  var(--theme-primary-color-3);
+    color: var(--theme-label-color-1);
+    border: 1px solid var(--theme-border-color-1);
+}
+body[builder-theme='dark'] .item_usages_container pre .keyword_highlight {
+    color: #212529;
+}
 body[builder-theme='dark'] .chosen-container-multi .chosen-choices {
     background-color: var(--theme-primary-color-1);
     border-color: var(--theme-border-color-1);
@@ -2982,6 +3039,10 @@ body[builder-theme] .nv-tags label {
     color: var(--theme-label-color-2);
 }
 
+body[builder-theme='dark'] .tree ol li.tree-viewer-item label > span.image{
+    filter: brightness(0) invert(1);
+}
+
 /* Add on builder CSS */
 body[builder-theme] .plugin-label {
     background-color: var(--theme-primary-color-3);
@@ -3064,6 +3125,14 @@ body[builder-theme] .api-container .element-operations .operation {
 }
 body[builder-theme]#cbuilder.tox-fullscreen > #top-panel{
     display: none;
+}
+body[builder-theme] .ui-dialog .ui-dialog-buttonpane {
+    background-color: var(--theme-primary-color-1);
+    border-color: var(--theme-border-color-1);
+    margin-top: 0px;
+}
+body[builder-theme] .ui-dialog .ui-dialog-buttonpane button{
+    border: 0px !important;
 }
 /* Guider Dark Theme */
 body[builder-theme='dark'] .guider {
@@ -3166,6 +3235,57 @@ body[builder-theme='dark'].popupBody.builder-popup.dark-mode .chosen-container-m
 }
 body[builder-theme='dark'].popupBody.builder-popup.dark-mode .chosen-container .chosen-results li.highlighted{
     background-color: #0075ff;
+    color: #fff;
+}
+body[builder-theme].popupBody .selector_element .selector_items .selector_item a{
+    color:transparent;
+}
+body[builder-theme='dark'].popupBody.builder-popup.dark-mode .chosen-container-multi .chosen-choices li.search-choice,
+body[builder-theme='dark'].popupBody.builder-popup.dark-mode select:not([class^=ui]){
+    color: var(--theme-field-font-color);
+}
+body[builder-theme='dark'].popupBody.builder-popup.dark-mode .chosen-container .chosen-results li{
+    color: var(--theme-field-font-color);
+}
+body[builder-theme].popupBody .chosen-container-multi .chosen-drop .result-selected,
+body[builder-theme='dark'].popupBody.builder-popup.dark-mode .chosen-container .chosen-results li.result-selected{
+    color: #ccc;
+}
+body[builder-theme].popupBody .form-fileupload a.remove{
+    color: #EA5858;
+}
+body[builder-theme].popupBody .form-fileupload a.remove:hover{
+    color: #EA5858;
+    text-decoration: none;
+}
+body[builder-theme].popupBody .btn-outline-danger {
+    color: #dc3545;
+    padding: .25rem .5rem;
+    line-height: 1.5;
+    font-size: 13px;
+    border: 1px solid transparent;
+    border-radius: .2rem;
+    box-shadow: 0 0 2px rgb(0 0 0 / 20%), 0 4px 4px -2px rgb(0 0 0 / 20%);
+}
+body[builder-theme].popupBody .btn-outline-danger:hover{
+    color: #fff;
+}
+body[builder-theme].popupBody .tox .tox-statusbar__wordcount{
+    padding: 0;
+    margin-right: 0px;
+}
+body.rtl[builder-theme='dark'].popupBody .chosen-rtl .chosen-choices li.search-choice{
+    padding: 3px 5px 3px 19px;
+}
+body.rtl[builder-theme].popupBody input[type=checkbox]:checked::after,
+body.rtl[builder-theme].popupBody input[type=radio]:checked::after{
+    position: relative;
+}
+body.rtl[builder-theme].popupBody input[type=checkbox]:checked::after{
+    left: -6px;
+}
+body.rtl[builder-theme].popupBody input[type=radio]:checked::after{
+    left: -5px;
 }
 body[builder-theme='dark'] jmexpander{
     color: #808080;
@@ -3194,4 +3314,39 @@ body[builder-theme='dark'].rtl .flexigrid div.nBtn.srtd,
 body[builder-theme='dark'].rtl .flexigrid div.nBtn{
     border-left: 0px;
     border-right: 1px solid var(--theme-primary-color-2);
+}
+body[builder-theme].popupBody .multiPagedForm .page-nav-panel .nav_item button{
+    box-shadow: none;
+    border-bottom-left-radius: 0;
+    border-bottom-right-radius: 0;
+}
+body[builder-theme].popupBody .selector_element .selector_button{
+    margin-right: 0px;   
+}
+body[builder-theme].rtl.popupBody .selector_element .selector_button{
+    margin-right: 0px;   
+}
+body[builder-theme].rtl .editor-panel-mode .property-type-checkbox-truefalse .property-input .multiple_option label .hidden_label {
+    padding-right: 20px;
+    padding-left: 0px;
+}
+body[builder-theme].rtl .editor-panel-mode .property-type-checkbox-truefalse .property-input .multiple_option label input[type=checkbox]:checked::after,
+body[builder-theme].rtl .editor-panel-mode .property-type-checkbox-truefalse .property-input .multiple_option label input[type=radio]:checked::after{
+    left:0px;
+}
+body[builder-theme].rtl .property-input .multiple_option input{
+    margin-right: 0px;
+    margin-left: 12px;
+}
+body[builder-theme].rtl span.hidden_label{
+    margin-left: 0px;
+    margin-right: 10px;
+}
+body[builder-theme].rtl .editor-panel-mode .property-grid .property-input .grid input[type=checkbox]:checked::after{
+    position:relative;
+    left: -5px;
+}
+body[builder-theme].rtl .property-editor-container:not(.editor-panel-mode) .elementmultiselect .repeater-row .actions.sort,
+body[builder-theme].rtl .property-editor-container:not(.editor-panel-mode) .repeater-row .actions.rowbuttons{
+    border-color: var(--theme-border-color-1);
 }

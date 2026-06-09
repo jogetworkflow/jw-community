@@ -1,23 +1,23 @@
 $(document).ready(function() {
     const targetSpan = $("body").find(".header-nav a.btn .badge")[0];
-    const observer = new MutationObserver( (mutations) => {
-        mutations.forEach( (mutation) => {
-            if (mutation.type === "characterData" || mutation.type === "childList") {
-                if (targetSpan.textContent.trim() === "0") {
-                    $(targetSpan).addClass("empty");
-                } else {
-                    $(targetSpan).removeClass("empty");
+    if (targetSpan !== undefined) {
+        const observer = new MutationObserver( (mutations) => {
+            mutations.forEach( (mutation) => {
+                if (mutation.type === "characterData" || mutation.type === "childList") {
+                    if (targetSpan.textContent.trim() === "0") {
+                        $(targetSpan).addClass("empty");
+                    } else {
+                        $(targetSpan).removeClass("empty");
+                    }
                 }
-            }
-        }
-        );
+            });
+        });
+        observer.observe(targetSpan, {
+            characterData: true,
+            childList: true,
+            subtree: true
+        });
     }
-    );
-    observer.observe(targetSpan, {
-        characterData: true,
-        childList: true,
-        subtree: true
-    });
     $(window).off("load.inbox").on("load.inbox", function() {
         setTimeout(function() {
             loadInbox();
@@ -85,7 +85,7 @@ $(document).ready(function() {
                 $("body").find("ul#category-container > li.category").each(function() {
                     if (!$(this).hasClass("first") && prevMenu !== null) {
                         if ($("body").hasClass("rtl")) {
-                            gap = $(prevMenu).offset().left - $(this).offset().left + $(this).outerWidth();
+                            gap = $(this).offset().left + $(this).outerWidth() - $(prevMenu).offset().left;
                         } else {
                             gap = $(this).offset().left - ($(prevMenu).offset().left + $(prevMenu).outerWidth());
                         }
@@ -94,14 +94,11 @@ $(document).ready(function() {
                     prevMenu = $(this);
                     totalMenuWidth += gap;
                 })
-                var breakpoint = $(window).outerWidth();
+                var breakpoint = $("#sidebar").outerWidth();
                 if ($("body").hasClass("inline_menu")) {
-                    breakpoint -= ($("header.navbar .container-fluid").outerWidth(true) - $("header.navbar .container-fluid").innerWidth());
-                    breakpoint -= $("a#header-link").outerWidth(true);
-                    breakpoint -= $("header.navbar .header-nav").outerWidth(true);
-                    breakpoint -= 20;
+                    breakpoint -= 30;
                 } else {
-                    breakpoint -= 32; //Cater for margin
+                    breakpoint -= 32;
                 }
 
                 $("body").find("nav button#leftNav").remove();
@@ -250,55 +247,6 @@ $(document).ready(function() {
                 }
             }, 150);
         }
-
-        var $navigationButtons = $('<div class="navigation-arrows-container"><div class="left-navigation-arrow"></div><div class="right-navigation-arrow"></div></div>');
-        if ($(".form-element.multiPagedForm > .page-nav-panel.top .navigation-arrows-container").length === 0) {
-            $(".form-element.multiPagedForm > .page-nav-panel.top > ul").after($navigationButtons);
-        } 
-
-
-        function checkScrollPosition($ul) {
-            let scrollLeft = $ul.scrollLeft();
-            let maxScrollLeft = $ul[0].scrollWidth - $ul[0].clientWidth;
-            if (scrollLeft <= 0) {
-                $ul.parent().find(".navigation-arrows-container > .left-navigation-arrow").addClass("disabled");
-            } else {
-                $ul.parent().find(".navigation-arrows-container > .left-navigation-arrow").removeClass("disabled");
-            }
-            if (Math.round(scrollLeft) >= Math.round(maxScrollLeft)) {
-                $ul.parent().find(".navigation-arrows-container > .right-navigation-arrow").addClass("disabled");
-            } else {
-                $ul.parent().find(".navigation-arrows-container > .right-navigation-arrow").removeClass("disabled");
-            }
-        }
-        $navigationButtons.find("div.left-navigation-arrow").on("click", function() {
-            let $ul = $(this).parent().prev("ul");
-            $ul.scrollLeft($ul.scrollLeft() - 100);
-            setTimeout(function() {
-                checkScrollPosition($ul);
-            }, 300);
-        });
-        $navigationButtons.find("div.right-navigation-arrow").on("click", function() {
-            let $ul = $(this).parent().prev("ul");
-            $ul.scrollLeft($ul.scrollLeft() + 100);
-            setTimeout(function() {
-                checkScrollPosition($ul);
-            }, 300);
-        });
-        $(".form-element.multiPagedForm > .page-nav-panel.top > ul").each(function() {
-            checkScrollPosition($(this));
-
-            var totalWidth = 0;
-            $(this).find("li").each(function(){
-                totalWidth += $(this).width();
-            })
-
-            if (totalWidth <= $(this).parent().width()) {
-                $(this).addClass("hideNavArrows")
-            } else {
-                $(this).removeClass("hideNavArrows")
-            }
-        });
     })
     $(window).on("page_loaded", function() {
         if ($("a.print-button").length > 0) {
@@ -306,9 +254,6 @@ $(document).ready(function() {
                 $(this).appendTo($(this).closest("div.Form_Menu").find("div.viewForm-body-content div#section-actions"));
             })
         }
-        $(".dataList .filters select").on("change", function() {
-            $(this).closest("div.filters").find("input.form-button[type='submit'][value='Show']").click();
-        })
     })
     $(window).resize(function() {
         if (($("body").hasClass("horizontal_menu") && $(window).outerWidth() < 768) || !$("body").hasClass("horizontal_menu")) {

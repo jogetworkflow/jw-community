@@ -1,16 +1,13 @@
 package org.joget.apps.datalist.model;
 
-import java.util.HashMap;
-import java.util.Map;
+import org.joget.apps.util.DefaultPropertyValuesCache;
 import org.joget.plugin.base.ExtDefaultPlugin;
-import org.joget.plugin.property.service.PropertyUtil;
 
 /**
  * Base class for a data list action
  */
 public abstract class DataListActionDefault extends ExtDefaultPlugin implements DataListAction {
     private DataList datalist;
-    private static Map<String, String> defaultPropertyValues = new HashMap<String, String>();
 
     public DataList getDatalist() {
         return datalist;
@@ -57,9 +54,6 @@ public abstract class DataListActionDefault extends ExtDefaultPlugin implements 
     }
     
     public String getDefaultPropertyValues(){
-        if (!DataListActionDefault.defaultPropertyValues.containsKey(getClassName())) {
-            DataListActionDefault.defaultPropertyValues.put(getClassName(), PropertyUtil.getDefaultPropertyValues(getPropertyOptions()));
-        }
-        return DataListActionDefault.defaultPropertyValues.get(getClassName());
+        return DefaultPropertyValuesCache.getDefaultPropertyValues(this);
     }
 }

@@ -52,6 +52,10 @@ public class Dx8TrimedaTheme extends AjaxUniversalTheme {
 
     @Override
     public String getJsCssLib(Map<String, Object> data) {
+        //Reset the property
+        setProperty("darkMode", "");
+        setProperty("compactTheme", "");
+
         String jsCssLink = super.getJsCssLib(data);
         
         //Remove ajaxuniversal.min.js
@@ -67,6 +71,17 @@ public class Dx8TrimedaTheme extends AjaxUniversalTheme {
         
         jsCssLink += "<style>" + generateLessCss() + "</style>";
         
+        // Compact Mode
+        if ("true".equals(getPropertyString("compactMode"))) {
+            jsCssLink += "<script src=\"" + data.get("context_path") + "/wro/compactTheme.js\" defer></script>\n";
+            jsCssLink += "<script>" +
+                        "$(function() {" +
+                        "  const density = localStorage.getItem(\"density\");" +
+                        "  if (density) { $(\"body\").addClass(density + \"-mode\"); }" +
+                        "});" +
+                        "</script>\n";
+        }
+
         return jsCssLink;
     }
 
@@ -119,6 +134,8 @@ public class Dx8TrimedaTheme extends AjaxUniversalTheme {
                     url = data.get("context_path") + "/universal/user.png";
                 }
                 profileImageTag = "<img alt=\"profile\" width=\"30\" height=\"30\" src=\"" + url + "\" /> ";
+            } else if ("no".equals(getPropertyString("userImage"))) {
+                profileImageTag = "<i class=\"fas fa-user-circle\"></i>";
             }
 
             html += "<li class=\"user-link dropdown\">\n"
@@ -417,6 +434,10 @@ public class Dx8TrimedaTheme extends AjaxUniversalTheme {
                   + "    </ul>\n"
                   + "<li>";
         }
+
+        if ("true".equals(getPropertyString("compactMode"))) {
+            html += super.getCompactThemeSwitch(data);
+        }
         
         return html;
     }
@@ -435,7 +456,7 @@ public class Dx8TrimedaTheme extends AjaxUniversalTheme {
 
     @Override
     protected String getBreadcrumb(Map<String, Object> data) {
-        String breadcrumb = "<ul class=\"breadcrumb\"><li><i class=\"fa fa-home\"></i> <a href=\"" + data.get("home_page_link") + "\">" + ResourceBundleUtil.getMessage("theme.universal.home") + "</a> <span class='separator'> - </span></li>";
+        String breadcrumb = "<ul class=\"breadcrumb\"><li> <a href=\"" + data.get("home_page_link") + "\">" + ResourceBundleUtil.getMessage("theme.universal.home") + "</a> <span class='separator'> - </span></li>";
         if ((Boolean) data.get("is_login_page") || (Boolean) data.get("embed")) {
             return "";
         } else if (userview.getCurrent() != null) {

@@ -37,6 +37,7 @@ import java.util.Properties;
 import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 import java.util.zip.ZipOutputStream;
@@ -46,6 +47,7 @@ import org.apache.commons.collections.map.ListOrderedMap;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.StringUtils;
 import org.eclipse.jgit.api.errors.GitAPIException;
+import org.hibernate.exception.SQLGrammarException;
 import org.hibernate.proxy.HibernateProxy;
 import org.joget.apps.app.dao.AppDefinitionDao;
 import org.joget.apps.app.dao.AppResourceDao;
@@ -57,24 +59,8 @@ import org.joget.apps.app.dao.MessageDao;
 import org.joget.apps.app.dao.PackageDefinitionDao;
 import org.joget.apps.app.dao.PluginDefaultPropertiesDao;
 import org.joget.apps.app.dao.UserviewDefinitionDao;
-import org.joget.apps.app.model.AbstractAppVersionedObject;
-import org.joget.apps.app.model.AppDefinition;
-import org.joget.apps.app.model.AppImportExportAwarePlugin;
-import org.joget.apps.app.model.AppResource;
-import org.joget.apps.app.model.BuilderDefinition;
-import org.joget.apps.app.model.DatalistDefinition;
-import org.joget.apps.app.model.EnvironmentVariable;
-import org.joget.apps.app.model.FormDefinition;
-import org.joget.apps.app.model.ImportAppException;
-import org.joget.apps.app.model.Message;
-import org.joget.apps.app.model.PackageActivityForm;
-import org.joget.apps.app.model.PackageActivityPlugin;
-import org.joget.apps.app.model.PackageDefinition;
-import org.joget.apps.app.model.PackageParticipant;
-import org.joget.apps.app.model.PluginDefaultProperties;
-import org.joget.apps.app.model.ProcessFormModifier;
-import org.joget.apps.app.model.StartProcessFormModifier;
-import org.joget.apps.app.model.UserviewDefinition;
+import org.joget.apps.app.model.*;
+import org.joget.apps.datalist.service.DataListUtil;
 import org.joget.apps.form.dao.FormDataDao;
 import org.joget.apps.form.dao.FormDataDaoImpl;
 import org.joget.apps.form.lib.LinkButton;
@@ -97,6 +83,7 @@ import org.joget.apps.form.service.FormService;
 import org.joget.apps.form.service.FormUtil;
 import org.joget.apps.userview.model.UserviewSetting;
 import org.joget.apps.userview.service.UserviewService;
+import org.joget.apps.userview.service.UserviewUtil;
 import org.joget.apps.workflow.lib.AssignmentCompleteButton;
 import org.joget.commons.util.DynamicDataSourceManager;
 import org.joget.commons.util.FileManager;
@@ -538,10 +525,10 @@ public class AppServiceImpl implements AppService {
         String activityDefId = assignment.getActivityDefId();
         Form form = null;
         AppDefinition appDef = null;
-        
+
         final String key = activityId.intern();
         synchronized (key) {
-        
+
             // get and submit mapped form
             PackageActivityForm paf = retrieveMappedForm(appId, version, processDefId, activityDefId);
             if (paf != null) {
@@ -1153,7 +1140,7 @@ public class AppServiceImpl implements AppService {
                 appDef == null || //there is no appDef in thread
                 !appDef.getId().equals(appId) || //different appDef in thread
                 (versionLong != null && versionLong == -1l && !appDef.isPublished()) || //required published version but appDef in thread is not
-                (versionLong != null && !appDef.getVersion().equals(versionLong))) { //required version not match 
+                (versionLong != null && !appDef.getVersion().equals(versionLong))) { //required version not match
             // no matching app in thread, load from DAO
             appDef = loadAppDefinition(appId, version);
         }
@@ -1342,8 +1329,22 @@ public class AppServiceImpl implements AppService {
                         }
                     }
                     
-                    //import
+                    // convert modified XML definitions into AppDefinition object
                     appDef = serializer.read(AppDefinition.class, new ByteArrayInputStream(appDefinitionXml), false);
+
+                    // perform pre-import CustomBuilder processing
+                    Collection<BuilderDefinition> builderDefinitions = appDef.getBuilderDefinitionList();
+                    Map<CustomBuilder, List<BuilderDefinition>> builderDefinitionMap = builderDefinitions.stream()
+                            .collect(Collectors.groupingBy(o -> CustomBuilderUtil.getBuilder(o.getType())));
+                    for (Entry<CustomBuilder, List<BuilderDefinition>> entry : builderDefinitionMap.entrySet()) {
+                        CustomBuilder key = entry.getKey();
+                        if (key instanceof CustomBuilderCloneCallback) {
+                            List<BuilderDefinition> value = entry.getValue();
+                            ((CustomBuilderCloneCallback) key).onClone(Collections.unmodifiableList(value), appDef);
+                        }
+                    }
+
+                    // import app
                     AppDefinition newAppDef = importAppDefinition(appDef, 1L, xpdl);
                     
                     AppResourceUtil.copyAppResources(copy.getAppId(), copy.getVersion().toString(), newAppDef.getAppId(), newAppDef.getVersion().toString());
@@ -1387,7 +1388,7 @@ public class AppServiceImpl implements AppService {
     @Transactional
     public Collection<String> createAppDefinitionFromTemplate(AppDefinition appDefinition, String templateId, String tablePrefix) {
         Collection<String> errors = new ArrayList<String>();
-        
+
         // check for duplicate
         String appId = appDefinition.getId();
         AppDefinition appDef = appDefinitionDao.loadById(appId);
@@ -1405,7 +1406,7 @@ public class AppServiceImpl implements AppService {
         }
         return errors;
     }
-    
+
     /**
      * Create a new app definition from template
      * @param appDefinition
@@ -1444,7 +1445,7 @@ public class AppServiceImpl implements AppService {
                 
                 //find template
                 byte[] templateConfig = getTemplateConfigFromZip(zip);
-        
+
                 //for backward compatible
                 Map<String, String> replacement = new LinkedHashMap<String, String>();
                 replacement.put("<!--disableSaveAsDraft>", "<disableSaveAsDraft>");
@@ -1457,7 +1458,7 @@ public class AppServiceImpl implements AppService {
                 replacement.put("</resourceList-->", "</resourceList>");
                 replacement.put("<!--builderDefinitionList>", "<builderDefinitionList>");
                 replacement.put("</builderDefinitionList-->", "</builderDefinitionList>");
-                
+
                 appData = StringUtil.searchAndReplaceByteContent(appData, replacement);
 
                 RegistryMatcher m = new RegistryMatcher();
@@ -1476,20 +1477,20 @@ public class AppServiceImpl implements AppService {
                 } else {
                     appData = StringUtil.searchAndReplaceFirstByteContent(appData, replacement);
                 }
-                
+
                 replacement = new LinkedHashMap<String, String>();
                 replacement.put("<appId>"+zipApp.getAppId()+"</appId>", "<appId>"+appDefinition.getAppId()+"</appId>");
                 replacement.put("/app/"+zipApp.getAppId()+"/", "/app/"+appDefinition.getAppId()+"/");
                 replacement.put("/userview/"+zipApp.getAppId()+"/", "/userview/"+appDefinition.getAppId()+"/");
                 replacement.put("app_fd_" + zipApp.getAppId() + "_pd", "app_fd_" + appDefinition.getAppId() + "_pd"); //for process enhancement process data table
-                
+
                 String prefix = findCommonTablePrefix(zipApp);
                 
                 Map<String, String> templateReplace = new LinkedHashMap<String, String>();
                 if (templateConfig != null) {
                     retrieveTemplateReplaceMap(replacement, templateReplace, prefix, tablePrefix, new JSONObject(new String(templateConfig, "UTF-8")));
                 }
-                
+
                 //replace table prefix
                 if (tablePrefix != null && !tablePrefix.isEmpty()) {
                     replacement.put("app_fd_" + prefix, "app_fd_" + tablePrefix);
@@ -1503,21 +1504,21 @@ public class AppServiceImpl implements AppService {
                 } else {
                     appData = StringUtil.searchAndReplaceByteContent(appData, replacement, 5, null); // start after name tag of appDefinition
                 }
-                
+
                 Map<String, String> replace = new HashMap<String, String>();
                 replace.put("Id=\""+zipApp.getAppId()+"\"", "Id=\""+appDefinition.getAppId()+"\"");
                 replace.put("id=\""+zipApp.getAppId()+"\"", "id=\""+appDefinition.getAppId()+"\"");
                 replace.put("Name=\""+StringUtil.escapeString(zipApp.getName(), StringUtil.TYPE_XML+";"+StringUtil.TYPE_XML)+"\"", "Name=\""+StringUtil.escapeString(appDefinition.getName(), StringUtil.TYPE_XML+";"+StringUtil.TYPE_XML)+"\"");
                 replace.put("name=\""+StringUtil.escapeString(zipApp.getName(), StringUtil.TYPE_XML+";"+StringUtil.TYPE_XML)+"\"", "name=\""+StringUtil.escapeString(appDefinition.getName(), StringUtil.TYPE_XML+";"+StringUtil.TYPE_XML)+"\"");
                 xpdl = StringUtil.searchAndReplaceFirstByteContent(xpdl, replace);
-                
+
                 if (!templateReplace.isEmpty()) {
                     xpdl = StringUtil.searchAndReplaceByteContent(xpdl, templateReplace, 3, null); //should not replace package id & name
                 }
-                
+
                 AppDefinition tempAppDef = serializer.read(AppDefinition.class, new ByteArrayInputStream(appData), false);
                 AppDefinition newAppDef = importAppDefinition(tempAppDef, 1L, xpdl);
-            
+
                 AppResourceUtil.importFromZip(newAppDef.getAppId(), newAppDef.getVersion().toString(), zip);
                 importPlugins(zip);
                 importFormData(zip);
@@ -1724,7 +1725,7 @@ public class AppServiceImpl implements AppService {
 
             // save app def
             appDefinitionDao.saveOrUpdate(newAppDef);
-            
+
             return newAppDef;
         } catch (Exception e) {
             LogUtil.error(AppServiceImpl.class.getName(), e, appId);
@@ -1990,7 +1991,11 @@ public class AppServiceImpl implements AppService {
         if (form != null) {
             try {
                 formData = formService.submitForm(form, formData, ignoreValidation);
-                
+
+                // clear hash variable plugins from the request after submitting form
+                AppDefinition appDef = AppUtil.getCurrentAppDefinition();
+                AppUtil.removeHashVariablePluginsFromRequest(appDef);
+
                 if (formData.getRequestParameter("_json") == null && formData.getRequestParameter("_nonce") == null) { //don't execute for embed form
                     FormUtil.executePostFormSubmissionProccessor(form, formData);
                 }
@@ -2289,6 +2294,7 @@ public class AppServiceImpl implements AppService {
                 return null;
             }
             AppDefinition prevAppDef = appDefinitionDao.loadVersion(appId, previousVersion);
+            AppUtil.setCurrentAppDefinition(prevAppDef);
             prevAppDef.setPublished(Boolean.FALSE);
             appDefinitionDao.saveOrUpdate(prevAppDef);
         }
@@ -2303,6 +2309,7 @@ public class AppServiceImpl implements AppService {
             appDef = appDefinitionDao.loadVersion(appId, versionLong);
         }
         if (appDef != null) {
+            AppUtil.setCurrentAppDefinition(appDef);
             appDef.setPublished(Boolean.TRUE);
             appDefinitionDao.saveOrUpdate(appDef);
         }
@@ -2319,6 +2326,7 @@ public class AppServiceImpl implements AppService {
         AppDefinition prevAppDef = getPublishedAppDefinition(appId);
         // unset previous published version
         if (prevAppDef != null) {
+            AppUtil.setCurrentAppDefinition(prevAppDef);
             prevAppDef.setPublished(Boolean.FALSE);
             appDefinitionDao.saveOrUpdate(prevAppDef);
         }
@@ -2649,7 +2657,7 @@ public class AppServiceImpl implements AppService {
             
             //handle AppImportExportAwarePlugin
             handleAppImportExportAwarePluginsDuringImport(newAppDef, zip);
-            
+
             return newAppDef;
         } catch (ImportAppException e) {
             throw e;
@@ -2934,6 +2942,24 @@ public class AppServiceImpl implements AppService {
         }
     }
 
+    // Modified method to return generated ID info instead of using instance variable
+    private String generateMissingEnvVarId(EnvironmentVariable envVar, AppDefinition appDef) {
+        if (envVar.getId() == null || envVar.getId().trim().isEmpty()) {
+            String newId = "__gen_missing_id_" + UuidGenerator.getInstance().getUuid();
+            LogUtil.warn(getClass().getName(), "Generated new ID: " + newId + " for empty env var in app " + appDef.getAppId());
+            envVar.setId(newId);
+
+            String originalRemarks = envVar.getRemarks();
+            String appendedRemarks = (originalRemarks == null || originalRemarks.trim().isEmpty())
+                ? "Note: This variable was missing an ID during import, so a new ID was automatically generated."
+                : "Original remarks: " + originalRemarks + "\n | Note: This variable was missing an ID during import, so a new ID was automatically generated.";
+
+            envVar.setRemarks(appendedRemarks);
+            return newId;
+        }
+        return null;
+    }
+
     /**
      * Import an app definition object and XPDL content into the system.
      * @param appDef
@@ -2948,7 +2974,10 @@ public class AppServiceImpl implements AppService {
         Boolean overridePluginDefault = false;
         Boolean doNotImportParticipant = false;
         Boolean doNotImportTool = false;
-        
+
+        // Use local list for thread safety - each request gets its own list
+        List<String> generatedEnvVarIds = new ArrayList<>();
+
         HttpServletRequest request = WorkflowUtil.getHttpServletRequest();
         if (request != null && request.getParameterValues("overrideEnvVariable") != null) {
             overrideEnvVariable = true;
@@ -2962,7 +2991,7 @@ public class AppServiceImpl implements AppService {
         if (request != null && request.getParameterValues("doNotImportTool") != null) {
             doNotImportTool = true;
         }
-        
+
         //fix app id letter case issue during import
         AppDefinition orgAppDef = getPublishedAppDefinition(appDef.getAppId());
         if (orgAppDef == null) {
@@ -2972,7 +3001,7 @@ public class AppServiceImpl implements AppService {
         if (orgAppDef != null) {
             appId = orgAppDef.getAppId();
         }
-        
+
         AppDevUtil.setImportApp(true);
         try {
             LogUtil.info(getClass().getName(), "Importing app " + appDef.getId() + " ...");
@@ -2990,42 +3019,41 @@ public class AppServiceImpl implements AppService {
             appDefinitionDao.saveOrUpdate(newAppDef);
 
             if (appDef.getFormDefinitionList() != null) {
-                Set<String> tables = new HashSet<String>();
-                Collection<String> importedForms = new ArrayList<String>();
+                Collection<String> importedForms = new ArrayList<>();
                 for (FormDefinition o : appDef.getFormDefinitionList()) {
                     o.setAppDefinition(newAppDef);
+                    FormUtil.validateDefinitionIdWithJsonForImport(o);
                     formDefinitionDao.add(o);
-                    tables.add(o.getTableName());
                     importedForms.add(o.getId());
                     formDataDao.clearFormTableCache(o.getTableName());
-                }
 
-                String currentTable = "";
-                try {
-                    for (String table : tables) {
-                        currentTable = table;
+                    String currentTable = o.getTableName();
+                    try {
                         // initialize db table by making a dummy load
                         String dummyKey = "xyz123";
-                        formDataDao.loadWithoutTransaction(table, table, dummyKey);
-                        LogUtil.debug(getClass().getName(), "Initialized form table " + table);
+                        formDataDao.loadWithoutTransaction(currentTable, currentTable, dummyKey);
+                        LogUtil.debug(getClass().getName(), "Initialized form table " + currentTable);
+                    } catch (Exception e) {
+                        //error creating form data table, rollback
+                        for (String formId : importedForms) {
+                            formDefinitionDao.delete(formId, newAppDef);
+                        }
+                        appDefinitionDao.delete(newAppDef);
+                        String errorMessage = "";
+                        if (currentTable.length() > 20) {
+                            errorMessage = ": " + ResourceBundleUtil.getMessage("form.form.invalidId");
+                        } else if (e instanceof SQLGrammarException) {
+                            errorMessage = "- possible cause: column name too long";
+                        }
+                        throw new ImportAppException(ResourceBundleUtil.getMessage("console.app.import.error.createTable", new Object[]{currentTable, errorMessage}), e);
                     }
-                } catch (Exception e) {
-                    //error creating form data table, rollback
-                    for (String formId : importedForms) {
-                        formDefinitionDao.delete(formId, newAppDef);
-                    }
-                    appDefinitionDao.delete(newAppDef);
-                    String errorMessage = "";
-                    if (currentTable.length() > 20) {
-                        errorMessage = ": " + ResourceBundleUtil.getMessage("form.form.invalidId");
-                    }
-                    throw new ImportAppException(ResourceBundleUtil.getMessage("console.app.import.error.createTable", new Object[]{currentTable, errorMessage}), e);
                 }
                 LogUtil.info(getClass().getName(), "Imported form definitions : " + appDef.getFormDefinitionList().size());        
             }
 
             if (appDef.getDatalistDefinitionList() != null) {
                 for (DatalistDefinition o : appDef.getDatalistDefinitionList()) {
+                    DataListUtil.validateDefinitionIdWithJson(o);
                     o.setAppDefinition(newAppDef);
                     datalistDefinitionDao.add(o);
                     LogUtil.debug(getClass().getName(), "Added list " + o.getId());
@@ -3035,6 +3063,7 @@ public class AppServiceImpl implements AppService {
 
             if (appDef.getUserviewDefinitionList() != null) {
                 for (UserviewDefinition o : appDef.getUserviewDefinitionList()) {
+                    UserviewUtil.validateDefinitionIdWithJson(o);
                     String name = "";
                     if (o.getName() != null) {
                         name = StringUtil.stripAllHtmlTag(o.getName());
@@ -3059,6 +3088,7 @@ public class AppServiceImpl implements AppService {
 
             if (appDef.getBuilderDefinitionList() != null) {
                 for (BuilderDefinition o : appDef.getBuilderDefinitionList()) {
+                    CustomBuilderUtil.validateDefinitionIdWithJson(o);
                     o.setAppDefinition(newAppDef);
                     builderDefinitionDao.add(o);
 
@@ -3076,7 +3106,7 @@ public class AppServiceImpl implements AppService {
                 }
                 LogUtil.info(getClass().getName(), "Imported addon builder definitions : " + appDef.getBuilderDefinitionList().size());
             }
-            
+
             if (!overrideEnvVariable && orgAppDef != null && orgAppDef.getEnvironmentVariableList() != null) {
                 Set<String> existId = new HashSet<String>();
                 for (EnvironmentVariable o : orgAppDef.getEnvironmentVariableList()) {
@@ -3091,27 +3121,33 @@ public class AppServiceImpl implements AppService {
 
                 if (appDef.getEnvironmentVariableList() != null) {
                     for (EnvironmentVariable o : appDef.getEnvironmentVariableList()) {
+                        // Only process if ID doesn't exist in original app
                         if (!existId.contains(o.getId())) {
-                            if (o.getValue() == null) {
-                                o.setValue("");
+                            String generatedId = generateMissingEnvVarId(o, newAppDef);
+                            if (generatedId != null) {
+                                generatedEnvVarIds.add(generatedId);
                             }
-                            o.setAppDefinition(newAppDef);
-                            environmentVariableDao.add(o);
+                            prepareAndAddEnvironmentVariable(o, newAppDef);
                         }
                     }
                 }
             } else {
                 if (appDef.getEnvironmentVariableList() != null) {
                     for (EnvironmentVariable o : appDef.getEnvironmentVariableList()) {
-                        if (o.getValue() == null) {
-                            o.setValue("");
+                        // Check if ID was generated and track it
+                        String generatedId = generateMissingEnvVarId(o, newAppDef);
+                        if (generatedId != null) {
+                            generatedEnvVarIds.add(generatedId);
                         }
-                        o.setAppDefinition(newAppDef);
-
-                        environmentVariableDao.add(o);
+                        prepareAndAddEnvironmentVariable(o, newAppDef);
                     }
                     LogUtil.info(getClass().getName(), "Imported environments variables : " + appDef.getEnvironmentVariableList().size());
                 }
+            }
+
+            // Log if any IDs were generated
+            if (!generatedEnvVarIds.isEmpty()) {
+                LogUtil.warn(getClass().getName(), "Generated " + generatedEnvVarIds.size() + " environment variable IDs during import for app " + appDef.getAppId() + ": " + String.join(", ", generatedEnvVarIds));
             }
 
             if (appDef.getMessageList() != null) {
@@ -3243,6 +3279,14 @@ public class AppServiceImpl implements AppService {
         } finally {
             AppDevUtil.setImportApp(null);
         }
+    }
+
+    private void prepareAndAddEnvironmentVariable(EnvironmentVariable o, AppDefinition newAppDef) {
+        if (o.getValue() == null) {
+            o.setValue("");
+        }
+        o.setAppDefinition(newAppDef);
+        environmentVariableDao.add(o);
     }
 
     /**
@@ -3590,7 +3634,7 @@ public class AppServiceImpl implements AppService {
             AppUtil.setCurrentAppDefinition(orgAppDef);
         }
         return resultAppDefinitionList;
-    }    
+    }
     
     /**
      * Retrieve list of published processes available to the current user
@@ -3862,31 +3906,39 @@ public class AppServiceImpl implements AppService {
         if (appDef.getEnvironmentVariableList() != null) {
             for (EnvironmentVariable env : appDef.getEnvironmentVariableList()) {
                 if (env.getId().equals("table_prefix")) {
-                    prefix = env.getValue();
+                    if (env.getValue() != null) {
+                        prefix = env.getValue();
+                    }
                     break;
                 }
             }
         }
-        if (prefix.isEmpty()) {
-            List<String> tableNameList = (List<String>) formDefinitionDao.getTableNameList(appDef);
-            if (tableNameList != null && !tableNameList.isEmpty()) {
-                
-                String firstString = tableNameList.get(0);
-                int length = firstString.length();
-                
-                for (int i = 0; i < length; i++) {
-                    char c = firstString.charAt(i);
-                    for (int j = 1; j < tableNameList.size(); j++) {
-                        String compare = tableNameList.get(j);
-                        if (i >= compare.length() || compare.charAt(i) != c) {
-                            prefix = firstString.substring(0, i);
-                            break;
-                        }
-                    }
-                    if (!prefix.isEmpty()) {
-                        break; //prefix is already found
-                    }
-                }
+        
+        if (!prefix.isEmpty()) {
+            return prefix;
+        }
+
+        List<String> tableNameList = (List<String>) formDefinitionDao.getTableNameList(appDef);     
+        if (tableNameList == null || tableNameList.isEmpty() || tableNameList.size() == 1) {
+            return "";
+        }
+        
+        prefix = tableNameList.get(0);
+
+        for (int i = 1; i < tableNameList.size(); i++) {
+            String other = tableNameList.get(i);
+            int minLen = Math.min(prefix.length(), other.length());
+            int j = 0;
+
+            while (j < minLen && prefix.charAt(j) == other.charAt(j)) {
+                j++;
+            }
+
+            prefix = prefix.substring(0, j);
+
+            // Stop early when prefix is not the same
+            if (prefix.isEmpty()) {
+                break;
             }
         }
         return prefix;

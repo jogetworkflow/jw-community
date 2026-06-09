@@ -241,6 +241,59 @@ public class TestStringUtil {
     }
     
     @Test
+    public void testFixUnclosedTags_closesUnclosedTag() throws Exception {
+        String input = "<div><span>hello";
+        String result = StringUtil.fixUnclosedTags(input);
+        Assert.isTrue(result.equals("<div><span>hello</span></div>"), "unclosed tags should be closed");
+    }
+
+    @Test
+    public void testFixUnclosedTags_noDocumentWrapperTags() throws Exception {
+        // Before the fix, doc.html() would return <html><head></head><body>...</body></html>
+        String input = "<div>test</div>";
+        String result = StringUtil.fixUnclosedTags(input);
+        Assert.isTrue(!result.contains("<html>"), "result should not contain <html> tag");
+        Assert.isTrue(!result.contains("<head>"), "result should not contain <head> tag");
+        Assert.isTrue(!result.contains("<body>"), "result should not contain <body> tag");
+        Assert.isTrue(result.equals("<div>test</div>"), "result should be body content only");
+    }
+
+    @Test
+    public void testFixUnclosedTags_noPrettyPrint() throws Exception {
+        // Before the fix, pretty print would add newlines and indentation
+        String input = "<div><span>hello</span></div>";
+        String result = StringUtil.fixUnclosedTags(input);
+        Assert.isTrue(result.equals(input), "result should not have extra whitespace from pretty printing");
+        Assert.isTrue(!result.contains("\n"), "result should not contain newlines from pretty printing");
+    }
+
+    @Test
+    public void testFixUnclosedTags_preservesInlineFormatting() throws Exception {
+        String input = "<p>text with <b>bold</b> and <i>italic</i></p>";
+        String result = StringUtil.fixUnclosedTags(input);
+        Assert.isTrue(result.equals(input), "well-formed HTML should be returned unchanged without reformatting");
+    }
+
+    @Test
+    public void testFixUnclosedTags_nullInput() throws Exception {
+        String result = StringUtil.fixUnclosedTags(null);
+        Assert.isTrue(result == null, "null input should return null");
+    }
+
+    @Test
+    public void testFixUnclosedTags_emptyInput() throws Exception {
+        String result = StringUtil.fixUnclosedTags("");
+        Assert.isTrue(result.equals(""), "empty input should return empty string");
+    }
+
+    @Test
+    public void testFixUnclosedTags_plainText() throws Exception {
+        String input = "just plain text";
+        String result = StringUtil.fixUnclosedTags(input);
+        Assert.isTrue(result.equals(input), "plain text should be returned unchanged");
+    }
+
+    @Test
     public void testEscapeImg2Base64() throws Exception {
         //todo
     }

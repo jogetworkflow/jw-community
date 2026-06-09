@@ -256,7 +256,7 @@ AjaxComponent = {
         
         var headers = new Headers();
         headers.append(ConnectionManager.tokenName, ConnectionManager.tokenValue);
-        headers.append("__ajax_theme_loading", "true");
+        headers.append("ajax-theme-loading", "true");
         
         var contentConatiner = $("#content.page_content");
         
@@ -265,7 +265,7 @@ AjaxComponent = {
                 isAjaxComponent = true;
                 contentConatiner = $(element).closest("[data-ajax-component]");
 
-                headers.append("__ajax_component", $(contentConatiner).attr("id"));
+                headers.append("ajax-component", $(contentConatiner).attr("id"));
                 
                 if(isTriggerByEvent) {
                     $(contentConatiner).data("event-url", url);
@@ -359,6 +359,8 @@ AjaxComponent = {
                 } else {
                     document.location.href = url;
                 }
+            } else if (!response.ok) {
+                throw new Error(response.status);
             }
             
             const disposition = response.headers.get('Content-Disposition');

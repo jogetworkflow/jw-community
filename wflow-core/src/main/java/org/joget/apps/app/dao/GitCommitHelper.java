@@ -79,6 +79,9 @@ public class GitCommitHelper {
 
     public void addCommitMessage(String newCommitMessage) {
         String messageToAppend = newCommitMessage + ". \n";
+        if (commitMessage == null) {
+            commitMessage = "";
+        }
         if (!commitMessage.contains(messageToAppend)) {
             commitMessage += messageToAppend;
         }

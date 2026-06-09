@@ -17,21 +17,20 @@ import org.joget.workflow.shark.model.SharkObjectId;
  * table when update the next object id in clustering environment
  */
 public class SharkObjectIdDao extends AbstractSpringDao {
-    
+
     public static final String ENTITY_NAME = "SharkObjectId";
-    private final static long CACHE_SIZE = 200;
 
     public SharkObjectId getNext(Long old) {
         int retryCount = 0;
         boolean retry = false;
-        
+
         SharkObjectId temp = new SharkObjectId();
         do {
             SessionFactory sf = super.getSessionFactory();
 
             // Check if session factory is null
             if (sf == null) {
-                return null; 
+                return null;
             }
 
             Session session = null;
@@ -40,30 +39,32 @@ public class SharkObjectIdDao extends AbstractSpringDao {
                 session = sf.openSession();
                 session.setHibernateFlushMode(FlushMode.MANUAL);
                 transaction = session.beginTransaction();
-                
+
                 //find the last next oid
                 Query find = session.createQuery("SELECT e FROM " + ENTITY_NAME + " e");
                 Collection<SharkObjectId> result = (Collection<SharkObjectId>) find.list();
-                
+
+                long cacheSize = SharkCounterDao.getCacheSize();
+
                 if (!result.isEmpty()) {
                     SharkObjectId nextOid = result.iterator().next();
-                    
+
                     //lock it for update
-                    session.refresh(ENTITY_NAME, nextOid, new LockOptions(LockMode.PESSIMISTIC_WRITE));
+                    session.refresh(nextOid, new LockOptions(LockMode.PESSIMISTIC_WRITE));
                     
                     LogUtil.debug(SharkObjectIdDao.class.getName(), "Retrieved number is " + nextOid.getNextoid() + ", old number is " + old);
-                    
+
                     temp.setNextoid(nextOid.getNextoid());
-                    temp.setMaxoid(nextOid.getNextoid() + CACHE_SIZE);
-                    
+                    temp.setMaxoid(nextOid.getNextoid() + cacheSize);
+ 
                     //update the next oid
                     Query query = session.createQuery("update " + ENTITY_NAME + " set nextoid=?1 where nextoid=?2");
                     query.setParameter(1, temp.getMaxoid());
                     query.setParameter(2, temp.getNextoid());
                     query.executeUpdate();
-                    
+
                     session.evict(nextOid);
-                    
+
                     return temp;
                 }
             } catch (Exception e) {
@@ -89,7 +90,7 @@ public class SharkObjectIdDao extends AbstractSpringDao {
                 }
             }
         } while (retry);
-        
+
         return null;
     }
 }

@@ -22,6 +22,7 @@ import java.util.Properties;
 import java.util.ResourceBundle;
 import java.util.Set;
 import java.util.TreeMap;
+import java.util.concurrent.locks.ReentrantLock;
 import java.util.jar.JarFile;
 import org.apache.felix.framework.Felix;
 import org.apache.felix.framework.util.StringMap;
@@ -51,6 +52,7 @@ import java.util.Date;
 import java.util.Dictionary;
 import java.util.Enumeration;
 import java.util.HashSet;
+import java.util.concurrent.locks.ReentrantReadWriteLock;
 import java.util.jar.JarEntry;
 import javax.servlet.http.HttpServletRequest;
 import org.apache.commons.collections.map.ListOrderedMap;
@@ -85,12 +87,14 @@ public class PluginManager implements ApplicationContextAware {
     private static ProfilePluginCache pluginCache = new ProfilePluginCache();
     private Set<String> blackList;
     private Set<String> scanPackageList;
-    protected Set<String> filesInProgress = new HashSet<String>(); //don't need to consider profile as the plugin for each profile having differrent absolute path
+    protected Set<String> filesInProgress = new HashSet<String>(); // don't need to consider profile as the plugin for each profile has different absolute paths
     
     public final static String ESCAPE_JAVASCRIPT = "javascript";
     protected final static String COMPLETED = "COMPLETED::";
     
     private FileAlterationMonitor monitor = null;
+    private final ReentrantReadWriteLock refreshLock = new ReentrantReadWriteLock(true);
+    private final ReentrantLock pluginListLoadLock = new ReentrantLock();
     
     /**
      * Used by system to initialize Plugin manager
@@ -295,8 +299,9 @@ public class PluginManager implements ApplicationContextAware {
             
             Bundle bundle = installBundle(file.toURI().toURL().toExternalForm());
             if (bundle != null) {
-                startBundle(bundle);
-                checkDependency(bundle);
+                if (startBundle(bundle)) {
+                    checkDependency(bundle);
+                }
                 LogUtil.info(PluginManager.class.getName(), "Installed plugin " + file.getName());
             }
         } catch (Exception e) {
@@ -377,7 +382,7 @@ public class PluginManager implements ApplicationContextAware {
             }
         }
     }
-
+   
     protected Bundle installBundle(String location) {
         try {
             BundleContext context = getOsgiContainer().getBundleContext();
@@ -414,9 +419,49 @@ public class PluginManager implements ApplicationContextAware {
                     // clear cache
                     clearCache();
                 }
+            } else {
+                checkAndReloadDependentPlugins(context, bundle);
             }
         } catch (Exception be) {
             LogUtil.error(PluginManager.class.getName(), be, "Failed to check dependency: " + be.toString());
+        }
+    }
+
+    /**
+     * Checks if a bundle's services share the same classloader with any custom plugin interfaces ...
+     * ... and reloads dependent plugins if needed to ensure consistent classloading.
+     * 
+     * @param bundle
+     * @return 
+     */
+    protected void checkAndReloadDependentPlugins(BundleContext context, Bundle bundle) {
+        // Get all services registered by this bundle
+        ServiceReference[] refs = bundle.getRegisteredServices();
+        if (refs != null) {
+            for (ServiceReference sr : refs) {
+                Object obj = context.getService(sr);
+                context.ungetService(sr);
+                Class pluginClass = obj.getClass();
+
+                // Check against all custom plugin interfaces
+                for (CustomPluginInterface pluginInterface : getCache().getCustomPluginInterfaces().values()) {
+                    Class interfaceClass = pluginInterface.getClassObj();
+
+                    // Check if the plugin class and interface class are loaded by the same classloader
+                    // This prevents the classloader mismatch issue ...
+                    // ... which results in `clazz.isInstance(plugin)` returning `false` in PluginJsonController.writePluginsResponse()
+                    if (pluginClass.getClassLoader().equals(interfaceClass.getClassLoader())) {
+                        // If they share the same classloader, reload dependent plugins ...
+                        // ... to ensure all related bundles are using the same classloader instance
+                        if (reloadDependentPlugins(bundle)) {
+                            // clear cache
+                            clearCache();
+                        }
+                        break; //it only need to reload once for each bundle
+                    }
+                }
+                break; // Only need to check the first service because all services in the bundle share the same classloader
+            }
         }
     }
     
@@ -457,7 +502,8 @@ public class PluginManager implements ApplicationContextAware {
      * @return  
      */
     protected boolean reloadDependentPlugins(Bundle bundle) {
-        boolean reloaded = false;
+        Collection<Bundle> bundleList = new ArrayList<Bundle>();
+        
         try {
             String groupId = getBundleGroupId(bundle);
             
@@ -468,19 +514,22 @@ public class PluginManager implements ApplicationContextAware {
                         uninstallBundle(b.getLocation());
                         Bundle newBundle = installBundle(b.getLocation());
                         if (newBundle != null) {
-                            startBundle(newBundle);
+                            bundleList.add(newBundle);
                         }
-                        
-                        reloaded = true;
-                        
-                        LogUtil.info(PluginManager.class.getName(), "Reloaded plugin " + b.getSymbolicName());
                     }
+                }
+                
+                //start all dependent plugins all together after all bundle re-installed
+                //so that same CustomPluginInterface is used
+                for (Bundle b : bundleList) {
+                    startBundle(b); 
+                    LogUtil.info(PluginManager.class.getName(), "Reloaded plugin " + b.getSymbolicName());
                 }
             }
         } catch (Exception be) {
             LogUtil.error(PluginManager.class.getName(), be, "");
         }
-        return reloaded;
+        return !bundleList.isEmpty();
     }
     
     /**
@@ -544,7 +593,7 @@ public class PluginManager implements ApplicationContextAware {
                 String line;
                 while ((line = reader.readLine()) != null) {
                     if (line.contains("<groupId>"+groupId+"</groupId>")) {
-                        return true;
+                         return true;
                     }
                 }
             } catch (Exception be) {
@@ -598,8 +647,13 @@ public class PluginManager implements ApplicationContextAware {
     public Date lastClearedCache() {
         return getCache().getLastCleared();
     }
+    
+    protected boolean validateBundle(Bundle bundle) {
+        return true;
+    }
 
     protected boolean startBundle(Bundle bundle) {
+        boolean started;
         try {
             //bundle.update();
             bundle.start();
@@ -620,14 +674,16 @@ public class PluginManager implements ApplicationContextAware {
                     context.ungetService(sr);
                 }
             }
+            
+            started = validateBundle(bundle);
 
             // clear cache
             clearCache();
         } catch (Exception be) {
             LogUtil.error(PluginManager.class.getName(), be, "Failed bundle start for " + bundle + ": " + be.toString());
-            return true;
+            started = false;
         }
-        return false;
+        return started;
     }
     
     /**
@@ -646,18 +702,27 @@ public class PluginManager implements ApplicationContextAware {
      */
     public Collection<Plugin> list(Class clazz) {
         // lookup in cache
+        Map<String, Plugin> pluginMap = getPluginsByClass(clazz);
+        return new ArrayList<>(pluginMap.values());
+    }
+
+    protected Map<String, Plugin> getPluginsByClass(Class<?> clazz) {
         Class classFilter = (clazz != null) ? clazz : Plugin.class;
         Map<String, Plugin> pluginMap = getCache().getPluginCache().get(classFilter);
         if (pluginMap == null) {
-            // load plugins
-            pluginMap = internalLoadPluginMap(clazz);
-
-            // store in cache
-            getCache().getPluginCache().put(classFilter, pluginMap);
+            pluginListLoadLock.lock();
+            try {
+                // re-check under lock in case another thread populated the cache
+                pluginMap = getCache().getPluginCache().get(classFilter);
+                if (pluginMap == null) {
+                    pluginMap = internalLoadPluginMap(clazz);
+                    getCache().getPluginCache().put(classFilter, pluginMap);
+                }
+            } finally {
+                pluginListLoadLock.unlock();
+            }
         }
-        Collection<Plugin> pluginList = new ArrayList<Plugin>();
-        pluginList.addAll(pluginMap.values());
-        return pluginList;
+        return pluginMap;
     }
 
     /**
@@ -931,8 +996,9 @@ public class PluginManager implements ApplicationContextAware {
             if (location != null && isValid) {
                 Bundle newBundle = installBundle(location);
                 if (newBundle != null) {
-                    startBundle(newBundle);
-                    checkDependency(newBundle);
+                    if (startBundle(newBundle)) {
+                        checkDependency(newBundle);
+                    }
                 } else {
                     //delete invalid file
                     try {
@@ -1075,14 +1141,7 @@ public class PluginManager implements ApplicationContextAware {
      */
     public Plugin getPluginByTypeAndName(Class pluginType, String name) {
         if (pluginType != null && name != null && !name.isEmpty()) {
-            Map<String, Plugin> pluginMap = getCache().getPluginCache().get(pluginType);
-            if (pluginMap == null) {
-                // load plugins
-                pluginMap = internalLoadPluginMap(pluginType);
-
-                // store in cache
-                getCache().getPluginCache().put(pluginType, pluginMap);
-            }
+            Map<String, Plugin> pluginMap = getPluginsByClass(pluginType);
             
             Plugin plugin = pluginMap.get(name);
             if (plugin != null) {

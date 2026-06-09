@@ -6,7 +6,9 @@
 .form-cell .label, .subform-cell .label {
     float: right;
 }
-
+.ql-editor{
+    text-align: right !important;
+}
 .form-column, .subform-column {
     color: #666666;
     float: right;
@@ -28,4 +30,8 @@ body.rtl .close-icon:after {
 body.rtl .boxy-wrapper .title-bar a.close{
     right: auto !important;
     left: 10px !important;
+}
+
+.ql-editor{
+    text-align: right !important;
 }

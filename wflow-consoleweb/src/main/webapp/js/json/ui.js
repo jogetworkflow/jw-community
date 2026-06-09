@@ -5,6 +5,28 @@ UI = {
    userview_id: '',
    locale: '',
    theme: '',
+
+    getFunction: function(name) {
+        try {
+            if ($.isFunction(name)) {
+                return name;
+            }
+            var parts = name.split(".");
+            var func = null;
+            if (parts[0] !== undefined && parts[0] !== "") {
+                func = window[parts[0]];
+            }
+            if (parts.length > 1) {
+                for (var i = 1; i < parts.length; i++) {
+                    func = func[parts[i]];
+                }
+            }
+
+            return func;
+        } catch (err) {};
+        return null;
+    },
+
    escapeHTML: function(c) {
       if (c == null || c == undefined) {
           return '';
@@ -21,6 +43,16 @@ UI = {
             div.innerHTML= c;
             return (div.textContent || div.innerText || "");
         } 
+   },
+   stripHtmlRelaxed: function(c) {
+        if (c == null || c == undefined) {
+            return '';
+        }
+        var stripped = UI.stripHtmlTags(c);
+        if (c.length > stripped.length) {
+            return '';
+        }
+        return stripped;
    },
    userviewThemeParams: function () {
       var params = ''; 
@@ -208,8 +240,12 @@ UI = {
                     
                     ConnectionManager.post(UI.base + '/web/userview/'+UI.userview_app_id+'/appI18nMessages', {
                         success : function(data) {
-                            UI.messages = $.extend(UI.messages, eval('['+data+']')[0]);
-                            
+                            try {
+                                var parsedData = JSON.parse(data);
+                                UI.messages = $.extend(UI.messages, parsedData);
+                            } catch (error) {
+                                console.error('Failed to parse i18n messages:', error);
+                            }
                             var callbacks = UI.messagesCalls[callKey];
                             delete UI.messagesCalls[callKey];
                             
@@ -249,9 +285,27 @@ UI = {
             multiple: multiple // Set the multiple parameter dynamically
         };
 
-        ConnectionManager.post('/jw/web/api/validateEmail', internalCallback, params);
+        ConnectionManager.post(UI.base + '/web/api/validateEmail', internalCallback, params);
 
         return false; // Prevent default behavior
+    },
+    isValidInput: function(input) {
+        if (input === null || input === "") return true;
+        
+        const s = input.trim();
+        
+        // Valid input pattern - allows alphanumeric, spaces, and specific special characters
+        const VALID_PATTERN = /^[\p{L}\p{M}\p{N} ._'\-]+$/u;
+    
+        // Patterns for consecutive special characters and start/end validation
+        const CONSECUTIVE_SPECIALS = /[._'\-]{2,}/;
+        const START_END_SPECIALS = /^[._'\-]|[._'\-]$/;
+
+        if (!VALID_PATTERN.test(s)) return false;
+        if (CONSECUTIVE_SPECIALS.test(s)) return false;
+        if (START_END_SPECIALS.test(s)) return false;
+        
+        return true;
     }
 };
 
@@ -728,11 +782,14 @@ JsonTable.prototype = {
                 if (name == command) {
                     var callback = thisObject.buttons[i].callback;
                     var selectedRows = thisObject.getSelectedRows();
-                    var functionCall = callback + "(selectedRows)";
-                    //alert(command + ": " + thisObject.getSelectedRows() + "; " + functionCall);
-                    var result = eval(functionCall);
-                    //alert(result);
-                    return result;
+                    var func = UI.getFunction(callback);
+                    if(func && $.isFunction(func)){
+                        var result = func(selectedRows);
+                        return result;
+                    }else{
+                        console.error('Invalid button callback function');
+                        return false;
+                    }
                 }
             }
         }
@@ -1130,10 +1187,6 @@ HelpGuide = {
                 HelpGuide.startGuide(helpDef);
             }
         });
-        
-        $(window).on("resize scroll", function() {
-            HelpGuide.reposition();
-        });
     },
     
     hide: function() {
@@ -1181,15 +1234,41 @@ HelpGuide = {
         });
 
     },
+
+    processHelpDefinition: function(helpDefObj) {
+        for (var i = 0; i < helpDefObj.length; i++) {
+            var guide = helpDefObj[i];
+            if (guide.buttons && Array.isArray(guide.buttons)) {
+                for (var j = 0; j < guide.buttons.length; j++) {
+                    var button = guide.buttons[j];
+                    if (button.onclick && typeof button.onclick === 'string') {
+                        // Convert string to function reference
+                        var func = UI.getFunction(button.onclick);
+                        if (func && $.isFunction(func)) {
+                            button.onclick = func;
+                        } else {
+                            console.error('Invalid button onclick function: ' + button.onclick);
+                            delete button.onclick;
+                        }
+                    }
+                }
+            }
+        }
+        return helpDefObj;
+    },
     
     startGuide: function(helpJson) {
         // eval definition
         var helpDefObj;
         if (helpJson != "") {
             try {
-                helpDefObj = eval(helpJson);
+                helpDefObj = JSON.parse(helpJson);
+                // Process the parsed JSON to convert onclick strings to functions
+                if (helpDefObj && helpDefObj.length > 0) {
+                    helpDefObj = HelpGuide.processHelpDefinition(helpDefObj);
+                }
             } catch (e) {
-                //alert(e);
+                console.error('Failed to parse help guide JSON:', e);
             }
         }
         if (helpDefObj == null) {
@@ -1214,6 +1293,21 @@ HelpGuide = {
                 }, 500);
             }
         }
+        let resizeScrollTimer;
+
+        $(window).on("resize scroll", function () {
+            if (HelpGuide.isEnabled()) {
+                clearTimeout(resizeScrollTimer); // cancel any previous scheduled run
+                resizeScrollTimer = setTimeout(function () {
+                    var index = $(".guider:not([style*='display: none'])").index(".guider");
+
+                    if (index !== -1 && helpDefObj[index] && guiders._guiders[helpDefObj[index].id]) {
+                        var guider = guiders._guiders[helpDefObj[index].id];
+                        HelpGuide.guiderOnShow(guider, true);
+                    }
+                }, 500); 
+            }
+        });
     },
     
     displayGuide: function(def, i, total) {
@@ -1226,72 +1320,7 @@ HelpGuide = {
                 def.steps = total;
                 
                 //auto adjust position
-                if (def.position !== undefined && def.position !== 0) {
-                    var atOffset = $(def.attachTo).offset();
-                    var atWidth = $(def.attachTo).outerWidth();
-                    var atHeight = $(def.attachTo).outerHeight();
-                    var scWidth = $(window).width();
-                    var scHeight = $(window).height();
-                    var wlimit = atOffset.left + atWidth + 400;
-                    var hlimit = atOffset.top + atHeight + 150;
-                    if (def.position >= 2 & def.position <= 4) { //right
-                        if (wlimit > scWidth) {
-                            if (atOffset.left - 400 < 0) {
-                                def.position = 0;
-                            } else {
-                                if (def.position === 2) {
-                                    def.position = 10;
-                                } else if (def.position === 3) {
-                                    def.position = 9;
-                                } else if (def.position === 4) {
-                                    def.position = 8;
-                                }
-                            }
-                        }
-                    } else if (def.position >= 8 & def.position <= 10) { //left
-                        if (atOffset.left - 400 < 0) {
-                            if (wlimit > scWidth) {
-                                def.position = 0;
-                            } else {
-                                if (def.position === 10) {
-                                    def.position = 2;
-                                } else if (def.position === 9) {
-                                    def.position = 3;
-                                } else if (def.position === 8) {
-                                    def.position = 4;
-                                }
-                            }
-                        }
-                    } else if (def.position >= 5 & def.position <= 7) { //bottom
-                        if (hlimit > scHeight) {
-                            if (atOffset.top - 150 < 0) {
-                                def.position = 0;
-                            } else {
-                                if (def.position === 5) {
-                                    def.position = 1;
-                                } else if (def.position === 6) {
-                                    def.position = 12;
-                                } else if (def.position === 7) {
-                                    def.position = 11;
-                                }
-                            }
-                        }
-                    } else { //top
-                        if (atOffset.top - 150 < 0) {
-                            if (hlimit > scHeight) {
-                                def.position = 0;
-                            } else {
-                                if (def.position === 1) {
-                                    def.position = 5;
-                                } else if (def.position === 12) {
-                                    def.position = 6;
-                                } else if (def.position === 11) {
-                                    def.position = 7;
-                                }
-                            }
-                        }
-                    }
-                }
+                HelpGuide.updatePosition(def);
                 
                 guider = guiders.createGuider(def);
                 if (def.show) {
@@ -1303,49 +1332,209 @@ HelpGuide = {
         }
     },
     
-    guiderOnShow : function(guider) {
-        if (guider.init === undefined) {
-            //add steps to guider
-            $(guider.elem).find('.guider_buttons').append('<spn class="steps">'+(guider.current+1)+'/'+guider.steps+'</span>')
-            guider.init = true;
-        }
-        
-        if (guider.script !== undefined) {
-            try {
-                eval(guider.script);
-            } catch (err) {}
-        }
-        
-        if (guider.highlight === undefined) {
-            guider.highlight = guider.attachTo;
-        }
-        
-        //if highlight
-        if (guider.highlight !== false) {
+    guiderOnShow: function(guider) {
+        function setOverlay(guider) {
             if ($('body .guider_hloverlay').length === 0) {
                 $('body').append('<div class="guider_hloverlay top"></div><div class="guider_hloverlay right"></div><div class="guider_hloverlay bottom"></div><div class="guider_hloverlay left"></div>');
             }
+            
+            var $hl = $(guider.highlight);
 
-            var offset = $(guider.highlight).offset();
-            var width = $(guider.highlight).outerWidth();
-            var height = $(guider.highlight).outerHeight();
             var pad = 5;
-            $('.guider_hloverlay.top').css({top:'0px', left: (offset.left-pad) + 'px', width: (width+pad+pad) + 'px', height: (offset.top - pad) + 'px'});
-            $('.guider_hloverlay.right').css({top:'0px', left: (offset.left+width+pad) + 'px', bottom: '0px', right: '0px'});
-            $('.guider_hloverlay.bottom').css({top:(offset.top+height+pad) + 'px', left: (offset.left-pad) + 'px', width: (width+pad+pad) + 'px', bottom: '0px'});
-            $('.guider_hloverlay.left').css({top:'0px', left: '0px', bottom: '0px', width: (offset.left-pad) + 'px'});
+            var rect = $hl[0].getBoundingClientRect();
+
+            var left   = Math.round(rect.left - pad);
+            var top    = Math.round(rect.top - pad);
+            var right  = Math.round(rect.right + pad);
+            var bottom = Math.round(rect.bottom + pad);
+
+            var vw = $(window).outerWidth();
+            var vh = $(window).outerHeight();
+
+            var points = [
+                `0px 0px`,
+                `0px ${vh}px`,
+                `${left}px ${vh}px`,
+                // Coordinates of the highlighted element
+                `${left}px ${top}px`,
+                `${right}px ${top}px`,
+                `${right}px ${bottom}px`,
+                `${left}px ${bottom}px`,
+                // End of Coordinates
+                `${left}px ${vh}px`,
+                `${vw}px ${vh}px`,
+                `${vw}px 0px`
+            ];
+
+            var clip = `polygon(${points.join(', ')})`;
+
+            var $overlay = $('.guider_hloverlay');
+            if (!$overlay.length) $overlay = $('<div class="guider_hloverlay"></div>').appendTo('body');
+
+            $overlay.css({
+                position: 'fixed',
+                top: 0, left: 0,
+                width: '100%', height: '100%',
+                margin: 0, padding: 0,
+                background: '#0000003d',
+                '-webkit-clip-path': clip,
+                'clip-path': clip,
+                'clip-rule': 'evenodd'
+            });
 
             $('body .guider_hloverlay').show();
+        }
+        function getScrollableAncestor(el) {
+            while (el && el !== document.body) {
+                const overflowY = window.getComputedStyle(el).overflowY;
+                if (overflowY === "auto" || overflowY === "scroll")
+                    return el;
+                el = el.parentElement;
+            }
+            return document.body;
+        }
+        const scrollableContainer = getScrollableAncestor($(guider.attachTo)[0]);
+        if (!$(scrollableContainer).is('body')) {
+            // Removed guider element and overlay from user's sight to wait for position update after change in screen width
+            $(guider.elem).css({
+                'top': '-1000px'
+            });
+            $('body .guider_hloverlay').css({
+                'top' : '-100000px'
+            })
+            
+            var $target = $(guider.attachTo);
+            var $container = $(scrollableContainer);
+            var targetOffset = $target.offset().top - $container.offset().top + $container.scrollTop();
+
+            // Center the target in the container
+            var scrollTo = targetOffset - ($container.height() / 2) + ($target.outerHeight() / 2);
+            
+            $container.animate({
+                scrollTop: scrollTo
+            }, 500, function() {
+                if (guider.highlight !== null && guider.highlight !== undefined && guider.highlight !== false) {
+                    setOverlay(guider);
+                } else {
+                    $('body .guider_hloverlay').hide();
+                }
+                
+                //Reposition for every change in position
+                HelpGuide.reposition();
+            });
+
+            return;
+        }
+        if (guider.script !== undefined) {
+            try {
+                var func = UI.getFunction(guider.script);
+                if(func && $.isFunction(func)){
+                    func();
+                }
+            } catch (err) {
+                console.error('Error executing help guide script:', err);
+            }
+        }
+        if (guider.highlight === undefined) {
+            guider.highlight = guider.attachTo;
+        }
+        if ((guider.highlight !== null && guider.highlight !== undefined && guider.highlight !== false) && $(scrollableContainer).is('body')) {
+            setOverlay(guider);
         } else {
             $('body .guider_hloverlay').hide();
         }
+
+        HelpGuide.reposition();
     },
-    
+
+    updatePosition : function(def) {
+        if (def.position !== undefined && def.position !== 0) {
+            var atOffset = $(def.attachTo).offset();
+            var atWidth = $(def.attachTo).outerWidth();
+            var atHeight = $(def.attachTo).outerHeight();
+            var scWidth = $(window).width();
+            var scHeight = $(window).height();
+            var wlimit = atOffset.left + atWidth + 400;
+            var hlimit = atOffset.top + atHeight + 150;
+            if (def.position >= 2 & def.position <= 4) { //right
+                if (wlimit > scWidth) {
+                    if (atOffset.left - 400 < 0) {
+                        def.position = 0;
+                    } else {
+                        if (def.position === 2) {
+                            def.position = 10;
+                        } else if (def.position === 3) {
+                            def.position = 9;
+                        } else if (def.position === 4) {
+                            def.position = 8;
+                        }
+                    }
+                }
+            } else if (def.position >= 8 & def.position <= 10) { //left
+                if (atOffset.left - 400 < 0) {
+                    if (wlimit > scWidth) {
+                        def.position = 0;
+                    } else {
+                        if (def.position === 10) {
+                            def.position = 2;
+                        } else if (def.position === 9) {
+                            def.position = 3;
+                        } else if (def.position === 8) {
+                            def.position = 4;
+                        }
+                    }
+                }
+            } else if (def.position >= 5 & def.position <= 7) { //bottom
+                if (hlimit > scHeight) {
+                    if (atOffset.top - 150 < 0) {
+                        def.position = 0;
+                    } else {
+                        if (def.position === 5) {
+                            def.position = 1;
+                        } else if (def.position === 6) {
+                            def.position = 12;
+                        } else if (def.position === 7) {
+                            def.position = 11;
+                        }
+                    }
+                }
+            } else { //top
+                if (atOffset.top - 150 < 0) {
+                    if (hlimit > scHeight) {
+                        def.position = 0;
+                    } else {
+                        if (def.position === 1) {
+                            def.position = 5;
+                        } else if (def.position === 12) {
+                            def.position = 6;
+                        } else if (def.position === 11) {
+                            def.position = 7;
+                        }
+                    }
+                }
+            }
+        }
+    },
+
     reposition: function() {
         var g;
-        for(g in guiders._guiders) {
+        for (g in guiders._guiders) {
+            if (guiders._guiders[g] !== undefined){      
+                var def = guiders._guiders[g];  
+
+                HelpGuide.updatePosition(def);
+            }   
+            
+            // Update the arrow style
+            $(guiders._guiders[g].elem)
+            .find(".guider_arrow")
+            .removeClass(function(index, className) {
+                return (className.match(/(^|\s)guider_arrow_\S+/g) || []).join(' ');
+            }); //Remove existing arrow styling from guider
+            guiders._styleArrow(guiders._guiders[g]);
+            
             guiders._attach(guiders._guiders[g]);
-        }        
+        }
     }
 
 };

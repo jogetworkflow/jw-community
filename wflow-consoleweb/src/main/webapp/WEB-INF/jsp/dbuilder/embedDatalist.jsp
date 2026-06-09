@@ -5,9 +5,14 @@
 <c:set var="isQuickEditEnabled" value="<%= AppUtil.isQuickEditEnabled() %>"/>
 <c:set var="isAdmin" value="<%= WorkflowUtil.isCurrentUserInRole(WorkflowUtil.ROLE_ADMIN) %>"/>
 
-<commons:popupHeader /> 
+<%
+    String theme = WorkflowUtil.getSystemSetupValue("systemTheme");
+    pageContext.setAttribute("theme", theme);
+%>
+
+<commons:popupHeader builderTheme="${theme}"  />
     <c:if test="${isQuickEditEnabled && isAdmin}">    
-        <script src="${pageContext.request.contextPath}/js/adminBar.js"></script>
+        <script src="${pageContext.request.contextPath}/js/adminBar.js?build=<fmt:message key="build.number"/>"></script>
         <script>
             AdminBar.cookiePath = '${pageContext.request.contextPath}/';
         </script>  
@@ -157,11 +162,15 @@
         function getSelectedData() {
             // find columns in datalist
             var columns = new Array();
-            var json = "(${json})";
-            var list = eval(json);
-            for (i=0; i<list.columns.length; i++) {
-                var column = list.columns[i];
-                columns.push(column);
+            var json = '${json}';
+            try {
+                var list = JSON.parse(json);
+                for (i=0; i<list.columns.length; i++) {
+                    var column = list.columns[i];
+                    columns.push(column);
+                }
+            } catch (e) {
+                console.error("Encountered an error in the request: ", e);
             }
             
             // get selected rows

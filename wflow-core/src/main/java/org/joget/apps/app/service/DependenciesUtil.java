@@ -2,11 +2,13 @@ package org.joget.apps.app.service;
 
 import java.io.ByteArrayInputStream;
 import javax.servlet.http.HttpServletRequest;
+import javax.xml.XMLConstants;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.xpath.XPath;
 import javax.xml.xpath.XPathConstants;
 import javax.xml.xpath.XPathFactory;
+import javax.xml.xpath.XPathFactoryConfigurationException;
 import org.joget.apps.app.model.CustomBuilder;
 import org.joget.commons.util.LogUtil;
 import org.joget.commons.util.ResourceBundleUtil;
@@ -20,22 +22,35 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
 public class DependenciesUtil {
-    
-    private static final XPath XPATH;
-    
-    static {
-        XPath xpath = XPathFactory.newInstance().newXPath();
+
+    // XPathFactory and XPath are not thread-safe.
+    // 1. Initialise static XPathFactory object and ONLY use it in ThreadLocal.withInitial to ensure thread safety.
+    // 2. Get an XPath object per thread from ThreadLocal to ensure thread safety.
+    private static final XPathFactory XPATH_FACTORY = XPathFactory.newInstance();
+    private static final ThreadLocal<XPath> threadLocalXpath = ThreadLocal.withInitial(() -> {
+        XPath xpath = XPATH_FACTORY.newXPath();
         xpath.setXPathFunctionResolver(new RegexMatchesFunctionResolver());
-        XPATH = xpath;
+        return xpath;
+    });
+
+    /**
+     * Get or create an XPath object for the current thread.
+     * <p>Never directly use the static {@code XPATH_FACTORY} variable to obtain your own XPath object as it is not
+     * thread-safe.
+     *
+     * @return an XPath object for the current thread
+     */
+    private static XPath createXPath() {
+        return threadLocalXpath.get();
     }
-    
+
     private static void findKeywords(JSONArray keywords, String text, String keyword) {
         int found = text.indexOf(keyword);
-                        
+
         while (found > 0) {
             int start = (found - 40 < 0) ? 0 : found - 40;
             int end = ((found + keyword.length() + 40) >= text.length())? text.length() : (found + keyword.length() + 40);
-            
+
             String words = text.substring(start, end);
             if (start != 0) {
                 words = "..." + words;
@@ -49,15 +64,15 @@ public class DependenciesUtil {
             found = text.indexOf(keyword);
         }
     }
-    
+
     private static void findHashVariableKeywords(JSONArray keywords, String text, String keyword) {
         int found = text.indexOf(keyword);
         String regex = ".*#[^#]+\\."+StringUtil.escapeRegex(keyword)+"([\\}?\\.\\[]+[^#]*)*#.*";
-                        
+
         while (found > 0) {
             int start = (found - 40 < 0) ? 0 : found - 40;
             int end = ((found + keyword.length() + 40) >= text.length())? text.length() : (found + keyword.length() + 40);
-            
+
             String words = text.substring(start, end);
             if (words.matches(regex)) {
                 if (start != 0) {
@@ -73,13 +88,14 @@ public class DependenciesUtil {
             found = text.indexOf(keyword);
         }
     }
-    
-    
+
+
     public static JSONArray getDependencies(String appId, String version, String type, String keyword, HttpServletRequest request) {
         keyword = SecurityUtil.validateStringInput(keyword);
-        
+        XPath xpath = createXPath(); // Create a new instance per method call
+
         AppService appService = (AppService) AppUtil.getApplicationContext().getBean("appService");
-        
+
         Long appVersion;
         if (version == null || version.isEmpty()) {
             appVersion = appService.getPublishedVersion(appId);
@@ -88,48 +104,47 @@ public class DependenciesUtil {
         }
         byte[] defXml = appService.getAppDefinitionXml(appId, appVersion, false);
         JSONArray usages = new JSONArray();
-        
+
         try {
             DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
             factory.setExpandEntityReferences(false);
             DocumentBuilder builder = factory.newDocumentBuilder();
             ByteArrayInputStream input =  new ByteArrayInputStream(defXml);
             Document xml = builder.parse(input);
-            
+
             String expression = "//json[contains(text(),'\""+keyword+"\"')]";
             expression += " | //pluginProperties[contains(text(),'\""+keyword+"\"')] ";
-            
+
             //Hash variable
             String regex = ".*#[^#]+\\."+StringUtil.escapeRegex(keyword)+"([\\}?\\.\\[]+[^#]*)*#.*";
             expression += " | //json[jfn:regexmatches(text(),'"+regex+"')]";
             expression += " | //pluginProperties[jfn:regexmatches(text(),'"+regex+"')] ";
-            
+
             if ("form".equals(type)) {
                 //handle for beanshell
                 expression += " | //json[contains(text(),'\""+keyword+"\\\"')]";
                 expression += " | //pluginProperties[contains(text(),'\""+keyword+"\\\"')] ";
-                
-                expression += " | //packageActivityForm/formId[normalize-space(text())='"+keyword+"']";	       
+
+                expression += " | //packageActivityForm/formId[normalize-space(text())='"+keyword+"']";
             } else if ("table".equals(type)) {
                 //handle for beanshell
                 expression += " | //json[contains(text(),'\""+keyword+"\\\"')]";
                 expression += " | //pluginProperties[contains(text(),'\""+keyword+"\\\"')] ";
-                
+
                 //handle for jdbc query
                 expression += " | //json[contains(text(),'app_fd_"+keyword+"')]";
                 expression += " | //pluginProperties[contains(text(),'app_fd_"+keyword+"')] ";
-                
+
                 //handle for form hash variable
                 expression += " | //json[contains(text(),'form."+keyword+".')]";
                 expression += " | //pluginProperties[contains(text(),'form."+keyword+".')] ";
             }
-            NodeList nodeList = (NodeList) XPATH.compile(expression).evaluate(xml, XPathConstants.NODESET);
-            
+            NodeList nodeList = (NodeList) xpath.compile(expression).evaluate(xml, XPathConstants.NODESET);
             if (nodeList.getLength() > 0) {
                 for (int i = 0; i < nodeList.getLength(); i++) {
                     JSONObject obj = new JSONObject();
                     Node nNode = nodeList.item(i);
-                    
+
                     if ("formId".equals(nNode.getNodeName())) {
                         Element parent = (Element) nNode.getParentNode().getParentNode();
                         Node where = parent.getElementsByTagName("string").item(0);
@@ -173,10 +188,10 @@ public class DependenciesUtil {
                         Node where = parent.getElementsByTagName("id").item(0);
                         String id = where.getTextContent();
                         obj.put("where", id);
-                        
+
                         Node label = parent.getElementsByTagName("name").item(0);
                         obj.put("label", label.getTextContent());
-                            
+
                         String nodeType = "form";
                         if ("userviewDefinition".equals(nNode.getParentNode().getNodeName())) {
                             nodeType = "userview";
@@ -185,11 +200,11 @@ public class DependenciesUtil {
                         } else if ("builderDefinition".equals(nNode.getParentNode().getNodeName())) {
                             nodeType = "cbuilder";
                         }
-                        
+
                         if (nodeType.equals(type) && keyword.equals(id)) {
                             continue;
                         }
-                        
+
                         if ("cbuilder".equals(nodeType)) {
                             Node builderTypeNode = parent.getElementsByTagName("type").item(0);
                             String builderType = builderTypeNode.getTextContent();
@@ -206,31 +221,31 @@ public class DependenciesUtil {
                             obj.put("link", request.getContextPath() + "/web/console/app/"+appId+"/"+version+"/"+nodeType+"/builder/"+id);
                         }
                     }
-                    
+
                     if ("pluginProperties".equals(nNode.getNodeName()) || "json".equals(nNode.getNodeName())) {
                         String text = nNode.getTextContent();
                         text = text.replaceAll("    ", "");
-                        
+
                         JSONArray foundArr = new JSONArray();
                         findKeywords(foundArr, text, "\""+keyword+"\"");
                         findHashVariableKeywords(foundArr, text, keyword);
-                        
+
                         if ("form".equals(type)) {
                             findKeywords(foundArr, text, "\\\""+keyword+"\\\"");
                         }
-                        
+
                         if ("table".equals(type)) {
                             findKeywords(foundArr, text, "\\\""+keyword+"\\\"");
                             findKeywords(foundArr, text, "form."+keyword+".");
                             findKeywords(foundArr, text, "app_fd_"+keyword+"");
                         }
-                        
+
                         obj.put("found", foundArr);
                     }
                     usages.put(obj);
                 }
             }
-            
+
         } catch (Exception e) {
             LogUtil.error(DependenciesUtil.class.getName(), e, "");
         }

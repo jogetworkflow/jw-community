@@ -1,10 +1,9 @@
-var version = "7.0.0";
 var cacheName = "jw-cache";
 var contextPath = '%s';
 var appUserviewId = '%s';
 var userviewKey = '_';
 var homePageLink = '';
-var appCacheName = appUserviewId + "-" + version;
+var appCacheName = appUserviewId + "-7.0.0";
 const buildNumber = '%s';
 var urlsToCache = [
         contextPath + '/css/v7.css',
@@ -41,6 +40,7 @@ var formUsername = null;
 var formUserviewAppId = null;
 var formPageTitle = null;
 var formData = null;
+var formUrl = null;
 
 var formDb = null;
 
@@ -123,50 +123,59 @@ function cacheUserview(){
         });
 }
 
+let currentPageUrlPromiseResolve;
+const currentPageUrlPromise = new Promise((resolve) => {
+    currentPageUrlPromiseResolve = resolve;
+});
+
 self.addEventListener('install', function (event) {
     console.log('SW install event');
-    self.skipWaiting();
     event.waitUntil(
-        caches.delete(appCacheName)
-            .then(function(){
-                caches.open(appCacheName)
-                    .then(function (cache) {
-                        var promises = [];
+        currentPageUrlPromise.then((url) => {
+            self.skipWaiting();
+            if (url !== contextPath + "/web/login") {
+                caches.delete(appCacheName)
+                    .then(function(){
+                        caches.open(appCacheName)
+                            .then(function (cache) {
+                                var promises = [];
 
-                        urlsToCache.push(getPath() + '/_/pwaoffline');
-                        urlsToCache.push(getPath() + '/_/offline');
-                        promises.push(
-                            //cache one by one to prevent duplicate url causing DOMexception
-                            urlsToCache.map(function(url) {
-                                return caches.match(url).then(function(checkCache){
-                                    if(checkCache === undefined){
-                                        cache.addAll([url]).then(function() {
-                                            //console.log(url + " cached");
-                                        }).catch(function(err) {
-                                            //ignore
-                                        });
-                                    }else{
-                                        //console.log(url + ' already exists in cache');
-                                    }
-                                })
+                                urlsToCache.push(getPath() + '/_/pwaoffline');
+                                urlsToCache.push(getPath() + '/_/offline');
+                                promises.push(
+                                    //cache one by one to prevent duplicate url causing DOMexception
+                                    urlsToCache.map(function(url) {
+                                        return caches.match(url).then(function(checkCache){
+                                            if(checkCache === undefined){
+                                                cache.addAll([url]).then(function() {
+                                                    //console.log(url + " cached");
+                                                }).catch(function(err) {
+                                                    //ignore
+                                                });
+                                            }else{
+                                                //console.log(url + ' already exists in cache');
+                                            }
+                                        })
+                                    })
+                                );
+
+                                return Promise.all(promises);
                             })
-                        );
-
-                        return Promise.all(promises);
-                    })
                 cacheUserview();
-            })
+                    })
+            }
+        })
     );
 });
 
 self.addEventListener('fetch', function (event) {
     //https://stackoverflow.com/questions/48463483/what-causes-a-failed-to-execute-fetch-on-serviceworkerglobalscope-only-if
-    let isFileUpload = event.request.method === 'POST' 
-            && event.request.headers.get('X-Requested-With') 
+    let isFileUpload = event.request.method === 'POST'
+            && event.request.headers.get('X-Requested-With')
             && event.request.headers.get('X-Requested-With').indexOf("XMLHttpRequest") !== -1; //for file upload progress bar
-    
-    if ((event.request.cache === 'only-if-cached' && event.request.mode !== 'same-origin') 
-            || isFileUpload) { 
+
+    if ((event.request.cache === 'only-if-cached' && event.request.mode !== 'same-origin')
+            || isFileUpload) {
         return;
     }
 
@@ -198,7 +207,8 @@ self.addEventListener('fetch', function (event) {
                 return response;
             })
             .catch(function () {
-                if(event.request.method === 'POST' && formData !== null){
+                const validUrl = verifyUrlHostname(fetchRequest.url);
+                if (validUrl && event.request.method === 'POST' && formData !== null && formUrl === fetchRequest.url) {
                     console.log('form POST failed, saving to indexedDB');
 
                     savePostRequest(event.request.clone().url, formUserviewAppId, formPageTitle, formData, formUsername);
@@ -216,7 +226,7 @@ self.addEventListener('fetch', function (event) {
                                     resolve(offlineResponse);
                                 }else{
                                     if (template && template !== "") {
-                                        var isAjaxTheme = event.request.headers.get('__ajax_theme_loading');
+                                        var isAjaxTheme = event.request.headers.get('ajax-theme-loading');
                                         if (isAjaxTheme === undefined || isAjaxTheme === null) {
                                             var responseText = await response.clone().text();
                                             var menuStartIndex = responseText.indexOf("ajaxtheme_loading_menus");
@@ -318,8 +328,13 @@ self.addEventListener('push', function (event) {
                             break;
                         }
                     }
-                    if (!found && serviceWorkerList[0].indexOf(appUserviewId.replace('-', '/')) !== -1) {
-                        show = true; //can't found the service worker for current url, use the first 1 to show
+                                        
+                    if (!found) {
+                        const appPath = appUserviewId.replace('-', '/');
+                        const fallbackMatch = serviceWorkerList.find(sw => sw.indexOf(appPath) !== -1);
+                        if (fallbackMatch) {
+                            show = true; // can't find the service worker for current url, use the matched appUserviewId in the list
+                        }
                     }
                 }
 
@@ -455,7 +470,12 @@ function getCsrfToken(){
 }
 
 function savePostRequest(url, userviewAppId, title, payload, username) {
-    var request = getObjectStore(FORM_DB_STORE_NAME, 'readwrite').add({
+    if (!verifyUrlHostname(url)) {
+        const timestamp = new Date().toISOString();
+        console.error(`${timestamp} - Unable to save post request, URL contains invalid hostname`);
+        return;
+    }
+    const request = getObjectStore(FORM_DB_STORE_NAME, 'readwrite').add({
         url: url,
         userviewAppId: userviewAppId,
         username: username,
@@ -480,6 +500,14 @@ function sendFormDataToServer(savedRequest){
     console.log('sendFormDataToServer', savedRequest);
 
     return new Promise(function(resolve, reject) {
+        if (!verifyUrlHostname(savedRequest.url)) {
+            const timestamp = new Date().toISOString();
+            console.log(`${timestamp} - Deleting offline form data ID '${savedRequest.id}' because URL contains invalid hostname`);
+            getObjectStore(FORM_DB_STORE_NAME, 'readwrite').delete(savedRequest.id);
+            resolve();
+            return;
+        }
+
         if(savedRequest.status === STATUS_FORM_ERROR){
             reject();
             return;
@@ -512,7 +540,7 @@ function sendFormDataToServer(savedRequest){
                         continue;
                     }
 
-                    if(key === 'OWASP_CSRFTOKEN'){
+                    if(key === 'OWASP-CSRFTOKEN'){
                         //ignore
                     }else{
                         //check if File array
@@ -526,7 +554,7 @@ function sendFormDataToServer(savedRequest){
                         }
                     }
                 }
-                formDataObj.append('OWASP_CSRFTOKEN', json.tokenValue);
+                formDataObj.append('OWASP-CSRFTOKEN', json.tokenValue);
 
                 fetch(requestUrl, {
                     headers: {
@@ -708,7 +736,25 @@ function connectCacheDB(f, mode) {
     };
 }
 
+function verifyUrlHostname(url) {
+    if (url == null || url.trim() === '') {
+        return false;
+    }
+    try {
+        const parsed = url instanceof URL ? url : new URL(url);
+        return parsed.hostname === self.location.hostname;
+    } catch (e) {
+        const timestamp = new Date().toISOString();
+        console.error(`${timestamp} - Invalid URL provided: ${url}`, e);
+        return false;
+    }
+}
+
 self.addEventListener('message', function(event) {
+    if (event.data.type === 'CURRENT_PAGE_URL') {
+        currentPageUrlPromiseResolve(event.data.url); // Resolve the promise when message is received
+    }
+
     if (event.data.hasOwnProperty('sync')) {
         console.log('sync received');
         processStoredFormData();
@@ -727,6 +773,7 @@ self.addEventListener('message', function(event) {
         formData = event.data.formData;
         formUserviewAppId = event.data.formUserviewAppId;
         formUsername = event.data.formUsername;
+        formUrl = event.data.formUrl;
     }
 
     if (event.data.hasOwnProperty('serviceWorkerList')) {

@@ -1,6 +1,6 @@
 PermissionManager = {
     render: function(container) {
-        if (CustomBuilder.paletteElements['permission-rule'] === undefined) {
+        if (CustomBuilder.paletteElements['permission-rule'] === undefined || CustomBuilder.paletteElements['permission-plugin'] === undefined) {
             PermissionManager.initPermissionComponent();
         }
         

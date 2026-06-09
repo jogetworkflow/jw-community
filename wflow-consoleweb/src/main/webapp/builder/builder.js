@@ -1,8 +1,9 @@
 /**
  * Customised from https://github.com/givanz/VvvebJs
  */
+import * as jsondiffpatch from '../js/jsondiffpatch/jsondiffpatch-0-7-3.js';
 
- _CustomBuilder = {
+window._CustomBuilder = {
     isAjaxReady : false,
     saveUrl : '',
     previewUrl : '',
@@ -21,7 +22,8 @@
                 getDefinitionUrl : "",
                 rightPropertyPanel : false,
                 defaultBuilder : false,
-                submitDiff : false //use for saving, prepare diff and post together with json definition
+                submitDiff : false, //use for saving, prepare diff and post together with json definition
+                idSuggestionFormat : "" //used to determine id suggestion naming convention (snakeCase, camelCase), default(leaving it blank) is snake case.
             },
             callbacks : {
                 initBuilder : "",
@@ -253,7 +255,7 @@
         
         var headers = new Headers();
         headers.append(ConnectionManager.tokenName, ConnectionManager.tokenValue);
-        headers.append("_ajax-rendering", "true");
+        headers.append("ajax-rendering", "true");
         
         var args = {
             method : "GET",
@@ -857,7 +859,9 @@
      * Add element to palette
      */
     initPaletteElement : function(categories, className, label, icon, propertyOptions, defaultPropertiesValues, render, css, metaData, tab){
-        if (this.paletteElements[className] !== undefined) {
+        if (this.paletteElements[className] !== undefined && !(
+                this.paletteElements[className].isMissing === true
+                && metaData.isMissing === undefined)) {
             return;
         }
         if (tab === undefined || tab === "") {
@@ -1053,7 +1057,7 @@
             function(returnedData){
                 if (returnedData !== null && returnedData !== undefined) {
                     CustomBuilder.permissionOptions = returnedData;
-                    for (e in returnedData) {
+                    for (let e in returnedData) {
                         if (returnedData[e].value !== "") {
                             CustomBuilder.availablePermission[returnedData[e].value] = returnedData[e].label;
                         }
@@ -1084,9 +1088,11 @@
                 if (props.id !== CustomBuilder.id) {
                     props.id = CustomBuilder.id; //reset it
                 }
-            }
-        
-            CustomBuilder.update(addToUndo);
+            } 
+            
+            var json = JSON.encode(CustomBuilder.data);
+            CustomBuilder.updateJson(json, addToUndo);
+            CustomBuilder.updatePasteIcons();
         } else {
             CustomBuilder.json = json;
         }
@@ -1127,9 +1133,7 @@
         //update save button
         $("#save-btn").removeClass("unsaved");
         if ($('body').attr("builder-theme") !== 'undefined' && $('body').attr("builder-theme") !== false) {
-            $("#save-btn > span").text(get_cbuilder_msg('ubuilder.save'));
-            $("#save-btn > i").removeClass("zmdi zmdi-check");
-            $("#save-btn > i").addClass("las la-cloud-upload-alt");
+            CustomBuilder.Builder.updateSaveButtonStatus(false);
         }
         if (!CustomBuilder.isSaved()) {
             $("#save-btn").addClass("unsaved");
@@ -1236,14 +1240,36 @@
                         $("#save-btn").removeAttr("disabled");
                         if (typeof $('body').attr("builder-theme") !== 'undefined' && $('body').attr("builder-theme") !== false) {
                             if(d.success === true){
-                                $("#save-btn > span").text(get_cbuilder_msg('cbuilder.saved'));
-                                $("#save-btn > i").removeClass("las la-cloud-upload-alt");
-                                $("#save-btn > i").addClass("zmdi zmdi-check");
+                                CustomBuilder.Builder.updateSaveButtonStatus(true);
                             }
                             $("body").removeClass("initializing");
                             $("#loadingMessage").text("");
                         }
                     }, 3000);
+                },
+                error: function(xhr, status, error) {
+                    let errorText = (UI.stripHtmlTags(xhr.responseText) || status || error);
+                    
+                    // Show a generic or detailed error message
+                    CustomBuilder.showMessage(
+                        get_cbuilder_msg('ubuilder.saveFailed') + " <br>" + errorText,
+                        "danger"
+                    );
+
+                    // Optional callback for external handling
+                    CustomBuilder.callback(CustomBuilder.config.builder.callbacks["builderSaveFailed"], [{
+                        success: false,
+                        error: error,
+                        status: status,
+                        response: xhr.responseText
+                    }]);
+                    
+                    if (typeof $('body').attr("builder-theme") !== 'undefined' && $('body').attr("builder-theme") !== false) {
+                        // Re-enable the button if disabled
+                        $("#save-btn").removeAttr("disabled");
+                        $("body").removeClass("initializing");
+                        $("#loadingMessage").text("");
+                    }
                 }
             });
         } else {
@@ -1272,7 +1298,16 @@
      */
     updateFromJson: function() {
         var json = $('#cbuilder-json').val();
-        if (CustomBuilder.getJson() !== json) {
+        var currentJson = CustomBuilder.getJson();
+        // Normalize JSON for comparison to handle formatting differences
+        var normalizedJson = json;
+        var normalizedCurrent = currentJson;
+        try {
+            normalizedJson = JSON.stringify(JSON.decode(json));
+            normalizedCurrent = JSON.stringify(JSON.decode(currentJson));
+        } catch(e) {
+        }
+        if (normalizedCurrent !== normalizedJson) {
             CustomBuilder.loadJson(json, true); //need to save a copy in undo
         }
         return false;
@@ -1302,8 +1337,13 @@
             if(CustomBuilder.undoStack.length === 0){
                 $('#undo-btn').addClass('disabled');
             }
-
-            CustomBuilder.updateSaveStatus("-");
+            
+            if (CustomBuilder.isSaved()){
+                $("#save-btn").removeClass("unsaved");
+            } else {
+                $("#save-btn").addClass("unsaved");
+            }
+            CustomBuilder.Builder.updateSaveButtonStatus(false);
         }
     },
 
@@ -1331,8 +1371,13 @@
             if(CustomBuilder.redoStack.length === 0){
                 $('#redo-btn').addClass('disabled');
             }
-
-            CustomBuilder.updateSaveStatus("+");
+            
+            if (CustomBuilder.isSaved()){
+                $("#save-btn").removeClass("unsaved");
+            } else {
+                $("#save-btn").addClass("unsaved");
+            }
+            CustomBuilder.Builder.updateSaveButtonStatus(false);
         }
     },
     
@@ -1356,6 +1401,10 @@
         if(CustomBuilder.undoStack.length === 1){
             $('#undo-btn').removeClass('disabled');
         }
+        
+        //clean redo when new json add to undo
+        CustomBuilder.redoStack = new Array();
+        $('#redo-btn').addClass('disabled');
 
         CustomBuilder.updateSaveStatus("+");
     },
@@ -1733,6 +1782,7 @@
             showCancelButton:true,
             changeCheckIgnoreUndefined: true,
             scrollToField: CustomBuilder.overviewPropertiesPath,
+            idSuggestionFormat: CustomBuilder.config.builder.options["idSuggestionFormat"],
             cancelCallback: function() {
                 CustomBuilder.callback(CustomBuilder.config.builder.callbacks["cancelEditProperties"], [elementObj, element]);
             },
@@ -2261,7 +2311,7 @@
         } else if (CustomBuilder[currentView+"ViewBeforeClosed"] !== undefined) {
             CustomBuilder[currentView+"ViewBeforeClosed"]($("#"+currentView+"View.builder-view .builder-view-body"));
         }
-        $("body").removeClass(currentView+"-builder-view");
+        $("body").removeClass(currentView+"-builder-view property-view");
         $("body").removeClass("hide-tool");
         $("body").removeClass("view-control");
         $("[data-cbuilder-view]").removeClass("active-view active");
@@ -2304,6 +2354,9 @@
             $("#"+view+"View.builder-view").show();
             $(viewDiv).find('.builder-view-body').trigger("builder-view-show");
             $("body").addClass(view+"-builder-view");
+            if (view === "properties" || view === "dataBinder") {
+                $("body").addClass("property-view");
+            }
         }
     },
     
@@ -2353,7 +2406,7 @@
         var viewport = $(".responsive-buttons button.active").data("view");
 	$(view).closest(".builder-view").addClass(viewport);
         
-        $('#cbuilder-preview [name=OWASP_CSRFTOKEN]').val(ConnectionManager.tokenValue);
+        $('#cbuilder-preview [name=OWASP-CSRFTOKEN]').val(ConnectionManager.tokenValue);
         $('#cbuilder-preview').attr("action", CustomBuilder.previewUrl);
         $('#cbuilder-preview').attr("target", "preview-iframe");
         $('#cbuilder-preview').submit();
@@ -2398,6 +2451,7 @@
      */
     xrayViewInit : function(view) {
         CustomBuilder.treeViewerViewInit(view);
+        $(view).find(".panel-header .text-secondary").text(get_advtool_msg("adv.tool.X-ray.Viewer"));
         if ($("body").hasClass("default-builder")) {
             CustomBuilder.Builder.renderNodeAdditional('Xray');
         }
@@ -3307,7 +3361,9 @@
                 // fix duplicate xmlns
                 newsvg = newsvg.replace('xmlns="http://www.w3.org/1999/xhtml"', '');
                 // render
-                canvg($tempCanvas[0], newsvg);
+                const ctx = $tempCanvas[0].getContext('2d');
+                const v = window.canvg.Canvg.fromString(ctx, newsvg);
+                v.render();
             });
         }
         target = $(target)[0];
@@ -3335,6 +3391,9 @@
      */
     isSaved : function(){
         var hasChange = false;
+        var currentJson = $('#cbuilder-json').val();
+        var originalJson = $('#cbuilder-json-original').val();
+        var savedJson = CustomBuilder.savedJson;
         
         if ($("body").hasClass("property-editor-right-panel") && !$("body").hasClass("no-right-panel")) {
             $(".element-properties .property-editor-container").each(function() {
@@ -3344,9 +3403,20 @@
                 }
             });
         }
-        
-        if(((CustomBuilder.savedJson !== undefined && CustomBuilder.savedJson === $('#cbuilder-json').val()) ||
-            ($('#cbuilder-json-original').val() === $('#cbuilder-json').val())) && !hasChange){
+
+
+        // Normalize JSON for comparison to handle formatting differences
+        try {
+            currentJson = JSON.stringify(JSON.decode(currentJson));
+            originalJson = JSON.stringify(JSON.decode(originalJson));
+            if (savedJson !== undefined) {
+                savedJson = JSON.stringify(JSON.decode(savedJson));
+            }
+        } catch(e) {
+            // Use original strings if parsing fails
+        }
+
+        if(((savedJson !== undefined && savedJson === currentJson) || (originalJson === currentJson)) && !hasChange){
             return true;
         }else{
             return false;
@@ -3468,6 +3538,9 @@
             $("#builder-menu ul").on("click", ".addnew a", function(){
                 var type = $(this).data("type");
                 if (type === "process") {
+                    if ($(this).closest("ul").find("li.item").length > 0) {
+                        localStorage.setItem("addNewProcess", true);
+                    }
                     CustomBuilder.ajaxRenderBuilder(CustomBuilder.contextPath + '/web/console/app' + CustomBuilder.appPath + '/process/builder');
                 } else {
                     var url = CustomBuilder.contextPath + '/web/console/app' + CustomBuilder.appPath + '/';
@@ -3484,9 +3557,7 @@
         $("#quick-nav-bar").removeClass("active");
         
         if (CustomBuilder.systemTheme === 'light' || CustomBuilder.systemTheme === 'dark') {
-            $("#save-btn > span").text(get_cbuilder_msg('ubuilder.save'));
-            $("#save-btn > i").removeClass("zmdi zmdi-check");
-            $("#save-btn > i").addClass("las la-cloud-upload-alt");
+            CustomBuilder.Builder.updateSaveButtonStatus(false);
             $('body').attr("builder-theme", CustomBuilder.systemTheme);
             var iframes = $('iframe');
             if (iframes.length > 0) {
@@ -3818,7 +3889,7 @@
 /*
  * Default builder to manage the palette and canvas
  */
-_CustomBuilder.Builder = {
+window._CustomBuilder.Builder = {
     zoom : 1,
     dragMoveMutation : false,
     mousedown : false,
@@ -3950,10 +4021,14 @@ _CustomBuilder.Builder = {
         }
         CustomBuilder.Builder.frameBody.addClass("initializing");
         
-        var self = CustomBuilder.Builder;
+        let self = CustomBuilder.Builder;
         
-        var selectedELSelector = "";
-        var selectedElIndex = 0;
+        let selectedELSelector = "";
+        let selectedElIndex = 0;
+
+        //to handle change of id
+        let selectedELAltSelector = "";
+        let selectedElAltIndex = 0;
 
         //find overview path element if overviewPath having value
         if (CustomBuilder.overviewPath !== null && CustomBuilder.overviewPath !== undefined && CustomBuilder.overviewPath !== "") {
@@ -3984,8 +4059,8 @@ _CustomBuilder.Builder = {
         self.selectNode(false);
         $("#element-parent-box, #element-highlight-box").hide();
         
-        var component = self.parseDataToComponent(data);
-        var temp = $('<div></div>');
+        let component = self.parseDataToComponent(data);
+        let temp = $('<div></div>');
         self.frameBody.append(temp);
         self.renderElement(data, temp, component, false, null, function(){
             if (self.nodeAdditionalType !== undefined && self.nodeAdditionalType !== "") {
@@ -3994,7 +4069,7 @@ _CustomBuilder.Builder = {
             
             //reselect previous selected element
             if (selectedELSelector !== "") {
-                var element = self.frameBody.find(selectedELSelector);
+                let element = self.frameBody.find(selectedELSelector);
                 
                 //to handle change of id
                 if (element.length === 0) {
@@ -4003,7 +4078,7 @@ _CustomBuilder.Builder = {
                 }
                 
                 if (element.length > 1) {
-                    var elements = element;
+                    let elements = element;
                     do {
                         element = elements[selectedElIndex];
                     } while (element === undefined && selectedElIndex-- > 0);
@@ -6144,7 +6219,8 @@ _CustomBuilder.Builder = {
             'deletable' : true,
             'copyable' : false,
             'navigable' : true
-        }});
+        },
+        isMissing: true});
         return CustomBuilder.paletteElements[className];
     },
 
@@ -6158,7 +6234,7 @@ _CustomBuilder.Builder = {
 
         $('.drag-elements-sidepane').off("mousedown.builder touchstart.builder", "ul > li > ol > li > [element-class]");
         $('.drag-elements-sidepane').on("mousedown.builder touchstart.builder", "ul > li > ol > li > [element-class]", function (event) {
-            $this = $(this);
+            let $this = $(this);
             if (self.iconDrag) {
                 self.iconDrag.remove();
                 self.iconDrag = null;
@@ -6598,8 +6674,9 @@ _CustomBuilder.Builder = {
             var props = self.parseElementProps(elementObj);
             if (props.tagName !== undefined && props.tagName !== "") {
                 var newTemp = document.createElement(props.tagName);
-                attributes = temp[0].attributes;
-                for (i = 0, len = attributes.length; i < len; i++) {
+                let attributes = temp[0].attributes;
+                let len;
+                for (let i = 0, len = attributes.length; i < len; i++) {
                     newTemp.setAttribute(attributes[i].nodeName, attributes[i].nodeValue);
                 }
                 temp = $(newTemp);
@@ -7618,9 +7695,25 @@ _CustomBuilder.Builder = {
                 $("#paste-element-btn").removeClass("disabled");
             }
         }
+    },
+    
+    /*
+     * Update the Save button icon and text when changes are saved or detected
+     */
+    updateSaveButtonStatus: function (saved) {
+        const icon = $("#save-btn > i");
+        const text = $("#save-btn > span");
+
+        if (saved) {
+            text.text(get_cbuilder_msg('cbuilder.saved'));
+            icon.removeClass("las la-cloud-upload-alt").addClass("zmdi zmdi-check");
+        } else {
+            text.text(get_cbuilder_msg('ubuilder.save'));
+            icon.removeClass("zmdi zmdi-check").addClass("las la-cloud-upload-alt");
+        }
     }
 }
 
-CustomBuilder = $.extend(true, {}, _CustomBuilder);
+window.CustomBuilder = $.extend(true, {}, _CustomBuilder);
 
 var isIE11 = !!window.MSInputMethodContext && !!document.documentMode;
