@@ -17,7 +17,7 @@
         }
         [dir="rtl"] .section_${element.properties.elementUniqueKey!} .section-toggle-icon {
             right: auto;
-            left: 0;
+            left: 18px;
         }
         .section_${element.properties.elementUniqueKey!}.collapsed .section-toggle-icon {
             transform: rotate(-180deg);
