@@ -2,41 +2,48 @@ package org.joget.plugin.base;
 
 import freemarker.template.Template;
 import java.util.Date;
-import java.util.List;
 import java.util.Map;
 import java.util.ResourceBundle;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.concurrent.locks.ReentrantLock;
 
 public class PluginManagerCache {
 
+    @SuppressWarnings("rawtypes")
     private final Map<Class, Map<String, Plugin>> pluginCache = new ConcurrentHashMap<>();
+    @SuppressWarnings("rawtypes")
     private final Map<String, Class> osgiPluginClassCache = new ConcurrentHashMap<>();
-    private final List<String> noOsgiPluginClassCache = new CopyOnWriteArrayList<>();
+    private final Set<String> noOsgiPluginClassCache = ConcurrentHashMap.newKeySet();
     private final Map<String, Template> templateCache = new ConcurrentHashMap<>();
-    private final List<String> noResourceBundleCache = new CopyOnWriteArrayList<>();
     private final Map<String, ResourceBundle> resourceBundleCache = new ConcurrentHashMap<>();
     private final Map<String, CustomPluginInterface> customPluginInterfaces = new ConcurrentHashMap<>();
     private volatile Date lastCleared = null;
+    // Per-profile lock guarding plugin-map loads. This cache is resolved per
+    // profile, so loads for different tenants no longer serialize on a single
+    // process-wide lock.
+    private final ReentrantLock pluginListLoadLock = new ReentrantLock();
+    // All woven OSGi plugins for this profile, built once and filtered by type
+    // by PluginManager.internalLoadPluginMap. Cleared together with the rest of
+    // the cache so bundle install/uninstall/refresh rebuilds it.
+    private volatile Map<String, Plugin> allOsgiPlugins = null;
 
+    @SuppressWarnings("rawtypes")
     public Map<Class, Map<String, Plugin>> getPluginCache() {
         return pluginCache;
     }
 
+    @SuppressWarnings("rawtypes")
     public Map<String, Class> getOsgiPluginClassCache() {
         return osgiPluginClassCache;
     }
 
-    public List<String> getNoOsgiPluginClassCache() {
+    public Set<String> getNoOsgiPluginClassCache() {
         return noOsgiPluginClassCache;
     }
 
     public Map<String, Template> getTemplateCache() {
         return templateCache;
-    }
-
-    public List<String> getNoResourceBundleCache() {
-        return noResourceBundleCache;
     }
 
     public Map<String, ResourceBundle> getResourceBundleCache() {
@@ -45,6 +52,18 @@ public class PluginManagerCache {
 
     public Map<String, CustomPluginInterface> getCustomPluginInterfaces() {
         return customPluginInterfaces;
+    }
+
+    public ReentrantLock getPluginListLoadLock() {
+        return pluginListLoadLock;
+    }
+
+    public Map<String, Plugin> getAllOsgiPlugins() {
+        return allOsgiPlugins;
+    }
+
+    public void setAllOsgiPlugins(Map<String, Plugin> allOsgiPlugins) {
+        this.allOsgiPlugins = allOsgiPlugins;
     }
 
     public Date getLastCleared() {
@@ -61,7 +80,7 @@ public class PluginManagerCache {
         noOsgiPluginClassCache.clear();
         templateCache.clear();
         resourceBundleCache.clear();
-        noResourceBundleCache.clear();
+        allOsgiPlugins = null;
         lastCleared = new Date();
     }
 
