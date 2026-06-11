@@ -1335,6 +1335,7 @@ public class AppServiceImpl implements AppService {
                     // perform pre-import CustomBuilder processing
                     Collection<BuilderDefinition> builderDefinitions = appDef.getBuilderDefinitionList();
                     Map<CustomBuilder, List<BuilderDefinition>> builderDefinitionMap = builderDefinitions.stream()
+                            .filter(o -> CustomBuilderUtil.getBuilder(o.getType()) != null)
                             .collect(Collectors.groupingBy(o -> CustomBuilderUtil.getBuilder(o.getType())));
                     for (Entry<CustomBuilder, List<BuilderDefinition>> entry : builderDefinitionMap.entrySet()) {
                         CustomBuilder key = entry.getKey();
