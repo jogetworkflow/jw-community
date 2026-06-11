@@ -63,12 +63,12 @@ import org.apache.commons.io.monitor.FileAlterationMonitor;
 import org.apache.commons.io.monitor.FileAlterationObserver;
 import org.apache.commons.lang.StringEscapeUtils;
 import org.aspectj.lang.NoAspectBoundException;
+import org.joget.commons.spring.model.ResourceBundleMessage;
 import org.joget.commons.spring.model.ResourceBundleMessageDao;
 import org.joget.commons.spring.model.Setting;
 import org.joget.commons.util.PagingUtils;
 import org.joget.commons.util.ResourceBundleUtil;
 import org.joget.commons.util.SecurityUtil;
-import org.joget.commons.util.StringUtil;
 import org.joget.plugin.property.service.PropertyUtil;
 import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.util.ClassUtils;
@@ -91,10 +91,19 @@ public class PluginManager implements ApplicationContextAware {
     
     public final static String ESCAPE_JAVASCRIPT = "javascript";
     protected final static String COMPLETED = "COMPLETED::";
+
+    // Sentinel stored in resourceBundleCache when a bundle is absent, so ConcurrentHashMap
+    // computeIfAbsent can represent both "found" and "not found" without storing null.
+    private static final ResourceBundle BUNDLE_NOT_FOUND = new ResourceBundle() {
+        @Override protected Object handleGetObject(String key) { return null; }
+        @Override public Enumeration<String> getKeys() { return Collections.emptyEnumeration(); }
+    };
     
     private FileAlterationMonitor monitor = null;
     private final ReentrantReadWriteLock refreshLock = new ReentrantReadWriteLock(true);
-    private final ReentrantLock pluginListLoadLock = new ReentrantLock();
+    // All classpath plugins scanned once at init() time; keyed by plugin name.
+    // internalLoadPluginMap filters this by type instead of re-scanning the classpath.
+    private static volatile Map<String, Plugin> allClasspathPlugins = null;
     
     /**
      * Used by system to initialize Plugin manager
@@ -708,21 +717,13 @@ public class PluginManager implements ApplicationContextAware {
 
     protected Map<String, Plugin> getPluginsByClass(Class<?> clazz) {
         Class classFilter = (clazz != null) ? clazz : Plugin.class;
-        Map<String, Plugin> pluginMap = getCache().getPluginCache().get(classFilter);
-        if (pluginMap == null) {
-            pluginListLoadLock.lock();
-            try {
-                // re-check under lock in case another thread populated the cache
-                pluginMap = getCache().getPluginCache().get(classFilter);
-                if (pluginMap == null) {
-                    pluginMap = internalLoadPluginMap(clazz);
-                    getCache().getPluginCache().put(classFilter, pluginMap);
-                }
-            } finally {
-                pluginListLoadLock.unlock();
-            }
-        }
-        return pluginMap;
+        // The cache is resolved per profile, so different tenants no longer
+        // serialize against a single process-wide lock. computeIfAbsent gives
+        // single-flight per type; the expensive OSGi weave it triggers is
+        // itself guarded by the per-profile lock in getAllOsgiPlugins().
+        // internalLoadPluginMap only builds a local map, so it does not mutate
+        // the plugin cache from within the mapping function.
+        return getCache().getPluginCache().computeIfAbsent(classFilter, k -> internalLoadPluginMap(clazz));
     }
 
     /**
@@ -765,57 +766,20 @@ public class PluginManager implements ApplicationContextAware {
      * @return A Map of name=pluginObject
      */
     protected Map<String, Plugin> internalLoadPluginMap(Class clazz) {
-        Map<String, Plugin> pluginMap = new TreeMap<String, Plugin>();
-
-        Class classFilter = (clazz != null) ? clazz : Plugin.class;
-
-        // find plugins in classpath
-        ClassPathScanningCandidateComponentProvider provider = new ClassPathScanningCandidateComponentProvider(false);
-        provider.addIncludeFilter(new AssignableTypeFilter(classFilter));
-        Set<BeanDefinition> components = provider.findCandidateComponents("org.joget");
-        if (scanPackageList != null) {
-            for (String scanPackage: scanPackageList) {
-                components.addAll(provider.findCandidateComponents(scanPackage));
-            }
+        if (allClasspathPlugins == null) {
+            scanAllClasspathPlugins();
         }
-        // sort plugins
-        List<BeanDefinition> componentList = new ArrayList(components);
-        Collections.sort(componentList, new Comparator() {
-            public int compare(Object o1, Object o2) {
-                String o1Name = ((BeanDefinition)o1).getBeanClassName();
-                String o2Name = ((BeanDefinition)o2).getBeanClassName();
-                
-                if (o1Name == null) {
-                    o1Name = o1.getClass().getName();
-                }
-                if (o2Name == null) {
-                    o2Name = o2.getClass().getName();
-                }
-                
-                return o1Name.compareTo(o2Name);
-            }
-        });
-        for (BeanDefinition component : componentList) {
-            String beanClassName = component.getBeanClassName();
-            if (beanClassName == null) {
-                beanClassName = component.getClass().getName();
-            }
-            if (blackList == null || !blackList.contains(beanClassName)) {
-                try {
-                    Class<? extends Plugin> beanClass = Class.forName(beanClassName).asSubclass(Plugin.class);
-                    Plugin plugin = beanClass.newInstance();
-                    pluginMap.put(plugin.getName(), plugin);
-                } catch (Exception ex) {
-                    if (!beanClassName.startsWith("org.joget")) {
-                        LogUtil.warn(PluginManager.class.getName(), " Error loading plugin class  " + beanClassName);
-                    }
-                }
+        
+        // Filter the pre-built allClasspathPlugins master cache by type.
+        Map<String, Plugin> pluginMap = new HashMap<String, Plugin>();
+        for (Plugin plugin : allClasspathPlugins.values()) {
+            if (clazz == null || clazz.isAssignableFrom(plugin.getClass())) {
+                pluginMap.put(plugin.getName(), plugin);
             }
         }
 
-        // find OSGI plugins
-        Collection<Plugin> pluginList = loadOsgiPlugins();
-        for (Plugin plugin : pluginList) {
+        // find OSGI plugins (woven once per profile, then filtered by type)
+        for (Plugin plugin : getAllOsgiPlugins().values()) {
             if (clazz == null || clazz.isAssignableFrom(ClassUtils.getUserClass(plugin))) {
                 if (blackList == null || !blackList.contains(ClassUtils.getUserClass(plugin).getName())) {
                     pluginMap.put(plugin.getName(), plugin);
@@ -824,7 +788,76 @@ public class PluginManager implements ApplicationContextAware {
         }
 
         LogUtil.debug(PluginManager.class.getName(), " Loaded plugins from classpath and OSGI container");
-        return pluginMap;
+
+        // sort only once when return
+        return new TreeMap<String, Plugin>(pluginMap);
+    }
+
+    /**
+     * Returns all OSGi plugins for the current profile, each woven with any
+     * required aspect. Built once per profile and cached in the per-profile
+     * {@link PluginManagerCache}; cleared together with the rest of the cache on
+     * {@link #clearCache()} (e.g. bundle install/uninstall/refresh).
+     *
+     * internalLoadPluginMap filters this map by type, so the expensive OSGi
+     * weave runs once per profile instead of once per (profile x type) cache miss.
+     * @return A Map of name=pluginObject (unmodifiable)
+     */
+    protected Map<String, Plugin> getAllOsgiPlugins() {
+        PluginManagerCache cache = getCache();
+        Map<String, Plugin> osgiPlugins = cache.getAllOsgiPlugins();
+        if (osgiPlugins == null) {
+            ReentrantLock pluginListLoadLock = cache.getPluginListLoadLock();
+            pluginListLoadLock.lock();
+            try {
+                osgiPlugins = cache.getAllOsgiPlugins();
+                if (osgiPlugins == null) {
+                    Map<String, Plugin> built = new HashMap<String, Plugin>();
+                    for (Plugin plugin : loadOsgiPlugins()) {
+                        built.put(plugin.getName(), plugin);
+                    }
+                    osgiPlugins = Collections.unmodifiableMap(built);
+                    cache.setAllOsgiPlugins(osgiPlugins);
+                }
+            } finally {
+                pluginListLoadLock.unlock();
+            }
+        }
+        return osgiPlugins;
+    }
+    
+    // Scan all Plugin subclasses from the classpath once
+    // internalLoadPluginMap filters this map by type rather than re-scanning.
+    private void scanAllClasspathPlugins() {
+        synchronized (PluginManager.class) {
+            if (allClasspathPlugins == null) {
+                ClassPathScanningCandidateComponentProvider provider = new ClassPathScanningCandidateComponentProvider(false);
+                provider.addIncludeFilter(new AssignableTypeFilter(Plugin.class));
+                Set<BeanDefinition> components = provider.findCandidateComponents("org.joget");
+                if (scanPackageList != null) {
+                    for (String scanPackage : scanPackageList) {
+                        components.addAll(provider.findCandidateComponents(scanPackage));
+                    }
+                }
+                Map<String, Plugin> built = new HashMap<String, Plugin>();
+                for (BeanDefinition component : components) {
+                    String beanClassName = component.getBeanClassName() != null ? component.getBeanClassName() : component.getClass().getName();
+                    try {
+                        Class<? extends Plugin> beanClass = Class.forName(beanClassName).asSubclass(Plugin.class);
+                        Plugin plugin = beanClass.getDeclaredConstructor().newInstance();
+                        if (blackList == null || !blackList.contains(plugin.getClass().getName())) {
+                            built.put(plugin.getName(), plugin);
+                        }
+                    } catch (Exception ex) {
+                        if (!beanClassName.startsWith("org.joget")) {
+                            LogUtil.warn(PluginManager.class.getName(), "Error loading plugin class " + beanClassName);
+                        }
+                    }
+                }
+                allClasspathPlugins = Collections.unmodifiableMap(built);
+                LogUtil.info(PluginManager.class.getName(), "Classpath plugin scan complete: " + allClasspathPlugins.size() + " plugins found");
+            }
+        }
     }
 
     /**
@@ -1133,6 +1166,48 @@ public class PluginManager implements ApplicationContextAware {
     }
     
     /**
+     * Returns a plugin class, from either the OSGI container and the classpath.
+     * Plugins from the OSGI container will take priority if there are conflicting classes.
+     * 
+     * @param name Class name of the required plugin
+     * @return
+     */
+    private Class getPluginClass(String name) {
+        if ((blackList != null && blackList.contains(name)) ||
+                !(name != null && name.trim().length() > 0 
+                && !"null".equalsIgnoreCase(name))) {
+            return null;
+        }
+        
+        //get OSGI first
+        if (!getCache().getNoOsgiPluginClassCache().contains(name)) {
+            try {
+                Class clazz = getCache().getOsgiPluginClassCache().get(name);
+                if (clazz == null) {
+                    BundleContext context = getOsgiContainer().getBundleContext();
+
+                    ServiceReference sr = context.getServiceReference(name);
+                    if (sr != null) {
+                        clazz = sr.getBundle().loadClass(name);
+                        getCache().getOsgiPluginClassCache().put(name, clazz);
+                        context.ungetService(sr);
+                    }
+                }
+                
+                if (clazz != null) {
+                    return clazz;
+                }
+            } catch (ClassNotFoundException ex) {
+                LogUtil.warn(PluginManager.class.getName(), "Plugin " + name + " could not be retrieved. Error : " + ex.getMessage());
+            }    
+        }
+        
+        //try get classpath plugin
+        Plugin plugin = loadClassPathPlugin(name);
+        return (plugin != null) ? plugin.getClass() : null;
+    }
+    
+    /**
      * Returns a plugin by type and name, from either the OSGI container and the classpath.
      * 
      * @param pluginType
@@ -1322,49 +1397,90 @@ public class PluginManager implements ApplicationContextAware {
      */
     public ResourceBundle getPluginMessageBundle(String pluginName, String translationPath) {
         String cacheKey = pluginName + "_" + translationPath + "_" + LocaleContextHolder.getLocale().toString();
-        if (!getCache().getNoResourceBundleCache().contains(cacheKey)) {
-            ResourceBundle bundle = getCache().getResourceBundleCache().get(cacheKey);
-            if (bundle == null) {
-                // get plugin
-                Plugin plugin = getPlugin(pluginName);
-                if (plugin != null) {
-                    bundle = getMessageBundle(plugin.getClass(), translationPath);
-                } else {
-                    getCache().getNoResourceBundleCache().add(cacheKey);
-                }
-            }
-            return bundle;
+        Map<String, ResourceBundle> bundleCache = getCache().getResourceBundleCache();
+
+        // Plain get first — avoids any locking on the hot path.
+        ResourceBundle cached = bundleCache.get(cacheKey);
+        if (cached != null) {
+            return cached == BUNDLE_NOT_FOUND ? null : cached;
         }
-        return null;
+
+        // Compute outside computeIfAbsent to avoid nested computeIfAbsent calls on the same
+        // ConcurrentHashMap (getMessageBundle also uses computeIfAbsent on this map, which can
+        // deadlock if both lambdas run while holding a lock on the same bin).
+        Class pluginClass = getPluginClass(pluginName);
+        ResourceBundle bundle = BUNDLE_NOT_FOUND;
+        if (pluginClass != null) {
+            ResourceBundle b = getMessageBundle(pluginClass, translationPath);
+            if (b != null) {
+                bundle = b;
+            }
+        }
+
+        // putIfAbsent ensures only one result wins if two threads raced past the get above.
+        ResourceBundle existing = bundleCache.putIfAbsent(cacheKey, bundle);
+        ResourceBundle result = existing != null ? existing : bundle;
+        return result == BUNDLE_NOT_FOUND ? null : result;
     }
     
     /**
      * Reads a message bundle from a plugin.
-     * @param pluginName
+     * @param pluginClass
      * @param translationPath
      * @return null if the resource bundle is not found or in the case of an exception
      */
-    public static ResourceBundle getMessageBundle(Class clazz, String translationPath) {
+    public static ResourceBundle getMessageBundle(Class pluginClass, String translationPath) {
         Locale locale = LocaleContextHolder.getLocale();
-        String cacheKey = clazz.getName() + "_" + translationPath + "_" + locale.toString();
-        if (!getCache().getNoResourceBundleCache().contains(cacheKey)) {
-            ResourceBundle bundle = getCache().getResourceBundleCache().get(cacheKey);
-            if (bundle == null) {
-                try {
-                    bundle = ResourceBundle.getBundle(translationPath, locale, clazz.getClassLoader());
-                    if (bundle != null) {
-                        getCache().getResourceBundleCache().put(cacheKey, bundle);
-                    } else {
-                        getCache().getNoResourceBundleCache().add(cacheKey);
-                    }
-                } catch (Exception e) {
-                    LogUtil.debug(PluginManager.class.getName(), translationPath + " translation file not found");
-                    getCache().getNoResourceBundleCache().add(cacheKey);
+        String cacheKey = pluginClass.getName() + "_" + translationPath + "_" + locale.toString();
+        PluginManagerCache cache = getCache();
+
+        // computeIfAbsent gives per-key locking: threads for different keys run concurrently;
+        // only threads racing for the same key wait on each other. The sentinel stands in for
+        // null so ConcurrentHashMap can store "not found" without a separate cache.
+        ResourceBundle bundle = cache.getResourceBundleCache().computeIfAbsent(cacheKey, k -> {
+            try {
+                ResourceBundle rawBundle = ResourceBundle.getBundle(translationPath, locale, pluginClass.getClassLoader());
+                Map<String, String> bundleMessages = new HashMap<>();
+                Enumeration<String> keys = rawBundle.getKeys();
+                while (keys.hasMoreElements()) {
+                    String key = keys.nextElement();
+                    bundleMessages.put(key, rawBundle.getString(key));
                 }
+
+                // Fetch all DAO overrides for this locale in a single query so the returned
+                // bundle never needs to call the DAO again after it is cached.
+                ResourceBundleMessageDao dao = (ResourceBundleMessageDao) applicationContext.getBean("resourceBundleMessageDao");
+                String localeStr = locale.toString();
+                Set<String> bundleKeys = bundleMessages.keySet();
+                String placeholders = String.join(",", Collections.nCopies(bundleKeys.size(), "?"));
+                List<String> params = new ArrayList<>();
+                params.add(localeStr);
+                params.addAll(bundleKeys);
+                List<ResourceBundleMessage> daoMessages = dao.getMessages(
+                        "WHERE e.locale = ? AND e.key IN (" + placeholders + ")",
+                        params.toArray(new String[0]), null, null, null, null);
+                for (ResourceBundleMessage m : daoMessages) {
+                    bundleMessages.put(m.getKey(), m.getMessage());
+                }
+
+                final Map<String, String> resolved = bundleMessages;
+                return new ResourceBundle() {
+                    @Override
+                    protected Object handleGetObject(String key) {
+                        return resolved.get(key);
+                    }
+                    @Override
+                    public Enumeration<String> getKeys() {
+                        return Collections.enumeration(resolved.keySet());
+                    }
+                };
+            } catch (Exception e) {
+                LogUtil.debug(PluginManager.class.getName(), translationPath + " translation file not found");
+                return BUNDLE_NOT_FOUND;
             }
-            return bundle;
-        }
-        return null;
+        });
+
+        return bundle == BUNDLE_NOT_FOUND ? null : bundle;
     }
     
     /**
@@ -1409,54 +1525,58 @@ public class PluginManager implements ApplicationContextAware {
         if (!(content != null && content.indexOf("@@") >= 0)) {
             return content;
         }
-        
-        List<String> keyList = new ArrayList<String>();
-        String tempContext = content;
-        int index = tempContext.indexOf("@@");
-        while (index != -1) {
-            int nindex = tempContext.indexOf("@@", index + 2);
-            if (nindex != -1) {
-                String temp = tempContext.substring(index, nindex+2);
-                if (temp.contains("\"") || temp.contains(" ") || !temp.contains(".")) {
-                    index = nindex;
-                } else {
-                    keyList.add(temp);
-                    index = tempContext.indexOf("@@", nindex + 2);
-                }
-            } else {
+
+        // Single-pass replacement: scan content once, writing resolved tokens into a StringBuilder.
+        // Resolution priority (plugin bundle vs platform DAO) is handled inside the bundle wrapper
+        // created by getMessageBundle, so a plain getString() call gives the correct value.
+        StringBuilder result = new StringBuilder(content.length());
+        int i = 0;
+        int len = content.length();
+        boolean changed = false;
+
+        while (i < len) {
+            int start = content.indexOf("@@", i);
+            if (start == -1) {
+                result.append(content, i, len);
                 break;
             }
-        }
-        
-        if (!keyList.isEmpty()) {
-
-            for (String key : keyList) {
-                String tempKey = key.replaceAll("@@", "");
-                String label = ResourceBundleUtil.getMessage(tempKey);
-
-                if (bundle != null && bundle.containsKey(tempKey)) {
-                    if (label == null) {
-                        label = bundle.getString(tempKey);
-                    } else {
-                        //check if it is a custom message from platform translation, if not, using message from bundle
-                        ResourceBundleMessageDao resourceBundleMessageDao = (ResourceBundleMessageDao) applicationContext.getBean("resourceBundleMessageDao");
-                        Locale locale = LocaleContextHolder.getLocale();
-                        if (resourceBundleMessageDao.getMessage(tempKey, locale.toString()) == null) {
-                            label = bundle.getString(tempKey);
-                        }
-                    }
-                }
-                
-                if (label != null) {
-                    if (ESCAPE_JAVASCRIPT.equals(escapeType)) {
-                        label = StringEscapeUtils.escapeJavaScript(label);
-                    }
-                    content = content.replaceAll(StringUtil.escapeRegex(key), StringUtil.escapeRegex(label));
-                }
+            int end = content.indexOf("@@", start + 2);
+            if (end == -1) {
+                result.append(content, i, len);
+                break;
             }
+
+            String tempKey = content.substring(start + 2, end);
+            // Mirror original validation: reject keys with quotes, spaces, or no dot
+            if (tempKey.contains("\"") || tempKey.contains(" ") || !tempKey.contains(".")) {
+                // Second @@ may open the next valid token — rewind to it
+                result.append(content, i, end);
+                i = end;
+                continue;
+            }
+
+            String label = null;
+            if (bundle != null && bundle.containsKey(tempKey)) {
+                label = bundle.getString(tempKey);
+            }
+            if (label == null) {
+                label = ResourceBundleUtil.getMessage(tempKey);
+            }
+
+            if (label != null) {
+                if (ESCAPE_JAVASCRIPT.equals(escapeType)) {
+                    label = StringEscapeUtils.escapeJavaScript(label);
+                }
+                result.append(content, i, start);
+                result.append(label);
+                changed = true;
+            } else {
+                result.append(content, i, end + 2);
+            }
+            i = end + 2;
         }
 
-        return content;
+        return changed ? result.toString() : content;
     }
 
     /**
@@ -1542,7 +1662,6 @@ public class PluginManager implements ApplicationContextAware {
     /**
      * Retrieves a URL to a resource from a plugin. The plugin may either be from OSGI container or system classpath.
      * @param pluginName
-     * @param pluginName
      * @param resourceUrl
      * @return
      */
@@ -1550,11 +1669,11 @@ public class PluginManager implements ApplicationContextAware {
         URL url = null;
 
         // get plugin
-        Plugin plugin = getPlugin(pluginName);
+        Class pluginClass = getPluginClass(pluginName);
 
-        if (plugin != null) {
+        if (pluginClass != null) {
             // get class loader for plugin
-            ClassLoader loader = plugin.getClass().getClassLoader();
+            ClassLoader loader = pluginClass.getClassLoader();
 
             // get resource url, remove first /
             if (resourceUrl.startsWith("/")) {
