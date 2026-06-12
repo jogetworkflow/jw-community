@@ -8,10 +8,13 @@ body .dataList.size_sm>.table-wrapper>table.responsivetable>tbody>tr {
 
     border-bottom: 1px solid #CED4DA;
     margin-bottom: 0px !important;
-    padding: 8px 0px !important;
-    border-left: none;
-    border-right: none;
+    padding-top: 8px!important;
+    padding-bottom: 8px!important;
     border-radius: 0;
+}
+
+.dataList.size_sm>form>.table-wrapper>table.responsivetable .form-check-input{
+    border-radius: 0.25rem;
 }
 
 .dataList.size_sm .responsivetable .cell-label {
@@ -39,10 +42,31 @@ body .dataList.size_sm>.table-wrapper>table.responsivetable>tbody>tr {
 }
 
 .dataList.size_sm>form>.table-wrapper>table.responsivetable>thead>tr>th:is(.select_checkbox, .rowNumberMobile),
-.dataList.size_sm>.table-wrapper>table.responsivetable>thead>tr>th:is(.select_checkbox, .rowNumberMobile) {
-    border: none;
+.dataList.size_sm>.table-wrapper>table.responsivetable>thead>tr>th:is(.select_checkbox, .rowNumberMobile),
+.dataList.size_sm>form>.table-wrapper>table.responsivetable>tbody>tr>td:is(.select_checkbox, .rowNumberMobile),
+.dataList.size_sm>.table-wrapper>table.responsivetable>tbody>tr>td:is(.select_checkbox, .rowNumberMobile) {
+    padding-inline: 0px !important;
+    padding-block: 0px !important;
+    border: 0;
+    background-color: transparent;
+    width:fit-content;
+    box-shadow: none;
 }
 
+.dataList.size_sm>form>.table-wrapper>table.responsivetable>thead>tr>th:is(.select_checkbox)>label,
+.dataList.size_sm>form>.table-wrapper>table.responsivetable>tbody>tr>td:is(.select_checkbox)>label {
+    text-align: start;
+    position: relative;
+    left: unset;
+    transform: none;
+    top: unset;
+    margin-top: 0px;
+}
+
+.dataList.size_sm>form>.table-wrapper>table.responsivetable>thead>tr>th:is(.select_checkbox)>label > input,
+.dataList.size_sm>form>.table-wrapper>table.responsivetable>tbody>tr>td:is(.select_checkbox)>label > input {
+    margin: 0px;
+}
 
 .dataList.size_sm>form>.table-wrapper>table.responsivetable>thead>tr>th:not(.select_checkbox, .rowNumberMobile),
 .dataList.size_sm>.table-wrapper>table.responsivetable>thead>tr>th:not(.select_checkbox, .rowNumberMobile),
@@ -65,15 +89,13 @@ body .dataList.size_sm>.table-wrapper>table.responsivetable>tbody>tr {
 .dataList.size_sm>form>.table-wrapper>table.responsivetable>tbody>tr>td:not([data-cbuilder-sample]):not(.control_hide),
 .dataList.size_sm>.table-wrapper>table.responsivetable>tbody>tr>td:not([data-cbuilder-sample]):not(.control_hide) {
     display: block !important;
-    border: 0;
     width: auto !important;
     text-align: left;
 }
 
 .dataList.size_sm>form>.table-wrapper>table.responsivetable,
 .dataList.size_sm>.table-wrapper>table.responsivetable {
-    width: fit-content !important;
-    max-width: fit-content !important;
+    width: 100% !important;
 }
 
 .dataList.size_sm>form>.table-wrapper>table.responsivetable>tbody>tr,
@@ -93,6 +115,8 @@ div.column_wrapper {
     display: flex;
     column-gap: 10px;
     border: none;
+    padding: 0px 0px !important;
+    margin-bottom: 0px !important;
 }
 
 .dataList.size_sm>form>.table-wrapper>table.responsivetable>tbody>tr>.column_wrapper>td.row-action,
@@ -104,14 +128,6 @@ div.column_wrapper {
 .dataList.size_sm>.table-wrapper>table.responsivetable>tbody>tr>.column_wrapper>td.row-action > a {
     padding: 0px 0px;
 }
-
-
-.dataList.size_sm>form>.table-wrapper>table.responsivetable>tbody>tr>.column_wrapper>td,
-.dataList.size_sm>.table-wrapper>table.responsivetable>tbody>tr>.column_wrapper>td {
-    padding: 0px 0px;
-    margin-bottom: 0px !important;
-}
-
 .dataList.size_sm>form>.table-wrapper>table.responsivetable>tbody>tr>.column_wrapper>td.row_action a.btn-link,
 .dataList.size_sm>.table-wrapper>table.responsivetable>tbody>tr>.column_wrapper>td.row_action a.btn-link {
     padding-left: 0px;
@@ -133,8 +149,8 @@ div.column_wrapper {
     flex: 1;
 }
 
-.dataList.size_sm>form>.table-wrapper>table.responsivetable>tbody>tr>td:not([data-cbuilder-sample]),
-.dataList.size_sm>.table-wrapper>table.responsivetable>tbody>tr>td:not([data-cbuilder-sample]) {
+.dataList.size_sm>form>.table-wrapper>table.responsivetable>tbody>tr:not(.empty)>td:not([data-cbuilder-sample]),
+.dataList.size_sm>.table-wrapper>table.responsivetable>tbody>tr:not(.empty)>td:not([data-cbuilder-sample]) {
     min-width: 40px;
     max-width: 40px;
 }
@@ -190,12 +206,6 @@ div.column_wrapper {
 
 .dataList.size_sm>form>.table-wrapper>table.responsivetable>tbody>tr,
 .dataList.size_sm>.table-wrapper>table.responsivetable>tbody>tr {
-    padding: var(--jgt-list-itemPadding);
-    background: var(--jgt-list-contentBg);
-    border: var(--jgt-list-lineWidth);
-    border-color: var(--jgt-list-colorBorder);
-    border-style: var(--jgt-acc-lineType);
-    border-radius: var(--jgt-list-borderRadius);
     margin-bottom: 10px;
     position: relative;
 }
@@ -222,14 +232,16 @@ div.column_wrapper {
 
     min-width: 30px;
     max-width: 30px;
+    padding-inline: 0px;
 }
 
-.dataList.size_sm>form>.table-wrapper>table.responsivetable>thead>tr>th,
-.dataList.size_sm>.table-wrapper>table.responsivetable>thead>tr>th,
-.dataList.size_sm>form>.table-wrapper>table.responsivetable>tbody>tr>td, 
-.dataList.size_sm>.table-wrapper>table.responsivetable>tbody>tr>td,
-.dataList.size_sm>form>.table-wrapper>table.responsivetable>tbody>tr>td:is(.select_checkbox, .select_radio, .rowNumberMobile) {
+.dataList.size_sm>form>.table-wrapper>table.responsivetable>thead>tr,
+.dataList.size_sm>form>.table-wrapper>table.responsivetable>tbody>tr {
     padding: 16px !important;
+}
+
+.dataList.size_sm>form>.table-wrapper>table.responsivetable>tbody>tr>td.select_checkbox {
+    margin-inline-start: 0px;
 }
 
 .dataList.size_sm>form>.table-wrapper>table.responsivetable>tbody>tr>td.select_checkbox input,
@@ -243,11 +255,11 @@ div.column_wrapper {
 .dataList.size_sm>form>.table-wrapper>table.responsivetable>tbody>tr>td.select_radio>label>i,
 .dataList.size_sm>.table-wrapper>table.responsivetable>tbody>tr>td.select_checkbox>label>i,
 .dataList.size_sm>.table-wrapper>table.responsivetable>tbody>tr>td.select_radio>label>i {
-    position: absolute;
-    top: 0;
-    right: 0;
-    bottom: 0;
-    left: 0;
+    position: relative;
+    top: unset;
+    right: unset;
+    bottom: unset;
+    left: unset;
     z-index: 1;
     pointer-events: auto;
     content: "";

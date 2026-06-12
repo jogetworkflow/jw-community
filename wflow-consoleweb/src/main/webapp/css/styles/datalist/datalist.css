@@ -380,4 +380,31 @@ html.ismobile .dataList .show_hide_control.show_dropdown ul, html:not(.ismobile)
     background-color: #F0F0F0;
 }
 
+body .dataList.size_sm>form>.table-wrapper>table.responsivetable>tbody>tr, 
+body .dataList.size_sm>.table-wrapper>table.responsivetable>tbody>tr {
+    border-left: none;
+    border-right: none;
+}
+
+.dataList.size_sm>form>.table-wrapper>table.responsivetable>tbody>tr,
+.dataList.size_sm>.table-wrapper>table.responsivetable>tbody>tr {
+    padding: var(--jgt-list-itemPadding);
+    background: var(--jgt-list-contentBg);
+    border: var(--jgt-list-lineWidth);
+    border-color: var(--jgt-list-colorBorder);
+    border-style: var(--jgt-acc-lineType);
+    border-radius: var(--jgt-list-borderRadius);
+}
+
+.dataList.size_sm>form>.table-wrapper>table.responsivetable,
+.dataList.size_sm>.table-wrapper>table.responsivetable,
+.dataList.size_sm>form>.table-wrapper>table.responsivetable>tbody,
+.dataList.size_sm>.table-wrapper>table.responsivetable>tbody,
+.dataList.size_sm>form>.table-wrapper>table.responsivetable>tbody>tr,
+.dataList.size_sm>.table-wrapper>table.responsivetable>tbody>tr,
+.dataList.size_sm>form>.table-wrapper>table.responsivetable>tbody>tr>td:not([data-cbuilder-sample]):not(.control_hide),
+.dataList.size_sm>.table-wrapper>table.responsivetable>tbody>tr>td:not([data-cbuilder-sample]):not(.control_hide) {
+    border: 0;
+}
+
 /* End of Datalist Styling */
