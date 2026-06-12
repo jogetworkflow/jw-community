@@ -6160,6 +6160,10 @@ a.btn.disabled,fieldset:disabled a.btn {
     box-shadow:none !important;
 }
 
+.fc-scrollgrid.table-bordered {
+    border: 1px solid #dee2e6;
+}
+
 
 @media (min-width: 1921px) {
     .horizontal_menu .navbar-inner,
