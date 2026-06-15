@@ -897,7 +897,7 @@ body.rtl *:is(.dataList.size_sm > form > .table-wrapper > table.responsivetable,
 .dataList.size_sm > form > .table-wrapper > table.responsivetable > tbody > tr > td.select_radio > label > i:after ,
 .dataList.size_sm > .table-wrapper > table.responsivetable > tbody > tr > td.select_checkbox > label > i:after,
 .dataList.size_sm > .table-wrapper > table.responsivetable > tbody > tr > td.select_radio > label > i:after {
-    display:none;
+    display:none !important;
 }
 
 .filter_form .mobile_search_trigger,

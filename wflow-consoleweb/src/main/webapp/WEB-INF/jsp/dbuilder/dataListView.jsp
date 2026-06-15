@@ -21,7 +21,7 @@
     .dataList .exportlinks {
         text-align: end !important;
     }
-    @media (max-width: 425px) {
+    @media (max-width: 550px) {
         .dataList .pagebanner, .dataList .pagebanner + .exportlinks {
             width: 100% !important;
             text-align: center !important;
@@ -34,7 +34,6 @@
         <c:when test="${dataList.isAuthorized}">
             <script type="text/javascript" src="${pageContext.request.contextPath}/js/footable/responsiveTable.js?build=<fmt:message key="build.number"/>" defer></script>
             <link rel="preload" href="${pageContext.request.contextPath}/js/footable/fonts/footable.woff" as="font" crossorigin />
-            <link rel="stylesheet" href="${pageContext.request.contextPath}/css/styles/datalist/datalist-mobile.css" />
             
             <c:set var="isQuickEditEnabled" value="<%= AppUtil.isQuickEditEnabled() %>"/>
             <c:if test="${isQuickEditEnabled && !dataList.disableQuickEdit}">

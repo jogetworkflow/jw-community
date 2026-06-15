@@ -236,28 +236,30 @@ function responsiveTable(datalist) {
                     const $table = $(table);
                     const $thead = $table.find("thead");
 
-                    // Wrap body cells for each row
-                    $table.find("tbody tr").each(function() {
-                        const $row = $(this);
-                        const $tds = $row.find("td[xclass~='column_body'], td.row_action");
-                        const $rowNumberTd = $row.find("td[xclass~='rowNumber']");
+                    if (window.UI.builderTheme !== undefined && window.UI.builderTheme === true) {
+                        // Wrap body cells for each row
+                        $table.find("tbody tr").each(function() {
+                            const $row = $(this);
+                            const $tds = $row.find("td[xclass~='column_body'], td.row_action");
+                            const $rowNumberTd = $row.find("td[xclass~='rowNumber']");
 
-                        // Wrap it to group it
-                        if ($tds.length && !$tds.parent().is(".column_wrapper")) {
-                            $tds.wrapAll('<div class="column_wrapper"></div>');
-                        }
-
-                        const $wrapper = $row.find(".column_wrapper");
-                        if ($wrapper.length && $rowNumberTd.length) {
-                            if ($rowNumberTd.next()[0] !== $wrapper[0]) {
-                                const index = $wrapper.index();
-                                if (index === 1 && !$thead.find("th").eq(index).is('.rowNumberMobile')) {
-                                    $thead.find("th").eq(index).before(`<th class='rowNumberMobile'>#</th>`);
-                                }
-                                $wrapper.before($rowNumberTd.clone().addClass('rowNumberMobile'));
+                            // Wrap it to group it
+                            if ($tds.length && !$tds.parent().is(".column_wrapper")) {
+                                $tds.wrapAll('<div class="column_wrapper"></div>');
                             }
-                        }
-                    });
+
+                            const $wrapper = $row.find(".column_wrapper");
+                            if ($wrapper.length && $rowNumberTd.length) {
+                                if ($rowNumberTd.next()[0] !== $wrapper[0]) {
+                                    const index = $wrapper.index();
+                                    if (index === 1 && !$thead.find("th").eq(index).is('.rowNumberMobile')) {
+                                        $thead.find("th").eq(index).before(`<th class='rowNumberMobile'>#</th>`);
+                                    }
+                                    $wrapper.before($rowNumberTd.clone().addClass('rowNumberMobile'));
+                                }
+                            }
+                        });
+                    }
 
                     const observer = new MutationObserver((mutationsList) => {
                         for (const mutation of mutationsList) {
