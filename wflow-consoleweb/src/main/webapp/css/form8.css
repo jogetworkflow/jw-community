@@ -1544,3 +1544,9 @@ body.rtl input.hasDatepicker {
 body.rtl .chosen-container-multi.chosen-rtl .chosen-choices li.search-choice{
     margin: 6px 5px 0 0;
 }
+.form-builder-truncation-note {
+    font-size: 11px;
+    font-style: italic;
+    color: #999;
+    padding-top: 5px;
+}
