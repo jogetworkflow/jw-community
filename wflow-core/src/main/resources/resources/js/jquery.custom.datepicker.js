@@ -299,6 +299,7 @@
             var nativeField = $(element).prev(".ui-screen-hidden").find('.native-picker');
                     
             var nativeChange = function(){
+                $(element).data('joget-native-picker-active', true);
                 if (!$(element).is("[readonly]")) {
                     $(element).off("change.manual");
                 }
@@ -306,6 +307,7 @@
                 if (!$(element).is("[readonly]")) {
                     $(element).on("change.manual", manualChange);
                 }
+                setTimeout(function() { $(element).removeData('joget-native-picker-active'); }, 500);
             };
             
             var manualChange = function() {
@@ -326,14 +328,19 @@
     //show the native picker or the jquery picker
     function showDatepicker(element) {
         if ($(element).hasClass("use-native")) {
+            if ($(element).data('joget-native-picker-active')) {
+                return;
+            }
             var nativeField = $(element).prev(".ui-screen-hidden").find('.native-picker')[0];
             if (!$(element).prev(".ui-screen-hidden").hasClass("ios")) { //only do it for non ios device, ios device is using css to place above field
                 try {
-                    nativeField.showPicker(); 
+                    nativeField.showPicker();
                 } catch (e) {
-                    $(element).datepicker("show");
-                    $(element).removeClass("use-native");
-                }    
+                    if (e.name !== 'NotAllowedError') {
+                        $(element).datepicker("show");
+                        $(element).removeClass("use-native");
+                    }
+                }
             }
         } else {
             $(element).datepicker("show");
