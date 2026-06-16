@@ -5,6 +5,8 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+
+import org.json.JSONException;
 import org.json.JSONObject;
 import org.hibernate.query.Query;
 import org.joget.apps.app.model.AppDefinition;
@@ -224,12 +226,16 @@ public class FormDefinitionDaoImpl extends AbstractAppVersionedObjectDao<FormDef
             String commitMessage = "Add form " + formDef.getId();
             AppDevUtil.fileSave(formDef.getAppDefinition(), filename, json, commitMessage);
 
-            // save yaml
-            filename = "forms/" + formDef.getId() + ".yaml";
-            JSONObject jsonObj = new JSONObject(json);
-            Map<String, Object> map = jsonObj.toMap();
-            String yaml = AppDevUtil.mapToYamlString(map);
-            AppDevUtil.fileSave(formDef.getAppDefinition(), filename, yaml, "");
+            // save YAML
+            try {
+                String yamlFilename = "forms/" + formDef.getId() + ".yaml";
+                JSONObject jsonObj = new JSONObject(json);
+                Map<String, Object> map = jsonObj.toMap();
+                String yaml = AppDevUtil.mapToYamlString(map);
+                AppDevUtil.fileSave(formDef.getAppDefinition(), yamlFilename, yaml, "");
+            } catch (JSONException e) {
+                // JSON might be encrypted from a protected app, skip saving YAML
+            }
 
             // sync app plugins
             AppDevUtil.dirSyncAppPlugins(formDef.getAppDefinition());
