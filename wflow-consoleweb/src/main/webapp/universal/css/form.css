@@ -154,8 +154,8 @@ body .editor-cell select:not([class^=ui]){
 .input-group *:is(input, textarea) {
     margin-bottom: 0px !important;
 }
-.form-cell:has(.datepicker-wrapper):not(:last-child),
-.form-cell:has(.input-group):not(:last-child) {
+.form-cell:has(.datepicker-wrapper),
+.form-cell:has(.input-group) {
     margin-bottom: 15px;
 }
 .input-group > .input-group-text {
