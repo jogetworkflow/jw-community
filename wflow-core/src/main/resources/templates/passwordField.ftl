@@ -16,10 +16,12 @@
             }
             .password-input-wrapper input[type=text],
             .password-input-wrapper input[type=password] {
-                margin-bottom: 0;
                 padding-inline-end: 2.2em !important;
                 max-width: 100%;
                 min-width: 100%;
+            }
+            .password-wrapper:has(.password-meter) .password-input-wrapper input {
+                 margin-bottom: 0;
             }
             .password-input-wrapper button.password-toggle {
                 cursor: pointer;

@@ -151,7 +151,7 @@ body .editor-cell select:not([class^=ui]){
   color: inherit;
 }
 
-.input-group *:is(input, textarea) {
+.input-group *:is(input, textarea, select) {
     margin-bottom: 0px !important;
 }
 .form-cell:has(.datepicker-wrapper),

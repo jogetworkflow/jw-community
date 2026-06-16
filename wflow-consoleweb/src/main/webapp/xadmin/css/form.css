@@ -279,7 +279,7 @@ body .editor-cell select:not([class^=ui]),
     background-color: #fff;
     border-radius: 2px;
 }
-.input-group *:is(input, textarea) {
+.input-group *:is(input, textarea, select) {
     margin-bottom: 0px !important;
 }
 .form-cell:has(.datepicker-wrapper),
