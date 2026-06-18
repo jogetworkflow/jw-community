@@ -1897,10 +1897,12 @@ ProcessBuilder = {
         // Handle deletion of edges, when edges are adjusted, it actually deletes the old one and create a new one
         // so, below is needed to properly remove the conenction
         ProcessBuilder.lf.on('edge:delete', ({ data }) => {
-            ProcessBuilder.removeConnection(data, false);
+            if (!ProcessBuilder.changeNodeId) {
+                ProcessBuilder.removeConnection(data, false);
 
-            ProcessBuilder.validate();
-        })
+                ProcessBuilder.validate();
+            }
+        });
         
         // Handle adding a new edge
         ProcessBuilder.lf.on('edge:add', ({ data }) => {
