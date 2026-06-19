@@ -219,3 +219,5 @@ nbdist/
 #################
 
 wflow-consoleweb/src/main/webapp/wro/
+
+wflow-consoleweb/${sys/catalina.home}/
