@@ -3071,7 +3071,7 @@ window._CustomBuilder = {
         VisibilityManager.render($(view));
         $(view).find(".dt-loading").remove();
 
-        $("#cbuilder-json").off("change.visibilityViewInit");
+        $("#cbuilder-json").off("change.visibilityViewInit undo.visibilityViewInit redo.visibilityViewViewInit");
         $("#cbuilder-json").on("change.visibilityViewInit", function () {
             if (!$("body").hasClass("visibility-builder-view")) {
                 view.html("");
@@ -3079,6 +3079,10 @@ window._CustomBuilder = {
                 VisibilityManager.render($(view));
                 $(view).find(".dt-loading").remove();
             }
+        });
+        $("#cbuilder-json").on("undo.visibilityViewInit redo.visibilityViewViewInit", function () {
+            view.html("");
+            VisibilityManager.render($(view));
         });
     },
 
@@ -3093,7 +3097,7 @@ window._CustomBuilder = {
             CustomBuilder.Builder.selectNode(CustomBuilder.Builder.selectedElBeforeVisibility);
         }
 
-        $("#cbuilder-json").off("change.visibilityViewInit");
+        $("#cbuilder-json").off("change.visibilityViewInit undo.visibilityViewInit redo.visibilityViewViewInit");
     },
     
     /*
