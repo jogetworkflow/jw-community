@@ -287,6 +287,16 @@ public class PackageDefinitionDaoImpl extends AbstractVersionedObjectDao<Package
             AppDefinition appDef = getAppDefinitionDao().loadVersion(appId, appVersion);
             packageDef = createPackageDefinition(appDef, appVersion);
         }
+        addAppActivityForm(packageDef, appId, appVersion, activityForm);
+        saveOrUpdate(packageDef);
+    }
+
+    @Override
+    public void addAppActivityForm(PackageDefinition packageDef, String appId, Long appVersion, PackageActivityForm activityForm) {
+        if (packageDef == null) {
+            AppDefinition appDef = getAppDefinitionDao().loadVersion(appId, appVersion);
+            packageDef = createPackageDefinition(appDef, appVersion);
+        }
         String processDefId = activityForm.getProcessDefId();
         processDefId = WorkflowUtil.getProcessDefIdWithoutVersion(processDefId);
         activityForm.setProcessDefId(processDefId);
@@ -305,11 +315,10 @@ public class PackageDefinitionDaoImpl extends AbstractVersionedObjectDao<Package
                 isUpdated = true;
             }
         }
-        
+
         if (!isUpdated) {
             packageDef.addPackageActivityForm(activityForm);
         }
-        saveOrUpdate(packageDef);
     }
 
     @Override
@@ -327,16 +336,24 @@ public class PackageDefinitionDaoImpl extends AbstractVersionedObjectDao<Package
             AppDefinition appDef = getAppDefinitionDao().loadVersion(appId, appVersion);
             packageDef = createPackageDefinition(appDef, appVersion);
         }
+        addAppActivityPlugin(packageDef, appId, appVersion, activityPlugin);
+        saveOrUpdate(packageDef);
+    }
+
+    @Override
+    public void addAppActivityPlugin(PackageDefinition packageDef, String appId, Long appVersion, PackageActivityPlugin activityPlugin) {
+        if (packageDef == null) {
+            AppDefinition appDef = getAppDefinitionDao().loadVersion(appId, appVersion);
+            packageDef = createPackageDefinition(appDef, appVersion);
+        }
         String processDefId = activityPlugin.getProcessDefId();
         processDefId = WorkflowUtil.getProcessDefIdWithoutVersion(processDefId);
         activityPlugin.setProcessDefId(processDefId);
         String activityDefId = activityPlugin.getActivityDefId();
         if (processDefId != null && activityDefId != null) {
             packageDef.removePackageActivityPlugin(processDefId, activityDefId);
-            saveOrUpdate(packageDef);
         }
         packageDef.addPackageActivityPlugin(activityPlugin);
-        saveOrUpdate(packageDef);
     }
 
     @Override
@@ -354,16 +371,24 @@ public class PackageDefinitionDaoImpl extends AbstractVersionedObjectDao<Package
             AppDefinition appDef = getAppDefinitionDao().loadVersion(appId, appVersion);
             packageDef = createPackageDefinition(appDef, appVersion);
         }
+        addAppParticipant(packageDef, appId, appVersion, participant);
+        saveOrUpdate(packageDef);
+    }
+
+    @Override
+    public void addAppParticipant(PackageDefinition packageDef, String appId, Long appVersion, PackageParticipant participant) {
+        if (packageDef == null) {
+            AppDefinition appDef = getAppDefinitionDao().loadVersion(appId, appVersion);
+            packageDef = createPackageDefinition(appDef, appVersion);
+        }
         String processDefId = participant.getProcessDefId();
         processDefId = WorkflowUtil.getProcessDefIdWithoutVersion(processDefId);
         participant.setProcessDefId(processDefId);
         String participantId = participant.getParticipantId();
         if (processDefId != null && participantId != null) {
             packageDef.removePackageParticipant(processDefId, participantId);
-            saveOrUpdate(packageDef);
         }
         packageDef.addPackageParticipant(participant);
-        saveOrUpdate(packageDef);
     }
 
     @Override

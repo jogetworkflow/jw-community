@@ -42,23 +42,31 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 import java.util.zip.ZipOutputStream;
 import javax.annotation.Resource;
+import javax.persistence.EntityNotFoundException;
 import javax.servlet.http.HttpServletRequest;
 import org.apache.commons.collections.map.ListOrderedMap;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.StringUtils;
+import org.eclipse.jgit.api.Git;
+import org.eclipse.jgit.api.ResetCommand;
 import org.eclipse.jgit.api.errors.GitAPIException;
 import org.hibernate.exception.SQLGrammarException;
 import org.hibernate.proxy.HibernateProxy;
 import org.joget.apps.app.dao.AppDefinitionDao;
 import org.joget.apps.app.dao.AppResourceDao;
 import org.joget.apps.app.dao.BuilderDefinitionDao;
+import org.joget.apps.app.dao.BuilderDefinitionDaoImpl;
 import org.joget.apps.app.dao.DatalistDefinitionDao;
+import org.joget.apps.app.dao.DatalistDefinitionDaoImpl;
 import org.joget.apps.app.dao.EnvironmentVariableDao;
 import org.joget.apps.app.dao.FormDefinitionDao;
+import org.joget.apps.app.dao.FormDefinitionDaoImpl;
+import org.joget.apps.app.dao.GitCommitHelper;
 import org.joget.apps.app.dao.MessageDao;
 import org.joget.apps.app.dao.PackageDefinitionDao;
 import org.joget.apps.app.dao.PluginDefaultPropertiesDao;
 import org.joget.apps.app.dao.UserviewDefinitionDao;
+import org.joget.apps.app.dao.UserviewDefinitionDaoImpl;
 import org.joget.apps.app.model.*;
 import org.joget.apps.datalist.service.DataListUtil;
 import org.joget.apps.form.dao.FormDataDao;
@@ -3017,46 +3025,52 @@ public class AppServiceImpl implements AppService {
             newAppDef.setLicense(appDef.getLicense());
             newAppDef.setDescription(appDef.getDescription());
             newAppDef.setMeta(appDef.getMeta());
-            appDefinitionDao.saveOrUpdate(newAppDef);
+
+            // Instead of persisting each definition individually (one flush per definition,
+            // plus a date-modified UPDATE on app_app per definition), collect every definition
+            // into newAppDef and rely on a single cascading saveOrUpdate further below. The
+            // collections are pre-initialized so the loops can populate them while newAppDef is
+            // still transient; the cascade is configured via "all-delete-orphan" in
+            // AppDefinition.hbm.xml. Git artifacts are produced per definition via the DAO
+            // addToGit helpers since the per-definition add() is bypassed.
+            newAppDef.setFormDefinitionList(new ArrayList<FormDefinition>());
+            newAppDef.setDatalistDefinitionList(new ArrayList<DatalistDefinition>());
+            newAppDef.setUserviewDefinitionList(new ArrayList<UserviewDefinition>());
+            newAppDef.setBuilderDefinitionList(new ArrayList<BuilderDefinition>());
+            newAppDef.setEnvironmentVariableList(new ArrayList<EnvironmentVariable>());
+            newAppDef.setMessageList(new ArrayList<Message>());
+            newAppDef.setPluginDefaultPropertiesList(new ArrayList<PluginDefaultProperties>());
+            newAppDef.setResourceList(new ArrayList<AppResource>());
+
+            // form data tables to initialize (deduplicated) after the cascading save.
+            // A form table failure rolls back the import (mandatory). Custom builder data tables
+            // are handled separately (best-effort) once their builder callback has run.
+            Set<String> tableNames = new HashSet<>();
 
             if (appDef.getFormDefinitionList() != null) {
-                Collection<String> importedForms = new ArrayList<>();
                 for (FormDefinition o : appDef.getFormDefinitionList()) {
                     o.setAppDefinition(newAppDef);
                     FormUtil.validateDefinitionIdWithJsonForImport(o);
-                    formDefinitionDao.add(o);
-                    importedForms.add(o.getId());
+                    Date date = new Date();
+                    o.setDateCreated(date);
+                    o.setDateModified(date);
+                    FormDefinitionDaoImpl.addToGit(o);
                     formDataDao.clearFormTableCache(o.getTableName());
-
-                    String currentTable = o.getTableName();
-                    try {
-                        // initialize db table by making a dummy load
-                        String dummyKey = "xyz123";
-                        formDataDao.loadWithoutTransaction(currentTable, currentTable, dummyKey);
-                        LogUtil.debug(getClass().getName(), "Initialized form table " + currentTable);
-                    } catch (Exception e) {
-                        //error creating form data table, rollback
-                        for (String formId : importedForms) {
-                            formDefinitionDao.delete(formId, newAppDef);
-                        }
-                        appDefinitionDao.delete(newAppDef);
-                        String errorMessage = "";
-                        if (currentTable.length() > 20) {
-                            errorMessage = ": " + ResourceBundleUtil.getMessage("form.form.invalidId");
-                        } else if (e instanceof SQLGrammarException) {
-                            errorMessage = "- possible cause: column name too long";
-                        }
-                        throw new ImportAppException(ResourceBundleUtil.getMessage("console.app.import.error.createTable", new Object[]{currentTable, errorMessage}), e);
-                    }
+                    tableNames.add(o.getTableName());
+                    newAppDef.getFormDefinitionList().add(o);
                 }
-                LogUtil.info(getClass().getName(), "Imported form definitions : " + appDef.getFormDefinitionList().size());        
+                LogUtil.info(getClass().getName(), "Imported form definitions : " + appDef.getFormDefinitionList().size());
             }
 
             if (appDef.getDatalistDefinitionList() != null) {
                 for (DatalistDefinition o : appDef.getDatalistDefinitionList()) {
                     DataListUtil.validateDefinitionIdWithJson(o);
                     o.setAppDefinition(newAppDef);
-                    datalistDefinitionDao.add(o);
+                    Date date = new Date();
+                    o.setDateCreated(date);
+                    o.setDateModified(date);
+                    DatalistDefinitionDaoImpl.addToGit(o);
+                    newAppDef.getDatalistDefinitionList().add(o);
                     LogUtil.debug(getClass().getName(), "Added list " + o.getId());
                 }
                 LogUtil.info(getClass().getName(), "Imported datalist definitions : " + appDef.getDatalistDefinitionList().size());
@@ -3081,7 +3095,11 @@ public class AppServiceImpl implements AppService {
                         o.setJson(o.getJson().replace("\"tempDisablePermissionChecking\"", "\"__\""));
                     }
 
-                    userviewDefinitionDao.add(o);
+                    Date date = new Date();
+                    o.setDateCreated(date);
+                    o.setDateModified(date);
+                    UserviewDefinitionDaoImpl.addToGit(o);
+                    newAppDef.getUserviewDefinitionList().add(o);
                     LogUtil.debug(getClass().getName(), "Added userview " + o.getId());
                 }
                 LogUtil.info(getClass().getName(), "Imported userview definitions : " + appDef.getUserviewDefinitionList().size());
@@ -3091,18 +3109,14 @@ public class AppServiceImpl implements AppService {
                 for (BuilderDefinition o : appDef.getBuilderDefinitionList()) {
                     CustomBuilderUtil.validateDefinitionIdWithJson(o);
                     o.setAppDefinition(newAppDef);
-                    builderDefinitionDao.add(o);
+                    Date date = new Date();
+                    o.setDateCreated(date);
+                    o.setDateModified(date);
 
-                    if (CustomFormDataTableUtil.TYPE.equals(o.getType())) {
-                        try {
-                            String dummyKey = "xyz123";
-                            String tableName = o.getId().substring(FormDataDaoImpl.FORM_PREFIX_TABLE_NAME.length());
-                            formDataDao.loadWithoutTransaction(tableName, tableName, dummyKey);
-                        } catch (Exception e) {
-                            LogUtil.error(getClass().getName(), e, "");
-                        }
-                    }
-
+                    // The custom builder callback (which creates the custom form data table) and
+                    // the table initialization run after the cascading save - see below.
+                    BuilderDefinitionDaoImpl.addToGit(o);
+                    newAppDef.getBuilderDefinitionList().add(o);
                     LogUtil.debug(getClass().getName(), "Added " + o.getType() + " " + o.getId());
                 }
                 LogUtil.info(getClass().getName(), "Imported addon builder definitions : " + appDef.getBuilderDefinitionList().size());
@@ -3116,7 +3130,7 @@ public class AppServiceImpl implements AppService {
                     temp.setId(o.getId());
                     temp.setValue(o.getValue());
                     temp.setRemarks(o.getRemarks());
-                    environmentVariableDao.add(temp);
+                    newAppDef.getEnvironmentVariableList().add(temp);
                     existId.add(o.getId());
                 }
 
@@ -3157,7 +3171,7 @@ public class AppServiceImpl implements AppService {
                     String k = o.getMessageKey() + AbstractAppVersionedObject.ID_SEPARATOR + o.getLocale();
                     if (!keys.contains(k)) {
                         o.setAppDefinition(newAppDef);
-                        messageDao.add(o);
+                        newAppDef.getMessageList().add(o);
                         keys.add(k);
                     }
                 }
@@ -3174,7 +3188,7 @@ public class AppServiceImpl implements AppService {
                     }
 
                     o.setAppDefinition(newAppDef);
-                    pluginDefaultPropertiesDao.add(o);
+                    newAppDef.getPluginDefaultPropertiesList().add(o);
                 }
                 LogUtil.info(getClass().getName(), "Imported default plugin properties : " + appDef.getPluginDefaultPropertiesList().size());
             }
@@ -3182,9 +3196,99 @@ public class AppServiceImpl implements AppService {
             if (appDef.getResourceList() != null) {
                 for (AppResource o : appDef.getResourceList()) {
                     o.setAppDefinition(newAppDef);
-                    appResourceDao.add(o);
+                    newAppDef.getResourceList().add(o);
                 }
                 LogUtil.info(getClass().getName(), "Imported app resources : " + appDef.getResourceList().size());
+            }
+
+            // Persist newAppDef together with every collected definition in a single cascading
+            // save (see the "all-delete-orphan" collections in AppDefinition.hbm.xml) rather than
+            // a flush per definition.
+            appDefinitionDao.saveOrUpdate(newAppDef);
+
+            // Initialize the form data tables now that the definitions are persisted. Done after
+            // the cascading save so that a table-creation failure can roll back the whole app.
+            String currentTable = "";
+            try {
+                String dummyKey = "xyz123";
+                for (String name : tableNames) {
+                    currentTable = name;
+                    // initialize db table by making a dummy load
+                    formDataDao.loadWithoutTransaction(currentTable, currentTable, dummyKey);
+                    LogUtil.debug(getClass().getName(), "Initialized form table " + currentTable);
+                }
+            } catch (EntityNotFoundException e) {
+                // table exists but the dummy record is absent - not a failure
+            } catch (Exception e) {
+                // log the underlying cause up-front so it is never masked by a rollback failure
+                LogUtil.error(getClass().getName(), e, "Error creating form data table " + currentTable + " while importing " + appDef.getAppId());
+
+                // error creating form data table, rollback the imported app
+                String errorMessage = "";
+                ImportAppException importAppException = null;
+                try {
+                    // reset git working copy so GitRequestFilter does not commit the partial import
+                    if (!AppDevUtil.isGitDisabled()) {
+                        GitCommitHelper gch = AppDevUtil.getGitCommitHelper(newAppDef);
+                        if (gch != null) {
+                            Git git = gch.getGit();
+                            if (git != null) {
+                                git.reset().setMode(ResetCommand.ResetType.HARD).setRef("HEAD").call();
+                            }
+                            gch.setCommitMessage(null);
+                        }
+                    }
+                } catch (Exception gitResetException) {
+                    errorMessage = "Failed to rollback, unable to reset Git; ";
+                } finally {
+                    // always attempt to delete the imported appDef. Re-fetch a fresh instance bound
+                    // to the current session first: the form-table load above runs in a separate
+                    // session and detaches newAppDef's collections, so deleting newAppDef directly
+                    // fails with "collection associated with two open sessions".
+                    try {
+                        AppDefinition toDelete = newAppDef;
+                        Collection<AppDefinition> appDefinitions = appDefinitionDao.findByVersion(newAppDef.getId(), newAppDef.getAppId(), newAppDef.getVersion(), newAppDef.getName(), null, null, null, null);
+                        if (appDefinitions != null && !appDefinitions.isEmpty()) {
+                            toDelete = appDefinitions.iterator().next();
+                        }
+                        appDefinitionDao.delete(toDelete);
+                    } catch (Exception deleteAppDefException) {
+                        errorMessage += "Failed to rollback, unable to delete AppDefinition";
+                        importAppException = new ImportAppException(ResourceBundleUtil.getMessage("console.app.import.error.createTable", new Object[]{currentTable, errorMessage}), deleteAppDefException);
+                    }
+                    if (importAppException != null) {
+                        throw importAppException;
+                    }
+                }
+                if (currentTable.length() > 20) {
+                    errorMessage = ": " + ResourceBundleUtil.getMessage("form.form.invalidId");
+                } else if (e instanceof SQLGrammarException) {
+                    errorMessage = "- possible cause: column name too long";
+                }
+                throw new ImportAppException(ResourceBundleUtil.getMessage("console.app.import.error.createTable", new Object[]{currentTable, errorMessage}), e);
+            }
+
+            // Invoke custom builder callbacks (mirrors BuilderDefinitionDaoImpl.add(), which the
+            // cascading import bypasses) now that the builder definitions are persisted. For custom
+            // form data tables the callback is what actually creates the table; the dummy load then
+            // just initializes it. Best-effort, matching the original import - a failure here is
+            // logged but must not roll back the import.
+            if (appDef.getBuilderDefinitionList() != null) {
+                for (BuilderDefinition o : appDef.getBuilderDefinitionList()) {
+                    try {
+                        CustomBuilder builder = CustomBuilderUtil.getBuilder(o.getType());
+                        if (builder instanceof CustomBuilderCallback) {
+                            ((CustomBuilderCallback) builder).addDefinition(o);
+                        }
+                        if (CustomFormDataTableUtil.TYPE.equals(o.getType())) {
+                            String name = o.getId().substring(FormDataDaoImpl.FORM_PREFIX_TABLE_NAME.length());
+                            formDataDao.loadWithoutTransaction(name, name, "xyz123");
+                            LogUtil.debug(getClass().getName(), "Initialized builder data table " + name);
+                        }
+                    } catch (Exception e) {
+                        LogUtil.error(getClass().getName(), e, "Failed to import " + o.getType() + " builder : " + o.getId());
+                    }
+                }
             }
 
             try {
@@ -3201,11 +3305,14 @@ public class AppServiceImpl implements AppService {
 
                     if (packageDef != null) {
                         if (oldPackageDef != null) {
+                            // Add every mapping to the in-memory packageDef (4-arg, no persistence),
+                            // then persist the whole package definition once below - rather than the
+                            // 3-arg variants which each issue their own saveOrUpdate per mapping.
                             if (oldPackageDef.getPackageActivityFormMap() != null) {
                                 for (Entry e : oldPackageDef.getPackageActivityFormMap().entrySet()) {
                                     PackageActivityForm form = (PackageActivityForm) e.getValue();
                                     form.setPackageDefinition(packageDef);
-                                    packageDefinitionDao.addAppActivityForm(newAppDef.getAppId(), appVersion, form);
+                                    packageDefinitionDao.addAppActivityForm(packageDef, newAppDef.getAppId(), appVersion, form);
                                 }
                                 LogUtil.info(getClass().getName(), "Imported process form mappings : " + oldPackageDef.getPackageActivityFormMap().size());
                             }
@@ -3221,7 +3328,7 @@ public class AppServiceImpl implements AppService {
                                         }
                                     }
                                     plugin.setPackageDefinition(packageDef);
-                                    packageDefinitionDao.addAppActivityPlugin(newAppDef.getAppId(), appVersion, plugin);
+                                    packageDefinitionDao.addAppActivityPlugin(packageDef, newAppDef.getAppId(), appVersion, plugin);
                                 }
                                 LogUtil.info(getClass().getName(), "Imported process tool mappings : " + oldPackageDef.getPackageActivityPluginMap().size());
                             }
@@ -3238,13 +3345,13 @@ public class AppServiceImpl implements AppService {
                                         }
                                     }
                                     participant.setPackageDefinition(packageDef);
-                                    packageDefinitionDao.addAppParticipant(newAppDef.getAppId(), appVersion, participant);
+                                    packageDefinitionDao.addAppParticipant(packageDef, newAppDef.getAppId(), appVersion, participant);
                                 }
                                 LogUtil.info(getClass().getName(), "Imported process participant mappings : " + oldPackageDef.getPackageParticipantMap().size());
                             }
 
-                            // update app definition
-                            appDefinitionDao.saveOrUpdate(newAppDef);
+                            // persist all package mappings in a single cascading save
+                            packageDefinitionDao.saveOrUpdate(packageDef);
                         }
                     }
                 }
@@ -3287,7 +3394,8 @@ public class AppServiceImpl implements AppService {
             o.setValue("");
         }
         o.setAppDefinition(newAppDef);
-        environmentVariableDao.add(o);
+        // collected into newAppDef for the cascading save in importAppDefinition
+        newAppDef.getEnvironmentVariableList().add(o);
     }
 
     /**

@@ -61,6 +61,17 @@ public interface PackageDefinitionDao extends VersionedObjectDao<PackageDefiniti
     void addAppActivityForm(String appId, Long appVersion, PackageActivityForm activityForm);
 
     /**
+     * Add a form/URL mapping to the given in-memory package definition without persisting it.
+     * Lets callers (e.g. app import) batch many mappings and persist the package definition
+     * once via a single cascading {@link #saveOrUpdate}, instead of one save per mapping.
+     * @param packageDef the package definition to modify; created if {@code null}
+     * @param appId
+     * @param appVersion
+     * @param activityForm
+     */
+    void addAppActivityForm(PackageDefinition packageDef, String appId, Long appVersion, PackageActivityForm activityForm);
+
+    /**
      * Remove a form/URL mapping from an activity
      * @param appId
      * @param appVersion
@@ -78,6 +89,17 @@ public interface PackageDefinitionDao extends VersionedObjectDao<PackageDefiniti
     void addAppActivityPlugin(String appId, Long appVersion, PackageActivityPlugin activityPlugin);
 
     /**
+     * Add a plugin mapping to the given in-memory package definition without persisting it.
+     * Lets callers (e.g. app import) batch many mappings and persist the package definition
+     * once via a single cascading {@link #saveOrUpdate}, instead of one save per mapping.
+     * @param packageDef the package definition to modify; created if {@code null}
+     * @param appId
+     * @param appVersion
+     * @param activityPlugin
+     */
+    void addAppActivityPlugin(PackageDefinition packageDef, String appId, Long appVersion, PackageActivityPlugin activityPlugin);
+
+    /**
      * Remove a plugin mapping from an activity
      * @param appId
      * @param appVersion
@@ -93,6 +115,17 @@ public interface PackageDefinitionDao extends VersionedObjectDao<PackageDefiniti
      * @param participant
      */
     void addAppParticipant(String appId, Long appVersion, PackageParticipant participant);
+
+    /**
+     * Add a participant mapping to the given in-memory package definition without persisting it.
+     * Lets callers (e.g. app import) batch many mappings and persist the package definition
+     * once via a single cascading {@link #saveOrUpdate}, instead of one save per mapping.
+     * @param packageDef the package definition to modify; created if {@code null}
+     * @param appId
+     * @param appVersion
+     * @param participant
+     */
+    void addAppParticipant(PackageDefinition packageDef, String appId, Long appVersion, PackageParticipant participant);
 
     /**
      * Remove a participant mapping

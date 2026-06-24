@@ -96,7 +96,20 @@ public class DatalistDefinitionDaoImpl extends AbstractAppVersionedObjectDao<Dat
         
         boolean result = super.add(object);
         appDefinitionDao.updateDateModified(object.getAppDefinition(), date);
-        
+
+        addToGit(object);
+
+        return result;
+    }
+
+    /**
+     * Saves the datalist definition JSON to the git working copy and syncs app plugins.
+     * Extracted from {@link #add} so the app import flow, which persists definitions via a
+     * single cascading save instead of calling {@link #add} per definition, can still produce
+     * the same git artifacts.
+     * @param object
+     */
+    public static void addToGit(DatalistDefinition object) {
         if (!AppDevUtil.isGitDisabled()) {
             // save json
             String filename = "lists/" + object.getId() + ".json";
@@ -107,8 +120,6 @@ public class DatalistDefinitionDaoImpl extends AbstractAppVersionedObjectDao<Dat
             // sync app plugins
             AppDevUtil.dirSyncAppPlugins(object.getAppDefinition());
         }
-        
-        return result;
     }
 
     @Override

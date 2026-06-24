@@ -117,7 +117,20 @@ public class BuilderDefinitionDaoImpl extends AbstractAppVersionedObjectDao<Buil
         if (builder instanceof CustomBuilderCallback) {
             ((CustomBuilderCallback) builder).addDefinition(object);
         }
-        
+
+        addToGit(object);
+        return result;
+    }
+
+    /**
+     * Saves the builder definition JSON to the git working copy and syncs app plugins.
+     * Extracted from {@link #add} so the app import flow, which persists definitions via a
+     * single cascading save instead of calling {@link #add} per definition, can still produce
+     * the same git artifacts. Note: this does not invoke the {@link CustomBuilderCallback};
+     * callers that bypass {@link #add} must invoke the callback themselves where required.
+     * @param object
+     */
+    public static void addToGit(BuilderDefinition object) {
         if (!AppDevUtil.isGitDisabled()) {
             // save json
             String filename = "builder/" + object.getType() + "/" + object.getId() + ".json";
@@ -128,7 +141,6 @@ public class BuilderDefinitionDaoImpl extends AbstractAppVersionedObjectDao<Buil
             // sync app plugins
             AppDevUtil.dirSyncAppPlugins(object.getAppDefinition());
         }
-        return result;
     }
 
     @Override

@@ -134,6 +134,21 @@ public class FormDefinitionDaoImpl extends AbstractAppVersionedObjectDao<FormDef
         boolean result = super.add(object);
         appDefinitionDao.updateDateModified(object.getAppDefinition(), date);
 
+        addToGit(object);
+
+        // clear cache
+        formColumnCache.remove(object.getTableName());
+        return result;
+    }
+
+    /**
+     * Saves the form definition JSON to the git working copy and syncs app plugins.
+     * Extracted from {@link #add} so the app import flow, which persists definitions via a
+     * single cascading save instead of calling {@link #add} per definition, can still produce
+     * the same git artifacts.
+     * @param object
+     */
+    public static void addToGit(FormDefinition object) {
         if (!AppDevUtil.isGitDisabled()) {
             // save json
             String filename = "forms/" + object.getId() + ".json";
@@ -144,10 +159,6 @@ public class FormDefinitionDaoImpl extends AbstractAppVersionedObjectDao<FormDef
             // sync app plugins
             AppDevUtil.dirSyncAppPlugins(object.getAppDefinition());
         }
-        
-        // clear cache
-        formColumnCache.remove(object.getTableName());
-        return result;
     }
 
     @Override
