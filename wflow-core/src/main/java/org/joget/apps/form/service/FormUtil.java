@@ -136,6 +136,7 @@ public class FormUtil implements ApplicationContextAware {
     public static final String FORM_BUILDER_ACTIVE = "formBuilderActive";
     public static final String FORM_ERRORS_PARAM = "_FORM_ERRORS";
     public static final String FORM_RESULT_LOAD_ALL_DATA = "FORM_RESULT_LOAD_ALL_DATA";
+    public static final String PROPERTY_OPTIONS_TRUNCATED = "_OPTIONS_TRUNCATED";
     
     static ApplicationContext appContext;
     
@@ -421,7 +422,43 @@ public class FormUtil implements ApplicationContextAware {
             FormLoadBinder binder = (FormLoadBinder) element.getOptionsBinder();
             if (binder != null && !isAjaxOptionsSupported(element, formData)) {
                 String primaryKeyValue = (formData != null) ? element.getPrimaryKeyValue(formData) : null;
-                FormRowSet data = binder.load(element, primaryKeyValue, formData);
+                FormRowSet data = null;
+                
+                if ("true".equalsIgnoreCase(formData.getFormResult(FormService.INCLUDE_META_DATA))) {
+                    // not execute binder in design, create sample/mock form data
+                    data = new FormRowSet();
+                    data.setMultiRow(true);
+                    
+                    // add empty row to the top if the empty option enabled
+                    if (binder instanceof PropertyEditable) {
+                        PropertyEditable pe = (PropertyEditable) binder;
+                        if ("true".equals(pe.getPropertyString("addEmpty")) || "true".equals(pe.getPropertyString("addEmptyOption"))) {
+                            FormRow empty = new FormRow();
+                            empty.setProperty(FormUtil.PROPERTY_LABEL, pe.getPropertyString("emptyLabel"));
+                            empty.setProperty(FormUtil.PROPERTY_VALUE, ""); 
+                            data.add(empty);
+                        }
+                    }
+                    String sampleStr = ResourceBundleUtil.getMessage("fbuilder.sampleData");
+                    if (sampleStr == null || sampleStr.isEmpty()) {
+                        sampleStr = "Sample Data";
+                    }
+                    
+                    for (int i = 1; i <= 5; i++) {
+                        FormRow row = new FormRow();
+                        row.setProperty(FormUtil.PROPERTY_LABEL, sampleStr + " " + i);
+                        row.setProperty(FormUtil.PROPERTY_VALUE, "sample_" + i);
+                        data.add(row);
+                    }
+                    String elementId = element.getPropertyString(PROPERTY_ID);
+                    if (elementId != null && !elementId.isEmpty()) {
+                        //set the truncated data flag to true, so that the UI can show the truncated data message
+                        formData.addFormResult(PROPERTY_OPTIONS_TRUNCATED + "_" + elementId, "true");
+                    }
+                } else {
+                    data = binder.load(element, primaryKeyValue, formData);
+                }
+                
                 if (data != null) {
                     formData.setOptionsBinderData(binder, data);
                 }

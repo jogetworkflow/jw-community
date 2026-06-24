@@ -171,7 +171,7 @@ public abstract class MfaAuthenticator extends ExtDefaultPlugin implements Prope
                     savedUrl = savedUrl.replace("/web/embed/ulogin/", "");
                     url += "embed/";
                 }
-                url += "userview/";
+                url += "ulogin/";
 
                 String[] urlKey = savedUrl.split("/");
                 String appId = urlKey[0];

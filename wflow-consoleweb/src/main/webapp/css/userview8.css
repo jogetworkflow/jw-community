@@ -65,6 +65,10 @@ body.rtl:not(.horizontal_menu) #page{
     padding-left: unset;
 }
 
+body.rtl#login #page{
+    padding-right: 0px !important;
+}
+
 /* header */
 header.navbar {
     background-color: var(--theme-header, var(--header-default-bgcolor, var(--theme-color6, #fff)));
@@ -114,6 +118,10 @@ body.rtl:not(.horizontal_menu) header.navbar .container-fluid{
     margin-right: 10px;
     vertical-align: top;
 }
+/* header name that has logo for rtl */
+body.rtl #header-name .logo {
+    margin-left: 10px;
+}
 #header-description {
     display:none;
 }
@@ -127,7 +135,13 @@ body.rtl:not(.horizontal_menu) header.navbar .container-fluid{
     max-width: 390px;  
     text-overflow: ellipsis;    
     white-space: nowrap;    
-    overflow: hidden; 
+    overflow: visible;  
+}
+/* header-link max-width for tablet view */
+@media (max-width: 991.98px) {
+  #header-link {
+    max-width: 200px;
+  }
 }
 #header-welcome-message{
     color: var(--theme-header-font, var(--theme-color2, var(--header-link-default-color, #72777a)));
@@ -349,6 +363,7 @@ body.rtl:not(.horizontal_menu) #sidebar{
     width: 100%;
     height: 100%;
     padding-left: 55px;
+    overflow: visible;
 }
 .sidebar_brand.no_logo #header-link {
     padding-left: 0px;
@@ -357,6 +372,65 @@ body.rtl:not(.horizontal_menu) #sidebar{
     max-height: 55px;
     overflow: hidden;
 }
+/* rtl adjustment for logo & brand name text */
+body.rtl  .sidebar_brand .logo_container {
+    left: auto;
+    right: 0;
+}
+
+body.rtl .sidebar_brand #header-link {
+    padding-left: 0;
+    padding-right: 55px;
+}
+
+/* rtl adjustment for no logo */
+body.rtl .sidebar_brand.no_logo #header-link {
+    padding-right: 0;
+}
+/* brand-tool tip to display long brand name when hover */
+.brand-tooltip-wrap {
+    position: relative;
+    display: flex;
+    align-items: center;
+    padding-left: 55px;
+    height: 100%;
+}
+
+.brand-text {
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    max-width: 100%;
+    overflow: hidden;
+    display: inline-block;
+    vertical-align: top;
+}
+
+.brand-tooltip {
+    display: none;
+    opacity: 0;
+    background-color: rgb(255, 255, 255);
+    color:black;
+    font-size: 10px;
+    border: 1px black solid;
+    padding: 2px 8px;
+    border-radius: 4px;
+    position: fixed;
+    top: 50px;
+    white-space: normal;
+    word-break: break-word;
+    z-index: 800;
+    transition: opacity 0.2s;
+    max-width: 280px;
+}
+
+.brand-tooltip-wrap:hover .brand-tooltip {
+    display: block;
+    opacity: 1;
+}
+body.rtl .brand-tooltip {
+    text-align:right;
+}
+/* brand-tool tip to display long brand name when hover */
 
 /* side navigation */
 #navigation {
@@ -923,6 +997,12 @@ body.horizontal_menu header.navbar {
 body.horizontal_menu #header-info{
     display: inline-block;
 }
+/* brand tool-tip */
+body.horizontal_menu .brand-tooltip-wrap{
+    padding-left: unset;
+    width: unset;
+    overflow: visible !important;
+}
 @media (min-width: 768px) {
     body.horizontal_menu header.navbar{
         position: relative;
@@ -1307,8 +1387,9 @@ body#login {
     background-size: cover;
 }
 body#login #page #content.page_content{
-    height: 100vh;
+    height: 100%;
     padding: 0;
+    min-height: 100vh;
 }
 body#login #page #content.page_content:has(#custom_login) .login-form-container{
     display: none;
@@ -1318,16 +1399,24 @@ body#login #page #content main{
 }
 body#login #loginForm {
     display: block;
-    top:45%;
-    left:50%;
-    transform: translate(-50%, -50%);
-    position: absolute;
+    position: relative;
     min-width: 25vw;
     background: #ffffffd9;
     padding: 50px;
     border-radius: 10px;
     box-shadow: 0px 10px 34px -15px rgb(0 0 0 / 24%);
     width: 25vw;
+}
+body#login main .form-errors {
+    margin-bottom: 0px;
+    z-index: 999;
+}
+body#login .login-form-container{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 90vh;
+    position: relative;
 }
 body#login table{
     width: 100%;
@@ -2179,6 +2268,14 @@ body.rtl .ContainerComponent {
     body.horizontal_menu .nav {
         align-items: center;
         padding-right: 0;
+    }
+    /* brand tooltip */
+    body.horizontal_menu.inline_menu .brand-tooltip{
+    line-height: normal;
+    }
+
+    body.horizontal_menu.inline_menu .brand-tooltip-wrap{
+        padding-left: unset;
     }
 }
 /*Priority Menu*/

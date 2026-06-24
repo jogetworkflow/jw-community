@@ -704,7 +704,7 @@ public class UserviewService {
                         }
                     });
                     // get app center userview
-                    Collection<UserviewDefinition> userviewList = appDef.getUserviewDefinitionList();
+                    Collection<UserviewDefinition> userviewList = userviewDefinitionDao.getList(appDef, null, null, null, null);
                     if (!userviewList.isEmpty()) {
                         String userviewId = userviewList.iterator().next().getId();
                         defaultUserview = userviewDefinitionDao.loadById(userviewId, appDef);

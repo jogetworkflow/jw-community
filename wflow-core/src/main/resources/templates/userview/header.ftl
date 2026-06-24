@@ -7,8 +7,9 @@ ${header_before!}
         ${header_name_before!}
         <div id="header-name" class="${header_name_classes!}">
             ${header_name_inner_before!}
-            <a href="${home_page_link!}" id="header-link" class="${header_link_classes!}">
-                <span>${userview.properties.name!}</span>
+            <a href="${home_page_link!}" id="header-link" class="brand-tooltip-wrap ${header_link_classes!}">
+                <span class = "brand-text">${userview.properties.name!}</span>
+                <div class="brand-tooltip">${userview.properties.name!}</div>
             </a>
             ${header_name_inner_after!}
         </div>

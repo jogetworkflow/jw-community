@@ -1368,7 +1368,7 @@ public class AppUtil implements ApplicationContextAware {
         }
         return label.replace(messageKey, translated);
     }
-    
+
     /**
      * Replace all app-specific messages in content
      *
@@ -2026,45 +2026,56 @@ public class AppUtil implements ApplicationContextAware {
     public static double getArchivedProcessStatus() {
         //not using setupManager due to the value is cached
         SetupDao setupDao = (SetupDao) WorkflowUtil.getApplicationContext().getBean("setupDao");
-        Collection<Setting> result = setupDao.find("WHERE property = ?", new String[]{WorkflowManager.ARCHIVE_SETTING}, null, null, null, null);
-        Setting status = (result.isEmpty()) ? null : result.iterator().next();
+        Collection<Setting> result = setupDao.find("WHERE property like ?", new String[]{WorkflowManager.ARCHIVE_PREFIX}, null, null, null, null);
 
-        if (status != null) {
-            try {
-                JSONObject statusObj = new JSONObject(status.getValue());
+        if (!result.isEmpty()) {
+            Setting status = null;
+            Setting statusProgress = null;
 
-                //check the date to see if the archive migration thread is still running, assume it is stopped if no update for 15mins
-                if (statusObj.getString("state").equals("STARTED")) {
-                    SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-                    if ((new Date()).getTime() - sdf.parse(statusObj.getString("lastRun")).getTime() > (15 * 60 * 1000)) {
-                        statusObj.put("state", "PAUSE");
-                        status.setValue(statusObj.toString());
-                        setupDao.saveOrUpdate(status);
+            for (Setting s : result) {
+                if (s.getProperty().equals(WorkflowManager.ARCHIVE_SETTING)) {
+                    status = s;
+                } else if (s.getProperty().equals(WorkflowManager.ARCHIVE_PROGRESS_SETTING)) {
+                    statusProgress = s;
+                }
+            }
+
+            if (status != null && statusProgress != null) {
+                try {
+                    JSONObject statusProgressObj = new JSONObject(statusProgress.getValue());
+
+                    //check the date to see if the archive migration thread is still running, assume it is stopped if no update for 15mins
+                    if (status.getValue().equals("STARTED")) {
+                        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+                        if ((new Date()).getTime() - sdf.parse(statusProgressObj.getString("lastRun")).getTime() > (15 * 60 * 1000)) {
+                            status.setValue("PAUSE");
+                            setupDao.saveOrUpdate(status);
+                        }
                     }
+
+                    double percentage = 0;
+                    double total = statusProgressObj.getDouble("total");
+                    double completed = statusProgressObj.getDouble("completed");
+
+                    if (total > completed) {
+                        percentage = completed/total * 100;
+                    } else {
+                        percentage = 95;
+                    }
+
+                    if (percentage == 0) {
+                        percentage = 1;
+                    }
+
+                    if (status.getValue().equals("PAUSE")) {
+                        //make it negative value is the migration thread is not running
+                        percentage = percentage * -1;
+                    }
+
+                    return percentage;
+                } catch (Exception e) {
+                    LogUtil.error(AppUtil.class.getName(), e, "");
                 }
-
-                double percentage = 0;
-                double total = statusObj.getDouble("total");
-                double completed = statusObj.getDouble("completed");
-
-                if (total > completed) {
-                    percentage = completed/total * 100;
-                } else {
-                    percentage = 95;
-                }
-
-                if (percentage == 0) {
-                    percentage = 1;
-                }
-
-                if (statusObj.getString("state").equals("PAUSE")) {
-                    //make it negative value is the migration thread is not running
-                    percentage = percentage * -1;
-                }
-
-                return percentage;
-            } catch (Exception e) {
-                LogUtil.error(AppUtil.class.getName(), e, "");
             }
         }
         return 100;

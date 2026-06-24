@@ -73,6 +73,11 @@ public class CheckBox extends SelectBox implements FormBuilderPaletteElement {
         // set options
         Collection<Map> optionMap = getOptionMap(formData);
         dataModel.put("options", optionMap);
+        
+        String elementId = getPropertyString(FormUtil.PROPERTY_ID);
+        if (elementId != null && !elementId.isEmpty() && getOptionsBinder() != null) {
+            dataModel.put("optionsTruncated", formData.getFormResult(FormUtil.PROPERTY_OPTIONS_TRUNCATED + "_" + elementId));
+        }
 
         String html = FormUtil.generateElementHtml(this, formData, template, dataModel);
         return html;

@@ -26,6 +26,9 @@
     </#list>
     </div>
     <div style="clear:both;"></div>
+    <#if optionsTruncated?? && optionsTruncated == "true">
+        <div class="form-builder-truncation-note">@@fbuilder.optionsTruncated.note@@</div>
+    </#if>
 
     <#if (element.properties.controlField?? && element.properties.controlField! != "" && !(element.properties.readonly! == 'true' && element.properties.readonlyLabel! == 'true')) >
         <script type="text/javascript">

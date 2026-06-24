@@ -9,24 +9,26 @@ ${loginBackground!}
     ${login_error_after!}
 </#if>
 ${login_form_before!}
-<form id="loginForm" name="loginForm" action="${context_path!}/j_spring_security_check" method="POST">
-    ${login_form_inner_before!}
-    <table align="center">
-        <tr><td><label>@@ubuilder.login.username@@: </label></td><td><input type='text' id='j_username' name='j_username' placeholder="@@ubuilder.login.username@@"/></td></tr>
-        <tr><td><label>@@ubuilder.login.password@@: </label></td><td><input type='password' id='j_password' name='j_password' placeholder="@@ubuilder.login.password@@"/></td></tr>
-        <tr><td>&nbsp;</td><td><input name="submit" class="form-button" type="submit" value="@@ubuilder.login@@" /></td></tr>
-        <tr><td colspan="2">
-            ${login_form_footer!}
-        </td></tr>
-    </table>
-    ${login_form_inner_after!}
-    <script>
-        $(function(){
-            $("#loginForm input[name='submit']").click(function(){
-                UI.blockUI({message : "@@form.form.message.wait@@" });
-                return true;
+<div class="login-form-container">
+    <form id="loginForm" name="loginForm" action="${context_path!}/j_spring_security_check" method="POST">
+        ${login_form_inner_before!}
+        <table align="center">
+            <tr><td><label>@@ubuilder.login.username@@: </label></td><td><input type='text' id='j_username' name='j_username' placeholder="@@ubuilder.login.username@@"/></td></tr>
+            <tr><td><label>@@ubuilder.login.password@@: </label></td><td><input type='password' id='j_password' name='j_password' placeholder="@@ubuilder.login.password@@"/></td></tr>
+            <tr><td>&nbsp;</td><td><input name="submit" class="form-button" type="submit" value="@@ubuilder.login@@" /></td></tr>
+            <tr><td colspan="2">
+                ${login_form_footer!}
+            </td></tr>
+        </table>
+        ${login_form_inner_after!}
+        <script>
+            $(function(){
+                $("#loginForm input[name='submit']").click(function(){
+                    UI.blockUI({message : "@@form.form.message.wait@@" });
+                    return true;
+                });
             });
-        });
-    </script>
-</form>
+        </script>
+    </form>
+</div>
 ${login_form_after!}

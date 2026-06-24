@@ -23,6 +23,9 @@
         <#if element.properties.readonly! == 'true' || element.properties.readonly! == 'readonly'><input id="${elementParamName!}" name="${elementParamName!}" type="hidden" value="${value!}" /></#if>
     </div>
     <div style="clear:both;"></div>
+    <#if optionsTruncated?? && optionsTruncated == "true">
+        <div class="form-builder-truncation-note">@@fbuilder.optionsTruncated.note@@</div>
+    </#if>
 
     <#if (element.properties.controlField?? && element.properties.controlField! != "" && !(element.properties.readonly! == 'true' && element.properties.readonlyLabel! == 'true')) >
         <script type="text/javascript">

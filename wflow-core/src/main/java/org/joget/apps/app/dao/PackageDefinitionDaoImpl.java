@@ -211,6 +211,7 @@ public class PackageDefinitionDaoImpl extends AbstractVersionedObjectDao<Package
         Collection<PackageDefinition> list = appDef.getPackageDefinitionList();
         if (list == null) {
             list = new ArrayList<>();
+            appDef.setPackageDefinitionList(list);
         }
         list.add(packageDef);
         getAppDefinitionDao().saveOrUpdate(appDef);

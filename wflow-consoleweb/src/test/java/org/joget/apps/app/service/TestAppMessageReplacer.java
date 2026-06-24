@@ -2,7 +2,9 @@ package org.joget.apps.app.service;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.json.JsonMapper;
+import java.util.Collection;
 import org.apache.commons.io.IOUtils;
+import org.joget.apps.app.dao.FormDefinitionDao;
 import org.joget.apps.app.model.AppDefinition;
 import org.joget.apps.app.model.FormDefinition;
 import org.junit.After;
@@ -27,6 +29,8 @@ public class TestAppMessageReplacer {
 
     @Autowired
     private AppService appService;
+    @Autowired
+    private FormDefinitionDao formDefinitionDao;
     private AppDefinition appDef;
 
     private static final JsonMapper mapper = new JsonMapper();
@@ -90,7 +94,8 @@ public class TestAppMessageReplacer {
     private void testReplacementMethod(AppMessageReplacementMethod func) {
         try {
             // get JSON from FormDefinition
-            FormDefinition formDef = appDef.getFormDefinitionList().iterator().next();
+            Collection<FormDefinition> formDefList = formDefinitionDao.getFormDefinitionList(null, appDef, null, null, null, null);
+            FormDefinition formDef = formDefList.iterator().next();
             String formJson = formDef.getJson();
 
             // execute test

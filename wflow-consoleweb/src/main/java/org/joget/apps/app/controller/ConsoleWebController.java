@@ -5090,11 +5090,11 @@ public class ConsoleWebController {
             Setting status = (result.isEmpty()) ? null : result.iterator().next();
            
             if (status != null) {
-                status.setValue(status.getValue().replace("STARTED", "PAUSE"));
+                status.setValue("PAUSE");
                 setupDao.saveOrUpdate(status);
             }
         }
-        
+
         writer.write(Double.toString(AppUtil.getArchivedProcessStatus()));
     }
     

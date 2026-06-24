@@ -5,9 +5,10 @@ ${header_before!}
     <div class="logo">
         <a href="${home_page_link!}">
             ${header_name_before!}
-            <div id="header-name" class="${header_name_classes!}">
+            <div id="header-name" class="brand-tooltip-wrap ${header_name_classes!}">
                 ${header_name_inner_before!}
-                <span>${userview.properties.name!}</span>
+                <span class = "brand-text">${userview.properties.name!}</span>
+                <div class="brand-tooltip">${userview.properties.name!}</div>
                 ${header_name_inner_after!}
             </div>
             ${header_name_after!}

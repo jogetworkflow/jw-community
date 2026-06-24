@@ -28,6 +28,8 @@ public interface WorkflowManager {
     public static final String DELETE_ALL_COMPLETED_PREFIX = "delete_all_completed_processes_%";
     public static final String DELETE_ALL_COMPLETED_SETTING = "delete_all_completed_processes_status";
     public static final String DELETE_ALL_COMPLETED_PROGRESS_SETTING = "delete_all_completed_processes_progress";
+    public static final String ARCHIVE_PREFIX = "archive_processing_%";
+    public static final String ARCHIVE_PROGRESS_SETTING = "archive_processing_progress";
 
     /**
      * Set the workflow variable based on an activity instance ID.

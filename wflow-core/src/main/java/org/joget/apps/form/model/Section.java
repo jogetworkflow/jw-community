@@ -21,6 +21,7 @@ public class Section extends Element implements FormBuilderEditable, FormContain
     protected Map<FormData, Boolean> continueValidations = new HashMap<FormData, Boolean>();
     private Collection<Map<String, String>> rules = null;
     private Map<String, Element> elements = new HashMap<String, Element>();
+    private String cachedRulesParameterName = null; 
 
     @Override
     public String getName() {
@@ -126,8 +127,17 @@ public class Section extends Element implements FormBuilderEditable, FormContain
      * @return Collection of visibility rules
      */
     protected Collection<Map<String, String>> getRules(FormData formData) {
+        // clear cache when custom parameter name changed 
+        // e.g when section is reused in subform repeater 
+        String currentParamName = getCustomParameterName();
+        if (rules != null && currentParamName != null && !currentParamName.equals(cachedRulesParameterName)) {
+            rules = null;
+            elements.clear();
+        }
+        
         if (rules == null) {
             rules = VisibilityControlUtil.parseVisibilityRules(this, formData, elements);
+            cachedRulesParameterName = currentParamName;
         }
         return rules;
     }

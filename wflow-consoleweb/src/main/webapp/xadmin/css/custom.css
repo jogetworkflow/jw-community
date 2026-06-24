@@ -5671,10 +5671,11 @@ body.has-logo .page-content{
 }
 body.has-logo img.logo{
     height: 60px;
-    margin-top: 10px;
+    margin-right: 10px;
 }
-body.has-logo #header-name span{
-    display: none;
+body.rtl.has-logo img.logo {
+    margin-right: unset;
+    margin-left: 10px;
 }
 body.has-logo .container > .left_open,
 body.has-logo .container > .layui-nav{

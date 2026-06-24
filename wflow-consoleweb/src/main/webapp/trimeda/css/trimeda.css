@@ -1309,6 +1309,10 @@ header.navbar .dropdown-menu.notifications > li.task.showMoreInfo > div.more-inf
 .header-nav a.btn:focus {
     box-shadow: none;
 }
+
+#header-link .brand-tooltip{
+    top:60px;
+}
 /* Content */
 #content.page_content {
     border-radius: 16px;
@@ -1348,6 +1352,10 @@ body.rtl:not(.horizontal_menu) #page {
     padding-right: calc(276 / 1440 * 100vw) !important;
 }
 
+body.rtl#login #page{
+    padding-right: 0px !important;
+}
+
 /* Breadcrumb */
 ul.breadcrumb {
     border-bottom: 1px solid var(--field-border-color);
@@ -1376,11 +1384,11 @@ body.rtl ul.breadcrumb > li > span.separator {
 }
 
 #content main > .main-body-content,
-#content main > *:not(.category-label-header, .breadcrumb, .quickEdit) {
+#content main > *:not(.category-label-header, .breadcrumb, .quickEdit, .form-errors, .login-form-container) {
     margin: 36px 47px 0px 47px;
 }
 
-#content main > *:not(.category-label-header, .breadcrumb, .quickEdit) {
+#content main > *:not(.category-label-header, .breadcrumb, .quickEdit, .form-errors, .login-form-container) {
     margin-top: var(--content-margin) !important;
     margin-left: 47px !important;
     margin-bottom: 0px !important;
@@ -1397,6 +1405,11 @@ footer {
 #content main {
     padding-top: var(--breadcrumb-spacing);
     padding-bottom: var(--breadcrumb-spacing);
+}
+
+body#login #content main {
+    padding-top: 0px;
+    padding-bottom: 0px
 }
 
 .form-section {
@@ -2563,6 +2576,16 @@ body.rtl .accordion .card-header::after {
     #section-actions > .subform-column {
         display: flex;
         justify-content: flex-end;
+    }
+
+    #section-actions > .form-column{
+        flex-wrap: wrap;
+    }
+}
+
+@media screen and (max-width: 490px) {
+    #section-actions > .form-column > .form-cell{  
+        margin-top: 0.5rem;
     }
 }
 

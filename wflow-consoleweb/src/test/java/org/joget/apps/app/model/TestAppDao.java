@@ -129,7 +129,7 @@ public class TestAppDao {
         
         // load and verify
         AppDefinition loadedAppDef = loadAppDefinitionVersion(TEST_APP_ID, TEST_APP_VERSION+3);
-        PackageDefinition loadedPackageDef = loadedAppDef.getPackageDefinition();
+        PackageDefinition loadedPackageDef = packageDefinitionDao.loadAppPackageDefinition(loadedAppDef.getAppId(), loadedAppDef.getVersion());
         Map<String, PackageActivityForm> activityFormMap = loadedPackageDef.getPackageActivityFormMap();
         String uid = paf.getUid();
         PackageActivityForm loadedPaf = activityFormMap.get(uid);
