@@ -225,3 +225,4 @@ wflow-consoleweb/src/main/webapp/wro/
 **/ignite/README.txt
 **/ignite/work/**
 
+wflow-consoleweb/${sys/catalina.home}/
