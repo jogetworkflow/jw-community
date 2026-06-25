@@ -65,7 +65,7 @@ public class SecureAuthenticationCheck extends GovHealthCheckAbstract {
         if (secureDm != null) {
             DirectoryManagerProxyImpl directoryManager = (DirectoryManagerProxyImpl) AppUtil.getApplicationContext().getBean("directoryManager");
             if (directoryManager != null && directoryManager.getDirectoryManagerImpl() != null) {
-                if (directoryManager.getDirectoryManagerImpl().getClass().isAssignableFrom(secureDm)) {
+                if (secureDm.isAssignableFrom(directoryManager.getDirectoryManagerImpl().getClass())) {
                     isSecureDm = true;
                 }
             }

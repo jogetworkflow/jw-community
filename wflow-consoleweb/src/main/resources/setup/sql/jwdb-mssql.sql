@@ -58,8 +58,8 @@ CREATE TABLE [app_builder](
 	[id] [nvarchar](255) NOT NULL,
 	[name] [nvarchar](255) NULL,
 	[type] [nvarchar](255) NULL,
-	[description] [ntext] NULL,
-	[json] [ntext] NULL,
+	[description] [nvarchar](max) NULL,
+	[json] [nvarchar](max) NULL,
 	[dateCreated] [datetime] NULL,
 	[dateModified] [datetime] NULL,
 PRIMARY KEY CLUSTERED 
@@ -80,8 +80,8 @@ CREATE TABLE [app_datalist](
 	[appVersion] [numeric](19, 0) NOT NULL,
 	[id] [nvarchar](255) NOT NULL,
 	[name] [nvarchar](255) NULL,
-	[description] [ntext] NULL,
-	[json] [ntext] NULL,
+	[description] [nvarchar](max) NULL,
+	[json] [nvarchar](max) NULL,
 	[dateCreated] [datetime] NULL,
 	[dateModified] [datetime] NULL,
 PRIMARY KEY CLUSTERED 
@@ -139,7 +139,7 @@ CREATE TABLE [app_form](
 	[dateCreated] [datetime] NULL,
 	[dateModified] [datetime] NULL,
 	[tableName] [nvarchar](255) NULL,
-	[json] [ntext] NULL,
+	[json] [nvarchar](max) NULL,
 	[description] [nvarchar](max) NULL,
 PRIMARY KEY CLUSTERED 
 (
@@ -469,8 +469,8 @@ CREATE TABLE [app_userview](
 	[appVersion] [numeric](19, 0) NOT NULL,
 	[id] [nvarchar](255) NOT NULL,
 	[name] [nvarchar](255) NULL,
-	[description] [ntext] NULL,
-	[json] [ntext] NULL,
+	[description] [nvarchar](max) NULL,
+	[json] [nvarchar](max) NULL,
 	[dateCreated] [datetime] NULL,
 	[dateModified] [datetime] NULL,
 PRIMARY KEY CLUSTERED 

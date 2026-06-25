@@ -5571,9 +5571,6 @@ body.popupBody > #form-canvas{
 body.rtl .sub-menu li a cite{
     float: right !important;
 }
-.badge {
-    max-width: 20%;
-}
 .sub-menu li a{
     overflow:auto;
 }

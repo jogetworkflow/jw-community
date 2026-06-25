@@ -55,6 +55,7 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.InputSource;
+import java.util.regex.Matcher;
 
 /**
  * Utility methods can be used by Generator Plugin
@@ -74,19 +75,38 @@ public class GeneratorUtil {
         if (content != null && !content.isEmpty() && formId != null && !formId.isEmpty() && appDef != null) {
             FormDefinitionDao formDao = (FormDefinitionDao) AppUtil.getApplicationContext().getBean("formDefinitionDao");
             FormDefinition formDef = formDao.loadById(formId, appDef);
-            
+
             if (formDef != null) {
-                content = content.replaceAll("\\[formId\\]", formDef.getId());
-                content = content.replaceAll("\\[formName\\]", formDef.getName());
-                content = content.replaceAll("\\[formTableName\\]", formDef.getTableName());
-                content = content.replaceAll("\\[appId\\]", appDef.getAppId());
-                content = content.replaceAll("\\[appName\\]", appDef.getName());
-                content = content.replaceAll("\\[appVersion\\]", appDef.getVersion().toString());
+
+                String formIdEsc = Matcher.quoteReplacement(formDef.getId());
+                
+                String formNameEsc = Matcher.quoteReplacement(
+                    StringUtil.escapeString(formDef.getName(), StringUtil.TYPE_JSON, null)
+                );
+                
+                String formTableNameEsc = Matcher.quoteReplacement(formDef.getTableName());
+                
+                String appIdEsc = Matcher.quoteReplacement(
+                    StringUtil.escapeString(appDef.getAppId(), StringUtil.TYPE_JSON, null)
+                );
+                
+                String appNameEsc = Matcher.quoteReplacement(
+                    StringUtil.escapeString(appDef.getName(), StringUtil.TYPE_JSON, null)
+                );
+                
+                String appVerEsc = Matcher.quoteReplacement(appDef.getVersion().toString());
+
+                content = content.replaceAll("\\[formId\\]", formIdEsc);
+                content = content.replaceAll("\\[formName\\]", formNameEsc);
+                content = content.replaceAll("\\[formTableName\\]", formTableNameEsc);
+                content = content.replaceAll("\\[appId\\]", appIdEsc);
+                content = content.replaceAll("\\[appName\\]", appNameEsc);
+                content = content.replaceAll("\\[appVersion\\]", appVerEsc);
             }
         }
         return content;
-    } 
-    
+    }
+
     /**
      * Gets the Form object by Id
      * @param formId
