@@ -138,7 +138,7 @@ public class ExpressionHashVariable extends DefaultHashVariablePlugin {
         @Override
         public MethodExecutor resolve(EvaluationContext context, Object targetObject, String name,
                 List<org.springframework.core.convert.TypeDescriptor> argumentTypes) throws AccessException {
-            if ("getClass".equals(name) || "getClassLoader".equals(name)) {
+            if ("getClass".equalsIgnoreCase(name) || "getClassLoader".equalsIgnoreCase(name)) {
                 throw new AccessException("Access to getClass() or getClassLoader() is forbidden");
             }
             return super.resolve(context, targetObject, name, argumentTypes);
@@ -148,7 +148,7 @@ public class ExpressionHashVariable extends DefaultHashVariablePlugin {
     public static class SecurePropertyAccessor extends ReflectivePropertyAccessor {
         @Override
         public boolean canRead(EvaluationContext context, Object target, String name) throws AccessException {
-            if ("class".equals(name) || "classLoader".equals(name)) { // also block classLoader just in case
+            if ("class".equalsIgnoreCase(name) || "classLoader".equalsIgnoreCase(name)) { // also block classLoader just in case
                 return false;
             }
             return super.canRead(context, target, name);
@@ -156,7 +156,7 @@ public class ExpressionHashVariable extends DefaultHashVariablePlugin {
 
         @Override
         public TypedValue read(EvaluationContext context, Object target, String name) throws AccessException {
-            if ("class".equals(name) || "classLoader".equals(name)) {
+            if ("class".equalsIgnoreCase(name) || "classLoader".equalsIgnoreCase(name)) {
                 throw new AccessException("Access to class/classLoader is forbidden");
             }
             return super.read(context, target, name);

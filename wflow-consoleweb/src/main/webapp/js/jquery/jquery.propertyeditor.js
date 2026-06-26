@@ -7000,12 +7000,30 @@ PropertyEditor.Type.IconTextField.prototype = {
             if (this.properties.iconOnly !== undefined && this.properties.iconOnly === "true") {
                 value = iconValue;
             } else {
-                if (iconValue !== "" && value !== "") {
+                if (iconValue !== "") {
                     value = iconValue + " " + value;
                 }
             }
         }
         
+        // Mark manually typed <i> icons to avoid being treated as picker icons later
+        if (typeof value === "string" && (icon.length === 0 || icon.find(".value").html() === "")) {
+            var tempManual = $('<div>' + value + '</div>');
+            var firstChild = tempManual.find('> *:eq(0)');
+            // Only proceed if first child is an <i> element
+            if (firstChild.is('i')) {
+                var peIconAttr = (firstChild.attr('data-pe-icon') || '').toLowerCase();
+                var manualMarker = (firstChild.attr('aria-label') || '').toLowerCase();
+                // If not already marked as picker icon or manual icon, mark it as manual
+                if (peIconAttr !== 'true' && manualMarker !== 'pe-manual') {
+                    if (!firstChild.attr('aria-label') || firstChild.attr('aria-label') === '') {
+                        firstChild.attr('aria-label', 'pe-manual');
+                        value = tempManual.html();
+                    }
+                }
+            }
+        }
+       
         if (value === undefined || value === null || value === "") {
             if (useDefault !== undefined && useDefault &&
                 this.defaultValue !== undefined && this.defaultValue !== null) {
@@ -7034,14 +7052,38 @@ PropertyEditor.Type.IconTextField.prototype = {
         
         var valueWithoutIcon = this.value;
         var icon= "";
-        var temp = $('<div>'+this.value+'</div>');
-        if ($(temp).find("> *:eq(0)").is("i")) {
-            var i = $(temp).find("> *:eq(0)");
-            var iClass = $(i).attr("class");
-            
-            if (iClass !== "") {
-                icon = $('<div></div>').append(i).html();
-                valueWithoutIcon = $(temp).html().trim();
+        // Extract icon picker icon only if explicitly marked
+        if (typeof this.value === "string") {
+            var matchPicker = this.value.match(/^\s*(<i\b[^>]*\bdata-pe-icon\s*=\s*["']true["'][^>]*><\/i>)\s*/i);
+            if (matchPicker) {
+                icon = matchPicker[1].trim();
+                valueWithoutIcon = this.value.replace(matchPicker[0], "").trim();
+            } else {
+                var temp = $('<div>' + this.value + '</div>');
+                var first = temp.find('> *:eq(0)');
+                // Preserve manual icon HTML inline
+                if (first.is('i')) {
+                    var manualMarker = (first.attr('aria-label') || '').toLowerCase();
+                    // If marked as manual icon, preserve as-is
+                    if (manualMarker === 'pe-manual' || first.hasClass('pe-icon-manual')) {
+                        if (manualMarker === 'pe-manual') {
+                            first.removeAttr('aria-label');
+                        }
+                        if (first.hasClass('pe-icon-manual')) {
+                            first.removeClass('pe-icon-manual');
+                        }
+                        valueWithoutIcon = UI.htmlDecode(temp.html()).trim();
+                    }
+                    // Else treat as picker icon
+                    // Maintain already existing DX8 picker behavior
+                    else {
+                        var iClass = first.attr('class');
+                        if (iClass !== undefined && iClass !== null && iClass !== "") {
+                            icon = $('<div></div>').append(first).html();
+                            valueWithoutIcon = UI.htmlDecode(temp.html()).trim();
+                        }
+                    }
+                }
             }
         }
         
