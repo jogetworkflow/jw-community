@@ -2,6 +2,71 @@ Joget DX COMMUNITY
 ====================
 For more information, please refer to https://community.joget.org
 
+9.1.0
+=====
+2b513473e Fixed: wflow-consoleweb - Icon Text Field - Fixed icon html not retaining when html code is written inside input #1261 @8.2-SNAPSHOT
+354601dd3 Fixed: wflow-core - ExpressionHashVariable - Used case-insensitive comparison to prevent bypass of getClass/getClassLoader access restrictions. #2067 @8.2-SNAPSHOT
+d26e9d44f Fixed: wflow-consoleweb - Property Editor - fixed encoding issue in IconTextField #1047 @8.2-SNAPSHOT
+8fa466f83 Fixed: wflow-plugin-base - Slow builder loading on multi tenant environment. #2011 @8.2-SNAPSHOT
+0f8ca64e6 Fixed: wflow-consoleweb - Calendar Menu - Added border to Progressive and Universal Theme #2095 @9.1-SNAPSHOT
+dcb191690 Fixed: wflow-consoleweb - Progressive/Universal - Fixed mispositioning of numeric fields #2095 @9.1-SNAPSHOT
+9f3a37f88 Added: wflow-core/wflow-consoleweb - Custom Styling - Added an option to enable/disable the inherit behavior for the default styling. #2018 @9.1-SNAPSHOT
+7e8a50edb Fixed: wflow-core - AppPluginUtil - getDefaultProperties improperly converts objects using toString method. #1155 @8.2-SNAPSHOT
+6bee37de7 Fixed: wflow-core - App Git - Performance issue with builder save. #1866 @9.0-SNAPSHOT
+72f756edc Fixed: wflow-consoleweb - DataList - Reverted the mobile design for other themes #2102 @9.1-SNAPSHOT
+9bc27c798 Fixed: wflow-consoleweb - Datalist Mobile - Standardized the CSS across different themes. #1741 @9.1-SNAPSHOT
+ad947b878 Fixed: wflow-consoleweb – Progressive/Universal/XAdmin themes – Resolved a rendering issue in RTL where badges with a max-width caused display problems. #1462 @8.2-SNAPSHOT
+cb9dca6f8 Fixed: wflow-core - Breadcrumb - Fixed multiple separator appearing in Breadcrumb #2132 @9.1-RELEASE
+26aa1ef35 Fixed: wflow-core - Generate Apps - Prevent duplicate list or userview entries and JSON errors when app or form titles contain quotes or apostrophes #1035. @8.2-SNAPSHOT
+012bb0d65 Fixed: wflow-consoleweb - DB - Convert ntext columns for definition table to nvarchar #1377. @8.2-SNAPSHOT
+9bcb861fb Added: wflow-core - Bitronix Aspect - Added new aspect to print stack trace whenever BitronixTransaction setRollbackOnly() is called #1664 @8.2-SNAPSHOT
+4a8d76be3 Fixed: wflow-core - Governance - Fixed secure authentication health check does not detect OpenID Connect. #2034 T7789 @8.2-SNAPSHOT
+cae5bdfd8 Fixed: wflow-core - DatePicker - Prevent jQuery UI dropdown from appearing after native date picker closes on mobile. #2106 @9.1-SNAPSHOT
+408f3e3e5 Fixed: wflow-consoleweb - Brand Tooltip - Fixed brand name's padding left causing issue in DX9 App Center. #875 @9.0-SNAPSHOT
+68531b9a0 Fixed: wflow-consoleweb - Brand Tooltip - Fixed brand tool tip overflow on long name without space. #875 @9.0-SNAPSHOT
+45c6271dd Fixed: wflow-consoleweb - Brand Tooltip - Added CSS styling for brand tooltip in DX9 builder theme. #875 @9.0-SNAPSHOT
+257b792ee Fixed: wflow-core - Brand Name - Fixed long brand name not visible in every themes. #875 @8.2-SNAPSHOT
+45ea05bb3 Fixed: wflow-consoleweb - Property Editor - Steps indicator of Multi Tools components remain expanded when not configuring it #1223 @8.2-SNAPSHOT
+0c4fd1d77 Fixed: wflow-consoleweb - DX8 Themes - Remove unnecessary padding in the login page during RTL view. #1342 @8.2-SNAPSHOT
+5e7bebc9b Fixed: wflow-consoleweb - Login Page - Fixed Login page UI issues and overlapping login form with error message. #1342 @9.0-SNAPSHOT
+7daba74b1 Fixed: wflow-core/wflow-consoleweb - Login Page - Fixed Login page UI issues and overlapping login form with error message. #1342 @8.2-SNAPSHOT
+92d2b0a68 Fixed: wflow-consoleweb - Trimeda - Fixed extra spacings on form-errors #1342 @8.2-SNAPSHOT
+5d72670fa Modified: wflow-consoleweb/wflow-core - Code Mirror - Updated the CodeMirror instances to the newest version #1351 @9.1-SNAPSHOT
+201eeb8e1 Fixed: wflow-directory - IDP - Fixed app redirect to page not found after login using IDP. #1574 @9.0-SNAPSHOT
+874e5d863 Fixed: wflow-core - MFA - Fixed an issue where app redirect to page not found after logging in with MFA. #1574 @8.2-SNAPSHOT
+32b5ec5c8 Fixed: wflow-consoleweb - Trimeda theme - Fixed bottom bottom not align correctly in mobile #1638 @8.2-SNAPSHOT
+a5c6c3047 Fixed: wflow-consoleweb - Form Builder - Fixed form builder element ordering issue caused by incorrect DOM-to-model index mapping #1684. @8.2-SNAPSHOT
+f9224d037 Fixed: wflow-consoleweb - Subform - Fixed subform position in Progressive and Universal Theme. #1826 @8.2-SNAPSHOT
+091714f80 Fixed: wflow-core - FileUpload - img upload field on chrome not showing camera option on androids #1857 T7567 @8.2-SNAPSHOT
+8a2109281 Fixed: wflow-wfengine - WorkflowManagerImpl - Enhanced process archiving logic with separate progress tracking and improved error handling. #1863 @8.2-SNAPSHOT
+4a4bc83ce Fixed: wflow-wfengine - Shark - Performance issues when lot of workflow variables used for non routing purpose. #1874 @9.1-SNAPSHOT
+4fe4e87d9 Fixed: wflow-core - Date Hash Variable - Added else block to fallback to the profile or system timezone if no timezone provided. T7634 #1917 @9.1-SNAPSHOT
+406dba79a Fixed: wflow-core - Form Builder - Fixed form option binder retrieving all table records in Form Builder design mode. T7707 #1994 @8.2-SNAPSHOT.
+9e75b5088 Fixed: wflow-core - Section - Fixed section visibility control not working when used with subform repeater. #2000 @8.2-SNAPSHOT
+cb0b60e65 Fixed: wflow-shark - Workflow Manager - Fixed workflow variable does not save when calling a certain workflow assignment API. #2005 @9.0-SNAPSHOT
+e356a2343 Fixed: wflow-wfengine - JSPClientUtilities - Fixed workflow variable does not save when calling a certain workflow assignment API. #2005 @8.2-SNAPSHOT
+1bd0dd9b7 Fixed: wflow-consoleweb - UI Builder - Fixed the second prompt does not popup when user chosen "remove" in first prompt #2006 @9.1-SNAPSHOT
+7fc5112ab Fixed: wflow-consoleweb - UI Builder - Fixed custom message not appear when BOTH custom js and custom css exist #2006 @9.1-SNAPSHOT
+56cb3e342 Modified: wflow-consoleweb - UI Builder - Fixed the existing custom CSS/JS not functioning as expected #2006 @9.1-SNAPSHOT
+66608401c Fixed: wflow-consoleweb, wflow-core - Form Input - Added select element to input-group margin reset rule and scoped password field margin-bottom to only apply when password meter is present, fixing la
+bel and icon alignment issues. #2017 @9.1-SNAPSHOT
+26bee4e7e Fixed: wflow-consoleweb - Progressive/Universal/XAdmin - Fixed inconsistent margin bottom when field icon is used. #2017 @9.1-SNAPSHOT
+450342f9a Fixed: wflow-consoleweb - XAdmin Theme - Add padding bottom to form and subform section. #2017 @9.1-SNAPSHOT
+abf6cc5ef Added: wflow-core, wflow-consoleweb - Form Fields - Added icon position option to place icon in label for backward compatibility with DX8. #1973 @9.1-SNAPSHOT
+82929c980 Fixed: wflow-jdbc - pom.xml - Upgrade postgresql to 42.7.11 #2033 @9.0-SNAPSHOT
+943616459 Fixed: wflow-core - pom.xml - Upgrade Bouncy Castle to 1.84 #2033 @9.0-SNAPSHOT
+0b7e8b148 Fixed: wflow-commons - pom.xml - Upgrade spring security to 6.5.10 #2033 @9.0-SNAPSHOT
+e37dabae1 Fxied: wflow-commons - File Manager - Clean temp file scheduler task is throwing security exception in cloud. #2058 @9.1-SNAPSHOT
+d5e8d315d Modified: jw-community - pom.xml - Upgraded Spring Framework to 6.2.19. #2065 @9.0-SNAPSHOT
+aa5845b34 Fixed: jw-community - Security - Upgraded Apache Tomcat to 11.0.22 to address CVEs. #2070 @9.0-SNAPSHOT
+7046289ea Fixed: wflow-core - Security - Allow trusted session deserialization for signed auth wrapper @9.0-SNAPSHOT
+8da9f16a6 Fixed: wflow-core - Form Data - Avoid dropping existing form table when schema probe fails on transient DB errors. T7899 T6978 #2077 @8.2-SNAPSHOT
+aa1e9bcdc Fixed: wflow-core - AbstractVersionedObjectDao - Excessive JOIN queries caused by session.refresh(). #2083 @8.2-SNAPSHOT
+3d2080757 Fixed: wflow-core - Form Section - RTL toggle icon now uses left: 18px to match the 18px inset used in LTR, preventing the icon from sitting flush against the edge in right-to-left layouts. #2093 @9.1-SNAPSHOT
+9f1039f85 Fixed: wflow-consoleweb - Form Section - Fixed border regression where always-visible sections incorrectly showed borders, borders now only apply to collapsible sections. #2093 @9.1-SNAPSHOT
+849f0c8d1 Fixed: wflow-core - Clone App - Regression of #1822 caused cloning app containing tags or custom tables throw NPE. #2099 @8.2-SNAPSHOT
+eaec9a41a Fixed: wflow-core - FormDefinitionDaoImpl - Added handling to skip YAML file saving when JSON is encrypted in protected apps. #2103 @9.1-SNAPSHOT
+
 9.1-BETA
 ========
 de4f6261f (HEAD -> 9.1-RELEASE) Fixed: wflow-core - Security - Allow trusted session deserialization for signed auth wrapper @9.0-SNAPSHOT
