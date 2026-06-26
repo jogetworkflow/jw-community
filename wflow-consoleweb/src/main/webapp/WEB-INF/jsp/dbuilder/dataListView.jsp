@@ -433,6 +433,8 @@
                 
                 return false;
             } else {
+                let submitForm = true;
+                
                 if (target === undefined || target === null || target === "" || target.toLowerCase() === "post") {
                     $("form[name='form_${dataListId}']").removeAttr("target");
                 } else if (target.toLowerCase() === "popup") {
@@ -443,7 +445,6 @@
                         popupActionDialog.src = url;
                     }
                     $("form[name='form_${dataListId}']").attr("target", "jqueryDialogFrame");
-                    var submitForm = true;
                     if (confirmation !== undefined && confirmation !== null && confirmation !== "") {
                         submitForm = await showConfirm(this, confirmation);
                     }
@@ -461,21 +462,21 @@
                 } else {
                     $("form[name='form_${dataListId}']").attr("target", target);
                 }
+                
                 if (confirmation !== undefined && confirmation !== null && confirmation !== "") {
-                    const submitForm = await showConfirm(this, confirmation);
-                    if (submitForm) {
-                        var name = $(thisObj).attr("name");
-                        var value = $(thisObj).val();
-                        var hiddenInput = $('<input name="'+name+'" value="'+value+'" class="temp_button_input"/>');
-                        thisForm.append(hiddenInput);
-                        thisObj.focus(); //to set document.activeElement used in ajax-component
-                        thisForm.submit();
-                        hiddenInput.remove();
-                    }
-                    return submitForm;
-                } else {
-                    return true;
+                    submitForm = await showConfirm(this, confirmation);
                 }
+                
+                if (submitForm) {
+                    var name = $(thisObj).attr("name");
+                    var value = $(thisObj).val();
+                    var hiddenInput = $('<input name="'+name+'" value="'+value+'" class="temp_button_input"/>');
+                    thisForm.append(hiddenInput);
+                    thisObj.focus(); //to set document.activeElement used in ajax-component
+                    thisForm.submit();
+                    hiddenInput.remove();
+                }
+                return submitForm;
             }
         });
         
