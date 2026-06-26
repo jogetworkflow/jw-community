@@ -1077,6 +1077,10 @@ body.rtl .property-input > span.icon > span > span.dropdown{
     padding:0px 30px 0px 60px; 
     box-sizing: border-box;
 }
+body.rtl .repeater-row .inputs {
+    padding:0px 60px 0px 30px; 
+    box-sizing: border-box;
+}
 .repeater-row .inputs .property-editor-property{
     display:inline-block;
 }
@@ -1094,6 +1098,7 @@ body.rtl .property-input > span.icon > span > span.dropdown{
     min-width: 250px;
     display: inline-block;
     vertical-align: top;
+    box-sizing: border-box;
 }
 .property-type-repeater > .property-input > div > .repeater-rows-container > .repeater-row > .inputs > .inputs-container > .property-editor-property.property-type-header,
 .property-type-repeater > .property-input > div > .repeater-rows-container > .repeater-row > .inputs > .inputs-container > .property-editor-property.property-type-sortableselect,
@@ -1124,13 +1129,27 @@ body.rtl .property-input > span.icon > span > span.dropdown{
     width: 100%;
 }
 .repeater-row .inputs .property-label-container {
-    width: 30%;
+    width: auto;
 }
 .repeater-row .inputs .property-input {
     width: 70%;
 }
 .property-type-repeater > .property-input > div > .repeater-rows-container > .repeater-row > .inputs > .inputs-container > .property-editor-property:nth-child(odd) {
     margin-right: 5%;
+}
+body.rtl .property-type-repeater > .property-input > div > .repeater-rows-container > .repeater-row > .inputs > .inputs-container > .property-editor-property:nth-child(odd) {
+    margin-right: 0;
+    margin-left: 5%;
+}
+body.rtl .property-type-repeater > .property-input > div > .repeater-rows-container > .repeater-row > .inputs > .inputs-container > .property-editor-property.property-type-codeeditor{
+    width: 95%;
+}
+.property-type-repeater > .property-input > div > .repeater-rows-container > .repeater-row > .inputs > .inputs-container > .property-editor-property.property-type-codeeditor .property-input > .code-editor{
+    border: 1px solid #dfe2e5;
+    border-radius: 0.375rem;
+}
+body.rtl .property-type-repeater > .property-input > div > .repeater-rows-container > .repeater-row > .inputs > .inputs-container > .property-editor-property.property-type-codeeditor .property-input > .code-editor{
+    direction: rtl;
 }
 .repeater-row .inputs .default-hidden .property-label{
     color:#999;
@@ -1167,6 +1186,10 @@ body.rtl .property-input > span.icon > span > span.dropdown{
     top:0;
     bottom: 0;
 }
+body.rtl .repeater-row .actions{
+    border-right: 0;
+    border-left: 1px solid #acc1cb; 
+}
 .repeater-row > .actions > a.expand,
 .repeater-row > .actions > a.compress{
     top: 0;
@@ -1189,6 +1212,10 @@ body.rtl .property-input > span.icon > span > span.dropdown{
     border-right: 0; 
     border-left: 1px solid #acc1cb;
 }
+body.rtl .repeater-row .actions:last-child {
+    border-left: 0; 
+    border-right: 1px solid #acc1cb;
+}
 .repeater-row .actions.expand-compress {
     left: 0;
 }
@@ -1196,6 +1223,14 @@ body.rtl .property-input > span.icon > span > span.dropdown{
     left: 30px;
     cursor: move;
     background: #f2f2f2;
+}
+body.rtl .repeater-row .actions.expand-compress {
+    left: unset;
+    right: 0;
+}
+body.rtl .repeater-row .actions.sort {
+    left: unset;
+    right: 30px;
 }
 .repeater-row .actions.rowbuttons {
     right: 0;
@@ -1209,6 +1244,10 @@ body.rtl .property-input > span.icon > span > span.dropdown{
     left: 50%;
     display: block;
 }
+body.rtl .repeater-row .actions.rowbuttons{
+    right: unset;
+    left: 0;
+}
 .repeater-row.error {
     border: 1px solid red;
 }
@@ -1218,8 +1257,17 @@ body.rtl .property-input > span.icon > span > span.dropdown{
 .elementmultiselect .repeater-row .inputs{
     padding: 5px 30px 5px 35px
 }
-.property-editor-container:not(.editor-panel-mode) .repeater-rows-container{
+.property-editor-container:not(.editor-panel-mode) .repeater-rows-container,
+.property-editor-container:not(.editor-panel-mode) .repeater-rows-container + div{
     width: 54%;
+}
+.property-editor-container:not(.editor-panel-mode) .repeater-rows-container:not(.elementmultiselect),
+.property-editor-container:not(.editor-panel-mode) .repeater-rows-container:not(.elementmultiselect) + div{
+    width: 100%;
+}
+body.rtl .property-editor-container:not(.editor-panel-mode) .repeater-rows-container + div{
+    float: right;
+    clear: right;
 }
 .property-editor-container:not(.editor-panel-mode) .repeater-row .chosen-container{
     width: 99% !important;
@@ -1236,8 +1284,16 @@ body.rtl .property-input > span.icon > span > span.dropdown{
     float: right;
     font-size: 13px;
 }
+body.rtl .btn.pebutton {
+    float: left;
+    clear: left;
+}
 .pebutton.addrow{
     float:left;
+}
+body.rtl .pebutton.addrow{
+    float: right;
+    clear: right;
 }
 .pebutton_container {
     margin-bottom: 10px;
@@ -2406,8 +2462,15 @@ body .ui-dialog .button_form.editor-panel-mode #main-body-header {
 .editor-panel-mode.narrow:not(.wider) .property-type-repeater .repeater-row .actions.sort{
     left: 20px;
 }
+body.rtl .editor-panel-mode.narrow:not(.wider) .property-type-repeater .repeater-row .actions.sort{
+    left: unset;
+    right: 20px;
+}
 .editor-panel-mode.narrow:not(.wider) .property-type-repeater .repeater-row .inputs{
     padding: 0px 19px 0px 40px;
+}
+body.rtl .editor-panel-mode.narrow:not(.wider) .property-type-repeater .repeater-row .inputs{
+    padding: 0px 40px 0px 19px;
 }
 .editor-panel-mode.narrow:not(.wider) .property-type-repeater .repeater-row .inputs .property-editor-property{
     max-width: 100%;
@@ -2418,10 +2481,12 @@ body .ui-dialog .button_form.editor-panel-mode #main-body-header {
 .editor-panel-mode.narrow:not(.wider) .property-type-repeater .repeater-row .inputs .property-editor-property textarea{
     max-width: 100%;
 }
+.repeater-rows-container:not(.elementmultiselect) .repeater-row.compress .inputs,
 .editor-panel-mode .property-type-repeater .repeater-row.compress > .inputs,
 #propertiesView.builder-view .property-type-repeater .repeater-row.compress > .inputs {
-    max-height: 66px;
-    overflow: hidden;
+    max-height: 96px;
+    overflow: auto;
+    scrollbar-width: none;
 }
 .editor-panel-mode .elementmultiselect {
     background: transparent;
@@ -3151,6 +3216,7 @@ body:not([builder-theme]).pluginConfigPopup #main-body-header{
 .rtl .property-label{
     padding-right: 0;
     padding-left: 10px;
+    direction: rtl;
 }
 .rtl .editor-panel-mode:not(.wider) .property-grid input:not([type]){
     float: none;
@@ -3196,6 +3262,11 @@ body:not([builder-theme]).pluginConfigPopup #main-body-header{
 .rtl .property-editor-container:not(.editor-panel-mode) .pebutton.addrow{
     float: right;
     clear: right;
+}
+.rtl .property-editor-container:not(.editor-panel-mode) .pebutton.collapseAll,
+.rtl .property-editor-container:not(.editor-panel-mode) .pebutton.expandAll{
+    float: left;
+    clear: left;
 }
 .property-editor-warning {
     color: #cb6000;
