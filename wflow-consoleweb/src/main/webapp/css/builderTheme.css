@@ -1188,6 +1188,18 @@ body[builder-theme] .repeater-row .actions:last-child {
     border-left: 1px solid var(--theme-border-color-1);
     border-right: 0px;
 }
+body[builder-theme].rtl .repeater-row .actions:last-child{
+    border-right: 1px solid var(--theme-border-color-1);
+    border-left: 0px;
+}
+body[builder-theme].rtl .repeater-row .actions {
+    border-left: 1px solid var(--theme-border-color-1);
+    border-right: 0;
+}
+body[builder-theme].rtl .ͼ2 .cm-gutters.cm-gutters-before{
+    border-left-width: 1px;
+    border-right-width: 0;
+}
 body[builder-theme] .chosen-container-multi .chosen-choices {
     font-size: 13px;
 }
@@ -3038,6 +3050,9 @@ body[builder-theme='dark'] .sortingTable{
     background-color: var(--theme-primary-color-3);
     border-color: var(--theme-border-color-1);
     color: var(--theme-label-color-1);
+}
+body[builder-theme='dark'] .property-type-repeater > .property-input > div > .repeater-rows-container > .repeater-row > .inputs > .inputs-container > .property-editor-property.property-type-codeeditor .property-input > .code-editor{
+    border: 1px solid var(--theme-border-color-1);
 }
 body[builder-theme] .nv-tags label {
     color: var(--theme-label-color-2);
