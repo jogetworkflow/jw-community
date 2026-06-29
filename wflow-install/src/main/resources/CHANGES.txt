@@ -4,6 +4,9 @@ For more information, please refer to https://community.joget.org
 
 9.1.0
 =====
+23409abe8 Fixed: wflow-consoleweb - Process Builder - Fixed changing activity element id causes an erorr when saving. T7885 #2072 @9.1-SNAPSHOT.
+b071def6f Fixed: wflow-commons - Security - Update Spring Security to 6.5.11. #2110 @9.1-SNAPSHOT
+774b3720f Fixed: wflow-consoleweb - List - Regression of #958 causing list action without confirmation not working. #2127 @9.1-SNAPSHOT
 2b513473e Fixed: wflow-consoleweb - Icon Text Field - Fixed icon html not retaining when html code is written inside input #1261 @8.2-SNAPSHOT
 354601dd3 Fixed: wflow-core - ExpressionHashVariable - Used case-insensitive comparison to prevent bypass of getClass/getClassLoader access restrictions. #2067 @8.2-SNAPSHOT
 d26e9d44f Fixed: wflow-consoleweb - Property Editor - fixed encoding issue in IconTextField #1047 @8.2-SNAPSHOT
