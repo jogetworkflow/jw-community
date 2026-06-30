@@ -10,28 +10,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.io.Writer;
-import java.net.ConnectException;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
-import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicReference;
-import javax.servlet.http.HttpServletRequest;
-import org.apache.commons.lang.RandomStringUtils;
-import org.apache.http.client.HttpRequestRetryHandler;
-import org.apache.http.client.methods.HttpPost;
-import org.apache.http.client.methods.HttpRequestBase;
-import org.apache.http.conn.ConnectTimeoutException;
-import org.apache.http.conn.HttpHostConnectException;
-import org.apache.http.entity.StringEntity;
-import org.apache.http.impl.client.CloseableHttpClient;
-import org.apache.http.impl.client.HttpClients;
-import org.apache.http.protocol.HttpContext;
 import org.apache.logging.log4j.core.Appender;
 import org.apache.logging.log4j.core.Core;
 import org.apache.logging.log4j.core.Filter;
@@ -43,30 +22,17 @@ import org.apache.logging.log4j.core.config.plugins.Plugin;
 import org.apache.logging.log4j.core.config.plugins.PluginAttribute;
 import org.apache.logging.log4j.core.config.plugins.PluginElement;
 import org.apache.logging.log4j.core.config.plugins.PluginFactory;
-import org.apache.logging.log4j.util.Strings;
 import org.eclipse.jgit.util.FileUtils;
 import org.joget.apps.app.model.AppDefinition;
 import org.joget.apps.app.service.AppUtil;
-import org.joget.commons.spring.model.Setting;
-import org.joget.commons.util.HostManager;
-import org.joget.commons.util.LogUtil;
-import org.joget.commons.util.PluginThread;
 import org.joget.commons.util.SecurityUtil;
 import org.joget.commons.util.ServerUtil;
-import org.joget.commons.util.SetupDao;
 import org.joget.commons.util.SetupManager;
-import org.joget.commons.util.StringUtil;
-import org.joget.workflow.model.service.WorkflowUserManager;
-import org.joget.workflow.util.WorkflowUtil;
 
 @Plugin(name = "LogViewerAppender", category = Core.CATEGORY_NAME, elementType = Appender.ELEMENT_TYPE, printObject = true)
 public class LogViewerAppender extends AbstractAppender {
 
     protected LoadingCache<String, Writer> qwCache = null;
-    protected static final Map<String, BlockingQueue<String>> messages = new HashMap<String, BlockingQueue<String>>();
-    protected static final Map<String, Boolean> processingMessage = new HashMap<String, Boolean>();
-    protected static final Set<String> unreachableNodes = new HashSet<String>();
-    protected static final AtomicReference<String> CURRENT_NODE_TOKEN = new AtomicReference<>();
 
     protected static final int SIZE = 40;
     public static final int MAX_FILESIZE = 200 * 1024; //200kb
@@ -79,8 +45,6 @@ public class LogViewerAppender extends AbstractAppender {
     public static final String CONSOLE_LOG = "CONSOLE_LOG";
 
     protected static boolean startLogging = false;
-    
-    protected static Map<String, Set<LogViewerEndpoint>> broadcastEndpoints = new HashMap<String, Set<LogViewerEndpoint>>();
 
     @PluginFactory
     public static LogViewerAppender createAppender(
@@ -252,7 +216,6 @@ public class LogViewerAppender extends AbstractAppender {
     @Override
     public void stop() {
         reset();
-        broadcastEndpoints = new HashMap<>();
         super.stop();
     }
 
@@ -263,8 +226,6 @@ public class LogViewerAppender extends AbstractAppender {
         if (appWriter != null) {
             appWriter.write(string);
         }
-        broadcast(getCurrentAppId(), string);
-        broadcast(CONSOLE_LOG, string);
     }
 
     protected void reset() {
@@ -293,296 +254,4 @@ public class LogViewerAppender extends AbstractAppender {
         }
     }
 
-    public static synchronized void registerEndpoint(String profile, String appId, LogViewerEndpoint endpoint, String node) {
-        String key = node + ":" + profile + ":" + appId;
-        Set<LogViewerEndpoint> endpoints = broadcastEndpoints.get(key);
-        if (endpoints == null) {
-            endpoints = new HashSet<>();
-            broadcastEndpoints.put(key, endpoints);
-        }
-        endpoints.add(endpoint);
-    }
-
-    public static synchronized void removeEndpoint(String profile, String appId, LogViewerEndpoint endpoint, String node) {
-        String key = node + ":" + profile + ":" + appId;
-        Set<LogViewerEndpoint> endpoints = broadcastEndpoints.get(key);
-        if (endpoints != null) {
-            endpoints.remove(endpoint);
-            if (endpoints.isEmpty()) {
-                broadcastEndpoints.remove(key);
-            }
-        }
-    }
-    
-    public static void broadcast(String appId, String message) {
-        broadcast(appId, message, null);
-    }
-
-    public static void broadcast(final String appId, final String message, final String node) {
-        // run it in new thread, so it won't block the current thread when something is not right with broadcast.
-        Thread newThread = new PluginThread(new Runnable() {
-            @Override
-            public void run() {
-                
-                String key;
-                if (node == null) {
-                    key = ServerUtil.getServerName() + ":" + HostManager.getCurrentProfile() + ":" + appId;
-                } else {
-                    key = node + ":" + HostManager.getCurrentProfile() + ":" + appId;
-                }
-                
-                //broadcast to registered endpoints based on key  
-                String lines[] = message.split(Strings.LINE_SEPARATOR);
-                Set<LogViewerEndpoint> endpoints = broadcastEndpoints.get(key);
-                if (endpoints != null && lines.length > 0) {
-                    Set<LogViewerEndpoint> invalidEndpoints = new HashSet<LogViewerEndpoint>();
-                    for (LogViewerEndpoint endpoint : endpoints) {
-                        synchronized (endpoint) {
-                            try {
-                                for (String line: lines) {
-                                    endpoint.session.getBasicRemote().sendText(line);
-                                }
-                            } catch (IllegalStateException e) {
-                                // WebSocket connection closed, ignore
-                                invalidEndpoints.add(endpoint);
-                            } catch (Exception e) {
-                                e.printStackTrace();
-                                invalidEndpoints.add(endpoint);
-                            }
-                        }
-                    }
-                    if (!invalidEndpoints.isEmpty()) {
-                        endpoints.removeAll(invalidEndpoints);
-
-                        if (endpoints.isEmpty()) {
-                            broadcastEndpoints.remove(key);
-                        }
-                    }
-                }
-            }
-        });
-        newThread.start();
-        
-        //if the server list having other cluster node, broadcast to other server
-        if (node == null && appId !=null && !appId.isEmpty()) {
-            String[] servers = ServerUtil.getServerList();
-            if (servers.length > 1) {
-                for (String server : servers) {
-                    if (!ServerUtil.getServerName().equalsIgnoreCase(server) && !unreachableNodes.contains(server)) {
-                        broadcastClusterNode(message, server, appId);
-                    }
-                }
-            }
-        }
-    }
-    
-    /**
-     * queue message to broadcast to cluster node
-     * @param message
-     * @param node
-     * @param appId 
-     */
-    public static void broadcastClusterNode(String message, String node, String appId) {
-        String key = node + ":" + HostManager.getCurrentProfile() + ":" + appId;
-        
-        BlockingQueue<String> queue = messages.get(key);
-        if (queue == null) {
-            queue = new LinkedBlockingQueue<String>();
-            messages.put(key, queue);
-        }
-        queue.offer(message);
-        
-        sendMessage(node, appId);
-    }
-    
-    /**
-     * Send queued message to cluster node with token
-     * @param node
-     * @param appId 
-     */
-    protected static void sendMessage(final String node, final String appId) {
-        final String key = node + ":" + HostManager.getCurrentProfile() + ":" + appId;
-        
-        //check if there is request object to continue
-        if (WorkflowUtil.getHttpServletRequest() == null) {
-            return;
-        }
-        
-        if (unreachableNodes.contains(node)) {
-            messages.remove(key);
-            processingMessage.remove(key);
-            return;
-        }
-        
-        synchronized (processingMessage) {
-            Boolean isProcessing = processingMessage.get(key);
-            if (isProcessing == null || !isProcessing) {
-                processingMessage.put(key, true); //stop sending message and start collecting it
-                
-                final BlockingQueue<String> queue = messages.get(key);
-                if (queue == null || queue.isEmpty()) {
-                    processingMessage.put(key, false); 
-                    return;
-                }
-                
-                // run it in new thread, so it won't block the current thread when something is not right with http call.
-                Thread newThread = new PluginThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        //prepare message
-                        int i = 0;
-                        StringBuilder sb = new StringBuilder();
-                        do {
-                            if (i != 0) {
-                                sb.append(Strings.LINE_SEPARATOR);
-                            }  
-                            sb.append(queue.poll());
-                            i++;
-                        } while (i < 20 && !queue.isEmpty());
-
-                        String message = sb.toString();
-                        
-                        HttpServletRequest httpRequest = WorkflowUtil.getHttpServletRequest();
-                        String nodeIp = ServerUtil.getIPAddress(node);
-                        if (httpRequest != null && nodeIp != null && !nodeIp.isEmpty()) {
-                            CloseableHttpClient client = null;
-                            try {
-                                String currentNode = ServerUtil.getServerName();
-                                final String token = getCurrentLogViewerToken();
-
-                                String broadcastURL = "http://" + nodeIp + ":" + httpRequest.getLocalPort() + httpRequest.getContextPath() +"/web/json/log/broadcast?";
-
-                                broadcastURL = StringUtil.addParamsToUrl(broadcastURL, "node", currentNode);
-                                broadcastURL = StringUtil.addParamsToUrl(broadcastURL, "profile", HostManager.getCurrentProfile());
-                                broadcastURL = StringUtil.addParamsToUrl(broadcastURL, "appId", appId);
-
-                                String url = broadcastURL;
-                                
-                                client = HttpClients.custom()
-                                .setRetryHandler(new HttpRequestRetryHandler() {
-                                    @Override
-                                    public boolean retryRequest(IOException exception, int executionCount, HttpContext context) {
-                                        return false; // do not need to retry as it is not critical
-                                    }
-                                }).build();
-                                HttpRequestBase request = new HttpPost(url);
-                                StringEntity requestEntity = new StringEntity(message, "UTF-8");
-                                ((HttpPost) request).setEntity(requestEntity);
-                                request.setHeader("token", token);
-                                client.execute(request);
-                            } catch (Exception e) {
-                                e.printStackTrace();
-
-                                //remove from server list when the server is not reachable
-                                if (e instanceof ConnectTimeoutException || e instanceof ConnectException || e instanceof HttpHostConnectException) {
-                                    unreachableNodes.add(node);
-                                }
-                            } finally {
-                                if (client != null) {
-                                    try {
-                                        client.close();
-                                    } catch (Exception e){}
-                                }
-                                
-                                synchronized (processingMessage) { //release the processing
-                                    processingMessage.put(key, false);
-                                }
-                                
-                                sendMessage(node, appId); //if there is unsend message, send it now
-                            }
-                        }
-                    }
-                });
-                newThread.start();
-            }
-        }
-    }
-    
-    //get or create log viewer token
-    public static String getCurrentLogViewerToken() {
-        String token = CURRENT_NODE_TOKEN.get();
-        if (token == null) {
-
-            String node = ServerUtil.getServerName();
-
-            SetupManager setupManager = (SetupManager) AppUtil.getApplicationContext().getBean("setupManager");
-            Setting setting = setupManager.getSettingByProperty(node + "LogToken");
-
-            // Get existing token or generate a random 12-char one
-            String newToken = (setting != null)
-                    ? setting.getValue()
-                    : RandomStringUtils.random(12, true, true);
-
-            // Try to set it atomically (only one thread succeeds)
-            if (CURRENT_NODE_TOKEN.compareAndSet(null, newToken)) {
-
-                // Only the winning thread runs this part
-                if (setting == null) {
-                    setupManager.updateSetting(node + "LogToken", newToken);
-                }
-
-                updateJsonIPWhitelist(node);
-                cleanExpiredLogViewerTokens();
-            }
-
-            // Return the final value (either ours or another thread’s)
-            return CURRENT_NODE_TOKEN.get();
-        }
-
-        return token;
-    }
-    
-    public static void cleanExpiredLogViewerTokens() {
-        // run it in new thread, so it won't block the current thread 
-        Thread newThread = new PluginThread(new Runnable() {
-            @Override
-            public void run() {
-                Set<String> servers = new HashSet<String>(Arrays.asList(ServerUtil.getServerList()));
-                if (!servers.isEmpty()) {
-                    LogUtil.info(LogViewerAppender.class.getName(), "Start cleaning expired log viewer tokens.");
-                    SetupDao setupDao = (SetupDao) AppUtil.getApplicationContext().getBean("setupDao");
-                    SetupManager setupManager = (SetupManager) AppUtil.getApplicationContext().getBean("setupManager");
-                    Collection<Setting> settings = setupDao.find("WHERE property LIKE ?", new String[]{"%LogToken"}, null, null, null, null);
-                    if (!settings.isEmpty()) {
-                        int count = 0;
-                        for (Setting s : settings) {
-                            //check for token not in server list, and delete it
-                            String node = s.getProperty().replace("LogToken", "");
-                            if (!servers.contains(node)) {
-                                setupManager.deleteSetting(s.getProperty());
-                                count++;
-                            }
-                        }
-                        LogUtil.info(LogViewerAppender.class.getName(), "Removed "+ count + " expired log viewer tokens.");
-                    }
-                }
-            }
-        });
-        newThread.start();
-    }
-    
-    //update or add ip address to JsonIPWhitelist
-    public static void updateJsonIPWhitelist(String node) {
-        SetupManager setupManager = (SetupManager) AppUtil.getApplicationContext().getBean("setupManager");
-        Setting setting = setupManager.getSettingByProperty("jsonpIPWhitelist");
-        String JsonIPWhitelist = "";
-        String currentIpAddress = ServerUtil.getIPAddress(node);
-        if (setting != null && setting.getValue() != null) {
-            JsonIPWhitelist = setting.getValue();
-        }
-        if (!JsonIPWhitelist.contains(currentIpAddress)) {
-            //check if JsonIPWhitelist is not empty & last character is not ;
-            if (!JsonIPWhitelist.isEmpty() && !JsonIPWhitelist.substring(JsonIPWhitelist.length() - 1).equals(";")) {
-                currentIpAddress = ";" + currentIpAddress;
-            }
-            JsonIPWhitelist = JsonIPWhitelist + currentIpAddress;
-            WorkflowUserManager wum = (WorkflowUserManager) AppUtil.getApplicationContext().getBean("workflowUserManager");
-            try {
-                wum.setSystemThreadUser(true); //to log it as system user
-                setupManager.updateSetting("jsonpIPWhitelist", JsonIPWhitelist);
-            } finally {
-                wum.setSystemThreadUser(false);
-            }
-        }
-    }
 }
