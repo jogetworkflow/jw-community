@@ -559,6 +559,13 @@ public class FormDataDaoImpl implements FormDataDao {
                     String newKey = oldKey;
                     if (oldKey != null && !oldKey.isEmpty() && (Character.isDigit(oldKey.charAt(0)) || RESERVED_KEYWORDS.contains(oldKey.toLowerCase()))) {
                         newKey = "t__" + key;
+                    } else if (oldKey.startsWith("t__")) {
+                        String suffix = oldKey.substring(3);
+                        if (!suffix.isEmpty() && (Character.isDigit(suffix.charAt(0)) || RESERVED_KEYWORDS.contains(suffix.toLowerCase()))) {
+                            if (row.containsKey(suffix)) {
+                                continue;
+                            }
+                        }
                     }
                     temp.put(newKey, row.get(key));
                 }

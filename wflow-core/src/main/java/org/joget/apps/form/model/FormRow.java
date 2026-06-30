@@ -6,6 +6,7 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.Properties;
 import org.joget.apps.app.service.AppUtil;
+import org.joget.apps.form.dao.FormDataDaoImpl;
 import org.joget.apps.form.service.FormUtil;
 import org.joget.commons.util.TimeZoneUtil;
 
@@ -284,6 +285,18 @@ public class FormRow extends Properties {
     }
     
     @Override
+    public Object get(Object key) {
+        Object value = super.get(key);
+        if (value == null && key instanceof String) {
+            String strKey = (String) key;
+            if (!strKey.isEmpty() && (Character.isDigit(strKey.charAt(0)) || FormDataDaoImpl.RESERVED_KEYWORDS.contains(strKey.toLowerCase()))) {
+                value = super.get("t__" + strKey);
+            }
+        }
+        return value;
+    }
+    
+    @Override
     public String getProperty(String key) {
         if (key == null) {
             return null;
@@ -293,7 +306,7 @@ public class FormRow extends Properties {
         
         if (oval != null && oval instanceof Date) {
             return TimeZoneUtil.convertToTimeZone((Date) oval, null, AppUtil.getAppDateFormat());
-        } else if (!key.isEmpty() && Character.isDigit(key.charAt(0))) {
+        } else if (!key.isEmpty() && (Character.isDigit(key.charAt(0)) || FormDataDaoImpl.RESERVED_KEYWORDS.contains(key.toLowerCase()))) {
             if (super.containsKey("t__" + key)) {
                 return super.getProperty("t__" + key);
             } else {

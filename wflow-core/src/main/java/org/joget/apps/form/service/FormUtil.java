@@ -29,6 +29,7 @@ import org.joget.apps.app.model.FormDefinition;
 import org.joget.apps.app.service.AppPluginUtil;
 import org.joget.apps.app.service.AppService;
 import org.joget.apps.app.service.AppUtil;
+import org.joget.apps.form.dao.FormDataDaoImpl;
 import org.joget.apps.form.lib.FormOptionsBinder;
 import org.joget.apps.datalist.lib.FormRowDataListBinder;
 import org.joget.apps.datalist.model.DataListColumn;
@@ -2558,6 +2559,14 @@ public class FormUtil implements ApplicationContextAware {
                     // Skip empty or invalid keys
                     if (key == null || key.isEmpty()) {
                         continue;
+                    }
+
+                    // Strip t__ prefix
+                    if (key.startsWith("t__")) {
+                        String originalKey = key.substring(3);
+                        if (!originalKey.isEmpty() && (Character.isDigit(originalKey.charAt(0)) || FormDataDaoImpl.RESERVED_KEYWORDS.contains(originalKey.toLowerCase()))) {
+                            key = originalKey;
+                        }
                     }
 
                     obj.put(key, r.getProperty(key));
