@@ -367,23 +367,134 @@ UI = {
             });
         }
     },
-    isValidInput: function(input) {
-        if (input === null || input === "") return true;
-        
-        const s = input.trim();
-        
-        // Valid input pattern - allows alphanumeric, spaces, and specific special characters
-        const VALID_PATTERN = /^[\p{L}\p{M}\p{N} ._'\-]+$/u;
-    
-        // Patterns for consecutive special characters and start/end validation
-        const CONSECUTIVE_SPECIALS = /[._'\-]{2,}/;
-        const START_END_SPECIALS = /^[._'\-]|[._'\-]$/;
+    isValidInput: function(fieldLabel, input) {
+        if (input === null || input === "") {
+            return { valid: true };
+        }
 
-        if (!VALID_PATTERN.test(s)) return false;
-        if (CONSECUTIVE_SPECIALS.test(s)) return false;
-        if (START_END_SPECIALS.test(s)) return false;
+        const s = String(input).trim();
+
+        // Decode HTML entities using the browser textarea element
+        const textarea = document.createElement("textarea");
+        textarea.innerHTML = s;
+        const decoded = textarea.value;
+
+        const invalidTokens = [];
+        const added = new Set();
+
+        function addToken(token) {
+            if (!added.has(token)) {
+                added.add(token);
+                invalidTokens.push(token);
+            }
+        }
+
+        // HTML tag detection
+        const HTML_TAG = /<\s*\/?\s*[a-z][^>]*>/ig;
+        const HTML_COMMENT = /<!--[\s\S]*?-->/g;
+
+        const matches = decoded.match(HTML_TAG);
+        if (matches) {
+            matches.forEach(addToken);
+        }
         
-        return true;
+        const commentMatches = decoded.match(HTML_COMMENT);
+        if (commentMatches) {
+            commentMatches.forEach(addToken);
+        }
+
+        if (invalidTokens.length > 0) {
+            return {
+                valid: false,
+                fieldLabel,
+                invalidTokens
+            };
+        }
+
+        return { valid: true };
+    },
+
+    // -------------------------------------------------------------------------
+    // Native browser dialog wrappers — same API as the SweetAlert2-based dialog
+    // methods (alert, alertBlock, confirm, asyncConfirm, prompt) but using
+    // window.alert / window.confirm / window.prompt for environments without Swal.
+    // Styling options (icon, iconColor, buttonClass, etc.) are silently ignored.
+    // -------------------------------------------------------------------------
+
+    /** Convenience wrapper — delegates to alertBlock. */
+    alert: function(text, args) {
+        UI.alertBlock(text, null, args);
+    },
+
+    /**
+     * @param {string}   text
+     * @param {Function} [callback]
+     * @param {boolean}  [isHtml=false]  HTML is stripped to plain text before display.
+     * @param {string}   [title=null]    Prepended to the message.
+     */
+    alertBlock: function(text, callback, { isHtml = false, title = null } = {}) {
+        var message = isHtml ? UI.stripHtmlTags(text) : text;
+        if (title) {
+            message = title + "\n\n" + message;
+        }
+        window.alert(message);
+        if (typeof callback === "function") {
+            callback();
+        }
+    },
+
+    /**
+     * @param {string}   text
+     * @param {Function} confirmCallback  Called on OK.
+     * @param {Object}   [args]           May include a cancelCallback function.
+     */
+    confirm: function(text, confirmCallback, args) {
+        UI.asyncConfirm(text, args).then(function(result) {
+            if (result) {
+                if (typeof confirmCallback === "function") {
+                    confirmCallback();
+                }
+            } else {
+                if (args && typeof args.cancelCallback === "function") {
+                    args.cancelCallback();
+                }
+            }
+        });
+    },
+
+    /**
+     * Returns Promise<boolean> — true on OK, false on Cancel.
+     * @param {string}  text
+     * @param {boolean} [isHtml=false]
+     * @param {string}  [title=null]
+     */
+    asyncConfirm: async function(text, { isHtml = false, title = null } = {}) {
+        var message = isHtml ? UI.stripHtmlTags(text) : text;
+        if (title) {
+            message = title + "\n\n" + message;
+        }
+        // Wrap synchronous window.confirm() in a Promise to match the SweetAlert2 signature.
+        return Promise.resolve(window.confirm(message));
+    },
+
+    /**
+     * @param {string}   text
+     * @param {Function} callback         Called with the entered value on OK.
+     * @param {boolean}  [isHtml=false]
+     * @param {string}   [title=null]
+     * @param {string}   [inputValue=""]       Pre-filled default value for the input field.
+     * @param {string}   [inputPlaceholder=""] Accepted for API compatibility; ignored by native prompt().
+     */
+    prompt: function(text, callback, { isHtml = false, title = null, inputValue = "", inputPlaceholder: _inputPlaceholder = "" } = {}) {
+        var message = isHtml ? UI.stripHtmlTags(text) : text;
+        if (title) {
+            message = title + "\n\n" + message;
+        }
+        // window.prompt() returns the entered string on OK, or null on Cancel.
+        var result = window.prompt(message, inputValue);
+        if (result !== null && typeof callback === "function") {
+            callback(result);
+        }
     }
 };
 

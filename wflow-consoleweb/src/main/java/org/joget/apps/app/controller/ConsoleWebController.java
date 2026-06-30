@@ -1099,6 +1099,7 @@ public class ConsoleWebController {
                     }
                 }
                 
+                errors.addAll(validateInput(user.getFirstName(), user.getLastName(), employeeCode, employeeRole));
                 errors.addAll(validateEmploymentDate(employeeStartDate, employeeEndDate));
 
                 if (errors.isEmpty()) {
@@ -1139,6 +1140,7 @@ public class ConsoleWebController {
                     }
                 }
                 
+                errors.addAll(validateInput(user.getFirstName(), user.getLastName(), employeeCode, employeeRole));
                 errors.addAll(validateEmploymentDate(employeeStartDate, employeeEndDate));
                 
                 if (errors.isEmpty()) {
@@ -1149,9 +1151,9 @@ public class ConsoleWebController {
                         return "error404";
                     }
                     
-                    String firstName = StringUtil.stripAllHtmlTag(StringUtil.unescapeString(user.getFirstName(), StringUtil.TYPE_HTML, null));
-                    String lastName = StringUtil.stripAllHtmlTag(StringUtil.unescapeString(user.getLastName(), StringUtil.TYPE_HTML, null));
-                                                
+                    String firstName = user.getFirstName();
+                    String lastName = user.getLastName();
+
                     u.setFirstName(firstName);
                     u.setLastName(lastName);
                     u.setEmail(user.getEmail());
@@ -1262,12 +1264,9 @@ public class ConsoleWebController {
                 }
             }
             
-            String sanitizedEmployeeCode = StringUtil.stripAllHtmlTag(StringUtil.unescapeString(employeeCode, StringUtil.TYPE_HTML, null));
-            String sanitizedEmployeeRole = StringUtil.stripAllHtmlTag(StringUtil.unescapeString(employeeRole, StringUtil.TYPE_HTML, null));
-
             employment.setUserId(user.getId());
-            employment.setEmployeeCode(sanitizedEmployeeCode);
-            employment.setRole(sanitizedEmployeeRole);
+            employment.setEmployeeCode(employeeCode);
+            employment.setRole(employeeRole);
             DateFormat df = new SimpleDateFormat("yyyy-MM-dd");
             try {
                 if (employeeStartDate != null && employeeStartDate.trim().length() > 0) {
@@ -1577,8 +1576,13 @@ public class ConsoleWebController {
             }
             errors.add(ResourceBundleUtil.getMessage("console.directory.user.error.label.authenticationFailed"));
         } else {
+            errors.addAll(validateInput(user.getFirstName(), user.getLastName()));
+
             if (us != null) {
-                errors = us.validateUserOnProfileUpdate(user);
+                Collection<String> validationErrors = us.validateUserOnProfileUpdate(user);
+                if (validationErrors != null && !validationErrors.isEmpty()) {
+                    errors.addAll(validationErrors);
+                }
             }
 
             if (user.getPassword() != null && !user.getPassword().isEmpty() && us != null) {
@@ -1621,8 +1625,8 @@ public class ConsoleWebController {
             return "console/profile";
         } else {
             if (currentUser.getUsername().equals(user.getUsername())) {
-                String firstName = StringUtil.stripAllHtmlTag(StringUtil.unescapeString(user.getFirstName(), StringUtil.TYPE_HTML, null));
-                String lastName = StringUtil.stripAllHtmlTag(StringUtil.unescapeString(user.getLastName(), StringUtil.TYPE_HTML, null));
+                String firstName = user.getFirstName();
+                String lastName = user.getLastName();
                             
                 currentUser.setFirstName(firstName);
                 currentUser.setLastName(lastName);               
@@ -1646,6 +1650,17 @@ public class ConsoleWebController {
         }
 
         return "console/dialogClose";
+    }
+
+    private Collection<String> validateInput(String... values) {
+        Collection<String> errors = new ArrayList<String>();
+        for (String value : values) {
+            if (!StringUtil.isValidInput(value)) {
+                errors.add(ResourceBundleUtil.getMessage("form.defaultvalidator.err.htmlNotAllowed"));
+                break;
+            }
+        }
+        return errors;
     }
 
     @RequestMapping("/console/app/menu")

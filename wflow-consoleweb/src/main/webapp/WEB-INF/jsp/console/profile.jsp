@@ -104,14 +104,27 @@
             let alertString = "";             
             const firstName = $("#firstName").val();
             const lastName = $("#lastName").val();
+
+            //For Input Validation
+            const invalidInputMsg = '<ui:msgEscJS key="console.directory.user.error.label.invalidInput"/>';
+            const fName = UI.isValidInput('<ui:msgEscJS key="console.directory.user.common.label.firstName"/>',firstName);
+            const lName = UI.isValidInput('<ui:msgEscJS key="console.directory.user.common.label.lastName"/>', lastName);
     
             if(firstName == ""){
                 alertString += '<ui:msgEscJS key="User.firstName[not.blank]"/>';
                 valid = false;
-            } else if (!UI.isValidInput(firstName) || !UI.isValidInput(lastName)) {
-                alertString += '<ui:msgEscJS key="console.directory.user.error.label.nameInvalid"/>';
+            } else if (!fName.valid) {
+                alertString += invalidInputMsg.replace('{0}', fName.fieldLabel).replace('{1}', fName.invalidTokens.join(", "));
                 valid = false;
-            }  
+            }
+
+            if (!lName.valid) {
+                if(alertString != ""){
+                    alertString += '\n';
+                }
+                alertString += invalidInputMsg.replace('{0}', lName.fieldLabel).replace('{1}', lName.invalidTokens.join(", "));
+                valid = false;
+            }    
             
             if($("#password").val() != $("#confirmPassword").val()){
                 if(alertString != ""){
