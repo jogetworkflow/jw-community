@@ -486,7 +486,7 @@ public final class PluginThread extends Thread {
 
         @Override
         public int getLocalPort() {
-            return 0;
+            return this.localPort;
         }
 
         @Override
