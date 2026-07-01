@@ -780,26 +780,28 @@ a.btn.disabled,fieldset:disabled a.btn {
     box-shadow: 0 0 0 .2rem rgba(222,170,12,.5) !important;
 }
 
-.btn.btn-danger {
+.btn.btn-danger,
+button.btn.delete_btn {
     color: #fff !important;
     background-color: #dc3545 !important;
     border-color: #dc3545 !important;
 }
 
-.btn.btn-danger:hover {
+.btn.btn-danger:hover,
+button.delete_btn {
     color: #fff !important;
     background-color: #c82333 !important;
     border-color: #bd2130 !important;
 }
 
-.btn.btn-danger.focus,.btn.btn-danger:focus {
+.btn.btn-danger.focus,.btn.btn-danger:focus, button.delete_btn:focus {
     color: #fff !important;
     background-color: #c82333 !important;
     border-color: #bd2130 !important;
     box-shadow: 0 0 0 .2rem rgba(225,83,97,.5) !important;
 }
 
-.btn.btn-danger.disabled,.btn.btn-danger:disabled {
+.btn.btn-danger.disabled,.btn.btn-danger:disabled, button.delete_btn:disabled {
     color: #fff !important;
     background-color: #dc3545 !important;
     border-color: #dc3545 !important;

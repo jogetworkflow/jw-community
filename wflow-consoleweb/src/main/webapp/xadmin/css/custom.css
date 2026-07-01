@@ -5532,6 +5532,11 @@ body.popupBody > #form-canvas{
     cursor: pointer;
     margin-bottom: 5px;
 }
+button.grid-action-add {
+    background-color: #1a237e !important;
+    color: #ffffff;
+    border-color: #1a237e;
+}
 .x-admin-sm .form-button, .x-admin-sm .btn, .x-admin-sm .button {
     font-size: 12px;
     line-height: 12px;

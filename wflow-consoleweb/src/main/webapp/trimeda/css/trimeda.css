@@ -84,7 +84,7 @@ body {
     
     --datalist-table-spacing: 70px;
     --datalist-padding: 12px 10px;
-    --datalist-header-padding: 16px;
+    --datalist-header-padding: 16px 10px;
     --datalist-filter-select-height: 40px;
     --datalist-filter-select-padding: 8px 32px;
 
@@ -235,7 +235,8 @@ div#section-actions.form-section .form-cell button {
 
 input.form-button,
 .dropdown-menu > li#logout-link,
-.btn-secondary  {
+.btn-secondary,
+.grid .grid-action-add  {
     padding: var(--form-button-padding) !important;
     border-radius: 16px;
 }
@@ -305,6 +306,8 @@ button.btn-danger {
     border-radius: 16px !important;
     min-height: var(--button-secondary-height);
     color: #FFF !important;
+    font-weight: 500;
+    --jgt-btn-font-size: 16px;
 }
 
 div.grid button.delete_btn > i.fa-trash-alt,

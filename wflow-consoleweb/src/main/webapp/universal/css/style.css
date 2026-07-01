@@ -1674,7 +1674,8 @@ main .grid-stack-item-header-refresh {
     background-color: transparent !important;
     border-color: transparent !important;
 }
-.btn.btn-danger {
+.btn.btn-danger,
+button.delete_btn {
     color: #fff !important;
     background-color: #d9534f !important;
     border-color: #d43f3a !important;

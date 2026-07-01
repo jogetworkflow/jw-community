@@ -335,6 +335,26 @@
     --jgt-upload-colorFillAlter: rgba(0, 0, 0, 0.02);
     --jgt-upload-fontSize: 14px;
     --jgt-upload-lineHeight: 1.5714285714285714;
+    --jgt-grid-tableBodyFontSize: 14px;
+    --jgt-grid-addButtonFontWeight: 400;
+    --jgt-grid-tableHeaderPaddingTop: 0.9em;
+    --jgt-grid-tableHeaderPaddingBottom: 0.7em;
+    --jgt-grid-labelWidth: 100%;
+    --jgt-grid-colorTextLabel: #666666;
+    --jgt-grid-lineWidth: 1px;
+    --jgt-grid-deleteButtonFontWeight: 400;
+    --jgt-grid-lineType: solid;
+    --jgt-grid-tableBodyPaddingBottom: 0.5em;
+    --jgt-grid-colorText: #666666;
+    --jgt-grid-labelFontSize: 14px;
+    --jgt-grid-labelFontWeight: 400;
+    --jgt-grid-tableHeaderFontSize: 14px;
+    --jgt-grid-colorBorder: #ced4da;
+    --jgt-grid-tableHeaderFontWeight: 700;
+    --jgt-grid-labelAlign: start;
+    --jgt-grid-tableBodyFontWeight: 400;
+    --jgt-grid-lineHeight: 1.5714285714285714;
+    --jgt-grid-tableBodyPaddingTop: 0.5em;
     
     --jgt-dropdown-icon: url(../images/base_dropdown_image.svg);
 }

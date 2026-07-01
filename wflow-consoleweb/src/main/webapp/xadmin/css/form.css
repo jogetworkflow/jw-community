@@ -921,10 +921,15 @@ body #form-canvas .grid table.tablesaw,
 body #form-canvas .grid table.tablesaw th,
 body #form-canvas .grid table.tablesaw td{
     border: 1px solid #e6e6e6;
+    text-align: start;
 }
 body #form-canvas .grid table.tablesaw th, 
 body #form-canvas .grid table.tablesaw td {
     padding: 8px 15px !important;
+}
+body.rtl .form-check-input{
+    margin-right: unset;
+    margin-left: -1.25px;
 }
 body #form-canvas .grid table.tablesaw th {
     background: #f2f2f2;
@@ -974,6 +979,15 @@ body .grid-action-moveup.disabled:after, body .grid-action-movedown.disabled:aft
 }
 body .grid.readonly a.grid-action-edit:after {
     content: '\f0f6';
+}
+body .grid > button.btn.btn-primary.grid-action-add:not(:disabled):not(.disabled),
+body .grid > button.btn.btn-primary.grid-action-add:not(:disabled):not(.disabled).active,
+body .grid > button.btn.btn-primary.grid-action-add:not(:disabled):not(.disabled):active,
+body .grid > button.btn.btn-primary.grid-action-add:hover,
+body .grid > button.btn.btn-primary.grid-action-add:focus {
+    color: #ffffff;
+    background-color: #1a237e !important;
+    border-color: #1a237e !important;
 }
 
 /* advanced grid */

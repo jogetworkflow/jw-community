@@ -803,13 +803,15 @@ body.rtl .selector_element .selector_items {
 }
 .grid .grid-action-add,
 .grid table tr:hover td.grid-action-cell a {
-    color: #0075ff !important;
     opacity: 0.5;
 }
 .grid .grid-action-add:hover,
 .grid table tr:hover td.grid-action-cell a:hover {
     opacity: 1;
     text-decoration: none;
+}
+.grid .btn.delete_btn {
+    border-color: rgb(220, 53, 69) !important;
 }
 .grid table tr:hover td.grid-action-cell a.grid-action-delete {
     color: #dc3545 !important;

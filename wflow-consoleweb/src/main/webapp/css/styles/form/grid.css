@@ -3,23 +3,49 @@ div.pq-grid * {
     font-size: 13px !important;
 }
 
+div:has(.grid) label.label {
+    text-align: var(--jgt-grid-labelAlign);
+    width: var(--jgt-grid-labelWidth);
+    color: var(--jgt-grid-colorTextLabel);
+    font-weight: var(--jgt-grid-labelFontWeight);
+    font-size: var(--jgt-grid-labelFontSize);
+}
+
+.grid {
+    color: var(--jgt-grid-colorText);
+}
+
 .grid table {
     width: 100%;
 }
 
 .grid table td {
     vertical-align: top;
+    padding-top: var(--jgt-grid-tableBodyPaddingTop);
+    padding-bottom: var(--jgt-grid-tableBodyPaddingBottom);
+    font-weight: var(--jgt-grid-tableBodyFontWeight);
+    font-size: var(--jgt-grid-tableBodyFontSize);
 }
 
 .grid table th,
 .grid table td {
-    border-top: 1px solid #ced4da !important;
-    border-bottom: 1px solid #ced4da;
+    border-top: 1px var(--jgt-grid-lineType) var(--jgt-grid-colorBorder) !important;
+    border-bottom: 1px var(--jgt-grid-lineType) var(--jgt-grid-colorBorder);
     margin: 0px;
+    color: var(--jgt-grid-colorText);
 }
 
-.grid table th {
-    border-bottom: 2px solid #ced4da !important;
+.grid table tbody tr {
+    border-color: var(--jgt-grid-colorBorder);
+    border-style: var(--jgt-grid-lineType); 
+}
+
+.grid table th, .grid .tablesaw thead tr:first-child th {
+    border-bottom: 2px var(--jgt-grid-lineType) var(--jgt-grid-colorBorder) !important;
+    padding-top: var(--jgt-grid-tableHeaderPaddingTop);
+    padding-bottom: var(--jgt-grid-tableHeaderPaddingBottom);
+    font-weight: var(--jgt-grid-tableHeaderFontWeight);
+    font-size: var(--jgt-grid-tableHeaderFontSize);
 }
 
 .grid table .grid-action-header,
@@ -53,17 +79,31 @@ div.pq-grid * {
     font-variant: normal;
     font-weight: 900;
     text-rendering: auto;
-    color: #ced4da;
+    color: var(--jgt-grid-colorText);
     padding: 0 3px;
+}
+
+.grid button.btn.grid-action-add {
+    background-color: var(--jgt-grid-colorBgAdd, var(--jgt-btn-colorPrimary)) !important;
+    border-color: var(--jgt-grid-borderAddButton, var(--jgt-btn-colorPrimary)) !important;
+    color: var(--jgt-grid-colorAddButton, var(--jgt-btn-primaryColor)) !important;
+    font-weight: var(--jgt-grid-addButtonFontWeight, var(--jgt-btn-fontWeight)) !important;
 }
 
 .grid .btn.delete_btn {
     margin-bottom: .25rem;
+    background-color: var(--jgt-grid-colorBgDelete, var(--jgt-btn-bg));
+    border-color: var(--jgt-grid-borderDeleteButton, var(--jgt-btn-border-color))  !important;
+    color: var(--jgt-grid-colorDeleteButton, var(--jgt-btn-color));
+    font-weight: var(--jgt-grid-deleteButtonFontWeight, var(--jgt-btn-fontWeight));
+}
+
+.grid .btn.delete_btn:focus, .grid .btn.delete_btn:active {
+    box-shadow: none !important;
 }
 
 .grid .grid-action-add,
 .grid table tr:hover td.grid-action-cell a {
-    color: #0075ff !important;
     opacity: 0.5;
 }
 
@@ -115,7 +155,7 @@ div.pq-grid * {
     text-align: right;
     padding: 10px 0;
     margin-bottom: 0;
-    color: #ced4da;
+    color: var(--jgt-grid-colorText);
 }
 
 .grid .pg-navigator .pg-current {

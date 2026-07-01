@@ -1017,6 +1017,10 @@ body .grid-action-movedown, body .grid-action-movedown.disabled, body .grid-acti
     margin: 2px;
     padding: 0;
 }
+body .grid-action-add, body .grid-action-add:hover, body .grid-action-add:active, body .grid-action-add:focus {
+    color: #ffffff;
+    background-color: #6c757d !important;
+}
 body .grid.readonly a.grid-action-edit:after,
 body .grid-action-edit:after, body .grid-action-delete:after, body .grid-action-moveup:after, body .grid-action-moveup.disabled:after,
 body .grid-action-movedown:after, body .grid-action-movedown.disabled:after, body .grid-action-add:after{

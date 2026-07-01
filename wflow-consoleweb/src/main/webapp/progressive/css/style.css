@@ -1868,7 +1868,8 @@ body:not(#login) #content > main > .datalist-body-content:not(.quickEdit) {
     background-color: transparent !important;
     border-color: transparent !important;
 }
-.btn.btn-danger {
+.btn.btn-danger,
+button.delete_btn {
     color: #fff !important;
     background-color: #D43F3A !important;
     border-color: #D43F3A !important;
