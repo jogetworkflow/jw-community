@@ -3,7 +3,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.joget</groupId>
     <artifactId>wflow-plugin-archetype</artifactId>
-    <version>9.1.0</version>
+    <version>9.1-SNAPSHOT</version>
     <packaging>jar</packaging>
     <name>wflow-plugin-archetype</name>
     <url>https://www.joget.org</url>
