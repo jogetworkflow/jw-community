@@ -86,18 +86,28 @@ public class PluginWebFilterChain extends GenericFilterBean {
     }
 
     /**
-     * Returns the first filter chain matching the supplied URL.
+     * Returns the merged, order-sorted filter chain of every url pattern
+     * bucket matching the supplied URL. Filters that were registered under
+     * more than one matching pattern are only included once.
      *
      * @param request the request to match
      * @return an ordered array of Filters defining the filter chain
      */
     private List<Filter> getFilters(HttpServletRequest request) {
+        Map<String, PluginWebFilter> matchedFilters = new LinkedHashMap<>();
         for (UrlPatternFiltersHolder holder : this.urlPatternFiltersHolder.values()) {
             if (holder.isMatch(request)) {
-                return holder.getFilters();
+                for (PluginWebFilter filter : holder.getFilterMap().values()) {
+                    matchedFilters.put(filter.getName(), filter);
+                }
             }
         }
-        return null;
+        if (matchedFilters.isEmpty()) {
+            return null;
+        }
+        return matchedFilters.values().stream()
+                .sorted(Comparator.comparingInt(PluginWebFilter::getOrder))
+                .collect(Collectors.toList());
     }
     
     protected UrlPatternFiltersHolder getUrlPatternFiltersHolder(String urlPattern) {
@@ -194,6 +204,10 @@ public class PluginWebFilterChain extends GenericFilterBean {
         
         public List<Filter> getFilters() {
             return new ArrayList<Filter>(filters.values());
+        }
+
+        public Map<String, PluginWebFilter> getFilterMap() {
+            return filters;
         }
     }
 
