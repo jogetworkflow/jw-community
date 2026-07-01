@@ -441,12 +441,23 @@ public class FormServiceImpl implements FormService {
         }
     }
     
-    private void handleFiles (FormData formData) {
-        try {
-            // handle multipart files
-            Map<String, MultipartFile[]> fileMap = FileStore.getFileMap();
-            if (fileMap != null) {
-                for (String paramName : fileMap.keySet()) {
+    private void handleFiles(FormData formData) {
+        // handle multipart files
+        Map<String, MultipartFile[]> fileMap = FileStore.getFileMap();
+        if (fileMap != null && !fileMap.isEmpty()) {
+            Set<String> fieldIds = new HashSet<String>();
+            for (String param : formData.getRequestParams().keySet()) {
+                fieldIds.add(param);
+                if (param.endsWith("_path")) {
+                    fieldIds.add(param.substring(0, param.length() - 5));
+                }
+            }
+
+            // Keep track of files processed by this form
+            List<String> processedKeys = new ArrayList<String>();
+
+            for (String paramName : fileMap.keySet()) {
+                if (fieldIds.contains(paramName)) {
                     try {
                         MultipartFile[] files = FileStore.getFiles(paramName);
                         List<String> paths = new ArrayList<String>();
@@ -459,23 +470,28 @@ public class FormServiceImpl implements FormService {
                         if (!paths.isEmpty()) {
                             formData.addRequestParameterValues(paramName, paths.toArray(new String[]{}));
                         }
+                        processedKeys.add(paramName); 
                     } catch (FileLimitException ex) {
                         formData.addFileError(paramName, ResourceBundleUtil.getMessage("general.error.fileSizeTooLarge", new Object[]{FileStore.getFileSizeLimit()}));
+                        processedKeys.add(paramName); 
                     }
                 }
             }
-            
-            Collection<String> errorList = FileStore.getFileErrorList();
-            if (errorList != null && !errorList.isEmpty()) {
-                for (String paramName : errorList) {
-                    formData.addFileError(paramName, ResourceBundleUtil.getMessage("general.error.fileSizeTooLarge", new Object[]{FileStore.getFileSizeLimit()}));
-                }
+
+            // safely removes files only this form processed leaving custom plugin files in the FileStore 
+            for (String key : processedKeys) {
+                fileMap.remove(key);
             }
-        } finally {
-            FileStore.clear();
+        }
+
+        Collection<String> errorList = FileStore.getFileErrorList();
+        if (errorList != null && !errorList.isEmpty()) {
+            for (String paramName : errorList) {
+                formData.addFileError(paramName, ResourceBundleUtil.getMessage("general.error.fileSizeTooLarge", new Object[]{FileStore.getFileSizeLimit()}));
+            }
         }
     }
-
+    
     /**
      * Invokes actions (e.g. buttons) in the form
      * @param form
