@@ -174,9 +174,22 @@
 
                         $(clearBtn).off("click");
                         $(clearBtn).on("click", function(){
+                            if ($(element).hasClass("use-native")){
+                                var datepickertype = $(element).prev("div").find("input").attr("type");
+                                var hiddennative = $(element).prev("div").find('input[type="'+ datepickertype +'"]');
+                                hiddennative.val("").change();
+                            }
                             $(element).val("").change();
                         });
-
+                        if ($(element).hasClass("use-native")) {
+                            var datepickertype = $(element).prev("div").find("input").attr("type");
+                            var hiddennative = $(element).prev("div").find('input[type="' + datepickertype + '"]');
+                            $(hiddennative).on("input change", function () {
+                                if (!this.value) {
+                                    $(element).val("").change();
+                                }
+                            });
+                        }
                         $(elementParent).off("click.dp", "input[readonly] , a.trigger");
                         $(elementParent).on("click.dp", "input[readonly] , a.trigger", function(evt){
                             evt.preventDefault();
