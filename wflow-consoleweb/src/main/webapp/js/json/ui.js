@@ -199,7 +199,7 @@ UI = {
         });
 
         if ($('body').hasClass('rtl')) {
-            $('.toast #close').css({"left": "0", "right": "initial"});
+            $('.toast #close').css({"left": ".5em", "right": "initial"});
             
             $('.toast #toast-icon').css({
                 "margin-left": ".5em", 
