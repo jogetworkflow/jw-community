@@ -67,6 +67,22 @@ public class FormDataDaoImplTest {
     }
 
     @Test
+    public void testProcessQuery_LegacyCustomPropertyPlusZeroSortCast() {
+        String input = "SELECT e FROM app_fd_test e WHERE 1=1 ORDER BY e.customProperties.sortNo  + 0";
+        String result = dao.processQuery(input);
+
+        assertEquals("SELECT e FROM app_fd_test e WHERE 1=1 ORDER BY cast(e.customProperties.sortNo as big_decimal)", result);
+    }
+
+    @Test
+    public void testProcessQuery_LegacyColumnPrefixPlusZeroSortCast() {
+        String condition = dao.replaceColumnNameWithPrefix("app_fd_test", "WHERE 1=1 ORDER BY c_sortNo  + 0");
+        String result = dao.processQuery("SELECT e FROM app_fd_test e " + condition);
+
+        assertEquals("SELECT e FROM app_fd_test e WHERE 1=1 ORDER BY cast(e.customProperties.sortNo as big_decimal)", result);
+    }
+
+    @Test
     public void testExtractAliasToTableMapping_SingleTables() {
         String query = "FROM app_fd_TEST_TABLE e";
         FormDataDaoImpl dao = new FormDataDaoImpl();

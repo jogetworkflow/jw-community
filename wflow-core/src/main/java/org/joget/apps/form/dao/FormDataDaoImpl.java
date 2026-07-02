@@ -88,6 +88,7 @@ public class FormDataDaoImpl implements FormDataDao {
     public static final Set<String> RESERVED_KEYWORDS = Collections.unmodifiableSet(
         new HashSet<>(java.util.Arrays.asList("class", "true", "false", "null"))
     );
+    private static final Pattern LEGACY_CUSTOM_PROPERTY_NUMERIC_SORT_PATTERN = Pattern.compile("(\\b\\w+\\.customProperties\\.[0-9a-zA-Z_][0-9a-zA-Z_]*\\b)\\s*\\+\\s*0+(?:\\.0+)?\\b");
     
     private FormDefinitionDao formDefinitionDao;
     private BuilderDefinitionDao builderDefinitionDao;
@@ -1939,6 +1940,7 @@ public class FormDataDaoImpl implements FormDataDao {
             // Normalize indetifiers from case-sesitive to case-insensitive based on table metadata
             Map<String, String> aliasToTableMap = extractAliasToTableMapping(query);
             query = normalizeCustomPropertiesWithAliases(query, aliasToTableMap);
+            query = rewriteLegacyCustomPropertyNumericSort(query);
 
             // save into cache
             processedQueryCache.put(cacheKey, query);                       
@@ -1946,6 +1948,21 @@ public class FormDataDaoImpl implements FormDataDao {
             LogUtil.error(query, e, query);
         }
         return query;
+    }
+
+    /**
+     * Hibernate 6 validates operand types in HQL before SQL generation. Older app definitions sometimes sort
+     * string-backed form fields numerically with "c_field + 0"; keep that compatible by converting the generated
+     * customProperties expression to an explicit numeric cast.
+     */
+    protected String rewriteLegacyCustomPropertyNumericSort(String query) {
+        Matcher matcher = LEGACY_CUSTOM_PROPERTY_NUMERIC_SORT_PATTERN.matcher(query);
+        StringBuilder sb = new StringBuilder();
+        while (matcher.find()) {
+            matcher.appendReplacement(sb, "cast(" + Matcher.quoteReplacement(matcher.group(1)) + " as big_decimal)");
+        }
+        matcher.appendTail(sb);
+        return sb.toString();
     }
 
     /***
