@@ -284,9 +284,10 @@
     function createNativeField(element, type, o) {
         if (isSupport(type)) {
             var attr = "";
-            
+
+            var isIosDevice = isIOS();
             var cssClass = "";
-            if (isIOS()) {
+            if (isIosDevice) {
                 cssClass += "ios";
             }
             if (!$(element).is("[readonly]")) {
@@ -297,8 +298,10 @@
             $(element).addClass('use-native');
             
             var nativeField = $(element).prev(".ui-screen-hidden").find('.native-picker');
-                    
+
+            var nativeChanged = false;
             var nativeChange = function(){
+                nativeChanged = true;
                 $(element).data('joget-native-picker-active', true);
                 if (!$(element).is("[readonly]")) {
                     $(element).off("change.manual");
@@ -318,7 +321,23 @@
             
             setNativeDate($(element), $(nativeField), o);
             $(nativeField).on("change.native", nativeChange);
-            
+
+            if (isIosDevice) {
+                //iOS highlights "today" by default but only commits it if the wheel is scrolled,
+                //so pre-fill it on focus and sync on blur in case "change" never fires
+                $(nativeField).on("focus.native-default", function(){
+                    nativeChanged = false;
+                    if ($(this).val() === "") {
+                        $(this).val(getNativeTodayValue(type));
+                    }
+                });
+                $(nativeField).on("blur.native-sync", function(){
+                    if (!nativeChanged && $(this).val() !== "") {
+                        nativeChange.call(this);
+                    }
+                });
+            }
+
             if (!$(element).is("[readonly]")) {
                 $(element).on("change.manual", manualChange);
             }
@@ -384,6 +403,18 @@
     function toDateString(date) {
         var newdate = new Date(date.getTime() - (date.getTimezoneOffset() * 60000));
         return newdate.toISOString();
+    }
+
+    //format today's date/time to match a native input's expected value format
+    function getNativeTodayValue(type) {
+        var now = toDateString(new Date());
+        if (type === "datetime-local") {
+            return now.substr(0, 16);
+        } else if (type === "time") {
+            return now.substr(11, 16);
+        } else {
+            return now.substr(0, 10);
+        }
     }
                 
     function setDateRange(element, type, target, o) {
