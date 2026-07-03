@@ -1508,6 +1508,14 @@ body[builder-theme] .chosen-container-active .chosen-single{
 body[builder-theme] .chosen-container .chosen-results {
     padding-bottom: 2px;
 }
+body[builder-theme] .property-input > .hashFieldAction{
+    right: 40px;
+}
+body[builder-theme].rtl .property-input > .hashFieldAction {
+    right: unset;
+    left: 40px;
+    direction: ltr;
+}
 body[builder-theme] .property_editor_app_resources .app_resources .image {
     background-color: transparent;
     border: 0px;
