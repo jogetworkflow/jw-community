@@ -319,6 +319,29 @@ $(document).ready(function() {
                     })
                 }
             })
+
+            // Store the last active tab in localStorage when a pagination link is clicked
+            document.querySelectorAll(".dataList .pagelinks > a").forEach(anchor => {
+                anchor.addEventListener("click", function () {
+                    const tabId = $(this)
+                        .closest("#users_section")
+                        .find("#user-tab-nav > li.active")
+                        .attr("id");
+
+                    if (tabId) {
+                        localStorage.setItem("last-admin-tab", tabId);
+                    }
+                }, true);
+            });
+
+            // Restore the last active tab from localStorage when the page is loaded
+            $("body#admin").off("page_loaded.savePage").on("page_loaded.savePage", function(e) {
+                if(localStorage.getItem("last-admin-tab") !== null) {
+                    const navId = localStorage.getItem("last-admin-tab");
+                    $("#" + navId).click();
+                    localStorage.removeItem("last-admin-tab");
+                }
+            });
         }
 
         if ($('body#home').length === 1) {
