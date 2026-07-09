@@ -10,6 +10,10 @@ import java.util.concurrent.locks.ReentrantLock;
 
 public class PluginManagerCache {
 
+    // Striped locks keep cold ResourceBundle loads out of pluginListLock and
+    // ConcurrentHashMap compute callbacks while avoiding one lock per cache key.
+    private static final int RESOURCE_BUNDLE_LOCK_STRIPES = 64;
+
     @SuppressWarnings("rawtypes")
     private final Map<Class, Map<String, Plugin>> pluginCache = new ConcurrentHashMap<>();
     @SuppressWarnings("rawtypes")
@@ -22,11 +26,13 @@ public class PluginManagerCache {
     // Per-profile lock guarding plugin-map loads. This cache is resolved per
     // profile, so loads for different tenants no longer serialize on a single
     // process-wide lock.
-    private final ReentrantLock pluginListLoadLock = new ReentrantLock();
+    private final ReentrantLock pluginListLock = new ReentrantLock();
     // All woven OSGi plugins for this profile, built once and filtered by type
     // by PluginManager.internalLoadPluginMap. Cleared together with the rest of
     // the cache so bundle install/uninstall/refresh rebuilds it.
     private volatile Map<String, Plugin> allOsgiPlugins = null;
+    private volatile long refreshGeneration = 0;
+    private final ReentrantLock[] resourceBundleLocks = createResourceBundleLocks();
 
     @SuppressWarnings("rawtypes")
     public Map<Class, Map<String, Plugin>> getPluginCache() {
@@ -54,8 +60,20 @@ public class PluginManagerCache {
         return customPluginInterfaces;
     }
 
-    public ReentrantLock getPluginListLoadLock() {
-        return pluginListLoadLock;
+    public ReentrantLock getPluginListLock() {
+        return pluginListLock;
+    }
+
+    public ReentrantLock getResourceBundleLock(String cacheKey) {
+        return resourceBundleLocks[(cacheKey.hashCode() & Integer.MAX_VALUE) % resourceBundleLocks.length];
+    }
+
+    public long getRefreshGeneration() {
+        return refreshGeneration;
+    }
+
+    public void incrementRefreshGeneration() {
+        refreshGeneration++;
     }
 
     public Map<String, Plugin> getAllOsgiPlugins() {
@@ -90,5 +108,13 @@ public class PluginManagerCache {
             return false;
         }
         return clearedDate.after(date);
+    }
+
+    private static ReentrantLock[] createResourceBundleLocks() {
+        ReentrantLock[] locks = new ReentrantLock[RESOURCE_BUNDLE_LOCK_STRIPES];
+        for (int i = 0; i < locks.length; i++) {
+            locks[i] = new ReentrantLock();
+        }
+        return locks;
     }
 }
