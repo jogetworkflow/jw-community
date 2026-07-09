@@ -1608,12 +1608,12 @@ window._CustomBuilder = {
                     data: params,
                     cache: false,
                     processData: false,
+                    dataType: 'json',
                     contentType: false,
                     beforeSend: function (request) {
                        request.setRequestHeader(ConnectionManager.tokenName, ConnectionManager.tokenValue);
                     },
-                    success:function(data) {
-                        var d = JSON.decode(data);
+                    success:function(d) {
                         if(d.success == true){
                             $("#save-btn").removeClass("unsaved");
                             $("#save-btn-toolbar").removeClass("unsaved");
