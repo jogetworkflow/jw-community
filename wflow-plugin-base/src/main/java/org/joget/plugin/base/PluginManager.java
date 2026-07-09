@@ -92,15 +92,14 @@ public class PluginManager implements ApplicationContextAware {
     public final static String ESCAPE_JAVASCRIPT = "javascript";
     protected final static String COMPLETED = "COMPLETED::";
 
-    // Sentinel stored in resourceBundleCache when a bundle is absent, so ConcurrentHashMap
-    // computeIfAbsent can represent both "found" and "not found" without storing null.
+    // Sentinel stored in resourceBundleCache when a bundle is absent, so the cache can
+    // represent both "found" and "not found" without storing null.
     private static final ResourceBundle BUNDLE_NOT_FOUND = new ResourceBundle() {
         @Override protected Object handleGetObject(String key) { return null; }
         @Override public Enumeration<String> getKeys() { return Collections.emptyEnumeration(); }
     };
     
     private FileAlterationMonitor monitor = null;
-    private final ReentrantReadWriteLock refreshLock = new ReentrantReadWriteLock(true);
     // All classpath plugins scanned once at init() time; keyed by plugin name.
     // internalLoadPluginMap filters this by type instead of re-scanning the classpath.
     private static volatile Map<String, Plugin> allClasspathPlugins = null;
@@ -331,13 +330,74 @@ public class PluginManager implements ApplicationContextAware {
             LogUtil.error(PluginManager.class.getName(), e, "");
         }
     }
+    
+    public void refresh() {
+        refresh(true);
+    }
 
     /**
-     * Find and install plugins from the baseDirectory
+     * Performs a single-flight plugin refresh.
+     *
+     * <p>This method ensures that only one thread performs the actual refresh
+     * (uninstalling and reinstalling bundles) at a time. If another thread
+     * calls this method while a refresh is already in progress, it will block
+     * until the first refresh completes. If any refresh completed while it was
+     * waiting, the queued call is treated as coalesced and returns without
+     * performing another refresh.
+     *
+     * <p>Behavior:
+     * <ul>
+     *   <li><b>Leader</b>: The first thread acquires the write lock and runs
+     *       {@link #uninstallAll(boolean) uninstallAll(false)} followed by {@link #installBundles() installBundles()}.</li>
+     *   <li><b>Followers</b>: Subsequent threads acquire a read lock, which
+     *       blocks until the write lock is released - effectively waiting for
+     *       the leader's refresh to finish, then return as "refresh complete."</li>
+     * </ul>
+     *
+     * <p>Prevents concurrent refresh conflicts and redundant plugin
+     * reloads while allowing all callers to receive a consistent post-refresh
+     * state once the active refresh completes. This intentionally coalesces by
+     * completion generation, not by filesystem-change generation; callers that
+     * need every bundle-directory change observed after refresh enumeration
+     * should add a separate request/change generation.
      */
-    public void refresh() {
-        uninstallAll(false);
-        installBundles();
+    public void refresh(boolean unloadPlugins) {
+        PluginManagerCache cache = getCache();
+        ReentrantLock pluginListLock = cache.getPluginListLock();
+        long refreshGeneration = cache.getRefreshGeneration();
+
+        if (!pluginListLock.tryLock()) {
+            pluginListLock.lock();
+            try {
+                if (cache.getRefreshGeneration() != refreshGeneration) {
+                    // Another refresh completed while this caller waited, so
+                    // coalesce this request instead of immediately refreshing
+                    // the same bundle directory again.
+                    return;
+                }
+                performRefresh(cache, unloadPlugins);
+            } finally {
+                pluginListLock.unlock();
+            }
+            return;
+        }
+
+        try {
+            performRefresh(cache, unloadPlugins);
+        } finally {
+            pluginListLock.unlock();
+        }
+    }
+
+    private void performRefresh(PluginManagerCache cache, boolean unloadPlugins) {
+        try {
+            if (unloadPlugins) {
+                uninstallAll(false);
+            }
+            installBundles();
+        } finally {
+            cache.incrementRefreshGeneration();
+        }
     }
 
     protected void installBundles() {
@@ -645,7 +705,14 @@ public class PluginManager implements ApplicationContextAware {
     }
     
     public void clearCache() {
-        getCache().clearCache();
+        PluginManagerCache cache = getCache();
+        ReentrantLock pluginListLock = cache.getPluginListLock();
+        try {
+            pluginListLock.lock();
+            cache.clearCache();
+        } finally {
+            pluginListLock.unlock();
+        }
     }
     
     /**
@@ -716,14 +783,35 @@ public class PluginManager implements ApplicationContextAware {
     }
 
     protected Map<String, Plugin> getPluginsByClass(Class<?> clazz) {
+        PluginManagerCache cache = getCache();
+        
         Class classFilter = (clazz != null) ? clazz : Plugin.class;
-        // The cache is resolved per profile, so different tenants no longer
-        // serialize against a single process-wide lock. computeIfAbsent gives
-        // single-flight per type; the expensive OSGi weave it triggers is
-        // itself guarded by the per-profile lock in getAllOsgiPlugins().
-        // internalLoadPluginMap only builds a local map, so it does not mutate
-        // the plugin cache from within the mapping function.
-        return getCache().getPluginCache().computeIfAbsent(classFilter, k -> internalLoadPluginMap(clazz));
+
+        // Plain get first — avoids any locking on the hot path.
+        Map<String, Plugin> plugins = cache.getPluginCache().get(classFilter);
+        if (plugins != null) {
+            return plugins;
+        }
+        
+        ReentrantLock pluginListLock = cache.getPluginListLock();
+        try {
+            pluginListLock.lock();
+
+            plugins = cache.getPluginCache().get(classFilter);
+            if (plugins != null) {
+                return plugins;
+            }
+
+            // Compute outside the cache update so plugin loading does not hold
+            // ConcurrentHashMap internals while doing heavier work.
+            plugins = internalLoadPluginMap(clazz);
+
+            cache.getPluginCache().putIfAbsent(classFilter, plugins);
+
+            return cache.getPluginCache().get(classFilter);
+        } finally {
+            pluginListLock.unlock();
+        }    
     }
 
     /**
@@ -732,17 +820,25 @@ public class PluginManager implements ApplicationContextAware {
      * @return
      */
     public Collection<Plugin> listOsgiPlugin(Class clazz) {
-        Map<String, Plugin> pluginMap = new TreeMap<String, Plugin>();
+        PluginManagerCache cache = getCache();
+        ReentrantLock pluginListLock = cache.getPluginListLock();
+        try {
+            pluginListLock.lock();
+            
+            Map<String, Plugin> pluginMap = new TreeMap<String, Plugin>();
 
-        // find OSGI plugins
-        Collection<Plugin> pluginList = loadOsgiPlugins();
-        for (Plugin plugin : pluginList) {
-            if (clazz == null || clazz.isAssignableFrom(plugin.getClass())) {
-                pluginMap.put(plugin.getName(), plugin);
+            // find OSGI plugins
+            Collection<Plugin> pluginList = getAllOsgiPlugins().values();
+            for (Plugin plugin : pluginList) {
+                if (clazz == null || clazz.isAssignableFrom(plugin.getClass())) {
+                    pluginMap.put(plugin.getName(), plugin);
+                }
             }
-        }
 
-        return pluginMap.values();
+            return pluginMap.values();
+        } finally {
+            pluginListLock.unlock();
+        }      
     }
 
     /**
@@ -807,8 +903,8 @@ public class PluginManager implements ApplicationContextAware {
         PluginManagerCache cache = getCache();
         Map<String, Plugin> osgiPlugins = cache.getAllOsgiPlugins();
         if (osgiPlugins == null) {
-            ReentrantLock pluginListLoadLock = cache.getPluginListLoadLock();
-            pluginListLoadLock.lock();
+            ReentrantLock pluginListLock = cache.getPluginListLock();
+            pluginListLock.lock();
             try {
                 osgiPlugins = cache.getAllOsgiPlugins();
                 if (osgiPlugins == null) {
@@ -820,7 +916,7 @@ public class PluginManager implements ApplicationContextAware {
                     cache.setAllOsgiPlugins(osgiPlugins);
                 }
             } finally {
-                pluginListLoadLock.unlock();
+                pluginListLock.unlock();
             }
         }
         return osgiPlugins;
@@ -1405,9 +1501,8 @@ public class PluginManager implements ApplicationContextAware {
             return cached == BUNDLE_NOT_FOUND ? null : cached;
         }
 
-        // Compute outside computeIfAbsent to avoid nested computeIfAbsent calls on the same
-        // ConcurrentHashMap (getMessageBundle also uses computeIfAbsent on this map, which can
-        // deadlock if both lambdas run while holding a lock on the same bin).
+        // Compute outside computeIfAbsent so bundle resolution never holds a
+        // ConcurrentHashMap bin lock while doing plugin or DAO work.
         Class pluginClass = getPluginClass(pluginName);
         ResourceBundle bundle = BUNDLE_NOT_FOUND;
         if (pluginClass != null) {
@@ -1433,11 +1528,29 @@ public class PluginManager implements ApplicationContextAware {
         Locale locale = LocaleContextHolder.getLocale();
         String cacheKey = pluginClass.getName() + "_" + translationPath + "_" + locale.toString();
         PluginManagerCache cache = getCache();
+        Map<String, ResourceBundle> bundleCache = cache.getResourceBundleCache();
 
-        // computeIfAbsent gives per-key locking: threads for different keys run concurrently;
-        // only threads racing for the same key wait on each other. The sentinel stands in for
-        // null so ConcurrentHashMap can store "not found" without a separate cache.
-        ResourceBundle bundle = cache.getResourceBundleCache().computeIfAbsent(cacheKey, k -> {
+        ResourceBundle cached = bundleCache.get(cacheKey);
+        if (cached != null) {
+            return cached == BUNDLE_NOT_FOUND ? null : cached;
+        }
+
+        // Only serialize competing cold loads for nearby bundle keys; plugin
+        // listing and refresh must not wait on translation I/O or DAO calls.
+        ReentrantLock resourceBundleLock = cache.getResourceBundleLock(cacheKey);
+        try {
+            resourceBundleLock.lock();
+
+            cached = bundleCache.get(cacheKey);
+            if (cached != null) {
+                return cached == BUNDLE_NOT_FOUND ? null : cached;
+            }
+
+            // Compute outside computeIfAbsent so slow bundle/DAO work cannot hold a
+            // ConcurrentHashMap bin lock while clearCache() is clearing this map.
+            // Use a dedicated bundle lock so translations do not block plugin list
+            // loads or refreshes guarded by pluginListLock.
+            ResourceBundle bundle = BUNDLE_NOT_FOUND;
             try {
                 ResourceBundle rawBundle = ResourceBundle.getBundle(translationPath, locale, pluginClass.getClassLoader());
                 Map<String, String> bundleMessages = new HashMap<>();
@@ -1464,7 +1577,7 @@ public class PluginManager implements ApplicationContextAware {
                 }
 
                 final Map<String, String> resolved = bundleMessages;
-                return new ResourceBundle() {
+                bundle = new ResourceBundle() {
                     @Override
                     protected Object handleGetObject(String key) {
                         return resolved.get(key);
@@ -1476,11 +1589,14 @@ public class PluginManager implements ApplicationContextAware {
                 };
             } catch (Exception e) {
                 LogUtil.debug(PluginManager.class.getName(), translationPath + " translation file not found");
-                return BUNDLE_NOT_FOUND;
             }
-        });
 
-        return bundle == BUNDLE_NOT_FOUND ? null : bundle;
+            ResourceBundle existing = bundleCache.putIfAbsent(cacheKey, bundle);
+            ResourceBundle result = existing != null ? existing : bundle;
+            return result == BUNDLE_NOT_FOUND ? null : result;
+        } finally {
+            resourceBundleLock.unlock();
+        }
     }
     
     /**

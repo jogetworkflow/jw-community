@@ -14,6 +14,11 @@ import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.util.Assert;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicReference;
+import java.util.concurrent.locks.ReentrantLock;
 
 @RunWith(value=SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations = {"classpath:pluginBaseApplicationContext.xml"})
@@ -155,5 +160,130 @@ public class TestPluginManager {
     public void testPluginTest() {
         LogUtil.info(getClass().getName(), " ===testPluginTest=== ");
         pluginManager.testPlugin(getSamplePlugin(), getSamplePluginFile(), null, true);
+    }
+
+    @Test
+    public void testRefreshRunsOnceForSingleCaller() {
+        CountingRefreshPluginManager p = new CountingRefreshPluginManager();
+
+        p.refresh();
+
+        Assert.isTrue(p.getUninstallCount() == 1, "Refresh should uninstall once");
+        Assert.isTrue(p.getInstallCount() == 1, "Refresh should install once");
+    }
+
+    @Test
+    public void testConcurrentRefreshWaitsWithoutDuplicateWork() throws Exception {
+        CountDownLatch refreshStarted = new CountDownLatch(1);
+        CountDownLatch releaseRefresh = new CountDownLatch(1);
+        CountingRefreshPluginManager p = new CountingRefreshPluginManager(refreshStarted, releaseRefresh);
+        AtomicReference<Throwable> failure = new AtomicReference<>();
+
+        Thread leader = new Thread(() -> runRefresh(p, failure), "refresh-leader");
+        leader.start();
+        Assert.isTrue(refreshStarted.await(5, TimeUnit.SECONDS), "Leader refresh should start");
+
+        Thread follower = new Thread(() -> runRefresh(p, failure), "refresh-follower");
+        follower.start();
+        Thread.sleep(100);
+        Assert.isTrue(follower.isAlive(), "Follower should wait for the active refresh");
+
+        releaseRefresh.countDown();
+        leader.join(5000);
+        follower.join(5000);
+
+        Assert.isTrue(!leader.isAlive(), "Leader refresh should finish");
+        Assert.isTrue(!follower.isAlive(), "Follower refresh should finish");
+        if (failure.get() != null) {
+            throw new AssertionError(failure.get());
+        }
+        Assert.isTrue(p.getUninstallCount() == 1, "Concurrent refresh should uninstall once");
+        Assert.isTrue(p.getInstallCount() == 1, "Concurrent refresh should install once");
+    }
+
+    @Test
+    public void testRefreshRunsAfterWaitingForNonRefreshLockHolder() throws Exception {
+        CountingRefreshPluginManager p = new CountingRefreshPluginManager();
+        PluginManagerCache cache = PluginManager.getCache();
+        ReentrantLock pluginListLock = cache.getPluginListLock();
+        AtomicReference<Throwable> failure = new AtomicReference<>();
+
+        pluginListLock.lock();
+        Thread refresher = new Thread(() -> runRefresh(p, failure), "refresh-after-list-lock");
+        try {
+            refresher.start();
+            Thread.sleep(100);
+            Assert.isTrue(p.getUninstallCount() == 0, "Refresh should wait while plugin list lock is held");
+            Assert.isTrue(refresher.isAlive(), "Refresh thread should wait for plugin list lock");
+        } finally {
+            pluginListLock.unlock();
+        }
+
+        refresher.join(5000);
+
+        Assert.isTrue(!refresher.isAlive(), "Refresh should finish after plugin list lock is released");
+        if (failure.get() != null) {
+            throw new AssertionError(failure.get());
+        }
+        Assert.isTrue(p.getUninstallCount() == 1, "Refresh should uninstall once after non-refresh lock holder");
+        Assert.isTrue(p.getInstallCount() == 1, "Refresh should install once after non-refresh lock holder");
+    }
+
+    private void runRefresh(PluginManager pluginManager, AtomicReference<Throwable> failure) {
+        try {
+            pluginManager.refresh();
+        } catch (Throwable t) {
+            failure.compareAndSet(null, t);
+        }
+    }
+
+    private static class CountingRefreshPluginManager extends PluginManager {
+        private final AtomicInteger uninstallCount = new AtomicInteger();
+        private final AtomicInteger installCount = new AtomicInteger();
+        private final CountDownLatch refreshStarted;
+        private final CountDownLatch releaseRefresh;
+
+        CountingRefreshPluginManager() {
+            this(null, null);
+        }
+
+        CountingRefreshPluginManager(CountDownLatch refreshStarted, CountDownLatch releaseRefresh) {
+            this.refreshStarted = refreshStarted;
+            this.releaseRefresh = releaseRefresh;
+        }
+
+        @Override
+        protected void init() {
+            // Avoid starting the real OSGi container for lock-behavior tests.
+        }
+
+        @Override
+        public void uninstallAll(boolean deleteFiles) {
+            uninstallCount.incrementAndGet();
+        }
+
+        @Override
+        protected void installBundles() {
+            installCount.incrementAndGet();
+            if (refreshStarted != null) {
+                refreshStarted.countDown();
+            }
+            if (releaseRefresh != null) {
+                try {
+                    releaseRefresh.await();
+                } catch (InterruptedException e) {
+                    Thread.currentThread().interrupt();
+                    throw new RuntimeException(e);
+                }
+            }
+        }
+
+        int getUninstallCount() {
+            return uninstallCount.get();
+        }
+
+        int getInstallCount() {
+            return installCount.get();
+        }
     }
 }
