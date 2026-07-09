@@ -3,7 +3,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.joget</groupId>
     <artifactId>wflow-shark</artifactId>
-    <version>9.1-SNAPSHOT</version>
+    <version>9.1.0.1</version>
     <url>http://www.joget.org</url>
     <properties>
         <maven.compiler.encoding>UTF-8</maven.compiler.encoding>
