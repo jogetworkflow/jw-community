@@ -3513,10 +3513,11 @@ ProcessBuilder = {
                     lfTransition.text = transition.properties.condition;
                 }
             } else if (lfTransition.properties.type === 'OTHERWISE' || lfTransition.properties.type === 'EXCEPTION'){
+                var typeLabel = (lfTransition.properties.type === 'EXCEPTION' && transition.properties.exceptionName) ? transition.properties.exceptionName : transition.properties.type;
                 if(lfTransition.text){
-                    lfTransition.text = lfTransition.text + '\n' + '[' + transition.properties.type + ']' + '\n';
+                    lfTransition.text = lfTransition.text + '\n' + (lfTransition.properties.type === 'EXCEPTION' ? typeLabel : '[' + typeLabel + ']') + '\n';
                 } else {
-                    lfTransition.text = transition.properties.type;
+                    lfTransition.text = typeLabel;
                 }
             }
             
