@@ -11,6 +11,7 @@ import java.io.UnsupportedEncodingException;
 import java.net.URISyntaxException;
 import java.nio.file.Files;
 import java.nio.file.NoSuchFileException;
+import java.nio.file.StandardCopyOption;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
@@ -91,6 +92,9 @@ import org.simpleframework.xml.core.Persister;
 import org.springframework.beans.BeansException;
 import org.springframework.util.ClassUtils;
 import java.nio.file.Path;
+import java.util.jar.Attributes;
+import java.util.jar.JarFile;
+import java.util.jar.Manifest;
 import org.eclipse.jgit.treewalk.filter.PathFilter;
 
 public class AppDevUtil {
@@ -1139,15 +1143,9 @@ public class AppDevUtil {
      */
     private static void snapshotAppFileState(AppDefinition appDef) {
         try {
-            File dir = AppDevUtil.fileGetFileObject(appDef, ".", false);
-            if (dir != null && dir.isDirectory()) {
-                Collection<File> files = FileUtils.listFiles(dir, new String[]{"json", "xml", "xpdl", "jar"}, true);
-                Set<String> currentFileNames = new HashSet<>();
-                for (File file : files) {
-                    currentFileNames.add(file.getAbsolutePath() + "|" + file.length());
-                }
-                String appKey = getAppCacheKey(appDef);
-                prevFileNamesMap.put(appKey, currentFileNames);
+            Set<String> fingerprint = computeAppFileFingerprint(appDef);
+            if (fingerprint != null) {
+                prevFileNamesMap.put(getAppCacheKey(appDef), fingerprint);
             }
         } catch (Exception e) {
             LogUtil.debug(AppDevUtil.class.getName(), "Failed to snapshot app file state for " + appDef.getAppId() + ": " + e.getMessage());
@@ -1878,10 +1876,6 @@ public class AppDevUtil {
             return;
         }
 
-        // get osgi plugins
-        PluginManager pluginManager = (PluginManager)AppUtil.getApplicationContext().getBean("pluginManager");
-        Collection<Plugin> pluginList = pluginManager.listOsgiPlugin(null);
-
         try {
             GitCommitHelper gitCommitHelper = getGitCommitHelper(appDef);
 
@@ -1891,24 +1885,22 @@ public class AppDevUtil {
             // Build fingerprint of matched plugins (path + lastModified + size) to detect changes
             // Including lastModified and size ensures we re-sync when a plugin JAR is updated in-place
             Set<String> matchedPluginFingerprints = new TreeSet<>();
-            Set<String> matchedPluginPaths = new TreeSet<>();
-            AppDefinition appDefCopy = copyAppDefForPluginMatch(appDef, gitCommitHelper.getWorkingDir());
-            for (Plugin plugin: pluginList) {
-                String pluginClassName = ClassUtils.getUserClass(plugin).getName();
-                String pluginMatch;
-                if (plugin instanceof DefaultHashVariablePlugin) {
-                    HashVariablePlugin hashVariablePlugin = (HashVariablePlugin) plugin;
-                    pluginMatch = "#" + hashVariablePlugin.getPrefix() + ".";
-                } else {
-                    pluginMatch = pluginClassName;
-                }
-                if (appDefContainsPlugin(appDefCopy, pluginMatch)) {
-                    String path = pluginManager.getOsgiPluginPath(pluginClassName);
-                    if (path != null) {
-                        matchedPluginPaths.add(path);
-                        File pluginFile = new File(path);
-                        matchedPluginFingerprints.add(path + "|" + pluginFile.lastModified() + "|" + pluginFile.length());
-                    }
+            Set<String> matchedPluginPaths = getActivePluginPathsUsedByApp(appDef, gitCommitHelper.getWorkingDir());
+            
+            for (String path: matchedPluginPaths) {
+                File pluginFile = new File(path);
+                matchedPluginFingerprints.add(path + "|" + pluginFile.lastModified() + "|" + pluginFile.length());
+            }
+
+            // Also fingerprint staged plugins to bypass node-local caching. 
+            // This ensures that if another node repairs the plugins, this node won't 
+            // falsely skip the update, avoiding the need for cross-node messaging.
+            File stagedDir = new File(AppDevUtil.getAppDevBaseDirectory()
+                    + File.separator + getAppGitDirectory(appDef), "plugins");
+            File[] stagedJars = stagedDir.listFiles((d, n) -> n.toLowerCase().endsWith(".jar"));
+            if (stagedJars != null) {
+                for (File staged : stagedJars) {
+                    matchedPluginFingerprints.add("staged:" + staged.getName() + "|" + staged.length());
                 }
             }
 
@@ -1936,7 +1928,7 @@ public class AppDevUtil {
                     LogUtil.debug(AppDevUtil.class.getName(), "Fail to copy " + path + " due to cloud security manager");
                 }
             }
-
+            
             // commit
             String commitMessage =  "Update app plugins " + appDef.getId();
             AppDevUtil.dirCopy(appDef, null, targetDirName, commitMessage);
@@ -2028,6 +2020,10 @@ public class AppDevUtil {
             //latestDate is null when git folder is empty, should not sync in that case.
             if (latestDate != null && (appLastModifiedDate == null || latestDate.after(appLastModifiedDate) || isAppModified)) {
                 LogUtil.info(AppDevUtil.class.getName(), "Change detected (" + latestDate + " vs " + appLastModifiedDate + "), init sync for app " + appDef);
+
+                // sync plugins
+                syncLatestPlugins(appDef);
+                
                 // sync app
                 updatedAppDef = appDefinitionDao.syncAppDefinition(appDef.getAppId(), appDef.getVersion());
                 copyDirectory(appDef);
@@ -2100,27 +2096,41 @@ public class AppDevUtil {
 
     public static boolean isAppModified(AppDefinition appDef) throws IOException, GitAPIException, URISyntaxException {
         String appKey = getAppCacheKey(appDef);
-        File dir = AppDevUtil.fileGetFileObject(appDef, ".", false);
-        if (dir != null && dir.isDirectory()) {
-            Collection<File> files = FileUtils.listFiles(dir, new String[]{"json", "xml", "xpdl", "jar"}, true);
-            Set<String> currentFileNames = new HashSet<>();
-            for (File file : files) {
-                currentFileNames.add(file.getAbsolutePath() + "|" + file.length());
-            }
+        Set<String> currentFileNames = computeAppFileFingerprint(appDef);
+        if (currentFileNames != null) {
             Set<String> prevNames = prevFileNamesMap.get(appKey);
 
             // Check if file count or file names have changed
             if (!currentFileNames.equals(prevNames)) {
                 prevFileNamesMap.put(appKey, currentFileNames);
-                
+
                 if (LogUtil.isDebugEnabled(AppDevUtil.class.getName())) {
                     LogUtil.debug(AppDevUtil.class.getName(), "appKey="+appKey+", prevNames="+prevNames+", currentFileNames="+currentFileNames+"]");
                 }
                 return true;
             }
         }
-        return false; 
+        return false;
      }
+
+    /**
+     * Computes the current fingerprint (absolute path and length per file) of an app's git-tracked
+     * source files. Shared by {@link #isAppModified(AppDefinition)} and
+     * {@link #snapshotAppFileState(AppDefinition)}.
+     * @return the fingerprint set, or {@code null} if the project directory does not exist
+     */
+    private static Set<String> computeAppFileFingerprint(AppDefinition appDef) throws IOException, GitAPIException, URISyntaxException {
+        File dir = AppDevUtil.fileGetFileObject(appDef, ".", false);
+        if (dir == null || !dir.isDirectory()) {
+            return null;
+        }
+        Collection<File> files = FileUtils.listFiles(dir, new String[]{"json", "xml", "xpdl", "jar"}, true);
+        Set<String> fingerprint = new HashSet<>();
+        for (File file : files) {
+            fingerprint.add(file.getAbsolutePath() + "|" + file.length());
+        }
+        return fingerprint;
+    }
 
     public static AppDefinition createDummyAppDefinition(String appId, Long appVersion) {
         // validate appId
@@ -2323,25 +2333,13 @@ public class AppDevUtil {
                 File projectDir = AppDevUtil.dirSetup(baseDir, projectDirName);
                 String targetDirName = "plugins";
                 File targetDir = new File(projectDir, targetDirName);
-
+                
                 if (targetDir.exists()) {
                     File[] files = targetDir.listFiles();
                     if (files != null) {
                         for (File file : files)
                         {
-                            if (file.canRead())
-                            {
-                                try (FileInputStream fis = new FileInputStream(file)) {
-                                    zip.putNextEntry(new ZipEntry(file.getName()));
-                                    byte[] buffer = new byte[4092];
-                                    int byteCount = 0;
-                                    while ((byteCount = fis.read(buffer)) != -1)
-                                    {
-                                        zip.write(buffer, 0, byteCount);
-                                    }
-                                    zip.closeEntry();
-                                }
-                            }
+                            writeZipEntry(zip, file);
                         }
                     }
                 }
@@ -2351,46 +2349,15 @@ public class AppDevUtil {
         } else {
             Set<String> jars = new HashSet<String>();
 
-            // get osgi plugins
-            PluginManager pluginManager = (PluginManager)AppUtil.getApplicationContext().getBean("pluginManager");
-            Collection<Plugin> pluginList = pluginManager.listOsgiPlugin(null);
-            
             try {
                 // look for plugins used in any definition file
-                AppDefinition appDefCopy = copyAppDefForPluginMatch(appDef, null);
-                for (Plugin plugin: pluginList) {
-                    String pluginClassName = ClassUtils.getUserClass(plugin).getName();
-                    String pluginMatch;
-                    if (plugin instanceof DefaultHashVariablePlugin) {
-                        HashVariablePlugin hashVariablePlugin = (HashVariablePlugin) plugin;
-                        pluginMatch = "#" + hashVariablePlugin.getPrefix() + ".";
-                    } else {
-                        pluginMatch = pluginClassName;
-                    }
-                    if (appDefContainsPlugin(appDefCopy, pluginMatch)) {
-                        // plugin used, copy
-                        String path = pluginManager.getOsgiPluginPath(pluginClassName);
-                        if (path != null) {
-                            File file = new File(path);
-                            if (!jars.contains(file.getName())) {
-                                if (file.canRead())
-                                {
-                                    try (FileInputStream fis = new FileInputStream(file)) {
-                                        zip.putNextEntry(new ZipEntry(file.getName()));
-                                        byte[] buffer = new byte[4092];
-                                        int byteCount = 0;
-                                        while ((byteCount = fis.read(buffer)) != -1)
-                                        {
-                                            zip.write(buffer, 0, byteCount);
-                                        }
-                                        zip.closeEntry();
-                                    }
-                                }
-
-                                jars.add(file.getName());
-                            }
-                        }
-                    }                
+                Set<String> activePluginPaths = getActivePluginPathsUsedByApp(appDef, null);
+                for (String path : activePluginPaths) {
+                    File file = new File(path);
+                    if (!jars.contains(file.getName())) {
+                        writeZipEntry(zip, file);
+                        jars.add(file.getName());
+                    }                                                 
                 }
             } catch (Exception e) {
                 LogUtil.error(AppDevUtil.class.getName(), e, "");
@@ -2414,7 +2381,7 @@ public class AppDevUtil {
                 File projectDir = AppDevUtil.dirSetup(baseDir, projectDirName);
                 String targetDirName = "plugins";
                 File targetDir = new File(projectDir, targetDirName);
-
+                
                 if (targetDir.exists()) {
                     File[] files = targetDir.listFiles();
                     if (files != null) {
@@ -2479,29 +2446,11 @@ public class AppDevUtil {
             }
         } else {
             // get osgi plugins
-            PluginManager pluginManager = (PluginManager)AppUtil.getApplicationContext().getBean("pluginManager");
-            Collection<Plugin> pluginList = pluginManager.listOsgiPlugin(null);
-
-            // look for plugins used in any definition file
-            AppDefinition appDefCopy = copyAppDefForPluginMatch(appDef, null);
-            for (Plugin plugin: pluginList) {
-                String pluginClassName = ClassUtils.getUserClass(plugin).getName();
-                String pluginMatch;
-                if (plugin instanceof DefaultHashVariablePlugin) {
-                    HashVariablePlugin hashVariablePlugin = (HashVariablePlugin) plugin;
-                    pluginMatch = "#" + hashVariablePlugin.getPrefix() + ".";
-                } else {
-                    pluginMatch = pluginClassName;
-                }
-                if (appDefContainsPlugin(appDefCopy, pluginMatch)) {
-                    // plugin used, copy
-                    String path = pluginManager.getOsgiPluginPath(pluginClassName);
-                    if (path != null) {
-                        File src = new File(path);
-                        if (!plugins.contains(src.getName())) {
-                            plugins.add(src.getName());
-                        }
-                    }
+            Set<String> activePluginPaths = getActivePluginPathsUsedByApp(appDef, null);
+            for (String path : activePluginPaths) {
+                File src = new File(path);
+                if (!plugins.contains(src.getName())) {
+                    plugins.add(src.getName());
                 }
             }
         }
@@ -2800,5 +2749,172 @@ public class AppDevUtil {
         }
         // Refer to AppDefinitionDaoImpl.delete(AppDefinition)
         return message.startsWith("Delete app version");
+    }
+    
+    /**
+     * Synchronizes local plugin directory with the active system plugins. 
+     * * @param appDef The application definition used to resolve the project's working directory 
+     * and identify which specific plugins are actively used by the app.
+     */
+    private static void syncLatestPlugins(AppDefinition appDef) {
+        // Lock locally to prevent concurrent syncs of the same app on this node.
+        // Cross-node safety for shared workflow home is handled by the ATOMIC_MOVE 
+        // inside the internal sync routine.
+        Object lock = COPY_LOCKS.computeIfAbsent(getAppCacheKey(appDef), k -> new Object());
+        synchronized (lock) {
+            syncLatestPluginsInternal(appDef);
+        }
+    }
+
+    private static void syncLatestPluginsInternal(AppDefinition appDef) {
+        boolean hasChanges = false;
+
+        try {
+            String baseDir = AppDevUtil.getAppDevBaseDirectory();
+            String projectDirName = getAppGitDirectory(appDef);
+            File targetDir = new File(baseDir + File.separator + projectDirName, "plugins");
+
+            if (!targetDir.exists()) return;
+
+            Set<String> activePluginPaths = getActivePluginPathsUsedByApp(appDef, null);
+            File[] oldJars = targetDir.listFiles((dir, name) -> name.toLowerCase().endsWith(".jar"));
+
+            // Index existing jars by Bundle-SymbolicName once so we don't re-read every manifest per active plugin
+            Map<String, List<File>> oldJarsBySymbolicName = new HashMap<>();
+            if (oldJars != null) {
+                for (File oldJar : oldJars) {
+                    String id = getPluginSymbolicName(oldJar);
+                    if (id != null) {
+                        oldJarsBySymbolicName.computeIfAbsent(id, k -> new ArrayList<>()).add(oldJar);
+                    }
+                }
+            }
+
+            for (String path : activePluginPaths) {
+                // Try/catch is scoped per-plugin so a single failure (e.g., a concurrent write) 
+                // doesn't abort the entire loop. This guarantees cache invalidation runs below, 
+                // preventing syncAppPlugins() from falsely returning early and leaving stale jars (#1937).
+                try {
+                    File activeSysJar = new File(path);
+                    File localJar = new File(targetDir, activeSysJar.getName());
+                    String activeId = getPluginSymbolicName(activeSysJar);
+
+                    // Remove outdated versions (same symbolic name, different filename) of this plugin
+                    if (activeId != null) {
+                        List<File> matchedOldJars = oldJarsBySymbolicName.get(activeId);
+                        if (matchedOldJars != null) {
+                            for (File oldJar : matchedOldJars) {
+                                // skip current version and any already deleted
+                                if (oldJar.getName().equals(activeSysJar.getName()) || !oldJar.exists()) continue;
+                                Files.deleteIfExists(oldJar.toPath());
+                                hasChanges = true;
+                                LogUtil.info(AppDevUtil.class.getName(), "Cleaned outdated " + oldJar.getName() + " plugin");
+                            }
+                        }
+                    }
+
+                    // Copy if the active version is missing or its content differs (e.g. same-filename in-place update).
+                    // Uses the same content check as AppDefinitionDaoImpl.syncPlugins so the sync won't re-upload a stale jar.
+                    if (!localJar.exists() || !FileUtils.contentEquals(activeSysJar, localJar)) {
+                        // Stage to a .tmp file to hide it from .jar filters and fingerprint checks.
+                        // Then publish via atomic rename so concurrent readers (other nodes/threads) 
+                        // never accidentally read or upload a partially written, truncated jar.
+                        File tmpJar = new File(targetDir,
+                                localJar.getName() + "." + UUID.randomUUID() + ".tmp");
+                        try {
+                            FileUtils.copyFile(activeSysJar, tmpJar);
+                            Files.move(tmpJar.toPath(), localJar.toPath(),
+                                    StandardCopyOption.REPLACE_EXISTING, StandardCopyOption.ATOMIC_MOVE);
+                            hasChanges = true;
+                            LogUtil.info(AppDevUtil.class.getName(), "Synced " + activeSysJar.getName() + " plugin");
+                        } finally {
+                            Files.deleteIfExists(tmpJar.toPath());
+                        }
+                    }
+                } catch (Exception e) {
+                    LogUtil.warn(AppDevUtil.class.getName(),
+                            "Failed to sync plugin " + path + " for " + appDef.getAppId()
+                            + " - " + e.getMessage());
+                }
+            }
+
+            // No git staging here: this method fixes the canonical project dir so the subsequent
+            // syncAppDefinition() -> syncPlugins() won't re-upload a stale jar to the platform.
+            // Committing is handled by the existing end-of-request pipeline: syncAppDefinition() ->
+            // saveOrUpdate() -> dirSyncAppPlugins() flags the request-scoped GitCommitHelper, and
+            // GitCommitHelper.commit() -> syncAppPlugins() rebuilds and commits the plugins folder
+            // from the (now-correct) platform jars. Invalidate the fingerprint cache so that commit
+            // is not skipped when the platform jars themselves are unchanged (e.g. stale jar arrived
+            // via a remote git push).
+            if (hasChanges) {
+                pluginFingerprintCache.remove(getAppCacheKey(appDef));
+
+                // Absorb the jar changes just written here into the isAppModified() snapshot so the
+                // next sync pass does not misread them as an external change and trigger a redundant sync.
+                snapshotAppFileState(appDef);
+            }
+
+        } catch (Exception e) {
+            LogUtil.error(AppDevUtil.class.getName(), e, "Failed to sync latest plugins");
+        }
+    }
+
+    private static String getPluginSymbolicName(File jarFile) {
+        try (JarFile jar = new JarFile(jarFile)) {
+            Manifest manifest = jar.getManifest();
+            if (manifest != null) {
+                Attributes attributes = manifest.getMainAttributes();
+                return attributes.getValue("Bundle-SymbolicName");
+            }
+        } catch (Exception e) {
+            // ignore
+        }
+        return null;
+    }
+    
+    /**
+     * Helper method to identify all active OSGi plugins utilized by a specific AppDefinition.
+     * @return A Set of absolute file paths to the matched active plugin .jar files.
+     */
+    private static Set<String> getActivePluginPathsUsedByApp(AppDefinition appDef, File workingDir) {
+        // Use TreeSet for deterministic iteration order. This ensures consistent 
+        // resolution across JVM runs if multiple active plugins share the same filename.        
+        Set<String> matchedPaths = new TreeSet<>();
+        PluginManager pluginManager = (PluginManager) AppUtil.getApplicationContext().getBean("pluginManager");
+        Collection<Plugin> pluginList = pluginManager.listOsgiPlugin(null);
+        
+        AppDefinition appDefCopy = copyAppDefForPluginMatch(appDef, workingDir);
+        
+        for (Plugin plugin : pluginList) {
+            String pluginClassName = ClassUtils.getUserClass(plugin).getName();
+            String pluginMatch = (plugin instanceof DefaultHashVariablePlugin) ? 
+                "#" + ((HashVariablePlugin) plugin).getPrefix() + "." : pluginClassName;
+                
+            if (appDefContainsPlugin(appDefCopy, pluginMatch)) {
+                String path = pluginManager.getOsgiPluginPath(pluginClassName);
+                if (path != null) {
+                    matchedPaths.add(path);
+                }
+            }
+        }
+        return matchedPaths;
+    }
+
+    
+    /**
+     * Helper method to read and write file into a ZipOutputStream.
+     */
+    private static void writeZipEntry(ZipOutputStream zip, File file) throws IOException {
+        if (file.canRead()) {
+            try (FileInputStream fis = new FileInputStream(file)) {
+                zip.putNextEntry(new ZipEntry(file.getName()));
+                byte[] buffer = new byte[4092];
+                int byteCount;
+                while ((byteCount = fis.read(buffer)) != -1) {
+                    zip.write(buffer, 0, byteCount);
+                }
+                zip.closeEntry();
+            }
+        }
     }
 }
