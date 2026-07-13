@@ -7,6 +7,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
@@ -20,6 +21,7 @@ import org.joget.apps.form.model.FormRowSet;
 import org.joget.commons.util.FileManager;
 import org.joget.commons.util.SecurityUtil;
 import org.joget.commons.util.StringUtil;
+import org.joget.commons.util.UuidGenerator;
 import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
@@ -30,6 +32,7 @@ import org.springframework.web.multipart.MultipartFile;
 @Service
 public class FileUtil implements ApplicationContextAware {
     public static final String PATH_VARIABLE = "{tempFilePath}";
+    public static final String COPY_ROW_VARIABLE = "{copyRow}";
 
     static ApplicationContext appContext;
 
@@ -63,7 +66,11 @@ public class FileUtil implements ApplicationContextAware {
      * @param primaryKeyValue 
      */
     public static void checkAndUpdateFileName(FormRowSet results, String tableName, String primaryKeyValue) {
-        Set<String> existedFileName = new HashSet<String>();
+
+        resolveCopiedRowFiles(results, tableName);
+        duplicateSharedTempFiles(results);
+
+        Map<String, Set<String>> existedFileNameByPath = new HashMap<String, Set<String>>();
         
         for (int i = 0; i < results.size(); i++) {
             FormRow row = results.get(i);
@@ -90,8 +97,13 @@ public class FileUtil implements ApplicationContextAware {
                                     String fileName = file.getName();
                                     String uploadPath = getUploadPath(tableName, id);
 
-                                    String newFileName = validateFileName(fileName, uploadPath, existedFileName, replaceFile);
-                                    existedFileName.add(newFileName);
+                                    Set<String> pathExistedNames = existedFileNameByPath.get(uploadPath);
+                                    if (pathExistedNames == null) {
+                                        pathExistedNames = new HashSet<String>();
+                                        existedFileNameByPath.put(uploadPath, pathExistedNames);
+                                    }
+                                    String newFileName = validateFileName(fileName, uploadPath, pathExistedNames, replaceFile);
+                                    pathExistedNames.add(newFileName);
                                     
                                     if (!newFileName.equals(file.getName())) {
                                         if (row.containsKey(fieldId)) {
@@ -271,6 +283,207 @@ public class FileUtil implements ApplicationContextAware {
                     }
                 }
             }
+        }
+    }
+    
+    /**
+     * Resolves COPY_ROW_VARIABLE sentinels ({@code {copyRow}<sourceRowId>/<fileName>})
+     * emitted when a spreadsheet row with an already-saved file/image is copied to another row.
+     * @param results
+     * @param tableName
+     */
+    protected static void resolveCopiedRowFiles(FormRowSet results, String tableName) {
+        if (results == null || results.isEmpty()) {
+            return;
+        }
+        for (FormRow row : results) {
+            Map<String, String[]> tempFilePathMap = row.getTempFilePathMap();
+            if (tempFilePathMap == null || tempFilePathMap.isEmpty()) {
+                continue;
+            }
+            for (Map.Entry<String, String[]> entry : tempFilePathMap.entrySet()) {
+                String[] paths = entry.getValue();
+                if (paths == null || paths.length == 0) continue;
+                boolean changed = false;
+                String[] newPaths = paths.clone();
+                for (int i = 0; i < newPaths.length; i++) {
+                    String path = newPaths[i];
+                    if (path == null || !path.startsWith(COPY_ROW_VARIABLE)) continue;
+                    // thumbnails are co-located with their main file when the main file is copied
+                    if (path.endsWith(FileManager.THUMBNAIL_EXT)) continue;
+                    String ref = path.substring(COPY_ROW_VARIABLE.length());
+                    int slash = ref.indexOf('/');
+                    if (slash <= 0 || slash >= ref.length() - 1) continue;
+                    String srcRowId = ref.substring(0, slash);
+                    String fileName = ref.substring(slash + 1);
+                    try {
+                        File src = getFile(fileName, tableName, srcRowId);
+                        if (src != null && src.exists()) {
+                            String copiedPath = copyToFreshTempDir(src);
+                            if (copiedPath != null) {
+                                newPaths[i] = copiedPath;
+                                changed = true;
+                                String newDirId = copiedPath.substring(0, copiedPath.indexOf(File.separator));
+                                File thumbSrc = getFile(fileName + FileManager.THUMBNAIL_EXT, tableName, srcRowId);
+                                colocateThumbnail(tempFilePathMap, thumbSrc, path + FileManager.THUMBNAIL_EXT, newDirId, src.getName());
+                            }
+                        }
+                    } catch (Exception ex) {
+                        LogUtil.error(FileUtil.class.getName(), ex, "Failed to resolve copied row file: " + path);
+                    }
+                }
+                if (changed) {
+                    entry.setValue(newPaths);
+                }
+            }
+        }
+    }
+
+    /**
+     * Copies a relocated file's thumbnail into the same temp dir as its main
+     * file and updates the matching map entry, preserving the {@code <mainPath>.thumb.jpg} linkage
+     * that {@link #checkAndUpdateFileName} needs when renaming duplicate file names.
+     * @param oldThumbValue
+     * @param mainFileName
+     */
+    private static void colocateThumbnail(Map<String, String[]> tempFilePathMap, File thumbSrc, String oldThumbValue, String newDirId, String mainFileName) {
+        if (thumbSrc == null || !thumbSrc.exists()) {
+            return;
+        }
+        // only copy if the map actually references the thumbnail, otherwise the copy would be orphaned in temp
+        boolean referenced = false;
+        for (String[] values : tempFilePathMap.values()) {
+            if (values != null && Arrays.asList(values).contains(oldThumbValue)) {
+                referenced = true;
+                break;
+            }
+        }
+        if (!referenced) {
+            return;
+        }
+        try {
+            File destDir = new File(FileManager.getBaseDirectory(), newDirId);
+            destDir.mkdirs();
+            FileCopyUtils.copy(thumbSrc, new File(destDir, mainFileName + FileManager.THUMBNAIL_EXT));
+            String newThumbPath = newDirId + File.separator + mainFileName + FileManager.THUMBNAIL_EXT;
+            for (Map.Entry<String, String[]> entry : tempFilePathMap.entrySet()) {
+                String[] values = entry.getValue();
+                if (values == null) continue;
+                boolean changed = false;
+                for (int k = 0; k < values.length; k++) {
+                    if (oldThumbValue.equals(values[k])) {
+                        values[k] = newThumbPath;
+                        changed = true;
+                    }
+                }
+                if (changed) {
+                    entry.setValue(values);
+                }
+            }
+        } catch (Exception ex) {
+            LogUtil.error(FileUtil.class.getName(), ex, "Failed to co-locate thumbnail: " + oldThumbValue);
+        }
+    }
+
+    /**
+     * @param results 
+     */
+    protected static void duplicateSharedTempFiles(FormRowSet results) {
+        if (results == null || results.isEmpty()) {
+            return;
+        }
+        
+        // pass 1: count references to each temp path across all rows
+        Map<String, Integer> pathRefCount = new HashMap<String, Integer>();
+        for (FormRow row : results) {
+            Map<String, String[]> tempFilePathMap = row.getTempFilePathMap();
+            if (tempFilePathMap == null || tempFilePathMap.isEmpty()) {
+                continue;
+            }
+            for (String[] paths : tempFilePathMap.values()) {
+                if (paths == null) continue;
+                for (String path : paths) {
+                    if (path != null && !path.isEmpty()) {
+                        Integer count = pathRefCount.get(path);
+                        pathRefCount.put(path, (count == null) ? 1 : count + 1);
+                    }
+                }
+            }
+        }
+        
+        // early exit if nothing is shared
+        boolean anyShared = false;
+        for (Integer c : pathRefCount.values()) {
+            if (c != null && c > 1) {
+                anyShared = true;
+                break;
+            }
+        }
+        if (!anyShared) {
+            return;
+        }
+        
+        // pass 2: for each row that references a shared path beyond the first occurrence,
+        // copy the temp file to a fresh UUID temp dir and rewrite this row's path entry
+        Set<String> firstSeen = new HashSet<String>();
+        for (FormRow row : results) {
+            Map<String, String[]> tempFilePathMap = row.getTempFilePathMap();
+            if (tempFilePathMap == null || tempFilePathMap.isEmpty()) {
+                continue;
+            }
+            for (Map.Entry<String, String[]> entry : tempFilePathMap.entrySet()) {
+                String[] paths = entry.getValue();
+                if (paths == null || paths.length == 0) continue;
+                boolean changed = false;
+                String[] newPaths = paths.clone();
+                for (int i = 0; i < newPaths.length; i++) {
+                    String path = newPaths[i];
+                    if (path == null || path.isEmpty()) continue;
+                    // thumbnails are co-located with their main file when the main file is copied
+                    if (path.endsWith(FileManager.THUMBNAIL_EXT)) continue;
+                    Integer count = pathRefCount.get(path);
+                    if (count == null || count <= 1) continue;
+                    if (firstSeen.add(path)) {
+                        // first occurrence keeps the original temp file
+                        continue;
+                    }
+                    File src = FileManager.getFileByPath(path);
+                    if (src == null) continue;
+                    String copiedPath = copyToFreshTempDir(src);
+                    if (copiedPath != null) {
+                        newPaths[i] = copiedPath;
+                        changed = true;
+                        String newDirId = copiedPath.substring(0, copiedPath.indexOf(File.separator));
+                        File thumbSrc = FileManager.getFileByPath(path + FileManager.THUMBNAIL_EXT);
+                        colocateThumbnail(tempFilePathMap, thumbSrc, path + FileManager.THUMBNAIL_EXT, newDirId, src.getName());
+                    }
+                }
+                if (changed) {
+                    entry.setValue(newPaths);
+                }
+            }
+        }
+    }
+    
+    /**
+     * @param src the existing temp file to copy
+     * @return relative path of the new copy, or null on failure
+     */
+    public static String copyToFreshTempDir(File src) {
+        if (src == null || !src.exists() || src.isDirectory()) {
+            return null;
+        }
+        try {
+            String id = UuidGenerator.getInstance().getUuid();
+            File destDir = new File(FileManager.getBaseDirectory(), id);
+            destDir.mkdirs();
+            File dest = new File(destDir, src.getName());
+            FileCopyUtils.copy(src, dest);
+            
+            return id + File.separator + src.getName();
+        } catch (IOException ex) {
+            LogUtil.error(FileUtil.class.getName(), ex, "Failed to copy shared temp file: " + src.getAbsolutePath());
+            return null;
         }
     }
     
