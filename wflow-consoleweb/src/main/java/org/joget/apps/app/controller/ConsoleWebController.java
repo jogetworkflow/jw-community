@@ -9,7 +9,6 @@ import jakarta.servlet.http.HttpSession;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.collections.map.ListOrderedMap;
 import org.apache.commons.io.FileUtils;
-import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.commons.lang.StringUtils;
 import org.eclipse.jgit.api.Git;
@@ -6486,28 +6485,6 @@ public class ConsoleWebController {
         }
     }
 
-    @RequestMapping(value = "/json/log/broadcast", method = RequestMethod.POST)
-    public void broadcast(HttpServletRequest httpRequest, Writer writer, @RequestParam(value = "appId") String appId, @RequestParam(value = "profile") String profile, @RequestParam(value = "node") String node) {
-        if (profile != null) {
-            try {
-                HostManager.setCurrentProfile(profile);
-                
-                Setting setting = setupManager.getSettingByProperty(node + "LogToken");
-                if (setting != null) {
-                    String httpToken = httpRequest.getHeader("token");
-                    //validate token
-                    if (setting.getValue().equals(httpToken)){
-                        LogViewerAppender.broadcast(appId, IOUtils.toString(httpRequest.getReader()), node);
-                    }
-                }
-            } catch (Exception e) {
-                //ignore it
-            } finally {
-                HostManager.resetProfile();
-            }
-        }
-    }
-    
      /**
     * Validates an email address and returns the result as a JSON response.
     * This method handles POST requests to the "/api/validateEmail" endpoint. 

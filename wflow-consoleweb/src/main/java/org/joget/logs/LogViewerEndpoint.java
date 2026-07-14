@@ -47,7 +47,9 @@ public class LogViewerEndpoint {
     @OnClose
     public void onClose(Session session) throws IOException {
         try {
-            this.logViewer.close();
+            if (this.logViewer != null) {
+                this.logViewer.close();
+            }
         } finally {
             HostManager.resetProfile();
         }
@@ -58,6 +60,12 @@ public class LogViewerEndpoint {
         if (LogUtil.isDebugEnabled(LogViewerEndpoint.class.getName())) {
             LogUtil.error(LogViewerEndpoint.class.getName(), thr, "");
         }
-        HostManager.resetProfile();
+        try {
+            if (this.logViewer != null) {
+                this.logViewer.close();
+            }
+        } finally {
+            HostManager.resetProfile();
+        }
     }
 }

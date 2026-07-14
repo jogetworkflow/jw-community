@@ -250,25 +250,29 @@ public class UserviewUtil implements ApplicationContextAware, ServletContextAwar
     }
     
     public static Boolean getPermisionResult(JSONObject permissionObj, Map requestParameters, User currentUser) throws JSONException {
-        Boolean isAuthorize = true;
-        if (permissionObj != null && permissionObj.has("className")) {
-            PluginManager pluginManager = (PluginManager) AppUtil.getApplicationContext().getBean("pluginManager");
-            String permissionClassName = permissionObj.getString("className");
-            Permission permission = null;
-            if (permissionClassName != null && !permissionClassName.isEmpty()) {
-                permission = (Permission) pluginManager.getPlugin(permissionClassName);
-            }
-            if (permission != null) {
-                if (permissionObj.has("properties")) {
-                    permission.setProperties(PropertyUtil.getProperties(permissionObj.getJSONObject("properties")));
-                }
-                permission.setRequestParameters(requestParameters);
-                permission.setCurrentUser(currentUser);
-
-                isAuthorize = permission.isAuthorize();
-            }
+        // if no permission plugin is specified in userview, we assume it as allow
+        // return true if permissionObj is null or className does not exist or is empty
+        if (permissionObj == null || !permissionObj.has("className")) {
+            return true;
         }
-        return isAuthorize;
+        String permissionClassName = permissionObj.getString("className");
+        if (permissionClassName.isEmpty()) {
+            return true;
+        }
+
+        // only return false if the plugin is specified but not found in the system
+        PluginManager pluginManager = (PluginManager) AppUtil.getApplicationContext().getBean("pluginManager");
+        Permission permission = (Permission) pluginManager.getPlugin(permissionClassName);
+        if (permission == null) {
+            return false;
+        }
+
+        if (permissionObj.has("properties")) {
+            permission.setProperties(PropertyUtil.getProperties(permissionObj.getJSONObject("properties")));
+        }
+        permission.setRequestParameters(requestParameters);
+        permission.setCurrentUser(currentUser);
+        return permission.isAuthorize();
     }
 
     public static String getManifest(String appId, String userviewId) {

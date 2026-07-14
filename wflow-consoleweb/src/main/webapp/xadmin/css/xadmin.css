@@ -1147,8 +1147,13 @@ a.btn.disabled,fieldset:disabled a.btn {
 .btn.btn.btn-link, .btn.btn.btn-link.focus, .btn.btn.btn-link:focus, .btn.btn.btn-link:active {
     box-shadow:none !important;
 }
+/* Fix for X-Admin filter multiselect-container (Only happens in DX8) */
+span.multiselect-native-select .multiselect-container {
+    top: 100% !important;
+    transform: none !important;
+}
+/* End of Fix */
 /* Fix for analyzer-label located in #main in RTL */
 body.rtl div#page > div#main div#content > div.analyzer-label {
     right: 16px;
 }
-

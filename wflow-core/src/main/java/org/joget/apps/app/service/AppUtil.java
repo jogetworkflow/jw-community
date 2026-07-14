@@ -132,6 +132,8 @@ public class AppUtil implements ApplicationContextAware {
     public static final String PROPERTY_WORKFLOW_VARIABLE = "workflowVariable";
     private static final String UI_SESSION_KEY = "UI_SESSION_KEY";
     private static final String HASH_NO_ESCAPE = "noescape";
+    private static final Pattern HASH_VARIABLE_PATTERN = Pattern.compile("\\#([^#\" ]+)\\.([^#\"]+)\\#");
+    private static final Pattern NESTED_HASH_VARIABLE_PATTERN = Pattern.compile("\\{([^\\{\\}])*\\}");
 
     static ApplicationContext appContext;
     static ThreadLocal currentAssignment = new ThreadLocal();
@@ -761,8 +763,7 @@ public class AppUtil implements ApplicationContextAware {
 
             //parse content
             if (content != null) {
-                Pattern pattern = Pattern.compile("\\#([^#\" ])*\\.([^#\"])*\\#");
-                Matcher matcher = pattern.matcher(content);
+                Matcher matcher = HASH_VARIABLE_PATTERN.matcher(content);
                 Set<String> varList = new HashSet<String>();
                 while (matcher.find()) {
                     varList.add(matcher.group());
@@ -775,15 +776,26 @@ public class AppUtil implements ApplicationContextAware {
                         Map<String, String> pluginPrefixMap = new HashMap<String, String>();
                         for (Plugin p : pluginList) {
                             HashVariablePlugin hashVariablePlugin = (HashVariablePlugin) p;
-                            pluginPrefixMap.put(hashVariablePlugin.getPrefix(), hashVariablePlugin.getClassName());
+                            String pluginPrefix = hashVariablePlugin.getPrefix();
+                            if (pluginPrefix != null && !pluginPrefix.isEmpty()) {
+                                pluginPrefixMap.put(pluginPrefix, p.getClass().getName());
+                            }
                         }
 
                         for (String var : varList) {
-                            String tempVar = var.replaceAll("#", "");
-                            String prefix = tempVar.substring(0, tempVar.indexOf("."));
+                            try {
+                                String tempVar = var.replace("#", "");
+                                int dotIdx = tempVar.indexOf(".");
+                                if (dotIdx <= 0 || dotIdx >= tempVar.length() - 1) {
+                                    continue;
+                                }
+                                String prefix = tempVar.substring(0, dotIdx);
 
-                            String hashVariableClass = pluginPrefixMap.get(prefix);
-                            if (hashVariableClass != null) {
+                                String hashVariableClass = pluginPrefixMap.get(prefix);
+                                if (hashVariableClass == null || hashVariableClass.isEmpty()) {
+                                    continue;
+                                }
+
                                 tempVar = tempVar.replaceFirst(StringUtil.escapeRegex(prefix + "."), "");
 
                                 HashVariablePlugin cachedPlugin = hashVariablePluginCache.get(hashVariableClass);
@@ -791,13 +803,16 @@ public class AppUtil implements ApplicationContextAware {
                                     cachedPlugin = getHashVariablePluginFromRequest(hashVariableClass, appDef);
                                     if (cachedPlugin == null) {
                                         cachedPlugin = (HashVariablePlugin) pluginManager.getPlugin(hashVariableClass);
+                                        if (cachedPlugin == null) {
+                                            continue;
+                                        }
                                         // get default plugin properties
 
                                         if (appDef == null) {
                                             appDef = AppUtil.getCurrentAppDefinition();
                                         }
-                                        PluginDefaultProperties pluginDefaultProperties = AppPluginUtil.getPluginDefaultProperties(cachedPlugin.getClassName(), appDef);
-                                        if (pluginDefaultProperties != null && pluginDefaultProperties.getPluginProperties() != null && pluginDefaultProperties.getPluginProperties().trim().length() > 0) {
+                                        PluginDefaultProperties pluginDefaultProperties = AppPluginUtil.getPluginDefaultProperties(cachedPlugin.getClass().getName(), appDef);
+                                        if (pluginDefaultProperties != null && pluginDefaultProperties.getPluginProperties() != null && !pluginDefaultProperties.getPluginProperties().trim().isEmpty()) {
                                             cachedPlugin.setProperties(PropertyUtil.getPropertiesValueFromJson(pluginDefaultProperties.getPluginProperties()));
                                         }
                                     }
@@ -813,8 +828,7 @@ public class AppUtil implements ApplicationContextAware {
                                 //process nested hash
                                 while (nestedHashVar.contains("{") && nestedHashVar.contains("}")) {
                                     boolean hasMatch = false;
-                                    Pattern nestedPattern = Pattern.compile("\\{([^\\{\\}])*\\}");
-                                    Matcher nestedMatcher = nestedPattern.matcher(nestedHashVar);
+                                    Matcher nestedMatcher = NESTED_HASH_VARIABLE_PATTERN.matcher(nestedHashVar);
                                     while (nestedMatcher.find()) {
                                         hasMatch = true;
 
@@ -824,13 +838,16 @@ public class AppUtil implements ApplicationContextAware {
 
                                         String processedNestedHashValue = processHashVariable(nestedHashString, wfAssignment, escapeFormat, replaceMap, appDef);
 
+                                        String escapedNestedHash = StringUtil.escapeRegex(nestedHash);
+                                        String escapedProcessedNestedHashValue = StringUtil.escapeRegex(processedNestedHashValue);
+
                                         //if being process
                                         if (!nestedHashString.equals(processedNestedHashValue)) {
-                                            tempVar = tempVar.replaceAll(StringUtil.escapeRegex(nestedHash), StringUtil.escapeRegex(processedNestedHashValue));
+                                            tempVar = tempVar.replaceAll(escapedNestedHash, escapedProcessedNestedHashValue);
                                         }
 
-                                        //remove nested hash 
-                                        nestedHashVar = nestedHashVar.replaceAll(StringUtil.escapeRegex(nestedHash), StringUtil.escapeRegex(processedNestedHashValue));
+                                        //remove nested hash
+                                        nestedHashVar = nestedHashVar.replaceAll(escapedNestedHash, escapedProcessedNestedHashValue);
                                     }
                                     if (!hasMatch) {
                                         //no nested hash syntax found
@@ -847,9 +864,10 @@ public class AppUtil implements ApplicationContextAware {
                                     String removeFormatVar = tempVar;
                                     String hashFormat = "";
                                     if (removeFormatVar.contains("?")) {
-                                        hashFormat = tempVar.substring(tempVar.lastIndexOf("?")+1);
+                                        int formatIdx = tempVar.lastIndexOf("?");
+                                        hashFormat = tempVar.substring(formatIdx + 1);
                                         if (!hashFormat.contains("}") && isHashEscapeFormat(hashFormat)) {
-                                            removeFormatVar = tempVar.substring(0, tempVar.lastIndexOf("?"));
+                                            removeFormatVar = tempVar.substring(0, formatIdx);
                                         }
                                     }
 
@@ -857,7 +875,7 @@ public class AppUtil implements ApplicationContextAware {
 
                                     if (value != null) {
                                         //escape based on hash variable
-                                        if (hashFormat != null && !hashFormat.isEmpty()) {
+                                        if (!hashFormat.isEmpty()) {
                                             value = StringUtil.escapeString(value, hashFormat, null);
                                         }
 
@@ -883,9 +901,9 @@ public class AppUtil implements ApplicationContextAware {
                                 } catch (CircularReferencedHashVariableException |
                                          HashVariableRecursionDepthException circularRefEx) {
                                     LogUtil.warn(AppUtil.class.getName(), circularRefEx.getMessage());
-                                } catch (Exception e) {
-                                    LogUtil.error(AppUtil.class.getName(), e, "Error processing hash variable " + var);
                                 }
+                            } catch (Exception e) {
+                                LogUtil.error(AppUtil.class.getName(), e, "Error processing hash variable " + var);
                             }
                         }
                     }

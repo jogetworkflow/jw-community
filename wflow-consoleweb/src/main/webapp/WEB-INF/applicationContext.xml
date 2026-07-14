@@ -57,7 +57,6 @@
         <security:intercept-url pattern="/web/json/workflow/assignment/**" access="hasAnyRole('ROLE_ADMIN', 'ROLE_APP_DESIGNER', 'ROLE_USER', 'ROLE_ANONYMOUS', 'ROLE_SYSTEM_MANAGER', 'ROLE_APP_CREATOR')"/>
         <security:intercept-url pattern="/web/json/apps/published/userviews" access="hasAnyRole('ROLE_ADMIN', 'ROLE_APP_DESIGNER', 'ROLE_USER', 'ROLE_ANONYMOUS', 'ROLE_SYSTEM_MANAGER', 'ROLE_APP_CREATOR')"/>
         <security:intercept-url pattern="/web/json/apps/published/processes" access="hasAnyRole('ROLE_ADMIN', 'ROLE_APP_DESIGNER', 'ROLE_USER', 'ROLE_ANONYMOUS', 'ROLE_SYSTEM_MANAGER', 'ROLE_APP_CREATOR')"/>
-        <security:intercept-url pattern="/web/json/log/broadcast" access="hasAnyRole('ROLE_ADMIN', 'ROLE_APP_DESIGNER',  'ROLE_USER', 'ROLE_ANONYMOUS', 'ROLE_SYSTEM_MANAGER', 'ROLE_APP_CREATOR')"/>
 
         <!-- Javascript API paths: JS API invokes JSON API, so permissions controlled there  --> 
         <security:intercept-url pattern="/web/js/**"  access="hasAnyRole('ROLE_ADMIN', 'ROLE_APP_DESIGNER', 'ROLE_USER', 'ROLE_ANONYMOUS', 'ROLE_SYSTEM_MANAGER', 'ROLE_APP_CREATOR')"/>

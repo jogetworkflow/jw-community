@@ -107,6 +107,12 @@ body .property-editor-page-button-panel input[type=button]:hover{
 body .property-editor-pages{
     color: #000;
 }
+/* Fix for DX8 Themes filter multiselect-container (Only happens in DX8) */
+span.multiselect-native-select .multiselect-container {
+    top: 100% !important;
+    transform: none !important;
+}
+/* End of Fix */
 body #permissionMenu .main-body-header{
     background: var(--theme-heading-bg, var(--theme-color5,#fff)) !important;
     color: var(--theme-heading-color, var(--theme-color2, #ffffff)) !important;

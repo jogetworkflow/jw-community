@@ -291,6 +291,10 @@ body.rtl .form-check-input {
     margin-top: 0.5rem;
 }
 @media (max-width: 767px) {
+    body.rtl span.multiselect-native-select div.multiselect-container {
+        left: unset !important;
+        right: 0 !important;
+    }
     body .dataList .filters .filter-cell:last-child:after {
         position: relative !important;
         top: -2px !important;
