@@ -5,7 +5,12 @@
 <%@ attribute name="builderTheme" required="false"%>
 <%@ tag import="org.joget.workflow.util.WorkflowUtil"%>
 
-<c:set var="userviewThemeCss" value="<%= AppUtil.getUserviewThemeCss() %>"/>
+<%@ attribute name="includeUserviewThemeCSS" required="false" %>
+<c:choose>
+    <c:when test="${empty includeUserviewThemeCSS}">
+        <c:set var="userviewThemeCss" value="<%= AppUtil.getUserviewThemeCss() %>"/>
+    </c:when>
+</c:choose>
 <c:set var="lang" value="<%= AppUtil.getAppLocale() %>"/>
 <c:set var="systemTheme" value='<%= AppUtil.getSystemTheme() %>'/>
 <c:if test="${empty title}"><c:set var="title"><fmt:message key="console.header.browser.title"/></c:set></c:if>

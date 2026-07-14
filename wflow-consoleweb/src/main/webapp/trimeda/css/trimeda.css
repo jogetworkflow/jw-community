@@ -294,6 +294,7 @@ div#dataList_columnslist tbody span.row_action_inner > a {
     color: var(--primary-text-color) !important;
     border: 1.5px solid var(--field-border-color) !important;
     border-color: var(--field-border-color) !important;
+    box-sizing: border-box;
 }
 
 /* Danger Buttons */
@@ -561,7 +562,7 @@ body.rtl #sidebar .nav > li > ul > li:not(:last-child){
     font-size: 16px;
 }
 
-.mCSB_container.mCS_no_scrollbar_y.mCS_y_hidden {
+.mCSB_container.mCS_no_scrollbar_y.mCS_y_hidden, #sidebar .mCSB_container {
     min-height: 100%;
 }
 

@@ -80,7 +80,7 @@
         css += '.visibilitywrapper .buttons:after{content:""; display:block; clear:both;}';
         css += '.visibilitywrapper .buttons .sort{cursor:move;}';
         css += '.visibilitywrapper table{width:100%;}';
-        css += '.visibilitywrapper .rulerow.pewrapper{background:#edf2f5f2; border-color:#9aafbb; padding:2px 2px 2px 5px;}';
+        css += '.visibilitywrapper .rulerow.pewrapper{background:var(--theme-primary-color-2, #edf2f5); border-color:var(--theme-border-color-2, #9aafbb); padding:2px 2px 2px 5px;}';
         css += '.visibilitywrapper .revert{width: 15px; color:#ccc; cursor:pointer;}';
         css += '.visibilitywrapper .revert.checked{width: 15px; color:red;}';
         css += '.visibilitywrapper a.revert{position: absolute; left: -3px; top: 11px;}';
@@ -91,7 +91,9 @@
         css += '.visibilitywrapper .col_input input, .visibilitywrapper .col_input select{width: 98%;}';
         css += '.visibilitywrapper .conditions-container > .rulerow:first-child > .buttons > .andOr, .visibilitywrapper .conditions-container > .rulerow:first-child > table .andOr {opacity:0.3; pointer-events:none;}';
         css += '.visibilitywrapper .alignright{width: 27px; text-align:left;}';
+        css += 'body.rtl .visibilitywrapper .alignright{text-align:right;}';
         css += '.visibilitywrapper .perow.condition .buttons{position:absolute; top:50%; right:5px; transform: translateY(-50%); z-index:5;}';
+        css += 'body.rtl .visibilitywrapper .perow.condition .buttons{right: unset; left:5px;}';
         
         var html = '<div name="'+thisObj.id+'" class="visibilitywrapper pewrapper"><div class="buttons"><a class="addcondition"><i class="fas fa-plus-circle"></i> @@app.rulesdecision.addCondition@@</a>&nbsp;&nbsp;<a class="addgroup"><i class="fas fa-plus-circle"></i> @@app.rulesdecision.addGroup@@</a></div><div class="conditions-container"></div></div>';
         

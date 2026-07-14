@@ -929,11 +929,18 @@ body .filter_form:not(.popup) .filters .filter-cell .multiselect-container .mult
         padding:0 !important;
         overflow:hidden;
     }
+    .rtl .dataList .swipeActions > .rowActionsContainer {
+        right: unset;
+        left: 0;
+    }
     .dataList .swipeActions > .rowActionsContainer > .rowActions {
         transform: translateX(101%);
         height: 100%;
         font-size: 0px;
         display: flex;
+    }
+    .rtl .dataList .swipeActions > .rowActionsContainer > .rowActions {
+        transform: translate(-101%);
     }
     .dataList .swipeActions > .rowActionsContainer > .rowActions > a{
         height: 100%;
@@ -943,6 +950,7 @@ body .filter_form:not(.popup) .filters .filter-cell .multiselect-container .mult
         align-items: center;
         justify-content: center;
         border-radius: 0px;
+        column-gap: 5px;
     }
     .dataList .swipeActions * {
         transition: transform 0.5s ease-in-out;

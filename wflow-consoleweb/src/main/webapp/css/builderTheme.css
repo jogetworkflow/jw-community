@@ -1024,6 +1024,10 @@ body[builder-theme] .chosen-container .chosen-results li {
     margin: 0 3px;
     margin-right: 5px;
 }
+body[builder-theme] .chosen-container .chosen-results li.no-results {
+    background: var(--theme-primary-color-3);
+}
+
 body[builder-theme] .chosen-results::-webkit-scrollbar {
     width: 3px;
 }
@@ -1236,7 +1240,7 @@ body[builder-theme] .property-type-selectbox a.builderAddNew {
     color: var(--theme-primary-color-4);
 }
 body[builder-theme] .property-editor-container a:not([class^=chosen]) {
-    opacity: 1;
+    opacity: 0.6;
 }
 body[builder-theme] .editor-panel-mode.narrow:not(.wider) .property-input > table.grid tr:not(.grid_model) {
     border: 1px solid var(--theme-border-color-1);
@@ -1938,7 +1942,7 @@ body[builder-theme].popupBody .button-panel{
     position: fixed;
     bottom: -4px;
     margin-bottom: 0;
-    width: 100%;
+    width: calc(100% - 60px);
     right: 0;
     padding: 15px 30px;
     box-sizing: border-box;
@@ -3415,7 +3419,7 @@ body[builder-theme] .ui-dialog .ui-dialog-buttonpane button{
 }
 body[builder-theme] .pluginConfig .builder-link a.openbuilder, 
 body[builder-theme] .pluginConfig .property-input a.elementHelplink{
-    top: 9px;
+    top: 11px;
 }
 /* Guider Dark Theme */
 body[builder-theme='dark'] .guider {

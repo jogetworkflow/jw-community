@@ -355,6 +355,10 @@ public abstract class DataListTemplate extends ExtDefaultPlugin implements Prope
         }
         template = template.replaceAll(StringUtil.escapeRegex(replace), StringUtil.escapeRegex(value));
         
+        if (template.contains("{{") && template.contains("}}")) {
+            template = fillData(template, data);
+        }
+        
         return template;
     }
     

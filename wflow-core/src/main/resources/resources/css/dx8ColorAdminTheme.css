@@ -282,6 +282,11 @@ div.exportlinks > a span {
     box-shadow: 0 0 2px rgb(0 0 0 / 20%), 0 4px 4px -2px rgb(0 0 0 / 20%);
     text-decoration: none !important;
 }
+
+.ps_progress_container .progress_bar {
+    background: #D6D6D6 !important;
+}
+
 #content main button[class*=button]:not(.accordion-button),
 #content main input[type=button][class*=button]{
     background-color: var(--theme-button-bg, #0d6efd);

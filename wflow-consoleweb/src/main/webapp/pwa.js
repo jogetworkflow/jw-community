@@ -126,6 +126,21 @@ PwaUtil = {
                 }
                 PwaUtil.hideOfflineIndicator();
                 PwaUtil.isOnline = true;
+
+                const previousUrl = localStorage.getItem('previousUrl');
+                const isOfflinePage = window.location.pathname.endsWith('/offline');
+
+                function redirectTo(url) {
+                    window.location.href = url;
+                }
+
+                if (isOfflinePage){
+                    if ($(".x-tab").length > 0) {
+                        redirectTo(`${UI.base}/web/userview/${UI.userview_app_id}/${UI.userview_id}/_/_index`);
+                        return;
+                    }
+                    redirectTo((previousUrl !== null && previousUrl.includes(`${UI.base}/web/userview/${UI.userview_app_id}/${UI.userview_id}`)) ? previousUrl : `${UI.base}/web/userview/${UI.userview_app_id}/${UI.userview_id}`);   
+                }
             });
         });
     },

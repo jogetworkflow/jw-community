@@ -112,6 +112,7 @@ body .editor-cell select:focus:not([readonly]):not([class^=ui]),
 body .editor-cell input.focus,
 body .dropzone:active,
 body .select_checkbox label > [type="checkbox"]:checked + i,
+body form.form-container .form-cell-value > label > input[type=checkbox]:checked + i,
 body label > input[type=checkbox]:checked + i,
 body select:not([class^="ui-"]):focus,
 body .editor-cell select:not([class^="ui-"]):focus,
@@ -131,6 +132,7 @@ body .layui-table-edit:focus {
     border-color: @primaryColor!important
 }
 body .select_checkbox label > [type="checkbox"]:checked + i,
+body form.form-container .form-cell-value > label > input[type=checkbox]:checked + i,
 body label > input[type=checkbox]:checked + i,
 body .chosen-container .chosen-results li.highlighted,
 body .layui-progress-bar,
@@ -147,7 +149,7 @@ body .layui-nav-child dd.layui-this,
 body #form-canvas .page-button-panel .button,
 body #form-canvas .selector_element .selector_button,
 .inbox-notification > a > .badge {
-    background-color: @buttonBackground;
+    background-color: @buttonBackground !important;
 }
 body .layui-tab-brief>.layui-tab-more li.layui-this:after,
 body .layui-tab-brief>.layui-tab-title .layui-this:after {
