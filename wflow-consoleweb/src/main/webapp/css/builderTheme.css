@@ -1942,7 +1942,7 @@ body[builder-theme].popupBody .button-panel{
     position: fixed;
     bottom: -4px;
     margin-bottom: 0;
-    width: calc(100% - 60px);
+    width: 100%;
     right: 0;
     padding: 15px 30px;
     box-sizing: border-box;
