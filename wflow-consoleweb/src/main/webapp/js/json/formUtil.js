@@ -198,86 +198,71 @@ FormUtil = {
         return queryString;
     },
     
-    numberFormat : function (value, options){
+    numberFormat: function(value, options) {
         var numOfDecimal = parseInt(options.numOfDecimal);
-        var decimalSeperator = ".";
-        var regexDecimalSeperator = "\\\.";
+        var decimalSeparator = ".";
+        var regexDecimalSeparator = "\\\.";
         var thousandSeparator = ",";
         var regexThousandSeparator = ",";
-        if(options.format.toUpperCase() === "EURO"){
-            decimalSeperator = ",";
-            regexDecimalSeperator = ",";
+        if (options.format.toUpperCase() === "EURO") {
+            decimalSeparator = ",";
+            regexDecimalSeparator = ",";
             thousandSeparator = ".";
             regexThousandSeparator = "\\\.";
         }
-        
         var number = value.replace(/\s/g, "");
-        number = number.replace(new RegExp(regexThousandSeparator, 'g'), '');
-        number = number.replace(new RegExp(regexDecimalSeperator, 'g'), '.');
-        if(options.prefix !== ""){
+        number = number.replace(new RegExp(regexThousandSeparator,'g'), '');
+        number = number.replace(new RegExp(regexDecimalSeparator,'g'), '.');
+        
+        if (options.prefix !== "") {
             number = number.replace(options.prefix, "");
         }
-        if(options.postfix !== ""){
+        if (options.postfix !== "") {
             number = number.replace(options.postfix, "");
         }
-                
         var exponent = "";
         if (!isFinite(number)) {
             number = 0;
-        } else {
-            number = Number(number);
-            if (numOfDecimal !== null){
+        }
+        number = BigNumber(number);
+
+        // Separate the sign from the number
+        var sign = number.isLessThan(0) ? "-" : "";
+        number = (number.isGreaterThan(0) ? number : number.multipliedBy(-1));
+
+        if (number.isFinite()) {
+            if (numOfDecimal !== null) {
                 number = number.toFixed(numOfDecimal);
             } else {
                 number = number.toFixed(0);
             }
-            
-            var numberstr = number.toString();
-            var eindex = numberstr.indexOf("e");
-            if (eindex > -1){
-                exponent = numberstr.substring(eindex);
-                number = parseFloat(numberstr.substring(0, eindex));
-            }
+        }
 
-            if (numOfDecimal !== null){
-                var temp = Math.pow(10, numOfDecimal);
-                number = Math.round(number * temp) / temp;
-            }
+        // Initialize the format to use
+        var fmt = {
+            decimalSeparator: decimalSeparator,
+            groupSeparator: (options.useThousandSeparator.toUpperCase() === "TRUE") ? thousandSeparator : "",
+            groupSize: 3
         }
         
-        var sign = number < 0 ? "-" : "";
-        
-        var integer = (number > 0 ? Math.floor (number) : Math.abs (Math.ceil (number))).toString ();
-        var fractional = number.toString ().substring (integer.length + sign.length);
-        fractional = numOfDecimal !== null && numOfDecimal > 0 || fractional.length > 1 ? (decimalSeperator + fractional.substring (1)) : "";
-        if(numOfDecimal !== null && numOfDecimal > 0){
-            for (i = fractional.length - 1, z = numOfDecimal; i < z; ++i){
-                fractional += "0";
-            }
-        }
-        
-        if(options.useThousandSeparator.toUpperCase() === "TRUE"){
-            for (i = integer.length - 3; i > 0; i -= 3){
-                integer = integer.substring (0 , i) + thousandSeparator + integer.substring (i);
-            }
-        }
-        
+        // Format the number to the desired format
+        number = BigNumber(number).toFormat(numOfDecimal ? numOfDecimal : 0, fmt);
+
         var resultString = "";
-        if(sign !== ""){
+        if (sign !== "") {
             resultString += sign;
         }
-        if(options.prefix !== ""){
+        if (options.prefix !== "") {
             resultString += options.prefix + ' ';
         }
-        resultString += integer + fractional;
-        if(exponent !== ""){
+        resultString += number;
+        if (exponent !== "") {
             resultString += ' ' + exponent;
         }
-        if(options.postfix !== ""){
+        if (options.postfix !== "") {
             resultString += ' ' + options.postfix;
         }
-        
-        return  resultString;
+        return resultString;
     },
     
     populateTooltip : function(tooltips) {

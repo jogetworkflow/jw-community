@@ -6646,17 +6646,17 @@ window._CustomBuilder.Builder = {
                             //check the element is already move into the drop area, else the page will auto scroll to top
                             if ($(self.dragElement).closest('[data-cbuilder-'+parentContainerAttr+']').length > 0) {
                                 //check if the drag element is visible in the canvas
-                                if (dragLeft < scrollHMin) {
+                                if (dragLeft < scrollHMin && $(self.dragElement).width() <= $(self.iframe).width()) {
                                     $(self.frameDoc).scrollLeft(dragLeft);
                                 }
-                                if (dragRight > scrollHMax) {
+                                if (dragRight > scrollHMax && $(self.dragElement).width() <= $(self.iframe).width()) {
                                     $(self.frameDoc).scrollLeft(scrollHMin + (dragRight - scrollHMax) + $(self.dragElement).width());
                                 }
                                 if (dragTop < scrollVMin) {
                                     $(self.frameDoc).scrollTop(dragTop);
                                 }
                                 if (dragBottom > scrollVMax) {
-                                    $(self.frameDoc).scrollTop(scrollVMin + (dragBottom - scrollHMax) + $(self.dragElement).height());
+                                    $(self.frameDoc).scrollTop(scrollVMin + (dragBottom - scrollVMax) + $(self.dragElement).height());
                                 }
                             }
                         }

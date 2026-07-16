@@ -140,6 +140,14 @@
                                     </fileset>
                                 </unzip>
 
+                                <!-- Remove Tomcat sample apps and set ROOT to redirect to /jw -->
+                                <delete dir="target/apache-tomcat-${tomcat.version}/webapps/docs" />
+                                <delete dir="target/apache-tomcat-${tomcat.version}/webapps/examples" />
+                                <delete dir="target/apache-tomcat-${tomcat.version}/webapps/host-manager" />
+                                <delete dir="target/apache-tomcat-${tomcat.version}/webapps/manager" />
+                                <move file="target/apache-tomcat-${tomcat.version}/webapps/ROOT/index.jsp" tofile="target/apache-tomcat-${tomcat.version}/webapps/ROOT/index_orig.jsp" />
+                                <copy file="src/main/resources/tomcat-root-index.jsp" tofile="target/apache-tomcat-${tomcat.version}/webapps/ROOT/index.jsp" overwrite="true" />
+
                                 <copy flatten="true" todir="target/apache-tomcat-${tomcat.version}/webapps">
                                     <fileset dir="../wflow-consoleweb/">
                                         <include name="*/jw.war" />

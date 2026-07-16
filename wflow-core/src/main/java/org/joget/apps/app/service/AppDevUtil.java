@@ -2497,6 +2497,9 @@ public class AppDevUtil {
                             }
                         }
                     }
+                } else {
+                    // plugins may not be synced yet
+                    requireUpdate = true;
                 }
             } catch (Exception e) {
                 LogUtil.error(AppDevUtil.class.getName(), e, "");
@@ -2507,8 +2510,15 @@ public class AppDevUtil {
                 try {
                     //sync it and commit
                     GitCommitHelper gitCommitHelper = getGitCommitHelper(appDef);
-                    AppDevUtil.syncAppPlugins(appDef);
-                    AppDevUtil.gitPullAndCommit(appDef, gitCommitHelper.getGit(), gitCommitHelper.getWorkingDir(), gitCommitHelper.getCommitMessage());
+                    if (gitCommitHelper != null) {
+                        gitCommitHelper.init();
+                        AppDevUtil.syncAppPlugins(appDef);
+                        String msg = gitCommitHelper.getCommitMessage();
+                        if (!(msg == null || msg.trim().isEmpty())) {
+//                            msg = "Update app plugins " + appDef.getId();
+                            AppDevUtil.gitPullAndCommit(appDef, gitCommitHelper.getGit(), gitCommitHelper.getWorkingDir(), msg);
+                        }
+                    }
                 } catch (Exception e) {
                     LogUtil.error(AppDevUtil.class.getName(), e, "");
                 }
@@ -2518,13 +2528,20 @@ public class AppDevUtil {
                 File projectDir = AppDevUtil.dirSetup(baseDir, projectDirName);
                 String targetDirName = "plugins";
                 File targetDir = new File(projectDir, targetDirName);
-                if (targetDir.exists()) {
-                    File[] files = targetDir.listFiles();
-                    if (files != null) {
-                        for (File file : files)
-                        {
-                            plugins.add(file.getName());
-                        }
+                // syncAppPlugins detects changes by diffing the temporary working repo (populated from
+                // HEAD) against HEAD, so a plugins folder removed from the working tree by accident -
+                // while still committed in Git history - produces no diff and is never rewritten. When the
+                // folder is still missing (or empty) after the sync, restore it directly from HEAD so the
+                // export picks it up. This is a no-op when HEAD has no plugins folder.
+                File[] files = targetDir.exists() ? targetDir.listFiles() : null;
+                if (files == null || files.length == 0) {
+                    AppDevUtil.restoreWorkingDirPluginsFromHead(appDef);
+                    files = targetDir.exists() ? targetDir.listFiles() : null;
+                }
+                if (files != null) {
+                    for (File file : files)
+                    {
+                        plugins.add(file.getName());
                     }
                 }
             }
@@ -2558,7 +2575,39 @@ public class AppDevUtil {
         }
         return plugins;
     }
-    
+
+    /**
+     * Recovers the working-tree "plugins" folder of the local app repository from its committed HEAD
+     * state. Plugin sync detects changes by diffing the temporary working repo (populated from HEAD)
+     * against HEAD, so a plugins folder that was removed from the working tree by accident - while
+     * still present in Git history - produces no diff and is never rewritten by syncAppPlugins. A
+     * plain path checkout restores it without needing a commit. No-op when HEAD has no plugins folder.
+     *
+     * @return {@code true} if the checkout was attempted successfully
+     */
+    protected static boolean restoreWorkingDirPluginsFromHead(AppDefinition appDef) {
+        try {
+            GitCommitHelper gitCommitHelper = getGitCommitHelper(appDef);
+            if (gitCommitHelper == null) {
+                return false;
+            }
+            gitCommitHelper.init();
+            Git localGit = gitCommitHelper.getLocalGit();
+            if (localGit == null || localGit.getRepository().resolve("HEAD") == null) {
+                return false;
+            }
+            localGit.checkout()
+                    .setStartPoint("HEAD")
+                    .addPath("plugins")
+                    .call();
+            LogUtil.debug(AppDevUtil.class.getName(), "Restored plugins folder from HEAD for " + appDef.getAppId());
+            return true;
+        } catch (Exception e) {
+            LogUtil.debug(AppDevUtil.class.getName(), "Unable to restore plugins folder from HEAD for " + appDef.getAppId() + ": " + e.getMessage());
+            return false;
+        }
+    }
+
     public static String cleanForCompare(String xpdl) {
         xpdl = xpdl.replace("\r", "").replace("\n", "");
         xpdl = xpdl.trim();
