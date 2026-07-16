@@ -633,6 +633,14 @@ body[builder-theme] button {
   height: fit-content;
 }
 
+/* the JS theme fixes .cm-line height to 1.5em, which makes long wrapped lines
+   (e.g. custom CSS/HTML property values in the JSON definition view) overflow
+   and paint over the lines below; lines must be able to grow when wrapped */
+.cm-editor .cm-line {
+  height: auto !important;
+  min-height: 1.5em;
+}
+
 .code-editor .cm-scroller {
     min-height: 300px;
     height: fit-content;
