@@ -2243,6 +2243,8 @@ PropertyEditor.Model.Page.prototype = {
             $.each(this.properties.properties, function(i, property) {
                 if (property.name === 'readonly') {
                     page.handleReadonlyProperty(property);
+                } else if (property.name === 'readonlyLabel') {
+                    page.handleReadonlyLabelProperty(property);
                 }
                 html += page.renderProperty(i, "", property);
             });
@@ -2253,12 +2255,16 @@ PropertyEditor.Model.Page.prototype = {
         if (property.type === 'checkbox') {
             property.label = get_advtool_msg("adv.permission.writePermission");
             property.type = "selectbox";
+            var prevValue = (property.options && property.options[0]) ? property.options[0].value : "true";
             property.options = [
                 { label: '', value: '' },
                 { label: get_advtool_msg("adv.permission.readonly"), value: 'readonly' },
-                { label: get_advtool_msg("adv.permission.disabled"), value: 'true' }
+                { label: get_advtool_msg("adv.permission.disabled"), value: prevValue }
             ];
         }
+    },
+    handleReadonlyLabelProperty: function(property){
+        property.label = get_advtool_msg("adv.permission.readonlyLabel");
     },
     renderProperty: function(i, prefix, property) {
         var type = property.propertyEditorObject;

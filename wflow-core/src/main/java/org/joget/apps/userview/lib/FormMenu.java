@@ -442,8 +442,11 @@ public class FormMenu extends UserviewMenu implements PwaOfflineValidation {
         }
 
         // set form to read-only if required
-        Boolean readonly = "Yes".equalsIgnoreCase(getPropertyString("readonly"));
-        
+        // Write Permission: "Yes" = disabled (DB-protected, version 1), "readonly" = readonly (UI only but persistable, version 2)
+        String writePermission = getPropertyString("readonly");
+        Boolean readonly = "Yes".equalsIgnoreCase(writePermission) || "readonly".equalsIgnoreCase(writePermission);
+        int readonlyVersion = "readonly".equalsIgnoreCase(writePermission) ? 2 : 1;
+
         //check if the edit button is click
         if (readonly && formData.getRequestParameter("_enonce") != null && SecurityUtil.verifyNonce(formData.getRequestParameter("_enonce"), new String[] {getUrl(), formData.getPrimaryKeyValue()})) {
             readonly = false;
@@ -451,7 +454,7 @@ public class FormMenu extends UserviewMenu implements PwaOfflineValidation {
         }
         
         if (readonly || readonlyLabel) {
-            FormUtil.setReadOnlyProperty(form, readonly, readonlyLabel);
+            FormUtil.setReadOnlyProperty(form, readonly, readonlyLabel, readonlyVersion);
         }
         
         //add edit button only when there is primary key
@@ -544,7 +547,8 @@ public class FormMenu extends UserviewMenu implements PwaOfflineValidation {
     @Override
     public Map<WARNING_TYPE, String[]> validation() {
         WARNING_TYPE type = WARNING_TYPE.SUPPORTED;
-        if ("yes".equalsIgnoreCase(getPropertyString("readonly"))) {
+        String writePermission = getPropertyString("readonly");
+        if ("yes".equalsIgnoreCase(writePermission) || "readonly".equalsIgnoreCase(writePermission)) {
             type = WARNING_TYPE.READONLY;
         }
         

@@ -38,12 +38,20 @@
     },
     {
         name : 'readonly',
-        label : '@@userview.formmenu.readonly@@',
-        type : 'checkbox',
-        value : 'No',
+        label : '@@userview.formmenu.writePermission@@',
+        type : 'selectbox',
+        value : '',
         options : [{
-            value : 'Yes',
+            value : '',
             label : ''
+        },
+        {
+            value : 'readonly',
+            label : '@@userview.formmenu.readonly@@'
+        },
+        {
+            value : 'Yes',
+            label : '@@userview.formmenu.disabled@@'
         }]
     },
     {
