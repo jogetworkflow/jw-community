@@ -32,45 +32,56 @@ public class VisibilityControlUtil {
             FormData formData,
             Map<String, Element> controlElementsMap) {
 
-        List<Map<String, String>> rules = new ArrayList<Map<String, String>>();
-        Form rootForm = FormUtil.findRootForm(element);
-        boolean isSection = element instanceof Section;
-
-        if (isSection) {
-            Collection<Map<String, String>> legacyRules = parseLegacyVisibilityRules(
-                    element, rootForm, formData, controlElementsMap);
-            rules.addAll(legacyRules);
+        // Guard against re-entrancy: resolving a control field nested inside this element can loop back
+        // into parseVisibilityRules for the same element
+        if (formData != null && !formData.addVisibilityRulesParsingInProgress(element)) {
+            return new ArrayList<Map<String, String>>();
         }
+        try {
+            List<Map<String, String>> rules = new ArrayList<Map<String, String>>();
+            Form rootForm = FormUtil.findRootForm(element);
+            boolean isSection = element instanceof Section;
 
-        Object visibilityRulesObj = element.getProperty("visibility_rules");
-        if (visibilityRulesObj != null && rootForm != null) {
-            Collection<Map<String, String>> formRules = parseVisibilityRulesFromForm(
-                    element, rootForm, formData, controlElementsMap, visibilityRulesObj);
-
-            // If Section has both own visibility and applied rules, combine with OR
-            if (!rules.isEmpty() && !formRules.isEmpty()) {
-                // Wrap existing rules in parentheses
-                Map<String, String> openParen = new HashMap<String, String>();
-                openParen.put("field", "(");
-                openParen.put("join", "");
-                rules.add(0, openParen);
-
-                Map<String, String> closeParen = new HashMap<String, String>();
-                closeParen.put("field", ")");
-                closeParen.put("join", "");
-                rules.add(closeParen);
-
-                // Add OR before form rules
-                if (!formRules.isEmpty()) {
-                    Map<String, String> firstFormRule = formRules.iterator().next();
-                    firstFormRule.put("join", "or");
-                }
+            if (isSection) {
+                Collection<Map<String, String>> legacyRules = parseLegacyVisibilityRules(
+                        element, rootForm, formData, controlElementsMap);
+                rules.addAll(legacyRules);
             }
 
-            rules.addAll(formRules);
-        }
+            Object visibilityRulesObj = element.getProperty("visibility_rules");
+            if (visibilityRulesObj != null && rootForm != null) {
+                Collection<Map<String, String>> formRules = parseVisibilityRulesFromForm(
+                        element, rootForm, formData, controlElementsMap, visibilityRulesObj);
 
-        return rules;
+                // If Section has both own visibility and applied rules, combine with OR
+                if (!rules.isEmpty() && !formRules.isEmpty()) {
+                    // Wrap existing rules in parentheses
+                    Map<String, String> openParen = new HashMap<String, String>();
+                    openParen.put("field", "(");
+                    openParen.put("join", "");
+                    rules.add(0, openParen);
+
+                    Map<String, String> closeParen = new HashMap<String, String>();
+                    closeParen.put("field", ")");
+                    closeParen.put("join", "");
+                    rules.add(closeParen);
+
+                    // Add OR before form rules
+                    if (!formRules.isEmpty()) {
+                        Map<String, String> firstFormRule = formRules.iterator().next();
+                        firstFormRule.put("join", "or");
+                    }
+                }
+
+                rules.addAll(formRules);
+            }
+
+            return rules;
+        } finally {
+            if (formData != null) {
+                formData.removeVisibilityRulesParsingInProgress(element);
+            }
+        }
     }
 
     /**

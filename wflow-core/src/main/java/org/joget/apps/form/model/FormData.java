@@ -3,6 +3,7 @@ package org.joget.apps.form.model;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
@@ -35,6 +36,7 @@ public class FormData {
     protected Boolean stay = false;
     protected Map<Element, Map<String, List<Element>>> elementMap = new HashMap<Element, Map<String, List<Element>>>();
     protected boolean elementMapBuildingInProgress = false;
+    protected Set<Element> visibilityRulesParsingInProgress = new HashSet<Element>();
 
     public Boolean getStay() {
         return stay;
@@ -434,5 +436,19 @@ public class FormData {
 
     public void setElementMapBuildingInProgress(boolean elementMapBuildingInProgress) {
         this.elementMapBuildingInProgress = elementMapBuildingInProgress;
+    }
+
+    /**
+     * Marks the element as having its visibility rules currently being parsed, to guard against
+     * re-entrancy when a visibility control field is nested inside the element it controls.
+     * @param element
+     * @return true if newly marked; false if already in progress
+     */
+    public boolean addVisibilityRulesParsingInProgress(Element element) {
+        return visibilityRulesParsingInProgress.add(element);
+    }
+
+    public void removeVisibilityRulesParsingInProgress(Element element) {
+        visibilityRulesParsingInProgress.remove(element);
     }
 }
