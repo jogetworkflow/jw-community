@@ -41,6 +41,7 @@
                                 UI.blockUI(); 
                                 var callback = {
                                     success : function() {
+                                        UI.unblockUI();
                                         document.location = '${pageContext.request.contextPath}/web/console/monitor/archived';
                                     }
                                 };

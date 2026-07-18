@@ -217,6 +217,7 @@
                 UI.blockUI(); 
                 var callback = {
                     success : function() {
+                        UI.unblockUI();
                         document.location = '${pageContext.request.contextPath}/web/console/directory/orgs';
                     }
                 }
@@ -235,6 +236,7 @@
                 UI.blockUI(); 
                 var callback = {
                     success : function() {
+                        UI.unblockUI();
                         document.location = '${pageContext.request.contextPath}/web/console/directory/org/view/${organization.id}';
                     }
                 }
@@ -253,6 +255,7 @@
                 UI.blockUI(); 
                 var callback = {
                     success : function() {
+                        UI.unblockUI();
                         document.location = '${pageContext.request.contextPath}/web/console/directory/org/view/${organization.id}';
                     }
                 }
@@ -271,6 +274,7 @@
                 UI.blockUI(); 
                 var callback = {
                     success : function() {
+                        UI.unblockUI();
                         document.location = '${pageContext.request.contextPath}/web/console/directory/org/view/${organization.id}';
                     }
                 }

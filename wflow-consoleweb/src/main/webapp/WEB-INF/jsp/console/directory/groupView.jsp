@@ -110,6 +110,7 @@
                     UI.blockUI(); 
                 var callback = {
                     success : function() {
+                        UI.unblockUI();
                         document.location = '${pageContext.request.contextPath}/web/console/directory/group/view/${group.id}';
                     }
                 }
@@ -126,6 +127,7 @@
                 UI.blockUI(); 
                 var callback = {
                     success : function() {
+                        UI.unblockUI();
                         document.location = '${pageContext.request.contextPath}/web/console/directory/groups';
                     }
                 }

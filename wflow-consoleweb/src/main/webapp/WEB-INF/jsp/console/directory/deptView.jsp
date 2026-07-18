@@ -118,6 +118,7 @@
                        hrefQuery="false"
                        hrefDialog="slideout"
                        checkbox="${!isCustomDirectoryManager}"
+                       checkboxId="user.id"
                        checkboxButton1="console.directory.department.user.assign.label"
                        checkboxCallback1="assignUsers"
                        checkboxOptional1="true"
@@ -188,6 +189,7 @@
                 UI.blockUI();
                 var callback = {
                     success : function() {
+                        UI.unblockUI();
                         document.location = '${pageContext.request.contextPath}/web/console/directory/dept/view/${department.id}';
                     }
                 }
@@ -204,6 +206,7 @@
                 UI.blockUI();
                 var callback = {
                     success : function() {
+                        UI.unblockUI();
                         document.location = '${pageContext.request.contextPath}/web/console/directory/org/view/${department.organization.id}';
                     }
                 }
@@ -220,6 +223,7 @@
                 UI.blockUI();
                 var callback = {
                     success : function() {
+                        UI.unblockUI();
                         document.location = '${pageContext.request.contextPath}/web/console/directory/org/view/${department.organization.id}';
                     }
                 }
@@ -236,6 +240,7 @@
                 UI.blockUI(); 
                 var callback = {
                     success : function() {
+                        UI.unblockUI();
                         document.location = '${pageContext.request.contextPath}/web/console/directory/dept/view/${department.id}';
                     }
                 }

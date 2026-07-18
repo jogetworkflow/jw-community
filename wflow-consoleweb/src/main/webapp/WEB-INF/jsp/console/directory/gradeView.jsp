@@ -95,6 +95,9 @@
     $(document).ready(function(){
         $('#JsonUserDataTable_searchTerm').hide();
 
+        $('div#JsonUserDataTable_userList-buttons > button').eq(0).addClass("console-primary");
+        $('div#JsonUserDataTable_userList-buttons > button').eq(1).addClass("console-danger");
+
         <c:if test="${isCustomDirectoryManager || grade.readonly}">
             $('#main-action-buttons').remove();
             $('#JsonUserDataTable_userList-buttons').remove();
@@ -123,6 +126,7 @@
                 UI.blockUI(); 
                 var callback = {
                     success : function() {
+                        UI.unblockUI();
                         document.location = '${pageContext.request.contextPath}/web/console/directory/org/view/${grade.organization.id}';
                     }
                 }
@@ -139,6 +143,7 @@
                 UI.blockUI(); 
                 var callback = {
                     success : function() {
+                        UI.unblockUI();
                         document.location = '${pageContext.request.contextPath}/web/console/directory/grade/view/${grade.id}';
                     }
                 }
