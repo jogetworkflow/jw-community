@@ -175,11 +175,11 @@ public class DataListExcelWriterTest {
 
     @Test
     public void prefix_NumericRemainsNumeric() {
-        writeAndAssertNumeric("RM 1,234", 1234.0, "\"RM\"#,##0");
-        writeAndAssertNumeric("US$ 1,234.50", 1234.50, "\"US$\"#,##0.00");
-        writeAndAssertNumeric("\u20AC 1.234,50", 1234.50,"\"\u20AC\"#,##0.00");
+        writeAndAssertNumeric("RM 1,234", 1234.0, "\"RM \"#,##0");
+        writeAndAssertNumeric("US$ 1,234.50", 1234.50, "\"US$ \"#,##0.00");
+        writeAndAssertNumeric("\u20AC 1.234,50", 1234.50,"\"\u20AC \"#,##0.00");
         // Prefix also resolves Euro-millions ambiguity
-        writeAndAssertNumeric("RM 123.123.123", 123123123.0, "\"RM\"#,##0");
+        writeAndAssertNumeric("RM 123.123.123", 123123123.0, "\"RM \"#,##0");
     }
 
     // =========================================================================
@@ -189,13 +189,13 @@ public class DataListExcelWriterTest {
     @Test
     public void postfix_NumericRemainsNumeric() {
         // Postfix is stored as a literal string in the format — NOT percentage scaling
-        writeAndAssertNumeric("1,234 %", 1234.0, "#,##0\"%\"");
-        writeAndAssertNumeric("1,234.50 %", 1234.50, "#,##0.00\"%\"");
+        writeAndAssertNumeric("1,234 %", 1234.0, "#,##0\" %\"");
+        writeAndAssertNumeric("1,234.50 %", 1234.50, "#,##0.00\" %\"");
     }
 
     @Test
     public void prefixAndPostfix_Combined() {
-        writeAndAssertNumeric("RM 1,234.50 %", 1234.50, "\"RM\"#,##0.00\"%\"");
+        writeAndAssertNumeric("RM 1,234.50 %", 1234.50, "\"RM \"#,##0.00\" %\"");
     }
 
     // =========================================================================
@@ -291,7 +291,7 @@ public class DataListExcelWriterTest {
     @Test
     public void formDecimalPoint3_EuroStyle_WithContext_IsThouand() {
         // Prefix provides unambiguous Euro context even without explicit preference
-        writeAndAssertNumeric("RM 1.000", 1000.0, "\"RM\"#,##0");
+        writeAndAssertNumeric("RM 1.000", 1000.0, "\"RM \"#,##0");
     }
 
     // =========================================================================
@@ -310,7 +310,7 @@ public class DataListExcelWriterTest {
     @Test
     public void negativeWithPrefix() {
         // E.g. "RM -1,234"
-        writeAndAssertNumeric("RM -1,234", -1234.0, "\"RM\"#,##0");
+        writeAndAssertNumeric("RM -1,234", -1234.0, "\"RM \"#,##0");
     }
 
     // =========================================================================
@@ -419,7 +419,7 @@ public class DataListExcelWriterTest {
         Object[] r = writer.parseNumericValue("RM 1,234", null);
         assertNotNull(r);
         assertEquals(1234.0, (Double) r[0], 0.0001);
-        assertEquals("\"RM\"#,##0", r[1]);
+        assertEquals("\"RM \"#,##0", r[1]);
     }
 
     @Test
@@ -427,7 +427,7 @@ public class DataListExcelWriterTest {
         Object[] r = writer.parseNumericValue("1,234 %", null);
         assertNotNull(r);
         assertEquals(1234.0, (Double) r[0], 0.0001);
-        assertEquals("#,##0\"%\"", r[1]);
+        assertEquals("#,##0\" %\"", r[1]);
     }
 
     @Test

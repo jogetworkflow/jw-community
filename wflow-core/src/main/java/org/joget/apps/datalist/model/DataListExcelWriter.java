@@ -18,6 +18,7 @@ import org.apache.poi.xssf.streaming.SXSSFWorkbook;
 import org.apache.poi.xssf.usermodel.XSSFCellStyle;
 import org.apache.poi.xssf.usermodel.XSSFColor;
 import org.apache.poi.xssf.usermodel.XSSFRichTextString;
+import org.joget.commons.util.LogUtil;
 
 /**
  * A utility class used to create table in Excel for datalist excel export
@@ -179,9 +180,12 @@ public class DataListExcelWriter {
             String str        = escapeColumnValue(value);
             String preference = colPreferences.get(cell.getColumnIndex());
             Object[] parsed   = parseNumericValue(str, preference);
-            if (parsed != null) {
+            XSSFCellStyle formatStyle = (parsed != null)
+                                        ? getOrCreateFormatStyle((String) parsed[1])
+                                        : null;
+            if (formatStyle != null) {
                 cell.setCellValue((Double) parsed[0]);
-                cell.setCellStyle(getOrCreateFormatStyle((String) parsed[1]));
+                cell.setCellStyle(formatStyle);
             } else {
                 cell.setCellValue(new XSSFRichTextString(str));
             }
@@ -238,9 +242,11 @@ public class DataListExcelWriter {
         int numStart = (firstDigit > 0 && s.charAt(firstDigit - 1) == '-')
                        ? firstDigit - 1 : firstDigit;
 
-        String  prefix = s.substring(0, numStart).trim();
+        // Do not trim: keep the original spacing (e.g. "RM 123") so the
+        // formatted cell displays exactly like the source value
+        String  prefix = s.substring(0, numStart);
         String  num = s.substring(numStart, lastDigit + 1);
-        String  suffix = s.substring(lastDigit + 1).trim();
+        String  suffix = s.substring(lastDigit + 1);
         boolean hasContext = !prefix.isEmpty() || !suffix.isEmpty();
 
         // Embedded spaces inside the number part make it unparseable
@@ -336,15 +342,37 @@ public class DataListExcelWriter {
         return sb.toString();
     }
 
-    /** 
-     * Return a cached (or newly created) cell style for the given format code. 
+    /**
+     * .xlsx allows at most 250 custom data formats per workbook. Prefix/suffix
+     * text is embedded in the format code, so highly varied data (e.g. reference
+     * numbers) can otherwise generate an unbounded number of formats.
+     */
+    private static final int MAX_CUSTOM_FORMATS = 200;
+
+    /** Ensures the format-limit warning is only logged once per export. */
+    private boolean formatLimitWarned = false;
+
+    /**
+     * Return a cached (or newly created) cell style for the given format code,
+     * or {@code null} when the workbook format limit has been reached — the
+     * caller should then fall back to writing the value as text.
      */
     private XSSFCellStyle getOrCreateFormatStyle(String format) {
-        return formatStyles.computeIfAbsent(format, f -> {
-            XSSFCellStyle style = (XSSFCellStyle) wb.createCellStyle();
-            style.setDataFormat(wb.createDataFormat().getFormat(f));
-            return style;
-        });
+        XSSFCellStyle style = formatStyles.get(format);
+        if (style == null) {
+            if (formatStyles.size() >= MAX_CUSTOM_FORMATS) {
+                if (!formatLimitWarned) {
+                    formatLimitWarned = true;
+                    LogUtil.warn(getClass().getName(), "Custom number format limit of " + MAX_CUSTOM_FORMATS
+                            + " reached; remaining formatted values will be written as plain text");
+                }
+                return null;
+            }
+            style = (XSSFCellStyle) wb.createCellStyle();
+            style.setDataFormat(wb.createDataFormat().getFormat(format));
+            formatStyles.put(format, style);
+        }
+        return style;
     }
 
     /**
