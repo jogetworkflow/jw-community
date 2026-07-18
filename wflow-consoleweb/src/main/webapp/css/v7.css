@@ -1792,6 +1792,41 @@ pre#code_detail {
         text-align: left;
         background: transparent;
         color:#535353;
+        border-radius: 0;
+        margin-bottom: 0;
+        padding-top: 10px;
+        padding-bottom: 10px;
+        transform: none;
+        transition:none;
+    }
+    #main-action-buttons.buttongroup li button:before{
+        transition:none;
+    }
+    #main-action-buttons.buttongroup li button:hover{
+        color:#fff;
+        background: #439cfd !important;
+    }
+    #main-action-buttons.buttongroup li button:focus{
+        color:#fff;
+        background: #007bff !important;
+        transition:none;
+        transform:none;
+    }
+    #main-action-buttons.buttongroup li button[onclick*="Delete"]:hover,
+    #main-action-buttons.buttongroup li button[onclick*="deleteVersion"]:hover{
+        background: #ff7875 !important;
+    }
+    #main-action-buttons.buttongroup li button[onclick*="Delete"]:focus,
+    #main-action-buttons.buttongroup li button[onclick*="deleteVersion"]:focus{
+        background: #ff4d4f !important;
+    }
+    #main-action-buttons.buttongroup li button[onclick*="Delete"]:before,
+    #main-action-buttons.buttongroup li button[onclick*="deleteVersion"]:before{
+        background: #ff4d4f !important;
+    }
+    #main-action-buttons.buttongroup li:last-child button:hover,
+    #main-action-buttons.buttongroup li:last-child button:focus{
+        border-radius: 0px 0px 5px 5px;
     }
     #main-action-buttons.buttongroup .moreaction{
         display: inline-block;
@@ -1801,6 +1836,11 @@ pre#code_detail {
     #main-action-buttons.buttongroup .moreaction a{
         width: 100%;
         box-sizing: border-box;
+    }
+    #main-action-buttons.buttongroup.focus .moreaction a{
+        margin-bottom: 0px;
+        border-radius: 5px 5px 0px 0px;
+        transform: none;
     }
     #main-action-buttons.buttongroup.focus li{
         display: inline-block;
