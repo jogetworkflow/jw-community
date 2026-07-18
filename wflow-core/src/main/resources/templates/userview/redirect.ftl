@@ -5,7 +5,9 @@
         <script type="text/javascript" src="${request.contextPath}/wro/common.js"></script>
         <script type="text/javascript" src="${request.contextPath}/js/sweetAlert2/resources/sweetalert2.min.js" ></script>
         <script>loadCSS("${request.contextPath}/wro/common.css")</script>
-        ${css!}
+        <style type="text/css">
+            ${css!}
+        </style>
         ${js_css_lib!}
     </head>
     <body>
