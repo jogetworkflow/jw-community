@@ -218,6 +218,7 @@ button#filter-btn {
 }
 .console-danger, .dialog-btn-danger, .dialog-btn-danger:focus{
     background: var(--console-button-danger-bg) !important;
+    color: #fff !important;
 }
 .console-danger:hover, .console-danger:active, .console-danger:focus,
 .dialog-btn-danger:hover, .dialog-btn-danger:active{
@@ -2469,8 +2470,13 @@ div#content-container {
     }
     #main-action-buttons.buttongroup.focus {
         box-shadow: 1px 1px 1px rgba(0, 0, 0, .3);
-        border: 1px solid #ccc;
+        border: 1px solid var(--console-border-color);
         border-radius: 10px;
+        gap: 0;
+    }
+    body[system-theme='dark'] #main-action-buttons.buttongroup.focus{
+        box-shadow: none;
+        border-bottom: 1px solid var(--console-border-color) !important;
     }
     #main-action-buttons.buttongroup.focus > li {
         text-align: center;
@@ -2480,9 +2486,35 @@ div#content-container {
     }
     #main-action-buttons.buttongroup li button {
         width: 100%;
-        text-align: left;
-        background: transparent;
-        color:#535353;
+        text-align: left !important;
+        background: transparent !important;
+        color: #535353 !important;
+        color: var(--console-default-font-color) !important;
+        border: none !important;
+        border-radius: 0 !important;
+        margin-bottom: 0;
+        padding-top: 10px !important;
+        padding-bottom: 10px !important;
+        height: 40px !important;
+        transform: none;
+        transition: none;
+    }
+    #main-action-buttons.buttongroup li button:before{
+        transition: none;
+    }
+    #main-action-buttons.buttongroup li button:focus{
+        color: #fff !important;
+        background: var(--console-button-primary-bg-hover) !important;
+        transition: none;
+        transform: none;
+    }
+    #main-action-buttons.buttongroup li button:hover{
+        color: #fff !important;
+        background: var(--console-button-primary-bg-hover) !important;
+    }
+    #main-action-buttons.buttongroup li:last-child button:hover,
+    #main-action-buttons.buttongroup li:last-child button:focus{
+        border-radius: 0px 0px 10px 10px !important;
     }
     #main-action-buttons.buttongroup .moreaction{
         display: inline-block;
@@ -2493,8 +2525,25 @@ div#content-container {
         width: 100%;
         box-sizing: border-box;
     }
+    #main-action-buttons.buttongroup.focus .moreaction a{
+        margin-bottom: 0px;
+        border-radius: 10px 10px 0px 0px !important;
+        transform: none;
+        text-align: left;
+    }
     #main-action-buttons.buttongroup.focus li{
         display: inline-block;
+    }
+    #main-action-buttons.buttongroup li .console-danger:hover, 
+    #main-action-buttons.buttongroup li .console-danger:active,
+    #main-action-buttons.buttongroup li .console-danger:focus,
+    #main-action-buttons.buttongroup li button[onclick*="Delete"]:hover,
+    #main-action-buttons.buttongroup li button[onclick*="deleteVersion"]:hover,
+    #main-action-buttons.buttongroup li button[onclick*="Delete"]:focus,
+    #main-action-buttons.buttongroup li button[onclick*="deleteVersion"]:focus,
+    #main-action-buttons.buttongroup li button[onclick*="Delete"]:active,
+    #main-action-buttons.buttongroup li button[onclick*="deleteVersion"]:active{
+        background: var(--console-button-danger-bg-hover) !important;
     }
 
     /* tabs */

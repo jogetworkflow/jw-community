@@ -99,6 +99,10 @@ body .boxy-wrapper .title-bar {
 body.rtl button:before, body.rtl input[type='button']:before, body.rtl input[type='submit']:before, body.rtl .smallbutton:before, body.rtl .btn:before{
     transform-origin: 100% 50%;
 }
+body.rtl .console-primary > i, body.rtl .console-danger > i, body.rtl .console-secondary > i, body.rtl .console-tertiary > i{
+    margin-left: 5px;
+    margin-right: 0;
+}
 
 /* table */
 body.rtl .flexigrid{
@@ -305,8 +309,9 @@ body.rtl .chosen-rtl.chosen-container:not(.chosen-with-drop) .chosen-drop{
         margin-right: 0;
     }
     /* button */
-    body.rtl #main-action-buttons.buttongroup li button {
-        text-align: right;
+    body.rtl #main-action-buttons.buttongroup li button,
+    body.rtl #main-action-buttons.buttongroup.focus .moreaction a {
+        text-align: right !important;
     }
     /* tabs */
     body.rtl .ui-tabs .ui-tabs-nav li.ui-tabs-active:after {
