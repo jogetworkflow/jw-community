@@ -743,7 +743,7 @@ VisibilityManager = {
         if (appliedRules.length > 0) {
             var $indicator = $(
                 '<span class="rules-indicator">' +
-                    '<i class="las la-eye"></i> ' +
+                    '<i class="las la-list-ul"></i> ' +
                     '<span class="rules-count">' + appliedRules.length + '</span>' +
                     '<div class="rules-tooltip">' +
                         '<div class="rules-tooltip-title">' + get_advtool_msg('adv.visibility.appliedRules') + '</div>' +
