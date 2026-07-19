@@ -2534,7 +2534,8 @@ public class WorkflowManagerImpl implements SharkWorkflowManager {
                 WfActivity wfActivity = wfActivityList[0];
                 Map var = new HashMap();
                 var.put(variableId, variableValue);
-                wfActivity.set_result(var);
+                
+                setActivityVariables(wfActivity, var);
                 
                 // clear cache 
                 WorkflowUtil.writeRequestCache("processId_" + wfActivity.container().key(), null);
@@ -2587,18 +2588,7 @@ public class WorkflowManagerImpl implements SharkWorkflowManager {
             if (wfActivityList.length > 0) {
                 WfActivity wfActivity = wfActivityList[0];
                 
-                Map varMap = wfActivity.container().process_context();
-                if (varMap != null && !varMap.isEmpty()) {
-                    Map<String, String> temp = new HashMap<String, String>();
-                    for (Object k : varMap.keySet()) {
-                        String name = k.toString();
-                        if (variables.containsKey(name)) {
-                            temp.put(name, variables.get(name));
-                        }
-                    }
-                    
-                    wfActivity.set_result(temp);
-                }
+                setActivityVariables(wfActivity, variables);
                 
                 // clear cache 
                 WorkflowUtil.writeRequestCache("processId_" + wfActivity.container().key(), null);
@@ -2612,6 +2602,21 @@ public class WorkflowManagerImpl implements SharkWorkflowManager {
             } catch (Exception e) {
                 LogUtil.error(getClass().getName(), e, "");
             }
+        }
+    }
+    
+    private void setActivityVariables(WfActivity wfActivity, Map<String, String> variables) throws Exception {
+        Map varMap = wfActivity.container().process_context();
+        if (varMap != null && !varMap.isEmpty()) {
+            Map<String, String> temp = new HashMap<String, String>();
+            for (Object k : varMap.keySet()) {
+                String name = k.toString();
+                if (variables.containsKey(name)) {
+                    temp.put(name, variables.get(name));
+                }
+            }
+
+            wfActivity.set_result(temp);
         }
     }
 
@@ -3158,7 +3163,7 @@ public class WorkflowManagerImpl implements SharkWorkflowManager {
                 //variables
                 if (actMap.containsKey("variables")) {
                     Map vars = (Map) actMap.get("variables");
-                    wfActivity.set_result(vars);
+                    setActivityVariables(wfActivity, vars);
                 }
                 
                 //subflow
@@ -4657,7 +4662,7 @@ public class WorkflowManagerImpl implements SharkWorkflowManager {
              * The route also not working correctly too.
              */
             if (variableMap != null && !variableMap.isEmpty()) {
-                activity.set_result(variableMap);
+                setActivityVariables(activity, variableMap);
             }
 
             activity.complete();
@@ -5129,7 +5134,7 @@ public class WorkflowManagerImpl implements SharkWorkflowManager {
             }
 
             _m.put(variableName, c);
-            a.activity().set_result(_m);
+            setActivityVariables(a.activity(), _m);
 
         } catch (Exception ex) {
             LogUtil.error(getClass().getName(), ex, "");
@@ -5164,8 +5169,8 @@ public class WorkflowManagerImpl implements SharkWorkflowManager {
             if (a == null || !JSPClientUtilities.isMine(sc, a)) {
                 throw new Exception("I don't own activity " + activityId);
             }
-
-            a.activity().set_result(variableMap);
+            
+            setActivityVariables(a.activity(), variableMap);
 
         } catch (Exception ex) {
             LogUtil.error(getClass().getName(), ex, "");
