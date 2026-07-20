@@ -103,6 +103,7 @@ import org.joget.directory.model.Role;
 import org.joget.directory.model.User;
 import org.joget.directory.model.service.ExtDirectoryManager;
 import org.joget.plugin.base.Plugin;
+import org.joget.plugin.base.PluginException;
 import org.joget.plugin.base.PluginManager;
 import org.joget.workflow.model.WorkflowActivity;
 import org.joget.workflow.model.WorkflowProcess;
@@ -4673,13 +4674,24 @@ public class ConsoleWebController {
             jarname = pluginFile.getOriginalFilename();
             
             if (!jarname.endsWith(".jar")) {
-                map.addAttribute("errorMessage", ResourceBundleUtil.getMessage("console.app.message.error.invalidJar"));
+                String errorMessage = ResourceBundleUtil.getMessage("console.setting.plugin.error.invalidJar", "The uploaded file is not a valid plugin JAR. Please verify the file and try again.");
+                map.addAttribute("errorMessage", errorMessage != null ? errorMessage : "The uploaded file is not a valid plugin JAR. Please verify the file and try again.");
                 return "console/setting/pluginUpload";
             } else {
                 pluginManager.upload(jarname, in);
             }
+        } catch (PluginException e) {
+            String errorMessage = e.getMessage();
+            if (errorMessage == null || errorMessage.isEmpty()) {
+                errorMessage = ResourceBundleUtil.getMessage("console.setting.plugin.error.installFailed", "The plugin could not be installed. Please verify that it is a valid Joget plugin and that all required dependencies are available.");
+            }
+            map.addAttribute("errorMessage", errorMessage != null ? errorMessage : "The plugin could not be installed. Please verify that it is a valid Joget plugin and that all required dependencies are available.");
+            LogUtil.warn(ConsoleWebPlugin.class.getName(), errorMessage + " : " + jarname);
+            return "console/setting/pluginUpload";
         } catch (Exception e) {
-            map.addAttribute("errorMessage", ResourceBundleUtil.getMessage("console.app.message.error.invalidJar"));
+            String errorMessage = ResourceBundleUtil.getMessage("console.setting.plugin.error.invalidJar", "The uploaded file is not a valid plugin JAR. Please verify the file and try again.");
+            map.addAttribute("errorMessage", errorMessage != null ? errorMessage : "The uploaded file is not a valid plugin JAR. Please verify the file and try again.");
+            LogUtil.warn(ConsoleWebPlugin.class.getName(), errorMessage + " : " + jarname);
             return "console/setting/pluginUpload";
         } finally {
             if (in != null) {

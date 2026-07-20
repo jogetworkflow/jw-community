@@ -70,6 +70,7 @@ import org.joget.commons.util.PagingUtils;
 import org.joget.commons.util.ResourceBundleUtil;
 import org.joget.commons.util.SecurityUtil;
 import org.joget.plugin.property.service.PropertyUtil;
+import org.osgi.framework.BundleException;
 import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.util.ClassUtils;
 import org.springframework.web.context.request.RequestContextHolder;
@@ -80,6 +81,13 @@ import org.springframework.web.context.request.ServletRequestAttributes;
  * 
  */
 public class PluginManager implements ApplicationContextAware {
+
+    protected static final String ERROR_BASE_PLUGIN_DUPLICATE = "A plugin with the same bundle identity is already installed as a platform plugin and cannot be replaced from Manage Plugins.";
+    protected static final String ERROR_BASE_PLUGIN_REPLACE_NOT_ALLOWED = "This plugin is provided by the platform and cannot be replaced from Manage Plugins.";
+    protected static final String ERROR_INSTALL_FAILED = "The plugin could not be installed. Please verify that it is a valid Joget plugin and that all required dependencies are available.";
+    protected static final String ERROR_INVALID_JAR = "The uploaded file is not a valid plugin JAR. Please verify the file and try again.";
+    protected static final String ERROR_INVALID_PLUGIN_NAME = "The plugin file name is invalid. Please upload a plugin JAR with a valid file name.";
+    protected static final String ERROR_WRITE_FAILED = "The plugin file could not be saved. Please check the plugin upload folder permissions and available disk space.";
 
     private Felix felix = null;
     private String baseDirectory = SetupManager.getBaseSharedDirectory() + File.separator + "app_plugins";
@@ -303,7 +311,12 @@ public class PluginManager implements ApplicationContextAware {
             } while (prevSize < file.length());
             
             //try uninstall first
-            uninstallBundle(file.toURI().toURL().toExternalForm());
+            try {
+                uninstallBundle(file.toURI().toURL().toExternalForm());
+            } catch (UninstallablePluginException ex) {
+                LogUtil.info(PluginManager.class.getName(), "Can't uninstalled base plugin " + file.toURI().toURL().toExternalForm() + " for " + HostManager.getCurrentProfile());
+                return;
+            }
             
             Bundle bundle = installBundle(file.toURI().toURL().toExternalForm());
             if (bundle != null) {
@@ -326,6 +339,8 @@ public class PluginManager implements ApplicationContextAware {
         try {
             uninstallBundle(file.toURI().toURL().toExternalForm());
             LogUtil.info(PluginManager.class.getName(), "Uninstalled plugin " + file.getName());
+        } catch (UninstallablePluginException ex) {
+            LogUtil.info(PluginManager.class.getName(), "Can't uninstalled base plugin " + file.getName() + " for " + HostManager.getCurrentProfile());
         } catch (Exception e) {
             LogUtil.error(PluginManager.class.getName(), e, "");
         }
@@ -410,11 +425,15 @@ public class PluginManager implements ApplicationContextAware {
         for (URL url : urlList) {
             // install the JAR file as a bundle
             String location = url.toExternalForm();
-            Bundle bundle = installBundle(location);
-            if (bundle != null) {
-                bundleList.add(bundle);
-            }
 
+            try {
+                Bundle bundle = installBundle(location);
+                if (bundle != null) {
+                    bundleList.add(bundle);
+                }
+            } catch (Exception e) {
+                LogUtil.error(PluginManager.class.getName(), e, location);
+            }
         }
 
         for (Bundle bundle : bundleList) {
@@ -466,6 +485,13 @@ public class PluginManager implements ApplicationContextAware {
             // clear cache
             clearCache();
             return newBundle;
+        } catch (BundleException e) {
+            if (e.getMessage() != null && e.getMessage().contains("not unique")) {
+                throw new BasePluginException(getPluginErrorMessage("console.setting.plugin.error.basePluginDuplicate", ERROR_BASE_PLUGIN_DUPLICATE));
+            } else {
+                LogUtil.error(PluginManager.class.getName(), e, "Failed bundle installation from " + location + ": " + e.toString());
+                return null;
+            }
         } catch (Exception be) {
             LogUtil.error(PluginManager.class.getName(), be, "Failed bundle installation from " + location + ": " + be.toString());
             return null;
@@ -580,10 +606,22 @@ public class PluginManager implements ApplicationContextAware {
                 BundleContext context = getOsgiContainer().getBundleContext();
                 for (Bundle b : context.getBundles()) {
                     if (!b.equals(bundle) && isDependentPlugins(b, groupId)) {
-                        uninstallBundle(b.getLocation());
-                        Bundle newBundle = installBundle(b.getLocation());
-                        if (newBundle != null) {
-                            bundleList.add(newBundle);
+                        try {
+                            uninstallBundle(b.getLocation());
+                        } catch (UninstallablePluginException ex) {
+                            LogUtil.info(PluginManager.class.getName(), "Can't uninstalled base plugin " + b.getLocation() + " for " + HostManager.getCurrentProfile());
+                            continue;
+                        }
+
+                        try {
+                            Bundle newBundle = installBundle(b.getLocation());
+                            if (newBundle != null) {
+                                bundleList.add(newBundle);
+                            }
+                        } catch (BasePluginException ex) {
+                            LogUtil.warn(PluginManager.class.getName(), ex.getMessage() + " Installation skipped for " + b.getLocation());
+                        } catch (Exception e) {
+                            LogUtil.error(PluginManager.class.getName(), e, b.getLocation());
                         }
                     }
                 }
@@ -676,7 +714,10 @@ public class PluginManager implements ApplicationContextAware {
         try {
             BundleContext context = getOsgiContainer().getBundleContext();
             Bundle bundle = context.getBundle(location);
-            if (bundle != null && uninstallable(bundle.getSymbolicName())) {
+            if (bundle != null) {
+                if (!uninstallable(bundle.getSymbolicName())) {
+                    throw new UninstallablePluginException();
+                }
                 
                 //find ActivationAwarePlugin plugin to call beforeUnregister method
                 ServiceReference[] refs = bundle.getRegisteredServices();
@@ -699,6 +740,8 @@ public class PluginManager implements ApplicationContextAware {
                 // clear cache
                 clearCache();
             }
+        } catch (UninstallablePluginException be) {
+            throw be;
         } catch (Exception be) {
             LogUtil.error(PluginManager.class.getName(), be, "Failed bundle uninstallation from " + location + ": " + be.toString());
         }
@@ -1028,7 +1071,7 @@ public class PluginManager implements ApplicationContextAware {
                 } catch (IOException ex) {
                     LogUtil.error(PluginManager.class.getName(), ex, "");
                 }
-                throw new PluginException("Invalid plugin name");
+                throw new PluginException(getPluginErrorMessage("console.setting.plugin.error.invalidPluginName", ERROR_INVALID_PLUGIN_NAME));
             }
             if (!filename.endsWith(".jar")) {
                 filename += ".jar";
@@ -1102,6 +1145,15 @@ public class PluginManager implements ApplicationContextAware {
                 }
                 
                 isValid = true;
+            } catch (UninstallablePluginException ex) {
+                if (outputFile != null) {
+                    try {
+                        outputFile.delete();
+                    } catch (Exception e) {
+                        LogUtil.error(PluginManager.class.getName(), e, "");
+                    }
+                }
+                throw new PluginException(getPluginErrorMessage("console.setting.plugin.error.basePluginReplaceNotAllowed", ERROR_BASE_PLUGIN_REPLACE_NOT_ALLOWED));
             } catch (IOException ex) {
                 //delete invalid file
                 try {
@@ -1111,10 +1163,10 @@ public class PluginManager implements ApplicationContextAware {
                 }
 
                 LogUtil.error(PluginManager.class.getName(), ex, "");
-                throw new PluginException("Invalid jar file");
+                throw new PluginException(getPluginErrorMessage("console.setting.plugin.error.invalidJar", ERROR_INVALID_JAR));
             } catch (Exception ex) {
                 LogUtil.error(PluginManager.class.getName(), ex, "");
-                throw new PluginException("Invalid jar file");
+                throw new PluginException(getPluginErrorMessage("console.setting.plugin.error.invalidJar", ERROR_INVALID_JAR));
             } finally {
                 if (jarFile != null) {
                     jarFile.close();
@@ -1135,14 +1187,23 @@ public class PluginManager implements ApplicationContextAware {
                     } catch (Exception e) {
                         LogUtil.error(PluginManager.class.getName(), e, "");
                     }
-                    throw new PluginException("Plugin could not be installed, please contact administrator");
+                    throw new PluginException(getPluginErrorMessage("console.setting.plugin.error.installFailed", ERROR_INSTALL_FAILED));
                 }
             }
 
             return true;
+        } catch (PluginException ex) {
+            //delete invalid file
+            try {
+                outputFile.delete();
+            } catch (Exception e) {
+                LogUtil.error(PluginManager.class.getName(), e, "");
+            }
+
+            throw ex;
         } catch (Exception ex) {
             LogUtil.error(PluginManager.class.getName(), ex, "");
-            throw new PluginException("Unable to write plugin file", ex);
+            throw new PluginException(getPluginErrorMessage("console.setting.plugin.error.writeFailed", ERROR_WRITE_FAILED), ex);
         } finally {
             if (fullFileName != null) {
                 filesInProgress.remove(fullFileName);
@@ -1182,7 +1243,11 @@ public class PluginManager implements ApplicationContextAware {
     public void uninstallAll(boolean deleteFiles) {
         Collection<Plugin> pluginList = this.list();
         for (Plugin plugin : pluginList) {
-            uninstall(ClassUtils.getUserClass(plugin).getName(), deleteFiles);
+            try {
+                uninstall(ClassUtils.getUserClass(plugin).getName(), deleteFiles);
+            } catch (UninstallablePluginException e) {
+                LogUtil.warn(PluginManager.class.getName(), "Should not uninstalled base plugin " + plugin.getName() + ". Prevented!");
+            }
         }
     }
 
@@ -1218,6 +1283,8 @@ public class PluginManager implements ApplicationContextAware {
                     }
                     result = true;
                 }
+            } catch (UninstallablePluginException e) {
+                throw e;
             } catch (Exception ex) {
                 LogUtil.error(PluginManager.class.getName(), ex, "");
             }
@@ -2115,5 +2182,19 @@ public class PluginManager implements ApplicationContextAware {
     
     public static CustomPluginInterface getCustomPluginInterface(String className) {
         return getCache().getCustomPluginInterfaces().get(className);
+    }
+
+    protected static String getPluginErrorMessage(String key, String defaultMessage) {
+        String message = ResourceBundleUtil.getMessage(key, defaultMessage);
+        return (message != null) ? message : defaultMessage;
+    }
+
+    protected class UninstallablePluginException extends RuntimeException {
+    }
+
+    protected class BasePluginException extends PluginException {
+        public BasePluginException(String message) {
+            super(message);
+        }
     }
 }
