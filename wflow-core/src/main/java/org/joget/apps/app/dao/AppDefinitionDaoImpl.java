@@ -41,6 +41,7 @@ import org.joget.apps.app.service.AppUtil;
 import org.joget.commons.cache.InMemoryCacheManager;
 import org.joget.commons.util.LogUtil;
 import org.joget.commons.util.SetupManager;
+import org.joget.plugin.base.PluginException;
 import org.joget.plugin.base.PluginManager;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
@@ -745,6 +746,8 @@ public class AppDefinitionDaoImpl extends AbstractVersionedObjectDao<AppDefiniti
                         try {
                             in = new FileInputStream(pluginFile);
                             pluginManager.upload(pluginFile.getName(), in);
+                        } catch (PluginException ex) {
+                            LogUtil.warn(getClass().getName(), "Fail to sync plugin " + pluginFile.getAbsolutePath() + " due to " + ex.getMessage());
                         } catch(Exception e) {
                             LogUtil.error(getClass().getName(), e, e.getMessage());
                         } finally {
