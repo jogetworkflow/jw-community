@@ -63,8 +63,15 @@ JPopup = {
         width = UI.getPopUpWidth(width);
         height = UI.getPopUpHeight(height);
         
+        // set initial height for builder dialog 
+        if (id === "navCreateNewDialog" && (height === "auto" || height < 600)) {
+            height = 600;
+        }
+        
+        var heightStyle = (height === "auto") ? "100%" : height + "px";
+        
         $("#"+id).remove();
-        JPopup.dialogboxes[id].setContent('<iframe onload="JPopup.trackChanges(\''+id+'\')" id="'+id+'" name="'+id+'" src="'+UI.base+'/images/v3/cj.gif" style="frameborder:0;height:'+height+'px;width:'+width+'px;"></iframe>');
+        JPopup.dialogboxes[id].setContent('<iframe onload="JPopup.trackChanges(\''+id+'\')" id="'+id+'" name="'+id+'" src="'+UI.base+'/images/v3/cj.gif" style="frameborder:0;height:'+heightStyle+';width:'+width+'px;"></iframe>');
         JPopup.dialogboxes[id].show();
         
         $(".boxy-modal-blackout").off("click");
@@ -102,6 +109,30 @@ JPopup = {
         setTimeout(function() {
             $(form).submit();
             $(form).remove();
+            
+            var iframe = $('iframe#' + id);
+            var heightAdjusted = false;
+            
+            iframe.on('load', function() {
+                if (!heightAdjusted) {
+                    heightAdjusted = true;
+                    // skip height adjustment for builder dialog and exportAppDialog
+                    if (id !== "navCreateNewDialog" && id !== "exportAppDialog") {
+                        UI.adjustPopUpHeight(id);
+                    }
+                    iframe.off('load');
+                }
+            });
+            
+            // fallback in case load event doesnt fire
+            setTimeout(function() {
+                if (!heightAdjusted) {
+                    heightAdjusted = true;
+                    if (id !== "navCreateNewDialog" && id !== "exportAppDialog") {
+                        UI.adjustPopUpHeight(id);
+                    }
+                }
+            }, 1000);
         }, 120);
     },
     
@@ -137,6 +168,11 @@ JPopup = {
             JPopup.buttonMsg = msgs['ubuilder.saveBeforeClose.leave'];
         });
         CustomBuilder.overrideNewCreation(id);
+        
+        // Auto-adjust height based on iframe content
+        if (id !== "navCreateNewDialog" && id !== "exportAppDialog") {
+            UI.adjustPopUpHeight(id);
+        }
     },
     
     fixIOS : function(id) {

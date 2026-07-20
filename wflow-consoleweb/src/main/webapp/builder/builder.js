@@ -9013,7 +9013,7 @@ window._CustomBuilder.Builder = {
         if (login) {
             url += "&login=true";
         }
-        JPopup.show("navCreateNewDialog", url, {}, "");
+        JPopup.show("marketplaceDialog", url, {}, "");
         
         return false;
     },
