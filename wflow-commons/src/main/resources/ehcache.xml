@@ -42,8 +42,12 @@
             <ttl unit="seconds">20</ttl>
         </expiry>
         <listeners>
+            <!-- This cache holds BasicDataSource (custom JDBC pools) and Properties
+                 (datasource profiles) - never SessionFactory. Use DataSourceCacheListener
+                 so an evicted/expired BasicDataSource is actually .close()d; otherwise the
+                 orphaned pool's physical connections leak until the DB times them out. -->
             <listener>
-                <class>org.joget.commons.util.SessionFactoryCacheListener</class>
+                <class>org.joget.commons.util.DataSourceCacheListener</class>
                 <event-firing-mode>ASYNCHRONOUS</event-firing-mode>
                 <event-ordering-mode>UNORDERED</event-ordering-mode>
                 <events-to-fire-on>EXPIRED</events-to-fire-on>

@@ -80,13 +80,28 @@ public class JdbcUtil {
             props.put("removeAbandonedOnBorrow", "true");
             props.put("removeAbandonedOnMaintenance", "true");
 
+            // Fail fast on pool exhaustion instead of blocking forever. DBCP2 defaults
+            // maxWaitMillis to -1 (block indefinitely); under load that turns a pool
+            // shortage into a permanent hang that only a restart clears. A finite wait
+            // makes a borrow throw a pool-timeout SQLException so the container recovers.
+            props.put("maxWaitMillis", (10*1000) + "");
+
+            // Validate connections so stale/dead handles (DB restart, firewall idle
+            // timeout) are detected and replaced instead of handed to callers. With no
+            // validationQuery set, DBCP2 uses Connection.isValid(), which is driver-agnostic.
+            // Cap the validation at 3s (isValid(0) has no timeout) so a dead network can't
+            // make the borrow-time check block and undo the fail-fast intent above.
+            props.put("testOnBorrow", "true");
+            props.put("testWhileIdle", "true");
+            props.put("validationQueryTimeout", "3");
+
             // Idle connections older than x mins * 60 seconds * 1000 millis will be evicted
             props.put("minEvictableIdleTimeMillis", (15*60*1000) + "");
 
             // Run evictor every x hour * 60 mins * 60 seconds * 1000 millis
             props.put("timeBetweenEvictionRunsMillis", (1*60*60*1000) + "");
-            
-            //support custom properties from plugin config
+
+            //support custom properties from plugin config (may override the defaults above)
             if (customProps != null) {
                 try {
                     props.load(new StringReader(customProps));
