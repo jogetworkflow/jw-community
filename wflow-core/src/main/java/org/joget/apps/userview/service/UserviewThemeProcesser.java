@@ -449,7 +449,7 @@ public class UserviewThemeProcesser {
                 + "        UI.offlineHandler();";
 
         if (alertMessage != null && !alertMessage.isEmpty()) {
-            html += "UI.alert(\"" + alertMessage + "\");\n";
+            html += "$(document).ready(function(){ UI.alert(\"" + StringUtil.escapeString(alertMessage, StringUtil.TYPE_JAVASCIPT, null) + "\"); });\n";
         }
 
         html += "</script>\n";
