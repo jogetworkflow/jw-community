@@ -88,7 +88,17 @@ public class JdbcUtil {
 
             // Run evictor every x hour * 60 mins * 60 seconds * 1000 millis
             props.put("timeBetweenEvictionRunsMillis", (1*60*60*1000) + "");
-            
+
+            // Fail fast on pool exhaustion instead of blocking indefinitely (DBCP2 default is -1,
+            // i.e. wait forever). Prevents a permanently wedged pool from hanging request threads.
+            props.put("maxWaitMillis", (10*1000) + "");
+
+            // Validate pooled connections so stale/dead external DB connections (firewall idle
+            // timeout, DB restart) are not handed out. With no validationQuery set, DBCP2 uses
+            // Connection.isValid(), which is driver-agnostic (works for Oracle etc.).
+            props.put("testOnBorrow", "true");
+            props.put("testWhileIdle", "true");
+
             //support custom properties from plugin config
             if (customProps != null) {
                 try {
