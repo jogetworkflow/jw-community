@@ -2726,12 +2726,11 @@ body#home.rtl .more-action{
     padding-top: 1rem !important;
 }
 .userProfile-body-content .form-message {
-    margin: 0px 15px;
+    margin-bottom: 1rem;
 }
 .userProfile-body-content .form-errors {
     margin-bottom: 1rem;
 }
-
 @media (min-width: 1280px) {
     body.rtl.sidebar-minimized #page {
         padding-right: 100px;

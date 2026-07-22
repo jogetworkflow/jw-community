@@ -104,23 +104,36 @@
             let alertStringList = '';            
             const firstName = $("#firstName").val();
             const lastName = $("#lastName").val();
+
+            //For Input Validation
+            const invalidInputMsg = '<ui:msgEscJS key="console.directory.user.error.label.invalidInput"/>';
+            const fName = UI.isValidInput('<ui:msgEscJS key="console.directory.user.common.label.firstName"/>',firstName);
+            const lName = UI.isValidInput('<ui:msgEscJS key="console.directory.user.common.label.lastName"/>', lastName);
     
             if(firstName == ""){
-                alertStringList += '<li>' + '<ui:msgEscJS key="User.firstName[not.blank]"/>' + '</li>';
+                alertStringList = UI.addAlertListItem(alertStringList, '<ui:msgEscJS key="User.firstName[not.blank]"/>');
                 valid = false;
-            } else if (!UI.isValidInput(firstName) || !UI.isValidInput(lastName)) {
-                alertStringList += '<li>' + '<ui:msgEscJS key="console.directory.user.error.label.nameInvalid"/>' + '</li>';            
+            } else if (!fName.valid) {
+                alertStringList = UI.addAlertListItem(alertStringList, invalidInputMsg.replace('{0}', fName.fieldLabel).replace('{1}', fName.invalidTokens.join(", ")));
                 valid = false;
-            }  
+            }
+
+            if (!lName.valid) {
+                if(alertStringList != ""){
+                    alertStringList += '\n';
+                }
+                alertStringList = UI.addAlertListItem(alertStringList, invalidInputMsg.replace('{0}', lName.fieldLabel).replace('{1}', lName.invalidTokens.join(", ")));
+                valid = false;
+            }    
             
             if($("#password").val() != $("#confirmPassword").val()){
-                alertStringList += '<li>' + '<ui:msgEscJS key="console.directory.user.error.label.passwordNotMatch"/>' + '</li>';
+                alertStringList = UI.addAlertListItem(alertStringList, '<ui:msgEscJS key="console.directory.user.error.label.passwordNotMatch"/>');
                 valid = false;
             }
             
             UI.validateEmail('#email', true, function(isValid) {
                 if (!isValid) {
-                    alertStringList +=  '<li>' +'<ui:msgEscJS key="console.directory.user.error.label.invalidEmailFormat"/>' + '</li>';
+                    alertStringList = UI.addAlertListItem(alertStringList, '<ui:msgEscJS key="console.directory.user.error.label.invalidEmailFormat"/>');
                     valid = false;
                 }
 

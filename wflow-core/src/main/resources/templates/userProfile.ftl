@@ -226,21 +226,34 @@
 
                 const firstName = $("#firstName").val();
                 const lastName = $("#lastName").val();
+
+                //For Input Validation
+                const invalidInputMsg = '@@console.directory.user.error.label.invalidInput@@';
+                const fName = UI.isValidInput('@@console.directory.user.common.label.firstName@@',firstName);
+                const lName = UI.isValidInput('@@console.directory.user.common.label.lastName@@', lastName);
+
                 <#if element.properties.f_firstName! != 'hide'>
                     if(firstName == ""){
-                        var error = '@@User.firstName[not.blank]@@'
-                        alertStringList += '<li>' + error + '</li>';
-                        valid=false;              
-                    } else if (!UI.isValidInput(firstName) || !UI.isValidInput(lastName)) {
-                        var error = '@@console.directory.user.error.label.nameInvalid@@'
-                        alertStringList += '<li>' + error + '</li>';
+                        alertStringList = UI.addAlertListItem(alertStringList, '@@User.firstName[not.blank]@@');
+                        valid = false;
+                    } else if (!fName.valid) {
+                        alertStringList = UI.addAlertListItem(alertStringList, invalidInputMsg.replace('{0}', fName.fieldLabel).replace('{1}', fName.invalidTokens.join(", ")));
+                        valid = false;
+                    }          
+                </#if>
+                <#if element.properties.f_lastName! != 'hide'>
+                    if (!lName.valid) {
+                        if(alertStringList != ""){
+                            alertStringList += '\n';
+                        }
+                        alertStringList = UI.addAlertListItem(alertStringList, invalidInputMsg.replace('{0}', lName.fieldLabel).replace('{1}', lName.invalidTokens.join(", ")));
                         valid = false;
                     }            
                 </#if>
                 <#if element.properties.f_password! != 'hide'>
                     if($("#password").val() != $("#confirmPassword").val()){
                         var error = '@@console.directory.user.error.label.passwordNotMatch@@';
-                        alertStringList += '<li>' + error + '</li>';
+                        alertStringList = UI.addAlertListItem(alertStringList, error);
                         valid = false;
                     }
                 </#if>
@@ -250,7 +263,7 @@
                     UI.validateEmail('#email', true, function(isValid) {
                         if (!isValid) {
                             var error = '@@console.directory.user.error.label.invalidEmailFormat@@';
-                            alertStringList += '<li>' + error + '</li>';
+                            alertStringList = UI.addAlertListItem(alertStringList, error);
                             valid = false;
                         }
 

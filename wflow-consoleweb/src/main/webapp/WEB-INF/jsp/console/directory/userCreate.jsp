@@ -258,37 +258,45 @@
             const employeeCode = $("#employeeCode").val();
             const employeeRole = $("#employeeRole").val();
             
+            //For Input Validation
+            const invalidInputMsg = '<ui:msgEscJS key="console.directory.user.error.label.invalidInput"/>';
+            const fName = UI.isValidInput('<ui:msgEscJS key="console.directory.user.common.label.firstName"/>',firstName);
+            const lName = UI.isValidInput('<ui:msgEscJS key="console.directory.user.common.label.lastName"/>', lastName);
+            const empCode = UI.isValidInput('<ui:msgEscJS key="console.directory.employment.common.label.employeeCode"/>',employeeCode);
+            const empRole = UI.isValidInput('<ui:msgEscJS key="console.directory.employment.common.label.role"/>',employeeRole);
+            
             if(!idMatch){
-                if(!idMatch){
-                    alertStringList += '<li>' + '<ui:msgEscJS key="console.directory.user.error.label.usernameInvalid"/>' + '</li>';
-                    $("#username").focus();
-                    valid = false;
-                }
+                alertStringList = UI.addAlertListItem(alertStringList, '<ui:msgEscJS key="console.directory.user.error.label.usernameInvalid"/>');
+                $("#username").focus();
+                valid = false;
             }
-                                     
+                                      
             if(firstName == ""){
-                alertStringList += '<li>' + '<ui:msgEscJS key="User.firstName[not.blank]"/>' + '</li>';
+                alertStringList = UI.addAlertListItem(alertStringList, '<ui:msgEscJS key="User.firstName[not.blank]"/>');
                 valid = false;
-            } else if (!UI.isValidInput(firstName) || !UI.isValidInput(lastName)) {
-                alertStringList += '<li>' + '<ui:msgEscJS key="console.directory.user.error.label.nameInvalid"/>' + '</li>';
+            } else if (!fName.valid) {
+                alertStringList = UI.addAlertListItem(alertStringList, invalidInputMsg.replace('{0}', fName.fieldLabel).replace('{1}', fName.invalidTokens.join(", ")));
                 valid = false;
-            }  
+            }
+            
+            if(!lName.valid){
+                alertStringList = UI.addAlertListItem(alertStringList, invalidInputMsg.replace('{0}', lName.fieldLabel).replace('{1}', lName.invalidTokens.join(", ")));
+                valid = false;
+            }
             
             if($("[name=password]").val() == "" || $("[name=confirmPassword]").val() == ""){
-                alertStringList += '<li>' + '<ui:msgEscJS key="console.directory.user.error.label.passwordNotEmpty"/>' + '</li>';
+                alertStringList = UI.addAlertListItem(alertStringList, '<ui:msgEscJS key="console.directory.user.error.label.passwordNotEmpty"/>');
                 valid = false;
             }else if($("[name=password]").val() != $("[name=confirmPassword]").val()){
-                alertStringList += '<li>' + '<ui:msgEscJS key="console.directory.user.error.label.passwordNotMatch"/>' + '</li>';
+                alertStringList = UI.addAlertListItem(alertStringList, '<ui:msgEscJS key="console.directory.user.error.label.passwordNotMatch"/>');
                 valid = false;
             }
-
-            if (!UI.isValidInput(employeeCode)) {
-                alertStringList += '<li>' + '<ui:msgEscJS key="console.directory.user.error.label.employeeCodeInvalid"/>' + '</li>';
+            if (!empCode.valid) {
+                alertStringList = UI.addAlertListItem(alertStringList, invalidInputMsg.replace('{0}', empCode.fieldLabel).replace('{1}', empCode.invalidTokens.join(", ")));
                 valid = false;
             }
-
-            if (!UI.isValidInput(employeeRole)) {
-                alertStringList += '<li>' + '<ui:msgEscJS key="console.directory.user.error.label.employeeCodeInvalid"/>' + '</li>';
+            if (!empRole.valid) {
+                alertStringList = UI.addAlertListItem(alertStringList, invalidInputMsg.replace('{0}', empRole.fieldLabel).replace('{1}', empRole.invalidTokens.join(", ")));
                 valid = false;
             }
             

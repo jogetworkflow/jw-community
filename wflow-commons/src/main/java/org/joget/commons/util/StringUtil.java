@@ -782,6 +782,21 @@ public class StringUtil {
         }
         return content;
     }
+
+    /**
+     * Checks that a value does not contain HTML after decoding HTML entities once.
+     *
+     * @param value the value to check
+     * @return true when the value contains no HTML
+     */
+    public static boolean isValidInput(String value) {
+        if (value == null || value.isEmpty()) {
+            return true;
+        }
+
+        String decoded = unescapeString(value.trim(), TYPE_HTML, null);
+        return Jsoup.isValid(decoded, Safelist.none());
+    }
     
     /**
      * Removed all HTML tags not in the allowed map from the content

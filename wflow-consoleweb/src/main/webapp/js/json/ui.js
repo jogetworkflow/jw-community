@@ -40,6 +40,9 @@ UI = {
           return span.html();
       }
    },
+   addAlertListItem: function(list, message) {
+      return (list || '') + '<li>' + UI.escapeHTML(message) + '</li>';
+   },
    stripHtmlTags: function(c) {
         if (c == null || c == undefined) {
             return '';
@@ -468,23 +471,51 @@ UI = {
             });
         }
     },
-    isValidInput: function(input) {
-        if (input === null || input === "") return true;
-        
-        const s = input.trim();
-        
-        // Valid input pattern - allows alphanumeric, spaces, and specific special characters
-        const VALID_PATTERN = /^[\p{L}\p{M}\p{N} ._'\-]+$/u;
-    
-        // Patterns for consecutive special characters and start/end validation
-        const CONSECUTIVE_SPECIALS = /[._'\-]{2,}/;
-        const START_END_SPECIALS = /^[._'\-]|[._'\-]$/;
+    isValidInput: function(fieldLabel, input) {
+        if (input === null || input === "") {
+            return { valid: true };
+        }
 
-        if (!VALID_PATTERN.test(s)) return false;
-        if (CONSECUTIVE_SPECIALS.test(s)) return false;
-        if (START_END_SPECIALS.test(s)) return false;
-        
-        return true;
+        const s = String(input).trim();
+
+        // Decode HTML entities using the browser textarea element
+        const textarea = document.createElement("textarea");
+        textarea.innerHTML = s;
+        const decoded = textarea.value;
+
+        const invalidTokens = [];
+        const added = new Set();
+
+        function addToken(token) {
+            if (!added.has(token)) {
+                added.add(token);
+                invalidTokens.push(token);
+            }
+        }
+
+        // HTML tag detection
+        const HTML_TAG = /<\s*\/?\s*[a-z][^>]*>/ig;
+        const HTML_COMMENT = /<!--[\s\S]*?-->/g;
+
+        const matches = decoded.match(HTML_TAG);
+        if (matches) {
+            matches.forEach(addToken);
+        }
+
+        const commentMatches = decoded.match(HTML_COMMENT);
+        if (commentMatches) {
+            commentMatches.forEach(addToken);
+        }
+
+        if (invalidTokens.length > 0) {
+            return {
+                valid: false,
+                fieldLabel,
+                invalidTokens
+            };
+        }
+
+        return { valid: true };
     },
     alert: function(text, 
                 args) {
@@ -651,7 +682,7 @@ UI = {
             }
             $("body").removeClass("swal2-shown"); //causing page can't scroll
         });
-    }
+    },
 };
 
 /*

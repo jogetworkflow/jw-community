@@ -251,9 +251,8 @@ public class UserProfileMenu extends UserviewMenu {
                     errors.add(ResourceBundleUtil.getMessage("form.defaultvalidator.err.invalidInputCharacter"));
                     break;
                 }
-                String e = StringUtil.unescapeString(StringUtil.stripAllHtmlTag(v), StringUtil.TYPE_HTML, null);
-                if (!e.equals(v)) {
-                    errors.add(ResourceBundleUtil.getMessage("form.defaultvalidator.err.invalidInputCharacter"));
+                if (!StringUtil.isValidInput(v)) {
+                    errors.add(ResourceBundleUtil.getMessage("form.defaultvalidator.err.htmlNotAllowed"));
                     break;
                 }
             }
@@ -284,12 +283,13 @@ public class UserProfileMenu extends UserviewMenu {
                 }
             }
         
-            if ("".equals(getPropertyString("f_firstName")) && !StringUtil.stripAllHtmlTag(getRequestParameterString("firstName")).isEmpty()) {
-                currentUser.setFirstName(StringUtil.stripAllHtmlTag(getRequestParameterString("firstName")));
+            String firstName = getRequestParameterString("firstName");
+            if ("".equals(getPropertyString("f_firstName")) && firstName != null && !firstName.isEmpty()) {
+                currentUser.setFirstName(firstName);
             }
 
             if ("".equals(getPropertyString("f_lastName"))) {
-                currentUser.setLastName(StringUtil.stripAllHtmlTag(getRequestParameterString("lastName")));
+                currentUser.setLastName(getRequestParameterString("lastName"));
             }
 
             if ("".equals(getPropertyString("f_email"))) {
@@ -399,7 +399,7 @@ public class UserProfileMenu extends UserviewMenu {
             viewForm(currentUser);
         }
     }
-    
+
     protected boolean isNonWesternDigitDate(String locale) {
         if (locale == null || locale.isEmpty()) {
             SetupManager setupManager = (SetupManager) AppUtil.getApplicationContext().getBean("setupManager");
