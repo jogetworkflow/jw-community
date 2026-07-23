@@ -1,6 +1,7 @@
 package org.joget.apps.app.service;
 
 import java.io.StringReader;
+import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.Map;
 import java.util.Properties;
@@ -10,6 +11,7 @@ import net.sf.ehcache.CacheManager;
 import net.sf.ehcache.Element;
 import org.apache.commons.dbcp2.BasicDataSource;
 import org.apache.commons.dbcp2.BasicDataSourceFactory;
+import org.apache.tomcat.jdbc.pool.PooledConnection;
 import org.joget.commons.util.DynamicDataSource;
 import org.joget.commons.util.DynamicDataSourceManager;
 import org.joget.commons.util.LogUtil;
@@ -120,12 +122,64 @@ public class JdbcUtil {
         
         if (dataSource == null || dataSource.isClosed()) {
             LogUtil.info(JdbcUtil.class.getName(), "Cached connection is closed");
-            
+
             //clear cache and retrieve it again
             cache.remove(cacheKey);
             dataSource = (BasicDataSource) createCachedCustomDataSource(driver, url, username, password, customProps);
         }
 
         return dataSource;
+    }
+
+    /**
+     * Cleans up a connection whose query has just failed, BEFORE it is handed back to the
+     * connection pool via {@link Connection#close()}.
+     *
+     * <p>This exists because a failed statement can leave a connection in a "poisoned" state -
+     * most notably on MSSQL, where an aborted statement can leave a server-side transaction open
+     * (<code>@@TRANCOUNT &gt; 0</code>) even though JDBC still reports auto-commit. When such a
+     * connection is returned to the shared default datasource pool, the next borrower (e.g. Joget's
+     * own <code>AppVersion</code> check on any page) inherits the bad state and fails immediately,
+     * effectively locking down the whole instance until a restart.</p>
+     *
+     * <p>Simply calling <code>con.rollback()</code> is not enough: <code>rollback()</code> throws
+     * when the connection is in auto-commit mode (the default for the shared pool), so the rollback
+     * silently does nothing. This method therefore does two things:</p>
+     * <ol>
+     *   <li>best-effort rollback of any explicit (non auto-commit) transaction; and</li>
+     *   <li>guarantees the physical connection is <b>not</b> reused by marking the Tomcat JDBC
+     *       {@link PooledConnection} as discarded, so the subsequent <code>close()</code> destroys
+     *       it and the pool creates a fresh one.</li>
+     * </ol>
+     *
+     * @param con the connection that just failed; may be null
+     */
+    public static void handleFailedConnection(Connection con) {
+        if (con == null) {
+            return;
+        }
+
+        // 1) best-effort rollback to clear any lingering explicit transaction.
+        //    rollback() is illegal (throws) in auto-commit mode, so guard on it.
+        try {
+            if (!con.isClosed() && !con.getAutoCommit()) {
+                con.rollback();
+            }
+        } catch (Exception e) {
+            LogUtil.warn(JdbcUtil.class.getName(), "Unable to roll back failed connection: " + e.getMessage());
+        }
+
+        // 2) guarantee the (possibly poisoned) physical connection is never reused.
+        //    For a Tomcat JDBC pooled connection (used by the shared default datasource),
+        //    flagging it as discarded makes close() destroy it instead of returning it to the pool.
+        try {
+            PooledConnection pooled = con.unwrap(PooledConnection.class);
+            if (pooled != null) {
+                pooled.setDiscarded(true);
+            }
+        } catch (Throwable t) {
+            // not a Tomcat JDBC pooled connection (e.g. a custom DBCP2 datasource) - nothing to discard
+            LogUtil.debug(JdbcUtil.class.getName(), "Connection is not a Tomcat JDBC pooled connection, skipping discard.");
+        }
     }
 }
