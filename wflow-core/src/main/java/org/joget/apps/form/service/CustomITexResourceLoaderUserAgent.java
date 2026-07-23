@@ -8,6 +8,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.CookieStore;
+import org.apache.http.client.config.RequestConfig;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.conn.ssl.NoopHostnameVerifier;
 import org.apache.http.conn.ssl.SSLConnectionSocketFactory;
@@ -29,6 +30,8 @@ import org.xhtmlrenderer.resource.ImageResource;
 
 public class CustomITexResourceLoaderUserAgent extends ITextUserAgent {
     private ITextOutputDevice _outputDevice;
+    private static final int DEFAULT_CONNECT_TIMEOUT = 10000; //10s
+    private static final int DEFAULT_SOCKET_TIMEOUT = 30000; //30s
 
     public CustomITexResourceLoaderUserAgent(ITextOutputDevice outputDevice) {
         super(outputDevice);
@@ -70,6 +73,11 @@ public class CustomITexResourceLoaderUserAgent extends ITextUserAgent {
                 try {
                     HttpClientBuilder httpClientBuilder = HttpClients.custom();
                     httpClientBuilder.setRedirectStrategy(new LaxRedirectStrategy());
+                    RequestConfig requestConfig = RequestConfig.custom()
+                            .setConnectTimeout(resolveTimeout("pdfImageFetch.connectTimeout", DEFAULT_CONNECT_TIMEOUT))
+                            .setSocketTimeout(resolveTimeout("pdfImageFetch.socketTimeout", DEFAULT_SOCKET_TIMEOUT))
+                            .build();
+                    httpClientBuilder.setDefaultRequestConfig(requestConfig);
                     HttpGet get = new HttpGet(uri);
 
                     CookieStore cookieStore = new BasicCookieStore(); 
@@ -154,5 +162,17 @@ public class CustomITexResourceLoaderUserAgent extends ITextUserAgent {
     private void scaleToOutputResolution(Image image) {
         float factor = getSharedContext().getDotsPerPixel();
         image.scaleAbsolute(image.getPlainWidth() * factor, image.getPlainHeight() * factor);
+    }
+
+    private static int resolveTimeout(String key, int defaultValue) {
+        try {
+            String v = System.getProperty(key);
+            if (v != null && !v.isEmpty()) {
+                return Integer.parseInt(v);
+            }
+        } catch (NumberFormatException e) {
+            LogUtil.warn(CustomITexResourceLoaderUserAgent.class.getName(), "Invalid value for " + key + ", using default " + defaultValue + "ms");
+        }
+        return defaultValue;
     }
 }

@@ -14,6 +14,9 @@
 
                     if (!isIOS()) { 
                         o.beforeShow = function(input, inst) {
+//                          Update and loads datepicker to allow the measure of the height of the datepicker popup
+                            $.datepicker._updateDatepicker(inst);
+                            
                             $(element).addClass("popup-picker");
                             setTimeout(function(){
                                 var tabbables = $("#ui-datepicker-div").find(':tabbable');
@@ -56,6 +59,11 @@
                                 inst.dpDiv.css({"z-index":(orizindex + 200)});
                             }, 100);
 
+                            let filterscrolloffset = 0;
+                            // Check if currently in mobile view and filter form is opened
+                            if ($(window).outerWidth() <= 766 && $('form.filter_form').hasClass('show')){
+                                filterscrolloffset = $(window).scrollTop();
+                            }
                             // Reposition datepicker to bottom of input field
                             // Get offset and height value of input box
                             // Get width of the datepicker and device frame
@@ -68,13 +76,31 @@
                             if ((left_position+dp_width) > (window_width-5)) {
                                 left_position = window_width - dp_width - 10;
                             }
-                            // Delay 10ms to make sure it is fully repositioned
-                            setTimeout(function() {
-                                inst.dpDiv.css({
-                                    top: input_offset.top + input_height + "px",
-                                    left: left_position + "px"
-                                });
-                            }, 10);
+//                          if window is less or equal than 766px AND the filter form is showing AND space under the input doesn't have enough space AND the space above the input doesn't have enough space
+                            if ($(window).outerWidth() <= 766 && $('form.filter_form').hasClass('show') && ($(window).height() - (input_offset.top - filterscrolloffset + $(input).outerHeight())) < inst.dpDiv.outerHeight() && input_offset.top - filterscrolloffset < inst.dpDiv.outerHeight() ){
+                                setTimeout(function() {
+                                    inst.dpDiv.css({
+                                        top: "50px",
+                                        left: left_position + "px"
+                                    });
+                                }, 10);    
+//                          if window is less or equal than 766px AND the filter form is showing AND space under the input doesn't have enough space
+                            } else if ($(window).outerWidth() <= 766 && $('form.filter_form').hasClass('show') && ($(window).height() - (input_offset.top - filterscrolloffset + $(input).outerHeight())) < inst.dpDiv.outerHeight()){
+                                setTimeout(function() {
+                                    inst.dpDiv.css({
+                                        top: input_offset.top - filterscrolloffset - inst.dpDiv.outerHeight() + "px",
+                                        left: left_position + "px"
+                                    });
+                                }, 10);
+                            } else {
+                                // Delay 10ms to make sure it is fully repositioned
+                                setTimeout(function() {
+                                    inst.dpDiv.css({
+                                        top: input_offset.top - filterscrolloffset + input_height + "px",
+                                        left: left_position + "px"
+                                    });
+                                }, 10);
+                            }
                         };
                         o.onClose = function(selectedDate) {
                             $(element).removeClass("popup-picker");
