@@ -48,9 +48,24 @@
         </tx:attributes>
     </tx:advice>
 
+    <!-- Cache-first reads must NOT open a JTA transaction: on a cache hit that would be pure overhead,
+         and each Bitronix commit runs an O(N) scan of the per-thread contexts map (btm 2.1.4). SUPPORTS
+         joins an existing tx if present, else runs with no tx (synchronization still active under the
+         tx manager's default SYNCHRONIZATION_ALWAYS, so a cache-miss Hibernate session can still open). -->
+    <tx:advice id="txAdviceCacheReadOnly" transaction-manager="transactionManager">
+        <tx:attributes>
+            <tx:method name="*" propagation="SUPPORTS" read-only="true" timeout="300" />
+        </tx:attributes>
+    </tx:advice>
+
     <aop:config>
         <aop:advisor advice-ref="txAdvice" pointcut="execution(* org.joget.commons.util.*Dao.*(..))" order="1" />
-        <aop:advisor advice-ref="txAdvice" pointcut="execution(* org.joget.commons.spring.model.*Dao.*(..))" order="1" />
+        <aop:advisor advice-ref="txAdvice"
+            pointcut="execution(* org.joget.commons.spring.model.*Dao.*(..)) and !execution(* org.joget.commons.spring.model.ResourceBundleMessageDao.getMessage(..))"
+            order="1" />
+        <aop:advisor advice-ref="txAdviceCacheReadOnly"
+            pointcut="execution(* org.joget.commons.spring.model.ResourceBundleMessageDao.getMessage(..))"
+            order="1" />
     </aop:config>
 
     <bean id="setupDataSource" class="org.joget.commons.util.DynamicDataSource" destroy-method="close" depends-on="staticInitOfDynamicDataSourceManager" lazy-init="true">
