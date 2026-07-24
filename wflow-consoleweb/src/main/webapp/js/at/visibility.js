@@ -13,18 +13,24 @@ VisibilityManager = {
         this.container = $(container);
         $(this.container).html(
             '<div class="visibility_view">' +
-                '<div class="visibility_rules">' +
-                    '<div class="buttons">' +
-                        '<span class="rules-total-count"></span>' +
-                        '<a class="add_visibility button"><i class="fas fa-plus"></i> ' + get_advtool_msg('adv.visibility.addRule') + '</a>' +
+                '<div class="visibility-migration-notice-container"></div>' +
+                '<div class="visibility_content">' +
+                    '<div class="visibility_rules">' +
+                        '<div class="buttons">' +
+                            '<span class="rules-total-count"></span>' +
+                            '<a class="add_visibility button"><i class="fas fa-plus"></i> ' + get_advtool_msg('adv.visibility.addRule') + '</a>' +
+                        '</div>' +
+                        '<div class="sortable"></div>' +
                     '</div>' +
-                    '<div class="sortable"></div>' +
+                    '<div class="elements_container"></div>' +
                 '</div>' +
-                '<div class="elements_container"></div>' +
             '</div>'
         );
 
-        this.migrateLegacyRules();
+        // Detect legacy section visibility rules without mutating the model, and show a
+        // notice instead of migrating eagerly
+        this.detectLegacyRules();
+        this.renderMigrationNotice();
         this.renderRules();
         this.updateTotalRuleCount();
         this.renderElementsHeader();
@@ -108,6 +114,7 @@ VisibilityManager = {
             opacity: 0.8,
             axis: 'y',
             handle: '.sort',
+            items: '.visibility_rule:not(.pending)',
             tolerance: 'intersect',
             stop: function() {
                 self.updateRulesOrder();
@@ -224,6 +231,12 @@ VisibilityManager = {
                 this.renderRule(rules[i]);
             }
         }
+
+        if (this.pendingLegacy && this.pendingLegacy.length > 0) {
+            for (var j = 0; j < this.pendingLegacy.length; j++) {
+                this.renderRule(this.pendingLegacy[j]);
+            }
+        }
     },
 
     /**
@@ -291,6 +304,16 @@ VisibilityManager = {
             $sortable.append($rule);
         }
 
+        // un-migrated legacy card: flag it, add the "Pending migration" badge, make it non-draggable, and skip inline name editing
+        if (ruleData['_pending']) {
+            $rule.addClass("pending");
+            $rule.find(".sort").remove();
+            $rule.find(".rule-content").append(
+                '<div class="pending-badge">' + get_advtool_msg('adv.visibility.pending') + '</div>'
+            );
+            return $rule;
+        }
+
         // Make name inline editable
         $rule.find(".name").editable(function(value) {
             if (value === "") {
@@ -322,6 +345,9 @@ VisibilityManager = {
      * Add a new visibility rule
      */
     addRule: function() {
+        if (this.pendingLegacy && this.pendingLegacy.length > 0) {
+            this.doMigration();
+        }
         this.hideEmptyState();
         var rule = {
             visibility_key: this.generateGuid(),
@@ -350,6 +376,21 @@ VisibilityManager = {
      * @param {jQuery} $rule - The rule element to remove
      */
     removeRule: function($rule) {
+        if ($rule.hasClass("pending")) {
+            var selfRef = this;
+            var pendingKey = $rule.data("key");
+            this.doMigration(function(mapping) {
+                var realKey = mapping ? mapping[pendingKey] : null;
+                if (realKey) {
+                    var $realCard = $(selfRef.container).find('#visibility-rule-' + realKey);
+                    if ($realCard.length > 0) {
+                        selfRef.removeRule($realCard);
+                    }
+                }
+            });
+            return;
+        }
+
         var ruleObj = this.getRuleElement();
         var key = $rule.data("key");
         var rules = ruleObj["visibility_rules"];
@@ -382,6 +423,22 @@ VisibilityManager = {
      * @param {jQuery} $rule - The rule element to edit
      */
     editRule: function($rule) {
+        if ($rule.hasClass("pending")) {
+            var selfRef = this;
+            var pendingKey = $rule.data("key");
+            this.doMigration(function(mapping) {
+                var realKey = mapping ? mapping[pendingKey] : null;
+                if (realKey) {
+                    var $realCard = $(selfRef.container).find('#visibility-rule-' + realKey);
+                    if ($realCard.length > 0) {
+                        selfRef.setActiveRule($realCard);
+                        selfRef.editRule($realCard);
+                    }
+                }
+            });
+            return;
+        }
+
         $("body").removeClass("no-right-panel");
 
         var data = $rule.data("data");
@@ -398,7 +455,7 @@ VisibilityManager = {
     updateRulesOrder: function() {
         var ruleObj = this.getRuleElement();
         var newRules = [];
-        $(this.container).find(".visibility_rules .sortable .visibility_rule").each(function() {
+        $(this.container).find(".visibility_rules .sortable .visibility_rule:not(.pending)").each(function() {
             newRules.push($(this).data("data")["properties"]);
         });
         ruleObj["visibility_rules"] = newRules;
@@ -412,6 +469,9 @@ VisibilityManager = {
     setActiveRule: function($rule) {
         $(this.container).find(".visibility_rule").removeClass("active");
         $rule.addClass("active");
+
+        var data = $rule.data("data");
+        this.activePendingRule = (data && data.properties && data.properties['_pending']) ? data.properties : null;
 
         var key = $rule.data("key");
         var $tbody = $(this.container).find('.elements_container table tbody');
@@ -601,6 +661,9 @@ VisibilityManager = {
         }
 
         var isApplied = this.isRuleApplied(props["visibility_rules"], key);
+        if (this.activePendingRule && data === this.activePendingRule['_sectionRef']) {
+            isApplied = true;
+        }
         var activeClass = isApplied ? "active" : "";
 
         // Parent containers (Sections, Columns) get data-disable-child attribute to control child elements
@@ -637,6 +700,21 @@ VisibilityManager = {
         $row.on("click", ".apply-btn", function(event) {
             if ($(this).attr("disabled") === "disabled") {
                 event.preventDefault();
+                return false;
+            }
+
+            if (self.pendingLegacy && self.pendingLegacy.length > 0) {
+                event.preventDefault();
+                var desired = !$(this).hasClass("active"); // apply if it was not active
+                var elementData = data;                    // live element ref (survives migration)
+                var pendingKeyToMap = self.activePendingRule ? self.activePendingRule['visibility_key'] : null;
+                self.doMigration(function(mapping) {
+                    var realKey = pendingKeyToMap ? (mapping ? mapping[pendingKeyToMap] : null) : key;
+                    if (!realKey) { return; }
+                    var $realCard = $(self.container).find('#visibility-rule-' + realKey);
+                    if ($realCard.length > 0) { self.setActiveRule($realCard); }
+                    self.applyRuleToElementRow(elementData, desired);
+                });
                 return false;
             }
 
@@ -728,6 +806,31 @@ VisibilityManager = {
             event.preventDefault();
             return false;
         });
+    },
+
+    /**
+     * @param {Object} elementData - The element data object to apply/unapply the rule on
+     * @param {boolean} desired - true to apply, false to unapply
+     */
+    applyRuleToElementRow: function(elementData, desired) {
+        var $tbody = $(this.container).find('.elements_container table tbody');
+        var $targetRow = null;
+        $tbody.find("tr").each(function() {
+            if ($(this).data("element") === elementData) {
+                $targetRow = $(this);
+                return false;
+            }
+        });
+        if ($targetRow === null) {
+            return;
+        }
+        var $btn = $targetRow.find(".apply-btn");
+        if ($btn.attr("disabled") === "disabled") {
+            return; // e.g. a child of a Section that already has the rule applied
+        }
+        if ($btn.hasClass("active") !== desired) {
+            $btn.trigger("click"); // normal toggle + parent/child cascade + CustomBuilder.update()
+        }
     },
 
     /**
@@ -1028,6 +1131,135 @@ VisibilityManager = {
         if (ruleObj["visibility_rules"] && ruleObj["visibility_rules"].length === 0) {
             delete ruleObj["visibility_rules"];
         }
+    },
+
+    /**
+     * scan the form for legacy Section visibility rules that have not
+     * been migrated yet, populating this.pendingLegacy with synthetic display-only rule objects.
+     */
+    detectLegacyRules: function() {
+        this.pendingLegacy = [];
+        this.scanElementsForDetection(CustomBuilder.data);
+    },
+
+    /**
+     * @param {Object} data - The element data node to scan (recurses into its children)
+     */
+    scanElementsForDetection: function(data) {
+        var self = this;
+        if (data === null || data === undefined) {
+            return;
+        }
+        if (data["className"] === "org.joget.apps.form.model.Section") {
+            var props = data.properties || {};
+            if (props["visibilityControl"] && props["visibilityControl"] !== "" &&
+                !props["_visibility_migrated"]) {
+                var sectionId = props["id"] || "";
+                this.pendingLegacy.push({
+                    visibility_key: "pending_" + (sectionId || this.generateGuid()),
+                    visibility_name: (sectionId || get_advtool_msg('adv.visibility.unnamed')),
+                    visibilityControl: props["visibilityControl"],
+                    visibilityValue: props["visibilityValue"] || "",
+                    regex: props["regex"] || "",
+                    join: props["join"] || "",
+                    reverse: props["reverse"] || "",
+                    _pending: true,
+                    _sectionRef: data
+                });
+            }
+        }
+        if (data.elements !== undefined && data.elements !== null && data.elements.length > 0) {
+            $.each(data.elements, function(i, child) {
+                self.scanElementsForDetection(child);
+            });
+        }
+    },
+
+    /**
+     * Render (or clear) the inline banner telling the user that N legacy rules exist and will
+     * be converted on their first change or via the "Migrate now" button. No-op when nothing
+     * is pending.
+     */
+    renderMigrationNotice: function() {
+        var self = this;
+        var $noticeContainer = $(this.container).find('.visibility-migration-notice-container');
+        $noticeContainer.empty();
+
+        if (!this.pendingLegacy || this.pendingLegacy.length === 0) {
+            return;
+        }
+
+        var count = this.pendingLegacy.length;
+        var $notice = $(
+            '<div class="alert alert-warning visibility-migration-notice">' +
+                '<i class="las la-info-circle"></i>' +
+                '<span class="notice-text">' + get_advtool_msg('adv.visibility.migrationNotice', [count]) + '</span>' +
+                '<a class="migrate-now button">' + get_advtool_msg('adv.visibility.migrateNow') + '</a>' +
+            '</div>'
+        );
+        $notice.find('.migrate-now').on('click', function() {
+            self.doMigration();
+        });
+        $noticeContainer.append($notice);
+    },
+
+    /**
+     * Do the deferred legacy migration: reuse migrateLegacyRules() to do the real model
+     * mutation (and CustomBuilder.update()), then clear the pending/preview state and re-render.
+     * @param {Function} [onDone] - Called with a {pendingKey: realKey} map (or null if nothing
+     *        was pending), letting callers act on the rule the pending card became.
+     */
+    doMigration: function(onDone) {
+        if (!this.pendingLegacy || this.pendingLegacy.length === 0) {
+            if (onDone) { onDone(null); }
+            return;
+        }
+        var pending = this.pendingLegacy;
+        var priorKeys = [];
+        for (var i = 0; i < pending.length; i++) {
+            var beforeProps = pending[i]._sectionRef.properties || {};
+            var beforeVr = beforeProps["visibility_rules"] || {};
+            priorKeys.push(Object.keys(beforeVr));
+        }
+
+        // Perform the real migration (mutates CustomBuilder.data + calls CustomBuilder.update()).
+        this.migrateLegacyRules();
+
+        // Resolve pending -> real key: the newly added key on each origin Section (after - before).
+        var mapping = {};
+        for (var j = 0; j < pending.length; j++) {
+            var afterProps = pending[j]._sectionRef.properties || {};
+            var afterVr = afterProps["visibility_rules"] || {};
+            var before = priorKeys[j];
+            var added = Object.keys(afterVr).filter(function(k) {
+                return before.indexOf(k) === -1;
+            });
+            mapping[pending[j].visibility_key] = added.length > 0 ? added[0] : null;
+        }
+
+        // Clear pending/preview state and re-render the tool from the now-real model.
+        this.pendingLegacy = [];
+        this.activePendingRule = null;
+        this.renderMigrationNotice();
+
+        $(this.container).find(".visibility_rules .sortable").empty();
+        this.renderRules();
+        this.updateTotalRuleCount();
+
+        var firstRule = $(this.container).find(".sortable .visibility_rule:eq(0)");
+        if (firstRule.length > 0) {
+            this.hideEmptyState();
+            this.setActiveRule(firstRule);
+        } else {
+            this.renderEmptyState();
+        }
+
+        CustomBuilder.showMessage(get_advtool_msg('adv.visibility.migrationDone'));
+        setTimeout(function() {
+            CustomBuilder.showMessage("");
+        }, 3500);
+
+        if (onDone) { onDone(mapping); }
     },
 
     /**

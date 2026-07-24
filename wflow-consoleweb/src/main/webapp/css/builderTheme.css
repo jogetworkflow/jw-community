@@ -2715,6 +2715,18 @@ body[builder-theme='dark'] .visibility_view .empty-state {
 body[builder-theme='dark'] .visibility_view .empty-state i {
     color: var(--theme-label-color-2);
 }
+body[builder-theme='dark'] .visibility_view .visibility_rule.pending:not(.active) {
+    background: var(--theme-primary-color-3);
+    border-color: var(--theme-label-color-2);
+}
+body[builder-theme='dark'] .visibility_view .visibility_rule.pending:hover:not(.active) {
+    background: var(--theme-primary-color-3);
+}
+body[builder-theme='dark'] .visibility_view .visibility_rule.pending .pending-badge {
+    color: var(--theme-label-color-1);
+    background: rgba(255,255,255,0.08);
+    border-color: var(--theme-label-color-2);
+}
 body[builder-theme='dark'] #components_comphead_Page-Components_list .image {
     filter: brightness(0) invert(0.7);
 }

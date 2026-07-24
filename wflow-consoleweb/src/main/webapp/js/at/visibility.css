@@ -1,5 +1,15 @@
-.visibility_view {height:100%; overflow: hidden; font-size: 13px;}
+.visibility_view {height:100%; overflow: hidden; font-size: 13px; display: flex; flex-direction: column;}
 .visibility_view a{cursor: pointer;}
+.visibility_view .visibility_content {flex: 1 1 auto; min-height: 0; display: flex; overflow: hidden;}
+.visibility_view .visibility-migration-notice-container:empty {display: none;}
+.visibility_view .visibility-migration-notice {display: flex; align-items: center; gap: 10px; margin: 0; border-radius: 0; padding: 10px 20px;}
+.visibility_view .visibility-migration-notice i {font-size: 20px; flex-shrink: 0;}
+.visibility_view .visibility-migration-notice .notice-text {flex: 1 1 auto; line-height: 1.4;}
+.visibility_view .visibility-migration-notice .migrate-now {flex-shrink: 0; white-space: nowrap;}
+.visibility_view .visibility_rule.pending {cursor: pointer; background: #fbfbfb; border-style: dashed; padding-left: 15px;}
+.visibility_view .visibility_rule.pending:hover:not(.active) {background: #eff7ff;}
+.visibility_view .visibility_rule.pending .pending-badge {display: inline-block; margin-top: 4px; font-size: 10px; text-transform: uppercase; letter-spacing: .03em; color: #8a6d3b; background: #fcf3d6; border: 1px solid #f3e2a9; border-radius: 3px; padding: 1px 6px;}
+.visibility_view .visibility_rule.pending.active .pending-badge {color: #fff; background: rgba(255,255,255,0.2); border-color: rgba(255,255,255,0.4);}
 .visibility_view .visibility_rules { width: 250px; height:100%; overflow-y: auto; display: inline-block; border-right: 2px solid #ddd; box-sizing: border-box; padding: 25px 25px 45px;}
 .visibility_view .elements_container {width: calc(100% - 250px); height:100%; overflow-y: auto; display: inline-block; box-sizing: border-box; padding: 25px 25px 45px;}
 .visibility_view .elements_container.hidden {display: none;}
