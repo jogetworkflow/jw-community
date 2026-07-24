@@ -1,6 +1,7 @@
 package org.joget.apps.app.web;
 
 import java.util.Locale;
+import java.util.Objects;
 import java.util.TimeZone;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -75,22 +76,22 @@ public class LocalLocaleResolver extends SessionLocaleResolver implements Locale
     @Override
     protected TimeZone determineDefaultTimeZone(HttpServletRequest request) {
         TimeZone timezone = null;
-        
+        TimeZone cachedTimeZone = null;
+
         if (request != null) {
             // reset profile and set hostname
             HostManager.initHost();
-            
+
             timezone = (TimeZone) request.getAttribute(SYSTEM_TIMEZONE);
-            
+
             if (timezone == null) {
                 // lookup in session
                 HttpSession session = request.getSession(false);
                 if (session != null) {
+                    cachedTimeZone = (TimeZone) session.getAttribute(SYSTEM_TIMEZONE);
                     Long defaultExpiry = (Long)session.getAttribute(SYSTEM_TIMEZONE_EXPIRY_KEY);
-                    if (defaultExpiry == null || defaultExpiry.compareTo(System.currentTimeMillis()) < 0) {
-                        session.removeAttribute(SYSTEM_TIMEZONE);
-                    } else {
-                        timezone = (TimeZone) session.getAttribute(SYSTEM_TIMEZONE);
+                    if (defaultExpiry != null && defaultExpiry.compareTo(System.currentTimeMillis()) >= 0) {
+                        timezone = cachedTimeZone;
                         request.setAttribute(SYSTEM_TIMEZONE, timezone);
                     }
                 }
@@ -134,7 +135,10 @@ public class LocalLocaleResolver extends SessionLocaleResolver implements Locale
                         if (session != null) {
                             Long expiry = System.currentTimeMillis() + CACHE_DURATION;
                             session.setAttribute(SYSTEM_TIMEZONE_EXPIRY_KEY, expiry);
-                            session.setAttribute(SYSTEM_TIMEZONE, timezone);
+                            // avoid rewriting (and re-replicating) the session attribute when the value hasn't changed
+                            if (!timezone.equals(cachedTimeZone)) {
+                                session.setAttribute(SYSTEM_TIMEZONE, timezone);
+                            }
                         }
                     }
                 }
@@ -151,7 +155,10 @@ public class LocalLocaleResolver extends SessionLocaleResolver implements Locale
         if (request != null) {
             HttpSession session = request.getSession(false);
             if (session != null) {
-                session.setAttribute(TIMEZONE_OF_USER, getWorkflowUserManager().getCurrentUsername());
+                String currentUsername = getWorkflowUserManager().getCurrentUsername();
+                if (!currentUsername.equals(session.getAttribute(TIMEZONE_OF_USER))) {
+                    session.setAttribute(TIMEZONE_OF_USER, currentUsername);
+                }
             }
         }
             
@@ -161,21 +168,21 @@ public class LocalLocaleResolver extends SessionLocaleResolver implements Locale
     @Override
     protected Locale determineDefaultLocale(HttpServletRequest request){
         Locale locale = null;
+        Locale cachedLocale = null;
         if (request != null) {
             // reset profile and set hostname
             HostManager.initHost();
-            
+
             locale = (Locale) request.getAttribute(DEFAULT_LOCALE_KEY);
-            
+
             HttpSession session = request.getSession(false);
             if (locale == null) {
                 // lookup in session
                 if (session != null) {
+                    cachedLocale = (Locale) session.getAttribute(DEFAULT_LOCALE_KEY);
                     Long defaultExpiry = (Long)session.getAttribute(DEFAULT_LOCALE_EXPIRY_KEY);
-                    if (defaultExpiry == null || defaultExpiry.compareTo(System.currentTimeMillis()) < 0) {
-                        session.removeAttribute(DEFAULT_LOCALE_KEY);
-                    } else {
-                        locale = (Locale) session.getAttribute(DEFAULT_LOCALE_KEY);
+                    if (defaultExpiry != null && defaultExpiry.compareTo(System.currentTimeMillis()) >= 0) {
+                        locale = cachedLocale;
                         request.setAttribute(DEFAULT_LOCALE_KEY, locale);
                     }
                 }
@@ -223,12 +230,15 @@ public class LocalLocaleResolver extends SessionLocaleResolver implements Locale
 
                     if (request != null) {
                         request.setAttribute(DEFAULT_LOCALE_KEY, locale);
-                        
+
                         HttpSession session = request.getSession(false);
                         if (session != null) {
                             Long expiry = System.currentTimeMillis() + CACHE_DURATION;
                             session.setAttribute(DEFAULT_LOCALE_EXPIRY_KEY, expiry);
-                            session.setAttribute(DEFAULT_LOCALE_KEY, locale);
+                            // avoid rewriting (and re-replicating) the session attribute when the value hasn't changed
+                            if (!Objects.equals(locale, cachedLocale)) {
+                                session.setAttribute(DEFAULT_LOCALE_KEY, locale);
+                            }
                         }
                     }
                 }
@@ -247,7 +257,10 @@ public class LocalLocaleResolver extends SessionLocaleResolver implements Locale
         if (request != null) {
             HttpSession session = request.getSession(false);
             if (session != null) {
-                session.setAttribute(LOCALE_OF_USER, getWorkflowUserManager().getCurrentUsername());
+                String currentUsername = getWorkflowUserManager().getCurrentUsername();
+                if (!currentUsername.equals(session.getAttribute(LOCALE_OF_USER))) {
+                    session.setAttribute(LOCALE_OF_USER, currentUsername);
+                }
             }
         }
             
