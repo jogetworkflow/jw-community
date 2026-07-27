@@ -6,7 +6,9 @@
                 name:'id',
                 label:'@@form.section.id@@',
                 type:'textfield',
-                required:'True'
+                required:'True',
+                regex_validation : '^[a-zA-Z0-9_]+$',
+                validation_message : '@@form.section.invalidId@@'
             },
             {
                 name:'label',
