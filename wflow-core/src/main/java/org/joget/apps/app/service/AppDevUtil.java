@@ -1421,24 +1421,26 @@ public class AppDevUtil {
         fileContents = compatibleNewline(fileContents);
 
         try {
-            String baseDir = AppDevUtil.getAppDevBaseDirectory();
-            String projectDirName = getAppGitDirectory(appDef);
-            File projectDir = AppDevUtil.dirSetup(baseDir, projectDirName);
-            File file = new File(projectDir, path);
+            GitCommitHelper gitCommitHelper = getGitCommitHelper(appDef);
+            if (gitCommitHelper != null) {
+                    
+                String baseDir = AppDevUtil.getAppDevBaseDirectory();
+                String projectDirName = getAppGitDirectory(appDef);
+                File projectDir = AppDevUtil.dirSetup(baseDir, projectDirName);
+                File file = new File(projectDir, path);
 
-            boolean toSave = true;
-            try {
-                if (file.exists()) {
-                    String currentContents = FileUtils.readFileToString(file, "UTF-8");
-                    toSave = !cleanForCompare(currentContents).equals(cleanForCompare(fileContents));
+                boolean toSave = true;
+                try {
+                    //if the same path already exist in the save list, always save it
+                    if (file.exists() && !gitCommitHelper.getPendingFilesToSave().containsKey(path)) {
+                        String currentContents = FileUtils.readFileToString(file, "UTF-8");
+                        toSave = !cleanForCompare(currentContents).equals(cleanForCompare(fileContents));
+                    }
+                } catch(Exception e) {
+                    // ignore
                 }
-            } catch(Exception e) {
-                // ignore
-            }
 
-            if (toSave) {
-                GitCommitHelper gitCommitHelper = getGitCommitHelper(appDef);
-                if (gitCommitHelper != null) {
+                if (toSave) {
                     gitCommitHelper.addPendingFileToSave(path, fileContents);
                     if (commitMessage != null) {
                         gitCommitHelper.addCommitMessage(commitMessage);

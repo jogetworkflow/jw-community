@@ -2,7 +2,6 @@ package org.joget.governance.lib;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import java.io.ByteArrayInputStream;
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
 import java.sql.ResultSet;
@@ -10,22 +9,25 @@ import java.sql.Statement;
 import java.util.Collection;
 import java.util.Date;
 import java.util.HashSet;
+import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import javax.sql.DataSource;
-import javax.xml.xpath.XPath;
-import javax.xml.xpath.XPathFactory;
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.xpath.XPathConstants;
 import org.apache.commons.lang.StringUtils;
 import org.joget.apps.app.dao.AppDefinitionDao;
+import org.joget.apps.app.model.AbstractAppVersionedObject;
 import org.joget.apps.app.model.AppDefinition;
 import org.joget.apps.app.model.BuilderDefinition;
 import org.joget.apps.app.model.FormDefinition;
-import org.joget.apps.app.service.AppService;
+import org.joget.apps.app.model.PackageActivityPlugin;
+import org.joget.apps.app.model.PackageDefinition;
+import org.joget.apps.app.model.PackageParticipant;
+import org.joget.apps.app.model.PluginDefaultProperties;
 import org.joget.apps.app.service.AppUtil;
-import org.joget.apps.app.service.RegexMatchesFunctionResolver;
+import org.joget.apps.app.service.DependenciesUtil;
+import org.joget.apps.app.service.DependenciesUtil.NamedDefinitionList;
 import org.joget.apps.form.dao.FormDataDao;
 import org.joget.apps.form.dao.FormDataDaoImpl;
 import org.joget.apps.form.service.CustomFormDataTableUtil;
@@ -36,13 +38,11 @@ import org.joget.governance.model.GovHealthCheckAction;
 import org.joget.governance.model.GovHealthCheckActionProvider;
 import org.joget.governance.model.GovHealthCheckActionResult;
 import org.joget.governance.model.GovHealthCheckResult;
-import org.w3c.dom.Document;
-import org.w3c.dom.NodeList;
 
 public class OrphanedFormDataCheck extends GovHealthCheckAbstract implements GovHealthCheckActionProvider {
     
     private List<GovHealthCheckAction> actions;
-    
+
     @Override
     public String getName() {
         return "OrphanedFormDataCheck";
@@ -62,7 +62,7 @@ public class OrphanedFormDataCheck extends GovHealthCheckAbstract implements Gov
     public String getDescription() {
         return "";
     }
-    
+
     @Override
     public String getClassName() {
         return getClass().getName();
@@ -97,139 +97,230 @@ public class OrphanedFormDataCheck extends GovHealthCheckAbstract implements Gov
         } else {
             result.setStatus(GovHealthCheckResult.Status.PASS);
         }
-        
+
         return result;
     }
     
     protected Set<String> getOrphanedTables() {
         Set<String> tables = getTables();
-        
+        if (tables.isEmpty()) {
+            return tables;
+        }
+
         AppDefinitionDao appDefinitionDao = (AppDefinitionDao) AppUtil.getApplicationContext().getBean("appDefinitionDao");
         Collection<AppDefinition> appDefinitionList = appDefinitionDao.findPublishedApps("name", Boolean.FALSE, null, null);
         Collection<AppDefinition> latestAppDefinitionList = appDefinitionDao.findLatestVersions(null, null, null, "name", Boolean.FALSE, null, null);
-        
-        for (AppDefinition appDef : appDefinitionList) {
-            if (appDef.getFormDefinitionList() != null) {
-                for (FormDefinition f : appDef.getFormDefinitionList()) {
-                    if (tables.contains(f.getTableName())) {
-                        tables.remove(f.getTableName());
-                    }
-                }
-            }
-            
-            //handle custom added form data table
-            if (appDef.getBuilderDefinitionList() != null) {
-                for (BuilderDefinition c : appDef.getBuilderDefinitionList()) {
-                    if (c.getType() != null
-                            && c.getType().equals(CustomFormDataTableUtil.TYPE) 
-                            && tables.contains(c.getName())) {
-                        tables.remove(c.getName());
-                    }
-                }
-            }
-        }
-        
-        for (AppDefinition appDef : latestAppDefinitionList) {
-            if (appDef.getFormDefinitionList() != null) {
-                for (FormDefinition f : appDef.getFormDefinitionList()) {
-                    if (tables.contains(f.getTableName())) {
-                        tables.remove(f.getTableName());
-                    }
-                }
-            }
-            
-            //handle custom added form data table
-            if (appDef.getBuilderDefinitionList() != null) {
-                for (BuilderDefinition c : appDef.getBuilderDefinitionList()) {
-                    if (c.getType() != null 
-                            && c.getType().equals(CustomFormDataTableUtil.TYPE) 
-                            && tables.contains(c.getName())) {
-                        tables.remove(c.getName());
-                    }
-                }
-            }
-        }
-        
+        Collection<AppDefinition> appDefinitions = getUniqueAppDefinitions(appDefinitionList, latestAppDefinitionList);
+
+        removeDefinedTables(appDefinitions, tables);
+
         if (!tables.isEmpty()) {
-            Set<String> checked = new HashSet<String>();
-            AppService appService = (AppService) AppUtil.getApplicationContext().getBean("appService");
-            XPath xpath = XPathFactory.newInstance().newXPath();
-            xpath.setXPathFunctionResolver(new RegexMatchesFunctionResolver());
-            
             //find usages
-            for (AppDefinition appDef : appDefinitionList) {
-                byte[] defXml = appService.getAppDefinitionXml(appDef, false);
-                checkUsages(defXml, tables, xpath);
-                checked.add(appDef.getAppId() + "::" + appDef.getVersion());
-            }
-            
-            for (AppDefinition appDef : latestAppDefinitionList) {
-                if (!checked.contains(appDef.getAppId() + "::" + appDef.getVersion())) {
-                    byte[] defXml = appService.getAppDefinitionXml(appDef, false);
-                    checkUsages(defXml, tables, xpath);
-                    checked.add(appDef.getAppId() + "::" + appDef.getVersion());
+            for (AppDefinition appDef : appDefinitions) {
+                if (tables.isEmpty()) {
+                    break;
+                }
+                try {
+                    checkDefinitionUsages(appDef, tables);
+                } catch (Exception e) {
+                    LogUtil.error(OrphanedFormDataCheck.class.getName(), e, "Failed checking usages for app " + appDef.getAppId() + "::" + appDef.getVersion());
                 }
             }
         }
-        
         return tables;
     }
-    
-    protected static void checkUsages(byte[] defXml, Set<String> tables, XPath xpath) {
-        if (!tables.isEmpty()) {
-            Set<String> temp = new HashSet<String>();
-            temp.addAll(tables);
-            
-            try {
-                DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
-                factory.setExpandEntityReferences(false);
-                DocumentBuilder builder = factory.newDocumentBuilder();
-                ByteArrayInputStream input =  new ByteArrayInputStream(defXml);
-                Document xml = builder.parse(input);
-                
-                for (String keyword : temp) {
-                    String expression = "//json[contains(text(),'\""+keyword+"\"')]";    // "keyword"
-                    expression += " | //pluginProperties[contains(text(),'\""+keyword+"\"')] ";
 
-                    //Hash variable
-                    //String regex = ".*#[^#]+\\."+StringUtil.escapeRegex(keyword)+"([\\}?\\.\\[]+[^#]*)*#.*";
-                    expression += " | //json[contains(text(),'."+keyword+"}')]";    // .keyword}
-                    expression += " | //pluginProperties[contains(text(),'."+keyword+"}')] ";
-                    expression += " | //json[contains(text(),'."+keyword+"?')]";    // .keyword?
-                    expression += " | //pluginProperties[contains(text(),'."+keyword+"?')] ";
-                    expression += " | //json[contains(text(),'."+keyword+".')]";    // .keyword.
-                    expression += " | //pluginProperties[contains(text(),'."+keyword+".')] ";
-                    expression += " | //json[contains(text(),'."+keyword+"[')]";    // .keyword[
-                    expression += " | //pluginProperties[contains(text(),'."+keyword+"[')] ";
-                    expression += " | //json[contains(text(),'."+keyword+"#')]";    // .keyword#
-                    expression += " | //pluginProperties[contains(text(),'."+keyword+"#')] ";
-                    
-                    //handle for beanshell
-                    expression += " | //json[contains(text(),'\""+keyword+"\\\"')]";   // "keyword\"
-                    expression += " | //pluginProperties[contains(text(),'\""+keyword+"\\\"')] ";
+    private static Collection<AppDefinition> getUniqueAppDefinitions(Collection<AppDefinition> appDefinitionList, Collection<AppDefinition> latestAppDefinitionList) {
+        Map<String, AppDefinition> appDefinitions = new LinkedHashMap<String, AppDefinition>();
+        addUniqueAppDefinitions(appDefinitions, appDefinitionList);
+        addUniqueAppDefinitions(appDefinitions, latestAppDefinitionList);
+        return appDefinitions.values();
+    }
 
-                    //handle for jdbc query
-                    expression += " | //json[contains(text(),'app_fd_"+keyword+"')]";   // app_fd_keyword
-                    expression += " | //pluginProperties[contains(text(),'app_fd_"+keyword+"')] ";
-
-                    //handle for form hash variable
-                    expression += " | //json[contains(text(),'form."+keyword+".')]";   // form.keyword.
-                    expression += " | //pluginProperties[contains(text(),'form."+keyword+".')] ";
-                    
-                    NodeList nodeList = (NodeList) xpath.compile(expression).evaluate(xml, XPathConstants.NODESET);
-                    if (nodeList.getLength() > 0) {
-                        tables.remove(keyword);
-                    }
+    private static void addUniqueAppDefinitions(Map<String, AppDefinition> appDefinitions, Collection<AppDefinition> appDefinitionList) {
+        if (appDefinitionList != null) {
+            for (AppDefinition appDef : appDefinitionList) {
+                String appDefinitionKey = appDef.getAppId() + "::" + appDef.getVersion();
+                if (!appDefinitions.containsKey(appDefinitionKey)) {
+                    appDefinitions.put(appDefinitionKey, appDef);
                 }
-            } catch (Exception e) {
-                LogUtil.error(OrphanedFormDataCheck.class.getName(), e, "");
             }
         }
     }
-    
+
+    private static void removeDefinedTables(Collection<AppDefinition> appDefinitionList, Set<String> tables) {
+        if (appDefinitionList != null) {
+            for (AppDefinition appDef : appDefinitionList) {
+                if (tables.isEmpty()) {
+                    break;
+                }
+                removeDefinedTables(appDef, tables);
+            }
+        }
+    }
+
+    private static void removeDefinedTables(AppDefinition appDef, Set<String> tables) {
+        if (tables.isEmpty()) {
+            return;
+        }
+
+        if (appDef.getFormDefinitionList() != null) {
+            for (FormDefinition f : appDef.getFormDefinitionList()) {
+                tables.remove(f.getTableName());
+            }
+        }
+
+        //handle custom added form data table
+        if (appDef.getBuilderDefinitionList() != null) {
+            for (BuilderDefinition c : appDef.getBuilderDefinitionList()) {
+                if (CustomFormDataTableUtil.TYPE.equals(c.getType())) {
+                    tables.remove(c.getName());
+                }
+            }
+        }
+    }
+
+    /**
+     * Removes tables referenced by app definition JSON/plugin property fields
+     * without exporting the full app definition XML.
+     *
+     * @param appDef app definition to scan
+     * @param tables table names without the app_fd_ prefix
+     */
+    protected static void checkDefinitionUsages(AppDefinition appDef, Set<String> tables) {
+        if (appDef == null || tables.isEmpty()) {
+            return;
+        }
+
+        for (NamedDefinitionList list : DependenciesUtil.getJsonDefinitionLists(appDef)) {
+            if (tables.isEmpty()) {
+                break;
+            }
+            checkJsonUsages(list.getDefinitions(), tables);
+        }
+        checkPluginDefaultPropertiesUsages(appDef.getPluginDefaultPropertiesList(), tables);
+        checkPackageDefinitionUsages(appDef.getPackageDefinitionList(), tables);
+    }
+
+    private static void checkJsonUsages(Collection<? extends AbstractAppVersionedObject> appObjectList, Set<String> tables) {
+        if (tables.isEmpty()) {
+            return;
+        }
+        
+        if (appObjectList != null) {
+            for (AbstractAppVersionedObject appObject : appObjectList) {
+                if (tables.isEmpty()) {
+                    break;
+                }
+                checkTextUsage(appObject.getJson(), tables);
+            }
+        }
+    }
+
+    private static void checkPluginDefaultPropertiesUsages(Collection<PluginDefaultProperties> pluginDefaultPropertiesList, Set<String> tables) {
+        if (tables.isEmpty()) {
+            return;
+        }
+        
+        if (pluginDefaultPropertiesList != null) {
+            for (PluginDefaultProperties pluginDefaultProperties : pluginDefaultPropertiesList) {
+                if (tables.isEmpty()) {
+                    break;
+                }
+                checkTextUsage(pluginDefaultProperties.getPluginProperties(), tables);
+            }
+        }
+    }
+
+    private static void checkPackageDefinitionUsages(Collection<PackageDefinition> packageDefinitionList, Set<String> tables) {
+        if (tables.isEmpty()) {
+            return;
+        }
+        
+        if (packageDefinitionList != null) {
+            for (PackageDefinition packageDef : packageDefinitionList) {
+                if (tables.isEmpty()) {
+                    break;
+                }
+                if (packageDef.getPackageActivityPluginMap() != null) {
+                    for (PackageActivityPlugin activityPlugin : packageDef.getPackageActivityPluginMap().values()) {
+                        if (tables.isEmpty()) {
+                            break;
+                        }
+                        checkTextUsage(activityPlugin.getPluginProperties(), tables);
+                    }
+                }
+                if (packageDef.getPackageParticipantMap() != null) {
+                    for (PackageParticipant participant : packageDef.getPackageParticipantMap().values()) {
+                        if (tables.isEmpty()) {
+                            break;
+                        }
+                        checkTextUsage(participant.getPluginProperties(), tables);
+                    }
+                }
+            }
+        }
+    }
+
+    private static void checkTextUsage(String text, Set<String> tables) {
+        if (StringUtils.isNotEmpty(text) && !tables.isEmpty()) {
+            removeMatchedTables(text, tables);
+        }
+    }
+
+    /**
+     * Compares one usage-bearing XML node against all currently unresolved
+     * tables and removes each table that has a matching reference.
+     */
+    private static boolean removeMatchedTables(String text, Set<String> tables) {
+        for (Iterator<String> iterator = tables.iterator(); iterator.hasNext();) {
+            String keyword = iterator.next();
+            if (containsTableUsage(text, keyword)) {
+                iterator.remove();
+                if (tables.isEmpty()) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    /**
+     * Mirrors the previous XPath contains checks for JSON/plugin property table
+     * references, including hash variables, BeanShell strings, and JDBC table
+     * names with the app_fd_ prefix.
+     * <p>
+     * The {@code .keyword}/{@code .keyword?}/{@code .keyword.}/{@code .keyword[}/
+     * {@code .keyword#} checks below are deliberately a looser literal
+     * approximation of a hash variable reference rather than the stricter
+     * {@code #...#}-anchored regex {@code DependenciesUtil} uses for the
+     * dependency-usage viewer: this predicate only ever removes a table from
+     * the orphan-candidate set, so over-matching just means being
+     * conservative about flagging a table as orphaned, whereas the stricter
+     * regex is required where a false positive would misreport an actual
+     * dependency in the UI. Do not "fix" this by swapping in the regex
+     * without confirming it can't cause tables to be reported as orphaned
+     * that previously were not.
+     */
+    private static boolean containsTableUsage(String text, String keyword) {
+        if (!text.contains(keyword)) {
+            return false;
+        }
+
+        return DependenciesUtil.containsQuoted(text, keyword)
+                || text.contains("." + keyword + "}")    // .keyword}
+                || text.contains("." + keyword + "?")    // .keyword?
+                || text.contains("." + keyword + ".")    // .keyword.
+                || text.contains("." + keyword + "[")    // .keyword[
+                || text.contains("." + keyword + "#")    // .keyword#
+                || DependenciesUtil.containsBeanshellEscaped(text, keyword)
+                || DependenciesUtil.containsAppFdTable(text, keyword)
+                || DependenciesUtil.containsFormHashKeyword(text, keyword);
+    }
+
     protected Set<String> getTables() {
         Set<String> tables = new HashSet<String>();
-        
+
         DataSource ds = (DataSource)AppUtil.getApplicationContext().getBean("setupDataSource");
         Connection con = null;
         ResultSet rs = null;
@@ -251,7 +342,7 @@ public class OrphanedFormDataCheck extends GovHealthCheckAbstract implements Gov
                     rs.close();
                 }
             } catch(Exception e) {
-            }  
+            }
             try {
                 if (con != null) {
                     con.close();
@@ -259,7 +350,7 @@ public class OrphanedFormDataCheck extends GovHealthCheckAbstract implements Gov
             } catch(Exception e) {
             }
         }
-        
+
         return tables;
     }
 

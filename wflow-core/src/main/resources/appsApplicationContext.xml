@@ -248,7 +248,6 @@
         <property name="privateKey" value="Fe0bTj0H_UYcg7qnFzx0qBl-H90RuptO6r_vOUZJWvI"/>
     </bean>
     
-    <!-- Important: this is to let the XPath object created before Security Manageger initialized -->
     <bean id="dependenciesService" class="org.joget.apps.app.service.DependenciesUtil">
     </bean>
 
