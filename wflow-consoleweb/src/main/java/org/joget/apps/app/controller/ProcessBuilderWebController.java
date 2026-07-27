@@ -12,7 +12,9 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.Writer;
 import java.sql.SQLException;
+import java.util.Date;
 import java.util.Iterator;
+import java.util.Objects;
 import javax.annotation.Resource;
 import javax.imageio.ImageIO;
 import jakarta.servlet.http.HttpServletRequest;
@@ -45,6 +47,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Controller;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.support.TransactionSynchronization;
+import org.springframework.transaction.support.TransactionSynchronizationManager;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -92,11 +96,44 @@ public class ProcessBuilderWebController {
         model.addAttribute("systemTheme", systemTheme);
         model.addAttribute("appId", appDef.getId());
         model.addAttribute("version", appDef.getVersion());
+
+        // Capture whether the design is being updated before loading the currently committed
+        // snapshot. The client may display this snapshot, but it blocks saves and merges the
+        // latest committed definition before allowing another save.
+        boolean processMigrationInProgress = appService.hasProcessUpdate(appDef);
+        PackageDefinition packageDefBefore = appDef.getPackageDefinition();
+        Long versionBefore = (packageDefBefore != null) ? packageDefBefore.getVersion() : null;
+        Long dateModifiedBefore = (packageDefBefore != null && packageDefBefore.getDateModified() != null) ? packageDefBefore.getDateModified().getTime() : null;
+
+        String json = PropertyUtil.propertiesJsonLoadProcessing(AppUtil.getXpdlAndMappingJson(appDef));
+
+        // A save can acquire the lock immediately after the check above returns false, and a
+        // one-time status check cannot catch a write whose entire acquire/modify/release cycle
+        // fits inside the time just spent reading. Re-check hasProcessUpdate, and also compare
+        // the package version/modification time the JSON was built from against a genuinely
+        // fresh read of the committed values: either one changing means a write touched this
+        // package while we were reading it, whether or not its lock was held at either boundary
+        // check. The re-read must NOT go through getAppDefinition()/loadAppDefinition(): both
+        // resolve the AppDefinition through the current Hibernate session, whose persistence
+        // context hands back the already-managed instance (with its stale package collection)
+        // instead of re-reading the committed row, so a concurrent save cycle would be
+        // invisible. A scalar metadata query reads the current committed values directly,
+        // bypassing that first-level cache.
+        Object[] freshPackageMeta = packageDefinitionDao.getPackageMetadata(appId, appDef.getVersion());
+        Long versionAfter = (freshPackageMeta != null) ? (Long) freshPackageMeta[0] : null;
+        Long dateModifiedAfter = (freshPackageMeta != null && freshPackageMeta[1] != null) ? ((Date) freshPackageMeta[1]).getTime() : null;
+
+        if (appService.hasProcessUpdate(appDef) || !Objects.equals(versionBefore, versionAfter) || !Objects.equals(dateModifiedBefore, dateModifiedAfter)) {
+            processMigrationInProgress = true;
+        }
+
+        Long packageVersion = (versionBefore != null) ? versionBefore : 1L;
+
         model.addAttribute("appDefinition", appDef);
-        model.addAttribute("packageVersion", (appDef.getPackageDefinition() != null)?(appDef.getPackageDefinition().getVersion()):1);
-        
-        model.addAttribute("json", PropertyUtil.propertiesJsonLoadProcessing(AppUtil.getXpdlAndMappingJson(appDef)));
-        
+        model.addAttribute("packageVersion", packageVersion);
+        model.addAttribute("processMigrationInProgress", processMigrationInProgress);
+        model.addAttribute("json", json);
+
         return "pbuilder/pbuilder";
     }
     
@@ -338,9 +375,24 @@ public class ProcessBuilderWebController {
                     jsonObject.put("error", error);
                 }
             } finally {
-                appService.tryReleaseProcessUpdate(appDef);
+                // Releasing here, before this @Transactional method returns, would drop the lock
+                // while the save is still uncommitted: another reader could then observe no lock
+                // in place and read the old, still-current committed package. Defer the release
+                // to afterCompletion so it only happens once the transaction's outcome (commit or
+                // rollback) is final and durable.
+                final AppDefinition releasedAppDef = appDef;
+                if (TransactionSynchronizationManager.isSynchronizationActive() && TransactionSynchronizationManager.isActualTransactionActive()) {
+                    TransactionSynchronizationManager.registerSynchronization(new TransactionSynchronization() {
+                        @Override
+                        public void afterCompletion(int status) {
+                            appService.tryReleaseProcessUpdate(releasedAppDef);
+                        }
+                    });
+                } else {
+                    appService.tryReleaseProcessUpdate(releasedAppDef);
+                }
             }
-            
+
             jsonObject.put("processMigration", appService.hasProcessUpdate(appDef));
         } else {
             jsonObject.put("error", ResourceBundleUtil.getMessage("pbuilder.migrationFailed"));
@@ -366,7 +418,7 @@ public class ProcessBuilderWebController {
         jsonObject.write(writer);
     }
     
-    @RequestMapping({"/console/app/(*:appId)/(~:version)/process/builder/json"})
+    @RequestMapping({"/console/app/(*:appId)/(~:version)/process/builder/json", "/json/console/app/(*:appId)/(~:version)/process/builder/json"})
     public void getJson(Writer writer, HttpServletRequest request, HttpServletResponse response, @RequestParam(value = "appId") String appId, @RequestParam(value = "version", required = false) String version) throws IOException {
         AppDefinition appDef = appService.getAppDefinition(appId, version);
         if (appDef == null) {
@@ -374,7 +426,36 @@ public class ProcessBuilderWebController {
             return;
         }
         
+        if (appDef != null && appService.hasProcessUpdate(appDef)) {
+            LogUtil.warn(ProcessBuilderWebController.class.getName(), "Process Builder save/migration is currently in progress. GET request for /web/console/app/" + appDef.getAppId() + "/" + appDef.getVersion() + "/process/builder/json is rejected.");
+            response.sendError(HttpServletResponse.SC_SERVICE_UNAVAILABLE, ResourceBundleUtil.getMessage("pbuilder.processDesignUpdateInProgress"));
+            return;
+        }
+
+        // Snapshot the package metadata the JSON is about to be built from.
+        PackageDefinition packageDefBefore = appDef.getPackageDefinition();
+        Long versionBefore = (packageDefBefore != null) ? packageDefBefore.getVersion() : null;
+        Long dateModifiedBefore = (packageDefBefore != null && packageDefBefore.getDateModified() != null) ? packageDefBefore.getDateModified().getTime() : null;
+
         String json = AppUtil.getXpdlAndMappingJson(appDef);
+
+        // The lock check above only guards the moment before generation began; a save could
+        // acquire the lock, commit, and release entirely while the JSON above was being assembled,
+        // leaving the returned payload stale or internally mixed. Re-check the lock and compare the
+        // package version/modification time against a genuinely fresh read of the committed values
+        // (a scalar query that bypasses the Hibernate first-level cache, unlike reloading the
+        // managed AppDefinition). If either changed, reject with 503 rather than return data that
+        // may already be out of date.
+        Object[] freshPackageMeta = packageDefinitionDao.getPackageMetadata(appDef.getAppId(), appDef.getVersion());
+        Long versionAfter = (freshPackageMeta != null) ? (Long) freshPackageMeta[0] : null;
+        Long dateModifiedAfter = (freshPackageMeta != null && freshPackageMeta[1] != null) ? ((Date) freshPackageMeta[1]).getTime() : null;
+
+        if (appService.hasProcessUpdate(appDef) || !Objects.equals(versionBefore, versionAfter) || !Objects.equals(dateModifiedBefore, dateModifiedAfter)) {
+            LogUtil.warn(ProcessBuilderWebController.class.getName(), "Process Builder save/migration committed while generating JSON. GET request for /web/console/app/" + appDef.getAppId() + "/" + appDef.getVersion() + "/process/builder/json is rejected.");
+            response.sendError(HttpServletResponse.SC_SERVICE_UNAVAILABLE, ResourceBundleUtil.getMessage("pbuilder.processDesignUpdateInProgress"));
+            return;
+        }
+
         writer.write(PropertyUtil.propertiesJsonLoadProcessing(json));
     }
     

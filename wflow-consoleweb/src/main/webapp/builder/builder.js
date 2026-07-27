@@ -33,7 +33,8 @@ window._CustomBuilder = {
                 cancelEditProperties : "",
                 getBuilderItemName : "",
                 getBuilderProperties : "",
-                saveBuilderProperties : ""
+                saveBuilderProperties : "",
+                builderCanEnableSaveButtons : ""
             }
         },
         advanced_tools : {
@@ -1651,8 +1652,17 @@ window._CustomBuilder = {
                         }
 
                         setTimeout(function(){
-                            $("#save-btn").removeAttr("disabled");
-                            $("#save-btn-toolbar").removeAttr("disabled");
+                            var canEnableSaveButtons = true;
+                            if (CustomBuilder.config.builder.callbacks["builderCanEnableSaveButtons"] !== undefined &&
+                                    CustomBuilder.config.builder.callbacks["builderCanEnableSaveButtons"] !== "") {
+                                canEnableSaveButtons = CustomBuilder.callback(
+                                        CustomBuilder.config.builder.callbacks["builderCanEnableSaveButtons"], [d]) !== false;
+                            }
+
+                            if (canEnableSaveButtons) {
+                                $("#save-btn").removeAttr("disabled");
+                                $("#save-btn-toolbar").removeAttr("disabled");
+                            }
                             if (CustomBuilder.Builder.isBuilderTheme()) {
                                 if(d.success === true){
                                     CustomBuilder.Builder.updateSaveButtonStatus(true);
@@ -1870,7 +1880,7 @@ window._CustomBuilder = {
     /*
      * Show notifcation message
      */
-    showMessage: function(message, type, center) {
+    showMessage: function(message, type, center, delayOverride) {
         if (message && message !== "") {
             if (CustomBuilder.Builder.isBuilderTheme() && type !== "danger") {
                 $("#loadingMessage").text(message);
@@ -1894,6 +1904,9 @@ window._CustomBuilder = {
                 $('.toast-danger').each(function(){
                     $(this).toast("hide");
                 });
+            }
+            if (delayOverride !== undefined && type !== "danger") {
+                delay = delayOverride;
             }
             var toast = $('<div id="'+id+'" role="alert" aria-live="assertive" aria-atomic="true" class="toast alert-dismissible toast-'+type+'" data-autohide="true">\
                 '+message+'\
@@ -2084,9 +2097,14 @@ window._CustomBuilder = {
                     return;
                 }
             },
-            error: function() {
+            error: function(err) {
                 currentSaved = $('#cbuilder-json-current').val();
                 merged = $('#cbuilder-json').val();
+                
+                if (CustomBuilder.config.builder.callbacks["showDiffGetDefinitionUrlFailed"] !== undefined &&
+                        CustomBuilder.config.builder.callbacks["showDiffGetDefinitionUrlFailed"] !== "") {
+                    merged = CustomBuilder.callback(CustomBuilder.config.builder.callbacks["showDiffGetDefinitionUrlFailed"], [err, merged]);
+                }
             },
             complete: function() {
                 if (merged !== undefined && callback) {
@@ -9170,9 +9188,20 @@ window._CustomBuilder.Builder = {
      * Reset the Save button
      */
     resetSaveButton: function() {
-        //re-enable save button if disabled
-        $("#save-btn").removeAttr("disabled");
-        $("#save-btn-toolbar").removeAttr("disabled");
+        var canEnableSaveButtons = true;
+        if (CustomBuilder.config.builder.callbacks["builderCanEnableSaveButtons"] !== undefined &&
+                CustomBuilder.config.builder.callbacks["builderCanEnableSaveButtons"] !== "") {
+            canEnableSaveButtons = CustomBuilder.callback(
+                    CustomBuilder.config.builder.callbacks["builderCanEnableSaveButtons"], [{}]) !== false;
+        }
+        if (canEnableSaveButtons) {
+            //re-enable save button if disabled
+            $("#save-btn").removeAttr("disabled");
+            $("#save-btn-toolbar").removeAttr("disabled");
+        } else {
+            $("#save-btn").attr("disabled", "disabled");
+            $("#save-btn-toolbar").attr("disabled", "disabled");
+        }
         $("#loadingMessage").text("");
         //revert back the button
         $("#save-btn > i").removeClass("fas fa-spinner fa-spin");

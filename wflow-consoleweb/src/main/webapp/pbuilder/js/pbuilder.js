@@ -5,6 +5,10 @@ ProcessBuilder = {
     updatePasteElement: true,
     changeNodeId: false,
     disableUpdate: false,
+    processMigrationBlocked: false,
+    processMigrationCheckerActive: false,
+    processMigrationMergeRequired: false,
+    processMigrationReloadRequired: false,
     
     /*
      * Intialize the builder, called from CustomBuilder.initBuilder
@@ -121,6 +125,10 @@ ProcessBuilder = {
             
             $.when.apply($, deferreds).then(function() {
                 if (callback) {
+                    if (CustomBuilder.config.builder.options["processMigrationInProgress"]) {
+                        ProcessBuilder.showProcessMigrationChecker({processMigration : true}, true);
+                    }
+
                     callback();
                 }
             });
@@ -6420,6 +6428,18 @@ ProcessBuilder = {
      * validate before post to save
      */                
     beforeSaveValidation : function() {
+        if (ProcessBuilder.processMigrationReloadRequired) {
+            $("#save-btn, #save-btn-toolbar").attr("disabled", "disabled");
+            CustomBuilder.showMessage(get_cbuilder_msg("pbuilder.processDesignMergeFailed"), "danger");
+            return false;
+        }
+
+        if (ProcessBuilder.processMigrationBlocked) {
+            $("#save-btn, #save-btn-toolbar").attr("disabled", "disabled");
+            CustomBuilder.showMessage(get_cbuilder_msg("pbuilder.migrationInProgress"), "warning");
+            return false;
+        }
+
         if (!ProcessBuilder.validate()) {
             CustomBuilder.showMessage(get_cbuilder_msg("pbuilder.label.designInvalid"), "danger");
             return false;
@@ -8145,22 +8165,74 @@ ProcessBuilder = {
     },
             
     builderSaveFailed : function(data) {
-        ProcessBuilder.showProcessMigrationChecker(data);
+        ProcessBuilder.showProcessMigrationChecker(data, true);
     },
-      
+
+    builderCanEnableSaveButtons : function(data) {
+        return !ProcessBuilder.processMigrationBlocked && !ProcessBuilder.processMigrationReloadRequired && data.processMigration !== true;
+    },
+
+    showDiffGetDefinitionUrlFailed : function (err, merged) {
+        var errorBody = err.responseJSON;
+
+        if (!errorBody && err.responseText) {
+            try {
+                errorBody = JSON.parse(err.responseText);
+            } catch (e) {
+                errorBody = {error : { message: get_cbuilder_msg("pbuilder.processDesignUpdateInProgress") }};
+            }
+        }
+        if (errorBody && errorBody.error && errorBody.error.message) {
+            CustomBuilder.showMessage(errorBody.error.message, "danger");
+        }
+
+        ProcessBuilder.showProcessMigrationChecker({processMigration : true}, true);
+        return;
+    },
+
     /**
      * Show a message to block the save button if there is process migration in progress. Unblock when it is done.
      */                
-    showProcessMigrationChecker: function(data) {
+    showProcessMigrationChecker: function(data, updateAndMerge = false) {
         if (data.processMigration) {
+            ProcessBuilder.processMigrationBlocked = true;
+            ProcessBuilder.processMigrationMergeRequired = ProcessBuilder.processMigrationMergeRequired || updateAndMerge;
+            $("#save-btn, #save-btn-toolbar").attr("disabled", "disabled");
+
             if ($("#processMigrationLoader").length === 0) {
                 $("#save-btn").parent().append('<div id="processMigrationLoader" class="alert alert-warning"><i class="las la-circle-notch fa-spin"></i> '+get_cbuilder_msg("pbuilder.migrationInProgress")+'</div>');
-            }  
-            
+            }
+
+            if (ProcessBuilder.processMigrationCheckerActive) {
+                return;
+            }
+            ProcessBuilder.processMigrationCheckerActive = true;
+
+            var finishMigrationCheck = function(clearDangerToasts) {
+                if (ProcessBuilder.processMigrationCheckerActive) {
+                    return;
+                }
+
+                if (clearDangerToasts !== false) {
+                    $('.toast-danger').each(function(){
+                        $(this).toast('hide');
+                    });
+                }
+                ProcessBuilder.processMigrationBlocked = false;
+                ProcessBuilder.processMigrationMergeRequired = false;
+                CustomBuilder.config.builder.options["processMigrationInProgress"] = false;
+                $("#processMigrationLoader").remove();
+                if (ProcessBuilder.processMigrationReloadRequired) {
+                    $("#save-btn, #save-btn-toolbar").attr("disabled", "disabled");
+                } else {
+                    $("#save-btn, #save-btn-toolbar").removeAttr("disabled");
+                }
+            };
+
             //add a progress checker
             var checker = function() {
-                $("#save-btn").attr("disabled", "disabled");
-                
+                $("#save-btn, #save-btn-toolbar").attr("disabled", "disabled");
+
                 $.ajax({ 
                     type: "POST", 
                     url: CustomBuilder.contextPath + '/web/json/console/app/' + CustomBuilder.appId + '/' + CustomBuilder.appVersion + '/process/builder/processUpdateCheck',
@@ -8176,18 +8248,62 @@ ProcessBuilder = {
                                 checker();
                             }, 5000);
                         } else {
-                            $("#processMigrationLoader").remove();
-                            $("#save-btn").removeAttr("disabled");
+                            var mergeRequired = ProcessBuilder.processMigrationMergeRequired;
+                            ProcessBuilder.processMigrationCheckerActive = false;
+
+                            if (mergeRequired) {
+                                var mergeSettled = false;
+                                var mergeTimeoutId;
+                                var settleMerge = function(clearDangerToasts) {
+                                    if (mergeSettled) {
+                                        return false;
+                                    }
+
+                                    mergeSettled = true;
+                                    clearTimeout(mergeTimeoutId);
+                                    finishMigrationCheck(clearDangerToasts);
+                                    return true;
+                                };
+
+                                mergeTimeoutId = setTimeout(function(){
+                                    $('.toast-danger').each(function(){
+                                        $(this).toast('hide');
+                                    });
+                                    ProcessBuilder.processMigrationReloadRequired = true;
+                                    CustomBuilder.showMessage(get_cbuilder_msg("pbuilder.processDesignMergeFailed"), "danger");
+                                    settleMerge(false);
+                                }, 8000);
+
+                                CustomBuilder.merge(function(merged){
+                                    if (mergeSettled) {
+                                        return;
+                                    }
+                                    if (merged) {
+                                        //make the message show until user dismiss it.
+                                        CustomBuilder.showMessage(get_cbuilder_msg("pbuilder.processDesignMergedWithRemoteChanges"), "info", false, 0);
+                                    }
+                                    ProcessBuilder.processMigrationReloadRequired = false;
+                                    settleMerge();
+                                });
+                            } else {
+                                ProcessBuilder.processMigrationReloadRequired = false;
+                                finishMigrationCheck();
+                            }
                         }
+                    },
+                    error: function() {
+                        setTimeout(function(){
+                            checker();
+                        }, 5000);
                     }
                 });
             };
-            
+
             setTimeout(function(){
                 checker();
             }, 3500);
         }
-    },        
+    },
 
     /*
      * Prepare the selector based on overview path parameter

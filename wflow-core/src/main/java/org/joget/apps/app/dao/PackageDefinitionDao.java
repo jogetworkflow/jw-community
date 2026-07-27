@@ -21,6 +21,22 @@ public interface PackageDefinitionDao extends VersionedObjectDao<PackageDefiniti
     PackageDefinition loadAppPackageDefinition(String appId, Long appVersion);
 
     /**
+     * Reads the package version and modification time for an app version directly from the
+     * database, bypassing the Hibernate first-level cache and the app definition caches.
+     * <p>
+     * Loading the {@code AppDefinition}/{@code PackageDefinition} entity would let the persistence
+     * context return the already-managed (possibly stale) instance without re-reading the committed
+     * row, hiding a concurrent package save. This scalar read reflects the latest committed values,
+     * so a Process Builder read can detect a save that committed while it was generating JSON.
+     * </p>
+     * @param appId App id
+     * @param appVersion App version
+     * @return {@code Object[]{Long version, java.util.Date dateModified}}, or null if the app
+     *         version has no package definition
+     */
+    Object[] getPackageMetadata(String appId, Long appVersion);
+
+    /**
      * Loads the package definition based on a process definition ID
      * @param packageId
      * @param packageVersion
@@ -120,6 +136,24 @@ public interface PackageDefinitionDao extends VersionedObjectDao<PackageDefiniti
      * @return
      */
     AppDefinition getAppDefinitionByPackage(String packageId, Long packageVersion);
+
+    /**
+     * Clears cached package metadata for the app definition.
+     * @param appDef App definition whose package metadata was changed
+     */
+    void clearPackageDefinitionCaches(AppDefinition appDef);
+
+    /**
+     * Clears cached package metadata for the app definition.
+     * <p>
+     * When {@code clearCurrentSession} is true, the given {@link AppDefinition} is evicted from
+     * the current Hibernate session so its package collection can be re-fetched. The rest of the
+     * persistence context is left intact.
+     * </p>
+     * @param appDef App definition whose package metadata was changed
+     * @param clearCurrentSession true to evict the given app definition from the current session
+     */
+    void clearPackageDefinitionCaches(AppDefinition appDef, boolean clearCurrentSession);
 
     /**
      * Merge an existing package definition

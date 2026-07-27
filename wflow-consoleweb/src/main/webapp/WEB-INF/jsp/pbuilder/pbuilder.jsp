@@ -70,12 +70,13 @@
     {
         "builder" : {
             "options" : {
-                "getDefinitionUrl" : "${pageContext.request.contextPath}/web/console/app/${appId}/${version}/process/builder/json",
+                "getDefinitionUrl" : "${pageContext.request.contextPath}/web/json/console/app/${appId}/${version}/process/builder/json",
                 "rightPropertyPanel" : true,
                 "defaultBuilder" : true,
                 "submitDiff" : true,
                 "marketplacePaletteClass" : "org.joget.plugin.base.ApplicationPlugin",
-                "idSuggestionFormat" : "camelCase"
+                "idSuggestionFormat" : "camelCase",
+                "processMigrationInProgress" : ${processMigrationInProgress}
             },
             "callbacks" : {
                 "initBuilder" : "ProcessBuilder.initBuilder",
@@ -96,8 +97,10 @@
                 "saveEditProperties" : "ProcessBuilder.saveEditProperties",
                 "builderSaved" : "ProcessBuilder.builderSaved",
                 "builderSaveFailed" : "ProcessBuilder.builderSaveFailed",
+                "builderCanEnableSaveButtons" : "ProcessBuilder.builderCanEnableSaveButtons",
                 "getOverviewPathElementSelector" : "ProcessBuilder.getOverviewPathElementSelector",
-                "marketplaceReloadPalette" : "ProcessBuilder.marketplaceReloadPalette"
+                "marketplaceReloadPalette" : "ProcessBuilder.marketplaceReloadPalette",
+                "showDiffGetDefinitionUrlFailed" : "ProcessBuilder.showDiffGetDefinitionUrlFailed"
             },
             "properties" : {
                 "packageVersion" : "${packageVersion}"

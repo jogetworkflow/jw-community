@@ -61,8 +61,24 @@ public class AppDefCache {
         LogUtil.debug(AppDefCache.class.getName(), "All caches with `"+cacheKey+"` prefix are removed.");
     }
     
+    /**
+     * Puts a value stamped with an explicit app modified time instead of wall-clock insertion time.
+     * <p>
+     * {@link #getCacheElement} treats an element as stale once {@code creationTime < dateModified}
+     * of the {@link AppDefinition} passed on read. Stamping with {@link System#currentTimeMillis()}
+     * (see {@link #put(String, Object, AppDefinition)}) leaves a race: a reader that loaded
+     * pre-change data can repopulate the cache <em>after</em> an eviction, stamping the stale value
+     * with a wall-clock time newer than the new {@code dateModified}, so it is never detected as
+     * stale and outlives the change. Callers that know the modification time of the data actually
+     * read should pass it here: a stale value then carries the old {@code dateModified} and is
+     * evicted on the next read that sees the newer one.
+     * </p>
+     * @param key cache key
+     * @param value value to cache
+     * @param appDef app definition the value belongs to
+     */
     public void put(String key, Object value, AppDefinition appDef) {
-        CacheElement element = new CacheElement(key, value, System.currentTimeMillis());
+        CacheElement element = new CacheElement(key, value, appDef.getDateModified().getTime());
         cache.put(key, element);
         LogUtil.debug(AppDefCache.class.getName(), key + " is refreshed.");
     }

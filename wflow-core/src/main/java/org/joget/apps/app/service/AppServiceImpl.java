@@ -18,9 +18,6 @@ import java.io.UnsupportedEncodingException;
 import java.io.Writer;
 import java.net.URISyntaxException;
 import java.net.URLDecoder;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -51,6 +48,7 @@ import org.apache.commons.lang.StringUtils;
 import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.api.ResetCommand;
 import org.eclipse.jgit.api.errors.GitAPIException;
+import org.hibernate.ObjectNotFoundException;
 import org.hibernate.exception.SQLGrammarException;
 import org.hibernate.proxy.HibernateProxy;
 import org.joget.apps.app.dao.*;
@@ -95,6 +93,7 @@ import org.joget.commons.util.DynamicDataSourceManager;
 import org.joget.commons.util.FileManager;
 import org.joget.commons.util.HostManager;
 import org.joget.commons.util.LogUtil;
+import org.joget.commons.util.PluginThread;
 import org.joget.commons.util.ResourceBundleUtil;
 import org.joget.commons.util.SecurityUtil;
 import org.joget.commons.util.SetupManager;
@@ -126,8 +125,11 @@ import org.simpleframework.xml.core.Persister;
 import org.simpleframework.xml.transform.RegistryMatcher;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
+import org.springframework.core.Ordered;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.support.TransactionSynchronization;
+import org.springframework.transaction.support.TransactionSynchronizationManager;
 import org.springframework.web.multipart.MultipartFile;
 
 /**
@@ -179,7 +181,17 @@ public class AppServiceImpl implements AppService {
     //----- Workflow use cases ------
     
     final protected Map<String, String> processMigration = new ConcurrentHashMap<String, String>();
-    private final static String PROCESS_MIGRATION_PATH = "app_migration" + File.separator;
+    // Cross-node file lock guarding a single app version's process update/migration; see
+    // ProcessUpdateLockManager for the locking protocol itself.
+    private final ProcessUpdateLockManager processUpdateLockManager;
+
+    public AppServiceImpl() {
+        this(new ProcessUpdateLockManager());
+    }
+
+    AppServiceImpl(ProcessUpdateLockManager processUpdateLockManager) {
+        this.processUpdateLockManager = processUpdateLockManager;
+    }
 
     /**
      * Retrieves the workflow process definition for a specific app version.
@@ -1812,15 +1824,28 @@ public class AppServiceImpl implements AppService {
             }
 
             // get package definition
-            packageDef = appDef.getPackageDefinition();
+            try {
+                packageDef = appDef.getPackageDefinition();
+            } catch (ObjectNotFoundException e) {
+                // The app definition can still reference a package row evicted by the version switch.
+                LogUtil.warn(getClass().getName(), "Stale package definition cache detected for app " + appDef.getAppId() + " v" + appDef.getVersion() + ": " + e.getMessage());
+                packageDefinitionDao.clearPackageDefinitionCaches(appDef, true);
+                AppUtil.resetAppDefinition();
+                appDef = loadAppDefinition(appDef.getAppId(), appDef.getVersion().toString());
+                packageDef = (appDef != null) ? appDef.getPackageDefinition() : null;
+            }
             Long packageVersion = Long.parseLong(versionStr);
             if (packageDef == null) {
                 packageDef = packageDefinitionDao.createPackageDefinition(appDef, packageVersion);
             } else {
                 originalVersion = packageDef.getVersion();
-                packageDefinitionDao.updatePackageDefinitionVersion(packageDef, packageVersion);
+                packageDef = packageDefinitionDao.updatePackageDefinitionVersion(packageDef, packageVersion);
             }
-            
+            if (packageDef != null && packageDef.getAppDefinition() != null) {
+                appDef = packageDef.getAppDefinition();
+                AppUtil.setCurrentAppDefinition(appDef);
+            }
+
             // save to xpdl file for git commit
             if (!AppDevUtil.isGitDisabled() && !isGitSync && appDef != null) {
                 String xpdl = AppDevUtil.getPackageXpdl(packageDef);
@@ -2836,7 +2861,13 @@ public class AppServiceImpl implements AppService {
 
     /**
      * Update running processes for a package from a version to another.
-     * The update is run in a background thread.
+     * The update is run in a background thread after the package save transaction commits.
+     *
+     * The migration marker is registered before commit so the Process Builder save lock
+     * remains held while the save transaction is pending. The actual Shark migration and
+     * unused XPDL cleanup must wait until after commit, otherwise a rollback or stale
+     * app_package read can cause cleanup to unload the newly deployed package version.
+     *
      * @param packageId
      * @param fromVersion
      * @param toVersion 
@@ -2845,17 +2876,72 @@ public class AppServiceImpl implements AppService {
         final String profile = DynamicDataSourceManager.getCurrentProfile();
         final AppDefinition appDef = AppUtil.getCurrentAppDefinition();
         final User currentUser = workflowUserManager.getCurrentUser();
+        final String migrationKey = getProcessMigrationKey(profile, appDef, fromVersion.toString());
 
-        processMigration.put(profile + "::" + appDef.getAppId() + "_" + appDef.getVersion() + "::" + fromVersion, toVersion.toString());
+        processMigration.put(migrationKey, toVersion.toString());
 
         try {
-            Thread backgroundThread = new Thread(new Runnable() {
+            if (TransactionSynchronizationManager.isSynchronizationActive() && TransactionSynchronizationManager.isActualTransactionActive()) {
+                TransactionSynchronizationManager.registerSynchronization(new TransactionSynchronization() {
+                    @Override
+                    public int getOrder() {
+                        // PackageDefinitionDaoImpl orders all final package cache evictions before
+                        // this callback, including mapping evictions registered later in the save.
+                        return Ordered.LOWEST_PRECEDENCE;
+                    }
+
+                    @Override
+                    public void afterCompletion(int status) {
+                        if (status == TransactionSynchronization.STATUS_COMMITTED) {
+                            LogUtil.info(getClass().getName(), "Deploy package " + packageId + "::" + toVersion + " transaction committed and package caches evicted. Starting ProcessMigrationThread ...");
+                            // afterCompletion, rather than afterCommit, keeps the save lock in place
+                            // until all higher-priority package cache eviction callbacks finish.
+                            startProcessMigrationThread(profile, appDef, currentUser, packageId, fromVersion, toVersion, migrationKey);
+                        } else {
+                            // No committed package version exists to migrate to, so release the save lock.
+                            processMigration.remove(migrationKey);
+                            tryReleaseProcessUpdate(appDef);
+                        }
+                    }
+                });
+            } else {
+                startProcessMigrationThread(profile, appDef, currentUser, packageId, fromVersion, toVersion, migrationKey);
+            }
+        } catch (Exception e) {
+            processMigration.remove(migrationKey);
+            tryReleaseProcessUpdate(appDef);
+            LogUtil.error(getClass().getName(), e, "Error starting process migration thread");
+        }
+    }
+
+    /**
+     * Starts the asynchronous process migration for a committed package version.
+     *
+     * The target package version is passed as a protected cleanup version because the
+     * just-deployed version can have no active assignments when migration aborts old
+     * instances with incompatible activity definitions. It is still the current app package
+     * version and must not be removed by removeUnusedXpdl.
+     *
+     * @param profile the tenant/profile that owns the app
+     * @param appDef the current app definition
+     * @param currentUser the user who triggered the package save
+     * @param packageId the workflow package id
+     * @param fromVersion the package version currently used by running processes
+     * @param toVersion the committed package version to migrate to
+     * @param migrationKey the processMigration key to clear when the thread finishes
+     */
+    protected void startProcessMigrationThread(final String profile, final AppDefinition appDef, final User currentUser, final String packageId, final Long fromVersion, final Long toVersion, final String migrationKey) {
+        try {
+            Thread backgroundThread = new PluginThread(new Runnable() {
 
                 public void run() {
                     try {
-                        HostManager.setCurrentProfile(profile);
                         AppUtil.setCurrentAppDefinition(appDef);
                         workflowUserManager.setCurrentThreadUser(currentUser);
+
+                        // Refresh the lock in case a slow queue delayed this thread's start,
+                        // so it is not mistaken for one abandoned by a crashed node.
+                        touchProcessUpdateLock(appDef);
 
                         LogUtil.info(getClass().getName(), "Updating running processes for " + packageId + " from " + fromVersion + " to " + toVersion.toString());
 
@@ -2864,17 +2950,19 @@ public class AppServiceImpl implements AppService {
                         migrateProcessInstance(runningProcessList, profile, packageId, fromVersion.toString(), toVersion.toString());
 
                         LogUtil.info(getClass().getName(), "Completed updating running processes for " + packageId + " from " + fromVersion + " to " + toVersion.toString());
-                        removeUnusedXpdl(profile, packageId);
+                        removeUnusedXpdl(profile, packageId, Collections.singleton(toVersion.toString()));
                     } finally {
-                        processMigration.remove(profile + "::" + appDef.getAppId() + "_" + appDef.getVersion() + "::" + fromVersion);
+                        processMigration.remove(migrationKey);
                         tryReleaseProcessUpdate(appDef);
                     }
                 }
             });
+            backgroundThread.setName("JogetProcessMigration-" + packageId + "-" + fromVersion + "-" + toVersion);
             backgroundThread.setDaemon(false);
             backgroundThread.start();
         } catch (Exception e) {
-            processMigration.remove(profile + "::" + appDef.getAppId() + "_" + appDef.getVersion() + "::" + fromVersion);
+            processMigration.remove(migrationKey);
+            tryReleaseProcessUpdate(appDef);
             LogUtil.error(getClass().getName(), e, "Error starting process migration thread");
         }
     }
@@ -2903,10 +2991,14 @@ public class AppServiceImpl implements AppService {
                 LogUtil.error(getClass().getName(), e, "Error updating Process Instance ID " + processId);
             }
 
-            if (processMigration.containsKey(profile + "::" + appDef.getAppId() + "_" + appDef.getVersion() + "::" + newVersion)) {
-                String tempVersion = processMigration.get(profile + "::" + appDef.getAppId() + "_" + appDef.getVersion() + "::" + newVersion);
+            // Heartbeat so a migration over a large batch of instances is not reclaimed as stale.
+            touchProcessUpdateLock(appDef);
+
+            String newVersionKey = getProcessMigrationKey(profile, appDef, newVersion);
+            if (processMigration.containsKey(newVersionKey)) {
+                String tempVersion = processMigration.get(newVersionKey);
                 if (fromVersion != null) {
-                    processMigration.put(profile + "::" + appDef.getAppId() + "_" + appDef.getVersion() + "::" + fromVersion, tempVersion);
+                    processMigration.put(getProcessMigrationKey(profile, appDef, fromVersion), tempVersion);
                 }
                 LogUtil.info(getClass().getName(), "New update found when updating running processes for " + packageId + " from " + fromVersion + " to " + newVersion + ". Continue update remaining running processes to " + tempVersion);
                 newVersion = tempVersion;
@@ -2916,21 +3008,36 @@ public class AppServiceImpl implements AppService {
         
         migrateProcessInstance(processInstanceNeedReview, profile, packageId, null, newVersion);
     }
-    
+
     protected void removeUnusedXpdl(String profile, String packageId) {
+        removeUnusedXpdl(profile, packageId, Collections.<String>emptySet());
+    }
+
+    /**
+     * Removes old Shark XPDL package versions that are no longer referenced by any app
+     * package, assignment, or active migration.
+     *
+     * @param profile the tenant/profile that owns the package
+     * @param packageId the workflow package id
+     * @param protectedVersions versions that must be retained even when they appear unused
+     */
+    protected void removeUnusedXpdl(String profile, String packageId, Collection<String> protectedVersions) {
         Collection<WorkflowProcess> existingProcesses = workflowManager.getProcessList(packageId);
         Set<String> versions = new HashSet<String>();
         for (WorkflowProcess p : existingProcesses) {
             versions.add(p.getVersion());
         }
+        if (protectedVersions != null) {
+            versions.removeAll(protectedVersions);
+        }
 
-        //removed version of latest package used by each app version
+        // Remove versions of the latest package used by each app version.
         Collection<Long> allPackageVersion = packageDefinitionDao.getPackageVersions(packageId);
         for (Long l : allPackageVersion) {
             versions.remove(l.toString());
         }
 
-        //removed version of package used by all existing assignment
+        // Remove package versions still used by existing assignments.
         Set<String> usedVersion = workflowAssignmentDao.getUsedVersion(packageId);
         for (String id : usedVersion) {
             String[] part = id.split("#");
@@ -2938,7 +3045,7 @@ public class AppServiceImpl implements AppService {
         }
 
         for (String v : versions) {
-            if (!processMigration.containsKey(profile + "::" + packageId + "::" + v)) {
+            if (!isPackageVersionInProcessMigration(profile, packageId, v)) {
                 try {
                     LogUtil.debug(getClass().getName(), "Trying to remove package " + packageId + " version " + v);
                     workflowManager.processDeleteAndUnloadVersion(packageId, v);
@@ -2947,6 +3054,46 @@ public class AppServiceImpl implements AppService {
                 }
             }
         }
+    }
+
+    /**
+     * Builds the processMigration key used to track an app version migration.
+     *
+     * @param profile the tenant/profile that owns the migration
+     * @param appDef the app definition being migrated
+     * @param version the source or chained source package version
+     * @return a stable processMigration key
+     */
+    protected String getProcessMigrationKey(String profile, AppDefinition appDef, String version) {
+        return profile + "::" + appDef.getAppId() + "_" + appDef.getVersion() + "::" + version;
+    }
+
+    /**
+     * Checks whether a Shark package version is involved in an active migration.
+     *
+     * processMigration keys include app id and app version, while cleanup only knows the
+     * package id and Shark package version. This method bridges those formats and treats
+     * both the source version in the key and the target version in the value as protected.
+     *
+     * @param profile the tenant/profile that owns the package
+     * @param packageId the workflow package id
+     * @param version the Shark package version to check
+     * @return true when the version is a source or target of an active migration
+     */
+    protected boolean isPackageVersionInProcessMigration(String profile, String packageId, String version) {
+        if (processMigration.containsKey(profile + "::" + packageId + "::" + version)) {
+            return true;
+        }
+
+        String appKeyPrefix = profile + "::" + packageId + "_";
+        String sourceVersionSuffix = "::" + version;
+        for (Entry<String, String> entry : processMigration.entrySet()) {
+            String key = entry.getKey();
+            if (key.startsWith(appKeyPrefix) && (key.endsWith(sourceVersionSuffix) || version.equals(entry.getValue()))) {
+                return true;
+            }
+        }
+        return false;
     }
 
     private String generateMissingEnvVarId(EnvironmentVariable envVar, AppDefinition appDef) {
@@ -4070,27 +4217,15 @@ public class AppServiceImpl implements AppService {
     /**
      * Lock and processing process update & process instance migration
      * @param appDef
-     * @return 
+     * @return
      */
     public boolean lockProcessUpdate(AppDefinition appDef) {
-        try {
-            String key = SecurityUtil.normalizedFileName(appDef.getAppId() + "_" + appDef.getVersion().toString() + ".lock");
-            Path path = Paths.get(SetupManager.getBaseDirectory() + PROCESS_MIGRATION_PATH + key);
-            Files.createDirectories(path.getParent());
-
-            if (!Files.exists(path)) {
-                Files.createFile(path);
-                return true;
-            }
-        } catch (Exception e) {
-            LogUtil.warn(AppServiceImpl.class.getName(), "Fail to acquire lock for " + appDef.getAppId() + "_" + appDef.getVersion().toString() + ". Will retry again.");
-        }
-        return false;
+        return processUpdateLockManager.lockProcessUpdate(appDef);
     }
-    
+
     /**
      * Release the lock after done process update and process instance migration
-     * @param appDef 
+     * @param appDef
      */
     public void tryReleaseProcessUpdate(AppDefinition appDef) {
         //should not release when process migration is running
@@ -4100,27 +4235,25 @@ public class AppServiceImpl implements AppService {
                 return;
             }
         }
-        
-        //remove the file to release lock
-        try {
-            String key = SecurityUtil.normalizedFileName(appDef.getAppId() + "_" + appDef.getVersion().toString() + ".lock");
-            Path path = Paths.get(SetupManager.getBaseDirectory() + PROCESS_MIGRATION_PATH + key);
-            if (Files.exists(path)) {
-                Files.deleteIfExists(path);
-            }
-        } catch (Exception e) {
-            LogUtil.info(AppServiceImpl.class.getName(), e.getMessage());
-        }  
+
+        processUpdateLockManager.tryReleaseProcessUpdate(appDef);
     }
-    
+
     /**
-     * Check there is process update & process instance migration
-     * @param appDef 
+     * Check there is process update & process instance migration.
+     * @param appDef
      */
     public boolean hasProcessUpdate(AppDefinition appDef) {
-        String key = SecurityUtil.normalizedFileName(appDef.getAppId() + "_" + appDef.getVersion().toString() + ".lock");
-        Path path = Paths.get(SetupManager.getBaseDirectory() + PROCESS_MIGRATION_PATH + key);
-        return Files.exists(path);
+        return processUpdateLockManager.hasProcessUpdate(appDef);
+    }
+
+    /**
+     * Refreshes the process update lock's last-modified time so an in-progress migration is not
+     * mistaken for one abandoned by a crashed node.
+     * @param appDef the app definition whose process update lock should be refreshed
+     */
+    protected void touchProcessUpdateLock(AppDefinition appDef) {
+        processUpdateLockManager.touchProcessUpdateLock(appDef);
     }
     
     /**

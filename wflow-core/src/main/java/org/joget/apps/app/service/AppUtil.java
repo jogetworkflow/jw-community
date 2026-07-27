@@ -21,6 +21,7 @@ import java.util.regex.Pattern;
 import javax.activation.FileDataSource;
 import javax.mail.internet.MimeUtility;
 import javax.mail.util.ByteArrayDataSource;
+import org.hibernate.ObjectNotFoundException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 import net.fortuna.ical4j.model.Calendar;
@@ -51,6 +52,7 @@ import org.apache.commons.mail.EmailException;
 import org.apache.commons.mail.HtmlEmail;
 import org.joget.apps.app.dao.EnvironmentVariableDao;
 import org.joget.apps.app.dao.MessageDao;
+import org.joget.apps.app.dao.PackageDefinitionDao;
 import org.joget.apps.app.dao.UserReplacementDao;
 import org.joget.apps.app.lib.CircularReferencedHashVariableException;
 import org.joget.apps.app.lib.EmailTool;
@@ -132,6 +134,7 @@ public class AppUtil implements ApplicationContextAware {
     public static final String PROPERTY_WORKFLOW_VARIABLE = "workflowVariable";
     private static final String UI_SESSION_KEY = "UI_SESSION_KEY";
     private static final String HASH_NO_ESCAPE = "noescape";
+    private static final int STALE_PACKAGE_CACHE_RETRY_LIMIT = 5;
     private static final Pattern HASH_VARIABLE_PATTERN = Pattern.compile("\\#([^#\" ]+)\\.([^#\"]+)\\#");
     private static final Pattern NESTED_HASH_VARIABLE_PATTERN = Pattern.compile("\\{([^\\{\\}])*\\}");
 
@@ -2283,114 +2286,216 @@ public class AppUtil implements ApplicationContextAware {
     }
 
     public static JSONObject getXpdlAndMappingJsonObj(AppDefinition appDef) {
+        return getXpdlAndMappingJsonObj(appDef, STALE_PACKAGE_CACHE_RETRY_LIMIT);
+    }
+
+    /**
+     * Builds the process builder JSON from XPDL and package mapping metadata.
+     * <p>
+     * Package metadata can be replaced by a concurrent workflow deploy. In that case Hibernate may
+     * throw {@link ObjectNotFoundException} from a cached package object. This method retries only
+     * for those known stale package metadata cases and reloads the app definition between attempts.
+     * </p>
+     * <p>
+     * Once retries are exhausted (or the failure is not a stale-cache case at all), the failure is
+     * rethrown as an unchecked exception rather than swallowed: callers must not receive an
+     * empty/partial JSON definition dressed up as a successful result, since that can be persisted
+     * back over a perfectly good process design.
+     * </p>
+     * @param appDef App definition used to build the process builder JSON
+     * @param stalePackageCacheRetries Number of stale package cache retries to allow
+     * @return Process builder JSON definition
+     */
+    protected static JSONObject getXpdlAndMappingJsonObj(AppDefinition appDef, int stalePackageCacheRetries) {
         JSONObject jsonDef = new JSONObject();
+        int attempts = Math.max(1, stalePackageCacheRetries + 1);
 
-        try {
-            String xpdl = getXpdl(appDef);
-            if (xpdl != null && !xpdl.isEmpty()) {
-                String xpdlJson = U.xmlToJson(xpdl);
-                jsonDef.put("xpdl", new JSONObject(xpdlJson));
+        for (int i = 0; i < attempts; i++) {
+            try {
+                String xpdl = getXpdlWithException(appDef);
+                if (xpdl != null && !xpdl.isEmpty()) {
+                    String xpdlJson = U.xmlToJson(xpdl);
+                    jsonDef.put("xpdl", new JSONObject(xpdlJson));
+                }
+
+                PackageDefinition packageDefinition = appDef.getPackageDefinition();
+                if (packageDefinition != null) {
+                    Map<String, PackageActivityForm> activityFormMap = packageDefinition.getPackageActivityFormMap();
+                    JSONObject activityForms = new JSONObject();
+                    if (activityFormMap != null && !activityFormMap.isEmpty()) {
+                        for (String k : activityFormMap.keySet()) {
+                            JSONObject o = new JSONObject();
+                            PackageActivityForm f = activityFormMap.get(k);
+
+                            populateActivityForm(o, f);
+                            activityForms.put(k, o);
+                        }
+                    }
+                    jsonDef.put("activityForms", activityForms);
+
+                    Map<String, PackageActivityPlugin> activityMap = packageDefinition.getPackageActivityPluginMap();
+                    JSONObject activityPlugins = new JSONObject();
+                    if (activityMap != null && !activityMap.isEmpty()) {
+                        for (String k : activityMap.keySet()) {
+                            JSONObject o = new JSONObject();
+                            PackageActivityPlugin p = activityMap.get(k);
+
+                            populateActivityPlugin(o, p);
+                            activityPlugins.put(k, o);
+                        }
+                    }
+                    jsonDef.put("activityPlugins", activityPlugins);
+
+                    Map<String, PackageParticipant> participantMap = packageDefinition.getPackageParticipantMap();
+                    JSONObject participants = new JSONObject();
+                    if (participantMap != null && !participantMap.isEmpty()) {
+                        for (String k : participantMap.keySet()) {
+                            JSONObject o = new JSONObject();
+                            PackageParticipant p = participantMap.get(k);
+
+                            populateParticipant(o, p);
+                            participants.put(k, o);
+                        }
+                    }
+                    jsonDef.put("participants", participants);
+                } else {
+                    jsonDef.put("activityForms", new JSONObject());
+                    jsonDef.put("activityPlugins", new JSONObject());
+                    jsonDef.put("participants", new JSONObject());
+                }
+
+                return jsonDef;
+            } catch (Exception e) {
+                if (i + 1 < attempts && isStalePackageCacheException(e)) {
+                    // A package version switch can invalidate cached mapping rows while JSON is being built.
+                    AppDefinition reloadedAppDef = reloadAppDefinitionAfterStalePackageCache(appDef, e);
+                    if (reloadedAppDef != null) {
+                        appDef = reloadedAppDef;
+                        jsonDef = new JSONObject();
+                        continue;
+                    }
+                }
+                LogUtil.error(AppUtil.class.getName(), e, "");
+                throw (e instanceof RuntimeException) ? (RuntimeException) e
+                        : new IllegalStateException("Unable to build the process builder definition for " + appDef.getAppId() + "_" + appDef.getVersion(), e);
             }
-
-            PackageDefinition packageDefinition = appDef.getPackageDefinition();
-            if (packageDefinition != null) {
-                Map<String, PackageActivityForm> activityFormMap = packageDefinition.getPackageActivityFormMap();
-                JSONObject activityForms = new JSONObject();
-                if (activityFormMap != null && !activityFormMap.isEmpty()) {
-                    for (String k : activityFormMap.keySet()) {
-                        JSONObject o = new JSONObject();
-                        PackageActivityForm f = activityFormMap.get(k);
-
-                        populateActivityForm(o, f);
-                        activityForms.put(k, o);
-                    }
-                }
-                jsonDef.put("activityForms", activityForms);
-
-                Map<String, PackageActivityPlugin> activityMap = packageDefinition.getPackageActivityPluginMap();
-                JSONObject activityPlugins = new JSONObject();
-                if (activityMap != null && !activityMap.isEmpty()) {
-                    for (String k : activityMap.keySet()) {
-                        JSONObject o = new JSONObject();
-                        PackageActivityPlugin p = activityMap.get(k);
-
-                        populateActivityPlugin(o, p);
-                        activityPlugins.put(k, o);
-                    }
-                }
-                jsonDef.put("activityPlugins", activityPlugins);
-
-                Map<String, PackageParticipant> participantMap = packageDefinition.getPackageParticipantMap();
-                JSONObject participants = new JSONObject();
-                if (participantMap != null && !participantMap.isEmpty()) {
-                    for (String k : participantMap.keySet()) {
-                        JSONObject o = new JSONObject();
-                        PackageParticipant p = participantMap.get(k);
-
-                        populateParticipant(o, p);
-                        participants.put(k, o);
-                    }
-                }
-                jsonDef.put("participants", participants);
-            } else {
-                jsonDef.put("activityForms", new JSONObject());
-                jsonDef.put("activityPlugins", new JSONObject());
-                jsonDef.put("participants", new JSONObject());
-            }
-
-        } catch (Exception e) {
-            LogUtil.error(AppUtil.class.getName(), e, "");
         }
 
-        return jsonDef;
+        // Every loop iteration above returns or throws; this satisfies the compiler only.
+        throw new IllegalStateException("Unable to build the process builder definition for " + appDef.getAppId() + "_" + appDef.getVersion());
     }
 
     protected static String getXpdl(AppDefinition appDef) {
         try {
-            PackageDefinition packageDef = appDef.getPackageDefinition();
-            String xpdl = null;
-            if (packageDef != null) {
-                WorkflowManager workflowManager = (WorkflowManager) AppUtil.getApplicationContext().getBean("workflowManager");
-                byte[] content = workflowManager.getPackageContent(packageDef.getId(), packageDef.getVersion().toString());
-                if (content != null) {
-                    xpdl = new String(content, "UTF-8");
-                }
-            }
-
-            if (xpdl == null) {
-                // read default xpdl
-                InputStream input = null;
-                ByteArrayOutputStream out = new ByteArrayOutputStream();
-                try {
-                    // get resource input stream
-                    String url = "/org/joget/apps/app/model/default.xpdl";
-
-                    PluginManager pluginManager = (PluginManager) AppUtil.getApplicationContext().getBean("pluginManager");
-                    input = pluginManager.getPluginResource(DefaultFormBinder.class.getName(), url);
-                    if (input != null) {
-                        // write output
-                        byte[] bbuf = new byte[65536];
-                        int length = 0;
-                        while ((input != null) && ((length = input.read(bbuf)) != -1)) {
-                            out.write(bbuf, 0, length);
-                        }
-                        // form xpdl
-                        xpdl = new String(out.toByteArray(), "UTF-8");
-
-                        // replace package ID and name
-                        xpdl = xpdl.replace("${packageId}", StringUtil.escapeString(appDef.getId(), StringUtil.TYPE_XML, null));
-                        xpdl = xpdl.replace("${packageName}", StringUtil.escapeString(appDef.getName(), StringUtil.TYPE_XML, null));
-                        return xpdl;
-                    }
-                } finally {
-                    if (input != null) {
-                        input.close();
-                    }
-                }
-            }
-            return xpdl;
+            return getXpdlWithException(appDef);
         } catch (Exception e) {
             LogUtil.error(AppUtil.class.getName(), e, "");
+        }
+        return null;
+    }
+
+    /**
+     * Reads the XPDL content for an app definition and lets lookup exceptions bubble to callers.
+     * <p>
+     * {@link #getXpdl(AppDefinition)} keeps the legacy null-on-error behavior, while retry-aware
+     * callers use this method so stale package cache exceptions can be detected.
+     * </p>
+     * <p>
+     * The default XPDL is only ever substituted for a genuinely new app that has no
+     * {@link PackageDefinition} at all. When a package definition exists but its deployed Shark
+     * content cannot be read, that is package corruption or a cleanup bug, not a new app, so this
+     * throws instead of silently handing back a blank/default design that could then be saved
+     * over the real one.
+     * </p>
+     * @param appDef App definition whose package XPDL should be read
+     * @return XPDL content, or the default package XPDL when no {@link PackageDefinition} exists
+     * @throws Exception when the package lookup fails, the deployed package content for an
+     *         existing package definition is missing, or the fallback resource read fails
+     */
+    protected static String getXpdlWithException(AppDefinition appDef) throws Exception {
+        PackageDefinition packageDef = appDef.getPackageDefinition();
+        if (packageDef == null) {
+            return getDefaultXpdl(appDef);
+        }
+
+        WorkflowManager workflowManager = (WorkflowManager) AppUtil.getApplicationContext().getBean("workflowManager");
+        byte[] content = workflowManager.getPackageContent(packageDef.getId(), packageDef.getVersion().toString());
+        if (content == null || content.length == 0) {
+            throw new IllegalStateException("Workflow package content is unavailable for " + packageDef.getId() + "#" + packageDef.getVersion() + "; refusing to substitute a blank or default process design for an existing package definition.");
+        }
+        return new String(content, "UTF-8");
+    }
+
+    /**
+     * Reads the bundled default XPDL template for a brand new app with no deployed package.
+     * @param appDef App definition supplying the package ID/name substituted into the template
+     * @return the default XPDL content, or null if the template resource could not be found
+     * @throws IOException if the template resource could not be read
+     */
+    private static String getDefaultXpdl(AppDefinition appDef) throws IOException {
+        InputStream input = null;
+        ByteArrayOutputStream out = new ByteArrayOutputStream();
+        try {
+            // get resource input stream
+            String url = "/org/joget/apps/app/model/default.xpdl";
+
+            PluginManager pluginManager = (PluginManager) AppUtil.getApplicationContext().getBean("pluginManager");
+            input = pluginManager.getPluginResource(DefaultFormBinder.class.getName(), url);
+            if (input == null) {
+                return null;
+            }
+            // write output
+            byte[] bbuf = new byte[65536];
+            int length;
+            while ((length = input.read(bbuf)) != -1) {
+                out.write(bbuf, 0, length);
+            }
+            // form xpdl
+            String xpdl = new String(out.toByteArray(), "UTF-8");
+
+            // replace package ID and name
+            xpdl = xpdl.replace("${packageId}", StringUtil.escapeString(appDef.getId(), StringUtil.TYPE_XML, null));
+            xpdl = xpdl.replace("${packageName}", StringUtil.escapeString(appDef.getName(), StringUtil.TYPE_XML, null));
+            return xpdl;
+        } finally {
+            if (input != null) {
+                input.close();
+            }
+        }
+    }
+
+    /**
+     * Determines whether an exception is a stale Hibernate reference to package metadata.
+     * @param e Exception raised while reading package metadata
+     * @return true when the exception is an ObjectNotFoundException for package metadata
+     */
+    protected static boolean isStalePackageCacheException(Exception e) {
+        if (!(e instanceof ObjectNotFoundException) || e.getMessage() == null) {
+            return false;
+        }
+        String message = e.getMessage();
+        return message.contains("PackageDefinition")
+                || message.contains("PackageActivityForm")
+                || message.contains("PackageActivityPlugin")
+                || message.contains("PackageParticipant");
+    }
+
+    /**
+     * Clears package caches and reloads the app definition after a stale package metadata lookup.
+     * @param appDef App definition that produced the stale package metadata exception
+     * @param e Original stale package metadata exception
+     * @return Reloaded app definition, or null when reload fails
+     */
+    protected static AppDefinition reloadAppDefinitionAfterStalePackageCache(AppDefinition appDef, Exception e) {
+        try {
+            LogUtil.warn(AppUtil.class.getName(), "Stale package definition cache detected for app " + appDef.getAppId() + " v" + appDef.getVersion() + ": " + e.getMessage());
+            PackageDefinitionDao packageDefinitionDao = (PackageDefinitionDao) AppUtil.getApplicationContext().getBean("packageDefinitionDao");
+            packageDefinitionDao.clearPackageDefinitionCaches(appDef, true);
+            AppService appService = (AppService) AppUtil.getApplicationContext().getBean("appService");
+            AppUtil.resetAppDefinition();
+            return appService.loadAppDefinition(appDef.getAppId(), appDef.getVersion().toString());
+        } catch (Exception retryException) {
+            LogUtil.error(AppUtil.class.getName(), retryException, "Failed to reload app definition after stale package cache");
         }
         return null;
     }
