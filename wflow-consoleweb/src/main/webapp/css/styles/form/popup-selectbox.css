@@ -172,6 +172,16 @@ span.selector_element button.selector_button {
     font-size: 20px !important;
 }
 
+.boxy-wrapper .title-bar:has(.memWarningTitle) .close {
+    top: 20px !important;
+    right: 20px !important;
+}
+
+body.rtl .boxy-wrapper .title-bar:has(.memWarningTitle) .close {
+    left: 20px !important;
+    right: unset !important;
+}
+
 .boxy-wrapper iframe {
     border: 0;
 }

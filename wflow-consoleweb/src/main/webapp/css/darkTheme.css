@@ -975,3 +975,6 @@ body.dark-mode .jgt-spin-description {
     color: var(--theme-font-color);
     text-shadow: 0 0px 5px var(--theme-font-color);
 }
+body.dark-mode #memWarning .memUsage {
+    color: #000;
+}

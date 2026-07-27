@@ -1082,8 +1082,36 @@ body .boxy-wrapper > tbody > tr > td:first-child,
 body .boxy-wrapper > tbody > tr > td:last-child{
     display: none !important;
 }
-body .boxy-wrapper .boxy-inner .title-bar {
-    
+body .boxy-wrapper .boxy-inner .title-bar:has(.memWarningTitle) {
+    position: relative;
+    right: 0;
+    padding: 15px 20px;
+    border-bottom: 1px solid var(--console-border-color);
+}
+.boxy-wrapper .title-bar:has(.memWarningTitle) h2 {
+    display: block;
+}
+body .boxy-wrapper .title-bar:has(.memWarningTitle) a.close {
+    top: 14px !important;
+    right: 15px !important;
+    font-size: 15px;
+}
+body.rtl .boxy-wrapper .title-bar:has(.memWarningTitle) a.close {
+    left: 15px !important;
+    right: unset !important;
+}
+body[system-theme="dark"] #memWarning {
+    background-color: var(--console-main-background-color);
+}
+body[system-theme="dark"] #memWarning .memUsage {
+    color: var(--console-main-background-color);
+}
+body[system-theme="dark"] .boxy-wrapper .boxy-inner .title-bar:has(.memWarningTitle) {
+    background-color: var(--console-main-background-color);
+}
+span.memWarningTitle,
+body .boxy-wrapper .title-bar:has(.memWarningTitle) a.close {
+    color: var(--console-default-font-color) !important;
 }
 body.popupBody:not(.no-header) {
     padding-top: 48px;

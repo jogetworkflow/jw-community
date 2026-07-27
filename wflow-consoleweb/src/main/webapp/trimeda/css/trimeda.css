@@ -2490,6 +2490,15 @@ body.rtl .accordion .card-header::after {
     height: 40px !important;
 }
 
+.boxy-wrapper .title-bar:has(.memWarningTitle) {
+    padding: 1.2rem !important;
+    height: unset !important;
+}
+
+body.rtl .boxy-wrapper .title-bar:has(.memWarningTitle) .close{
+    left: 15px !important;
+}
+
 .dataList span.pagelinks {
     padding: var(--input-padding-x, 16px 21px);
     background-color: var(--secondary-box-background-color);

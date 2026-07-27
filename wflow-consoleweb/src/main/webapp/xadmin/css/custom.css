@@ -6075,3 +6075,6 @@ div.InformationTileComponent .badge{
 .adjustfontSize .btn-group{
     align-items: center;
 }
+body.rtl .boxy-wrapper .title-bar:has(.memWarningTitle) .close {
+    left: 6px !important;
+}

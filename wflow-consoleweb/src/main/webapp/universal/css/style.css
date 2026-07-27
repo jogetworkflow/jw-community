@@ -30,6 +30,10 @@ body.popupBody:not(.embeded) {
     margin-top: 0px;
 }
 
+body.rtl .boxy-wrapper .title-bar:has(.memWarningTitle) .close {
+    left: 6px !important;
+}
+
 @supports (-webkit-overflow-scrolling: touch) {
     body:not(.embeded) {
         margin-top: 0px;

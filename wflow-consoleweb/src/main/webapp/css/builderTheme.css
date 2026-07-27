@@ -4122,3 +4122,34 @@ body[builder-theme="dark"] .alert-warning {
     background-color: #332701;
     border-color: #997404;
 }
+body[system-theme="dark"] #memWarning .memUsage {
+    color: var(--theme-border-color-1);
+}
+body .boxy-wrapper .boxy-inner .title-bar:has(.memWarningTitle) {
+    position: relative;
+    right: 0;
+    padding: 15px 20px;
+    border-bottom: 1px solid var(--theme-border-color-1);
+    background-color: var(--theme-primary-color-1);
+    height: unset;
+}
+.boxy-wrapper .title-bar:has(.memWarningTitle) h2 {
+    display: block;
+}
+body table.boxy-wrapper .title-bar:has(.memWarningTitle) a.close {
+    top: 14px !important;
+    right: 15px !important;
+    left: unset !important;
+    font-size: 15px;
+    text-align: right;
+}
+span.memWarningTitle {
+    color: var(--theme-label-color-2) !important;
+}
+#memWarning {
+    padding: 10px 20px;
+    font-size: 14px;
+}
+body[builder-theme="dark"] #memWarning .memUsage {
+    color: var(--theme-button-bgcolor-1);
+}
