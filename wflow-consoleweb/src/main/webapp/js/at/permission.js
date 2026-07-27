@@ -131,7 +131,14 @@ PermissionManager = {
         });
         $(PermissionManager.container).off("click", ".permission_rule .delete_rule");
         $(PermissionManager.container).on("click", ".permission_rule .delete_rule", function(event) {
-            PermissionManager.removeRule($(this).closest(".permission_rule"));
+            var rule = $(this).closest(".permission_rule");
+            // Check if the last selectedElement is the current permission rule
+            if (CustomBuilder?.Builder.selectedEl && CustomBuilder.Builder.selectedEl.is(rule) && !$("body").hasClass("no-right-panel")) {
+                $("#right-panel .property-editor-container").remove();
+                $("body").addClass("no-right-panel");
+            }
+
+            PermissionManager.removeRule(rule);
             event.stopImmediatePropagation();
         });
         $(PermissionManager.container).off("click", "tr .toggle-btn i");
