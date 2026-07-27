@@ -543,6 +543,9 @@ body.rtl #adminBar .analyzer-page{
 .embeded .hasAnalyzer .analyzer-page {
     top:0;
 }
+#memWarning {
+    padding: 10px 20px;
+}
 #memWarning .warningMessage {
     padding: 10px 0px;
 }

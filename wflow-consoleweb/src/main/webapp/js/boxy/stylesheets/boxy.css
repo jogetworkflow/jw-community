@@ -17,6 +17,11 @@
 	.boxy-wrapper .top-right { background: url('../images/boxy-ne.png'); }
 	.boxy-wrapper .bottom-right { background: url('../images/boxy-se.png'); }
 	.boxy-wrapper .bottom-left { background: url('../images/boxy-sw.png'); }
+
+	body.rtl .boxy-wrapper .top-left { background-image: url('../images/boxy-ne.png'); }
+	body.rtl .boxy-wrapper .top-right { background-image: url('../images/boxy-nw.png'); }
+	body.rtl .boxy-wrapper .bottom-left { background-image: url('../images/boxy-se.png'); }
+	body.rtl .boxy-wrapper .bottom-right { background-image: url('../images/boxy-sw.png'); }
 	
 	.boxy-wrapper .top,
 	.boxy-wrapper .bottom { height: 10px; background-color: black; opacity: 0.6; filter: alpha(opacity=60); padding: 0 }
@@ -30,7 +35,7 @@
 	  .boxy-wrapper .title-bar.dragging { cursor: move; }
 	    .boxy-wrapper .title-bar h2 { font-size: 12px; color: white; line-height: 1; margin: 0; padding: 0; font-weight: normal; }
 	    .boxy-wrapper .title-bar .close { color: rgba(0,0,0,.45); position: absolute; top: 6px; right: 6px; font-size: 90%; line-height: 1; opacity: 1; font-weight: 900; text-shadow: none }
-		
+			body.rtl .boxy-wrapper .title-bar .close { left:6px; right: unset; }
 	/* Content Region */
 	
 	.boxy-inner { background-color: white; padding: 0 }

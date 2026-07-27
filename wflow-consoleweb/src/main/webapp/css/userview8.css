@@ -1350,6 +1350,13 @@ body.horizontal_menu .brand-tooltip-wrap{
     color: rgba(0,0,0,.45);
     font-size: 20px !important;
 }
+body.rtl .boxy-wrapper .title-bar .close {
+    left: 15px !important;
+    right: unset !important;
+}
+body.rtl .boxy-wrapper .title-bar:has(.memWarningTitle) .close {
+    left: 15px !important;
+}
 .boxy-wrapper iframe {
     border: 0;
 }

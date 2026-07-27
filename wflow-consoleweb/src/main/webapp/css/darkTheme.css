@@ -902,3 +902,7 @@ body.dark-mode .chosen-choices li.search-field input[type="text"]:focus{
 body.dark-mode .ht_master .wtHolder{
     scrollbar-color: rgb(255 255 255 / 23%) var(--theme-background);
 }
+
+body.dark-mode #memWarning .memUsage{
+    color: #000;
+}
