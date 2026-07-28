@@ -136,7 +136,10 @@ JPopup = {
         UI.loadMsg(['ubuilder.saveBeforeClose.leave'], function(msgs) {
             JPopup.buttonMsg = msgs['ubuilder.saveBeforeClose.leave'];
         });
-        CustomBuilder.overrideNewCreation(id);
+        
+        if (typeof CustomBuilder !== "undefined" && CustomBuilder !== null) {
+            CustomBuilder.overrideNewCreation(id);
+        }
     },
     
     fixIOS : function(id) {
