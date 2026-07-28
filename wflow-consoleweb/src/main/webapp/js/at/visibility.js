@@ -131,7 +131,15 @@ VisibilityManager = {
             event.stopImmediatePropagation();
         });
         $container.on("click.visibility", ".visibility_rule .delete_rule", function(event) {
-            self.removeRule($(this).closest(".visibility_rule"));
+            var rule = $(this).closest(".visibility_rule");
+
+            // Check if the last selectedElement is the current permission rule
+            if (CustomBuilder?.Builder.selectedEl && CustomBuilder.Builder.selectedEl.is(rule) && !$("body").hasClass("no-right-panel")) {
+                $("#right-panel .property-editor-container").remove();
+                $("body").addClass("no-right-panel");
+            }
+
+            self.removeRule(rule);
             event.stopImmediatePropagation();
         });
 
