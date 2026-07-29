@@ -8,12 +8,13 @@
     <script type="text/javascript" src="${pageContext.request.contextPath}/js/fbuilder.core.js?build=<fmt:message key="build.number"/>"></script>
     <script type="text/javascript" src="${pageContext.request.contextPath}/pbuilder/js/jquery.jsPlumb-1.6.4-min.js"></script>
     <script>
-        $(function () {  
+        $(function () {
+        <c:set var="editableElementList" value="${palette.editableElementList}"/>
         <c:forEach items="${palette.elementCategoryMap}" var="categoryRow">
             <c:set var="category" value="${categoryRow.key}"/>
             <c:set var="elementList" value="${categoryRow.value}"/>
             <c:forEach items="${elementList}" var="element">
-                ${palette.editableElementList.remove(element)}
+                ${editableElementList.remove(element)}
                 <c:if test="${!empty element.propertyOptions}">
                     try {
                         <c:set var="initScript"> 
@@ -38,12 +39,12 @@
                 </c:if>
             </c:forEach>
         </c:forEach>
-        <c:forEach items="${palette.editableElementList}" var="element">
+        <c:forEach items="${editableElementList}" var="element">
             <c:if test="${!empty element.propertyOptions}">
                 try {
-                    <c:set var="initScript"> 
+                    <c:set var="initScript">
                         var elementProps = ${PropertyUtil.injectHelpLink(element.helpLink, element.propertyOptions)};
-                        FormBuilder.initPaletteElement('', '${element.className}', '<c:out value='${fn:replace(element.i18nLabel, "\'", "\\\\\'")}' escapeXml='false'/>', '', elementProps, '', false, "", {'builderTemplate' :  {}}); 
+                        FormBuilder.initPaletteElement('', '${element.className}', '<c:out value='${fn:replace(element.i18nLabel, "\'", "\\\\\'")}' escapeXml='false'/>', '', elementProps, '', false, "", {'builderTemplate' :  {}});
                     </c:set>
                     <c:set var="initScript"><ui:escape value="${initScript}" format="javascript"/></c:set>
                     eval("${initScript}");    
