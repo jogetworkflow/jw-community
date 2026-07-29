@@ -93,6 +93,9 @@ var Usages = {
                 var value = $(highlights[i]).text();
                 var regex = new RegExp('"([^"]+)"\\s*:\\s*"' + value + '"');
                 var match = $(text[i]).text().match(regex);
+                if (match === null) {
+                    continue;
+                }
                 var key = match[1];
                 var value = $(highlights[i]).text();
                 var item = '"' + key + '": "' + value + '"';
