@@ -85,16 +85,16 @@
         css += '.visibilitywrapper .revert.checked{width: 15px; color:red;}';
         css += '.visibilitywrapper a.revert{position: absolute; left: -3px; top: 11px;}';
         css += '.visibilitywrapper .col_input.small {flex-grow: inherit; min-width: 70px; width: 70px !important; max-width: inherit;}';
-        css += '.visibilitywrapper .col_input span.label {transform: none; bottom: 33px; font-size:80%;}';
+        css += '.visibilitywrapper .col_input span.label {transform: none; bottom: 40px; font-size:80%;}';
         css += '.visibilitywrapper .col_inputs{display: flex;flex-wrap: wrap;}';
         css += '.visibilitywrapper .col_input{flex-basis: 0;flex-grow: 1;max-width: 100%;position: relative;width: 100%;min-width:100px;}';
-        css += '.visibilitywrapper .col_input input, .visibilitywrapper .col_input select{width: 98%;}';
+        css += '.visibilitywrapper .col_input input, .visibilitywrapper .col_input select{width: 98%; margin-top: 8px !important; margin-bottom: 8px !important;}';
         css += '.visibilitywrapper .conditions-container > .rulerow:first-child > .buttons > .andOr, .visibilitywrapper .conditions-container > .rulerow:first-child > table .andOr {opacity:0.3; pointer-events:none;}';
         css += '.visibilitywrapper .alignright{width: 27px; text-align:left;}';
         css += 'body.rtl .visibilitywrapper .alignright{text-align:right;}';
         css += '.visibilitywrapper .perow.condition .buttons{position:absolute; top:50%; right:5px; transform: translateY(-50%); z-index:5;}';
         css += 'body.rtl .visibilitywrapper .perow.condition .buttons{right: unset; left:5px;}';
-        
+
         var html = '<div name="'+thisObj.id+'" class="visibilitywrapper pewrapper"><div class="buttons"><a class="addcondition"><i class="fas fa-plus-circle"></i> @@app.rulesdecision.addCondition@@</a>&nbsp;&nbsp;<a class="addgroup"><i class="fas fa-plus-circle"></i> @@app.rulesdecision.addGroup@@</a></div><div class="conditions-container"></div></div>';
         
         return '<style>'+ css + '</style>' + html;

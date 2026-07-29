@@ -1305,9 +1305,10 @@ body.rtl .pebutton.addrow{
     cursor:pointer;
 }
 .pewrapper{
-    background:#f6f9fa;
-    border: 1px solid #eaeef0;
+    background:var(--theme-primary-color-1, #f6f9fa);
+    border: 1px solid var(--theme-border-color-1, #eaeef0);
     margin-bottom:5px;
+    color: var(--theme-label-color-2, #B5B7C8);
 }
 .pewrapper + .pewrapper {
     margin-top: 15px;
@@ -1317,8 +1318,8 @@ body.rtl .pebutton.addrow{
 }
 .pewrapper > .peheader {
     font-weight:bold; 
-    border-top: 1px solid #eaeef0; 
-    border-bottom: 1px solid #eaeef0;
+    border-top: 1px solid var(--theme-border-color-1, #eaeef0); 
+    border-bottom: 1px solid var(--theme-border-color-1, #eaeef0);
 }
 .pewrapper > .peheader .buttons {
     float:right; 
@@ -1326,6 +1327,9 @@ body.rtl .pebutton.addrow{
 }
 .pewrapper > .peheader .buttons a {
     padding:0 5px;
+}
+body.rtl .pewrapper > .peheader .buttons {
+    float: left;
 }
 .pewrapper .buttons {
     text-align:right;
@@ -1356,8 +1360,8 @@ body.rtl .pebutton.addrow{
 }
 .perow {
     padding:5px; 
-    background:#f2f2f2; 
-    border:1px solid #d7d9da; 
+    background:var(--theme-primary-color-2, #f2f2f2); 
+    border:1px solid var(--theme-border-color-2, #d7d9da); 
     border-radius:3px; 
     margin-top: 5px; 
     position:relative;
@@ -1407,7 +1411,7 @@ body.rtl .pebutton.addrow{
 }
 .pewrapper input, .pewrapper select {
     margin-right:5px;
-    margin-top: 8px !important;
+    font-size: 13px;
 }
 .pewrapper .small:not(.button),
 .pewrapper .small + span.label{
@@ -1454,6 +1458,22 @@ body.rtl .pebutton.addrow{
 .pewrapper input:focus + span.label, 
 .pewrapper select:focus + span.label {
     display: inline-block;
+}
+body.rtl .pewrapper input,
+body.rtl .pewrapper select {
+    margin-left: 0px !important;
+    width: 100% !important;
+}
+a.deleteset:hover,
+a.deleteinput:hover, 
+a.deletepost:hover,
+a.deleteoutput:hover {
+    color: #dc3545;
+}
+body.rtl .tfiowrapper a.deleteinput, 
+body.rtl .tfiowrapper a.deletepost {
+    left: 5px;
+    right: unset;
 }
 .css-styles-container .style-group {
     border: 1px solid #9eadba;
@@ -3162,6 +3182,121 @@ th:hover {
     box-shadow: none;
     border: 1px solid transparent;
 }
+/* Tensor flow Stylings */
+.tfiowrapper *:is(.inputs-container, .posts-container) .input-fields,
+.tfiowrapper *:is(.inputs-container, .posts-container) .input-fields > label,
+.tfiowrapper *:is(.inputs-container, .posts-container) .input-fields > div,
+.tfiowrapper *:is(.inputs-container, .posts-container) .input-fields > div > label {
+    display: flex;
+    flex-direction: column;
+    row-gap: 5px;
+    position: relative;
+}
+.tfiowrapper div.actions {
+    display: flex;
+    position: relative;
+    width: 100%;
+    column-gap: 5px;
+}
+.tfiowrapper div.actions,
+.tfiowrapper div.actions:last-child {
+    border: none;
+}
+.tfiowrapper *:is(.inputs-container, .posts-container) .input-fields > label,
+.tfiowrapper *:is(.inputs-container, .posts-container) .input-fields > div > label {
+    row-gap:0px;
+    column-gap: 15px;
+    flex-direction: row;
+    align-items: center;
+    margin-bottom: 0px;
+    padding: 0px;
+}
+.tfiowrapper *:is(.inputs-container, .posts-container) .input-fields > div  {
+    margin-top: 0px;
+}
+.tfiowrapper *:is(.inputs-container, .posts-container) a.choosefile,
+.tfiowrapper *:is(.inputs-container, .posts-container) a.clearfile {
+    margin: 0px;
+}
+.tfiowrapper .model-container a.choosefile,
+.tfiowrapper .model-container a.clearfile {
+    margin-left: 0px;
+    margin-right: 0px;
+}
+.tfiowrapper *:is(.inputs-container, .posts-container) input[type='checkbox'],
+.tfiowrapper .posts-container input[type='checkbox'] {
+    width: fit-content !important;
+    height: fit-content;
+}
+.tfiowrapper *:is(.inputs-container, .posts-container) input[type='checkbox']:checked::after {
+    margin-right: 6px;
+}
+.tfiowrapper .input-fields span.label,
+.editor-panel-mode.narrow:not(.wider) .tfiowrapper *:is(.inputs-container, .posts-container) .input-fields span.label,
+.tfiowrapper .outputs-container table tr td span.label {
+    position: unset;
+    margin: 0px 0px;
+    transform: none;
+}
+.tfiowrapper .outputs-container input[name='variable'] {
+    padding-inline-end: 27px;
+}
+body.rtl *:is(.tfiowrapper .inputrows-container .input-fields span.label,
+.editor-panel-mode.narrow:not(.wider) .tfiowrapper *:is(.inputs-container, .posts-container) .input-fields span.label,
+.tfiowrapper .outputs-container table tr td span.label) {
+    margin-right: 5px;
+}
+.tfiowrapper .outputs-container table tr td {
+    overflow: visible;
+    height: auto;
+    vertical-align: top;
+}
+.property-editor-container:not(.wider) .tfiowrapper .outputs-container table tr td > a.deleteoutput{
+    left: 3px;
+}
+.tfiowrapper .outputs-container table tr td > a.deleteoutput {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+}
+body.rtl .perow.tfio-row.input:not(:has(.ace_editor)) .input-fields > div > div > .assist_icon,
+body.rtl .perow.tfio-row.post:not(:has(.CodeMirror)) .input-fields > div > div > .assist_icon {
+    right: unset;
+    padding-left: 5px;
+    left: 0px;
+}
+.rtl .tfiowrapper .outputs-container table tr td > a.deleteoutput {
+    left: unset;
+    right: 14px;
+}
+.rtl .property-editor-container:not(.wider) .tfiowrapper .outputs-container table tr td > a.deleteoutput {
+    left: unset;
+    right: 3px;
+}
+.tfiowrapper .outputs-container table tr:has(td > input:focus) td > a.deleteoutput {
+    transform: translateY(-100%);
+}
+body.rtl .pewrapper *:is(.property-input textarea, .property-input input, .property-input select) {
+    float: none;
+}
+body.rtl #right-panel:not(.wider) .pewrapper *:is(.property-input textarea, .property-input input:not(
+    [type="checkbox"],
+    [type="radio"],
+    [type="button"],
+    [type="submit"],
+    [type="reset"],
+    [type="file"],
+    [type="range"],
+    [type="color"],
+    [type="date"],
+    [type="datetime-local"],
+    [type="month"],
+    [type="week"],
+    [type="time"]
+), .property-input select) {
+    width: calc(100% - 5px);    
+}
+/* End of Stylings */
 .rtl .property-input > span.icon > span{
     right: 0;
     border-radius: 0 0.25rem 0.25rem 0;
