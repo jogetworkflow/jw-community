@@ -13,9 +13,7 @@ import org.joget.apps.app.service.AppPluginUtil;
 import org.joget.apps.app.service.AppUtil;
 import org.joget.apps.form.service.FormUtil;
 import org.joget.apps.form.service.VisibilityControlUtil;
-import org.joget.commons.util.LogUtil;
 import org.joget.plugin.base.PluginWebSupport;
-import org.json.JSONObject;
 
 public class Section extends Element implements FormBuilderEditable, FormContainer, PluginWebSupport {
     protected Map<FormData, Boolean> continueValidations = new HashMap<FormData, Boolean>();
@@ -48,16 +46,9 @@ public class Section extends Element implements FormBuilderEditable, FormContain
             }
             
             if (!(dataModel.containsKey("elementMetaData") && !dataModel.get("elementMetaData").toString().isEmpty())) {
-                if (!getRules(formData).isEmpty()) {
-                    try {
-                        JSONObject jsonObject = new JSONObject();
-                        jsonObject.put("rules", rules);
-
-                        String json = jsonObject.toString();
-                        dataModel.put("rules", json);
-                    } catch (Exception e) {
-                        LogUtil.error(Section.class.getName(), e, "Not able to retrieve visibility control rules");
-                    }
+                String rulesJson = VisibilityControlUtil.toJson(getRules(formData));
+                if (rulesJson != null) {
+                    dataModel.put("rules", rulesJson);
                 }
                 dataModel.put("visible", isMatch(formData));
             } else {

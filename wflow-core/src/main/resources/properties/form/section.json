@@ -69,8 +69,12 @@
         properties:[
             {
                 label : '@@form.section.visibility@@',
-                type : 'header',
-                description : '@@form.section.visibilityNotice@@'
+                type : 'header'
+            },
+            {
+                name : 'sectionVisibilitySummary',
+                type : 'custom',
+                script_url : '[CONTEXT_PATH]/web/json/app[APP_PATH]/plugin/org.joget.apps.form.model.Section/service?version=@@build.number@@-visibility-summary-5'
             },
             {
                 label : '@@form.section.permission@@',

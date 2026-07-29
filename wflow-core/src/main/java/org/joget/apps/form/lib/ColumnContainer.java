@@ -9,8 +9,6 @@ import org.joget.apps.form.model.FormContainer;
 import org.joget.apps.form.model.FormData;
 import org.joget.apps.form.service.FormUtil;
 import org.joget.apps.form.service.VisibilityControlUtil;
-import org.joget.commons.util.LogUtil;
-import org.json.JSONObject;
 
 /**
  * Represents a single column in the Columns layout.
@@ -77,14 +75,9 @@ public class ColumnContainer extends Element implements FormBuilderEditable, For
             boolean visible = true;
             String uniqueKey = getPropertyString("elementUniqueKey");
             if (!(dataModel.containsKey("elementMetaData") && !dataModel.get("elementMetaData").toString().isEmpty())) {
-                if (!getRules(formData).isEmpty()) {
-                    try {
-                        JSONObject jsonObject = new JSONObject();
-                        jsonObject.put("rules", rules);
-                        rulesJson = jsonObject.toString();
-                    } catch (Exception e) {
-                        LogUtil.error(ColumnContainer.class.getName(), e, "Not able to retrieve visibility control rules");
-                    }
+                String parsedRulesJson = VisibilityControlUtil.toJson(getRules(formData));
+                if (parsedRulesJson != null) {
+                    rulesJson = parsedRulesJson;
                 }
                 visible = isMatch(formData);
             }

@@ -19,6 +19,9 @@ import org.mozilla.javascript.Scriptable;
  */
 public class VisibilityControlUtil {
 
+    private static final int MAX_VISIBILITY_RULE_TOKENS = 2048;
+    private static final int MAX_VISIBILITY_RULE_GROUP_DEPTH = 64;
+
     /**
      * Parse visibility control properties into a collection of rules.
      *
@@ -199,7 +202,12 @@ public class VisibilityControlUtil {
                 }
             }
         } else if (formVisibilityRules instanceof Collection) {
-            formRulesList = (Collection<Map<String, Object>>) formVisibilityRules;
+            formRulesList = new ArrayList<Map<String, Object>>();
+            for (Object obj : (Collection<?>) formVisibilityRules) {
+                if (obj instanceof Map) {
+                    formRulesList.add((Map<String, Object>) obj);
+                }
+            }
         }
 
         if (formRulesList == null || formRulesList.isEmpty()) {
@@ -209,7 +217,7 @@ public class VisibilityControlUtil {
         // Build rules from applied form rules
         boolean isFirstRule = true;
         for (Map<String, Object> formRule : formRulesList) {
-            String ruleKey = (String) formRule.get("visibility_key");
+            String ruleKey = getStringValue(formRule, "visibility_key");
             if (ruleKey == null || !isRuleApplied(appliedRuleKeys, ruleKey)) {
                 continue;
             }
@@ -224,6 +232,7 @@ public class VisibilityControlUtil {
             String[] regex = getStringValue(formRule, "regex").split(";", -1);
             String[] joins = getStringValue(formRule, "join").split(";", -1);
             String[] reverses = getStringValue(formRule, "reverse").split(";", -1);
+            boolean addedRuleToken = false;
 
             for (int i = 0; i < fields.length; i++) {
                 if (fields[i].isEmpty()) {
@@ -232,12 +241,7 @@ public class VisibilityControlUtil {
 
                 Map<String, String> rule = new HashMap<String, String>();
 
-                // Use OR to join different rules (except first condition of first rule)
                 String joinVal = (joins.length > i) ? joins[i] : "";
-                if (!isFirstRule && i == 0 && !"(".equals(fields[i]) && !")".equals(fields[i])) {
-                    joinVal = "or";
-                }
-
                 rule.put("join", joinVal);
                 rule.put("reverse", (reverses.length > i) ? reverses[i] : "");
                 rule.put("value", (values.length > i) ? values[i] : "");
@@ -257,11 +261,19 @@ public class VisibilityControlUtil {
                 }
 
                 if (rule.get("field") != null) {
+                    // Separate independently named rules with OR. Apply the join to the
+                    // first token that survived parsing, including an opening group.
+                    if (!isFirstRule && !addedRuleToken) {
+                        rule.put("join", "or");
+                    }
                     rules.add(rule);
+                    addedRuleToken = true;
                 }
             }
 
-            isFirstRule = false;
+            if (addedRuleToken) {
+                isFirstRule = false;
+            }
         }
 
         return rules;
@@ -295,15 +307,22 @@ public class VisibilityControlUtil {
      * @param rules The collection of visibility rules
      * @param controlElementsMap Map of control field names to their elements
      * @param formData The form data
-     * @return true if the element should be visible, false otherwise
+     * @return true if the element should be visible, false otherwise. Malformed
+     *         rule expressions fail closed, matching the client-side monitor.
      */
     public static Boolean evaluateVisibilityRules(
             Collection<Map<String, String>> rules,
             Map<String, Element> controlElementsMap,
             FormData formData) {
 
-        if (rules.isEmpty()) {
+        if (rules == null || rules.isEmpty()) {
             return true;
+        }
+
+        if (!isRuleExpressionStructurallyValid(rules)) {
+            LogUtil.warn(VisibilityControlUtil.class.getName(),
+                    "Visibility rules evaluation skipped because the expression is malformed or exceeds safe limits");
+            return false;
         }
 
         org.mozilla.javascript.Context cx = org.mozilla.javascript.Context.enter();
@@ -317,6 +336,50 @@ public class VisibilityControlUtil {
         } finally {
             org.mozilla.javascript.Context.exit();
         }
+    }
+
+    /**
+     * Validate the persisted token stream before handing it to Rhino. Rhino's parser
+     * is recursive for nested groups, so a corrupt or hostile configuration must be
+     * rejected before expression parsing can overflow the Java stack.
+     */
+    private static boolean isRuleExpressionStructurallyValid(Collection<Map<String, String>> rules) {
+        if (rules.size() > MAX_VISIBILITY_RULE_TOKENS) {
+            return false;
+        }
+
+        int groupDepth = 0;
+        List<Boolean> groupHasContent = new ArrayList<Boolean>();
+        for (Map<String, String> rule : rules) {
+            if (rule == null) {
+                return false;
+            }
+            String field = rule.get("field");
+            if (field == null || field.isEmpty()) {
+                return false;
+            }
+            if ("(".equals(field)) {
+                groupDepth++;
+                if (groupDepth > MAX_VISIBILITY_RULE_GROUP_DEPTH) {
+                    return false;
+                }
+                groupHasContent.add(false);
+            } else if (")".equals(field)) {
+                if (groupDepth == 0) {
+                    return false;
+                }
+                if (!groupHasContent.remove(groupHasContent.size() - 1)) {
+                    return false;
+                }
+                groupDepth--;
+                if (groupDepth > 0) {
+                    groupHasContent.set(groupHasContent.size() - 1, true);
+                }
+            } else if (groupDepth > 0) {
+                groupHasContent.set(groupHasContent.size() - 1, true);
+            }
+        }
+        return groupDepth == 0;
     }
 
     /**

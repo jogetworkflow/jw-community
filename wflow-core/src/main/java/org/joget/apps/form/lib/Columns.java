@@ -11,8 +11,6 @@ import org.joget.apps.form.model.FormContainer;
 import org.joget.apps.form.model.FormData;
 import org.joget.apps.form.service.FormUtil;
 import org.joget.apps.form.service.VisibilityControlUtil;
-import org.joget.commons.util.LogUtil;
-import org.json.JSONObject;
 
 /**
  * Columns layout container for grouping child fields into configurable columns.
@@ -43,15 +41,9 @@ public class Columns extends Element implements FormBuilderPaletteElement, FormC
             String template = "columns.ftl";
 
             if (!(dataModel.containsKey("elementMetaData") && !dataModel.get("elementMetaData").toString().isEmpty())) {
-                if (!getRules(formData).isEmpty()) {
-                    try {
-                        JSONObject jsonObject = new JSONObject();
-                        jsonObject.put("rules", rules);
-                        String json = jsonObject.toString();
-                        dataModel.put("rules", json);
-                    } catch (Exception e) {
-                        LogUtil.error(Columns.class.getName(), e, "Not able to retrieve visibility control rules");
-                    }
+                String rulesJson = VisibilityControlUtil.toJson(getRules(formData));
+                if (rulesJson != null) {
+                    dataModel.put("rules", rulesJson);
                 }
                 dataModel.put("visible", isMatch(formData));
             } else {
