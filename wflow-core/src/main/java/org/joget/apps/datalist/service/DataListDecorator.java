@@ -313,7 +313,7 @@ public class DataListDecorator extends CheckboxTableDecorator {
     }
 
     public static String generateLinkAndMergeParams(String hrefParam, String hrefColumn, String href, String link, Object row) {
-        if (hrefParam != null && !hrefParam.isEmpty() && hrefColumn != null && !hrefColumn.isEmpty()) {
+        if (hrefParam != null && hrefColumn != null && !hrefColumn.isEmpty()) {
             String[] params = hrefParam.split(";");
             String[] columns = hrefColumn.split(";");
 
