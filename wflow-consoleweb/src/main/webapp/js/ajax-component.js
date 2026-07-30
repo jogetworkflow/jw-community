@@ -173,6 +173,12 @@ AjaxComponent = {
                 e.stopImmediatePropagation();
 
                 var form = $(this);
+                //data-confirmation is the only way a confirm prompt survives past off("submit") above
+                var confirmMsg = $(form).data("confirmation");
+                if (!(confirmMsg === "" || confirmMsg === null || confirmMsg === undefined || confirm(confirmMsg))) {
+                    return false;
+                }
+
                 //datalist filter form
                 if ($(form).hasClass("filter_form") && $(form).closest(".dataList").length > 0) {
                      var params = UrlUtil.serializeForm($(form));
