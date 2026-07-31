@@ -115,23 +115,38 @@ UI = {
         }
         return url += "__a_=" + UI.userview_app_id + "&__u_=" + UI.userview_id;
    },
-   getPopUpHeight: function(height) {
-       if (height === undefined || height === "") {
-           height = "90%";
-       }
+   getPopUpHeight: function(height, contentSelector) {
        var windowHeight = $(window).height();
        var windowWidth = $(window).width();
-       var maxHeight = windowHeight - 100;
-           
-       if (isNaN(height) && height.indexOf("%") !== -1) {
+       var maxHeight = windowHeight - 30;
+       var minHeight = 150;
+
+       if (height === undefined || height === "") {
+           // Try to get content-based height if selector provided and element exists
+           if (contentSelector && $(contentSelector).length > 0) {
+               var contentHeight = $(contentSelector).outerHeight(true) + 40; // padding for header/footer
+               height = Math.max(Math.min(contentHeight, maxHeight), minHeight);
+           } else if (windowWidth < 668) {
+               height = maxHeight;
+           } else {
+               height = "auto";
+           }
+       }
+
+       if (typeof height === 'string' && height.indexOf("%") !== -1) {
            var tempHeight = parseFloat(height.replace("%", ""));
            height = windowHeight * tempHeight / 100;
        }
-       
-       if (height > maxHeight || windowWidth < 668) {
-           height = maxHeight;
+
+       if (height !== "auto") {
+           if (height > maxHeight) {
+               height = maxHeight;
+           }
+           if (windowWidth < 668 && height > maxHeight) {
+               height = maxHeight;
+           }
        }
-       
+
        return height;
    }, 
    getPopUpWidth: function(width) {
@@ -843,7 +858,7 @@ PopupDialog.prototype = {
           this.height = temHeight - 20;
       }
 
-      var useDynamicHeight = newSrc.indexOf("/web/console/") === -1;     
+      var useDynamicHeight = newSrc.indexOf("/web/console/") === -1 && newSrc.indexOf("/plugin/org.joget.apps.ext.ConsoleWebPlugin/") === -1;   
       var thisObject = this;
       var newDiv = document.getElementById("jqueryDialogDiv");
       var newFrame = document.getElementById("jqueryDialogFrame");

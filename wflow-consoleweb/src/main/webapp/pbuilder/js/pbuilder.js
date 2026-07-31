@@ -26,7 +26,7 @@ ProcessBuilder = {
                 if ($('body').attr('builder-theme') === "dark") {
                     url += "?__a_="+CustomBuilder.appId+"&__u_=_builder_dark_mode";
                 }
-                JPopup.show("runProcessDialog", url, {}, "");
+                JPopup.show("runProcessDialog", url, {}, "", "", "70%");
             }
             return false;
         });

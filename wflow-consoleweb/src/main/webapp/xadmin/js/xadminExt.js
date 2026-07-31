@@ -57,8 +57,7 @@
                     return true;
                 }
             });
-            
-            layer.iframeAuto(index);
+
             if (callback) {
                 callback(index);
             }
@@ -160,15 +159,12 @@
 
         PopupDialogCache.popupDialog = this;
 
-        var temWidth = $(window).width();
-        var temHeight = $(window).height();
-        if (temWidth >= 768) {
-            this.width = temWidth * 0.8;
-            this.height = temHeight * 0.9;
-        } else {
-            this.width = temWidth - 20;
-            this.height = temHeight - 20;
+        this.width = UI.getPopUpWidth(this.width);
+        var initialHeight = UI.getPopUpHeight(this.height);
+        if (initialHeight === "auto" || isNaN(initialHeight)) {
+            initialHeight = $(window).height() * 0.5; 
         }
+        this.height = initialHeight;
         var height = this.height;
         xadmin.openPopup(this.title, newSrc, this.width, this.height, function(index){
             PopupDialogCache.popupDialog.windowName = index;
@@ -201,13 +197,17 @@
         }
         
         width = UI.getPopUpWidth(width);
-        height = UI.getPopUpHeight(height);
+        var popupHeight = UI.getPopUpHeight(height);
+        if (popupHeight === "auto" || isNaN(popupHeight)) {
+            popupHeight = $(window).height() * 0.5;
+        }
+        height = popupHeight;
         if (action !== undefined && action.toLowerCase() === "get") {
             $.each(params, function (key, data) {
                 url += "&" + key + "=" + encodeURIComponent(data);
             });
             url += "&" + JPopup.tokenName + "="+ JPopup.tokenValue;
-            
+
             xadmin.openPopup(title, url, width, height, function(index){
                 JPopup.dialogboxes[id] = index;
                 // resize popup after iframe loads
