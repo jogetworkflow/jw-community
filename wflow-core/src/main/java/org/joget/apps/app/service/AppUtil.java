@@ -778,7 +778,7 @@ public class AppUtil implements ApplicationContextAware {
                             HashVariablePlugin hashVariablePlugin = (HashVariablePlugin) p;
                             String pluginPrefix = hashVariablePlugin.getPrefix();
                             if (pluginPrefix != null && !pluginPrefix.isEmpty()) {
-                                pluginPrefixMap.put(pluginPrefix, p.getClass().getName());
+                                pluginPrefixMap.put(pluginPrefix, ClassUtils.getUserClass(p).getName());
                             }
                         }
 

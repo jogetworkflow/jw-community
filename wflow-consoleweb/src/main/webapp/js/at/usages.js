@@ -162,9 +162,10 @@ var Usages = {
             $(element).find('i.la-spinner').remove();
         }, true);
     },
-    highlight: function(element, str) {
-        var regex = new RegExp(str,"gi");
-        $(element).find(".usage_found").each(function() {
+    highlight : function (element, str) {
+        var regex = new RegExp("(?<![a-zA-Z0-9])" + str + "(?![a-zA-Z0-9])", "gi");
+
+        $(element).find(".usage_found pre").each(function () {
             this.innerHTML = this.innerHTML.replace(regex, function(matched) {
                 return "<span class=\"keyword_highlight\">" + matched + "</span>";
             });
