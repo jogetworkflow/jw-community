@@ -102,30 +102,6 @@ JPopup = {
         setTimeout(function() {
             $(form).submit();
             $(form).remove();
-            
-            var iframe = $('iframe#' + id);
-            var heightAdjusted = false;
-            
-            iframe.on('load', function() {
-                if (!heightAdjusted) {
-                    heightAdjusted = true;
-                    // skip height adjustment for builder dialog and exportAppDialog
-                    if (id !== "navCreateNewDialog" && id !== "exportAppDialog") {
-                        UI.adjustPopUpHeight(id);
-                    }
-                    iframe.off('load');
-                }
-            });
-            
-            // fallback in case load event doesnt fire
-            setTimeout(function() {
-                if (!heightAdjusted) {
-                    heightAdjusted = true;
-                    if (id !== "navCreateNewDialog" && id !== "exportAppDialog") {
-                        UI.adjustPopUpHeight(id);
-                    }
-                }
-            }, 1000);
         }, 120);
     },
     
@@ -157,6 +133,10 @@ JPopup = {
         UI.loadMsg(['ubuilder.saveBeforeClose'], function(msgs){
             JPopup.msg = msgs['ubuilder.saveBeforeClose'];
         });
+        UI.loadMsg(['ubuilder.saveBeforeClose.leave'], function(msgs) {
+            JPopup.buttonMsg = msgs['ubuilder.saveBeforeClose.leave'];
+        });
+        CustomBuilder.overrideNewCreation(id);
     },
     
     fixIOS : function(id) {

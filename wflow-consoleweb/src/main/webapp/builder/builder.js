@@ -9031,7 +9031,7 @@ window._CustomBuilder.Builder = {
         if (login) {
             url += "&login=true";
         }
-        JPopup.show("marketplaceDialog", url, {}, "");
+        JPopup.show("navCreateNewDialog", url, {}, "");
         
         return false;
     },
