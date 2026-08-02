@@ -107,38 +107,23 @@ UI = {
         }
         return url += "__a_=" + UI.userview_app_id + "&__u_=" + UI.userview_id;
    },
-   getPopUpHeight: function(height, contentSelector) {
+   getPopUpHeight: function(height) {
+       if (height === undefined || height === "") {
+           height = "90%";
+       }
        var windowHeight = $(window).height();
        var windowWidth = $(window).width();
-       var maxHeight = windowHeight - 30;
-       var minHeight = 150;
-
-       if (height === undefined || height === "") {
-           // Try to get content-based height if selector provided and element exists
-           if (contentSelector && $(contentSelector).length > 0) {
-               var contentHeight = $(contentSelector).outerHeight(true) + 40; // padding for header/footer
-               height = Math.max(Math.min(contentHeight, maxHeight), minHeight);
-           } else if (windowWidth < 668) {
-               height = maxHeight;
-           } else {
-               height = "auto";
-           }
-       }
-
-       if (typeof height === 'string' && height.indexOf("%") !== -1) {
+       var maxHeight = windowHeight - 100;
+           
+       if (isNaN(height) && height.indexOf("%") !== -1) {
            var tempHeight = parseFloat(height.replace("%", ""));
            height = windowHeight * tempHeight / 100;
        }
-
-       if (height !== "auto") {
-           if (height > maxHeight) {
-               height = maxHeight;
-           }
-           if (windowWidth < 668 && height > maxHeight) {
-               height = maxHeight;
-           }
+       
+       if (height > maxHeight || windowWidth < 668) {
+           height = maxHeight;
        }
-
+       
        return height;
    }, 
    getPopUpWidth: function(width) {
@@ -168,67 +153,6 @@ UI = {
        // center dialogbox
        dialogbox.center('x');
        dialogbox.center('y');
-   },
-   adjustPopUpHeight: function(iframeId) {
-       // Auto-adjust popup height based on iframe content
-       var iframe = $('iframe#' + iframeId);
-       if (iframe.length === 0) return;
-
-       try {
-           var iframeDoc = iframe[0].contentDocument || iframe[0].contentWindow.document;
-           if (!iframeDoc) return;
-           
-           // If a console/builder page manually calls this function, ignore it to keep console dialogs fixed.
-           var url = iframe[0].contentWindow.location.href;
-           if (url.indexOf("/web/console/") !== -1) {
-               return; 
-           }
-
-           var body = iframeDoc.body;
-           var html = iframeDoc.documentElement;
-
-           var contentHeight = Math.max(
-               body.scrollHeight,
-               body.offsetHeight,
-               html.clientHeight,
-               html.scrollHeight,
-               html.offsetHeight
-           );
-
-           // Add padding for header/footer/margins
-           var targetHeight = contentHeight + 5;
-           var windowHeight = $(window).height();
-           var maxHeight = windowHeight - 160;
-           var minHeight = (iframeId === "navCreateNewDialog") ? 600 : 150;
-
-           var currentHeight = iframe.height();
-           var initialHeight = iframe.data("popupInitialHeight");
-           if (initialHeight === undefined || isNaN(initialHeight)) {
-               initialHeight = currentHeight;
-               iframe.data("popupInitialHeight", initialHeight);
-           }
-           if (!isNaN(initialHeight)) {
-               minHeight = Math.min(maxHeight, Math.max(minHeight, initialHeight));
-           }
-
-           if (targetHeight > maxHeight) {
-               targetHeight = maxHeight;
-           } else if (targetHeight < minHeight) {
-               targetHeight = minHeight;
-           }
-
-           if (Math.abs(targetHeight - currentHeight) > 20) {
-               iframe.height(targetHeight);
-
-               var dialogBox = iframe.closest('.boxy-content');
-               if (dialogBox.length > 0) {
-                   dialogBox.height(targetHeight + 5); // Add space for title bar
-                   UI.adjustPopUpDialog(JPopup.dialogboxes[iframeId]);
-               }
-           }
-       } catch (e) {
-           // Ignore
-       }
    },
    isMobileUserAgent: function() {
         var mobileUserAgent = false;
@@ -662,8 +586,7 @@ PopupDialog.prototype = {
           this.width = temWidth - 20;
           this.height = temHeight - 20;
       }
-
-      var useDynamicHeight = newSrc.indexOf("/web/console/") === -1 && newSrc.indexOf("/plugin/org.joget.apps.ext.ConsoleWebPlugin/") === -1;   
+      
       var thisObject = this;
       var newDiv = document.getElementById("jqueryDialogDiv");
       var newFrame = document.getElementById("jqueryDialogFrame");
@@ -677,103 +600,59 @@ PopupDialog.prototype = {
               newFrame.setAttribute("frameborder", "0");
               newFrame.setAttribute("width", "100%");
               if (UI.userview_app_id === undefined || UI.userview_app_id === '') {
+                  newFrame.setAttribute("height", this.height-20);
                   newFrame.setAttribute("scrolling", "no");
+              } else {
+                  newFrame.setAttribute("height", this.height-10);
               }
+              newFrame.onload = function() {
+                    try {
+                        var url = newFrame.contentWindow.location.href;
+                        if (url.indexOf("/web/userview/") !== -1 || url.indexOf("&__a_=") !== -1) {
+                            newFrame.setAttribute("scrolling", "yes");
+                            newFrame.setAttribute("height", thisObject.height-10);
+                        }
+                    } catch (err) {}
+                    
+                    if (/iPhone|iPod|iPad/.test(navigator.userAgent)) {
+                        $(document).scrollTop(0);
+                        $('#jqueryDialogDiv').height($('#jqueryDialogFrame').height());
+                    }
+              };
               
               newDiv.appendChild(newFrame);
               document.body.appendChild(newDiv);
           }
-          if (/iPhone|iPod|iPad/.test(navigator.userAgent)) {
-              $('#jqueryDialogDiv').css({
-                  overflow: 'visible'
-              });
-          }
+            if (/iPhone|iPod|iPad/.test(navigator.userAgent)) {
+                $('#jqueryDialogDiv').css({
+                    overflow: 'visible'
+                });
+            }
       }
 
       var openDialog = function() {
             var newFrame = document.getElementById("jqueryDialogFrame");
-            
-            var temWidth = $(window).width();
-            var dialogWidth = (temWidth >= 768) ? temWidth * 0.8 : temWidth - 20;
-            
-            $(newDiv).dialog('option', 'width', dialogWidth);
-            $(newDiv).dialog("option", "position", { my: "center", at: "center", of: window });
-
             if (newFrame != null) {
                 newFrame.setAttribute("src", newSrc); 
                 setTimeout(function() { 
                     newFrame.contentWindow.focus();
                 }, 100);
                 $(newFrame).addClass("iframeloading");
-
-                if (!useDynamicHeight) {
-                    if (UI.userview_app_id === undefined || UI.userview_app_id === '') {
-                        newFrame.setAttribute("height", thisObject.height - 20);
-                    } else {
-                        newFrame.setAttribute("height", thisObject.height - 10);
-                    }
-                }
-
-                newFrame.onload = function() {
-                    try {
-                        var url = newFrame.contentWindow.location.href;
-                        if (url.indexOf("/web/userview/") !== -1 || url.indexOf("&__a_=") !== -1) {
-                            newFrame.setAttribute("scrolling", "yes");
-                        }
-                        
-                        if (useDynamicHeight) {
-                            var iframeDoc = newFrame.contentWindow.document;
-                            var adjustHeight = function() {
-                                var wrapper = $(iframeDoc).find('.form-container, #main-body-content, #main, .datalist-container').first();
-                                var contentHeight = wrapper.length > 0 ? wrapper.outerHeight(true) : iframeDoc.body.scrollHeight;
-
-                                var minHeight = 200; 
-                                var maxHeight = $(window).height() - 40; 
-                                
-                                var targetHeight = Math.max(contentHeight + 35, minHeight);
-                                targetHeight = Math.min(targetHeight, maxHeight);
-
-                                if (Math.abs($(newFrame).height() - targetHeight) > 10) {
-                                    $(newFrame).height(targetHeight);
-                                    $(thisObject.popupDialog).dialog('option', 'height', 'auto');
-                                    $(thisObject.popupDialog).dialog("option", "position", { my: "center", at: "center", of: window });
-                                }
-                            };
-                            
-                            adjustHeight();
-                            $(thisObject.popupDialog).parent('.ui-dialog').css('visibility', 'visible');
-                            
-                            if (window.ResizeObserver) {
-                                var resizeObserver = new ResizeObserver(function() {
-                                    adjustHeight();
-                                });
-                                resizeObserver.observe(iframeDoc.body);
-                                
-                                var wrapperObj = $(iframeDoc).find('#main-body-content, .form-container')[0];
-                                if(wrapperObj) {
-                                    resizeObserver.observe(wrapperObj);
-                                }
-                            }
-                        } else {
-                            if (url.indexOf("/web/userview/") !== -1 || url.indexOf("&__a_=") !== -1) {
-                                newFrame.setAttribute("height", thisObject.height - 10);
-                            }
-                            $(thisObject.popupDialog).parent('.ui-dialog').css('visibility', 'visible');
-                        }
-                        
-                    } catch (err) {
-                        // revert to the fixed height on error so it doesnt collapse
-                        $(newFrame).height(thisObject.height - 20);
-                        $(thisObject.popupDialog).dialog('option', 'height', thisObject.height);
-                        $(thisObject.popupDialog).dialog("option", "position", { my: "center", at: "center", of: window });
-                        $(thisObject.popupDialog).parent('.ui-dialog').css('visibility', 'visible');
-                    }
-                    
-                    if (/iPhone|iPod|iPad/.test(navigator.userAgent)) {
-                        $(document).scrollTop(0);
-                        $('#jqueryDialogDiv').height($('#jqueryDialogFrame').height());
-                    }
-                };
+            }
+            
+            var temWidth = $(window).width();
+            var temHeight = $(window).height();
+            if (temWidth >= 768) {
+                this.width = temWidth * 0.8;
+                this.height = temHeight * 0.9;
+            } else {
+                this.width = temWidth - 20;
+                this.height = temHeight - 20;
+            }
+            if (UI.userview_app_id === undefined || UI.userview_app_id === '') {
+                newFrame.setAttribute("height", this.height-20);
+            } else {
+                newFrame.setAttribute("height", this.height-10);
             }
             
             if (/iPhone|iPod|iPad/.test(navigator.userAgent)) {
@@ -793,11 +672,7 @@ PopupDialog.prototype = {
             
             $('.ui-widget-overlay').off('click');
             $('.ui-widget-overlay').on('click',function(){
-                if(typeof PopupDialogCache !== 'undefined' && PopupDialogCache.popupDialog) {
-                    PopupDialogCache.popupDialog.close();
-                } else {
-                    $(newDiv).dialog('close');
-                }
+                PopupDialogCache.popupDialog.close();
             });
             
             $(this).parents('.ui-dialog').find('.ui-dialog-titlebar-close').blur();
@@ -825,7 +700,7 @@ PopupDialog.prototype = {
           //minWidth: this.width,
           //minHeight: this.height,
           width: this.width,
-          height: useDynamicHeight ? 'auto' : this.height, 
+          height: this.height,
           position: { my: 'center' },
           draggable: false,
           autoOpen: true,
@@ -839,9 +714,6 @@ PopupDialog.prototype = {
           closeText: '',
           zIndex: 15001
       });
-
-      // hide until iframe finishes loading & calculate height
-      $(this.popupDialog).parent('.ui-dialog').css('visibility', 'hidden');
   },
 
   close: function() {

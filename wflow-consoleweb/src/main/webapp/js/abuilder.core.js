@@ -471,7 +471,7 @@ AppBuilder = {
      * Action implementation of top panel to show export app dialog
      */
     exportApp: function() {
-        JPopup.show("exportAppDialog", CustomBuilder.contextPath + "/web/console/app"+CustomBuilder.appPath+"/exportconfig?", {}, "", "", "65%");
+        JPopup.show("exportAppDialog", CustomBuilder.contextPath + "/web/console/app"+CustomBuilder.appPath+"/exportconfig?", {}, "");
     },
     
     /*
