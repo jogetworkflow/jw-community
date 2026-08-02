@@ -39,14 +39,13 @@
             var index = layer.open({
                 type: 2,
                 area: [width+'px', height +'px'],
-                offset: '50px',
                 fix: false, //not fix
                 maxmin: true,
                 shadeClose: true,
                 shade:0.4,
                 title: title,
                 content: url,
-                cancel: function(){
+                cancel: function(){ 
                     //check is in iframe
                     if (parent && parent.layer && parent.xadmin && $(window.frameElement)) {
                         var pindex = parent.layer.getFrameIndex(window.name);
@@ -57,7 +56,8 @@
                     return true;
                 }
             });
-
+            
+            layer.iframeAuto(index);
             if (callback) {
                 callback(index);
             }
@@ -65,48 +65,6 @@
     };
     win.xadmin.closePopup = function(index) {
         layer.close(index);
-    };
-    win.xadmin.autoResizePopup = function(index) {
-        var layer = $("#layui-layer" + index);
-        if (layer.length === 0) return;
-
-        var iframe = layer.find("iframe");
-        if (iframe.length === 0) return;
-
-        try {
-            var iframeDoc = iframe[0].contentDocument || iframe[0].contentWindow.document;
-            if (!iframeDoc) return;
-
-            var body = iframeDoc.body;
-            var html = iframeDoc.documentElement;
-
-            var contentHeight = Math.max(
-                body.scrollHeight,
-                body.offsetHeight,
-                html.clientHeight,
-                html.scrollHeight,
-                html.offsetHeight
-            );
-
-            var targetHeight = contentHeight + 60; 
-            var windowHeight = $(window).height();
-            var maxHeight = windowHeight - 50;
-            var minHeight = 200;
-
-            if (targetHeight > maxHeight) {
-                targetHeight = maxHeight;
-            } else if (targetHeight < minHeight) {
-                targetHeight = minHeight;
-            }
-
-            layer.css({
-                "height": targetHeight + "px"
-            });
-            layer.find(".layui-layer-content").css("height", (targetHeight - 51) + "px");
-            iframe.css("height", (targetHeight - 51) + "px");
-        } catch (e) {
-            // ignore
-        }
     };
     win.xadmin.redirect = function(title,url) {
         var currentURL = window.location.href;
@@ -159,19 +117,19 @@
 
         PopupDialogCache.popupDialog = this;
 
-        this.width = UI.getPopUpWidth(this.width);
-        var initialHeight = UI.getPopUpHeight(this.height);
-        if (initialHeight === "auto" || isNaN(initialHeight)) {
-            initialHeight = $(window).height() * 0.5; 
+        var temWidth = $(window).width();
+        var temHeight = $(window).height();
+        if (temWidth >= 768) {
+            this.width = temWidth * 0.8;
+            this.height = temHeight * 0.9;
+        } else {
+            this.width = temWidth - 20;
+            this.height = temHeight - 20;
         }
-        this.height = initialHeight;
         var height = this.height;
         xadmin.openPopup(this.title, newSrc, this.width, this.height, function(index){
             PopupDialogCache.popupDialog.windowName = index;
-            // resize popup after iframe loads
-            $("#layui-layer-iframe" + index).on("load", function() {
-                xadmin.autoResizePopup(index);
-            });
+            $("#layui-layer-iframe" + index).closest(".layui-layer-iframe").css("height", (parseInt(height) + 51) + "px");
         });
     };
     PopupDialog.prototype.close = function() {
@@ -197,35 +155,24 @@
         }
         
         width = UI.getPopUpWidth(width);
-        var popupHeight = UI.getPopUpHeight(height);
-        if (popupHeight === "auto" || isNaN(popupHeight)) {
-            popupHeight = $(window).height() * 0.5;
-        }
-        height = popupHeight;
+        height = UI.getPopUpHeight(height);
         if (action !== undefined && action.toLowerCase() === "get") {
             $.each(params, function (key, data) {
                 url += "&" + key + "=" + encodeURIComponent(data);
             });
             url += "&" + JPopup.tokenName + "="+ JPopup.tokenValue;
-
+            
             xadmin.openPopup(title, url, width, height, function(index){
                 JPopup.dialogboxes[id] = index;
-                // resize popup after iframe loads
-                $("#layui-layer-iframe" + index).on("load", function() {
-                    xadmin.autoResizePopup(index);
-                });
+                $("#layui-layer-iframe" + index).closest(".layui-layer-iframe").css("height", (parseInt(height) + 51) + "px");
             });
         } else {
             url += "&" + JPopup.tokenName + "="+ JPopup.tokenValue;
             
             xadmin.openPopup(title, UI.base+"/images/v3/cj.gif", width, height, function(index){
                 JPopup.dialogboxes[id] = index;
+                $("#layui-layer-iframe" + index).closest(".layui-layer-iframe").css("height", (parseInt(height) + 51) + "px");
                 $("#layui-layer-iframe"+ index).replaceWith('<iframe scrolling="auto" allowtransparency="true" id="'+id+'" name="'+id+'" ></iframe>');
-                
-                // catch load event listener to the replaced iframe
-                $("#" + id).on("load", function() {
-                    xadmin.autoResizePopup(index);
-                });
                 
                 var form = $('<form method="post" data-ajax="false" style="display:none;" target="' + id + '" action="' + url + '"></form>');
                 $(document.body).append(form); 

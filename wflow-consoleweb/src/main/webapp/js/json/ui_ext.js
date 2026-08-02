@@ -12,8 +12,6 @@ JPopup = {
                 var newWidth = UI.getPopUpWidth(width);
                 var newHeight = UI.getPopUpHeight(height);
                 
-                var heightStyle = (newHeight === "auto") ? "100%" : newHeight + "px";
-                
                 if (!title || title === "") {
                     title = "&nbsp;";
                 }
@@ -21,7 +19,7 @@ JPopup = {
                 if (/iPhone|iPod|iPad/.test(navigator.userAgent)) {
                     isIphone = true;
                 }
-                JPopup.dialogboxes[id] = new Boxy('<iframe onload="JPopup.trackChanges(\''+id+'\')" id="'+id+'" name="'+id+'" src="'+UI.base+'/images/v3/cj.gif" style="frameborder:0;height:'+heightStyle+';width:'+newWidth+'px;"></iframe>', {title:title,closeable:true,draggable:isIphone,show:false,fixed: !JPopup.isMobileAndTablet(), modal:true});
+                JPopup.dialogboxes[id] = new Boxy('<iframe onload="JPopup.trackChanges(\''+id+'\')" id="'+id+'" name="'+id+'" src="'+UI.base+'/images/v3/cj.gif" style="frameborder:0;height:'+newHeight+'px;width:'+newWidth+'px;"></iframe>', {title:title,closeable:true,draggable:isIphone,show:false,fixed: !JPopup.isMobileAndTablet(), modal:true});
                 
                 JPopup.dialogboxes[id].options.afterHide = function() {
                     try {
@@ -65,15 +63,8 @@ JPopup = {
         width = UI.getPopUpWidth(width);
         height = UI.getPopUpHeight(height);
         
-        // set initial height for builder dialog 
-        if (id === "navCreateNewDialog" && (height === "auto" || height < 600)) {
-            height = 600;
-        }
-        
-        var heightStyle = (height === "auto") ? "100%" : height + "px";
-        
         $("#"+id).remove();
-        JPopup.dialogboxes[id].setContent('<iframe onload="JPopup.trackChanges(\''+id+'\')" id="'+id+'" name="'+id+'" src="'+UI.base+'/images/v3/cj.gif" style="frameborder:0;height:'+heightStyle+';width:'+width+'px;"></iframe>');
+        JPopup.dialogboxes[id].setContent('<iframe onload="JPopup.trackChanges(\''+id+'\')" id="'+id+'" name="'+id+'" src="'+UI.base+'/images/v3/cj.gif" style="frameborder:0;height:'+height+'px;width:'+width+'px;"></iframe>');
         JPopup.dialogboxes[id].show();
         
         $(".boxy-modal-blackout").off("click");
@@ -166,15 +157,6 @@ JPopup = {
         UI.loadMsg(['ubuilder.saveBeforeClose'], function(msgs){
             JPopup.msg = msgs['ubuilder.saveBeforeClose'];
         });
-        UI.loadMsg(['ubuilder.saveBeforeClose.leave'], function(msgs) {
-            JPopup.buttonMsg = msgs['ubuilder.saveBeforeClose.leave'];
-        });
-        CustomBuilder.overrideNewCreation(id);
-        
-        // Auto-adjust height based on iframe content
-        if (id !== "navCreateNewDialog" && id !== "exportAppDialog") {
-            UI.adjustPopUpHeight(id);
-        }
     },
     
     fixIOS : function(id) {

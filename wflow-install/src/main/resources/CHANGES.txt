@@ -7,8 +7,6 @@ For more information, please refer to https://community.joget.org
 7924ee0f3 Fixed: wflow-core - JDBC - Fix JDBC binder poisoning the shared "default" connection pool T7847 #2100. @8.2-SNAPSHOT
 bc409496e Fixed: wflow-core, wflow-consoleweb - Process Builder  - Fixed stale Ignite package definition cache during package save/deploy and missing workflow package after process migrati
 on cleanup. T8086 #2196 @9.1-SNAPSHOT
-026102e18 Fixed: wflow-consoleweb - UI - Fixed popup size issues. #1969 @9.1-SNAPSHOT
-f81bbfe9e Fixed: wflow-consoleweb - UI - Fixed popup sizing to fit to content. #1969 @8.2-SNAPSHOT
 c774899ff Fixed: jw-community - Security - Upgraded Apache Tomcat to 11.0.24 to address CVEs. #2169 @9.1-SNAPSHOT
 8e77a80c4 Modified: wflow-jdbc - pom.xml - Updated postgresql to 42.7.13. #2169 @9.1-SNAPSHOT
 bf7120ea1 Modified: wflow-jdbc - pom.xml - Updated mariadb-java-client to 2.7.14. #2169 @9.1-SNAPSHOT
