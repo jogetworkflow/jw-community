@@ -6116,8 +6116,8 @@ public class ConsoleWebController {
     @RequestMapping("/json/console/locales")
     public void consoleJsonLocaleList(Writer writer) throws JSONException {
         JSONObject jsonObject = new JSONObject();
-        jsonObject.put("data", new JSONArray());
-        jsonObject.append("data", getSortedLocalList());
+        // using accumulate because it will flatten the String[] returned by getSortedLocalList
+        jsonObject.accumulate("data", getSortedLocalList());
 
         jsonObject.write(writer);
     }
