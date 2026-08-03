@@ -191,25 +191,17 @@ body[builder-theme='dark'] .cm6-shortcut kbd {
   color: #24292e;
 }
 
-
 .cm-theme-light .cm-scroller {
   overflow: auto;
   font-family: 'Consolas', 'Menlo', 'Monaco', 'Courier New', monospace;
   min-height: 100%;
 }
 
-
-.cm-theme-light .cm-content {
-  min-width: 100%;
-}
-
-
 .cm-theme-light .cm-gutters {
   background-color: #f6f8fa;
   color: #959da5;
   border-right: 1px solid #dfe2e5;
 }
-
 
 /* --- Search Panel Theme --- */
 .cm-editor .cm-panel.cm-search {
