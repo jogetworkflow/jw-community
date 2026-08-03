@@ -638,8 +638,12 @@ body[builder-theme] button {
     height: fit-content;
 }
 
-.code-editor .cm-gutters {
+.code-editor:not(#code_detail) .cm-gutters {
     min-height: 300px !important;
+}
+
+#code_detail.code-editor .cm-gutters {
+    min-height: 300px;
 }
 
 .cm-scroller {

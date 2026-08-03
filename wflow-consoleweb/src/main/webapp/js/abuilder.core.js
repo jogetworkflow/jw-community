@@ -1377,7 +1377,6 @@ AppBuilder = {
                         });
                         
                         //show details in popup dialog with edit link
-                        var codeEditor;
                         var codeEditorField;
                         var showDetail = function(detailLink) {
                             var frameBody = $($("iframe#overview_data_more_detail")[0].contentWindow.document).find("body");
@@ -1402,20 +1401,24 @@ AppBuilder = {
                             $("iframe#overview_data_more_detail").css("height", height + "px");
                             $(frameBody).find("#main-body-content")[0].style.setProperty("height", (height - 53) + "px", "important");
                             
-                            //create code editor to show code
-                            $(frameBody).find("#main-body-content").html('<div id="code_detail" name="code_detail" class="code-editor" style="width:100%; height:100%"></pre>');
-
-                            var $codeDetail = $(frameBody).find("#main-body-content #code_detail");
-
-                            var isDark = false;
-
-                            if (CustomBuilder.systemTheme === 'dark') { //support builder theme
-                                isDark = true;
+                            if (codeEditorField) {
+                                codeEditorField.destroy();
+                                codeEditorField = null;
                             }
 
-                            //update content
+                            //create code editor to show code
+                            $(frameBody).find("#main-body-content").html('<div id="code_detail" name="code_detail" class="code-editor" style="width:100%; height:100%"></div>');
+
+                            var $codeDetail = $(frameBody).find("#main-body-content #code_detail");
                             var content = $(detailLink).find(".more_detail_content").text();
-                            
+                            var frameWindow = $("iframe#overview_data_more_detail")[0].contentWindow;
+                            var isDark = CustomBuilder.systemTheme === 'dark';
+                            codeEditorField = frameWindow.initCM6Editor($codeDetail[0], content, "html", isDark);
+                            codeEditorField.dispatch({
+                                effects: frameWindow.cm.StateEffect.appendConfig.of(
+                                    frameWindow.cm.EditorState.readOnly.of(true)
+                                )
+                            });
                             //show the popup
                             JPopup.dialogboxes["overview_data_more_detail"].show();
                             UI.adjustPopUpDialog(JPopup.dialogboxes["overview_data_more_detail"]);
@@ -1424,6 +1427,7 @@ AppBuilder = {
                             var headerHeight = $(frameBody).find("#main-body-header").outerHeight();
                             var mainBodyHeight = $(frameBody).find("#main-body-content").outerHeight() - headerHeight;
                             $(frameBody).css("padding-top", headerHeight + 'px');
+                            codeEditorField.refresh();
                         };
                         
                         $("#builders")
@@ -1443,17 +1447,12 @@ AppBuilder = {
                                         $(frameBody).attr('builder-theme', theme);
                                         $(frameHtml).attr('builder-theme', theme);
 
-                                        //wait for ace editor available
-                                        while (!codeEditor) {
-                                            codeEditor = $("iframe#overview_data_more_detail")[0].contentWindow.CodeMirror;
+                                        var frameWindow = $("iframe#overview_data_more_detail")[0].contentWindow;
+                                        if (typeof frameWindow.initCM6Editor === "function") {
+                                            showDetail(detailLink);
                                         }
-                                        
-                                        showDetail(detailLink);
                                     });
                                 } else {
-                                    // Reinitializing codeEditor here to prevent error when navigating to another App Composer and opening script editor ...
-                                    // ... as codeEditor is redeclared and becomes undefined when builders are initialized
-                                    codeEditor = $("iframe#overview_data_more_detail")[0].contentWindow.CodeMirror;
                                     showDetail(detailLink);
                                 }
                             });

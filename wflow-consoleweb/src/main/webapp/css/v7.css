@@ -2255,6 +2255,69 @@ pre#code_detail {
     box-sizing: border-box;
 }
 
+#code_detail {
+    height: 100% !important;
+    min-height: 300px !important;
+    overflow: hidden !important;
+}
+
+#code_detail .cm-editor {
+    height: 100% !important;
+    min-height: 100% !important;
+    overflow: hidden !important;
+}
+
+#code_detail .cm-scroller {
+    height: 100% !important;
+    min-height: 0 !important;
+    overflow-y: auto !important;
+}
+
+#code_detail .cm-content .cm-line {
+    padding-top: 0;
+    padding-bottom: 0;
+}
+
+#code_detail .cm-search-row1 button[name='next'],
+#code_detail .cm-search-row1 button[name='prev'],
+#code_detail .cm-search-row1 button[name='close'] {
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    flex: 0 0 24px !important;
+    width: 24px !important;
+    min-width: 24px !important;
+    height: 24px !important;
+    min-height: 24px !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    line-height: 1 !important;
+    vertical-align: middle !important;
+}
+
+#code_detail .cm-search-row1 button.cm-search-toggle {
+    display: none !important;
+}
+
+#code_detail .cm-search-row1 button[name='next']::after,
+#code_detail .cm-search-row1 button[name='prev']::after {
+    display: block !important;
+    line-height: 1 !important;
+}
+
+#code_detail .cm-search-row1 button[name='close'] {
+    margin-left: auto !important;
+}
+
+#code_detail .cm-search-row1 button::before,
+#code_detail .cm-search-row1 button:focus::before {
+    background: transparent !important;
+}
+
+#code_detail .cm-search-row3 {
+    margin-left: 0 !important;
+}
+
 /* quick overlay frame */
 #main-header, #footer, #adminBar {
     display:none !important;
