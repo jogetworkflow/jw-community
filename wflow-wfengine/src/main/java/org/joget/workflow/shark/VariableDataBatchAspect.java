@@ -12,6 +12,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.LinkedHashMap;
+import java.util.Locale;
 import javax.sql.DataSource;
 import java.lang.reflect.Field;
 import org.aspectj.lang.ProceedingJoinPoint;
@@ -752,9 +753,28 @@ public class VariableDataBatchAspect {
         else ps.setNull(idx, java.sql.Types.TIMESTAMP);
     }
 
+    /**
+     * VariableValueBOOL is a native boolean on PostgreSQL but numeric on Oracle (NUMBER),
+     * MySQL/MariaDB (smallint) and MSSQL (tinyint), so the SQL type used to bind NULL has to
+     * follow the dialect: Oracle rejects Types.BOOLEAN ("Invalid column type: 16") while
+     * PostgreSQL rejects Types.SMALLINT ("column is of type boolean but expression is of type
+     * smallint"). Non-null values are bound with setBoolean, which every supported driver
+     * coerces to the underlying column type.
+     */
     private void setBoolean(PreparedStatement ps, int idx, short type, int boolType, boolean val) throws SQLException {
         if (type == boolType) ps.setBoolean(idx, val);
-        else ps.setNull(idx, java.sql.Types.BOOLEAN);
+        else ps.setNull(idx, usesNativeBoolean(ps) ? java.sql.Types.BOOLEAN : java.sql.Types.SMALLINT);
+    }
+
+    /**
+     * Resolve the boolean representation from the statement's own connection so the decision
+     * follows the datasource actually in use. Deliberately not shared with the JVM-global
+     * PostgresBooleanAspect.IS_PG cache, which would be wrong for a tenant whose profile
+     * resolves to a different database.
+     */
+    private boolean usesNativeBoolean(PreparedStatement ps) throws SQLException {
+        String product = ps.getConnection().getMetaData().getDatabaseProductName();
+        return product != null && product.toLowerCase(Locale.ROOT).contains("postgresql");
     }
 
     private void closeQuietly(PreparedStatement ps, Connection conn, DataSource ds) {
