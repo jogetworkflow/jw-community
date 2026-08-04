@@ -4,6 +4,9 @@ For more information, please refer to https://community.joget.org
 
 9.1.1
 =====
+574ba686b Fixed: wflow-consoleweb - App Composer > Overview Tools - Restored Overview More Details rendering and first-open alignment #2232 @9.1-SNAPSHOT
+5ae5bf72a Fixed: wflow-consoleweb - ConsoleWebController - Reverted locale list generation to accumulate method. #2234 @9.1-SNAPSHOT
+e235bd8c6 Fixed: wflow-consoleweb - CodeMirror - Fixed long lines rendering behind the Builder Properties panel #2235 @9.1-SNAPSHOT
 7924ee0f3 Fixed: wflow-core - JDBC - Fix JDBC binder poisoning the shared "default" connection pool T7847 #2100. @8.2-SNAPSHOT
 bc409496e Fixed: wflow-core, wflow-consoleweb - Process Builder  - Fixed stale Ignite package definition cache during package save/deploy and missing workflow package after process migrati
 on cleanup. T8086 #2196 @9.1-SNAPSHOT
