@@ -1073,11 +1073,13 @@ body.rtl .property-input > span.icon > span > span.dropdown{
 .repeater-row a {
     cursor: pointer;
 }
-.repeater-row .inputs {
+.repeater-row .inputs,
+.repeater-rows-container:not(.elementmultiselect) .repeater-row .inputs {
     padding:0px 30px 0px 60px; 
     box-sizing: border-box;
 }
-body.rtl .repeater-row .inputs {
+body.rtl .repeater-row .inputs,
+body.rtl .repeater-rows-container:not(.elementmultiselect) .repeater-row .inputs {
     padding:0px 60px 0px 30px; 
     box-sizing: border-box;
 }
@@ -1224,11 +1226,15 @@ body.rtl .repeater-row .actions:last-child {
     cursor: move;
     background: #f2f2f2;
 }
+.repeater-rows-container:not(.elementmultiselect) .repeater-row .actions.sort {
+    left: 30px;
+}
 body.rtl .repeater-row .actions.expand-compress {
     left: unset;
     right: 0;
 }
-body.rtl .repeater-row .actions.sort {
+body.rtl .repeater-row .actions.sort,
+body.rtl .repeater-rows-container:not(.elementmultiselect) .repeater-row .actions.sort {
     left: unset;
     right: 30px;
 }
