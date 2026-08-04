@@ -7,7 +7,7 @@
             <key-property column="appVersion" name="appVersion" type="long"/>
             <key-property column="id" name="id" type="string"/>
         </composite-id>
-        <property index="idx_name" name="name" type="string"/>
+        <property index="idx_app_datalist_name" name="name" type="string"/>
         <property name="description" type="text"/>
         <property name="json" type="text"/>
         <property name="dateCreated" type="timestamp"/>
