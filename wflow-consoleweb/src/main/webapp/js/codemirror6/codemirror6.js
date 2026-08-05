@@ -202,6 +202,10 @@ window.initCM6Editor = function (elementId, content, mode, isDarkMode, options) 
         case "java": lang = cm.java(); lintExt = [cm.lintGutter()]; break;
         default: lang = cm.xml(); lintExt = [cm.lintGutter()];
     }
+    // Allow callers (e.g. property editor's check_syntax: 'false') to opt out of syntax linting
+    if (opts.checkSyntax === false) {
+        lintExt = [];
+    }
     // Use local 'view' variable to avoid closure issues
     var editorView = new cm.EditorView({
         state: cm.EditorState.create({

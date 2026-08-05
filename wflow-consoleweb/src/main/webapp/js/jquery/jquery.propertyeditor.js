@@ -10125,8 +10125,10 @@ PropertyEditor.Type.CodeEditor.prototype = {
             if (!el) return;
             var mode = (thisObj.properties && thisObj.properties.mode) ? thisObj.properties.mode : 'text';
             var isDark = document.body.getAttribute('builder-theme') === 'dark';
-            thisObj.codeeditor = window.initCM6Editor(thisObj.id, thisObj.value, mode, isDark, function (val) {
-                thisObj.value = val;
+            var checkSyntax = !(thisObj.properties && String(thisObj.properties.check_syntax).toLowerCase() === 'false');
+            thisObj.codeeditor = window.initCM6Editor(thisObj.id, thisObj.value, mode, isDark, {
+                onChange: function (val) { thisObj.value = val; },
+                checkSyntax: checkSyntax
             });
 
             thisObj.codeeditor.enableFullscreen = true;
