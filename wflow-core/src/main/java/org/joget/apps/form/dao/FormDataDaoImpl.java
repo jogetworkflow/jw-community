@@ -22,6 +22,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
+import java.util.concurrent.locks.ReentrantLock;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import javax.cache.Cache;
@@ -31,7 +32,7 @@ import javax.xml.transform.TransformerException;
 import org.apache.commons.collections.map.LRUMap;
 import org.hibernate.SessionFactory;
 import org.hibernate.HibernateException;
-import org.hibernate.InvalidMappingException;
+import org.hibernate.MappingException;
 import org.hibernate.ObjectNotFoundException;
 import org.hibernate.query.Query;
 import org.hibernate.Session;
@@ -49,22 +50,16 @@ import org.hibernate.tool.hbm2ddl.SchemaUpdate;
 import org.hibernate.tool.schema.TargetType;
 import org.joget.apps.app.dao.BuilderDefinitionDao;
 import org.joget.apps.app.dao.FormDefinitionDao;
-import org.joget.apps.app.model.BuilderDefinition;
 import org.joget.apps.app.model.FormDefinition;
 import org.joget.apps.app.service.AppUtil;
-import org.joget.apps.form.model.AbstractSubForm;
 import org.joget.apps.form.model.FormColumnCache;
-import org.joget.apps.form.model.FormContainer;
-import org.joget.apps.form.service.CustomFormDataTableUtil;
 import org.joget.apps.form.service.FormService;
 import org.joget.commons.cache.InMemoryCacheManager;
 import org.joget.commons.util.DynamicDataSourceManager;
 import static org.joget.commons.util.DynamicDataSourceManager.getProperties;
 import org.joget.commons.util.HostManager;
 import org.joget.commons.util.LogUtil;
-import org.joget.commons.util.PluginThread;
 import org.joget.commons.util.StringUtil;
-import org.json.JSONObject;
 import org.springframework.orm.ObjectRetrievalFailureException;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -114,15 +109,67 @@ public class FormDataDaoImpl implements FormDataDao {
         new HashSet<>(java.util.Arrays.asList("class", "true", "false", "null"))
     );
     private static final Pattern LEGACY_CUSTOM_PROPERTY_NUMERIC_SORT_PATTERN = Pattern.compile("(\\b\\w+\\.customProperties\\.[0-9a-zA-Z_][0-9a-zA-Z_]*\\b)\\s*\\+\\s*0+(?:\\.0+)?\\b");
-    
+
     private FormDefinitionDao formDefinitionDao;
     private BuilderDefinitionDao builderDefinitionDao;
     private FormService formService;
     private FormColumnCache formColumnCache;
+
+    /**
+     * Answers "what columns does this table have?" — see {@link FormColumnResolver}.
+     *
+     * <p>Owned rather than Spring-injected so the existing setters stay the single wiring point:
+     * every collaborator it needs is one this DAO is already given, and forwarding them keeps
+     * {@code appsApplicationContext.xml} and every existing caller unchanged.</p>
+     */
+    private FormColumnResolver columnResolver = new FormColumnResolver();
+
     private Cache formSessionFactoryCache;
     private Cache joinFormSessionFactoryCache;
     private Cache formPersistentClassCache;
-    
+
+    /**
+     * Pairs a {@link SessionFactory} with the {@link PersistentClass} it was actually built from, so
+     * a reader can verify the two still belong together instead of trusting whichever provenance
+     * happens to be filed under the same key. See {@code formSessionFactorySourceCache}'s javadoc:
+     * without the identity check this exists for, two independent map reads/writes for {@code sf}
+     * and its provenance can interleave with a concurrent rebuild and pair a NEW {@code sf} with
+     * STALE provenance (or vice versa) - reviewer-confirmed 2026-09-09 against an earlier version of
+     * this fix that used two separately-read entries.
+     */
+    static final class SessionFactoryProvenance {
+        final SessionFactory sf;
+        final PersistentClass pc;
+
+        SessionFactoryProvenance(SessionFactory sf, PersistentClass pc) {
+            this.sf = sf;
+            this.pc = pc;
+        }
+    }
+
+    /**
+     * Tracks what each cached {@code formSessionFactoryCache} entry was actually built from, keyed
+     * identically (by {@code getSessionFactoryCacheKey}), as a {@code (sf, pc)} pair so a reader can
+     * check {@code provenance.sf == sf} before trusting it (see {@link SessionFactoryProvenance}).
+     * Deliberately NOT the Spring-wired {@code formPersistentClassCache}: that cache expires on its
+     * own fixed 120s TTL independently of {@code formSessionFactoryCache} (which is eternal) and is
+     * also independently repopulated by {@code normalizeCustomPropertiesForAlias} for query-string
+     * normalization, unrelated to this DAO's own generation tracking. Kept in lock-step with
+     * {@code formSessionFactoryCache} at every write/clear site - see {@code getSessionFactory},
+     * {@code clearFormCache}, {@code clearFormTableCache} and {@code clearCache} - so it can answer
+     * "does the CACHED sf match the mapping now in hand", not just "is the mapping now in hand
+     * current" (#2085 cross-node staleness, GitLab note_48496).
+     *
+     * <p>Bounded rather than a plain unbounded map: {@code formSessionFactoryCache}'s own backing
+     * region ({@code SF_CACHE}) is a 5000-entry LRU heap, shared with {@code joinFormSessionFactoryCache},
+     * so its entries can be evicted without ever calling this DAO's own {@code remove} methods -
+     * reviewer-confirmed 2026-09-09. An unbounded companion map would then grow without limit over a
+     * long-running, high-table-churn multitenant deployment. {@link LRUMap} matches the pattern
+     * already used in this class for {@code processedQueryCache} below.</p>
+     */
+    private final Map<String, SessionFactoryProvenance> formSessionFactorySourceCache =
+            Collections.synchronizedMap(new LRUMap(5000));
+
     private static final Document formRowDocument;
     static {
         InputStream is = null;
@@ -141,14 +188,13 @@ public class FormDataDaoImpl implements FormDataDao {
         }
     }
        
-    private static Set<String> cacheInProgress = new HashSet<String>();
-    
     public FormDefinitionDao getFormDefinitionDao() {
         return formDefinitionDao;
     }
 
     public void setFormDefinitionDao(FormDefinitionDao formDefinitionDao) {
         this.formDefinitionDao = formDefinitionDao;
+        columnResolver.setFormDefinitionDao(formDefinitionDao);
     }
 
     public BuilderDefinitionDao getBuilderDefinitionDao() {
@@ -157,6 +203,7 @@ public class FormDataDaoImpl implements FormDataDao {
 
     public void setBuilderDefinitionDao(BuilderDefinitionDao builderDefinitionDao) {
         this.builderDefinitionDao = builderDefinitionDao;
+        columnResolver.setBuilderDefinitionDao(builderDefinitionDao);
     }
 
     public FormService getFormService() {
@@ -165,6 +212,7 @@ public class FormDataDaoImpl implements FormDataDao {
 
     public void setFormService(FormService formService) {
         this.formService = formService;
+        columnResolver.setFormService(formService);
     }
 
     public FormColumnCache getFormColumnCache() {
@@ -173,6 +221,26 @@ public class FormDataDaoImpl implements FormDataDao {
 
     public void setFormColumnCache(FormColumnCache formColumnCache) {
         this.formColumnCache = formColumnCache;
+        columnResolver.setFormColumnCache(formColumnCache);
+    }
+
+    /** The column resolver this DAO delegates {@link #getFormDefinitionColumnNames} to. */
+    public FormColumnResolver getColumnResolver() {
+        return columnResolver;
+    }
+
+    /**
+     * Replaces the column resolver — an extension and test seam.
+     *
+     * <p>Collaborators already given to this DAO are copied across, and the setters above keep
+     * forwarding to whichever resolver is current, so wiring order does not matter.</p>
+     */
+    public void setColumnResolver(FormColumnResolver columnResolver) {
+        columnResolver.setFormDefinitionDao(formDefinitionDao);
+        columnResolver.setBuilderDefinitionDao(builderDefinitionDao);
+        columnResolver.setFormService(formService);
+        columnResolver.setFormColumnCache(formColumnCache);
+        this.columnResolver = columnResolver;
     }
 
     /**
@@ -777,13 +845,15 @@ public class FormDataDaoImpl implements FormDataDao {
         joinFormSessionFactoryCache.removeAll();
         formSessionFactoryCache.removeAll();
         formPersistentClassCache.removeAll();
+        formSessionFactorySourceCache.clear();
         formColumnCache.clear();
     }
-    
+
     public void clearFormCache(Form form) {
         String entityName = getFormEntityName(form);
         String tableName = getFormTableName(form);
         formSessionFactoryCache.remove(getSessionFactoryCacheKey(entityName, tableName, null));
+        formSessionFactorySourceCache.remove(getSessionFactoryCacheKey(entityName, tableName, null));
         formPersistentClassCache.remove(getPersistentClassCacheKey(entityName));
         
         // strip table prefix for form column cache
@@ -797,19 +867,47 @@ public class FormDataDaoImpl implements FormDataDao {
     
     @Override
     public void clearFormTableCache(String tableName) {
-        formColumnCache.remove(tableName);
-        
+        // reset(), not remove(): "forget this table" has to include the incremental base, or the
+        // next build merges onto the very union the caller asked to discard.
+        formColumnCache.reset(tableName);
+
         tableName = FormDataDaoImpl.FORM_PREFIX_TABLE_NAME + tableName;
         formSessionFactoryCache.remove(getSessionFactoryCacheKey(tableName, tableName, null));
+        formSessionFactorySourceCache.remove(getSessionFactoryCacheKey(tableName, tableName, null));
         formPersistentClassCache.remove(getPersistentClassCacheKey(tableName));
         clearJoinCache(tableName);
         
         //remove mapping file to recreate
+        // Guarded by the SAME "MAP:" lock createSessionFactoryWithSingleFlight takes, so this
+        // delete cannot land between that method's write (XMLUtil.saveDocument) and its own
+        // immediate re-read (metadataSources.addFile) of the SAME entity's mapping file - the
+        // exact interleaving that would otherwise throw an uncaught MappingNotFoundException out
+        // of a request that just built a fresh, correct mapping (#2085 follow-up finding,
+        // 2026-09-08: this method was previously entirely unguarded, racing that guarded
+        // write-then-read). Best-effort on timeout/nesting rather than throwing: this method is
+        // called from app import and form save/publish, none of which expect or handle an
+        // exception here, and skipping the delete outright would leave a stale mapping file
+        // permanently uncleared - worse than the narrow window this closes.
         String path = getFormMappingPath();
         String filename = tableName + ".hbm.xml";
         File mappingFile = new File(path, filename);
-        if (mappingFile.exists()) {
-            mappingFile.delete();
+        String key = "MAP:" + HostManager.getCurrentProfile() + ":" + tableName;
+        int timeoutSeconds = FormBuildGuard.isNested() ? 0 : getLockTimeoutSeconds();
+        ReentrantLock lock = FormBuildGuard.tryLock(key, timeoutSeconds);
+        if (lock == null) {
+            LogUtil.warn(FormDataDaoImpl.class.getName(), "Could not acquire the mapping build lock"
+                    + " for \"" + tableName + "\" before deleting its cached Hibernate mapping file;"
+                    + " deleting without it. A concurrent rebuild for this table may rarely see a"
+                    + " transient MappingException and rebuild again on retry.");
+        }
+        try {
+            if (mappingFile.exists()) {
+                mappingFile.delete();
+            }
+        } finally {
+            if (lock != null) {
+                lock.unlock();
+            }
         }
     }
     
@@ -912,12 +1010,65 @@ public class FormDataDaoImpl implements FormDataDao {
         return session;
     }
 
+    /**
+     * True if {@code builtFromPc} (what the cached {@code sf} was actually built from, tracked in
+     * {@link #formSessionFactorySourceCache}) no longer matches {@code currentPc}'s own column set —
+     * i.e. the cached {@code sf} is unverifiable or provably stale relative to the mapping now in
+     * hand, regardless of whether that mapping is itself current. {@code builtFromPc == null} (no
+     * provenance recorded — a cache entry from before this tracking existed, or one populated via a
+     * non-LOAD path) fails closed: unknown provenance is not "unchanged".
+     *
+     * <p>Inherits {@link #hasMappingChanged}'s existing "an empty column set is not a change"
+     * policy (reviewer-noted 2026-09-08/09): if {@code currentPc} itself carries zero columns, this
+     * cannot distinguish that from "identical to builtFromPc" and reports no difference. Pre-existing
+     * behaviour, not introduced here — see {@code hasMappingChanged}'s own javadoc for why.</p>
+     */
+    private boolean sessionFactoryMappingDiffersFrom(PersistentClass builtFromPc, PersistentClass currentPc) {
+        if (builtFromPc == null) {
+            return true;
+        }
+        return hasMappingChanged(builtFromPc, columnNamesOf(currentPc));
+    }
+
+    /** The custom-property column names {@code pc} itself carries, t__-prefix stripped. */
+    private Collection<String> columnNamesOf(PersistentClass pc) {
+        Property custom = pc.getProperty(FormUtil.PROPERTY_CUSTOM_PROPERTIES);
+        Component customComponent = (Component) custom.getValue();
+        Set<String> names = new HashSet<String>();
+        Iterator i = customComponent.getProperties().iterator();
+        while (i.hasNext()) {
+            Property property = (Property) i.next();
+            String propertyName = property.getName();
+            if (propertyName.startsWith("t__")) {
+                propertyName = propertyName.substring(3);
+            }
+            names.add(propertyName);
+        }
+        return names;
+    }
+
     protected SessionFactory findSessionFactory(String entityName, String tableName, FormRowSet rowSet, int actionType) throws HibernateException {
         PersistentClass pc = null;
-        
+
         // lookup cache
         String cacheKey = getSessionFactoryCacheKey(entityName, tableName, rowSet);
         SessionFactory sf = (SessionFactory)formSessionFactoryCache.get(cacheKey);
+        // What sf itself was built from, if anything - see formSessionFactorySourceCache. These two
+        // reads are against SEPARATE maps and are NOT atomic with each other or with a concurrent
+        // rebuild's writes, so the identity check below (provenance.sf == sf) is load-bearing, not
+        // defensive: without it, a rebuild racing between these two lines can pair THIS sf with a
+        // stale-or-not-yet-updated provenance record (or vice versa) filed under the same key,
+        // wrongly concluding they differ and closing a factory another thread just published, or
+        // wrongly concluding they match when they do not (reviewer-confirmed 2026-09-09: Opus and
+        // Sol independently found the same race against an earlier version of this fix that trusted
+        // a same-key lookup without checking whose sf it actually described).
+        PersistentClass sfBuiltFromPc = null;
+        if (sf != null) {
+            SessionFactoryProvenance provenance = formSessionFactorySourceCache.get(cacheKey);
+            if (provenance != null && provenance.sf == sf) {
+                sfBuiltFromPc = provenance.pc;
+            }
+        }
         if (sf != null) {
             if (LogUtil.isDebugEnabled(FormDataDaoImpl.class.getName())) {
                 LogUtil.debug(FormDataDaoImpl.class.getName(), "  --- Form " + entityName + " session factory found in cache");
@@ -925,7 +1076,6 @@ public class FormDataDaoImpl implements FormDataDao {
         }
             
         if (actionType == ACTION_TYPE_LOAD) {
-            boolean mappingFileExist = true;
             // find existing persistent class for comparison
             if (sf != null) {
                 pc = (PersistentClass)formPersistentClassCache.get(getPersistentClassCacheKey(entityName));
@@ -957,12 +1107,24 @@ public class FormDataDaoImpl implements FormDataDao {
                             // save into cache
                             formPersistentClassCache.put(getPersistentClassCacheKey(entityName), pc);
                         }
-                    } else {
-                        mappingFileExist = false;
                     }
-                } catch(InvalidMappingException ime) {
-                    // could not read XML file
-                    mappingFileExist = false;
+                } catch(MappingException me) {
+                    // Could not read the XML file: either a parse failure on a corrupt/mid-write
+                    // file (InvalidMappingException - the original, already-documented case), OR
+                    // the file vanished between the exists() check above and addFile() actually
+                    // opening it (MappingNotFoundException - a SIBLING of InvalidMappingException,
+                    // not a subclass, so the narrower catch this replaced let it through
+                    // uncaught). The second case is a real, live-confirmed race: addFile() reads
+                    // and parses the file synchronously and eagerly (verified against this
+                    // project's actual Hibernate 6.6.1 dependency), so a concurrent
+                    // clearFormTableCache()/clearFormCache() deleting the SAME entity's mapping
+                    // file - an unguarded delete, reachable from app import and form
+                    // save/publish - can win the race between this thread's exists() check and
+                    // its addFile() call, especially since createMetadataSources() in between
+                    // does real work (builds a fresh Hibernate ServiceRegistry). Either way, pc
+                    // stays null here and the mapping is regenerated below via the guarded
+                    // single-flight rebuild path (#2085) - correct for BOTH causes, since a
+                    // mapping this DAO cannot itself read is unverifiable regardless of why.
                 }
             }
             if (pc != null) {
@@ -981,52 +1143,33 @@ public class FormDataDaoImpl implements FormDataDao {
                 }
 
                 if (!changes) {
-                    // get form fields
-                    Collection<String> formFields = null;
-                    if (mappingFileExist) {
-                        formFields = syncFormDefinitionColumnNamesCache(tableName);
-                    } else {
-                        formFields = getFormDefinitionColumnNames(tableName);
-                    }
+                    // Resolve the column set SYNCHRONOUSLY. This used to hop through
+                    // syncFormDefinitionColumnNamesCache, which returns null while a background
+                    // rebuild is in flight, and the null was then treated as "nothing changed" —
+                    // so a node that had not yet seen the invalidation served a stale mapping and
+                    // any HQL naming a new column blew up with UnknownPathException (#2085).
+                    //
+                    // Removing that hop does not reintroduce #7709: it only ever skipped work in
+                    // the "column cache cold AND mapping unchanged" case, which is exactly the
+                    // case where the work is required for correctness. When a rebuild IS needed,
+                    // createSessionFactory already resolves the same column set synchronously on
+                    // this thread. getFormDefinitionColumnNames is single-flighted per table, so
+                    // concurrent callers collapse onto one load instead of stampeding.
+                    Collection<String> formFields = getFormDefinitionColumnNames(tableName);
 
-                    //formFields is null when cache is refreshing
-                    if (formFields != null && !formFields.isEmpty()) {
-                        Property custom = pc.getProperty(FormUtil.PROPERTY_CUSTOM_PROPERTIES);
-                        Component customComponent = (Component) custom.getValue();
+                    changes = hasMappingChanged(pc, formFields);
+                }
 
-                        // compare existing mappings with new properties
-                        int size = customComponent.getPropertySpan();
-                        if (size == formFields.size()) {
-                            // similar size, so compare individual fields
-                            boolean found;
-                            Iterator i = customComponent.getProperties().iterator();
-                            while (i.hasNext()) {
-                                Property property = (Property) i.next();
-                                String propertyName = property.getName();
-                                if (propertyName.startsWith("t__")) {
-                                    propertyName = propertyName.substring(3);
-                                }
-                                found = formFields.contains(propertyName);
-                                if (!found || RESERVED_KEYWORDS.contains(property.getName().toLowerCase())) {
-                                    // property not found, fields changed
-                                    changes = true;
-                                    break;
-                                }
-                            }
-                            
-                            try {
-                                Property createdBy = pc.getProperty(FormUtil.PROPERTY_CREATED_BY);
-                                if (createdBy == null) {
-                                    changes = true;
-                                }
-                            } catch (Exception ex) {
-                                changes = true;
-                            }
-                        } else {
-                            // dissimilar size, fields changed
-                            changes = true;
-                        }
-                    }
+                if (!changes && sf != null) {
+                    // pc is current and trustworthy, but that alone does not prove the CACHED sf
+                    // matches it - pc's own cache entry can have been repopulated (TTL expiry, or
+                    // normalizeCustomPropertiesForAlias's independent write) without sf ever being
+                    // rebuilt to match. Verify sf's own provenance directly instead of assuming it
+                    // (#2085 cross-node staleness, note_48496) - cheap, in-memory, no disk/DB I/O,
+                    // so this does not reintroduce the "rebuild on every TTL cycle" cost that a
+                    // cruder "always rebuild when pc's cache misses" fix would (verified in
+                    // FormSessionFactoryPcTtlRebuildPatchTest).
+                    changes = sessionFactoryMappingDiffersFrom(sfBuiltFromPc, pc);
                 }
 
                 if (changes) {
@@ -1034,8 +1177,10 @@ public class FormDataDaoImpl implements FormDataDao {
                         LogUtil.debug(FormDataDaoImpl.class.getName(), "  --- Form " + entityName + " changes detected");
                     }
 
-                    // properties changed, close session factory
-                    if (sf != null) {
+                    // properties changed, close session factory.
+                    // isClosed() guard: several threads can reach this holding the SAME stale
+                    // factory reference, and only the first should close it.
+                    if (sf != null && !sf.isClosed()) {
                         sf.close();
                         if (LogUtil.isDebugEnabled(FormDataDaoImpl.class.getName())) {
                             LogUtil.debug(FormDataDaoImpl.class.getName(), "  --- Form " + entityName + " existing session factory closed");
@@ -1044,15 +1189,44 @@ public class FormDataDaoImpl implements FormDataDao {
 
                     // clear session factory to be recreated
                     sf = null;
-                    
+
                     //remove persistentClassCache
                     formPersistentClassCache.remove(getPersistentClassCacheKey(entityName));
+                    // The closed sf's provenance record is now stale; the identity check on the read
+                    // side would already ignore it once a NEW sf is cached under this key, but clear
+                    // it explicitly rather than leave a record describing a closed factory around.
+                    formSessionFactorySourceCache.remove(cacheKey);
                     clearJoinCache(entityName);
                 } else if (metadata != null && sf == null) {
                     //no change, use existing mapping file if session factory not exist
                     LogUtil.debug(FormDataDaoImpl.class.getName(), "  --- Form " + entityName + " get session factory");
                     sf = getSessionFactory(entityName, cacheKey, actionType, metadata, false);
                 }
+            } else if (sf != null) {
+                // pc could not be resolved: it was not in formPersistentClassCache, AND the
+                // on-disk <entity>.hbm.xml fallback above also came back empty (missing mapping
+                // file, or a MappingException from reading it mid-rewrite by another thread's
+                // createSessionFactoryWithSingleFlight, or mid-delete by clearFormTableCache).
+                // formPersistentClassCache and
+                // formSessionFactoryCache are separate cache regions with independent eviction
+                // (formPersistentClassCache expires on a fixed TTL; the session factory cache is
+                // eternal), so this is a routine, expected combination, not just a rare race.
+                //
+                // With no PersistentClass there is nothing left to verify sf's mapping against,
+                // so this cannot silently fall through to "sf is open, reuse it" the way the code
+                // below does — that would return a session factory whose staleness was simply
+                // never checked (#2085). Treat it the same as a detected mapping change instead:
+                // close it and let the block below rebuild it from scratch.
+                if (LogUtil.isDebugEnabled(FormDataDaoImpl.class.getName())) {
+                    LogUtil.debug(FormDataDaoImpl.class.getName(), "  --- Form " + entityName + " PersistentClass could not be resolved; treating cached session factory as unverifiable");
+                }
+
+                if (!sf.isClosed()) {
+                    sf.close();
+                }
+                sf = null;
+                formSessionFactorySourceCache.remove(cacheKey);
+                clearJoinCache(entityName);
             }
         }
         
@@ -1060,11 +1234,161 @@ public class FormDataDaoImpl implements FormDataDao {
             if (LogUtil.isDebugEnabled(FormDataDaoImpl.class.getName())) {
                 LogUtil.debug(FormDataDaoImpl.class.getName(), "  --- Form " + entityName + " create session factory");
             }
-            sf = createSessionFactory(entityName, tableName, rowSet, actionType);
+            sf = createSessionFactoryWithSingleFlight(entityName, tableName, rowSet, actionType, cacheKey);
         }
         return sf;
     }
+
+    /**
+     * Regenerates a mapping, collapsing concurrent regenerations of the same entity onto one.
+     *
+     * <p>Without this, every thread that detects a change closes the stale factory and then
+     * independently writes {@code <entity>.hbm.xml}, builds a {@code SessionFactory} and runs
+     * {@code SchemaUpdate} DDL — concurrent DDL against one table, N-1 wasted factories (which
+     * are put into the cache one over another and may never be closed), and repeated writes of
+     * the same file. Failing closed on change detection made this fire reliably where the old
+     * fail-open path largely hid it, so it has to be handled here.</p>
+     *
+     * <p>Shares {@link FormBuildGuard} with the column build, and must: {@code createSessionFactory}
+     * resolves columns, which runs plugin code, which can call {@code find()} and land back here.
+     * Both mapping→columns and columns→mapping orderings therefore exist in production, and only
+     * the guard's never-wait-while-nested rule stops them forming an ABBA deadlock.</p>
+     *
+     * <p><b>Nested callers are locked too, just never made to wait.</b> An earlier version returned
+     * {@code createSessionFactory} directly when nested, which contradicted this method's own reason
+     * for failing on timeout rather than proceeding unlocked: a nested regeneration reached through
+     * plugin code can truncate and rewrite {@code <entity>.hbm.xml} while the thread holding the
+     * stripe is parsing it — the exact corruption the timeout branch refuses to risk. A zero-timeout
+     * {@code tryLock} cannot block, so the never-wait-while-nested rule is preserved and no ABBA
+     * cycle can form, while the file still has exactly one writer.</p>
+     */
+    protected SessionFactory createSessionFactoryWithSingleFlight(String entityName, String tableName,
+            FormRowSet rowSet, int actionType, String cacheKey) {
+        String key = "MAP:" + HostManager.getCurrentProfile() + ":" + entityName;
+
+        if (FormBuildGuard.holds(key)) {
+            // This entity's regeneration is already on this thread's stack, and plugin code has
+            // asked for it again. Recursing would rewrite the mapping file underneath the frame
+            // that is parsing it, and the stripe is reentrant so the lock below would not stop it.
+            throw new HibernateException("Re-entrant regeneration of the Hibernate mapping for \""
+                    + entityName + "\" detected while the outer regeneration is still running."
+                    + " Retry the request.");
+        }
+
+        // Zero while nested: a thread already inside a guarded build must not BLOCK on another
+        // lock, but it must still hold this one to write the mapping file.
+        int timeoutSeconds = FormBuildGuard.isNested() ? 0 : getLockTimeoutSeconds();
+        ReentrantLock lock = FormBuildGuard.tryLock(key, timeoutSeconds);
+        if (lock == null) {
+            // Deliberately NOT regenerating outside the lock. Regeneration truncates and rewrites
+            // <entity>.hbm.xml, and a second writer can be truncating that file while the first
+            // is parsing it — file corruption, duplicate DDL, and factories overwriting each
+            // other. Failing a request retriably is strictly better than that. Contrast the
+            // column build, where a duplicated build is merely wasteful and so is allowed.
+            String why = (timeoutSeconds > 0)
+                    ? "Timed out after " + timeoutSeconds + "s waiting to regenerate"
+                    : "Another thread is regenerating, and this one is already inside a build so it"
+                      + " must not wait, for";
+            throw new HibernateException(why + " the Hibernate mapping for \"" + entityName
+                    + "\". Not regenerating outside the lock, as concurrent writers would corrupt the mapping file. Retry the request.");
+        }
+
+        try {
+            // Double-check: a thread ahead of us may have already regenerated and cached it.
+            SessionFactory existing = (SessionFactory) formSessionFactoryCache.get(cacheKey);
+            if (existing != null && !existing.isClosed()) {
+                if (LogUtil.isDebugEnabled(FormDataDaoImpl.class.getName())) {
+                    LogUtil.debug(FormDataDaoImpl.class.getName(), "  --- Form " + entityName + " session factory regenerated by another thread");
+                }
+                return existing;
+            }
+            return FormBuildGuard.runGuarded(key,
+                    () -> createSessionFactory(entityName, tableName, rowSet, actionType));
+        } finally {
+            lock.unlock();
+        }
+    }
+
+    /** Overridable so tests can drive the timeout paths without a 20s wait. */
+    protected int getLockTimeoutSeconds() {
+        return FormBuildGuard.DEFAULT_LOCK_TIMEOUT_SECONDS;
+    }
     
+    /**
+     * Compares a cached Hibernate mapping against the form's current column set.
+     *
+     * <p>This is the correctness gate for cross-node staleness (#2085), so it FAILS CLOSED: an
+     * unknown column set means the mapping cannot be vouched for, and an unverifiable mapping
+     * must be regenerated rather than served. Regenerating one that turned out to be fine is
+     * bounded, idempotent work; serving one that turned out to be stale is a 500 to the user the
+     * moment any HQL names a column the mapping does not carry.</p>
+     *
+     * <p>An EMPTY column set is a different thing from an unknown one and is deliberately treated
+     * as "no change": a table with no form definition and no builder definition legitimately
+     * resolves to zero columns, and shrinking the mapping there would unmap columns that may
+     * still hold data. Collapsing empty into unknown would also make every unmapped table
+     * regenerate its mapping on every request.</p>
+     *
+     * @param pc the cached mapping
+     * @param formFields the current column set; null means "could not be determined"
+     * @return true if the mapping must be regenerated
+     */
+    protected boolean hasMappingChanged(PersistentClass pc, Collection<String> formFields) {
+        if (formFields == FormColumnResolver.UNRESOLVED_COLUMNS) {
+            // A cycle was cut, so we know nothing about this table's columns. Neither answer is
+            // safe: "unchanged" serves a mapping we cannot vouch for (#2085 again), and "changed"
+            // triggers a regeneration that re-enters the same cycle and publishes a mapping with
+            // no custom columns. Abort without publishing anything and let the caller retry —
+            // by then the outermost build has completed and cached, so there is no cycle left.
+            throw new HibernateException("Cannot validate the Hibernate mapping for \"" + pc.getEntityName()
+                    + "\": its form column set is unresolved because of a circular form dependency. Retry the request.");
+        }
+        if (formFields == null) {
+            // Unknown - fail closed. See javadoc.
+            return true;
+        }
+        if (formFields.isEmpty()) {
+            // Known to be empty - deliberately not a change. See javadoc.
+            return false;
+        }
+
+        Property custom = pc.getProperty(FormUtil.PROPERTY_CUSTOM_PROPERTIES);
+        Component customComponent = (Component) custom.getValue();
+
+        // compare existing mappings with new properties
+        int size = customComponent.getPropertySpan();
+        if (size != formFields.size()) {
+            // dissimilar size, fields changed
+            return true;
+        }
+
+        // similar size, so compare individual fields
+        Iterator i = customComponent.getProperties().iterator();
+        while (i.hasNext()) {
+            Property property = (Property) i.next();
+            String propertyName = property.getName();
+            if (propertyName.startsWith("t__")) {
+                propertyName = propertyName.substring(3);
+            }
+            boolean found = formFields.contains(propertyName);
+            if (!found || RESERVED_KEYWORDS.contains(property.getName().toLowerCase())) {
+                // property not found, fields changed
+                return true;
+            }
+        }
+
+        try {
+            Property createdBy = pc.getProperty(FormUtil.PROPERTY_CREATED_BY);
+            if (createdBy == null) {
+                return true;
+            }
+        } catch (Exception ex) {
+            return true;
+        }
+
+        return false;
+    }
+
     protected SessionFactory findJoinSessionFactory(String[] entities) throws HibernateException {
         SessionFactory sf = null;        
         
@@ -1137,6 +1461,12 @@ public class FormDataDaoImpl implements FormDataDao {
         } else {
             // column names from all forms mapped to this table
             formFields = getFormDefinitionColumnNames(tableName);
+            if (formFields == FormColumnResolver.UNRESOLVED_COLUMNS) {
+                // Publishing here would write a mapping with NO custom columns and run DDL
+                // against it — far worse than failing the request. See FormColumnResolver.UNRESOLVED_COLUMNS.
+                throw new HibernateException("Cannot generate the Hibernate mapping for \"" + entityName
+                        + "\": its form column set is unresolved because of a circular form dependency. Retry the request.");
+            }
         }
 
         // load default FormRow hbm xml
@@ -1245,19 +1575,41 @@ public class FormDataDaoImpl implements FormDataDao {
     protected SessionFactory createJoinSessionFactory(String[] entities) throws HibernateException {
         // create metadatasources
         MetadataSources metadataSources = createMetadataSources();
-        
+
         String path = getFormMappingPath();
         for (String e : entities) {
-            if (WORKFLOW_ASSIGNMENT.equals(e)){ // include the assignment related hibernate mapping file 
+            if (WORKFLOW_ASSIGNMENT.equals(e)){ // include the assignment related hibernate mapping file
                 metadataSources.addResource("/org/joget/workflow/model/WorkflowProcessLink.hbm.xml");
                 metadataSources.addResource("/org/joget/apps/form/model/FormDataAssignment.hbm.xml");
             } else {
                 String filename = e + ".hbm.xml";
                 File mappingFile = new File(path, filename);
-                metadataSources.addFile(mappingFile);
+                // findJoinSessionFactory's own loop (its caller) already called findSessionFactory
+                // for every entity here, which regenerates a missing/stale mapping - but that
+                // guarantee only holds AT THE INSTANT each per-entity call returns. Each entity is
+                // checked, and its FormBuildGuard "MAP:" lock released, one at a time; by the time
+                // THIS loop reaches an entity's file, an unrelated concurrent request for that same
+                // entity (its own findSessionFactory/clearFormTableCache/clearFormCache call) can
+                // have rewritten or deleted it again. Unlike findSessionFactory's own disk-fallback
+                // read, this had NO exception handling at all for that - not even the narrower
+                // InvalidMappingException catch - so a raced read here threw an uncaught, opaque
+                // Hibernate exception (#2085 follow-up finding, 2026-09-08). Failing closed with a
+                // clear, retriable error is what every other guarded rebuild in this file already
+                // does (see createSessionFactoryWithSingleFlight's timeout branch and
+                // hasMappingChanged's UNRESOLVED_COLUMNS branch); actually closing the race would
+                // need locking multiple entities at once here, which risks an ABBA deadlock between
+                // two joins that reference the same tables in different orders and is deliberately
+                // left as a separate, larger piece of work.
+                try {
+                    metadataSources.addFile(mappingFile);
+                } catch (MappingException me) {
+                    throw new HibernateException("Could not read the Hibernate mapping for \"" + e
+                            + "\" while building the join session factory for [" + String.join(", ", entities)
+                            + "]: it may be concurrently regenerated by another request. Retry the request.", me);
+                }
             }
         }
-        
+
         String cacheKey = getJoinSessionFactoryCacheKey(entities);
         Metadata metadata = metadataSources.buildMetadata();
         SessionFactory sf = getJoinSessionFactory(entities, cacheKey, metadata);
@@ -1275,12 +1627,26 @@ public class FormDataDaoImpl implements FormDataDao {
             internalUpdateSchema(sf, metadata, entityName);
         }
         
+        PersistentClass pc = null;
         if (actionType == ACTION_TYPE_LOAD) {
-            PersistentClass pc = metadata.getEntityBinding(entityName);
+            pc = metadata.getEntityBinding(entityName);
             // save into cache
             formPersistentClassCache.put(getPersistentClassCacheKey(entityName), pc);
         }
-        
+
+        // Record what sf was actually built from, tied to sf's own (eternal) lifecycle rather than
+        // formPersistentClassCache's independent 120s TTL (#2085) - see formSessionFactorySourceCache.
+        // Published BEFORE sf itself is published below: a reader that observes the new sf via
+        // formSessionFactoryCache must never be able to observe an older (or missing) provenance
+        // record for that SAME sf - the identity check on the read side (provenance.sf == sf) makes
+        // this safe even if a concurrent write interleaves regardless, but ordering it this way
+        // keeps the common, uncontended case from paying a spurious fail-closed rebuild.
+        if (pc != null) {
+            formSessionFactorySourceCache.put(cacheKey, new SessionFactoryProvenance(sf, pc));
+        } else {
+            formSessionFactorySourceCache.remove(cacheKey);
+        }
+
         // save into cache
         formSessionFactoryCache.remove(cacheKey);
         formSessionFactoryCache.put(cacheKey, sf);
@@ -1422,29 +1788,21 @@ public class FormDataDaoImpl implements FormDataDao {
                     columnsName.addAll(row.keySet());
                 }
             }
-            Pattern pattern = Pattern.compile("^[0-9a-zA-Z_\\-]+$");
+            // Same naming rules as the LOAD side (FormColumnResolver): the two must agree, or a
+            // column the store path accepts is one the load mapping does not carry.
             for (Object column : columnsName) {
                 String columnName = (String) column;
-                if (columnName != null && !columnName.isEmpty() && !FormUtil.PROPERTY_ID.equals(columnName) && !FormUtil.PROPERTY_DATE_CREATED.equals(columnName) && !FormUtil.PROPERTY_DATE_MODIFIED.equals(columnName)
-                         && !FormUtil.PROPERTY_CREATED_BY.equals(columnName) && !FormUtil.PROPERTY_CREATED_BY_NAME.equals(columnName)
-                         && !FormUtil.PROPERTY_MODIFIED_BY.equals(columnName) && !FormUtil.PROPERTY_MODIFIED_BY_NAME.equals(columnName)) {
+                if (columnName != null && !columnName.isEmpty()
+                        && !FormColumnResolver.PREDEFINED_COLUMNS.contains(columnName)) {
                     String lowerCasePropName = columnName.toLowerCase();
-                    
-                    if (pattern.matcher(columnName).matches() && !lowerCaseColumnSet.contains(lowerCasePropName) && !(columnName.startsWith(FORM_PREFIX_COLUMN) && columnsName.contains(columnName.substring(2)))) {
+
+                    if (FormColumnResolver.COLUMN_NAME_PATTERN.matcher(columnName).matches() && !lowerCaseColumnSet.contains(lowerCasePropName) && !(columnName.startsWith(FORM_PREFIX_COLUMN) && columnsName.contains(columnName.substring(2)))) {
                         columnList.add(columnName);
                         lowerCaseColumnSet.add(lowerCasePropName);
                     }
                 }
             }
-            
-            //remove predefined column
-            columnList.remove(FormUtil.PROPERTY_ID);
-            columnList.remove(FormUtil.PROPERTY_DATE_CREATED);
-            columnList.remove(FormUtil.PROPERTY_DATE_MODIFIED);
-            columnList.remove(FormUtil.PROPERTY_CREATED_BY);
-            columnList.remove(FormUtil.PROPERTY_CREATED_BY_NAME);
-            columnList.remove(FormUtil.PROPERTY_MODIFIED_BY);
-            columnList.remove(FormUtil.PROPERTY_MODIFIED_BY_NAME);
+            // No separate "remove predefined column" pass: the guard above already excluded them.
         }
         return columnList;
     }
@@ -1456,146 +1814,9 @@ public class FormDataDaoImpl implements FormDataDao {
      */
     @Override
     public Collection<String> getFormDefinitionColumnNames(String tableName) {
-        Collection<String> columnList;
-        Collection<String> indexesList;
-        Map<String, String> checkDuplicateMap = new HashMap<String, String>();
-
-        // strip table prefix
-        if (tableName.startsWith(FORM_PREFIX_TABLE_NAME)) {
-            tableName = tableName.substring(FORM_PREFIX_TABLE_NAME.length());
-        }
-        
-        // get forms mapped to the table name
-        columnList = formColumnCache.get(tableName);
-        indexesList = formColumnCache.getIndexes(tableName);
-        if (columnList == null) {
-            Date requestTime = new Date();
-            
-            LogUtil.debug(FormDataDaoImpl.class.getName(), "======== Build Form Column Cache for table \""+ tableName +"\" START ========");
-            columnList = new HashSet<String>();
-            indexesList = new HashSet<String>();
-
-            Collection<FormDefinition> formList = getFormDefinitionDao().loadFormDefinitionByTableName(tableName);
-            Collection<BuilderDefinition> builderDefs = getBuilderDefinitionDao().find(" and type = ? and id = ?", new String[]{CustomFormDataTableUtil.TYPE, FormDataDaoImpl.FORM_PREFIX_TABLE_NAME + tableName}, null, null, null, null, null);
-            
-            Pattern pattern = Pattern.compile("^[0-9a-zA-Z_\\-]+$");
-            
-            if ((formList != null && !formList.isEmpty()) || (builderDefs != null && !builderDefs.isEmpty())) {
-                if (formList != null && !formList.isEmpty()) {
-                    for (FormDefinition formDef : formList) {
-                        // get JSON
-                        String json = formDef.getJson();
-                        if (json != null) {
-                            try {
-                                Form form = (Form) getFormService().createElementFromJson(json, false);
-                                Collection<String> tempColumnList = new HashSet<String>();
-                                findAllElementIds(form, tempColumnList);
-
-                                LogUtil.debug(FormDataDaoImpl.class.getName(), "Columns of Form \"" + formDef.getId() + "\" [" + formDef.getAppId() + " v" + formDef.getAppVersion() + "] - " + tempColumnList.toString());
-                                for (String c : tempColumnList) {
-                                    if (!c.isEmpty()) {
-                                        String exist = checkDuplicateMap.get(c.toLowerCase());
-                                        if (exist != null && !exist.equals(c)) {
-                                            LogUtil.warn(FormDataDaoImpl.class.getName(), "Detected duplicated column in Form \"" + formDef.getId() + "\" [" + formDef.getAppId() + " v" + formDef.getAppVersion() + "]: \"" + exist + "\" and \"" + c + "\". Removed \"" + exist + "\" and replaced with \"" + c + "\".");
-                                            columnList.remove(exist);
-                                        }
-                                        checkDuplicateMap.put(c.toLowerCase(), c);
-                                        
-                                        if (pattern.matcher(c).matches()) {
-                                            columnList.add(c);
-                                        }
-                                    }
-                                }
-                            } catch (Exception e) {
-                                LogUtil.debug(FormDataDaoImpl.class.getName(), "JSON definition of form["+formDef.getAppId()+":"+formDef.getAppVersion()+":"+formDef.getId()+"] is either protected or corrupted.");
-                            }
-                        }
-                    }
-                }
-                if (builderDefs != null && !builderDefs.isEmpty()) {
-                    for (BuilderDefinition def : builderDefs) {
-                        try {
-                            JSONObject defObj = new JSONObject(def.getJson());
-                            if (defObj.has("columns")) {
-                                JSONObject columnsObj = defObj.getJSONObject("columns");
-                                Iterator keys = columnsObj.keys();
-                                while (keys.hasNext()) {
-                                    String c = (String) keys.next();
-                                    if (!c.isEmpty()) {
-                                        String exist = checkDuplicateMap.get(c.toLowerCase());
-                                        if (exist != null && !exist.equals(c)) {
-                                            LogUtil.warn(FormDataDaoImpl.class.getName(), "Detected duplicated column in custom table \"" + tableName + "\" [" + def.getAppId() + " v" + def.getAppVersion() + "]: \"" + exist + "\" and \"" + c + "\". Removed \"" + exist + "\" and replaced with \"" + c + "\".");
-                                            columnList.remove(exist);
-                                        }
-                                        checkDuplicateMap.put(c.toLowerCase(), c);
-
-                                        if (pattern.matcher(c).matches()) {
-                                            columnList.add(c);
-                                        }
-                                    }
-                                }
-                            }
-                            
-                            if (defObj.has("indexes")) {
-                                JSONObject indexesObj = defObj.getJSONObject("indexes");
-                                Iterator ikeys = indexesObj.keys();
-                                while (ikeys.hasNext()) {
-                                    String c = (String) ikeys.next();
-                                    indexesList.add(c);
-                                }
-                            }
-                        } catch (Exception e) {
-                            LogUtil.error(FormDataDaoImpl.class.getName(), e, "fail to retrieve columns for custom table \"" + tableName + "\" [" + def.getAppId() + " v" + def.getAppVersion() + "]");
-                        }
-                    }
-                }
-
-                //remove predefined column
-                columnList.remove(FormUtil.PROPERTY_ID);
-                columnList.remove(FormUtil.PROPERTY_DATE_CREATED);
-                columnList.remove(FormUtil.PROPERTY_DATE_MODIFIED);
-                columnList.remove(FormUtil.PROPERTY_CREATED_BY);
-                columnList.remove(FormUtil.PROPERTY_CREATED_BY_NAME);
-                columnList.remove(FormUtil.PROPERTY_MODIFIED_BY);
-                columnList.remove(FormUtil.PROPERTY_MODIFIED_BY_NAME);
-
-                LogUtil.debug(FormDataDaoImpl.class.getName(), "All Columns - " + columnList.toString());
-                formColumnCache.put(tableName, columnList, requestTime);
-                formColumnCache.putIndexes(tableName, indexesList, requestTime);
-            }
-            LogUtil.debug(FormDataDaoImpl.class.getName(), "======== Build Form Column Cache for table \""+ tableName +"\" END   ========");
-        }
-        return columnList;
+        return getColumnResolver().getColumnNames(tableName);
     }
-    
-    public Collection<String> syncFormDefinitionColumnNamesCache(String tableName) {
-        Collection<String> columnList;
-        // strip table prefix
-        if (tableName.startsWith(FORM_PREFIX_TABLE_NAME)) {
-            tableName = tableName.substring(FORM_PREFIX_TABLE_NAME.length());
-        }
-        
-        final String fTableName = tableName;
-        final String profile = HostManager.getCurrentProfile();
-        
-        columnList = formColumnCache.get(tableName);
-        if (columnList == null) {
-            if (!cacheInProgress.contains(profile + ":" + fTableName)) {
-                cacheInProgress.add(profile + ":" + fTableName);
-                Thread startThread = new PluginThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        getFormDefinitionColumnNames(fTableName);
-                        cacheInProgress.remove(profile + ":" + fTableName);
-                    }
-                });
-                startThread.setDaemon(true);
-                startThread.start();
-            }
-        }
-        return columnList;
-    }
-    
+
     /**
      * Returns EntityName of form mapped to a table & column
      * @param tableName
@@ -1623,32 +1844,6 @@ public class FormDataDaoImpl implements FormDataDao {
             }
         }
         return null;
-    }
-
-    /**
-     * Recurse into child elements to find add all element property ID to columnList.
-     * @param element
-     * @param columnList
-     */
-    protected void findAllElementIds(org.joget.apps.form.model.Element element, Collection<String> columnList) {
-        Collection<String> fieldNames = element.getDynamicFieldNames();
-        if (fieldNames != null && !fieldNames.isEmpty()) {
-            columnList.addAll(fieldNames);
-        }
-        if (!(element instanceof FormContainer) && element.getProperties() != null) {
-            String id = element.getPropertyString(FormUtil.PROPERTY_ID);
-            if (id != null && !id.isEmpty()) {
-                columnList.add(id);
-            }
-        }
-        if (!(element instanceof AbstractSubForm)) { // do not recurse into subforms
-            Collection<org.joget.apps.form.model.Element> children = element.getChildren();
-            if (children != null) {
-                for (org.joget.apps.form.model.Element child : children) {
-                    findAllElementIds(child, columnList);
-                }
-            }
-        }
     }
 
     protected void closeSession(Session session) {

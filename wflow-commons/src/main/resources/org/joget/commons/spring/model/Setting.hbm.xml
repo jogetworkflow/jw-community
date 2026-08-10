@@ -4,7 +4,15 @@
   <class entity-name="Setting" lazy="false" name="org.joget.commons.spring.model.Setting" table="wf_setup">
     <cache usage="transactional" /> 
     <id name="id" column="id" type="string"/>
-    <property name="property" type="string"/>
+    <!--
+      Indexed because "property" is the real lookup key - the primary key "id" is a random UUID
+      and is never queried. Every SetupDao.find("WHERE property = ?") was a full table scan, which
+      matters because CACHE_LAST_CLEAR_ rows accumulate one per cache key ever invalidated. On a
+      20,000-row wf_setup the lookup measured 8.1 ms unindexed vs 0.09 ms indexed (#2085).
+      Declared here rather than only in the install scripts so hbm2ddl (auto=update) creates it on
+      every dialect, on upgrade as well as fresh install.
+    -->
+    <property name="property" type="string" index="idx_setup_property"/>
     <property name="value" type="text"/>
     <property name="ordering" type="integer"/>
   </class>

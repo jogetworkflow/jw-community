@@ -11,7 +11,19 @@
         <property index="idx_name" name="name" type="string"/>
         <property name="dateCreated" type="timestamp"/>
         <property name="dateModified" type="timestamp"/>
-        <property name="tableName" type="string"/>
+        <!--
+          Indexed because "tableName" is the predicate BOTH column-resolution queries use -
+          loadFormDefinitionByTableName and the #2085 manifest projection - and neither could use
+          an index before, so each was a full scan of app_form no matter how few rows matched.
+          Measured on MySQL 8 with 1000 matching rows either way: at 10,000 rows the manifest cost
+          6 ms unindexed vs 3 ms indexed, but at 50,000 rows (382 MB, past a 128 MB buffer pool) it
+          was 393 ms vs 4 ms, and the full payload load 463 ms vs 27 ms. It is a cliff rather than
+          a slope, app_form only grows (every publish adds a version), and it competes for the
+          buffer pool with the much larger app_fd_* and wf_* tables.
+          Declared here rather than only in the install scripts so hbm2ddl (auto=update) creates it
+          on every dialect, on upgrade as well as fresh install.
+        -->
+        <property name="tableName" type="string" index="idx_form_tablename"/>
         <property name="json" type="text"/>
         <property name="description" type="text"/>
         <many-to-one entity-name="AppDefinition" insert="false" name="appDefinition" update="false" lazy="proxy">

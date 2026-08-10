@@ -182,6 +182,30 @@ public class SetupManager {
     }
 
     /**
+     * Gets a system setting value straight from the database, bypassing every cache.
+     *
+     * <p>{@link #getSettingValue} reads through {@link SetupManagerCache}, which refreshes a whole
+     * profile at a time on a ~20 second debounce. That is the right trade for ordinary settings,
+     * but not for a value whose entire purpose is to signal "something changed on another node
+     * just now" — there the debounce IS the staleness.</p>
+     *
+     * <p>Use sparingly and throttled: this is one indexed read, but it is a database round trip on
+     * every call. Prefer {@link #getSettingValue} and reach for this only when a cached answer has
+     * already been shown to be insufficient.</p>
+     *
+     * <p>Returns EVERY row stored under the property, because {@code wf_setup.property} is not
+     * unique and two nodes can create the same setting concurrently. Resolving which value wins
+     * needs to know what the value MEANS, so it is left to the caller — see
+     * {@code SetupDao.findFreshValues}.</p>
+     *
+     * @param property
+     * @return every value stored under that property; empty if it does not exist
+     */
+    public java.util.Collection<String> getSettingValuesFresh(String property) {
+        return getSetupDao().findFreshValues(property);
+    }
+
+    /**
      * Delete system setting by property key.
      * @param property 
      */

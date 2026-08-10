@@ -24,4 +24,14 @@ public interface FormDefinitionDao extends AppVersionedObjectDao<FormDefinition>
      * @return
      */
     Collection<FormDefinition> loadFormDefinitionByTableName(String tableName);
+
+    /**
+     * A cheap change-detection manifest for every definition mapped to a table: one row of
+     * {@code [appId, appVersion, formId, dateModified, jsonLength]} per definition, WITHOUT the
+     * {@code json} payload.
+     */
+    Collection<Object[]> getFormDefinitionManifestByTableName(String tableName);
+
+    /** Loads the full definitions for specific form ids mapped to a table — the changed ones. */
+    Collection<FormDefinition> loadFormDefinitionByTableNameAndIds(String tableName, Collection<String> ids);
 }
