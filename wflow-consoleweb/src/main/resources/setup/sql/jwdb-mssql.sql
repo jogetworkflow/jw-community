@@ -149,6 +149,8 @@ PRIMARY KEY CLUSTERED
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 ) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
 ;
+CREATE NONCLUSTERED INDEX [idx_form_tablename] ON [app_form] ([tableName] ASC) ON [PRIMARY]
+;
 /****** Object:  Table [app_form_data_audit_trail]    Script Date: 05/29/2019 10:16:22 ******/
 SET ANSI_NULLS ON
 ;
@@ -2113,6 +2115,8 @@ PRIMARY KEY CLUSTERED
 	[id] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 ) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
+;
+CREATE NONCLUSTERED INDEX [idx_setup_property] ON [wf_setup] ([property] ASC) ON [PRIMARY]
 ;
 INSERT [dir_role] ([id], [name], [description]) VALUES (N'ROLE_ADMIN', N'Admin', N'Administrator')
 INSERT [dir_role] ([id], [name], [description]) VALUES (N'ROLE_USER', N'User', N'Normal User')

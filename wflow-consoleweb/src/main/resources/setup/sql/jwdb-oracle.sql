@@ -79,6 +79,7 @@
 	"JSON" CLOB, 
 	"DESCRIPTION" VARCHAR2(4000)
    ) ;
+  CREATE INDEX "IDX_FORM_TABLENAME" ON "APP_FORM" ("TABLENAME") ;
 --------------------------------------------------------
 --  DDL for Table APP_FORM_DATA_AUDIT_TRAIL
 --------------------------------------------------------
@@ -1377,6 +1378,7 @@
 	"VALUE" CLOB, 
 	"ORDERING" NUMBER(10,0)
    ) ;
+  CREATE INDEX "IDX_SETUP_PROPERTY" ON "WF_SETUP" ("PROPERTY") ;
 --------------------------------------------------------
 --  DDL for Table WF_HISTORY_ACTIVITY
 --------------------------------------------------------

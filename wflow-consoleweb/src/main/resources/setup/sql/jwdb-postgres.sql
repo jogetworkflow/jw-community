@@ -149,6 +149,8 @@ CREATE TABLE app_form (
     description text
 );
 
+CREATE INDEX idx_form_tablename ON app_form USING btree (tablename);
+
 
 --
 -- TOC entry 216 (class 1259 OID 16424)
@@ -1873,6 +1875,8 @@ CREATE TABLE wf_setup (
     value text,
     ordering integer
 );
+
+CREATE INDEX idx_setup_property ON wf_setup USING btree (property);
 
 
 --

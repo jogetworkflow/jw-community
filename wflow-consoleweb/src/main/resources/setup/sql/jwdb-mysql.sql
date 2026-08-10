@@ -2115,6 +2115,7 @@ CREATE TABLE `app_form` (
   PRIMARY KEY (`appId`,`appVersion`,`formId`),
   KEY `FK45957822462EF4C7` (`appId`,`appVersion`),
   KEY `idx_name` (`name`),
+  KEY `idx_form_tablename` (`tableName`),
   CONSTRAINT `FK45957822462EF4C7` FOREIGN KEY (`appId`, `appVersion`) REFERENCES `app_app` (`appId`, `appVersion`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
@@ -3151,7 +3152,8 @@ CREATE TABLE `wf_setup` (
   `property` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `value` text COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `ordering` int(11) DEFAULT NULL,
-  PRIMARY KEY (`id`)
+  PRIMARY KEY (`id`),
+  KEY `idx_setup_property` (`property`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
