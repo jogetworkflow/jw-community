@@ -1255,6 +1255,10 @@ body[builder-theme] .property-input > table tr td.property-type-grid-action-colu
 body[builder-theme] .property-input > table tr:hover th.property-type-grid-action-column, body[builder-theme] .property-input > table tr:hover  td.property-type-grid-action-column a{
     visibility: visible;
 }
+body[builder-theme='dark'] .property-editor-container a.property-type-grid-action-moveup.disabled,
+body[builder-theme='dark'] .property-editor-container a.property-type-grid-action-movedown.disabled{
+    color: #4d4d4d;
+}
 body[builder-theme] .editor-panel-mode .property-editor-page:not(.collapsed) .property-editor-page-title:after{
     transform: rotate(0deg);
     color: var(--theme-header-color-2);
