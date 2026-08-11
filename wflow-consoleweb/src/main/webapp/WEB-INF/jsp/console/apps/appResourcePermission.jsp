@@ -1,7 +1,7 @@
 <%@ include file="/WEB-INF/jsp/includes/taglibs.jsp" %>
 <jsp:useBean id="PropertyUtil" class="org.joget.plugin.property.service.PropertyUtil" scope="page"/>
 
-<commons:popupHeader bodyCssClass=" builder-popup" builderTheme="true"/>
+<commons:popupHeader bodyCssClass=" builder-popup pluginConfigPopup" builderTheme="true"/>
 
 <jsp:include page="/WEB-INF/jsp/console/plugin/library.jsp" />
 

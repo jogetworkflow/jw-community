@@ -1,6 +1,6 @@
 <%@ include file="/WEB-INF/jsp/includes/taglibs.jsp" %>
 
-<commons:popupHeader bodyCssClass=" builder-popup" builderTheme="true"/>
+<commons:popupHeader bodyCssClass=" builder-popup pluginConfigPopup" builderTheme="true"/>
     <div id="main-body-header">
         <fmt:message key="console.app.resources.create.label"/>
     </div>
