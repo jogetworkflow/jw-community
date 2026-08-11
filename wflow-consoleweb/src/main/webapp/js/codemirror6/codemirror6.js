@@ -258,6 +258,8 @@ window.initCM6Editor = function (elementId, content, mode, isDarkMode, options) 
                 cm.EditorView.editorAttributes.of({ class: isDarkMode ? "cm-theme-dark" : "cm-theme-light" }),
                 isDarkMode ? cm.oneDark : [],
                 cm.keymap.of([].concat(cm.defaultKeymap).concat(cm.historyKeymap).concat([
+                    { key: "Tab", run: cm.insertTab, shift: cm.indentLess }
+                ]).concat([
                     { key: "Mod-f", run: cm.openSearchPanel, preventDefault: true },
                     { key: "Escape", run: cm.closeSearchPanel },
                     { key: "F3", run: cm.findNext }, { key: "Shift-F3", run: cm.findPrevious }
