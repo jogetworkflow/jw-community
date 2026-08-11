@@ -272,9 +272,8 @@ body.rtl .ht_clone_top_left_corner {
     right: 0;
 }
 
-body.rtl .handsontable .htCore tr th:last-child,
-body.rtl .handsontable .htCore tr td:last-child {
-    border-left-width: 1px !important;
+body.rtl .handsontable.listbox td.htDimmed {
+    border-left: 0px !important;
 }
 
 .spreadsheet [dir=rtl].handsontable td:last-child {
@@ -298,6 +297,10 @@ body.rtl .handsontable .file_delete {
 /* Spreadsheet date, upload, time icons and hints */
 body.rtl .handsontable .date-icon, body.rtl .handsontable .upload-icon, body.rtl .handsontable .time-icon {
     margin-left: 4px;
+    float: right;
+}
+
+body.rtl .handsontable .date-icon + span, body.rtl .handsontable .upload-icon, body.rtl .handsontable .time-icon + span{
     float: right;
 }
 

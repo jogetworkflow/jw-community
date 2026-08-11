@@ -970,25 +970,16 @@ body.rtl .ht_clone_top_left_corner  {
     left: unset !important; 
     right:0;
 }
-body.rtl .handsontable .htCore tr th:last-child, 
-body.rtl .handsontable .htCore tr td:last-child {
-    border-left-width:1px !important;
+.handsontable.listbox td.htDimmed {
+    border-bottom: 1px solid #ced4da !important;
+    border-right: 0px !important;
 }
-.spreadsheet .handsontable table td, 
-.spreadsheet .handsontable table th{
-    border: 0px solid #ced4da !important; 
-    border-bottom: 1px solid #ced4da !important; 
-    border-right: 1px solid #ced4da !important;
+body.rtl .handsontable.listbox td.htDimmed {
+    border-left: 0px !important;
 }
-.spreadsheet .handsontable.ht_clone_left table.htCore th, 
-.spreadsheet .handsontable.ht_clone_top_left_corner table.htCore th {
-    border-left: 1px solid #ced4da !important;
-} 
-.spreadsheet .handsontable.ht_clone_top table.htCore th, 
-.spreadsheet .handsontable.ht_clone_top_left_corner table.htCore th{
-    border-top: 1px solid #ced4da !important;
-} 
-
+.handsontable.listbox tr:last-child td.htDimmed {
+    border-bottom: 0px !important;
+}
 .spreadsheet [dir=rtl].handsontable td:last-child {
     border-left-width: 1px !important;
 }
