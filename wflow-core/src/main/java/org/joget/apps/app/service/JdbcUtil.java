@@ -11,6 +11,7 @@ import javax.sql.DataSource;
 import org.apache.commons.dbcp2.BasicDataSource;
 import org.apache.commons.dbcp2.BasicDataSourceFactory;
 import org.apache.tomcat.jdbc.pool.PooledConnection;
+import org.joget.commons.cache.InMemoryCacheManager;
 import org.joget.commons.util.DynamicDataSource;
 import org.joget.commons.util.DynamicDataSourceManager;
 import org.joget.commons.util.LogUtil;
@@ -178,6 +179,41 @@ public class JdbcUtil {
         } catch (Throwable t) {
             // not a Tomcat JDBC pooled connection (e.g. a custom DBCP2 datasource) - nothing to discard
             LogUtil.debug(JdbcUtil.class.getName(), "Connection is not a Tomcat JDBC pooled connection, skipping discard.");
+        }
+    }
+
+    /**
+     * Clears the cached query results for a specific database table in the in-memory
+     * data grid (e.g. Apache Ignite).
+     *
+     * <p>Intended for callers that modify a table directly through custom SQL, bypassing
+     * Hibernate: such writes leave the second-level query cache unaware of the change, so
+     * cached query results for the table become stale. Clearing the table's query-results
+     * region forces the next read to reload from the database.</p>
+     *
+     * <p>This clears only the query-results cache region for the table; it does not evict
+     * cached entity rows (those are keyed by form/entity, not by table name). It is a no-op
+     * when the table name is blank or when the in-memory grid is not active (e.g. Ignite
+     * disabled), in which case there is no second-level cache to be stale.</p>
+     *
+     * <p>The region name follows the existing convention used by cacheable queries
+     * ({@link InMemoryCacheManager#PREFIX_QUERY_CACHE} + table name) and is not tenant-prefixed,
+     * matching that convention; the in-memory grid is disabled under virtual hosts anyway.</p>
+     *
+     * @param tableName the physical database table name (e.g. {@code app_fd_customer}) whose
+     *                  cached query results should be cleared
+     */
+    public static void clearQueryCache(String tableName) {
+        if (tableName == null || tableName.trim().isEmpty()) {
+            return;
+        }
+        // no in-memory grid (e.g. Ignite disabled) means there is no query cache to be stale
+        if (!InMemoryCacheManager.isAvailable()) {
+            return;
+        }
+        InMemoryCacheManager inMemoryCacheManager = InMemoryCacheManager.getInMemoryCacheManager();
+        if (inMemoryCacheManager != null) {
+            inMemoryCacheManager.clear(InMemoryCacheManager.PREFIX_QUERY_CACHE + tableName);
         }
     }
 }
