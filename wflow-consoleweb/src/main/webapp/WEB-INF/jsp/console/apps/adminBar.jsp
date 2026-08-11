@@ -138,13 +138,47 @@
                     params
                 )
             }
-            window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change',({ matches }) => {
-                if (matches && $("div#adminBar").attr('device-theme') === "true" && $("div#adminBar").attr('builder-theme') !== "dark") {
-                    ajaxRequestChangeSystemTheme('dark');
-                } else if (!matches && $("div#adminBar").attr('device-theme') === "true" && $("div#adminBar").attr('builder-theme') !== "light"){
-                    ajaxRequestChangeSystemTheme('light');
+            (function() {
+                var darkThemeQuery = window.matchMedia('(prefers-color-scheme: dark)');
+                var lastDeviceThemeMatches = darkThemeQuery.matches; //last known device theme
+                var isPrinting = false;
+                var printingTimeout = null;
+
+                function handleDeviceThemeChange(matches) {
+                    if (matches === lastDeviceThemeMatches) {
+                        return; //if no change, do not do request
+                    }
+                    lastDeviceThemeMatches = matches;
+
+                    if (matches && $("div#adminBar").attr('device-theme') === "true" && $("div#adminBar").attr('builder-theme') !== "dark") {
+                        ajaxRequestChangeSystemTheme('dark');
+                    } else if (!matches && $("div#adminBar").attr('device-theme') === "true" && $("div#adminBar").attr('builder-theme') !== "light"){
+                        ajaxRequestChangeSystemTheme('light');
+                    }
                 }
-            })   
+
+                darkThemeQuery.addEventListener('change', ({ matches }) => {
+                    //browsers force a light color scheme while rendering for print, ignore it.
+                    //the real device theme comes through on the restore event once printing ends.
+                    if (isPrinting) {
+                        return;
+                    }
+                    handleDeviceThemeChange(matches);
+                });
+
+                //handle all print entry point
+                window.addEventListener('beforeprint', function() {
+                    isPrinting = true;
+                    //safety net, afterprint is not guaranteed to fire on all browsers
+                    clearTimeout(printingTimeout);
+                    printingTimeout = setTimeout(function() { isPrinting = false; }, 30000);
+                });
+
+                window.addEventListener('afterprint', function() {
+                    clearTimeout(printingTimeout);
+                    isPrinting = false;
+                });
+            })();
         }
     </script>
     <script>
