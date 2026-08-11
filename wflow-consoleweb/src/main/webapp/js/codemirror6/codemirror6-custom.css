@@ -619,12 +619,6 @@ body[builder-theme] button {
   padding: 0px;
 }
 
-.code-editor .cm-content .cm-line {
-  min-height: 26px;
-  padding: 4px 2px 4px 6px;
-  height: fit-content;
-}
-
 /* the JS theme fixes .cm-line height to 1.5em, which makes long wrapped lines
    (e.g. custom CSS/HTML property values in the JSON definition view) overflow
    and paint over the lines below; lines must be able to grow when wrapped */
