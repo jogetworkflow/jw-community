@@ -34,6 +34,13 @@ public class InMemoryJdbcCacheAspect {
 
     @Around("jdbcPluginMethods()")
     public Object cacheJdbcPluginSql(ProceedingJoinPoint pjp) throws Throwable {
+        // Save and restore the previous marker instead of clearing it to null. execution() weaving
+        // intercepts self-invocation, so this advice nests whenever an InMemoryJdbcCacheable method
+        // calls another one (e.g. a plugin invoking its own helper before running its SQL). Clearing
+        // to null in the inner finally would erase the context while the outer call is still active,
+        // causing the SQL interception below to treat the query as non-cacheable. Restoring the prior
+        // value keeps the outer target set for the whole duration of the outer method.
+        Object previous = cacheableObject.get();
         try {
             Object target = pjp.getTarget();
             if (target instanceof InMemoryJdbcCacheable) {
@@ -42,7 +49,7 @@ public class InMemoryJdbcCacheAspect {
             Object result = pjp.proceed();
             return result;
         } finally {
-            cacheableObject.set(null);
+            cacheableObject.set(previous);
         }
     }
     
