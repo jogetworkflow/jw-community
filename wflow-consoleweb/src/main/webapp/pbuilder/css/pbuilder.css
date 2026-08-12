@@ -23,7 +23,7 @@ body#cbuilder.default-builder #process-selector + #builder_canvas #iframe-wrappe
     position: fixed;
     right: 50px;
     bottom: 60px;
-    z-index: 200;
+    z-index: 9;
     background: rgba(0,0,0,0.75);
     color: #fff;
     padding: 10px 12px;
@@ -38,6 +38,7 @@ body#cbuilder.default-builder #process-selector + #builder_canvas #iframe-wrappe
     flex-direction: row;
     align-items: center;
     flex-wrap: wrap;
+    min-width: 244px;
 }
 #pbuilder-controls-indicator > #pbuilder-controls-header {
     font-weight:600; 
