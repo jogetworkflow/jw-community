@@ -106,6 +106,9 @@
         <property name="hibernateProperties">
             <props>
                 <prop key="hibernate.hbm2ddl.auto">update</prop>
+                <!-- #2253: migrate only the tables being migrated, not the whole catalog.
+                     See FormDataDaoImpl.HBM2DDL_JDBC_METADATA_EXTRACTION_STRATEGY. -->
+                <prop key="hibernate.hbm2ddl.jdbc_metadata_extraction_strategy">individually</prop>
                 <prop key="hibernate.show_sql">false</prop>
                 <prop key="hibernate.enable_lazy_load_no_trans">true</prop>
                 <prop key="hibernate.allow_update_outside_transaction">true</prop>
