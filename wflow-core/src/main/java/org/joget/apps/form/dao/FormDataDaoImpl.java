@@ -78,6 +78,31 @@ import org.w3c.dom.NodeList;
 public class FormDataDaoImpl implements FormDataDao {
 
     public static final String FORM_MAPPING_DIRECTORY = "app_forms";
+    /**
+     * Makes Hibernate read JDBC metadata for the tables it is actually migrating, instead of the
+     * whole database catalog.
+     *
+     * <p>Every form schema change runs {@link #internalUpdateSchema}, and Hibernate's DEFAULT
+     * strategy for that (<code>grouped</code>) loads the column metadata of EVERY table in the
+     * schema before it can decide whether one form table needs a new column. On SQL Server that
+     * single call is the <code>DECLARE @mssqljdbc_temp_sp_columns_result ...</code> statement in
+     * #2253: measured at 46,678 rows and ~3.9 s per call against a 46,679-column database, to add
+     * one column to a 12-column table. The cost is a function of the customer's whole schema and
+     * has nothing to do with the form being changed, which is why it is ~1 s in a test environment
+     * and ~17 s in production.
+     *
+     * <p><code>individually</code> looks up only the tables being migrated — one form table here —
+     * so the cost stops scaling with the rest of the database.
+     *
+     * <p>Declared as a literal rather than Hibernate's own constant on purpose: it lives on
+     * <code>AvailableSettings</code> in Hibernate 5.6 (DX8) but on <code>SchemaToolingSettings</code>
+     * in 6.6 (DX9), and this class has to compile on both for the DX8 -> DX9 forward merge. The
+     * property name itself is identical in both versions.
+     *
+     * @see <a href="https://gitlab.joget.org/joget/jw-community/-/issues/2253">#2253</a>
+     */
+    public static final String HBM2DDL_JDBC_METADATA_EXTRACTION_STRATEGY = "hibernate.hbm2ddl.jdbc_metadata_extraction_strategy";
+
     public static final String FORM_PREFIX_ENTITY = "FormRow_";
     public static final String FORM_PREFIX_TABLE_NAME = "app_fd_";
     public static final String FORM_PROPERTY_TABLE_NAME = "tableName";
@@ -1080,8 +1105,10 @@ public class FormDataDaoImpl implements FormDataDao {
                 configuration.setProperty(k.toString(), v.toString());
             });
         }
+        // after the cache manager properties on purpose, so this cannot be overridden by them
+        configuration.setProperty(HBM2DDL_JDBC_METADATA_EXTRACTION_STRATEGY, "individually");
         configuration.setProperty(Environment.LOG_SLOW_QUERY, "500");
-        
+
         // set datasource
         DataSource dataSource = (DataSource)AppUtil.getApplicationContext().getBean("setupDataSource");
         configuration.getProperties().put(Environment.JAKARTA_JTA_DATASOURCE, dataSource);

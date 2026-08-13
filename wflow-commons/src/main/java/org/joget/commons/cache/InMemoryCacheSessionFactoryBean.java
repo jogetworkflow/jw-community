@@ -12,9 +12,23 @@ public class InMemoryCacheSessionFactoryBean extends org.springframework.orm.hib
     public void setHibernateProperties(Properties hibernateProperties) {
         InMemoryCacheManager cacheManager = InMemoryCacheManager.getInMemoryCacheManager();
         if (cacheManager.isEnabled()) {
-            // cache is enabled, set hibernate cache properties
+            // Cache is enabled: fill in the hibernate cache properties the context did NOT set.
+            //
+            // Only fill gaps. An explicit <prop> in a Spring context is a deliberate choice and has
+            // to win: this used to be a blanket putAll, which meant any key the cache manager
+            // happened to return silently replaced the configured value. Nothing currently returns
+            // a conflicting key, so nothing was actually broken -- but it put every DDL
+            // SessionFactory one line of cache-manager code away from quietly reverting
+            // hibernate.hbm2ddl.jdbc_metadata_extraction_strategy to Hibernate's default and
+            // reading the whole database catalog again (#2253), with no test able to notice.
+            //
+            // Same gap-filling idiom as org.springframework.orm.hibernate4.LocalSessionFactoryBean.
             Properties cacheManagerProperties = cacheManager.getHibernateProperties();
-            hibernateProperties.putAll(cacheManagerProperties);
+            for (String key : cacheManagerProperties.stringPropertyNames()) {
+                if (!hibernateProperties.containsKey(key)) {
+                    hibernateProperties.setProperty(key, cacheManagerProperties.getProperty(key));
+                }
+            }
         }
         super.setHibernateProperties(hibernateProperties);
         
