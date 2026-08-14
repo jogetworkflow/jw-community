@@ -40,6 +40,10 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 import java.util.jar.Manifest;
+import java.util.logging.Handler;
+import java.util.logging.Level;
+import java.util.logging.LogRecord;
+import java.util.logging.Logger;
 import org.apache.tomcat.jakartaee.JogetPluginMigration;
 import org.joget.commons.spring.model.ResourceBundleMessage;
 import org.joget.commons.spring.model.Setting;
@@ -1434,7 +1438,16 @@ public class PluginManager implements ApplicationContextAware {
         JogetPluginMigration migration = new JogetPluginMigration();
         migration.setSource(pluginJar);
         migration.setDestination(transformed);
-        migration.execute();
+        
+        // Set up a custom log handler to forward message from org.apache.tomcat.jakartaee.Migration
+        Logger migrationLogger = Logger.getLogger("org.apache.tomcat.jakartaee.Migration");
+        Handler jogetLogHandler = new JogetMigrationLogHandler(Thread.currentThread());
+        migrationLogger.addHandler(jogetLogHandler);
+        try {
+            migration.execute();
+        } finally {
+            migrationLogger.removeHandler(jogetLogHandler);
+        }
         
         //backup old plugin
         File backup = new File(pluginJar.getAbsolutePath() + ".original");
@@ -1442,6 +1455,54 @@ public class PluginManager implements ApplicationContextAware {
 
         // replace old plugin JAR
         Files.move(transformed.toPath(), pluginJar.toPath(), StandardCopyOption.REPLACE_EXISTING);
+    }
+
+    /**
+     * Forwards Jakarta EE migration messages emitted on the current migration thread
+     * from java.util.logging to Joget's logging system.
+     */
+    private static class JogetMigrationLogHandler extends Handler {
+
+        private final Thread migrationThread;
+
+        JogetMigrationLogHandler(Thread migrationThread) {
+            this.migrationThread = migrationThread;
+            setLevel(Level.ALL);
+        }
+
+        @Override
+        public void publish(LogRecord record) {
+            if (record == null || Thread.currentThread() != migrationThread || !isLoggable(record)) {
+                return;
+            }
+
+            String loggerName = record.getLoggerName();
+            if (loggerName == null || loggerName.isEmpty()) {
+                loggerName = JogetPluginMigration.class.getName();
+            }
+
+            String message = record.getMessage();
+            int level = record.getLevel().intValue();
+            if (level >= Level.SEVERE.intValue()) {
+                LogUtil.error(loggerName, record.getThrown(), message);
+            } else if (level >= Level.WARNING.intValue()) {
+                LogUtil.warn(loggerName, message);
+            } else if (level >= Level.INFO.intValue()) {
+                LogUtil.info(loggerName, message);
+            } else {
+                LogUtil.debug(loggerName, message);
+            }
+        }
+
+        @Override
+        public void flush() {
+            // LogUtil delegates flushing to the configured Log4j2 appenders.
+        }
+
+        @Override
+        public void close() {
+            // No resources to release.
+        }
     }
 
     /**
