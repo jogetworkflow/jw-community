@@ -62,6 +62,15 @@ import org.springframework.transaction.support.TransactionTemplate;
 @Service("userviewService")
 public class UserviewService {
 
+    /**
+     * {@code BuilderDefinition.type} marker for the separately-persisted
+     * page component content ({@code up-<menuId>}) of a userview page.
+     * Referenced by {@link org.joget.apps.app.service.DependenciesUtil} to
+     * tell these internal rows apart from real {@code CustomBuilder} plugin
+     * definitions that also live in {@code BuilderDefinition}.
+     */
+    public final static String TYPE = "INTERNAL_USERVIEW_PAGE";
+
     @Autowired
     private PluginManager pluginManager;
     @Autowired
@@ -834,7 +843,7 @@ public class UserviewService {
             }
 
             Collection<Object> params = new ArrayList<>();
-            params.add("INTERNAL_USERVIEW_PAGE");
+            params.add(TYPE);
             params.add(userviewId);
 
             if (!menuIds.isEmpty()) {
@@ -929,7 +938,7 @@ public class UserviewService {
                 page.setAppDefinition(appDef);
                 page.setId("up-"+id);
                 page.setName(name);
-                page.setType("INTERNAL_USERVIEW_PAGE");
+                page.setType(TYPE);
                 page.setJson(menuObj.getJSONObject("referencePage").toString(0));
                 page.setDescription(userviewId);
 
