@@ -4045,15 +4045,21 @@ window._CustomBuilder.Builder = {
         let selectedELAltSelector = "";
         let selectedElAltIndex = 0;
 
+        //whether the element being reselected below came from an overview_path
+        //link rather than a re-render of the currently-edited element, so we
+        //know it's the one case where scrolling the canvas to it is wanted
+        let isOverviewPathSelection = false;
+
         //find overview path element if overviewPath having value
         if (CustomBuilder.overviewPath !== null && CustomBuilder.overviewPath !== undefined && CustomBuilder.overviewPath !== "") {
+            isOverviewPathSelection = true;
             if (CustomBuilder.config.builder.callbacks["getOverviewPathElementSelector"] !== undefined &&
                 CustomBuilder.config.builder.callbacks["getOverviewPathElementSelector"] !== "") {
                 [selectedELSelector, CustomBuilder.overviewPropertiesPath] = CustomBuilder.callback(CustomBuilder.config.builder.callbacks["getOverviewPathElementSelector"], [data, CustomBuilder.overviewPath]);
             } else {
                 [selectedELSelector, CustomBuilder.overviewPropertiesPath] = CustomBuilder.Builder.getOverviewPathElementSelector(data, CustomBuilder.overviewPath);
             }
-            
+
             CustomBuilder.overviewPath = null;
         } else if (self.selectedEl) {
             if ($(self.selectedEl).is("[data-cbuilder-id]")) {
@@ -4100,6 +4106,12 @@ window._CustomBuilder.Builder = {
                 }
                 if ($(element).length > 0) {
                     self.selectNode(element);
+
+                    if (isOverviewPathSelection) {
+                        self.frameHtml.animate({
+                            scrollTop: $(element).offset().top - 25
+                        }, 1000);
+                    }
                 }
             } else {
                 CustomBuilder.Builder.updatePasteStatus();
