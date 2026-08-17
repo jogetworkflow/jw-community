@@ -283,6 +283,10 @@ body.rtl .chosen-rtl.chosen-container:not(.chosen-with-drop) .chosen-drop{
         right: auto;
         left: 0;
     }
+    body.rtl #installApp {
+        right: auto;
+        left: 35px;
+    }
     /* footer */
     body:not(#login) #footer{
         margin-left: 0;
