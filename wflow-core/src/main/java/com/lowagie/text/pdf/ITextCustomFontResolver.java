@@ -40,9 +40,9 @@ import org.xhtmlrenderer.util.XRLog;
 import org.xhtmlrenderer.util.XRRuntimeException;
 
 public class ITextCustomFontResolver extends ITextFontResolver {
+    private String defaultFonts = "";
     private Map _fontFamilies = createInitialFontMap();
     private Map _fontCache = new HashMap();
-    private static String defaultFonts = "";
 
     private final SharedContext _sharedContext;
 
@@ -473,8 +473,9 @@ public class ITextCustomFontResolver extends ITextFontResolver {
         return name + "-" + weight + "-" + style;
     }
 
-    private static Map createInitialFontMap() {
+    private Map createInitialFontMap() {
         HashMap result = new LinkedHashMap();
+        defaultFonts = "";
 
         try {
             // Try and load the iTextAsian fonts
@@ -506,7 +507,7 @@ public class ITextCustomFontResolver extends ITextFontResolver {
         return BaseFont.createFont(name, encoding, embedded);
     }
 
-    private static void addCourier(HashMap result) throws DocumentException, IOException {
+    private void addCourier(HashMap result) throws DocumentException, IOException {
         FontFamily courier = new FontFamily();
         courier.setName("Courier");
 
@@ -525,7 +526,7 @@ public class ITextCustomFontResolver extends ITextFontResolver {
         addDefaultFonts("Courier");
     }
 
-    private static void addTimes(HashMap result) throws DocumentException, IOException {
+    private void addTimes(HashMap result) throws DocumentException, IOException {
         FontFamily times = new FontFamily();
         times.setName("Times");
 
@@ -543,7 +544,7 @@ public class ITextCustomFontResolver extends ITextFontResolver {
         addDefaultFonts("Times");
     }
 
-    private static void addHelvetica(HashMap result) throws DocumentException, IOException {
+    private void addHelvetica(HashMap result) throws DocumentException, IOException {
         FontFamily helvetica = new FontFamily();
         helvetica.setName("Helvetica");
 
@@ -562,7 +563,7 @@ public class ITextCustomFontResolver extends ITextFontResolver {
         addDefaultFonts("Helvetica");
     }
 
-    private static void addSymbol(Map result) throws DocumentException, IOException {
+    private void addSymbol(Map result) throws DocumentException, IOException {
         FontFamily fontFamily = new FontFamily();
         fontFamily.setName("Symbol");
 
@@ -572,7 +573,7 @@ public class ITextCustomFontResolver extends ITextFontResolver {
         addDefaultFonts("Symbol");
     }
 
-    private static void addZapfDingbats(Map result) throws DocumentException, IOException {
+    private void addZapfDingbats(Map result) throws DocumentException, IOException {
         FontFamily fontFamily = new FontFamily();
         fontFamily.setName("ZapfDingbats");
 
@@ -590,7 +591,7 @@ public class ITextCustomFontResolver extends ITextFontResolver {
         {"HYGoThic-Medium", "HYGoThic-Medium", "UniKS-UCS2-H"}
     };
 
-    private static void addCJKFonts(Map fontFamilyMap) throws DocumentException, IOException {
+    private void addCJKFonts(Map fontFamilyMap) throws DocumentException, IOException {
         for(int i = 0; i < cjkFonts.length; i++) {
             String fontFamilyName = cjkFonts[i][0];
             String fontName = cjkFonts[i][1];
@@ -600,7 +601,7 @@ public class ITextCustomFontResolver extends ITextFontResolver {
         }
     }
 
-    private static void addCJKFont(String fontFamilyName, String fontName, String encoding, Map fontFamilyMap) throws DocumentException, IOException {
+    private void addCJKFont(String fontFamilyName, String fontName, String encoding, Map fontFamilyMap) throws DocumentException, IOException {
         FontFamily fontFamily = new FontFamily();
         fontFamily.setName(fontFamilyName);
         addDefaultFonts(fontFamilyName);
@@ -611,10 +612,9 @@ public class ITextCustomFontResolver extends ITextFontResolver {
         fontFamily.addFontDescription(new FontDescription(createFont(fontName, encoding, true), IdentValue.NORMAL, 400));
 
         fontFamilyMap.put(fontFamilyName, fontFamily);
-        addDefaultFonts(fontFamilyName);
     }
     
-    private static void addCustomLoadedFonts(Map fontFamilyMap) throws DocumentException, IOException {
+    private void addCustomLoadedFonts(Map fontFamilyMap) throws DocumentException, IOException {
         String path = SetupManager.getBaseDirectory() + File.separator + "fonts" + File.separator;
         File fontsFile = new File(path + "fonts.csv");
         if (fontsFile.exists()) {
@@ -651,7 +651,7 @@ public class ITextCustomFontResolver extends ITextFontResolver {
         addCustomFont("THSarabun", "fonts/THSarabun/THSarabun.ttf", BaseFont.IDENTITY_H, fontFamilyMap);
     }
     
-    private static void addCustomFont(String fontFamilyName, String path, String encoding, Map fontFamilyMap) throws DocumentException, IOException {
+    private void addCustomFont(String fontFamilyName, String path, String encoding, Map fontFamilyMap) throws DocumentException, IOException {
         FontFamily fontFamily = new FontFamily();
         fontFamily.setName(fontFamilyName);
         addDefaultFonts(fontFamilyName);
@@ -660,11 +660,15 @@ public class ITextCustomFontResolver extends ITextFontResolver {
         fontFamilyMap.put(fontFamilyName, fontFamily);
     }
     
-    private static void addDefaultFonts(String name) {
+    private void addDefaultFonts(String name) {
+        String quoted = "\""+name+"\"";
+        if (defaultFonts.contains(quoted)) {
+            return;
+        }
         if (!defaultFonts.isEmpty()) {
             defaultFonts += ", ";
         }
-        defaultFonts += "\""+name+"\"";
+        defaultFonts += quoted;
     }
     
     public String getDefaultFonts() {

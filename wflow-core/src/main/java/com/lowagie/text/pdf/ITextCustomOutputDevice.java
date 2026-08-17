@@ -31,33 +31,48 @@ public class ITextCustomOutputDevice extends ITextOutputDevice {
         super.drawString(s, x, y, info);
     }
     
+    /**
+     * Walks the CSS font-family fallback list one family at a time until a font covers a
+     * majority of s's characters, or the list is exhausted (then falls back to "serif").
+     * The check is done iteratively rather than recursively so the stack depth never depends on the length of the
+     * font-family list (T8018/#2167).
+     */
     protected void checkFontFamily(String s, int index) {
-        if (countMissingChar(s) > s.length() / 2) {
-            FontSpecification spec = getFontSpecification();
-            ITextCustomFontResolver resolver = (ITextCustomFontResolver) getSharedContext().getFontResolver();
-            String[] families = spec.families;
-            if (families.length > index+1) {
-                FSFont font = resolver.resolveFont(getSharedContext(), families[index+1], spec.size, spec.fontWeight, spec.fontStyle, spec.variant);
-                if (font != null) {
-                    setFont(font);
-                }
-                checkFontFamily(s, index + 1);
-            } else if (families.length == index+1) {
-                FSFont font = resolver.resolveFont(getSharedContext(), "serif", spec.size, spec.fontWeight, spec.fontStyle, spec.variant);
-                if (font != null) {
-                    setFont(font);
-                }
+        if (!(countMissingChar(s) > s.length() / 2)) {
+            return;
+        }
+        FontSpecification spec = getFontSpecification();
+        ITextCustomFontResolver resolver = (ITextCustomFontResolver) getSharedContext().getFontResolver();
+        String[] families = spec.families;
+
+        int i = index;
+        while (i + 1 < families.length && countMissingChar(s) > s.length() / 2) {
+            i++;
+            FSFont font = resolver.resolveFont(getSharedContext(), families[i], spec.size, spec.fontWeight, spec.fontStyle, spec.variant);
+            if (font != null) {
+                setFont(font);
+            }
+        }
+
+        if (i + 1 == families.length && countMissingChar(s) > s.length() / 2) {
+            FSFont font = resolver.resolveFont(getSharedContext(), "serif", spec.size, spec.fontWeight, spec.fontStyle, spec.variant);
+            if (font != null) {
+                setFont(font);
             }
         }
     }
-    
+
+    // Excluding spaces/whitespaces/invisible characters from counting as "missing glyphs"
+    // cause the fallback path might be triggered unnecessarily where it should be renderable
+    private static final String EXEMPT_WHITESPACE = " \u00a0\u3000\u202f\u2007\u2009\u200b\ufeff\u2060\u00ad\u2028\u2029";
+
     protected int countMissingChar(String s) {
         int count = 0;
         char[] charArr = s.toCharArray();
-        
+
         for (int i = 0; i < charArr.length; i++) {
-            if (!(charArr[i] == ' ' || charArr[i] == '\u00a0' || charArr[i] == '\u3000' 
-                    || _localFont.getFontDescription().getFont().charExists(charArr[i]))) {
+            char c = charArr[i];
+            if (EXEMPT_WHITESPACE.indexOf(c) < 0 && !_localFont.getFontDescription().getFont().charExists(c)) {
                 count++;
             }
         }
