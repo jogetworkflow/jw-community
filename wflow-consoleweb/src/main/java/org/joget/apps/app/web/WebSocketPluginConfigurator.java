@@ -22,5 +22,6 @@ public class WebSocketPluginConfigurator extends ServletAwareConfigurator {
             // Store the HttpSession as a user property in the WebSocket session
             config.getUserProperties().put(HttpSession.class.getName(), httpSession);
         }
+
     }
 }
