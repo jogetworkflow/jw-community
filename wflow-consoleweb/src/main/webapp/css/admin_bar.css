@@ -197,6 +197,7 @@ body.rtl #adminBarButtons {
     cursor: pointer;
     white-space: nowrap;
     overflow: hidden;
+    border-bottom: 2px solid transparent;
 }
 
 #quickEditModeOption > div > a {
@@ -257,7 +258,7 @@ body.rtl #quickEditModeOption > div > a > i, body.rtl #adminBarButtons > div > a
     opacity: 0 !important; 
 }
 
-#adminBarButtons > div > a.current, #adminBarButtons > div > a:hover {
+#adminBarButtons > div > a.current, #adminBarButtons > div > a:hover, #quickEditModeOption > div > a:hover {
     color: black;
     background: transparent;
     border-bottom: 2px solid #009688;
