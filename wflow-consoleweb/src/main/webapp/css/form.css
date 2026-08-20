@@ -825,6 +825,9 @@ body.rtl #${elementParamName!}_multiPagedForm_${element.properties.elementUnique
 .editor-cell .chosen-container {
     width:300px !important;
 }
+body .chosen-container-multi .chosen-choices{
+    overflow: auto;
+}
 
 /* Popup select box */
 .selector_element {
