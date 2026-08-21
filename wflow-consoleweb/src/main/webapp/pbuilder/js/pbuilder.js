@@ -2373,13 +2373,15 @@ ProcessBuilder = {
     
     /**
      * Renders the LogicFlow graph with the provided data.
+     *
+     * @param {boolean} skipPersist - see ProcessBuilder.updateNodePosition
      */
-    renderLFWithData: function (graphData, addToUndo = false) {
+    renderLFWithData: function (graphData, addToUndo = false, skipPersist = false) {
         graphData = ProcessBuilder.updatePoolHeight(graphData);
         ProcessBuilder.lf.render(graphData);
         ProcessBuilder.resizePool();
         ProcessBuilder.currentLFProcessData = ProcessBuilder.lf.getGraphData();
-        ProcessBuilder.adjustLane(true, addToUndo);
+        ProcessBuilder.adjustLane(true, addToUndo, skipPersist);
     },
     
     /**
@@ -2388,8 +2390,9 @@ ProcessBuilder = {
      *
      * @param {boolean} adjustNode - Whether to adjust child node positions.
      * @param {boolean} addToUndo - Whether to add the change to undo, default is false
+     * @param {boolean} skipPersist - see ProcessBuilder.updateNodePosition
      */
-    adjustLane: function (adjustNode, addToUndo = false) {
+    adjustLane: function (adjustNode, addToUndo = false, skipPersist = false) {
         let graphData = ProcessBuilder.lf.getGraphData();
         
         //before adjust the lane, make sure there is enough gap between the source & target node, adjust it if gap is very small
@@ -2528,7 +2531,7 @@ ProcessBuilder = {
         }
         
         graphData = ProcessBuilder.updateEdges(graphData);
-        ProcessBuilder.updateNodePosition(graphData, addToUndo);
+        ProcessBuilder.updateNodePosition(graphData, addToUndo, skipPersist);
     },
     
     /*
@@ -3983,7 +3986,12 @@ ProcessBuilder = {
             if (activity.properties['mapping_act_modifier'] !== undefined 
                     && activity.properties['mapping_act_modifier']['className'] !== undefined 
                     && activity.properties['mapping_act_modifier']['className'] !== "" ) {
-                CustomBuilder.data['activityPlugins'][id] = $.extend(true, {}, activity.properties['mapping_act_modifier']);
+                var existingModifierMapping = CustomBuilder.data['activityPlugins'][id];
+                var newModifierMapping = $.extend(true, {}, activity.properties['mapping_act_modifier']);
+                //only replace if the value actually changed, to avoid churn on every re-render
+                if (existingModifierMapping === undefined || JSON.encode(existingModifierMapping) !== JSON.encode(newModifierMapping)) {
+                    CustomBuilder.data['activityPlugins'][id] = newModifierMapping;
+                }
             } else if (CustomBuilder.data['activityPlugins'][id] !== undefined) {
                 delete CustomBuilder.data['activityPlugins'][id];
             }
@@ -4022,12 +4030,11 @@ ProcessBuilder = {
             if (activity.properties['mapping_act_plugin'] !== undefined 
                     && activity.properties['mapping_act_plugin']['className'] !== undefined
                     && activity.properties['mapping_act_plugin']['className'] !== "") {
-                if (mapping === undefined) {
-                    mapping = {};
-                    CustomBuilder.data['activityPlugins'][id] = mapping;
+                var newRouteMapping = $.extend(true, {}, activity.properties['mapping_act_plugin']);
+                //only replace if the value actually changed, to avoid churn on every re-render
+                if (mapping === undefined || JSON.encode(mapping) !== JSON.encode(newRouteMapping)) {
+                    CustomBuilder.data['activityPlugins'][id] = newRouteMapping;
                 }
-                mapping = $.extend(true, {}, activity.properties['mapping_act_plugin']);
-                CustomBuilder.data['activityPlugins'][id] = mapping;
             } else if (mapping !== undefined){
                 delete CustomBuilder.data['activityPlugins'][id];
             }
@@ -5433,8 +5440,9 @@ ProcessBuilder = {
             element.attr("id", "process_" + elementObj.properties.id);
             element.html("");
             element.attr("data-cbuilder-uneditable", "").attr("data-cbuilder-participants", "");
-            
-            ProcessBuilder.renderLFWithData(ProcessBuilder.currentLFProcessData);
+
+            //skipPersist=true, this is just (re)displaying data (load/switch/undo/redo), not an edit
+            ProcessBuilder.renderLFWithData(ProcessBuilder.currentLFProcessData, false, true);
             ProcessBuilder.recenter();
             
             callback(element);
@@ -5955,8 +5963,9 @@ ProcessBuilder = {
      *
      * @param {Object} graphData - The current process graph data containing nodes.
      * @param {boolean} addToUndo - Whether to add the change to undo, default to true
+     * @param {boolean} skipPersist - Whether to skip persisting this update, default to false
      */
-    updateNodePosition: function (graphData, addToUndo = true) {
+    updateNodePosition: function (graphData, addToUndo = true, skipPersist = false) {
         let processData = ProcessBuilder.currentProcessData;
         graphData.nodes.forEach(node => {
             if (node.type !== 'pool' && node.type !== 'lane') {
@@ -5978,7 +5987,7 @@ ProcessBuilder = {
         ProcessBuilder.resizePool();
         
         ProcessBuilder.currentProcessData = processData;
-        if (!ProcessBuilder.readonly && !$("body").hasClass("initializing")) {
+        if (!ProcessBuilder.readonly && !$("body").hasClass("initializing") && !skipPersist) {
             CustomBuilder.update(addToUndo);
         }
     },
