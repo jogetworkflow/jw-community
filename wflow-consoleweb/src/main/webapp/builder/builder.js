@@ -4184,6 +4184,12 @@ window._CustomBuilder = {
      * Method used for toolbar to paste an element
      */
     pasteElement : function(event) {
+        var target = event ? event.target : null;
+        var selStart = null, selEnd = null;
+        if (target && typeof target.selectionStart === "number" && !$(target).hasClass("ace_text-input") && !$(target).hasClass("ace_editor") && !$(target).hasClass("code-editor")) {
+            selStart = target.selectionStart;
+            selEnd = target.selectionEnd;
+        }
         try {
             navigator.clipboard.readText().then(clipText => {
                 if (CustomBuilder.isJSONString(clipText)) {
@@ -4197,22 +4203,19 @@ window._CustomBuilder = {
                     }
                     CustomBuilder.Builder.pasteNode();
                 } else {
-                    if ($(event.target).hasClass("ace_text-input") || $(event.target).hasClass("ace_editor")) {
-                        var id = $(event.target).closest(".ace_editor").attr("id");
+                    if ($(target).hasClass("ace_text-input") || $(target).hasClass("ace_editor")) {
+                        var id = $(target).closest(".ace_editor").attr("id");
                         var codeeditor = ace.edit(id);
-                        codeeditor.session.insert(codeeditor.getCursorPosition(), clipText);
-                    } else if ($(event.target).hasClass("code-editor")) {
-                        var codeeditor = $(event.target).find(".CodeMirror")[0].CodeMirror;
-                        codeeditor.getDoc().replaceRange(clipText, PropertyAssistant.currentCaretPosition);
-                    } else {
-                        var caret = PropertyAssistant.doGetCaretPosition(event.target);
-                        var text = $(event.target).val();
-                        var selectedText = (window.getSelection())?window.getSelection().toString():"";
-                        if (selectedText.length > 0) { //remove the selected text
-                            text = [text.slice(0, caret), text.slice(selectedText.length)].join('');
-                        }
-                        var output = [text.slice(0, caret), clipText, text.slice(caret)].join('');
-                        $(event.target).val(output);
+                        codeeditor.insert(clipText); //editor.insert replaces the current selection
+                    } else if ($(target).hasClass("code-editor")) {
+                        var codeeditor = $(target).find(".CodeMirror")[0].CodeMirror;
+                        codeeditor.getDoc().replaceSelection(clipText); //replaces the current selection
+                    } else if (selStart !== null) {
+                        var val = $(target).val();
+                        $(target).val(val.slice(0, selStart) + clipText + val.slice(selEnd)); //replace selected range
+                        var pos = selStart + clipText.length;
+                        try { target.setSelectionRange(pos, pos); } catch (e) {}
+                        $(target).trigger("input").trigger("change");
                     }
                 }
             });
