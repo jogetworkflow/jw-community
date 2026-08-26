@@ -1317,6 +1317,9 @@ body .flexigrid div.pDiv select {
     min-height: 25px;
     padding: 0 5px;
 }
+body .flexigrid tr.trSelected:has(.plugin-non-removable) td {
+    background: inherit !important;
+}
 body .flexigrid div.bDiv tr.erow.trSelected:hover td, 
 body .flexigrid div.bDiv tr.erow.trSelected:hover td.sorted, 
 body .flexigrid div.bDiv tr.erow.trOver.trSelected td.sorted, 

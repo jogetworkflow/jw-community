@@ -48,6 +48,12 @@
                     } else {
                         row.fileName = UI.escapeHTML(row.fileName);
                     }
+
+                    if (row.removable === false){
+                        row.removable = '<div style="text-align: center; width: 100%;" class="plugin-non-removable"> <i class="fas fa-times" style="color: #dc3545;"></i> </div>';
+                    } else {
+                        row.removable = '<div style="text-align: center; width: 100%;"> <i class="fas fa-check" style="color: #198754;"></i> </div>';
+                    }
                 }
             }
         }
@@ -123,6 +129,7 @@
                         column3="{key: 'version', label: 'console.plugin.label.version', sortable: false, width: 115}"
                         column4="{key: 'fileName', label: 'console.plugin.label.fileName', sortable: false, width: 175, relaxed: true}"
                         column5="{key: 'url', label: 'console.plugin.label.marketplaceUrl', sortable: false, width: 200}"
+                        column6="{key: 'removable', label: 'console.plugin.label.uninstallable', sortable: false, width: 65, relaxed: true}"
                         />
                 </div>
                 <div id="update" class="pluginList_container">
@@ -221,6 +228,27 @@
             $('#JsonDataTable1_pluginList-buttons button:eq(0)').show();
         </c:if>
             
+        $("#pluginList1").on("success", function () {
+            $(this).find(".plugin-non-removable").each(function () {
+                var row = $(this).closest("tr");
+                var checkbox = row.find(
+                    ".selectionTd input[type='checkbox']"
+                );
+
+                checkbox.prop("checked", false).prop("disabled", true);
+
+                row.addClass("non-removable-row").removeClass("trSelected");
+            });
+        });
+
+        $(document).off("click.nonRemovable", "#pluginList1-checkboxes")
+        .on("click.nonRemovable", "#pluginList1-checkboxes",function () {
+                $("#pluginList1 .non-removable-row")
+                    .find("input[type='checkbox']")
+                    .prop("checked", false);
+            }
+        );
+
         //reset to 0 first before refresh
         $("#pluginList2").on("refresh", function(){
             $(".update_count").text("(0)");

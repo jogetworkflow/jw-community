@@ -30,6 +30,8 @@ import org.joget.workflow.model.ParticipantPlugin;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.osgi.framework.Bundle;
+import org.osgi.framework.FrameworkUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Controller;
@@ -133,6 +135,28 @@ public class PluginJsonController {
     @RequestMapping("/json/plugin/listInstalledBundle")
     public void pluginListInstalledBundle(Writer writer, @RequestParam(value = "className", required = false) String className, @RequestParam(value = "name", required = false) String filter, @RequestParam(value = "isUpdate", required = false) Boolean isUpdate, @RequestParam(value = "sort", required = false) String sort, @RequestParam(value = "desc", required = false) Boolean desc, @RequestParam(value = "start", required = false) Integer start, @RequestParam(value = "rows", required = false) Integer rows) throws JSONException, IOException {
         JSONObject jsonObject = MarketplaceUtil.getInstalledBundledList(null, filter, className, isUpdate, sort, desc, start, rows);
+        
+        JSONArray data = jsonObject.optJSONArray("data");
+
+        if (data != null) {
+            for (int i = 0; i < data.length(); i++) {
+                JSONObject row = data.getJSONObject(i);
+                String pluginClass = row.optString("pluginClass");
+
+                Plugin plugin = pluginManager.getPlugin(pluginClass);
+                Bundle bundle = null;
+
+                if (plugin != null) {
+                    Class<?> actualClass = ClassUtils.getUserClass(plugin);
+                    bundle = FrameworkUtil.getBundle(actualClass);
+                }
+
+                boolean removable = bundle != null && pluginManager.isPluginRemovable(bundle);
+
+                row.put("removable", removable);
+            }
+        }
+
         AppUtil.writeJson(writer, jsonObject, null);
     }    
 

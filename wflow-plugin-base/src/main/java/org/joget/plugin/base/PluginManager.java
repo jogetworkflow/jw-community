@@ -147,6 +147,13 @@ public class PluginManager implements ApplicationContextAware {
             return baseDirectory;
         }
     }
+
+    /**
+     * Helper method to check if the plugin is removable or not
+     */
+    public boolean isPluginRemovable(Bundle bundleName) {
+        return uninstallable(bundleName.getSymbolicName());
+    }
     
     /**
      * Initializes the plugin manager
