@@ -95,7 +95,10 @@
                                                 cdpos = cdpos + cdleft + cdpad;
                                             }
                                         }
-					$('div:eq('+n+')',g.cDrag).css({'left':cdpos+'px'}).show();
+					if ($('body').hasClass('rtl'))
+						$('div:eq('+n+')',g.cDrag).css({'right':cdpos+'px','left':'auto'}).show();
+					else
+						$('div:eq('+n+')',g.cDrag).css({'left':cdpos+'px','right':'auto'}).show();
 
 					cdleft = cdpos;
 					}
@@ -137,7 +140,8 @@
 						$(obj).addClass('dragging').siblings().hide();
 						$(obj).prev().addClass('dragging').show();
 
-						this.colresize = {startX: e.pageX, ol: parseInt(obj.style.left), ow: ow, n : n };
+						var isRtl = $('body').hasClass('rtl');
+						this.colresize = {startX: e.pageX, ol: parseInt(isRtl ? obj.style.right : obj.style.left), ow: ow, n : n, rtl: isRtl };
 						$('body').css('cursor','col-resize');
 					}
 				else if (dragtype=='vresize') //table resize
@@ -186,11 +190,12 @@
 					{
 						var n = this.colresize.n;
 						var diff = e.pageX-this.colresize.startX;
+						if (this.colresize.rtl) diff = -diff;
 						var nleft = this.colresize.ol + diff;
 						var nw = this.colresize.ow + diff;
 						if (nw > p.minwidth)
 							{
-								$('div:eq('+n+')',this.cDrag).css('left',nleft);
+								$('div:eq('+n+')',this.cDrag).css(this.colresize.rtl ? 'right' : 'left',nleft);
 								this.colresize.nw = nw;
 							}
 					}
