@@ -330,7 +330,7 @@ public class DatalistBuilderWebController {
             HashMap hm = new HashMap();
             hm.put("name", sourceColumn.getName());
             hm.put("label", sourceColumn.getLabel());
-            hm.put("displayLabel", AppUtil.processHashVariable(sourceColumn.getLabel(), null, null, null, appDef));
+            hm.put("displayLabel", StringUtil.stripHtmlRelaxed(AppUtil.processHashVariable(sourceColumn.getLabel(), null, null, null, appDef)));
             hm.put("sortable", true);
             hm.put("filterable", sourceColumn.isFilterable());
             hm.put("type", (sourceColumn.getType() != null)?sourceColumn.getType():"");
