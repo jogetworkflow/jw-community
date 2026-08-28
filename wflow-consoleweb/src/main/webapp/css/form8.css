@@ -1707,3 +1707,6 @@ body.rtl input.hasDatepicker {
 body.rtl .chosen-container-multi.chosen-rtl .chosen-choices li.search-choice{
     margin: 6px 5px 0 0;
 }
+body .chosen-container-multi .chosen-choices{
+    overflow: auto;
+}

@@ -23,6 +23,9 @@
     top: 4px;
     right: 4px;
 }
+body .chosen-container-multi .chosen-choices{
+    overflow: auto;
+}
 
 /* Font Size */
 .mediumFontSize .label-top .form-cell:not(.label-left) > label.label.withIcon > i,
