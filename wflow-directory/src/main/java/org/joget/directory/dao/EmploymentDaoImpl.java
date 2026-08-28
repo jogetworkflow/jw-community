@@ -935,6 +935,18 @@ public class EmploymentDaoImpl extends AbstractSpringDao implements EmploymentDa
      * @param username 
      */
     protected void updateCachedUserEmployments(String username) {
+
+        if (username != null) {
+            try {
+                User owner = userDao.getUser(username);
+                if (owner != null) {
+                    getSessionFactory().getCache().evictCollectionData("User.employments", owner.getId());
+                }
+            } catch (Exception e) {
+                LogUtil.error(EmploymentDaoImpl.class.getName(), e, "Failed to evict User.employments cache for user [" + username + "]");
+            }
+        }
+
         WorkflowUserManager userManager = (WorkflowUserManager) DirectoryUtil.getApplicationContext().getBean("workflowUserManager");
         if (username != null && userManager != null) {
             if (username.equals(userManager.getCurrentUsername())) {
