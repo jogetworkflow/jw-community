@@ -48,6 +48,7 @@
             title : "<c:out value="${builderLabel}"/> <c:choose><c:when test="${!empty builderDef}">: <c:out value="${builderDef.name}"/></c:when><c:otherwise>: <c:out value="${appDefinition.name}"/></c:otherwise></c:choose>",
             appId : "<c:out value="${appDefinition.id}"/>",
             appVersion : "<c:out value="${appDefinition.version}"/>",
+            appName : "<ui:escape value="${appDefinition.name}" format="json" />",
             appPublished : "<ui:escape value="${appDefinition.published}" format="json" />",
             appPath : "/<c:out value="${appDefinition.id}"/>/<c:out value="${appDefinition.version}"/>",
             builderType : "<ui:escape value="${builderCode}" format="json" />",
@@ -365,6 +366,7 @@
                             _CustomBuilder.contextPath = '${pageContext.request.contextPath}';
                             CustomBuilder.appId = '<c:out value="${appDefinition.id}"/>';
                             CustomBuilder.appVersion = '<c:out value="${appDefinition.version}"/>';
+                            CustomBuilder.appName = "<ui:escape value="${appDefinition.name}" format="json" />";
                             CustomBuilder.appPath = '/<c:out value="${appDefinition.id}"/>/<c:out value="${appDefinition.version}"/>';
                             CustomBuilder.appPublished = '<c:out value="${appDefinition.published}"/>';
                             CustomBuilder.builderType = '<c:out value="${builderCode}"/>';

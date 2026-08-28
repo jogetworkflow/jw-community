@@ -10,6 +10,7 @@ window._CustomBuilder = {
     contextPath : '/jw',
     appId: '',
     appVersion: '',
+    appName: '',
     appPath: '',
     builderType: '',
     builderLabel: '',
@@ -197,20 +198,20 @@ window._CustomBuilder = {
     renderAppNotExist: function(appId) {
         $("body").removeClass("initializing");
         appId = UI.escapeHTML(appId);
-        
-        //add a overlay with message, add it to quick nav so that it get removed together when navigate to other app
-        $("#builder-quick-nav #builder-menu ul #appNotExist").remove();
-        $("#builder-quick-nav #builder-menu ul").append('<li id="appNotExist"><div class="error">'+get_cbuilder_msg('abuilder.appNotExist', [appId])+'</div></li>');
-        
-        var url = CustomBuilder.contextPath+'/web/console/app/'+appId+'/0/builders';
-        //change the browser URL, so the next import can redirect correctly.
-        history.pushState({url: url}, "", url);
+        var appName = UI.escapeHTML(CustomBuilder.appName);
+
+        //remove any transient overlay popup so it doesn't flash before navigating away
+        $("#quickOverlayContainer").remove();
+
+        //app no longer exists - alert then go home
+        var url = CustomBuilder.contextPath + "/web/desktop/home";
+        UI.alertBlock(get_cbuilder_msg("abuilder.appDeleted", [appName, appId]), function() {
+            window.location.href = url;
+        });
     },
-    
+
     ajaxRenderBuilder: async function(url, skipPushState = false) {
         HelpGuide.hide();
-        
-        $("#builder-quick-nav #builder-menu ul #appNotExist").hide();
         
         var rtl;
         if($('body').hasClass('rtl')){
@@ -362,6 +363,7 @@ window._CustomBuilder = {
             if (CustomBuilder.builderType === data.builderType && CustomBuilder.systemTheme === data.systemTheme && CustomBuilder.builderType !== "app") {
                 CustomBuilder.id = data.id;
                 CustomBuilder.appId = data.appId;
+                CustomBuilder.appName = data.appName;
                 CustomBuilder.appVersion = data.appVersion;
                 CustomBuilder.appPath = data.appPath;
                 CustomBuilder.appPublished = data.appPublished;
@@ -408,6 +410,7 @@ window._CustomBuilder = {
                 
                 CustomBuilder.id = data.id;
                 CustomBuilder.appId = data.appId;
+                CustomBuilder.appName = data.appName;
                 CustomBuilder.appVersion = data.appVersion;
                 CustomBuilder.appPath = data.appPath;
                 CustomBuilder.appPublished = data.appPublished;
