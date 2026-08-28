@@ -5,7 +5,7 @@
     left: 5px;
     right: auto;
     border-radius: 5px;
-    padding: 0;
+    padding: 0 !important;
     z-index: 2;
     background-clip: padding-box;
 }
@@ -50,13 +50,13 @@ div.clr-field > .assist_icon {
     order: 2;
     height: 24px;
     margin: 0 15px 20px;
-    padding: 0 20px;
+    padding: 0 20px !important;
     border: 0;
-    border-radius: 12px;
+    border-radius: 12px !important;
     color: #fff;
     background-color: #666;
     font-family: inherit;
-    font-size: 12px;
+    font-size: 12px !important;
     font-weight: 400;
     cursor: pointer;
 }

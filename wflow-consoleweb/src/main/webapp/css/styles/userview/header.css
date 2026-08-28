@@ -28,7 +28,7 @@ body.horizontal_menu header.navbar {
 }
 
 body.dark-sidebar header.navbar{
-    background-color: rgba(255, 255, 255, 0.6);
+    background-color: color-mix(in srgb, var(--theme-header, var(--theme-color6, #fff)) 60%, transparent);
     -webkit-backdrop-filter: blur(8px);
     backdrop-filter: blur(8px);
     transition: background-color 0.3s cubic-bezier(0.645, 0.045, 0.355, 1);

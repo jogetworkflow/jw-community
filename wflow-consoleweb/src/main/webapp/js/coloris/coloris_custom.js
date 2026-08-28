@@ -627,7 +627,8 @@
         //and reset positioning so it doesnt overlap
         $(document).on('click', '.clr-field > input', function () {
             var obj = this;
-            
+            currentInstance = obj;
+
             if ($(this).parent().hasClass('allowRecentColors')) {
                 $("div#clr-picker").addClass("allow-recent-colors");
             } else {
