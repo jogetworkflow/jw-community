@@ -222,41 +222,52 @@ AjaxComponent = {
                 e.stopImmediatePropagation();
 
                 var form = $(this);
-                //datalist filter form
-                if ($(form).hasClass("filter_form") && $(form).closest(".dataList").length > 0) {
-                     var params = UrlUtil.serializeForm($(form));
-                     var queryStr = window.location.search;
-                     params = params.replace(/\+/g, " ");
-                     var newUrl = window.location.pathname + "?" + UrlUtil.mergeRequestQueryString(queryStr, params);
-                     AjaxComponent.call($(form), newUrl, "GET", null);
-                } else {
-                    var formData = new FormData($(form)[0]);
-                    var btn;
-                    if (e.originalEvent !== undefined && e.originalEvent.submitter !== undefined) {
-                       btn = $(e.originalEvent.submitter);
+                //UI.confirm is async (always returns undefined) so data-confirmation is checked via its callback below, not a boolean
+                var confirmMsg = $(form).data("confirmation");
+
+                var doSubmit = function() {
+                    //datalist filter form
+                    if ($(form).hasClass("filter_form") && $(form).closest(".dataList").length > 0) {
+                         var params = UrlUtil.serializeForm($(form));
+                         var queryStr = window.location.search;
+                         params = params.replace(/\+/g, " ");
+                         var newUrl = window.location.pathname + "?" + UrlUtil.mergeRequestQueryString(queryStr, params);
+                         AjaxComponent.call($(form), newUrl, "GET", null);
                     } else {
-                       btn = $(this).find(document.activeElement);
+                        var formData = new FormData($(form)[0]);
+                        var btn;
+                        if (e.originalEvent !== undefined && e.originalEvent.submitter !== undefined) {
+                           btn = $(e.originalEvent.submitter);
+                        } else {
+                           btn = $(form).find(document.activeElement);
+                        }
+                        if (($(btn).length === 0 || !$(btn).is('input[type=submit], input[type=button], button, a')) && $(form).find("input[type=submit]:focus, input[type=button]:focus, button:focus").length === 0) {
+                            btn = $(form).find("input[type='submit'][name], input[type='button'][name], button[name]").eq(0);
+                        }
+                        if ($(btn).length > 0) {
+                            $(btn).each(function(){
+                                $(this).attr('clicked', 'true');
+                                formData.append($(this).attr("name"), $(this).val());
+                            });
+                        }
+                        if (typeof PwaUtil !== 'undefined'){
+                            PwaUtil.submitForm(form);
+                        }
+                        var url = $(form).attr("action");
+                        if (url === "") {
+                            url = window.location.href;
+                        }
+                        $.unblockUI();
+                        AjaxComponent.call($(form), url, "POST", formData, ajaxCustomCallback, ajaxCustomErrorCallback);
                     }
-                    if (($(btn).length === 0 || !$(btn).is('input[type=submit], input[type=button], button, a')) && $(this).find("input[type=submit]:focus, input[type=button]:focus, button:focus").length === 0) {
-                        btn = $(this).find("input[type='submit'][name], input[type='button'][name], button[name]").eq(0);
-                    }
-                    if ($(btn).length > 0) {
-                        $(btn).each(function(){
-                            $(this).attr('clicked', 'true');
-                            formData.append($(this).attr("name"), $(this).val());
-                        });
-                    }
-                    if (typeof PwaUtil !== 'undefined'){
-                        PwaUtil.submitForm(form);
-                    }
-                    var url = $(form).attr("action");
-                    if (url === "") {
-                        url = window.location.href;
-                    }
-                    $.unblockUI();
-                    AjaxComponent.call($(form), url, "POST", formData, ajaxCustomCallback, ajaxCustomErrorCallback);
+                };
+
+                if (confirmMsg === "" || confirmMsg === null || confirmMsg === undefined) {
+                    doSubmit();
+                } else {
+                    UI.confirm(confirmMsg, doSubmit, { confirmButtonClass: 'dialog-btn-primary' });
                 }
-                
+
                 return false;
             } else {
                 var btn = $(this).find("input[type=submit][name]:focus, input[type=button][name]:focus, button[name]:focus");
