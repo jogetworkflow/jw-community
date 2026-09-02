@@ -44,6 +44,15 @@ public class HashVariableSupportedMapImpl<K,V> extends HashVariableSupportedMap<
 
     @Override
     protected Object getProcessedValue(V value) {
+        return getProcessedValue((K) null, value);
+    }
+
+    @Override
+    protected Object getProcessedValue(K key, V value) {
+        //properties that end up in a script interpreter or in an SQL statement get a safe default
+        //escaping for the Hash Variables that resolve to end user supplied data
+        String defaultHashFormat = (key instanceof String) ? AppUtil.getPropertyDefaultHashEscapeFormat((String) key) : null;
+
         Object newValue = null;
         if (value instanceof Map && !(value instanceof HashVariableSupportedMapImpl)) {
             newValue = new HashVariableSupportedMapImpl(appDef, assignment, (Map) value);
@@ -66,13 +75,16 @@ public class HashVariableSupportedMapImpl<K,V> extends HashVariableSupportedMap<
                 newValue = value;
             }
         } else if (value instanceof String) {
-            newValue = AppUtil.processHashVariable((String) value, assignment, null, null, appDef, true);
+            newValue = AppUtil.processHashVariable((String) value, assignment, null, null, appDef, true, defaultHashFormat);
         } else if (value instanceof FormRowSet) {
             for (FormRow r : (FormRowSet) value) {
                 for (String k : r.stringPropertyNames()) {
                     String t = r.getProperty(k);
                     if (AppUtil.containsHashVariable(t)) {
-                        r.setProperty(k, AppUtil.processHashVariable(t, assignment, null, null, appDef, true));
+                        //pass the key-derived default format here too - the String branch above
+                        //already does, and a FormRowSet valued "sql"/"script" property would
+                        //otherwise be expanded without the default escaping
+                        r.setProperty(k, AppUtil.processHashVariable(t, assignment, null, null, appDef, true, defaultHashFormat));
                     }
                 }
             }

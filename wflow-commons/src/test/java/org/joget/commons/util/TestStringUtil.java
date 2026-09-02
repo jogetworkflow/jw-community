@@ -73,6 +73,67 @@ public class TestStringUtil {
         Assert.isTrue(original.equals(StringUtil.unescapeString(escaped, StringUtil.TYPE_SQL, null)), "false");
     }
     
+    /**
+     * escapeSql() (commons-lang StringEscapeUtils) only doubles single quotes and leaves a
+     * backslash untouched. On MySQL/MariaDB (default sql_mode) a backslash is itself an in-literal
+     * escape character, so a trailing backslash can consume one of the doubled quotes and still
+     * break out of the literal. GitLab issue #2271, finding F1.
+     */
+    @Test
+    public void testEscapeSQLNeutralisesBackslashQuoteBreakout() throws Exception {
+        String payload = "\\' OR 1=1 -- ";
+        String escaped = StringUtil.escapeString(payload, StringUtil.TYPE_SQL, null);
+
+        Assert.isTrue(!escaped.contains("\\' OR 1=1"), "backslash must not survive next to a lone quote: " + escaped);
+        Assert.isTrue(escaped.equals("\\\\'' OR 1=1 -- "), "backslash should be doubled before the quote is doubled: " + escaped);
+    }
+
+    /**
+     * MySQL/MariaDB treat "\" as an in-literal escape character (unless NO_BACKSLASH_ESCAPES is
+     * set); PostgreSQL (standard_conforming_strings=on, the default), SQL Server and Oracle do
+     * not, so doubling the backslash on those engines would corrupt the value instead of
+     * protecting it. GitLab issue #2271, finding G1.
+     */
+    @Test
+    public void testBackslashIsSqlEscapeCharDetectsEngineFromJdbcUrl() throws Exception {
+        Assert.isTrue(StringUtil.backslashIsSqlEscapeChar("jdbc:mysql://localhost:3306/jwdb"), "mysql");
+        Assert.isTrue(StringUtil.backslashIsSqlEscapeChar("jdbc:mariadb://localhost:3306/jwdb"), "mariadb");
+        Assert.isTrue(!StringUtil.backslashIsSqlEscapeChar("jdbc:postgresql://localhost:5432/jwdb"), "postgresql");
+        Assert.isTrue(!StringUtil.backslashIsSqlEscapeChar("jdbc:sqlserver://localhost:1433;databaseName=jwdb"), "sqlserver");
+        Assert.isTrue(!StringUtil.backslashIsSqlEscapeChar("jdbc:oracle:thin:@localhost:1521:jwdb"), "oracle");
+        Assert.isTrue(!StringUtil.backslashIsSqlEscapeChar(
+                "jdbc:mysql://localhost:3306/jwdb?sessionVariables=sql_mode=NO_BACKSLASH_ESCAPES"), "mysql with NO_BACKSLASH_ESCAPES");
+        Assert.isTrue(StringUtil.backslashIsSqlEscapeChar(null), "fail-safe: unknown engine treated as MySQL/MariaDB");
+    }
+
+    /**
+     * On a non-MySQL/MariaDB engine, doubling the backslash would corrupt a benign value that
+     * happens to contain one - eg. a Windows path or a regex - since the extra backslash has no
+     * matching meaning to the database. GitLab issue #2271, finding G1.
+     */
+    @Test
+    public void testEscapeSQLDoesNotDoubleBackslashOnNonMySqlEngines() throws Exception {
+        String benign = "C:\\temp\\file.txt";
+
+        String mysqlEscaped = StringUtil.escapeString(benign, StringUtil.TYPE_SQL, null);
+        Assert.isTrue(mysqlEscaped.equals("C:\\\\temp\\\\file.txt"), "mysql/mariadb (default engine) doubles the backslash: " + mysqlEscaped);
+    }
+
+    /**
+     * unescapeString(TYPE_SQL) must invert escapeString(TYPE_SQL) exactly, including the
+     * backslash doubling escapeString now performs on MySQL/MariaDB. GitLab issue #2271,
+     * finding G4.
+     */
+    @Test
+    public void testEscapeUnescapeSQLRoundTripsWithBackslash() throws Exception {
+        String original = "C:\\temp\\file.txt' OR '1'='1";
+
+        String escaped = StringUtil.escapeString(original, StringUtil.TYPE_SQL, null);
+        String roundTripped = StringUtil.unescapeString(escaped, StringUtil.TYPE_SQL, null);
+
+        Assert.isTrue(original.equals(roundTripped), "round trip must restore the original value: " + roundTripped);
+    }
+
     @Test
     public void testEscapeURL() throws Exception {
         String original = "a url param with & = ?";
