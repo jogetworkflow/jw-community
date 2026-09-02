@@ -3563,6 +3563,7 @@ public class AppServiceImpl implements AppService {
      */
     @Override
     public byte[] getAppDataXmlFromZip(byte[] zip) throws Exception {
+        int archiveSize = zip != null ? zip.length : 0;
         ZipInputStream in = new ZipInputStream(new ByteArrayInputStream(zip));
         ByteArrayOutputStream out = new ByteArrayOutputStream();
 
@@ -3576,14 +3577,26 @@ public class AppServiceImpl implements AppService {
                     out.write(temp, 0, length);
                 }
 
-                return out.toByteArray();
+                byte[] appData = out.toByteArray();
+
+                if (appData.length == 0) {
+                    throw new IOException(
+                            "Failed to read app data: appDefinition.xml is empty. "
+                            + "The archive may be corrupted. Archive size: "
+                            + archiveSize + " bytes.");
+                }
+
+                return appData;
             }
             out.flush();
             out.close();
         }
         in.close();
 
-        return null;
+        throw new IOException(
+            "Failed to read app data: appDefinition.xml was not found. "
+            + "The file may not be a valid Joget app export or the archive may be corrupted. "
+            + "Archive size: " + archiveSize + " bytes.");
     }
 
     /**
