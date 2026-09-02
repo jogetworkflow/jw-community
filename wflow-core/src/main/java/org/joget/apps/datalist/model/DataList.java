@@ -18,11 +18,13 @@ import javax.servlet.http.HttpSession;
 import net.sf.ehcache.Cache;
 import net.sf.ehcache.Element;
 import org.displaytag.tags.TableTagParameters;
+import org.displaytag.util.LookupUtil;
 import org.displaytag.util.ParamEncoder;
 import org.joget.apps.app.model.AppDefinition;
 import org.joget.apps.app.service.AppUtil;
 import org.joget.apps.datalist.lib.StaleCacheDataListBinder;
 import org.joget.apps.datalist.service.DataListDecorator;
+import org.joget.apps.datalist.service.DataListService;
 import org.joget.apps.datalist.service.DataListUtil;
 import org.joget.commons.util.*;
 import org.joget.plugin.base.PluginManager;
@@ -274,7 +276,7 @@ public class DataList {
         
         this.columns = columns;
     }
-    
+
     public DataListColumn[] getColumnPlaceholder(String key) {
         return columnPlaceholders.get(key);
     }
@@ -506,8 +508,59 @@ public class DataList {
             }
             setRowActionPlaceholder("rowActions", rowActions);
         }
-        
+
         this.rowActions = rowActions;
+    }
+
+    /**
+     * Checks that every key in {@code selectedKeys} corresponds to a row this list's own binder
+     * actually returns for its current filter/query - ie. a row this specific list would show to
+     * whoever is calling it - not an arbitrary primary key value from the same underlying table
+     * that this list was never scoped to expose. {@link org.joget.apps.datalist.lib.
+     * FormRowDeleteDataListAction} (and potentially other {@link DataListAction} implementations)
+     * act on a selected key by primary key alone, with no such check of their own, so a caller
+     * that only trusts "this is a valid nonce for this list" must still perform this check itself
+     * before invoking {@link #getActionResult()} for a caller it cannot otherwise vouch for.
+     *
+     * @param selectedKeys the row keys a caller wants to act on (eg. from a checkbox selection)
+     * @return true if {@code selectedKeys} is null/empty, or every key is one of this list's own
+     *      current rows; false if the binder/rows are unavailable (fails closed) or any key is not
+     *      part of this list's own rows
+     */
+    public boolean isSelectionWithinScope(String[] selectedKeys) {
+        if (selectedKeys == null || selectedKeys.length == 0) {
+            return true;
+        }
+        if (getBinder() == null) {
+            return false;
+        }
+        String primaryKeyColumnName = getBinder().getPrimaryKeyColumnName();
+        DataListCollection ownRows = getRows();
+        if (ownRows == null) {
+            return false;
+        }
+        Set<String> validKeys = new HashSet<String>();
+        for (Object row : ownRows) {
+            try {
+                //read the primary key exactly the way the rest of the framework does
+                //(DataListTemplate/DataListDecorator both go through this) - it additionally
+                //handles a DataListRow wrapper, a lowercase name fallback and "t__" prefixed
+                //fields. LookupUtil.getBeanProperty alone returns null for those rows, which
+                //leaves validKeys empty and fails this guard closed on legitimate row actions.
+                Object id = DataListService.evaluateColumnValueFromRow(row, primaryKeyColumnName);
+                if (id != null) {
+                    validKeys.add(id.toString());
+                }
+            } catch (Exception e) {
+                LogUtil.error(DataList.class.getName(), e, "Error reading primary key while validating action selection scope");
+            }
+        }
+        for (String key : selectedKeys) {
+            if (!validKeys.contains(key)) {
+                return false;
+            }
+        }
+        return true;
     }
 
     public boolean isUseSession() {

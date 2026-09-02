@@ -2,6 +2,8 @@ package org.joget.commons.util;
 
 import java.net.URI;
 import java.net.URLDecoder;
+import java.nio.charset.StandardCharsets;
+import java.security.MessageDigest;
 import java.text.Normalizer;
 import java.util.List;
 import java.util.regex.Pattern;
@@ -287,6 +289,60 @@ public class SecurityUtil implements ApplicationContextAware {
             return csrfGuard.getTokenService().getTokenValue(logicalSession.getKey(), request.getRequestURI());
         }
         return "";
+    }
+
+    /**
+     * Validates the CSRF token submitted with a request against the token this session is
+     * expected to present.
+     *
+     * Needed because "/web/json/*" is explicitly excluded from CSRFGuard
+     * (org.owasp.csrfguard.unprotected.Json in Owasp.CsrfGuard.properties), so a state changing
+     * action served from that path gets no token check from the filter and must ask for one
+     * itself. Requiring POST is not enough on its own - a cross site HTML form can issue a POST.
+     *
+     * The token is accepted either as a request parameter or as a request header, both named
+     * SecurityUtil#getCsrfTokenName(), which is how the console's own javascript sends it.
+     *
+     * @param request
+     * @return true only when a non empty token was submitted and it matches the expected one
+     */
+    public static boolean validateCsrfToken(HttpServletRequest request) {
+        if (request == null) {
+            return false;
+        }
+        try {
+            String tokenName = getCsrfTokenName();
+            if (tokenName == null || tokenName.isEmpty()) {
+                return false;
+            }
+            String submittedToken = request.getParameter(tokenName);
+            if (submittedToken == null || submittedToken.isEmpty()) {
+                submittedToken = request.getHeader(tokenName);
+            }
+            return validateCsrfToken(submittedToken, getCsrfTokenValue(request));
+        } catch (Exception e) {
+            //CSRFGuard not available/initialised - fail closed rather than let the request through
+            LogUtil.debug(SecurityUtil.class.getName(), "Unable to validate the CSRF token: " + e.getMessage());
+            return false;
+        }
+    }
+
+    /**
+     * Compares a submitted CSRF token against the expected one. An absent or empty token on
+     * either side is always a failure - an empty expected token must never make every request
+     * valid.
+     * @param submittedToken the token presented by the caller
+     * @param expectedToken the token this session is expected to present
+     * @return
+     */
+    public static boolean validateCsrfToken(String submittedToken, String expectedToken) {
+        if (submittedToken == null || submittedToken.isEmpty()
+                || expectedToken == null || expectedToken.isEmpty()) {
+            return false;
+        }
+        //constant time comparison, so the check does not leak the expected token byte by byte
+        return MessageDigest.isEqual(submittedToken.getBytes(StandardCharsets.UTF_8),
+                expectedToken.getBytes(StandardCharsets.UTF_8));
     }
 
     /**

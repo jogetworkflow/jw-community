@@ -2628,6 +2628,14 @@ PropertyEditor.Model.ButtonPanel.prototype = {
                 url: PropertyEditor.Util.replaceContextPath(url, this.options.contextPath),
                 data: $.param(data),
                 dataType: "text",
+                beforeSend: function(request) {
+                    //some of these button endpoints are served from "/web/json/*", which is
+                    //excluded from CSRFGuard, so they validate the token themselves
+                    if (typeof ConnectionManager !== "undefined" && ConnectionManager !== null
+                            && ConnectionManager.tokenName !== undefined && ConnectionManager.tokenName !== null && ConnectionManager.tokenName !== "") {
+                        request.setRequestHeader(ConnectionManager.tokenName, ConnectionManager.tokenValue);
+                    }
+                },
                 success: function(response) {
                     var r = $.parseJSON(response);
 

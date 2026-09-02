@@ -34,7 +34,20 @@ public abstract class HashVariableSupportedMap<K,V> extends HashMap<K,V> {
     }
     
     protected abstract Object getProcessedValue(V value);
-    
+
+    /**
+     * Same as {@link #getProcessedValue(java.lang.Object)} but the property key is made available
+     * so that an implementation can apply key sensitive processing, eg. escaping the Hash Variable
+     * values of a property that is used as a script or as part of an SQL statement.
+     *
+     * @param key
+     * @param value
+     * @return
+     */
+    protected Object getProcessedValue(K key, V value) {
+        return getProcessedValue(value);
+    }
+
     @Override
     public V get(Object key) {
         if (super.containsKey(key)) {
@@ -42,7 +55,7 @@ public abstract class HashVariableSupportedMap<K,V> extends HashMap<K,V> {
         } else if (initialMap.containsKey(key)) {
             V value = initialMap.remove(key);
             if (value != null) {
-                Object newValue = getProcessedValue(value);
+                Object newValue = getProcessedValue((K) key, value);
                 put((K) key, (V) newValue);
                 return (V) newValue;
             }
@@ -110,7 +123,7 @@ public abstract class HashVariableSupportedMap<K,V> extends HashMap<K,V> {
             for (K key : initialMap.keySet()) {
                 V value = initialMap.get(key);
                 if (value != null) {
-                    Object newValue = getProcessedValue(value);
+                    Object newValue = getProcessedValue(key, value);
                     super.put((K) key, (V) newValue);
                 }
             }

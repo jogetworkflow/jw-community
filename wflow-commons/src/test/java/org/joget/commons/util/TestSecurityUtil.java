@@ -165,4 +165,39 @@ public class TestSecurityUtil {
         assertEquals("test+file.txt", SecurityUtil.normalizedFileName("test+file.txt"));
         assertEquals("test＋file.txt", SecurityUtil.normalizedFileName("test＋file.txt"));
     }
+
+    /**
+     * GitLab issue #2271, finding F3. "/web/json/*" is excluded from CSRFGuard, so a state
+     * changing action served from that path has to validate the token itself; requiring POST is
+     * not enough, since a cross site HTML form can issue a POST.
+     */
+    @Test
+    public void testValidateCsrfTokenAcceptsOnlyAnExactMatch() {
+        assertTrue(SecurityUtil.validateCsrfToken("abc123", "abc123"));
+        assertFalse("a different token must not be accepted", SecurityUtil.validateCsrfToken("abc124", "abc123"));
+        assertFalse("a token that is only a prefix must not be accepted", SecurityUtil.validateCsrfToken("abc12", "abc123"));
+        assertFalse("a token with trailing content must not be accepted", SecurityUtil.validateCsrfToken("abc1234", "abc123"));
+    }
+
+    /**
+     * A missing or empty token on either side must fail closed - an empty expected token must
+     * never turn the check into "everything is valid".
+     */
+    @Test
+    public void testValidateCsrfTokenFailsClosedOnAMissingToken() {
+        assertFalse(SecurityUtil.validateCsrfToken(null, "abc123"));
+        assertFalse(SecurityUtil.validateCsrfToken("", "abc123"));
+        assertFalse(SecurityUtil.validateCsrfToken("abc123", null));
+        assertFalse(SecurityUtil.validateCsrfToken("abc123", ""));
+        assertFalse(SecurityUtil.validateCsrfToken("", ""));
+        assertFalse(SecurityUtil.validateCsrfToken(null, null));
+    }
+
+    /**
+     * A null request (eg. a non web invocation) must also fail closed rather than throw.
+     */
+    @Test
+    public void testValidateCsrfTokenFailsClosedWithoutARequest() {
+        assertFalse(SecurityUtil.validateCsrfToken(null));
+    }
 }

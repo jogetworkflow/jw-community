@@ -343,6 +343,9 @@ public class StringUtil {
                 inStr = StringEscapeUtils.unescapeJava(inStr);
             } else if (TYPE_SQL.equals(f)) {
                 inStr = inStr.replaceAll("''", "'");
+                if (backslashIsSqlEscapeChar()) { //mirror escapeString()'s TYPE_SQL branch
+                    inStr = inStr.replace("\\\\", "\\");
+                }
             } else if (TYPE_EXP.equals(f)) {
                 inStr = StringEscapeUtils.escapeHtml(inStr.replaceAll("''", "'"));
             } else if (TYPE_URL.equals(f)) {
@@ -463,7 +466,16 @@ public class StringUtil {
             } else if (TYPE_JAVA.equals(f)) {
                 inStr = StringEscapeUtils.escapeJava(inStr);
             } else if (TYPE_SQL.equals(f)) {
-                inStr = StringEscapeUtils.escapeSql(inStr);
+                // escapeSql() only doubles single quotes. On MySQL/MariaDB a backslash is itself an
+                // escape character inside a string literal unless NO_BACKSLASH_ESCAPES is set, so a
+                // payload containing "\'" can consume the doubled quote and break out of the literal.
+                // Escape the backslash first, then let escapeSql() double the quotes. On PostgreSQL
+                // (standard_conforming_strings=on, the default), SQL Server and Oracle a backslash
+                // is ordinary data, so doubling it there would corrupt the value instead - gate on
+                // the current tenant's engine.
+                inStr = backslashIsSqlEscapeChar()
+                        ? StringEscapeUtils.escapeSql(inStr.replace("\\", "\\\\"))
+                        : StringEscapeUtils.escapeSql(inStr);
             } else if (TYPE_EXP.equals(f)) {
                 inStr = StringEscapeUtils.unescapeHtml(inStr).replaceAll("'", "''");
             } else if (TYPE_URL.equals(f)) {
@@ -487,7 +499,35 @@ public class StringUtil {
         
         return inStr;
     }
-    
+
+    /**
+     * Whether the current tenant's datasource treats "\" as an escape character inside a
+     * single-quoted SQL string literal - true for MySQL/MariaDB without NO_BACKSLASH_ESCAPES,
+     * false for PostgreSQL (standard_conforming_strings=on, the default), SQL Server and Oracle,
+     * where a backslash is ordinary data and doubling it would corrupt the value.
+     *
+     * Fails safe as MySQL/MariaDB (true) when the engine can't be determined, since that direction
+     * risks a corrupted value rather than a reopened SQL injection.
+     */
+    protected static boolean backslashIsSqlEscapeChar() {
+        return backslashIsSqlEscapeChar(DynamicDataSourceManager.getProperty("workflowUrl"));
+    }
+
+    /**
+     * Pure form of {@link #backslashIsSqlEscapeChar()}, taking the JDBC URL directly so the
+     * per-engine logic can be unit tested without a live datasource configuration.
+     */
+    protected static boolean backslashIsSqlEscapeChar(String workflowUrl) {
+        if (workflowUrl == null) {
+            return true;
+        }
+        String u = workflowUrl.toLowerCase();
+        if (!(u.startsWith("jdbc:mysql") || u.startsWith("jdbc:mariadb"))) {
+            return false;
+        }
+        return !u.contains("no_backslash_escapes");
+    }
+
     public static String imageToBase64(String content) {
         HttpServletRequest request = null;
         try {

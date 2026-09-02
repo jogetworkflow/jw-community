@@ -71,6 +71,7 @@ import org.joget.apps.form.model.Form;
 import org.joget.apps.form.model.FormData;
 import org.joget.apps.form.service.FileUtil;
 import org.joget.apps.form.service.FormUtil;
+import org.joget.apps.workflow.security.EnhancedWorkflowUserManager;
 import org.joget.apps.userview.lib.AjaxUniversalTheme;
 import org.joget.apps.userview.model.UserviewTheme;
 import org.joget.apps.userview.model.UserviewV5Theme;
@@ -86,6 +87,7 @@ import org.joget.commons.util.SetupDao;
 import org.joget.commons.util.SetupManager;
 import org.joget.commons.util.StringUtil;
 import org.joget.commons.util.TimeZoneUtil;
+import org.joget.directory.dao.UserDao;
 import org.joget.directory.model.User;
 import org.joget.directory.model.service.DirectoryManager;
 import org.joget.plugin.base.Plugin;
@@ -97,6 +99,7 @@ import org.joget.plugin.property.service.PropertyUtil;
 import org.joget.workflow.model.WorkflowAssignment;
 import org.joget.workflow.model.WorkflowProcess;
 import org.joget.workflow.model.service.WorkflowManager;
+import org.joget.workflow.model.service.WorkflowUserManager;
 import org.joget.workflow.model.service.WorkflowManagerImpl;
 import org.joget.workflow.shark.model.dao.WorkflowAssignmentDao;
 import org.joget.workflow.util.WorkflowUtil;
@@ -111,6 +114,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.AntPathMatcher;
 import org.springframework.util.ClassUtils;
+import org.springframework.util.StringUtils;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 import org.springframework.web.multipart.MultipartFile;
@@ -129,6 +133,114 @@ public class AppUtil implements ApplicationContextAware {
     private static final String HASH_NO_ESCAPE = "noescape";
     private static final Pattern HASH_VARIABLE_PATTERN = Pattern.compile("\\#([^#\" ]+)\\.([^#\"]+)\\#");
     private static final Pattern NESTED_HASH_VARIABLE_PATTERN = Pattern.compile("\\{([^\\{\\}])*\\}");
+
+    /**
+     * System property to turn off the default escaping of Hash Variables that are used in
+     * script & SQL typed plugin properties. Set to "false" to fully restore the pre 9.0
+     * behavior where such Hash Variables are substituted raw.
+     */
+    public static final String SYSTEM_PROPERTY_HASH_DEFAULT_ESCAPE = "wflow.hashVariable.defaultEscape";
+
+    /**
+     * System property to override the list of Hash Variable prefixes (comma separated) that are
+     * escaped by default when used in a script & SQL typed plugin property.
+     */
+    public static final String SYSTEM_PROPERTY_HASH_DEFAULT_ESCAPE_PREFIXES = "wflow.hashVariable.defaultEscape.prefixes";
+
+    /**
+     * Hash Variable prefixes that resolve to end user supplied data (request scoped or stored
+     * user input). Only these are escaped by default in script & SQL typed properties, so that
+     * designer controlled sources (eg. envVariable, beanshell) that are commonly used to compose
+     * dynamic script/SQL fragments keep working exactly as before.
+     *
+     * <p>The list is the outcome of an audit of every registered HashVariablePlugin's
+     * processHashVariable implementation on both the community and the enterprise classpath. A
+     * prefix belongs here only when a specific code path makes its resolved value depend on end
+     * user supplied input; the deliberate exclusions are as important as the inclusions, because
+     * escaping a designer authored fragment is what breaks designer composed dynamic SQL:</p>
+     * <ul>
+     * <li><b>binder</b> (FormBinderHashVariable, enterprise) - runs a form's load binders for a
+     *     primary key taken straight off the request (FormHashVariable.getPrimaryKeyFromRequest,
+     *     ie. the "id" parameter) and returns the stored field value. Same threat class as
+     *     <b>form</b>, which was already listed.</li>
+     * <li><b>datalist</b> (DatalistHashVariable, enterprise) - returns stored record data via
+     *     DataListService.evaluateColumnValueFromRow (the col/csv/json/html/total formats), ie.
+     *     whatever end users submitted into the underlying table.</li>
+     * <li><b>users</b> (UsersHashVariable, enterprise) - returns firstName/lastName/fullName/email
+     *     of the users in a group/grade/department/organization. Those are user editable profile
+     *     fields, the same fields <b>user</b>/<b>currentUser</b> are listed for.</li>
+     * <li><i>not</i> <b>process</b> / <b>assignment</b> - resolve to engine generated instance ids,
+     *     process/activity definition names authored by the designer, timestamps and usernames.
+     *     A username is created through the directory rather than supplied as free text by the end
+     *     user, so no code path here carries end user text.</li>
+     * <li><i>not</i> <b>stats</b> - counts, APM/governance telemetry, admin created group names and
+     *     designer authored app/form/list/ui names only.</li>
+     * <li><i>not</i> <b>uiListCount</b> - always an integer (DataList.getTotal), so it cannot
+     *     carry a payload, even though its key is derived from request parameters.</li>
+     * <li><i>not</i> <b>envVariable</b> / <b>appVariable</b> / <b>sysVariable</b> /
+     *     <b>beanshell</b> - designer or admin authored content, and the sources designers use
+     *     precisely to compose dynamic script/SQL. Escaping these is the documented non goal.</li>
+     * <li><i>not</i> <b>i18n</b>, <b>appResource</b>, <b>appDef</b>, <b>platform</b>,
+     *     <b>date</b>/<b>dateLocale</b>/<b>dateEN</b>, <b>exp</b> - designer or admin authored
+     *     configuration, or values derived from a designer authored format/expression.</li>
+     * </ul>
+     */
+    private static final String DEFAULT_ESCAPE_PREFIXES = "requestParam,request,form,variable,currentUser,performer,user,uservariable,binder,datalist,users";
+
+    /**
+     * The escape prefixes configuration string and the prefix set parsed from it, published
+     * together in one immutable object. Two independent volatile fields could be seen torn by a
+     * reader (a config string paired with another config's prefix set), which would silently
+     * narrow or widen the default escaping - a single volatile reference to an immutable holder
+     * cannot.
+     */
+    private static final class EscapePrefixes {
+        final String config;
+        final Set<String> prefixes;
+
+        EscapePrefixes(String config, Set<String> prefixes) {
+            this.config = config;
+            this.prefixes = prefixes;
+        }
+    }
+
+    private static volatile EscapePrefixes cachedEscapePrefixes = null;
+
+    /**
+     * Session attribute holding the per app "is this app editable by the session's user" decisions
+     * memoized by {@link #isAppEditableByCurrentUser(AppDefinition, Boolean)}.
+     */
+    static final String SESSION_ATTRIBUTE_USER_EDITABLE_APPS = "USER_EDITABLE_APPS";
+
+    /**
+     * Session attribute holding the username the {@link #SESSION_ATTRIBUTE_USER_EDITABLE_APPS} map
+     * was populated for.
+     */
+    static final String SESSION_ATTRIBUTE_USER_EDITABLE_APPS_USERNAME = "USER_EDITABLE_APPS_USERNAME";
+
+    /**
+     * Session attribute holding the {@link System#currentTimeMillis()} the
+     * {@link #SESSION_ATTRIBUTE_USER_EDITABLE_APPS} map was last (re)populated at.
+     */
+    static final String SESSION_ATTRIBUTE_USER_EDITABLE_APPS_TIME = "USER_EDITABLE_APPS_TIME";
+
+    /**
+     * System property to override, in milliseconds, how long
+     * {@link #isAppEditableByCurrentUser(AppDefinition, Boolean)} may keep honouring a memoized
+     * decision before re-evaluating the role/group assignments behind it. A value of 0 disables
+     * the memoization entirely.
+     */
+    public static final String SYSTEM_PROPERTY_USER_EDITABLE_APPS_CACHE_TTL = "wflow.userEditableApps.cacheTtl";
+
+    /**
+     * Default lifetime, in milliseconds, of a memoized "app editable by current user" decision.
+     * Deliberately short: the decision is derived from the app's "Delegate app designer" user and
+     * group assignments, so an unbounded per session cache leaves a user whose assignment was just
+     * revoked authorized for the remaining lifetime of their session. This bounds that staleness
+     * without giving up the memoization the design time UI relies on to avoid re-reading the
+     * assignments (and, for a group assignment, re-querying the directory) on every single check.
+     */
+    static final long DEFAULT_USER_EDITABLE_APPS_CACHE_TTL = 60000L;
 
     static ApplicationContext appContext;
     static ThreadLocal currentAssignment = new ThreadLocal();
@@ -686,6 +798,113 @@ public class AppUtil implements ApplicationContextAware {
      * @return
      */
     public static String processHashVariable(String content, WorkflowAssignment wfAssignment, String escapeFormat, Map<String, String> replaceMap, AppDefinition appDef, boolean decryptContent) {
+        return processHashVariable(content, wfAssignment, escapeFormat, replaceMap, appDef, decryptContent, null);
+    }
+
+    /**
+     * Returns the escape format that should be applied by default to the Hash Variables found in
+     * the value of a plugin property, based on the property key.
+     *
+     * Properties that are eventually handed to a script interpreter or concatenated into an SQL
+     * statement (eg. "script", "sql", "query", "extraCondition") get a safe default so that a
+     * value supplied by an end user cannot break out of the string literal it is placed in.
+     *
+     * The matching is intentionally strict (exact name, camel case suffix or snake_case suffix)
+     * because a loose "contains" match would also hit unrelated properties such as "description"
+     * (which contains "script") and "colorTextDescription".
+     *
+     * <p><b>Known limitation - the default escaping only protects a QUOTED literal.</b> Both
+     * formats make an end user value safe as a <i>string literal</i>; neither makes it inert as
+     * <i>code</i>. A Hash Variable interpolated <b>outside</b> a quoted string is not protected,
+     * because there is no literal for the value to break out of:
+     * <ul>
+     *   <li>an unquoted SQL comparison - {@code ... WHERE id = #requestParam.id#} - where
+     *       {@code 1 OR 1=1} needs no quote at all;</li>
+     *   <li>a bare BeanShell/Java expression - {@code if (#requestParam.n# &gt; 5) { ... }} - where
+     *       the substituted text is parsed as code.</li>
+     * </ul>
+     * Always write an end user Hash Variable inside quotes in a "script" or "sql" typed property,
+     * or bind it as a statement parameter. This limitation is in addition to the name-based
+     * coverage limitation above (a custom plugin with a differently named script/SQL property is
+     * not covered either).
+     *
+     * @param propertyKey the plugin property key
+     * @return StringUtil.TYPE_JAVA, StringUtil.TYPE_SQL or null when no default applies
+     */
+    public static String getPropertyDefaultHashEscapeFormat(String propertyKey) {
+        if (propertyKey == null || propertyKey.isEmpty() || !isHashVariableDefaultEscapeEnabled()) {
+            return null;
+        }
+        if ("script".equals(propertyKey) || propertyKey.endsWith("Script")) {
+            return StringUtil.TYPE_JAVA;
+        }
+        if ("sql".equals(propertyKey) || "query".equals(propertyKey) || "extraCondition".equals(propertyKey)
+                || propertyKey.endsWith("Sql") || propertyKey.endsWith("SQL")
+                || propertyKey.endsWith("Query") || propertyKey.endsWith("ExtraCondition")
+                //snake_case variants used by bundled plugins, eg. the JDBC Store Binder's
+                //check_sql / insert_sql / update_sql / delete_sql, which are handed straight to
+                //Connection.prepareStatement and match none of the camel case suffixes above
+                || propertyKey.toLowerCase().endsWith("_sql")
+                || propertyKey.toLowerCase().endsWith("_query")) {
+            return StringUtil.TYPE_SQL;
+        }
+        return null;
+    }
+
+    /**
+     * Whether the default escaping of Hash Variables in script &amp; SQL typed plugin properties is
+     * enabled for this deployment (see SYSTEM_PROPERTY_HASH_DEFAULT_ESCAPE). Public so that a
+     * caller which passes a hardcoded defaultHashFormat to processHashVariable - instead of
+     * deriving it from a property key through getPropertyDefaultHashEscapeFormat - can honour the
+     * same kill switch.
+     * @return
+     */
+    public static boolean isHashVariableDefaultEscapeEnabled() {
+        return !"false".equalsIgnoreCase(System.getProperty(SYSTEM_PROPERTY_HASH_DEFAULT_ESCAPE, "true"));
+    }
+
+    /**
+     * Checks whether the default escaping applies to the Hash Variable of the given prefix.
+     * @param prefix Hash Variable prefix, eg. "requestParam"
+     * @return
+     */
+    protected static boolean isDefaultEscapeApplicable(String prefix) {
+        if (prefix == null || prefix.isEmpty()) {
+            return false;
+        }
+        String config = System.getProperty(SYSTEM_PROPERTY_HASH_DEFAULT_ESCAPE_PREFIXES, DEFAULT_ESCAPE_PREFIXES);
+        EscapePrefixes cached = cachedEscapePrefixes;
+        if (cached == null || !config.equals(cached.config)) {
+            Set<String> prefixes = new HashSet<String>();
+            for (String p : config.split(",")) {
+                p = p.trim().toLowerCase();
+                if (!p.isEmpty()) {
+                    prefixes.add(p);
+                }
+            }
+            //the config and the set it was parsed from are published as one immutable value, so a
+            //concurrent reader can never pair one config with another config's prefix set
+            cached = new EscapePrefixes(config, prefixes);
+            cachedEscapePrefixes = cached;
+        }
+        return cached.prefixes.contains(prefix.toLowerCase());
+    }
+
+    /**
+     * Used to parses Hash Variables found in the content and replace it to the Hash
+     * Variable value
+     * @param content
+     * @param wfAssignment
+     * @param escapeFormat
+     * @param replaceMap
+     * @param appDef
+     * @param decryptContent
+     * @param defaultHashFormat escape format applied to a Hash Variable when the designer did not
+     *      specify an explicit "?format" suffix on it, and the Hash Variable prefix resolves to end
+     *      user supplied data. Use null to keep the legacy raw substitution.
+     * @return
+     */
+    public static String processHashVariable(String content, WorkflowAssignment wfAssignment, String escapeFormat, Map<String, String> replaceMap, AppDefinition appDef, boolean decryptContent, String defaultHashFormat) {
         if (content == null || content.isEmpty()) {
             return content;
         }
@@ -777,6 +996,15 @@ public class AppUtil implements ApplicationContextAware {
                                     hashVariablePluginCache.put(hashVariableClass, cachedPlugin);
                                 }
 
+                                //snapshot the "?format" suffix the designer actually wrote on this Hash
+                                //Variable, BEFORE the nested hash substitution below rewrites tempVar in
+                                //place. A nested expansion can be end user controlled (eg.
+                                //"#requestParam.{requestParam.inner}#" with inner="id?noescape"), so a
+                                //format that only appears AFTER substitution is data, not an explicit
+                                //opt-out, and must not be allowed to suppress the key-derived default
+                                //escaping below.
+                                String designerHashFormat = getExplicitHashFormat(tempVar);
+
                                 String nestedHashVar = tempVar;
 
                                 //process nested hash
@@ -817,11 +1045,24 @@ public class AppUtil implements ApplicationContextAware {
                                 try {
                                     String removeFormatVar = tempVar;
                                     String hashFormat = "";
+                                    boolean hasExplicitFormat = false;
                                     if (removeFormatVar.contains("?")) {
                                         int formatIdx = tempVar.lastIndexOf("?");
                                         hashFormat = tempVar.substring(formatIdx + 1);
                                         if (!hashFormat.contains("}") && isHashEscapeFormat(hashFormat)) {
                                             removeFormatVar = tempVar.substring(0, formatIdx);
+                                            //only an explicit "?noescape", or an explicit format that already
+                                            //provides the guarantee the property's default format exists for
+                                            //(eg. "?sql" or "?expression" on a "sql" property), may suppress
+                                            //the key-derived default below. A format such as "?html"/"?json"/
+                                            //"?url" leaves the value just as unsafe for SQL/script context as
+                                            //no format at all, so it must not disable the default escaping.
+                                            //...and only when that format is the one the designer wrote in
+                                            //the property itself (designerHashFormat), never one contributed
+                                            //by a nested Hash Variable expansion.
+                                            hasExplicitFormat = hashFormat.equals(designerHashFormat)
+                                                    && (HASH_NO_ESCAPE.equals(hashFormat)
+                                                        || formatSatisfiesDefault(hashFormat, defaultHashFormat));
                                         }
                                     }
 
@@ -836,6 +1077,14 @@ public class AppUtil implements ApplicationContextAware {
                                         if (requiredXssPrevention(hashFormat)){
                                             // clean to prevent XSS
                                             value = StringUtil.stripHtmlRelaxed(value);
+                                        }
+
+                                        //escape based on the context of the content (eg. a script or an SQL statement).
+                                        //skipped only for "?noescape" or an explicit format that already provides
+                                        //the same guarantee (see formatSatisfiesDefault); any other explicit
+                                        //format is chained BEFORE this default, not a substitute for it.
+                                        if (!hasExplicitFormat && defaultHashFormat != null && isDefaultEscapeApplicable(prefix)) {
+                                            value = StringUtil.escapeString(value, defaultHashFormat, null);
                                         }
 
                                         //escape based on api call
@@ -893,6 +1142,53 @@ public class AppUtil implements ApplicationContextAware {
                         }
                     }
                 }
+            }
+        }
+        return false;
+    }
+
+    /**
+     * Returns the explicit "?format" suffix written on the Hash Variable itself, or null when
+     * there is none. Called with the Hash Variable as the designer wrote it, ie. before any nested
+     * Hash Variable inside it has been expanded, so that a "?format" that only appears in the
+     * expanded text cannot be mistaken for an explicit opt-out chosen by the designer.
+     * @param hashVariable the Hash Variable without its leading prefix, eg. "q?noescape"
+     * @return the recognised escape format, or null
+     */
+    protected static String getExplicitHashFormat(String hashVariable) {
+        if (hashVariable == null || !hashVariable.contains("?")) {
+            return null;
+        }
+        String format = hashVariable.substring(hashVariable.lastIndexOf("?") + 1);
+        //same recognition rule as the caller: a "}" means the "?" belongs to an unexpanded nested
+        //Hash Variable, not to a format suffix
+        if (format.contains("}") || !isHashEscapeFormat(format)) {
+            return null;
+        }
+        return format;
+    }
+
+    /**
+     * Explicit hash-variable formats that already give the same safety guarantee as a given
+     * key-derived default format, and so may suppress it instead of being chained with it.
+     * Tests the guarantee, not the format's spelling: "?expression" doubles single quotes exactly
+     * like TYPE_SQL's own escaping, and "?javascript" escapes backslash/quote for a string literal
+     * exactly like TYPE_JAVA's own escaping.
+     */
+    private static final Map<String, Set<String>> HASH_FORMAT_SATISFIES = Collections.unmodifiableMap(
+            new HashMap<String, Set<String>>() {{
+                put(StringUtil.TYPE_SQL, new HashSet<String>(Arrays.asList(StringUtil.TYPE_SQL, StringUtil.TYPE_EXP)));
+                put(StringUtil.TYPE_JAVA, new HashSet<String>(Arrays.asList(StringUtil.TYPE_JAVA, StringUtil.TYPE_JAVASCIPT)));
+            }});
+
+    protected static boolean formatSatisfiesDefault(String hashFormat, String defaultHashFormat) {
+        Set<String> satisfying = HASH_FORMAT_SATISFIES.get(defaultHashFormat);
+        if (satisfying == null) {
+            return false;
+        }
+        for (String format : hashFormat.split(";")) {
+            if (satisfying.contains(format)) {
+                return true;
             }
         }
         return false;
@@ -2294,5 +2590,146 @@ public class AppUtil implements ApplicationContextAware {
         }
 
         return sb.toString();
+    }
+
+    /**
+     * Check the user can edit the app by user role. Either admin or app designer.
+     *
+     * <p>Note: unlike the 9.x line, 8.x's {@code AppDefinition} carries no "created by" owner
+     * field and {@code WorkflowUtil} has no {@code ROLE_APP_CREATOR}, so this backport only
+     * covers admin and the custom app designer ("Delegate app designer") role assignment.</p>
+     *
+     * @param appDef
+     * @return
+     */
+    public static boolean isAppEditableByCurrentUser(AppDefinition appDef) {
+        return isAppEditableByCurrentUser(appDef, WorkflowUtil.isCurrentUserInRole(WorkflowUtil.ROLE_ADMIN));
+    }
+
+    /**
+     * How long, in milliseconds, a memoized "app editable by current user" decision may be
+     * honoured. Read from {@link #SYSTEM_PROPERTY_USER_EDITABLE_APPS_CACHE_TTL} on every call so a
+     * deployment (or a test) can change it without a restart. Falls back to
+     * {@link #DEFAULT_USER_EDITABLE_APPS_CACHE_TTL} when unset or unparseable, and clamps a
+     * negative value to 0 (no memoization) rather than treating it as "never expires".
+     * @return
+     */
+    static long getUserEditableAppsCacheTtl() {
+        String config = System.getProperty(SYSTEM_PROPERTY_USER_EDITABLE_APPS_CACHE_TTL);
+        if (config != null && !config.trim().isEmpty()) {
+            try {
+                long ttl = Long.parseLong(config.trim());
+                return (ttl < 0) ? 0 : ttl;
+            } catch (NumberFormatException e) {
+                LogUtil.warn(AppUtil.class.getName(), "Invalid " + SYSTEM_PROPERTY_USER_EDITABLE_APPS_CACHE_TTL
+                        + " value \"" + config + "\", using the default of " + DEFAULT_USER_EDITABLE_APPS_CACHE_TTL + "ms");
+            }
+        }
+        return DEFAULT_USER_EDITABLE_APPS_CACHE_TTL;
+    }
+
+    /**
+     * True when a "app editable by current user" cache populated at cachedAt is no longer usable.
+     *
+     * <p>Fails closed - ie. reports expired - on anything it cannot make sense of: a missing or
+     * non-Long attribute (a session that predates this attribute, or was deserialized oddly), and
+     * a timestamp in the future (the wall clock moved backwards, so the real age is unknowable).
+     * A TTL of 0 always reports expired, which turns the memoization off.</p>
+     *
+     * @param cachedAt the raw session attribute value, may be null
+     * @param now
+     * @return
+     */
+    static boolean isUserEditableAppsCacheExpired(Object cachedAt, long now) {
+        if (!(cachedAt instanceof Long)) {
+            return true;
+        }
+        long populatedAt = (Long) cachedAt;
+        if (now < populatedAt) {
+            return true;
+        }
+        return (now - populatedAt) >= getUserEditableAppsCacheTtl();
+    }
+
+    /**
+     * Check the user can edit the app by user role. Either admin or app designer.
+     *
+     * <p>The decision is memoized per app in the caller's own HttpSession. The memoization is
+     * bounded by {@link #getUserEditableAppsCacheTtl()} - see
+     * {@link #SYSTEM_PROPERTY_USER_EDITABLE_APPS_CACHE_TTL} - because this method is also used as
+     * an authorization control on data returning APIs, where an unbounded per session cache would
+     * keep honouring a "Delegate app designer" assignment that has since been revoked.</p>
+     *
+     * @param appDef
+     * @return
+     */
+    public static boolean isAppEditableByCurrentUser(AppDefinition appDef, Boolean isAdmin) {
+        // get http session
+        HttpSession session = null;
+        HttpServletRequest request = WorkflowUtil.getHttpServletRequest();
+        if (request != null) {
+            session = request.getSession();
+        }
+        if (session != null) {
+            String username = WorkflowUtil.getCurrentUsername();
+
+            // get nonce map from session
+            Map<String, Boolean> editableAppMap = (Map)session.getAttribute(SESSION_ATTRIBUTE_USER_EDITABLE_APPS);
+            String cachedUser = (String) session.getAttribute(SESSION_ATTRIBUTE_USER_EDITABLE_APPS_USERNAME);
+            long now = System.currentTimeMillis();
+            if (editableAppMap == null || !username.equals(cachedUser)) {
+                editableAppMap = Collections.synchronizedMap(new LinkedHashMap<String, Boolean>());
+                session.setAttribute(SESSION_ATTRIBUTE_USER_EDITABLE_APPS, editableAppMap);
+                session.setAttribute(SESSION_ATTRIBUTE_USER_EDITABLE_APPS_USERNAME, username);
+                session.setAttribute(SESSION_ATTRIBUTE_USER_EDITABLE_APPS_TIME, now);
+            } else if (isUserEditableAppsCacheExpired(session.getAttribute(SESSION_ATTRIBUTE_USER_EDITABLE_APPS_TIME), now)) {
+                //the memoized decisions are derived from the app's "Delegate app designer" user and
+                //group assignments, and used to be discarded only when the session's username
+                //changed - so revoking an assignment left the user authorized for the rest of their
+                //session. Drop the whole map once it is older than the TTL and let the checks below
+                //re-evaluate the assignments, which bounds how long a revocation goes unnoticed
+                //while keeping the memoization for the burst of checks a single page render makes.
+                editableAppMap.clear();
+                session.setAttribute(SESSION_ATTRIBUTE_USER_EDITABLE_APPS_TIME, now);
+            }
+
+            if (editableAppMap.containsKey(appDef.getAppId())) {
+                return editableAppMap.get(appDef.getAppId());
+            } else {
+                Boolean result = false;
+                if (isAdmin) {
+                    result = true; //user is admin
+                } else {
+                    // check for custom app designer role assignments
+                    Collection<String> adminUserSet = new HashSet<>();
+                    Properties props = AppDevUtil.getAppDevProperties(appDef);
+                    String roleAdmin = props.getProperty(WorkflowUserManager.ROLE_ADMIN);
+                    String roleAdminGroup = props.getProperty(EnhancedWorkflowUserManager.ROLE_ADMIN_GROUP);
+                    if ((roleAdmin != null && !roleAdmin.isEmpty()) || (roleAdminGroup != null && !roleAdminGroup.isEmpty())) {
+                        String[] adminUsers = StringUtils.tokenizeToStringArray(roleAdmin, ";,", true, true);
+                        if (adminUsers != null && adminUsers.length > 0) {
+                            adminUserSet.addAll(Arrays.asList(adminUsers));
+                        }
+                        String[] adminGroups = StringUtils.tokenizeToStringArray(roleAdminGroup, ";,", true, true);
+                        if (adminGroups != null && adminGroups.length > 0) {
+                            UserDao userDao = (UserDao)AppUtil.getApplicationContext().getBean("userDao");
+                            for (String groupId: adminGroups) {
+                                Collection<User> groupUsers = userDao.getUsers(null, null, null, null, groupId, null, "1", null, null, null, null);
+                                for (User user: groupUsers) {
+                                    adminUserSet.add(user.getUsername());
+                                }
+                            }
+                        }
+                        result = adminUserSet.contains(username);
+                    }
+                }
+
+                editableAppMap.put(appDef.getAppId(), result);
+                session.setAttribute(SESSION_ATTRIBUTE_USER_EDITABLE_APPS, editableAppMap);
+
+                return result;
+            }
+        }
+        return false;
     }
 }
