@@ -24,4 +24,7 @@
 .numeric_field_control.numeric_field_control_decr {
     top: 15px;
 } 
+.numeric_field_controls.disabled {
+    display: none;
+}
 /* End of Numeric controls stylings */
