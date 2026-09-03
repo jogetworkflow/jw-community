@@ -3244,6 +3244,12 @@ th:hover {
     margin-left: 0px;
     margin-right: 0px;
 }
+.tfiowrapper .model-container span.label {
+    position: unset;
+    margin: 0px 0px;
+    transform: none;
+    width: 100%;
+}
 .tfiowrapper *:is(.inputs-container, .posts-container) input[type='checkbox'],
 .tfiowrapper .posts-container input[type='checkbox'] {
     width: fit-content !important;
