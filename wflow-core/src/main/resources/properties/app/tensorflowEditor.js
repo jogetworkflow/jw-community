@@ -154,7 +154,7 @@
         css += '.tfiowrapper a.deleteinput, .tfiowrapper a.deletepost {position: absolute; right: 5px; top: 5px;}';
         css += '.tfio-row .input-fields > div {margin-top:5px;}';
         css += '.tfio-row .input-fields label {display:inline-block; padding: 7px 0;}';
-        
+
         var html = '<div name="'+thisObj.id+'">';
         html += '<div class="tfio-container"></div><a class="pebutton tfbutton addset"><i class="fas fa-plus-circle"></i> @@app.simpletfai.addSession@@</a>';
         html += '<div class="tfio-post tfiowrapper pewrapper"><div class="tfio_header peheader">@@app.simpletfai.postprocessin@@</div><div class="posts-container">';
@@ -338,7 +338,7 @@
     addSet : function() {
         var thisObj = this;
         
-        var ioset = $('<div class="tfio-ioset tfiowrapper pewrapper"><div class="tfio_header peheader">@@app.simpletfai.model@@ <span class="buttons"><a class="deleteset" title="@@app.simpletfai.deleteSet@@"><i class="fas fa-trash-alt"></i></a></span></div><div class="model-container"></div><div class="tfio_header peheader">@@app.simpletfai.inputs@@</div><div class="inputs-container"></div><div class="tfio_header peheader">@@app.simpletfai.outputs@@</div><div class="outputs-container"></div></div>');
+        var ioset = $('<div class="tfio-ioset tfiowrapper pewrapper"><div class="tfio_header peheader">@@app.simpletfai.model@@<span class="property-required">*</span> <span class="buttons"><a class="deleteset" title="@@app.simpletfai.deleteSet@@"><i class="fas fa-trash-alt"></i></a></span></div><div class="model-container"></div><div class="tfio_header peheader">@@app.simpletfai.inputs@@<span class="property-required">*</span></div><div class="inputs-container"></div><div class="tfio_header peheader">@@app.simpletfai.outputs@@<span class="property-required">*</span></div><div class="outputs-container"></div></div>');
         thisObj.initModel($(ioset));
         thisObj.initInputs($(ioset));
         thisObj.initOutputs($(ioset));
@@ -346,7 +346,7 @@
     },
     initModel : function(ioset) {
         var thisObj = this;
-        $(ioset).find(".model-container").append('<input class="input_model half required" placeholder="@@app.simpletfai.model@@"/> <a class="choosefile btn button small">@@peditor.chooseFile@@</a> <a class="clearfile btn button small">@@peditor.clear@@</a></div>');
+        $(ioset).find(".model-container").append('<input class="input_model half required" placeholder="@@app.simpletfai.model@@*"/><span class="label">@@app.simpletfai.model@@*</span> <a class="choosefile btn button small">@@peditor.chooseFile@@</a> <a class="clearfile btn button small">@@peditor.clear@@</a></div>');
     },
     initInputs : function(ioset) {
         var thisObj = this;
