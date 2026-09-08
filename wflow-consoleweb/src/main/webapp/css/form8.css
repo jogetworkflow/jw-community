@@ -731,8 +731,15 @@ body.rtl .selector_element .selector_items {
 }
 
 /* grid */
-.grid table {
+.grid {
     width: 100%;
+}
+.grid > .grid-scroll {
+    overflow-x: auto;
+    width: 100%;
+}
+.grid:not(.adgrid) table {
+    min-width: 100%;
 }
 .grid table td{
     vertical-align: top;
@@ -839,10 +846,6 @@ body.rtl .selector_element .selector_items {
 }
 .grid table tr.pg-tr-hide {
     display:none;
-}
-.grid table + .pg-navigator + .grid-action-add {
-    position: absolute;
-    bottom: 0px;
 }
 @media screen and (max-width: 39.9375em) {
     .grid table tr.grid-row{
