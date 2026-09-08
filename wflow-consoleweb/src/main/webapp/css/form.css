@@ -551,8 +551,15 @@ ul.form-fileupload-value li .remove {color:#EA5858; display:inline-block; margin
 ul.form-fileupload-value li a {display: inline-block;}
 
 /* grid */
-.cgrid table {
+.grid {
     width: 100%;
+}
+.grid > .grid-scroll {
+    overflow-x: auto;
+    width: 100%;
+}
+.cgrid table {
+    min-width: 100%;
 }
 .grid td {
     vertical-align: top;

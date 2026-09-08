@@ -13,10 +13,16 @@ div:has(.grid) label.label {
 
 .grid {
     color: var(--jgt-grid-colorText);
+    width: 100%;
 }
 
-.grid table {
+.grid > .grid-scroll {
+    overflow-x: auto;
     width: 100%;
+}
+
+.grid:not(.adgrid) table {
+    min-width: 100%;
 }
 
 .grid table td {
@@ -164,10 +170,5 @@ div:has(.grid) label.label {
 
 .grid table tr.pg-tr-hide {
     display: none;
-}
-
-.grid table+.pg-navigator+.grid-action-add {
-    position: absolute;
-    bottom: 0px;
 }
 /* End of Form Grid Stylings */
