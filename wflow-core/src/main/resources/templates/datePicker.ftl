@@ -68,6 +68,68 @@
         $("#${elementParamName!}_${element.properties.elementUniqueKey!}").off('focus').on('focus', function(){
             $(this).siblings('.trigger').trigger('click');
         });
+        <#if element.properties.datePickerType! != 'dateTime' && element.properties.datePickerType! != 'utcdateTime' && element.properties.datePickerType! != 'timeOnly'>
+        
+        var form_${element.properties.elementUniqueKey!} = $("#${elementParamName!}_${element.properties.elementUniqueKey!}").closest("form")[0];
+        
+        form_${element.properties.elementUniqueKey!}.addEventListener("submit", function(event) {
+            var element = $("#${elementParamName!}_${element.properties.elementUniqueKey!}");
+            var value = $(element).val();
+
+            var settings = {
+                shortYearCutoff: $(element).datepicker(
+                    "option",
+                    "shortYearCutoff"
+                )
+            };
+
+            var dateFormat = $(element).datepicker(
+                                "option",
+                                "dateFormat"
+                            );
+
+            var valid = matchesDateFormat(
+                value,
+                dateFormat,
+                settings
+            );
+
+            if (value && !valid) {
+                event.preventDefault();
+                event.stopImmediatePropagation();
+
+                if ($.unblockUI) {
+                    $.unblockUI();
+                }
+
+                UI.alert("@@form.datepicker.invalidFormat@@", {icon: "error"});
+
+                $(element).focus();
+
+                return false;
+            }
+        }, true)
+
+        function matchesDateFormat(value, dateFormat, settings) {
+            try {
+                var date = $.datepicker.parseDate(
+                    dateFormat,
+                    value,
+                    settings
+                );
+
+                var normalizedValue = $.datepicker.formatDate(
+                    dateFormat,
+                    date,
+                    settings
+                );
+
+                return normalizedValue === value;
+            } catch (error) {
+                return false;
+            }
+        }
+        </#if>
 
         $(window).on("resize orientationchange", function(){
             $("#${elementParamName!}_${element.properties.elementUniqueKey!}").datepicker("hide");
