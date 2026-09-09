@@ -49,6 +49,47 @@ public class DirectoryManagerProxyImpl implements ExtDirectoryManager {
 
     public void setDefaultDirectoryManagerImpl(ExtDirectoryManager defaultDirectoryManagerImpl) {
         this.defaultDirectoryManagerImpl = defaultDirectoryManagerImpl;
+        // The injected bean is wrapped by a transactional advisor proxy
+        // (directoryApplicationContext.xml), so defaultDirectoryManagerImpl here is the PROXY, not
+        // the real DirectoryManagerImpl. MultiTenantPluginAspect's execution() advice on
+        // DirectoryManagerImpl.setUserDao/setRoleDao is woven into the real target's own method
+        // body and fires with the REAL target as pjp.getTarget(), so we must register the
+        // unwrapped target rather than the proxy for the guard's identity check to match.
+        // Registering the proxy's identity would leave the real target unprotected: a script could
+        // unwrap the proxy via Spring's public Advised.getTargetSource().getTarget() (not blocked
+        // by BshReflectionGuardAspect) and call the setter directly on the unregistered real target.
+        Object toRegister = defaultDirectoryManagerImpl;
+        if (toRegister instanceof org.springframework.aop.framework.Advised) {
+            try {
+                Object target = ((org.springframework.aop.framework.Advised) toRegister)
+                        .getTargetSource().getTarget();
+                if (target != null) {
+                    toRegister = target;
+                } else {
+                    // If getTarget() returns null, falling through to register the PROXY would
+                    // silently defeat the setUserDao/setRoleDao guard (it can never match a proxy
+                    // identity, per the comment above) with no indication anything went wrong.
+                    // Fail closed instead: log at ERROR and register nothing.
+                    LogUtil.error(getClass().getName(), null,
+                            "defaultDirectoryManagerImpl's Advised proxy returned a null target -- "
+                            + "DirectoryManagerImpl.setUserDao/setRoleDao will NOT be protected by "
+                            + "identity for this delegate. This is a real problem, not a diagnostic.");
+                    toRegister = null;
+                }
+            } catch (Exception e) {
+                // Same reasoning as the null-target branch above: registering the still-wrapped
+                // proxy here would silently leave the real target unprotected while looking like
+                // registration succeeded. Fail closed -- log at ERROR and register nothing.
+                LogUtil.error(getClass().getName(), e,
+                        "Failed to unwrap proxied defaultDirectoryManagerImpl -- "
+                        + "DirectoryManagerImpl.setUserDao/setRoleDao will NOT be protected by "
+                        + "identity for this delegate. This is a real problem, not a diagnostic.");
+                toRegister = null;
+            }
+        }
+        if (toRegister != null) {
+            org.joget.commons.util.ManagedDelegateRegistry.register(toRegister);
+        }
     }
 
     public String getCustomDirectoryManagerClassName() {

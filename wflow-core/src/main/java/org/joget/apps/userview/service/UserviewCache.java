@@ -30,16 +30,37 @@ public class UserviewCache {
             WorkflowUserManager workflowUserManager = (WorkflowUserManager) AppUtil.getApplicationContext().getBean("workflowUserManager");
             scope = (CACHE_SCOPE_APPLICATION.equals(scope)) ? CACHE_SCOPE_APPLICATION : workflowUserManager.getCurrentUsername();
             String prefix = CACHE_KEY_PREFIX + ":" + userviewId + ":" + menuId + ":" + scope + ":";
-            for (Iterator i=cache.iterator(); i.hasNext();) {
-                Cache.Entry entry = (Cache.Entry)i.next();
-                if (entry != null) {
-                    String key = entry.getKey().toString();
-                    if (key.startsWith(prefix)) {
-                        i.remove();
-                        if (LogUtil.isDebugEnabled(UserviewCache.class.getName())) {    
-                            LogUtil.debug(UserviewCache.class.getName(), "clearCachedContent: " + key);
+            try {
+                for (Iterator i=cache.iterator(); i.hasNext();) {
+                    Cache.Entry entry = (Cache.Entry)i.next();
+                    if (entry != null) {
+                        String key = entry.getKey().toString();
+                        if (key.startsWith(prefix)) {
+                            i.remove();
+                            if (LogUtil.isDebugEnabled(UserviewCache.class.getName())) {
+                                LogUtil.debug(UserviewCache.class.getName(), "clearCachedContent: " + key);
+                            }
                         }
                     }
+                }
+            } catch (SecurityException e) {
+                // cache.iterator() enumerates every key across every tenant, so
+                // MultiTenantPluginAspect blocks it outright for a restricted (OSGi/BeanShell)
+                // caller -- there's no "own key" an enumeration could be scoped to. A non-admin
+                // tenant's own userview content (rendered by an OSGi-loaded menu/form/formatter
+                // plugin) is the normal case here, not an attack, so failing to clear just leaves
+                // this menu's cached content until its TTL expires or a trusted caller clears it --
+                // stale content, not new cross-tenant exposure -- so this degrades instead of
+                // turning an ordinary content update into an uncaught 500. Logged at DEBUG rather
+                // than WARN because, unlike AppWorkflowHelper.removeReplacementUsers(..) (which
+                // guards a stale authorization input), this is plain rendered content and this
+                // path fires on every ordinary restricted-caller request, so WARN would flood the
+                // log for the expected case.
+                if (LogUtil.isDebugEnabled(UserviewCache.class.getName())) {
+                    LogUtil.debug(UserviewCache.class.getName(), "clearCachedContent: could not enumerate "
+                            + "org.joget.cache.USERVIEW_CACHE for prefix " + prefix + " from a restricted "
+                            + "caller context -- cached content for this menu may be stale until it "
+                            + "expires: " + e.getMessage());
                 }
             }
         }

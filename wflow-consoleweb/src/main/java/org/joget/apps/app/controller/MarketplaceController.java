@@ -145,11 +145,11 @@ public class MarketplaceController {
 
             if (httpResponse.getStatusLine().getStatusCode() == HttpServletResponse.SC_OK) {
                 String filename = "";
-                //get all headers		
+                //get all headers
                 Header[] headers = httpResponse.getAllHeaders();
                 for (Header header : headers) {
                     if ("Content-Disposition".equalsIgnoreCase(header.getName())) {
-                        filename = header.getValue().substring(header.getValue().indexOf("filename=") + 9);
+                        filename = extractContentDispositionFilename(header.getValue());
                         break;
                     }
                 }
@@ -291,6 +291,44 @@ public class MarketplaceController {
         }
     }    
     
+    /**
+     * Extracts the {@code filename=} value from a {@code Content-Disposition} header, replacing
+     * a naive {@code indexOf(..) + 9} substring that had two real bugs. (1) It crashed with
+     * {@code StringIndexOutOfBoundsException} whenever the
+     * header had no {@code filename=} token at all (e.g. {@code "inline"}) -- {@code indexOf}
+     * returns -1, and {@code substring(-1 + 9)} on a shorter string throws. (2) It never stripped
+     * surrounding quotes or trailing parameters, so a standard, common {@code Content-Disposition:
+     * attachment; filename="plugin.jar"} response (RFC 6266's own quoted form) produced {@code
+     * "\"plugin.jar\""} -- which never satisfies {@code filename.endsWith(".jar")} below, silently
+     * routing what should have been a plugin install into the app-import branch instead, where it
+     * would fail as an invalid app package.
+     *
+     * <p>The extracted filename still passes through {@code PluginManager.upload(..)}'s own
+     * {@code SecurityUtil.normalizedFileName(..)} call and its containment check unmodified by this
+     * method -- this only fixes what value reaches that point, not the security boundary itself,
+     * which upload(..) already enforces uniformly for every caller.
+     */
+    protected static String extractContentDispositionFilename(String headerValue) {
+        if (headerValue == null) {
+            return "";
+        }
+        int idx = headerValue.indexOf("filename=");
+        if (idx < 0) {
+            return "";
+        }
+        String value = headerValue.substring(idx + "filename=".length()).trim();
+        if (value.startsWith("\"")) {
+            int closingQuote = value.indexOf('"', 1);
+            value = (closingQuote >= 0) ? value.substring(1, closingQuote) : value.substring(1);
+        } else {
+            int semicolon = value.indexOf(';');
+            if (semicolon >= 0) {
+                value = value.substring(0, semicolon);
+            }
+        }
+        return value.trim();
+    }
+
     protected boolean validateTrustedUrl(String url) {
         boolean trusted = false;
         String trustedUrlsKey = "appCenter.link.marketplace.trusted";

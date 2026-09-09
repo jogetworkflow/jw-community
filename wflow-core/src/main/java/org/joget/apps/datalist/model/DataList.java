@@ -792,11 +792,43 @@ public class DataList {
         if (binder instanceof StaleCacheDataListBinder && ((StaleCacheDataListBinder) binder).shouldCacheRowCount()) {
             Object[] binderHashParams = ((StaleCacheDataListBinder) binder).getAdditionalStaleCacheKeyParams();
             String binderHash = DataListUtil.getStaleCacheKey(appDef, binder, new Object[]{binderHashParams, filterQueryObjects});
-            final String cacheKey = "Profile::" + DynamicDataSourceManager.getCurrentProfile() + "(" + binderHash + ")";
+            // The previous "Profile::" + profile + "(" + hash + ")" format put the same literal
+            // prefix on every tenant's key with the actual profile name embedded after it, so a
+            // guard checking "does this key start with the caller's own profile" could never
+            // recognize ownership. ProfileScopedCacheKey puts the profile first instead and
+            // registers this cache's KeyScope to match (see PlatformCacheRegistrar). It returns
+            // null only when the current profile cannot be safely scoped; treat that the same as
+            // "no binder cache available" below rather than falling back to an unscoped key.
+            final String cacheKey = ProfileScopedCacheKey.forCurrentProfile("(" + binderHash + ")");
+            if (cacheKey == null) {
+                rowCount = getCountLambda.get();
+                return rowCount;
+            }
 
-            final Cache cache = AppUtil.getCache("org.joget.cache.ROW_COUNT_CACHE");
+            // org.joget.cache.ROW_COUNT_CACHE has no registered Spring bean here, so
+            // AppUtil.getCache(..) falls through to a raw CacheManager.getCache(..) fetch, which
+            // is unconditionally guarded (managedCacheManagerGuardCheck, cloud-wfengine) against
+            // any restricted (OSGi-plugin-in-the-call-stack) caller, independent of any KeyScope.
+            // A StaleCacheDataListBinder rendered under a non-admin tenant's own OSGi-loaded
+            // binder/formatter is the ordinary case, not an attack, so this degrades to computing
+            // the row count uncached rather than letting an uncaught SecurityException turn an
+            // ordinary datalist load into a 500 -- the same trade-off used for the cache calls
+            // elsewhere in this change.
+            Cache cache;
+            try {
+                cache = AppUtil.getCache("org.joget.cache.ROW_COUNT_CACHE");
+            } catch (SecurityException e) {
+                rowCount = getCountLambda.get();
+                return rowCount;
+            }
             final Long elemTtl = (long) ((StaleCacheDataListBinder) binder).getCacheTtl();
-            DynamicCacheElement cachedElem = (DynamicCacheElement) cache.get(cacheKey);
+            DynamicCacheElement cachedElem;
+            try {
+                cachedElem = (DynamicCacheElement) cache.get(cacheKey);
+            } catch (SecurityException e) {
+                rowCount = getCountLambda.get();
+                return rowCount;
+            }
 
             // 1. Run rowCountLambda in a PluginThread.
             // 2. Add the CountDownLatch into a ConcurrentHashMap to keep track of cacheKey -> latch

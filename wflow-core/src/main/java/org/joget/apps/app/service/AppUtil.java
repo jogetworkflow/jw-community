@@ -82,6 +82,7 @@ import org.joget.commons.util.DistributedIdGenerator;
 import org.joget.commons.util.FileLimitException;
 import org.joget.commons.util.FileStore;
 import org.joget.commons.util.LogUtil;
+import org.joget.commons.util.PlatformCacheRegistrar;
 import org.joget.commons.util.ResourceBundleUtil;
 import org.joget.commons.util.SecurityUtil;
 import org.joget.commons.util.SetupDao;
@@ -1166,7 +1167,22 @@ public class AppUtil implements ApplicationContextAware {
         return content;
     }
     
+    // A direct CacheManager.getCache(name) fetch (the fallback below) returns the raw JSR-107
+    // provider cache object, not the PlatformCacheRegistrar-registered, MultiTenantPluginAspect-
+    // guarded net.sf.ehcache.Cache wrapper bean -- two different Java objects backed by the same
+    // underlying data. The security guards are woven onto the wrapper's own put/get/remove method
+    // bodies, so calling those same method names on the raw provider object dispatches to
+    // unadvised provider bytecode instead, leaving every guard silently unreachable.
+    // PlatformCacheRegistrar.getRegisteredCache(String) must be keyed by the ehcache.xml alias
+    // (cache.getName(), e.g. "org.joget.cache.CSS_CACHE") rather than the Spring bean id ("cssCache")
+    // -- every real call site here passes the alias, not the bean id -- so this returns the same
+    // registered, guarded instance those callers expect, without changing the data or the return
+    // type (net.sf.ehcache.Cache already implements the javax.cache.Cache this method declares).
     public static Cache getCache(String cacheName) {
+        Cache registered = PlatformCacheRegistrar.getRegisteredCache(cacheName);
+        if (registered != null) {
+            return registered;
+        }
         Cache cache = ((CacheManager)AppUtil.getApplicationContext().getBean("cacheManager")).getCache(cacheName);
         return cache;
     }
@@ -1800,7 +1816,7 @@ public class AppUtil implements ApplicationContextAware {
 
     public static void emailAttachment(Map properties, WorkflowAssignment wfAssignment, AppDefinition appDef, final HtmlEmail email) {
         //handle file attachment
-        System.setProperty("mail.mime.encodeparameters", "false");
+        allowMailMimeEncodeParametersProperty();
         String formDefId = (String) properties.get("formDefId");
         Object[] fields = null;
         if (properties.get("fields") instanceof Object[]){
@@ -1909,7 +1925,25 @@ public class AppUtil implements ApplicationContextAware {
         }
         attachIcal(email, properties, wfAssignment, appDef);
     }
-    
+
+    /**
+     * Callback-free: sets the property and returns immediately, never invoking any plugin or
+     * hash-variable code. Kept separate from emailAttachment/attachIcal so that a security-manager
+     * whitelist entry for it cannot be walked past into unrelated, untrusted code further down
+     * either caller's own body (both call into tenant-supplied HashVariablePlugins later).
+     */
+    private static void allowMailMimeEncodeParametersProperty() {
+        System.setProperty("mail.mime.encodeparameters", "false");
+    }
+
+    /**
+     * Callback-free counterpart to {@link #allowMailMimeEncodeParametersProperty()} for
+     * attachIcal's ical4j timezone-cache property.
+     */
+    private static void configureIcal4jTimezoneCache() {
+        System.setProperty("net.fortuna.ical4j.timezone.cache.impl", MapTimeZoneCache.class.getName());
+    }
+
     /**
      * Gets the retry count configuration for email sending.
      * @param retryCountStr The number of retry attempts for failed email sending.
@@ -1989,7 +2023,7 @@ public class AppUtil implements ApplicationContextAware {
     protected static void attachIcal(final HtmlEmail email, Map properties, WorkflowAssignment wfAssignment, AppDefinition appDef) {
         try {
             if ("true".equalsIgnoreCase((String) properties.get("icsAttachement"))) {
-                System.setProperty("net.fortuna.ical4j.timezone.cache.impl", MapTimeZoneCache.class.getName());
+                configureIcal4jTimezoneCache();
 
                 Calendar calendar = new Calendar();
                 calendar.getProperties().add(Version.VERSION_2_0);

@@ -44,7 +44,19 @@ public class AuthenticationTokenWrapper implements Authentication {
     public static final String HOST_SESSION_SIGNING_KEY_PROPERTY = "hostSessionSigningKey";
     public static final String SESSION_FILE = "app_session.properties";
     private static final String HOST_SESSION_SIGNING_KEY_ALGORITHM = "HmacSHA256";
-    private static final String HOST_SESSION_BINDING_VERSION = "v1";
+    // Each bump is deliberate, not incidental: "v1" -> "v2" added authorities to what this MAC
+    // covers; "v2" -> "v3" added a canonical form of getDetails() (see canonicalizeDetails(..)'s
+    // own comment for the concrete gap this closed -- WorkflowUserManager reads identity/roles
+    // from getDetails() in preference to getAuthorities(), which "v2" alone left uncovered);
+    // "v3" -> "v4" closed three more shapes canonicalizeDetails(..) still didn't recognize;
+    // "v4" -> "v5" closed a gap "v4" itself introduced in its own ExtUserDetails branch (covered
+    // getUser().getRoles() but not getAuthorities(), which is what getCurrentRoles() actually
+    // reads for that shape -- see canonicalizeDetails(..)'s own comment). A session signed under
+    // an older version recomputes its expected signature with the CURRENT version in the version
+    // byte, which can never match a signature computed under an older one, so every pre-upgrade
+    // session fails closed (forces re-login) instead of being silently accepted as if it had
+    // already been checked under the newer scheme.
+    private static final String HOST_SESSION_BINDING_VERSION = "v5";
     private static final SecureRandom SECURE_RANDOM = new SecureRandom();
     private static final StackWalker SIGNED_SESSION_STACK_WALKER = StackWalker.getInstance(StackWalker.Option.RETAIN_CLASS_REFERENCE);
     // SHOW_REFLECT_FRAMES is required so that reflection-based attacks (Method.invoke) are visible
@@ -109,8 +121,7 @@ public class AuthenticationTokenWrapper implements Authentication {
         }
         if (auth instanceof AuthenticationTokenWrapper) {
             AuthenticationTokenWrapper wrapper = (AuthenticationTokenWrapper) auth;
-            String name = getAuthenticationName(auth);
-            if (isValidSignedBinding(wrapper.getLoginHost(), wrapper.loginHostSignature, name)) {
+            if (isValidSignedBinding(wrapper.getLoginHost(), wrapper.loginHostSignature, wrapper.authentication)) {
                 this.loginHost = wrapper.getLoginHost();
                 this.loginHostSignature = wrapper.loginHostSignature;
                 return;
@@ -118,13 +129,20 @@ public class AuthenticationTokenWrapper implements Authentication {
             // Invalid wrapper: treat like a non-wrapper — re-signing requires a trusted caller.
         }
         requireTrustedSignedSessionCreationCaller();
-        String name = getAuthenticationName(auth);
         this.loginHost = resolveLoginHost();
-        this.loginHostSignature = signLoginHost(this.loginHost, name);
+        this.loginHostSignature = signLoginHost(this.loginHost, auth);
     }
 
     private AuthenticationTokenWrapper(Authentication auth, String loginHost, String loginHostSignature) {
         requireSignedSessionInternalCaller("restore signed host session binding");
+        // This is the constructor SerializationProxy.readResolve() actually calls -- the outer
+        // class's own readObject(..) below never runs for a normal deserialization, since
+        // writeReplace() unconditionally substitutes the proxy, so a signature check placed only
+        // there would be dead code. Verifying HERE means an untrusted stream is rejected as soon
+        // as the wrapper is reconstructed, rather than relying on a later validateHost(..) call.
+        if (!isValidSignedBinding(loginHost, loginHostSignature, auth)) {
+            throw new SecurityException("Invalid signed host session binding");
+        }
         this.authentication = auth;
         this.loginHost = loginHost;
         this.loginHostSignature = loginHostSignature;
@@ -212,21 +230,78 @@ public class AuthenticationTokenWrapper implements Authentication {
         return isValidSignedBinding(loginHost, loginHostSignature, authentication);
     }
 
+    /**
+     * Reports whether this token carries a host-session binding that verifies against the server's
+     * signing key -- i.e. whether it is the product of a real, credential-verifying login rather
+     * than something assembled by a caller.
+     *
+     * <p>This is a provenance statement, and it is stronger than it may look. The public
+     * constructor calls {@code requireTrustedSignedSessionCreationCaller()} whenever virtual
+     * hosting is on, so BeanShell and OSGI bundle code cannot construct a signed wrapper at all,
+     * and {@code signLoginHost(..)} is unreachable from outside this class, so the
+     * signature cannot be forged either. A token that answers {@code true} here therefore came
+     * from a trusted creator such as {@code WorkflowAuthenticationProvider}, whatever code is
+     * currently holding it. Callers that must decide whether to trust an {@link Authentication}
+     * they were handed can use that instead of guessing from the identity of their caller.
+     *
+     * <p>Returns {@code true} unconditionally when virtual hosting is disabled, matching the rest
+     * of this class: host-session binding only exists in a multi-tenant deployment.
+     *
+     * <p>Final on purpose -- this class is not final, and a subclass that could override this
+     * would be able to assert a provenance it does not have. {@link #getLoginHost()} is final for
+     * the same reason.
+     *
+     * @return true if the signed host-session binding verifies, or virtual hosting is off
+     */
+    public final boolean isGenuinelySignedSession() {
+        return hasValidSignedBinding();
+    }
+
+    /**
+     * Convenience form of {@link #isGenuinelySignedSession()} for callers holding a plain
+     * {@link Authentication}: true only when the given object is an
+     * {@code AuthenticationTokenWrapper} whose signed host-session binding verifies. Null-safe,
+     * and false for any bare or self-assembled token.
+     *
+     * <p>The concrete class must also come from this class's own classloader. This class is not
+     * final, and while a subclass cannot get itself constructed from BeanShell or an OSGI bundle
+     * (see the constructor), a subclass CAN override the un-final parts of the
+     * {@link Authentication} contract -- {@code getPrincipal()} in particular, which the binding
+     * is not computed over. {@code getName()} and {@code getAuthorities()} ARE covered (see
+     * {@link #signLoginHost(String, Authentication)}'s own comment for why authorities needed to
+     * be added). Requiring the same classloader keeps any script- or bundle-defined subclass out
+     * of this answer regardless. The only in-tree subclass,
+     * {@code LicenseAutheticationTokenWrapper}, ships in the same WAR and so shares this
+     * classloader.
+     *
+     * @param authentication the authentication to test, may be null
+     * @return true if the authentication provably originated from a trusted login
+     */
+    public static boolean isTrustedAuthentication(Authentication authentication) {
+        return authentication instanceof AuthenticationTokenWrapper
+                && authentication.getClass().getClassLoader() == AuthenticationTokenWrapper.class.getClassLoader()
+                && ((AuthenticationTokenWrapper) authentication).isGenuinelySignedSession();
+    }
+
     private static boolean isValidSignedBinding(String loginHost, String signature, Authentication auth) {
         if (!HostManager.isVirtualHostEnabled()) {
             return true;
         }
+        // Unwrapped HERE, at the method boundary, rather than trusting every caller to have done
+        // it already -- see unwrapRaw(..)'s own javadoc for why signing/verifying against a
+        // (possibly invalidly-signed) wrapper directly, instead of the raw inner Authentication it
+        // wraps, would be wrong. this.authentication (what hasValidSignedBinding()/readObject(..)
+        // pass in here) is set unconditionally in the constructor before the wrapper-validity
+        // check runs, so it CAN itself be a wrapper in the "invalid nested wrapper" fallthrough
+        // case -- defense in depth, not a redundant safety net.
+        auth = unwrapRaw(auth);
         if (auth == null) {
             return false;
         }
-        return isValidSignedBinding(loginHost, signature, getAuthenticationName(auth));
-    }
-
-    private static boolean isValidSignedBinding(String loginHost, String signature, String name) {
         if (isBlank(loginHost) || isBlank(signature)) {
             return false;
         }
-        String expected = signLoginHost(loginHost, name);
+        String expected = signLoginHost(loginHost, auth);
         if (isBlank(expected)) {
             return false;
         }
@@ -235,15 +310,207 @@ public class AuthenticationTokenWrapper implements Authentication {
         return MessageDigest.isEqual(supplied, calculated);
     }
 
+    /**
+     * Unwraps to the innermost, non-{@code AuthenticationTokenWrapper} {@link Authentication} --
+     * the object whose {@code getName()}/{@code getAuthorities()} this class actually signs and
+     * verifies against. Signing/verifying against {@code auth} directly when it might itself be a
+     * (possibly invalidly-signed) wrapper would instead cover THIS class's own {@link
+     * #getAuthorities()} override, which injects synthetic roles (sysadmin/app-admin) derived from
+     * OTHER, separately-mutable server state ({@code EnhancedWorkflowUserManager}) -- signing that
+     * would make the signature unstable across calls (a legitimately-signed token could start
+     * failing verification later purely because that unrelated state changed), not just wrong in
+     * principle. Terminates on a non-wrapper (including {@code null}), so it cannot loop forever
+     * even if wrapping were ever nested more than one level deep.
+     */
+    private static Authentication unwrapRaw(Authentication auth) {
+        while (auth instanceof AuthenticationTokenWrapper) {
+            auth = ((AuthenticationTokenWrapper) auth).authentication;
+        }
+        return auth;
+    }
+
+    /**
+     * A canonical, deterministic string form of {@code auth}'s authorities -- sorted (so the same
+     * conceptual authority SET always produces the same signature input regardless of the wrapped
+     * {@code Authentication} implementation's own iteration order) and joined with a delimiter no
+     * legal Spring Security authority string contains on its own (each entry is additionally
+     * length-prefixed below to remove any ambiguity from a delimiter appearing inside an
+     * authority string regardless).
+     *
+     * <p>{@code auth} is expected to already be the result of {@link #unwrapRaw(Authentication)}
+     * -- this method does not unwrap itself, so a caller that passes a wrapper here would sign
+     * that wrapper's own derived authorities instead, exactly the mistake {@link
+     * #unwrapRaw(Authentication)}'s own javadoc explains.
+     */
+    private static String canonicalizeAuthorities(Authentication auth) {
+        if (auth == null) {
+            return "";
+        }
+        return canonicalizeGrantedAuthorities(auth.getAuthorities());
+    }
+
+    /**
+     * Shared by {@link #canonicalizeAuthorities(Authentication)} and
+     * {@link #canonicalizeDetails(Authentication)} so an authorities collection read from either
+     * {@code auth.getAuthorities()} or a {@code getDetails()} object is canonicalized the same
+     * collision-free way, rather than two independently-written (and possibly divergent) encodings.
+     */
+    private static String canonicalizeGrantedAuthorities(Collection<? extends GrantedAuthority> authorities) {
+        if (authorities == null) {
+            return "";
+        }
+        java.util.List<String> names = new ArrayList<>();
+        for (GrantedAuthority ga : authorities) {
+            if (ga != null && ga.getAuthority() != null) {
+                names.add(ga.getAuthority());
+            }
+        }
+        java.util.Collections.sort(names);
+        StringBuilder sb = new StringBuilder();
+        for (String n : names) {
+            sb.append(n.length()).append(':').append(n).append(';');
+        }
+        return sb.toString();
+    }
+
+    /**
+     * Canonicalizes {@code auth.getDetails()} (falling back to {@code getPrincipal()} when
+     * details is null) into the MAC input. This exists because {@code
+     * WorkflowUserManager.getCurrentUser()}/{@code getCurrentRoles()} -- the ACTUAL identity/role
+     * source the rest of the application reads -- prefer {@code auth.getDetails()} over {@code
+     * auth.getAuthorities()} whenever {@code getDetails()} is a {@link
+     * org.springframework.security.core.userdetails.UserDetails}. Without this, an attacker
+     * holding a legitimately-signed low-privilege session could leave {@code
+     * getName()}/{@code getAuthorities()} untouched -- keeping the signature valid -- while
+     * tampering the serialized {@code details} object's embedded username/authorities, and every
+     * caller that resolves identity/roles through {@code WorkflowUserManager} (the overwhelming
+     * majority of the application) would use the forged values instead.
+     *
+     * <p>Mirrors {@code WorkflowUserManager.getCurrentUser()}/{@code getCurrentRoles()}'s own
+     * {@code instanceof} handling of {@code getDetails()} deliberately -- what gets signed must be
+     * exactly what authorization actually reads, not a superset or a guess:
+     * <ul>
+     * <li>{@code getDetails() == null} falls back to {@code getPrincipal()}, matching both
+     * methods' own fallback.</li>
+     * <li>{@code getDetails()} (or the {@code getPrincipal()} fallback) can be a bare {@code
+     * org.joget.directory.model.User} -- signed directly here, matching {@code
+     * getCurrentUser()}'s own {@code instanceof User} branch, which reads its roles via {@code
+     * user.getRoles()}.</li>
+     * <li>{@code ExtUserDetails} must be checked BEFORE the plain {@code UserDetails} check below
+     * (an {@code ExtUserDetails} is also a {@code UserDetails}), mirroring {@code
+     * getCurrentUser()}'s own branch order. Both fields must be covered: {@code getUser()}'s
+     * username/roles, which {@code getCurrentUser()} reads directly, AND {@code getAuthorities()},
+     * which {@code getCurrentRoles()} reads instead (via {@code
+     * WorkflowUserDetails.getAuthorities()}'s own independent, LIVE directory lookup, memoized
+     * into a plain, deserialization-writable field unrelated to {@code getUser().getRoles()}).
+     * Signing only one of the two leaves the other tamperable in a deserialized
+     * {@code getDetails()} without invalidating the signature.</li>
+     * <li>Any other shape canonicalizes to the same empty string {@code null} details already
+     * does -- consistent, not a gap, since authorization never reads an unrecognized details
+     * object either.</li>
+     * </ul>
+     */
+    private static String canonicalizeDetails(Authentication auth) {
+        if (auth == null) {
+            return "";
+        }
+        Object userObj = auth.getDetails();
+        if (userObj == null) {
+            userObj = auth.getPrincipal();
+        }
+        if (userObj instanceof String) {
+            String s = (String) userObj;
+            return "S:" + s.length() + ':' + s;
+        } else if (userObj instanceof org.joget.directory.model.service.ExtUserDetails
+                && ((org.joget.directory.model.service.ExtUserDetails) userObj).getUser() != null) {
+            org.joget.directory.model.service.ExtUserDetails extUserDetails =
+                    (org.joget.directory.model.service.ExtUserDetails) userObj;
+            return "EU:" + canonicalizeDirectoryUser(extUserDetails.getUser())
+                    + ";" + canonicalizeGrantedAuthorities(extUserDetails.getAuthorities());
+        } else if (userObj instanceof org.springframework.security.core.userdetails.UserDetails) {
+            org.springframework.security.core.userdetails.UserDetails userDetails =
+                    (org.springframework.security.core.userdetails.UserDetails) userObj;
+            String username = userDetails.getUsername();
+            StringBuilder sb = new StringBuilder("U:");
+            if (username != null) {
+                sb.append(username.length()).append(':').append(username);
+            }
+            sb.append(';').append(canonicalizeGrantedAuthorities(userDetails.getAuthorities()));
+            return sb.toString();
+        } else if (userObj instanceof org.joget.directory.model.User) {
+            return "PU:" + canonicalizeDirectoryUser((org.joget.directory.model.User) userObj);
+        }
+        return "";
+    }
+
+    /**
+     * Canonicalizes a raw {@code org.joget.directory.model.User}'s username and roles -- the same
+     * fields {@code getCurrentUser()}/{@code getCurrentRoles()} read directly off this object for
+     * both the bare-{@code User} and {@code ExtUserDetails.getUser()} shapes (see {@link
+     * #canonicalizeDetails(Authentication)}'s own comment). {@code User.getRoles()} returns a raw
+     * {@code Set} (no generic element type declared on the class itself); non-{@code Role} entries
+     * are skipped rather than thrown on, since a forged collection could otherwise crash signing
+     * instead of just failing to canonicalize the bogus entries -- either way, a role-forging
+     * attacker gets no signature they can compute themselves.
+     */
+    private static String canonicalizeDirectoryUser(org.joget.directory.model.User user) {
+        if (user == null) {
+            return "";
+        }
+        String username = user.getUsername();
+        StringBuilder sb = new StringBuilder();
+        if (username != null) {
+            sb.append(username.length()).append(':').append(username);
+        }
+        sb.append(';');
+        java.util.Set<?> roles = user.getRoles();
+        if (roles != null) {
+            java.util.List<String> ids = new ArrayList<>();
+            for (Object o : roles) {
+                if (o instanceof org.joget.directory.model.Role) {
+                    String id = ((org.joget.directory.model.Role) o).getId();
+                    if (id != null) {
+                        ids.add(id);
+                    }
+                }
+            }
+            java.util.Collections.sort(ids);
+            for (String id : ids) {
+                sb.append(id.length()).append(':').append(id).append(';');
+            }
+        }
+        return sb.toString();
+    }
+
     private static String signLoginHost(String loginHost, Authentication auth) {
         requireSignedSessionInternalCaller("sign host session binding");
+        // Unwrapped HERE too (same reasoning as isValidSignedBinding(String, String,
+        // Authentication)'s own comment) so this entry point is safe regardless of whether every
+        // future caller remembers to unwrap first.
+        auth = unwrapRaw(auth);
         if (auth == null) {
             return null;
         }
-        return signLoginHost(loginHost, getAuthenticationName(auth));
+        return signLoginHost(loginHost, getAuthenticationName(auth), canonicalizeAuthorities(auth),
+                canonicalizeDetails(auth));
     }
 
-    private static String signLoginHost(String loginHost, String name) {
+    /**
+     * The MAC covers {@code authorities} in addition to {@code loginHost}/{@code name}. Signing
+     * only the login host and name (the earlier "v1" scheme) left an attacker holding a
+     * legitimately-signed LOW-privilege session (their own account, real credentials, real
+     * signature) able to tamper a serialized stream so the wrapped {@code Authentication}'s
+     * authorities read {@code ROLE_ADMIN} while name/loginHost/signature stayed byte-identical:
+     * {@code isValidSignedBinding(..)} recomputed the expected signature from the SAME unchanged
+     * name and loginHost, so it matched, and the forged-privilege token was accepted as
+     * "genuinely signed." Binding authorities into the same MAC closes this: any authority change
+     * now changes the MAC input, so the stored signature no longer matches and verification fails
+     * closed. {@code auth} MUST be the result of {@link #unwrapRaw(Authentication)} -- see that
+     * method's own javadoc for why signing a wrapper's own (possibly injected, possibly unstable)
+     * authorities instead would be wrong.
+     */
+    private static String signLoginHost(String loginHost, String name, String authoritiesCanonical,
+            String detailsCanonical) {
         requireSignedSessionInternalCaller("sign host session binding");
         if (isBlank(loginHost)) {
             return null;
@@ -258,6 +525,10 @@ public class AuthenticationTokenWrapper implements Authentication {
             if (name != null) {
                 mac.update(name.getBytes(StandardCharsets.UTF_8));
             }
+            mac.update((byte) 0);
+            mac.update(authoritiesCanonical.getBytes(StandardCharsets.UTF_8));
+            mac.update((byte) 0);
+            mac.update(detailsCanonical.getBytes(StandardCharsets.UTF_8));
             return Base64.getEncoder().encodeToString(mac.doFinal());
         } catch (Exception e) {
             LogUtil.error(AuthenticationTokenWrapper.class.getName(), e, "Unable to sign host session binding");
@@ -443,39 +714,105 @@ public class AuthenticationTokenWrapper implements Authentication {
     }
 
     private static boolean hasUntrustedSignedSessionCreationFrame() {
-        // Check only the DIRECT caller (first non-ATW frame). Checking the entire stack
-        // would block legitimate logins where a plugin calls a trusted framework service
-        // (e.g. UserAuthenticationService.loginUser) that in turn creates ATW.
+        // Check only the DIRECT caller (first frame that is not one of our own pass-through
+        // frames). Checking the entire stack would block legitimate logins where a plugin calls a
+        // trusted framework service (e.g. UserAuthenticationService.loginUser) that in turn
+        // creates ATW.
         return SIGNED_SESSION_STACK_WALKER.walk(frames -> frames
                 .map(StackFrame::getDeclaringClass)
-                .filter(c -> c != AuthenticationTokenWrapper.class)
+                .filter(c -> !isSignedSessionPassThroughClass(c))
                 .findFirst()
                 .map(AuthenticationTokenWrapper::isUntrustedSignedSessionCreationClass)
                 .orElse(false));
+    }
+
+    /**
+     * Frames that must be walked PAST before asking "is my caller untrusted?", because they are
+     * trusted call <em>sites</em> but never trusted call <em>origins</em>.
+     *
+     * <p>The distinction matters. This class' own frames are obviously transparent -- they are the
+     * implementation of the check itself. The other two are transparent for a security reason
+     * rather than a mechanical one: each is a public, reachable-by-anyone wrapper that ends up
+     * invoking this constructor on its caller's behalf, so if the walk stops at one of them it
+     * reports the wrapper's own (webapp, therefore trusted) classloader and the real originator --
+     * which may be BeanShell or an OSGI bundle -- is never inspected at all. That turns each of
+     * them into a signing oracle: call the wrapper, get back a validly signed
+     * AuthenticationTokenWrapper you could not have constructed directly.
+     *
+     * <ul>
+     *   <li><b>Subclasses of this class.</b> {@code LicenseAutheticationTokenWrapper} (enterprise)
+     *       is public with a public {@code (Authentication)} constructor whose only statement is
+     *       {@code super(auth)}. Its {@code <init>} frame sits between the attacker and this check
+     *       and is a DIFFERENT class from {@code AuthenticationTokenWrapper}, so an exact-class
+     *       filter treats it as "the caller" and finds it trusted.</li>
+     *   <li><b>{@link org.joget.apps.util.JogetSecurityContextImpl} and its subclasses.</b> Its
+     *       {@code setAuthentication(..)} is public and unguarded and wraps any non-anonymous,
+     *       not-already-wrapped token in a fresh {@code AuthenticationTokenWrapper}, so the same
+     *       shielding applies to anyone who can reach a {@code SecurityContext}.</li>
+     * </ul>
+     *
+     * <p>This is the same confused-deputy shape, and the same remedy, as
+     * {@code MultiTenantSecurityManager.isNativeLibraryLoadOriginatedFromUntrustedCode()}: skip the
+     * known-internal frames that any caller can reach and judge the first genuine application
+     * frame behind them.
+     *
+     * <p>Not treated as transparent: enterprise's {@code EnterpriseJogetSecurityContextImpl}. It
+     * also wraps, but only after its own {@code setAuthentication(..)} has already made the trust
+     * decision for that call earlier in the same invocation, so it is not an unguarded oracle the
+     * way the community {@code JogetSecurityContextImpl} is. It is also not a subclass of
+     * {@code JogetSecurityContextImpl} (it extends Spring's {@code SecurityContextImpl} directly),
+     * so the assignability test below does not reach it.
+     */
+    private static boolean isSignedSessionPassThroughClass(Class<?> clazz) {
+        if (clazz == null) {
+            return false;
+        }
+        return AuthenticationTokenWrapper.class.isAssignableFrom(clazz)
+                || org.joget.apps.util.JogetSecurityContextImpl.class.isAssignableFrom(clazz);
     }
 
     private static boolean isUntrustedSignedSessionCreationClass(Class<?> clazz) {
         if (clazz == null || clazz == AuthenticationTokenWrapper.class) {
             return false;
         }
-        String className = clazz.getName();
-        if (className.startsWith("bsh.")) {
+        // BeanShell's own interpreter classes ship inside the WAR, so they ARE framework-loadable
+        // and have to be named explicitly; everything else is decided by where the class was
+        // defined rather than by what it is called.
+        if (clazz.getName().startsWith("bsh.")) {
             return true;
         }
-        ClassLoader loader = clazz.getClassLoader();
-        while (loader != null) {
-            if (isOsgiBundleClassLoader(loader)) {
-                return true;
-            }
-            loader = loader.getParent();
-        }
-        return false;
+        return !isFrameworkLoadable(clazz.getClassLoader());
     }
 
-    private static boolean isOsgiBundleClassLoader(ClassLoader loader) {
-        String loaderClassName = loader.getClass().getName();
-        return loaderClassName.contains("BundleClassLoader")
-                || loaderClassName.contains("BundleWiringImpl");
+    /**
+     * True when {@code loader} is this class' own (application/webapp) classloader or one of its
+     * ancestors, up to and including the bootstrap classloader.
+     *
+     * <p>A POSITIVE membership test, deliberately, rather than the negative
+     * "is the loader's class name one we recognise as a Felix bundle loader" test this used to do.
+     * A negative test only rejects the loaders it has been told about: an OSGI bundle can define a
+     * helper class through a classloader of its own making -- {@code new ClassLoader(null){..}}
+     * delegating the platform APIs by hand -- whose class name matches no known pattern and whose
+     * parent chain is empty, and that helper would then have been judged trusted and allowed to
+     * reach the signing constructor. Anchoring on "is it in OUR delegation chain" cannot be escaped
+     * that way: a class defined outside the chain is by definition not platform code.
+     *
+     * <p>This mirrors {@code MultiTenantSecurityManager.isFrameworkLoadable(..)}, which the
+     * enterprise security manager already uses for exactly this question (and which its
+     * {@code isFelixSecureAction(..)} pairs with a name test in the same "name AND framework-loaded"
+     * shape). It is duplicated rather than shared because {@code wflow-core} cannot depend on
+     * {@code cloud-wfengine}.
+     */
+    private static boolean isFrameworkLoadable(ClassLoader loader) {
+        if (loader == null) {
+            return true; // bootstrap classloader is an ancestor of every classloader
+        }
+        for (ClassLoader l = AuthenticationTokenWrapper.class.getClassLoader(); l != null; l = l.getParent()) {
+            if (l == loader) {
+                return true;
+            }
+        }
+        return false;
     }
 
     private static boolean hasHostSessionSigningKeyAccessFrame() {

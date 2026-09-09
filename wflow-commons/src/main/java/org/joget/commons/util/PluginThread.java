@@ -121,7 +121,7 @@ public final class PluginThread extends Thread {
     public static String SYSTEM_PROPERTY_ASYNC_REQUEST_TIMEOUT = "wflow.asyncRequestTimeout";
     
     public PluginThread(Runnable r) {
-        super(r);
+        super(wrapWithCurrentUserIdentity(r));
         activeThreadKey = this.getName();
         ACTIVE_THREADS.put(activeThreadKey, this);
         currentLocale = LocaleContextHolder.getLocale();
@@ -291,7 +291,17 @@ public final class PluginThread extends Thread {
     
     /**
      * Returns an asynchronous executor service to run in a background thread.
-     * @return 
+     *
+     * <p>GitLab #2261: unlike a one-shot {@code new PluginThread(runnable); thread.start();}, this
+     * executor's single underlying worker thread is long-lived and reused across every task ever
+     * submitted to it (this project's own {@code PresenceManager} holds one for its whole lifetime).
+     * Capturing identity once, at thread-construction time, would be wrong here: whichever caller
+     * happens to be first to trigger this executor's creation would have every LATER task -- possibly
+     * submitted by a completely different user -- run with that first caller's identity. Each
+     * submitted task must capture/restore/clear its OWN identity independently, so the returned
+     * {@code ExecutorService} is wrapped to apply {@link #wrapWithCurrentUserIdentity(Runnable)} to
+     * every task at the moment it is actually submitted, not once when the executor itself is built.
+     * @return
      */
     public static ExecutorService getAsyncExecutorService() {
         ExecutorService asyncExecutorService = Executors.newSingleThreadExecutor((Runnable r) -> {
@@ -300,7 +310,225 @@ public final class PluginThread extends Thread {
             t.setDaemon(false);
             return t;
         });
-        return asyncExecutorService;
+        return new IdentityPropagatingExecutorService(asyncExecutorService);
+    }
+
+    /**
+     * Wraps {@code task} so that whichever thread eventually runs it inherits the identity AND
+     * tenant profile already established on THIS (the calling/submitting) thread at the moment of
+     * this call -- both captured now, restored immediately before {@code task.run()} and cleared
+     * immediately after, regardless of whether the executing thread is a fresh one-shot {@link
+     * PluginThread} or a long-lived, reused worker.
+     *
+     * <p>Profile is captured/restored here UNCONDITIONALLY (not gated on an identity being present)
+     * specifically for the reused-worker case: {@link #getAsyncExecutorService()}'s single
+     * underlying worker thread is itself a {@code PluginThread}, whose OWN constructor captures
+     * {@code profile} exactly ONCE, at construction time, and restores that SAME captured value for
+     * the worker's ENTIRE lifetime (see this class's own constructor/{@code run()}) -- correct for a
+     * one-shot {@code new PluginThread(runnable); thread.start();}, but wrong for a reused executor:
+     * whichever tenant happens to be first to trigger the executor's creation would have every
+     * LATER task, submitted by a completely different tenant, run under the FIRST tenant's profile.
+     * Capturing/restoring profile again HERE, per task, corrects that for the reused-executor case;
+     * for the one-shot case it is redundant with (but harmless alongside) the outer PluginThread's
+     * own construction-time capture, since {@link HostManager#setCurrentProfile(String)}/{@link
+     * HostManager#resetProfile()} push/pop a stack, so nesting the same value twice composes safely.
+     */
+    public static Runnable wrapWithCurrentUserIdentity(final Runnable task) {
+        final String capturedUsername = captureCurrentUsername();
+        final String capturedProfile = DynamicDataSourceManager.getCurrentProfile();
+        return new Runnable() {
+            @Override
+            public void run() {
+                runWithIdentityPropagation(capturedUsername, capturedProfile, task);
+            }
+        };
+    }
+
+    private static String captureCurrentUsername() {
+        try {
+            ThreadUserIdentitySource provider = resolveIdentitySource();
+            return provider == null ? null : provider.captureUsernameForPluginThreadPropagation();
+        } catch (Exception ex) {
+            return null;
+        }
+    }
+
+    private static void runWithIdentityPropagation(String username, String profile, Runnable task) {
+        ThreadUserIdentitySource provider = resolveIdentitySource();
+        boolean restoredIdentity = false;
+        if (username != null && provider != null) {
+            try {
+                // Deliberately a single-statement call into a DEDICATED, private method (see
+                // restoreCapturedIdentity's own comment) -- this exact call is one of a small, fixed
+                // set of platform-code call sites MultiTenantSecurityManager.WHITELIST_RESTRICTED_
+                // CLASSES exempts from the setCurrentThreadUser guard, on the SAME
+                // propagate-already-established-identity reasoning as every other entry there.
+                restoreCapturedIdentity(provider, username);
+                restoredIdentity = true;
+            } catch (Exception ex) {
+                LogUtil.warn(PluginThread.class.getName(), "Failed to restore thread user identity: " + ex);
+            }
+        }
+        // See this method's caller (wrapWithCurrentUserIdentity) for why profile is restored
+        // unconditionally, unlike identity. Deliberately a single-statement call into a DEDICATED
+        // private method (see restoreCapturedProfile's own comment) -- NOT called inline here --
+        // for the SAME reason restoreCapturedIdentity above is its own method: this method's OWN
+        // frame remains on the stack for the ENTIRE DURATION of task.run() below (it is the direct
+        // caller), so if the profile mutation happened directly in THIS method's body, a malicious
+        // wrapped task could call HostManager.setCurrentProfile(otherTenant) itself and inherit
+        // this frame's own trust by simply being a descendant of it -- an independent review found
+        // exactly this gap in an earlier version of this fix. restoreCapturedProfile/
+        // clearCapturedProfile's own frames, by contrast, each return before task.run() begins (or
+        // only start after it ends), so they are never an ancestor of the wrapped task's own code.
+        restoreCapturedProfile(profile);
+        try {
+            task.run();
+        } finally {
+            clearCapturedProfile();
+            if (restoredIdentity) {
+                try {
+                    clearCapturedIdentity(provider);
+                } catch (Exception ex) {
+                    LogUtil.warn(PluginThread.class.getName(), "Failed to clear thread user identity: " + ex);
+                }
+            }
+        }
+    }
+
+    /**
+     * Backs {@link #runWithIdentityPropagation(String, Runnable)}'s own comment. Kept as its own
+     * tiny, single-statement, private method (never called anywhere else in this class, and never
+     * reachable from outside it without also defeating this project's separate, already-existing
+     * reflection guards) specifically so its presence on the stack -- checked by
+     * MultiTenantSecurityManager.checkAgainstWhitelist(..) via a whitelist entry naming this exact
+     * method -- can only mean this class's own automatic identity propagation is genuinely in
+     * progress. Always returns BEFORE task.run() (see the caller above) -- its own frame is never an
+     * ancestor of the wrapped task's later execution, so a plugin's own, separate, direct call to
+     * setCurrentThreadUser from within that task never inherits this trust by association.
+     */
+    private static void restoreCapturedIdentity(ThreadUserIdentitySource provider, String username) {
+        provider.setCurrentThreadUser(username);
+    }
+
+    /**
+     * Backs {@link #runWithIdentityPropagation(String, String, Runnable)}'s own comment on why
+     * profile mutation must not happen inline in that method's body. Kept as its own tiny,
+     * single-statement, private method (never called anywhere else in this class, and never
+     * reachable from outside it without also defeating this project's separate, already-existing
+     * reflection guards) specifically so its presence on the stack -- checked by
+     * MultiTenantSecurityManager.checkAgainstWhitelist(..) via a whitelist entry naming this exact
+     * method -- can only mean this class's own automatic profile propagation is genuinely in
+     * progress. Always returns BEFORE task.run() (see the caller above) -- its own frame is never an
+     * ancestor of the wrapped task's later execution, so a plugin's own, separate, direct call to
+     * HostManager.setCurrentProfile from within that task never inherits this trust by association.
+     */
+    private static void restoreCapturedProfile(String profile) {
+        HostManager.setCurrentProfile(profile);
+    }
+
+    /**
+     * @see #restoreCapturedProfile(String)
+     */
+    private static void clearCapturedProfile() {
+        HostManager.resetProfile();
+    }
+
+    /**
+     * @see #restoreCapturedIdentity(ThreadUserIdentitySource, String)
+     */
+    private static void clearCapturedIdentity(ThreadUserIdentitySource provider) {
+        provider.clearCurrentThreadUser();
+    }
+
+    // GitLab #2261 (07 Sep 2026, independent review): resolving the identity source via a live
+    // SecurityUtil.getApplicationContext().getBean("workflowUserManager") lookup, even with that
+    // context reference itself guarded against replacement, was found still exploitable -- a tenant
+    // bundle can reach the SAME genuine ApplicationContext's own bean factory through entirely
+    // PUBLIC Spring APIs (no reflection/setAccessible needed: ConfigurableApplicationContext
+    // .getBeanFactory(), then ConfigurableListableBeanFactory.registerSingleton(..)), destroy the
+    // real "workflowUserManager" singleton, and register an attacker-defined replacement -- which
+    // this class's own NEXT lookup would then trust completely. Fixed by never querying the mutable
+    // Spring context for this at all: the genuine WorkflowUserManager bean instance PINS itself here
+    // exactly once, in its own constructor (see that class's own comment), strictly before any OSGi/
+    // tenant plugin code can possibly execute (Felix containers are only created after the core
+    // webapp Spring context finishes initializing) -- so no later bean-registry tampering can ever
+    // reach this reference. Write-once (pinIdentitySourceIfAbsent below): even if some other object
+    // later also implements ThreadUserIdentitySource and is (somehow) constructed, it cannot displace
+    // the already-pinned genuine instance.
+    private static volatile ThreadUserIdentitySource pinnedIdentitySource;
+
+    /**
+     * Called ONCE by the genuine {@code WorkflowUserManager} bean's own constructor -- see this
+     * field's own comment above for why that timing is safe, and {@link #resolveIdentitySource()}
+     * for how the pinned value is used.
+     */
+    public static void pinIdentitySourceIfAbsent(ThreadUserIdentitySource source) {
+        if (pinnedIdentitySource == null && source != null) {
+            synchronized (PluginThread.class) {
+                if (pinnedIdentitySource == null) {
+                    pinnedIdentitySource = source;
+                }
+            }
+        }
+    }
+
+    // Test-only seam, matching MultiTenantSecurityManager.TEST_TRUSTED_PLUGIN_BUNDLE_LOCATOR_OVERRIDE
+    // 's own established pattern in this codebase: consulted only as a FALLBACK after the real
+    // pinned instance, never touched by production code -- lets a bare-JUnit test (no real Spring-
+    // wired WorkflowUserManager bean to trigger pinning) supply a fake without weakening the
+    // production write-once guarantee above.
+    static volatile ThreadUserIdentitySource TEST_IDENTITY_SOURCE_OVERRIDE = null;
+
+    private static ThreadUserIdentitySource resolveIdentitySource() {
+        if (pinnedIdentitySource != null) {
+            return pinnedIdentitySource;
+        }
+        return TEST_IDENTITY_SOURCE_OVERRIDE;
+    }
+
+    /**
+     * Wraps a real {@code ExecutorService} so every task submitted through ANY of its methods
+     * (all of which {@code AbstractExecutorService} implements in terms of {@link #execute(Runnable)}
+     * below) gets {@link #wrapWithCurrentUserIdentity(Runnable)} applied at the moment it is
+     * submitted -- see {@link #getAsyncExecutorService()}'s own comment for why per-task wrapping,
+     * not per-worker-thread-construction wrapping, is required here.
+     */
+    private static final class IdentityPropagatingExecutorService extends java.util.concurrent.AbstractExecutorService {
+        private final ExecutorService delegate;
+
+        IdentityPropagatingExecutorService(ExecutorService delegate) {
+            this.delegate = delegate;
+        }
+
+        @Override
+        public void execute(Runnable command) {
+            delegate.execute(wrapWithCurrentUserIdentity(command));
+        }
+
+        @Override
+        public void shutdown() {
+            delegate.shutdown();
+        }
+
+        @Override
+        public List<Runnable> shutdownNow() {
+            return delegate.shutdownNow();
+        }
+
+        @Override
+        public boolean isShutdown() {
+            return delegate.isShutdown();
+        }
+
+        @Override
+        public boolean isTerminated() {
+            return delegate.isTerminated();
+        }
+
+        @Override
+        public boolean awaitTermination(long timeout, java.util.concurrent.TimeUnit unit) throws InterruptedException {
+            return delegate.awaitTermination(timeout, unit);
+        }
     }
     
     /**

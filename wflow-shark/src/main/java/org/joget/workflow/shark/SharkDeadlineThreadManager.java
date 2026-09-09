@@ -29,15 +29,43 @@ public class SharkDeadlineThreadManager extends DeadlineThreadManager{
             // find all profiles and start threads
             Properties profiles = DynamicDataSourceManager.getProfileProperties();
             Set<String> profileSet = new HashSet(profiles.values());
+            // Per-profile try/catch/finally, matching GovHealthCheckManager's own constructor --
+            // two reasons this matters here, not just style: (1) a single unreachable/not-yet-
+            // provisioned tenant database must not abort every OTHER tenant's own deadline-checker
+            // start-up (the previous unconditional setCurrentProfile(profile) with no per-iteration
+            // reset meant one exception here propagated out of the whole loop, and out of this
+            // bean's own construction, since init(..) is called from WorkflowManagerImpl
+            // .setSetupManager(..)); (2) now that WorkflowManagerImpl's own bare whitelist entry has
+            // been removed (see MultiTenantSecurityManager's own comment on why), a restricted
+            // caller's setCurrentProfile(profile) call here is refused with a SecurityException for
+            // any profile it isn't entitled to -- that must be caught and skipped per profile, not
+            // let to abort every remaining tenant's legitimate initialization too.
+            //
+            // `switched` guards the finally's own resetProfile() call: HostManager.setCurrentProfile
+            // only pushes a restore entry AFTER its own permission check succeeds, so a REFUSED
+            // setCurrentProfile leaves nothing on the stack for this iteration at all. Calling
+            // resetProfile() unconditionally in that case would pop/restore whatever entry some
+            // OUTER, unrelated scope had already pushed -- corrupting that caller's own restore
+            // chain instead of doing nothing, exactly the "unpaired reset" shape this whole file's
+            // own fix elsewhere in this codebase exists to prevent.
             for (String profile : profileSet) {
                 if (profile.contains(",")) {
                     continue;
                 }
-                HostManager.setCurrentProfile(profile);
-                workflowManager.internalRecoverStuckToolActivities();
-                workflowManager.internalUpdateDeadlineChecker();
+                boolean switched = false;
+                try {
+                    HostManager.setCurrentProfile(profile);
+                    switched = true;
+                    workflowManager.internalRecoverStuckToolActivities();
+                    workflowManager.internalUpdateDeadlineChecker();
+                } catch (Exception e) {
+                    LogUtil.error(SharkDeadlineThreadManager.class.getName(), e, "Error initializing deadline checker for " + profile);
+                } finally {
+                    if (switched) {
+                        HostManager.resetProfile();
+                    }
+                }
             }
-            HostManager.setCurrentProfile(null);
         }
         else {
             // start current profile

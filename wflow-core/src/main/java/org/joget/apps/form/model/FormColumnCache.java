@@ -7,6 +7,7 @@ import java.util.Map;
 import org.apache.commons.collections.map.LRUMap;
 import static org.joget.apps.form.dao.FormDataDaoImpl.FORM_PREFIX_TABLE_NAME;
 import org.joget.commons.util.DynamicDataSourceManager;
+import org.joget.commons.util.LogUtil;
 import org.joget.commons.util.LongTermCache;
 
 /**
@@ -231,8 +232,30 @@ public class FormColumnCache {
 
     public void clear() {
         String prefix = DynamicDataSourceManager.getCurrentProfile() + "_" + "FORM_COLUMNS_";
-        cache.removeAll(prefix);
-        cache.removeAll(DynamicDataSourceManager.getCurrentProfile() + "_" + "FORM_INDEXES_");
+        // #2261: this method is already whitelisted by caller-frame identity
+        // (MultiTenantSecurityManager.WHITELIST_RESTRICTED_CLASSES has
+        // "org.joget.apps.form.model.FormColumnCache.clear"), so a restricted caller was never
+        // actually blocked here -- but that whitelist entry trusts this frame UNCONDITIONALLY,
+        // with no check at all on whether the prefix it enumerates by could collide with another
+        // real tenant's own entries. removeAllForCurrentProfile(..) adds that check (see its own
+        // javadoc): it builds the identical "<profile>_FORM_COLUMNS_"/"<profile>_FORM_INDEXES_"
+        // prefix this method always used, but refuses instead of removing anything if that prefix
+        // cannot be proven collision-safe. Its own boolean return distinguishes "genuinely
+        // cleared" from "refused" so the node-local tableStates cleanup below stays consistent
+        // with the cache instead of always running regardless -- clearing tableStates when the
+        // cache itself was NOT cleared would let the next build rebuild on top of entries that
+        // were never actually evicted.
+        boolean columnsCleared = cache.removeAllForCurrentProfile("FORM_COLUMNS_");
+        boolean indexesCleared = cache.removeAllForCurrentProfile("FORM_INDEXES_");
+        if (!columnsCleared || !indexesCleared) {
+            LogUtil.warn(FormColumnCache.class.getName(),
+                    "clear() could not fully clear the shared cache for prefix `" + prefix
+                            + "` -- leaving node-local state (and CACHE_LAST_CLEAR_ notification to "
+                            + "other nodes) untouched to stay consistent; the next read may serve a "
+                            + "stale column/index set until this profile's own collision with "
+                            + "another real tenant profile is resolved.");
+            return;
+        }
         // Same reasoning as reset(): a surviving base would let the next build rebuild ON TOP of
         // what was just discarded. Scoped to the current profile, like the eviction above — one
         // tenant clearing its cache must not cost every other tenant a full rebuild.

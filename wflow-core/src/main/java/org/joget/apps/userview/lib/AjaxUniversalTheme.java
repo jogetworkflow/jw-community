@@ -8,6 +8,7 @@ import org.joget.apps.app.service.MobileUtil;
 import org.joget.apps.userview.model.SupportBuilderColorConfig;
 import org.joget.apps.userview.service.UserviewThemeProcesser;
 import org.joget.apps.userview.service.UserviewUtil;
+import org.joget.commons.util.ProfileScopedCacheKey;
 import org.joget.commons.util.ResourceBundleUtil;
 import org.joget.commons.util.StringUtil;
 import org.joget.directory.model.User;
@@ -482,9 +483,11 @@ public class AjaxUniversalTheme extends UniversalTheme implements SupportBuilder
                 .add(userviewId)
                 .add(userviewKey)
                 .add(themeHash);
-        String key = sj.toString();
+        // Cache key scoped to the current tenant (see UniversalTheme.getCss(..) for the full
+        // reasoning); this cache also stores rendered service-worker HTML, not just CSS.
+        String key = ProfileScopedCacheKey.forCurrentProfile(sj.toString());
         String html = "";
-        Cache cache = AppUtil.getCache("org.joget.cache.CSS_CACHE");
+        Cache cache = (key != null) ? AppUtil.getCache("org.joget.cache.CSS_CACHE") : null;
         if (cache != null) {
             html = (String)cache.get(key);
         }

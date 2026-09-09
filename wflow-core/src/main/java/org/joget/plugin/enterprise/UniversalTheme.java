@@ -30,6 +30,7 @@ import org.joget.apps.userview.model.UserviewSetting;
 import org.joget.apps.userview.model.UserviewV5Theme;
 import org.joget.apps.userview.service.UserviewUtil;
 import org.joget.commons.util.LogUtil;
+import org.joget.commons.util.ProfileScopedCacheKey;
 import org.joget.commons.util.ResourceBundleUtil;
 import org.joget.commons.util.SecurityUtil;
 import org.joget.commons.util.StringUtil;
@@ -599,17 +600,36 @@ public class UniversalTheme extends UserviewV5Theme implements UserviewPwaTheme,
         }        
         
         less = lessVariables + "\n" + less;
+        // The cache key used to be the raw LESS source, with no tenant information at all. Since
+        // LESS source is a deterministic function of the shipped theme resource and the variables
+        // above, a hostile bundle could predict another tenant's key and call cssCache.put(..)
+        // directly to poison the victim's compiled CSS with attacker-controlled content (a
+        // cross-tenant UI-injection vector, not just eviction). ProfileScopedCacheKey scopes the
+        // key to the current tenant instead, matching the KeyScope registered for this cache in
+        // PlatformCacheRegistrar so the multi-tenant guard (Cloud/Enterprise edition) can
+        // recognize a caller's own entry.
+        String cacheKey = ProfileScopedCacheKey.forCurrentProfile(less);
         // read CSS from cache
-        Cache cache = AppUtil.getCache("org.joget.cache.CSS_CACHE");
+        Cache cache = (cacheKey != null) ? AppUtil.getCache("org.joget.cache.CSS_CACHE") : null;
         if (cache != null) {
-            css = (String)cache.get(less);
+            try {
+                css = (String)cache.get(cacheKey);
+            } catch (RuntimeException e) {
+                // A cache is an optimization, not a requirement -- LESS still compiles below
+                // regardless of why the cache couldn't be read.
+                LogUtil.warn(getClass().getName(), "Unable to read compiled CSS cache: " + e.getMessage());
+            }
         }
         if (css == null || css.isEmpty()) {
             // not available in cache, compile LESS
             css = compileLess(less);
             // store CSS in cache
             if (cache != null) {
-                cache.put(less, css);
+                try {
+                    cache.put(cacheKey, css);
+                } catch (RuntimeException e) {
+                    LogUtil.warn(getClass().getName(), "Unable to update compiled CSS cache: " + e.getMessage());
+                }
             }
         }
         return css;

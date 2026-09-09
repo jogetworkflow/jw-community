@@ -825,25 +825,57 @@ public class AppWorkflowHelper implements WorkflowHelper {
             
             replacements.put(ur.getUsername(), processes);
             if (cache != null) {
-                cache.put(cacheKey, replacements);
+                // SETUP_CACHE's mutation guard has no key-scope exemption for this key: "username"
+                // here is a caller-supplied argument, not a verified identity, so no scope can
+                // tell "this user's own entry" apart from "another tenant's" (see
+                // ManagedCacheRegistry's setupManagerCache comment). It correctly blocks a
+                // restricted (OSGi-plugin-in-the-call-stack) caller. This call only populates the
+                // cache after an already-correct DB read, though, so a blocked put is a
+                // performance detail, not a correctness issue -- the next lookup just re-queries
+                // the DB.
+                try {
+                    cache.put(cacheKey, replacements);
+                } catch (SecurityException e) {
+                    LogUtil.debug(AppWorkflowHelper.class.getName(), "getReplacementUsers: could not "
+                            + "cache task-delegation lookup for " + username + " from a restricted "
+                            + "caller context -- result is still correct, just not cached: "
+                            + e.getMessage());
+                }
             }
         }
-        
+
         return replacements;
     }
-    
+
     /**
      * Remove the task delegation cache after it is edited
-     * @param username 
+     * @param username
      */
     public void removeReplacementUsers(String username) {
         String profile = DynamicDataSourceManager.getCurrentProfile();
         SimpleDateFormat sf = new SimpleDateFormat("yyyy-MM-dd");
         String cacheKey = profile + ":USER_REPLACEMENT_" + username + "_" + sf.format(new Date());
-        
+
         Cache cache = AppUtil.getCache("org.joget.cache.SETUP_CACHE");
         if (cache != null) {
-            cache.remove(cacheKey);
+            // Unlike the put(..) above, a swallowed failure here is not just a cache-population
+            // detail: this eviction runs when a task delegation is edited or revoked, so a
+            // blocked remove leaves getReplacementUsers(username) serving the pre-edit
+            // replacement map -- a stale authorization input, since the revoked delegate stays
+            // effective for workflow assignment -- until this key's date component rolls over at
+            // midnight, or a trusted caller evicts it first. Degrading instead of propagating is
+            // still correct: this is an ordinary restricted-caller path (a form/userview edit with
+            // an OSGi plugin on the stack), not an attack, and there's no way for an untrusted
+            // caller to perform this eviction safely. Logged at WARN rather than DEBUG so
+            // operators have visibility into the same-day stale-delegation window.
+            try {
+                cache.remove(cacheKey);
+            } catch (SecurityException e) {
+                LogUtil.warn(AppWorkflowHelper.class.getName(), "removeReplacementUsers: could not "
+                        + "evict task-delegation cache for " + username + " from a restricted "
+                        + "caller context -- the pre-edit replacement map may still apply until "
+                        + "this cache entry naturally expires at end of day: " + e.getMessage());
+            }
         }
     }
     

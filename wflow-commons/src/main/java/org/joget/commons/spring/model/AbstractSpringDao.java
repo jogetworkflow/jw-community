@@ -18,6 +18,19 @@ public abstract class AbstractSpringDao {
     }
 
     public void setSessionFactory(SessionFactory sf) {
+        // #2261 (A2, external security review): write-once. Spring injects the SessionFactory once
+        // at startup; after that no caller may swap it for a different one. This closes the
+        // cross-tenant vector where a non-admin tenant reaches a shared DAO (e.g. the authentication
+        // DAOs userDao/roleDao/setupDao) -- directly or by unwrapping its Spring proxy -- and
+        // replaces the SessionFactory with a hostile one so subsequent authentication/settings
+        // queries return attacker-chosen results. Enforced here in the base class (not only in the
+        // MultiTenantPluginAspect setSessionFactory guard) because an inherited base-class method
+        // reached on a raw target can miss aspect weaving across OSGi bundle classloaders, whereas
+        // this check always runs. Idempotent re-injection of the SAME instance is allowed so
+        // legitimate re-wiring is unaffected.
+        if (this.sessionFactory != null && sf != this.sessionFactory) {
+            throw new SecurityException("SessionFactory is already set and cannot be replaced");
+        }
         this.sessionFactory = sf;
     }
 

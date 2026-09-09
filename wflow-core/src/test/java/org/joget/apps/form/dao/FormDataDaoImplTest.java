@@ -797,4 +797,35 @@ public class FormDataDaoImplTest {
         }
         return sb.toString();
     }
+
+    /**
+     * #2317: setCacheManager(..) used to assign the raw JSR-107 provider objects
+     * (cacheManager.getCache(..)) directly to all three cache fields, none of which is an
+     * instance of net.sf.ehcache.Cache -- the type MultiTenantPluginAspect's cache guards match
+     * by declaring class. On 9.1 this silently left formSessionFactoryCache/
+     * joinFormSessionFactoryCache/formPersistentClassCache (live Hibernate SessionFactory/
+     * PersistentClass objects) entirely unguarded for every non-admin tenant. Confirms the fix:
+     * each field now holds a net.sf.ehcache.Cache wrapper, registered read-sensitive with
+     * ManagedCacheRegistry, matching 8.2's own setFormSessionFactoryCache/etc. exactly.
+     */
+    @Test
+    public void testSetCacheManager_wrapsAllThreeCachesAndRegistersReadSensitive() throws Exception {
+        javax.cache.CacheManager cacheManager = mock(javax.cache.CacheManager.class);
+        when(cacheManager.getCache(anyString())).thenAnswer(invocation -> mock(Cache.class));
+
+        FormDataDaoImpl dao = new FormDataDaoImpl();
+        dao.setCacheManager(cacheManager);
+
+        String[] fieldNames = {"formSessionFactoryCache", "joinFormSessionFactoryCache", "formPersistentClassCache"};
+        for (String fieldName : fieldNames) {
+            Field field = FormDataDaoImpl.class.getDeclaredField(fieldName);
+            field.setAccessible(true);
+            Object wired = field.get(dao);
+            assertTrue(fieldName + " must be wrapped in net.sf.ehcache.Cache so "
+                            + "MultiTenantPluginAspect's guards can see it",
+                    wired instanceof net.sf.ehcache.Cache);
+            assertTrue(fieldName + " must be registered read-sensitive with ManagedCacheRegistry",
+                    org.joget.commons.util.ManagedCacheRegistry.isReadSensitive(wired));
+        }
+    }
 }

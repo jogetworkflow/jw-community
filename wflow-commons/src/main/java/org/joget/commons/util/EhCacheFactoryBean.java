@@ -9,11 +9,12 @@ public class EhCacheFactoryBean implements FactoryBean<Cache> {
     private Cache cache;
     private CacheManager cacheManager;
     private String cacheName = "default";
-    
+    private boolean scopeByProfile = false;
+
     public void setCacheManager(CacheManager cacheManager) {
         this.cacheManager = cacheManager;
     }
-    
+
     /**
      * Set a name for which to retrieve a cache instance.
      */
@@ -21,12 +22,24 @@ public class EhCacheFactoryBean implements FactoryBean<Cache> {
         this.cacheName = cacheName;
     }
 
+    /**
+     * #2261 (A4, external security review): when true, wrap the cache in
+     * {@link ProfileScopedNonceCache} so every key is transparently scoped to the current profile
+     * and bulk operations cannot cross tenants. Used by the nonceCache bean, whose OIDC consumer
+     * keys by opaque OAuth state tokens that no {@code ManagedCacheRegistry.KeyScope} could
+     * recognise.
+     */
+    public void setScopeByProfile(boolean scopeByProfile) {
+        this.scopeByProfile = scopeByProfile;
+    }
+
     @Override
     public Cache getObject() throws Exception {
         if (cache == null) {
-            cache = new Cache(cacheManager.getCache(cacheName));
+            javax.cache.Cache backing = cacheManager.getCache(cacheName);
+            cache = scopeByProfile ? new ProfileScopedNonceCache(backing) : new Cache(backing);
         }
-        
+
         return cache;
     }
 

@@ -29,8 +29,16 @@ public final class GovHealthCheckTask implements Runnable {
     
     @Override
     public void run() {
-        HostManager.setCurrentProfile(profile);
-        GovHealthCheckManager govHealthCheckManager = (GovHealthCheckManager) AppUtil.getApplicationContext().getBean("govHealthCheckManager");
-        govHealthCheckManager.runCheck();
+        // Runs on a pooled ThreadPoolTaskScheduler thread. Without try/finally, an exception from
+        // runCheck() leaves HostManager's previousProfileStack ThreadLocal leaked on that pooled
+        // thread, recoverable by a later, unrelated task via a bare HostManager.resetProfile()
+        // call (unguarded, no SecurityManager check applies to it).
+        try {
+            HostManager.setCurrentProfile(profile);
+            GovHealthCheckManager govHealthCheckManager = (GovHealthCheckManager) AppUtil.getApplicationContext().getBean("govHealthCheckManager");
+            govHealthCheckManager.runCheck();
+        } finally {
+            HostManager.resetProfile();
+        }
     }
 }

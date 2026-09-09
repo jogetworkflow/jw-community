@@ -247,12 +247,48 @@ public class FormDataDaoImpl implements FormDataDao {
 
     /**
      * Method used by system to set cache object
-     * @param cacheManager 
+     * @param cacheManager
      */
+    // #2317: wrap each fetch in net.sf.ehcache.Cache (Joget's own JSR-107 shim, matching
+    // EhCacheFactoryBean.getObject()) so MultiTenantPluginAspect's guards -- which match by
+    // declaring type, not by name -- can see these caches at all; the raw JSR-107 provider
+    // objects cacheManager.getCache(..) alone returns are a different class the aspect's
+    // pointcuts never match. registerReadSensitive(..) on each, matching 8.2's own
+    // setFormSessionFactoryCache/setJoinFormSessionFactoryCache/setFormPersistentClassCache
+    // setters exactly (this class holds live Hibernate SessionFactory/PersistentClass objects --
+    // reading one directly, not just mutating it, is itself the harm; see ManagedCacheRegistry's
+    // own javadoc). Also registers each alias so AppUtil.getCache("org.joget.cache.SF_CACHE")/
+    // AppUtil.getCache("default") return these SAME governed instances instead of falling
+    // through to a separate, ungoverned raw fetch -- unlike fluCache/dynamicDataSourceManagerCache,
+    // no PlatformCacheRegistrar-discoverable bean exists for either alias on 9.1, so that gap was
+    // otherwise wide open regardless of this class's own registration.
+    // Independent review (Sol) finding: constructs each into a LOCAL variable and registers it
+    // BEFORE assigning to the field -- this setter is itself now guarded (see
+    // MultiTenantPluginAspect.formDataDaoCacheSetterGuardCheck's setCacheManager(..) entry), but
+    // ManagedCacheRegistry.registerReadSensitive(..) is ALSO independently guarded and can throw
+    // for a restricted caller who somehow still reaches this method; assigning each field only
+    // after its registration succeeds means a thrown SecurityException leaves that field
+    // completely untouched, never pointing at an attacker-supplied cache.
     public void setCacheManager(CacheManager cacheManager) {
-        this.formSessionFactoryCache = cacheManager.getCache("org.joget.cache.SF_CACHE");
-        this.joinFormSessionFactoryCache = cacheManager.getCache("org.joget.cache.SF_CACHE");
-        this.formPersistentClassCache = cacheManager.getCache("default");
+        net.sf.ehcache.Cache wrappedFormSessionFactoryCache =
+                new net.sf.ehcache.Cache(cacheManager.getCache("org.joget.cache.SF_CACHE"));
+        org.joget.commons.util.ManagedCacheRegistry.registerReadSensitive(wrappedFormSessionFactoryCache);
+        org.joget.commons.util.PlatformCacheRegistrar.registerAlias(wrappedFormSessionFactoryCache);
+        this.formSessionFactoryCache = wrappedFormSessionFactoryCache;
+
+        net.sf.ehcache.Cache wrappedJoinFormSessionFactoryCache =
+                new net.sf.ehcache.Cache(cacheManager.getCache("org.joget.cache.SF_CACHE"));
+        org.joget.commons.util.ManagedCacheRegistry.registerReadSensitive(wrappedJoinFormSessionFactoryCache);
+        this.joinFormSessionFactoryCache = wrappedJoinFormSessionFactoryCache;
+
+        net.sf.ehcache.Cache wrappedFormPersistentClassCache =
+                new net.sf.ehcache.Cache(cacheManager.getCache("default"));
+        org.joget.commons.util.ManagedCacheRegistry.registerReadSensitive(wrappedFormPersistentClassCache);
+        // "default" is also SecureDataEncryptionImpl's alias (joget-enterprise) -- both wrappers
+        // are equally registerReadSensitive, so whichever one AppUtil.getCache("default") ends up
+        // returning is equally protected; not registered here to avoid a startup-order-dependent
+        // overwrite of the other's registration for no behavioral benefit.
+        this.formPersistentClassCache = wrappedFormPersistentClassCache;
     }
 
     /**

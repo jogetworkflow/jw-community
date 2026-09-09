@@ -199,8 +199,19 @@
     <bean id="resourceBundleMessageCache" class="org.joget.commons.util.EhCacheFactoryBean" depends-on="cacheManager" lazy-init="true">
         <property name="cacheManager" ref="cacheManager"/>
     </bean>
+    <!-- #2261: cacheName was unset, so this bean defaulted to wrapping the shared "default" cache,
+         the same cache SecureDataEncryptionImpl fills with decrypted values: an identity-mismatch
+         bulk-read gap (see PlatformCacheRegistrar's own javadoc). org.joget.cache.NONCE_CACHE
+         (ehcache.xml) already exists as its own, purpose-built region (DynamicExpiryPolicy,
+         matching OpenIDDirectoryManager's own per-element TTL) but this bean never pointed at it. -->
     <bean id="nonceCache" class="org.joget.commons.util.EhCacheFactoryBean" depends-on="cacheManager" lazy-init="true">
         <property name="cacheManager" ref="cacheManager"/>
+        <property name="cacheName" value="org.joget.cache.NONCE_CACHE"/>
+        <!-- #2261 (A4, external security review): scope every key to the current profile so a
+             non-admin tenant cannot enumerate, bulk-evict or plant other tenants' pending OIDC
+             state->nonce entries. Transparent to the OIDC plugin, which keeps using its opaque
+             state keys. -->
+        <property name="scopeByProfile" value="true"/>
     </bean>
     
     <bean id="fileManager" class="org.joget.commons.util.FileManager" depends-on="setupManager">
@@ -215,4 +226,6 @@
 
     <bean id="logInfoHelper" class="org.joget.commons.util.LogInfoHelperImpl" lazy-init="true">
     </bean>
+
+    <bean id="platformCacheRegistrar" class="org.joget.commons.util.PlatformCacheRegistrar" />
 </beans>

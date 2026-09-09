@@ -15,7 +15,7 @@
     <bean id="formService" class="org.joget.apps.form.service.FormServiceImpl" lazy-init="true">
     </bean>
 
-    <bean id="appFluCache" class="org.joget.apps.app.dao.AppDefCache" lazy-init="true">
+    <bean id="appFluCache" class="org.joget.apps.app.dao.AppDefCache">
         <property name="cacheManager" ref="cacheManager" />
     </bean>
 
@@ -273,7 +273,23 @@
         <property name="waitForTasksToCompleteOnShutdown" value="false" />
     </bean>
     
-    <bean id="govHealthCheckManager" class="org.joget.governance.service.GovHealthCheckManager" depends-on="govHealthCheckScheduler, setupManager" lazy-init="true">
+    <!-- #2261 follow-up: was lazy-init="true". GovHealthCheckManager's own
+         constructor iterates every tenant profile, switching into each (HostManager.setCurrentProfile)
+         and back (HostManager.resetProfile()) to run initChecker(), and switching back is only
+         safe when nothing already restricts the calling thread (see HostManager's own restore-point
+         javadoc). Lazy init meant the FIRST caller to touch this bean anywhere in the app's lifetime,
+         via AppSetupManagerHelperImpl.getGovHealthCheckManager(), reached from ANY
+         setupManager.saveSetting(..) call, including from ordinary plugin code such as
+         LongTermCache.remove(..), ran that profile-switching constructor on ITS OWN thread. If that
+         first caller happened to be a genuinely restricted one (OSGi/BeanShell code on the stack, in
+         the admin profile), the switch-back for a non-admin tenant profile was refused, stranding the
+         REST of that caller's own request in the wrong tenant. Made eager instead: construction now
+         happens during ApplicationContext refresh, on the server's own startup thread, before any
+         request/plugin context (and therefore any restriction) exists, so the profile-iteration loop
+         always runs unrestricted. This closes the FIRST-TOUCH case; it does not by itself cover a
+         tenant profile added after startup, which still defers to whatever caller next reaches this
+         bean for that specific profile. -->
+    <bean id="govHealthCheckManager" class="org.joget.governance.service.GovHealthCheckManager" depends-on="govHealthCheckScheduler, setupManager">
         <constructor-arg><ref bean="govHealthCheckScheduler" /></constructor-arg>
         <constructor-arg><ref bean="setupManager" /></constructor-arg>
     </bean>

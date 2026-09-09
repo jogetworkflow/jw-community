@@ -114,6 +114,34 @@ public class TestLongTermCacheRequestTime {
         assertEquals("columns", cache.getObject(KEY));
     }
 
+    /**
+     * #2317: setCacheManager(..) used to assign the raw JSR-107 provider object
+     * (cacheManager.getCache(..)) directly, which is NOT an instance of net.sf.ehcache.Cache --
+     * the type MultiTenantPluginAspect's cache guards match by declaring class. On 9.1 this
+     * silently left RBM_CACHE (backing FormColumnCache/ResourceBundleMessageDao) entirely
+     * unguarded for every non-admin tenant. Confirms the fix: the field now holds a
+     * net.sf.ehcache.Cache wrapper, registered with ManagedCacheRegistry using
+     * UNDERSCORE_PREFIX_LONGEST_REAL_PROFILE_MATCH_SCOPE (see that constant's own javadoc for
+     * why this is NOT the same LEGACY_UNDERSCORE_PREFIX_SCOPE PlatformCacheRegistrar carries for
+     * this cache's separate, never-wired "longTermCacheObject" bean-based registration path).
+     */
+    @Test
+    public void testSetCacheManager_wrapsRawProviderCacheAndRegistersIt() throws Exception {
+        LongTermCache freshCache = new LongTermCache();
+        freshCache.setCacheManager(cacheManager(new LinkedHashMap<Object, Object>()));
+
+        java.lang.reflect.Field cacheField = LongTermCache.class.getDeclaredField("cache");
+        cacheField.setAccessible(true);
+        Object wired = cacheField.get(freshCache);
+
+        assertTrue("setCacheManager(..) must wrap the raw provider cache in net.sf.ehcache.Cache "
+                        + "so MultiTenantPluginAspect's guards can see it",
+                wired instanceof net.sf.ehcache.Cache);
+        assertTrue("the wrapped cache must be registered with ManagedCacheRegistry so the "
+                        + "self-scoped mutation exemption check recognizes it",
+                ManagedCacheRegistry.isManaged(wired));
+    }
+
     // ------------------------------------------------------------------ helpers
 
     private static CacheManager cacheManager(final Map<Object, Object> store) {

@@ -59,6 +59,17 @@ import org.springframework.context.annotation.Lazy;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler;
 import org.springframework.stereotype.Service;
 
+// #2261: restored @Lazy after a real regression -- removing it (reasoning at the time: "the
+// explicit govHealthCheckManager entry in appsApplicationContext.xml is the effective bean
+// definition, this annotation is a stale no-op for the same bean id") was only true in a Spring
+// context that ALSO loads appsApplicationContext.xml. In any OTHER context that just does
+// <context:component-scan base-package="org.joget"/> without importing that file (confirmed live:
+// wflow-eventstream-kafka's own narrow test context, which only imports wfengineApplicationContext
+// .xml), the component scan is the ONLY registration for this class -- without @Lazy, Spring's own
+// preInstantiateSingletons() now tries to eagerly construct it there too, and fails with
+// UnsatisfiedDependencyException (no ThreadPoolTaskScheduler/SetupManager bean in that narrower
+// context to satisfy the constructor). @Lazy defers that attempt until something actually asks for
+// this bean by name, which nothing in that unrelated test ever does.
 @Service
 @Lazy
 public class GovHealthCheckManager {
@@ -90,13 +101,24 @@ public class GovHealthCheckManager {
                 if (profile.contains(",")) {
                     continue;
                 }
+                // `switched` guards the finally's own resetProfile() call: HostManager
+                // .setCurrentProfile only pushes a restore entry AFTER its own permission check
+                // succeeds, so a REFUSED setCurrentProfile leaves nothing on the stack for this
+                // iteration at all. Calling resetProfile() unconditionally in that case (the
+                // previous shape of this loop) would pop/restore whatever entry some OUTER,
+                // unrelated scope had already pushed -- corrupting that caller's own restore chain
+                // instead of doing nothing.
+                boolean switched = false;
                 try {
                     HostManager.setCurrentProfile(profile);
+                    switched = true;
                     initChecker();
                 } catch(Exception e) {
-                    LogUtil.error(getClass().getName(), e, "Error initializing GovHealthCheckManager for " + profile);                        
+                    LogUtil.error(getClass().getName(), e, "Error initializing GovHealthCheckManager for " + profile);
                 } finally {
-                    HostManager.resetProfile();
+                    if (switched) {
+                        HostManager.resetProfile();
+                    }
                 }
             }
         }

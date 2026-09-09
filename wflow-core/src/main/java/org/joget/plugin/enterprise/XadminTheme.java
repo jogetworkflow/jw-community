@@ -22,6 +22,7 @@ import org.joget.apps.userview.model.UserviewCategory;
 import org.joget.apps.userview.model.UserviewMenu;
 import org.joget.apps.userview.service.UserviewUtil;
 import org.joget.commons.util.LogUtil;
+import org.joget.commons.util.ProfileScopedCacheKey;
 import org.joget.commons.util.ResourceBundleUtil;
 import org.joget.commons.util.SecurityUtil;
 import org.joget.commons.util.StringUtil;
@@ -207,17 +208,20 @@ public class XadminTheme extends UniversalTheme {
             // process LESS
             String less = AppUtil.readPluginResource(getClass().getName(), "resources/themes/" + getPathName() + "/theme.less");
             less = lessVariables + "\n" + less;
+            // Cache key scoped to the current tenant (see UniversalTheme.getCss(..) for the full
+            // reasoning) instead of the raw, tenant-blind LESS source.
+            String cacheKey = ProfileScopedCacheKey.forCurrentProfile(less);
             // read CSS from cache
-            Cache cache = AppUtil.getCache("org.joget.cache.CSS_CACHE");
+            Cache cache = (cacheKey != null) ? AppUtil.getCache("org.joget.cache.CSS_CACHE") : null;
             if (cache != null) {
-                css = (String)cache.get(less);
+                css = (String)cache.get(cacheKey);
             }
             if (css == null || css.isEmpty()) {
                 // not available in cache, compile LESS
                 css = compileLess(less);
                 // store CSS in cache
                 if (cache != null) {
-                    cache.put(less, css);
+                    cache.put(cacheKey, css);
                 }
             }
         } catch (Exception e) {

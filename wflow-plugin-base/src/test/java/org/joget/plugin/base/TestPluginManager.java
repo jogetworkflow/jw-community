@@ -11,8 +11,13 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.util.Assert;
 
 import java.io.*;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.time.Instant;
 import java.util.Collection;
+import java.util.jar.JarEntry;
+import java.util.jar.JarOutputStream;
+import java.util.jar.Manifest;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.ReentrantLock;
@@ -419,6 +424,217 @@ public class TestPluginManager {
         }
         Assert.isTrue(p.getUninstallCount() == 1, "Refresh should uninstall once after non-refresh lock holder");
         Assert.isTrue(p.getInstallCount() == 1, "Refresh should install once after non-refresh lock holder");
+    }
+
+    /**
+     * A plain {@code FileOutputStream} follows a pre-existing symlink unconditionally. In a
+     * multi-tenant Cloud deployment, {@code getUploadDir()} is overridden to a per-tenant profile
+     * directory (see {@code MultiTenantPluginManager.getUploadDir()}) that the same tenant's own
+     * OSGi/BeanShell code can otherwise write inside of, including planting a symlink under a
+     * chosen filename pointing outside that directory. Reproduces that shape: plant a symlink at
+     * the upload target path pointing to a file elsewhere, then upload -- the uploaded bytes must
+     * never land at the symlink's target; {@code upload(..)} must refuse to write through the
+     * symlink and create an ordinary file at the literal path instead.
+     */
+    @Test
+    public void testUploadDoesNotFollowPreExistingSymlink() throws Exception {
+        final Path tempDir = Files.createTempDirectory("testUploadSymlink");
+        final Path outsideDir = Files.createTempDirectory("testUploadSymlinkOutside");
+        try {
+            final Path outsideTarget = outsideDir.resolve("planted.jar");
+            final Path uploadTargetPath = tempDir.resolve("planted.jar");
+            Files.createSymbolicLink(uploadTargetPath, outsideTarget);
+            Assert.isTrue(Files.isSymbolicLink(uploadTargetPath), "setup: symlink must exist before upload");
+
+            PluginManager p = new PluginManager() {
+                @Override
+                protected String getUploadDir() {
+                    return tempDir.toString();
+                }
+            };
+
+            byte[] uploadedBytes = buildMinimalValidJarBytes();
+            try {
+                p.upload("planted.jar", new ByteArrayInputStream(uploadedBytes));
+            } catch (Exception expected) {
+                // This test's minimal JAR is a valid zip/jar but not a real, loadable OSGi
+                // bundle/plugin, so upload(..)'s own later plugin-load validation is expected to
+                // reject it and clean up the file it just wrote -- irrelevant here. The property
+                // under test (the write never reaches the symlink's outside target) is
+                // established EARLIER in upload(..), before that later validation/cleanup runs,
+                // and must hold regardless of what upload(..) does afterward for unrelated
+                // plugin-validity reasons.
+            }
+
+            Assert.isTrue(!Files.exists(outsideTarget),
+                    "the uploaded bytes must NOT have been written to the symlink's outside target -- "
+                    + "this is the actual security property under test, independent of whatever "
+                    + "upload(..) does afterward at the tenant-directory path itself");
+        } finally {
+            deleteRecursively(tempDir);
+            deleteRecursively(outsideDir);
+        }
+    }
+
+    /**
+     * The symlink check in {@link #testUploadDoesNotFollowPreExistingSymlink()} only guards
+     * {@code outputFile}'s own leaf path component -- {@code filename} can contain path
+     * separators ({@code SecurityUtil.normalizedFileName(..)} rejects "../" traversal but not a
+     * plain subdirectory segment), so an ancestor directory under {@code getUploadDir()} planted
+     * as a symlink could resolve the write outside the intended upload directory even though the
+     * leaf itself is never a symlink. Reproduces that shape: {@code tempDir/subdir} is pre-planted
+     * as a symlink to {@code outsideDir}, then {@code upload("subdir/planted.jar", ..)} is called.
+     *
+     * <p>Asserts on the thrown exception's message rather than on {@code outsideDir}'s final
+     * file-listing, since {@code upload(..)}'s later cleanup on install failure deletes the same
+     * path regardless of whether the write was ever attempted, so file existence alone can't tell
+     * a refused write apart from a written-then-cleaned-up one. The message can: the containment
+     * check throws {@code ERROR_INVALID_PLUGIN_NAME} synchronously before the write ever runs,
+     * while the pre-fix code reaches the write and fails later with a different message
+     * ({@code ERROR_INSTALL_FAILED}).
+     *
+     * <p>{@code upload(..)} now also rejects any {@code /} or {@code \} in the filename outright,
+     * before this containment check even runs -- see {@link
+     * #testUploadRejectsFilenameContainingPathSeparatorOutright()}. This test still passes (both
+     * checks throw the identical message) but the outright rejection is what actually fires now;
+     * the containment check remains as defense-in-depth for any future caller that legitimately
+     * needs a subdirectory.
+     */
+    @Test
+    public void testUploadDoesNotFollowPreExistingSymlinkedAncestorDirectory() throws Exception {
+        final Path tempDir = Files.createTempDirectory("testUploadSymlinkAncestor");
+        final Path outsideDir = Files.createTempDirectory("testUploadSymlinkAncestorOutside");
+        try {
+            final Path plantedSymlinkDir = tempDir.resolve("subdir");
+            Files.createSymbolicLink(plantedSymlinkDir, outsideDir);
+            Assert.isTrue(Files.isSymbolicLink(plantedSymlinkDir), "setup: ancestor symlink must exist before upload");
+
+            PluginManager p = new PluginManager() {
+                @Override
+                protected String getUploadDir() {
+                    return tempDir.toString();
+                }
+            };
+
+            byte[] uploadedBytes = buildMinimalValidJarBytes();
+            try {
+                p.upload("subdir/planted.jar", new ByteArrayInputStream(uploadedBytes));
+                Assert.isTrue(false, "upload(..) through a symlinked ancestor directory must throw");
+            } catch (PluginException actual) {
+                Assert.isTrue(PluginManager.ERROR_INVALID_PLUGIN_NAME.equals(actual.getMessage()),
+                        "upload(..) must refuse a path resolving outside the intended upload "
+                        + "directory BEFORE ever attempting the write -- got \"" + actual.getMessage()
+                        + "\" instead of the containment-check's own message, meaning the write "
+                        + "was attempted (and only failed/cleaned up later, for an unrelated reason)");
+            }
+
+            Assert.isTrue(!Files.exists(outsideDir.resolve("planted.jar")),
+                    "the uploaded bytes must NOT have been written under the symlinked ancestor "
+                    + "directory's real target");
+        } finally {
+            deleteRecursively(tempDir);
+            deleteRecursively(outsideDir);
+        }
+    }
+
+    /**
+     * The ancestor-containment check is check-then-act: if the ancestor directory doesn't exist
+     * yet at check time (the ordinary case for a new subdirectory), the check trivially passes,
+     * and a concurrent actor could replace it with a symlink before the write. Rather than trying
+     * to make the containment check atomic with the write, {@code upload(..)} rejects any path
+     * separator in the filename outright, unconditionally -- no legitimate caller needs a
+     * subdirectory. Proves this fires even with no symlink anywhere in the picture (a genuinely
+     * benign subdirectory name), confirming the rejection is unconditional on any {@code /}/
+     * {@code \}, not merely a side effect of the containment check.
+     */
+    @Test
+    public void testUploadRejectsFilenameContainingPathSeparatorOutright() throws Exception {
+        final Path tempDir = Files.createTempDirectory("testUploadRejectsSlash");
+        try {
+            PluginManager p = new PluginManager() {
+                @Override
+                protected String getUploadDir() {
+                    return tempDir.toString();
+                }
+            };
+
+            byte[] uploadedBytes = buildMinimalValidJarBytes();
+            try {
+                p.upload("perfectly/ordinary/subdir/plugin.jar", new ByteArrayInputStream(uploadedBytes));
+                Assert.isTrue(false, "upload(..) must reject a filename containing a path "
+                        + "separator outright, even with no symlink involved at all");
+            } catch (PluginException actual) {
+                Assert.isTrue(PluginManager.ERROR_INVALID_PLUGIN_NAME.equals(actual.getMessage()),
+                        "expected the invalid-plugin-name message, got \"" + actual.getMessage() + "\"");
+            }
+
+            Assert.isTrue(!Files.exists(tempDir.resolve("perfectly")),
+                    "no subdirectory should ever have been created under the upload directory");
+        } finally {
+            deleteRecursively(tempDir);
+        }
+    }
+
+    /**
+     * Sanity/non-regression: an ordinary, slash-free filename must NOT be rejected by the new
+     * outright path-separator check. Deliberately asserts on the exception MESSAGE, not file
+     * existence: this minimal jar is not a loadable OSGi bundle, so upload(..)'s later
+     * install-failure cleanup deletes the file it just wrote regardless of whether the filename
+     * check passed -- the same reason the ancestor-symlink test above can't use file existence
+     * either. If the new outright-rejection check wrongly fired here, the exception would be
+     * ERROR_INVALID_PLUGIN_NAME; since it doesn't, the failure must come from the (expected,
+     * unrelated) later install-failure path instead.
+     */
+    @Test
+    public void testUploadStillAcceptsAnOrdinaryFilenameWithNoPathSeparator() throws Exception {
+        final Path tempDir = Files.createTempDirectory("testUploadOrdinaryFilename");
+        try {
+            PluginManager p = new PluginManager() {
+                @Override
+                protected String getUploadDir() {
+                    return tempDir.toString();
+                }
+            };
+
+            byte[] uploadedBytes = buildMinimalValidJarBytes();
+            try {
+                p.upload("plugin.jar", new ByteArrayInputStream(uploadedBytes));
+                Assert.isTrue(false, "expected this non-loadable-bundle jar to fail at the "
+                        + "LATER install-failure stage, not to succeed outright");
+            } catch (PluginException actual) {
+                Assert.isTrue(!PluginManager.ERROR_INVALID_PLUGIN_NAME.equals(actual.getMessage()),
+                        "an ordinary, slash-free filename must NOT be rejected by the outright "
+                        + "path-separator check -- got the invalid-plugin-name message, meaning "
+                        + "the new check wrongly fired for a filename with no separator at all");
+            }
+        } finally {
+            deleteRecursively(tempDir);
+        }
+    }
+
+    private static byte[] buildMinimalValidJarBytes() throws IOException {
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        Manifest manifest = new Manifest();
+        manifest.getMainAttributes().putValue("Manifest-Version", "1.0");
+        try (JarOutputStream jos = new JarOutputStream(baos, manifest)) {
+            jos.putNextEntry(new JarEntry("marker.txt"));
+            jos.write("PROOF_2261_UPLOAD_MARKER".getBytes("UTF-8"));
+            jos.closeEntry();
+        }
+        return baos.toByteArray();
+    }
+
+    private static void deleteRecursively(Path dir) {
+        try {
+            java.util.List<Path> paths = new java.util.ArrayList<>();
+            Files.walk(dir).forEach(paths::add);
+            java.util.Collections.reverse(paths);
+            for (Path p : paths) {
+                Files.deleteIfExists(p);
+            }
+        } catch (IOException ignore) {
+            // best-effort cleanup only
+        }
     }
 
     private void runRefresh(PluginManager pluginManager, AtomicReference<Throwable> failure) {

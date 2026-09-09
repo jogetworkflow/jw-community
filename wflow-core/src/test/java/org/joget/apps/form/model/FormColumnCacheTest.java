@@ -32,6 +32,14 @@ public class FormColumnCacheTest {
         // static datasource cache only Spring populates unless HostManager already has a profile.
         HostManager.setCurrentProfile("test");
         longTermCache = mock(LongTermCache.class);
+        // #2261: removeAllForCurrentProfile(..) now reports (via its boolean return) whether the
+        // removal actually proceeded, and FormColumnCache.clear() only drops its own node-local
+        // tableStates when it did (see clear()'s own comment for why). Mockito's default for an
+        // unstubbed boolean-returning method is false, which would make clear() skip that cleanup
+        // in EVERY test below unless stubbed here -- stubbed true by default so every existing
+        // test keeps its original "clear() always succeeds" assumption; a test that specifically
+        // wants to exercise the refused/false path overrides this stub itself.
+        when(longTermCache.removeAllForCurrentProfile(anyString())).thenReturn(true);
         cache = new FormColumnCache();
         cache.setCache(longTermCache);
     }

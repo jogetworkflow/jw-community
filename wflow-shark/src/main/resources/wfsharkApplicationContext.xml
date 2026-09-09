@@ -19,7 +19,24 @@
     <bean id="deadlineThreadManager" class="org.joget.workflow.shark.SharkDeadlineThreadManager" lazy-init="true">
     </bean>
     
-    <bean id="workflowManager" class="org.joget.workflow.model.service.WorkflowManagerImpl" lazy-init="true">
+    <!-- #2261 follow-up: was lazy-init="true". WorkflowManagerImpl.setSetupManager(..) (called by
+         Spring as this bean's own property injection, below) re-invokes
+         DeadlineThreadManager.initThreads(this) -> SharkDeadlineThreadManager.init(..), which
+         iterates every tenant profile switching into each (HostManager.setCurrentProfile) to run
+         initChecker()-equivalent per-tenant work. Lazy init meant that switch-into-every-tenant
+         loop ran on whatever thread first touched this bean, and previously, a bare whitelist
+         entry unconditionally exempted it regardless of who that caller was (removed in
+         MultiTenantSecurityManager; see that class's own comment on why: the same public-setter-
+         reachable cross-tenant primitive already closed for GovHealthCheckManager). With the
+         whitelist entry gone, a restricted caller whose first-ever touch of this bean happened
+         to land here would now see the SAME first-touch problem GovHealthCheckManager already had:
+         one caller's own tenant switch, refused mid-construction. Made eager for the identical
+         reason as govHealthCheckManager above: construction now happens during ApplicationContext
+         refresh, before any request/plugin context (and therefore any restriction) exists.
+         SharkDeadlineThreadManager.init(..)'s own per-profile try/catch/finally (added alongside
+         this) also means one unreachable tenant database at boot no longer aborts every other
+         tenant's initialization, let alone the whole context refresh. -->
+    <bean id="workflowManager" class="org.joget.workflow.model.service.WorkflowManagerImpl">
         <constructor-arg><ref bean="setupDataSource" /></constructor-arg>
         <constructor-arg><ref bean="transactionManager" /></constructor-arg>
         <property name="workflowUserManager" ref="workflowUserManager"/>
@@ -127,15 +144,27 @@
         <property name="workflowProcessLinkDao" ref="workflowProcessLinkDao"/>
     </bean>
     
-    <bean id="deadlineDao" class="org.joget.workflow.shark.model.dao.DeadlineDao" lazy-init="true">
+    <!-- Eager, like the two DAOs below: DeadlineDao has no interface and is matched by the shark DAO
+         transaction advisor, so Spring builds it as a CGLIB proxy, and building the proxy class calls
+         setAccessible. While the bean was lazy, a tenant script that was the first caller after a
+         restart (getBean, WorkflowManager.internalCheckDeadlines, activity migration) had that call
+         refused, and Spring's CGLIB class cache keeps the failed build, so later getBean callers kept
+         failing too. Built at context refresh instead; its only dependency, workflowSessionFactory,
+         is already built at boot. Matches 8.2. -->
+    <bean id="deadlineDao" class="org.joget.workflow.shark.model.dao.DeadlineDao">
         <property name="sessionFactory" ref="workflowSessionFactory"/>
     </bean>
-    
-    <bean id="sharkObjectIdDao" class="org.joget.workflow.shark.model.dao.SharkObjectIdDao" lazy-init="true">
+
+    <!-- Eager so the sharkIdSessionFactory (the ID-allocation path) is built during context refresh
+         on the clean startup stack, not lazily on a tenant's first BeanShell-initiated process start:
+         with a bsh frame on the stack, the reflection its Hibernate/JAXB mapping bootstrap does is
+         refused on any JDK (and on JDK <= 17 the refused log/lambda path can also wedge a lambda call
+         site). Matches 8.2, which never made these lazy. hbm2ddl.auto=none, so no eager DDL. -->
+    <bean id="sharkObjectIdDao" class="org.joget.workflow.shark.model.dao.SharkObjectIdDao">
         <property name="sessionFactory" ref="sharkIdSessionFactory"/>
     </bean>
-    
-    <bean id="sharkCounterDao" class="org.joget.workflow.shark.model.dao.SharkCounterDao" lazy-init="true">
+
+    <bean id="sharkCounterDao" class="org.joget.workflow.shark.model.dao.SharkCounterDao">
         <property name="sessionFactory" ref="sharkIdSessionFactory"/>
     </bean>
 </beans>

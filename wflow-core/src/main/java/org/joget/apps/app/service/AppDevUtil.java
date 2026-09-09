@@ -133,6 +133,21 @@ public class AppDevUtil {
     // Tracks commit count per repo since last GC (for commit-threshold trigger)
     private static final ConcurrentHashMap<String, AtomicInteger> gcCommitCounters = new ConcurrentHashMap<>();
 
+    /**
+     * Lets multi-tenant security code (Cloud/Enterprise edition) recognize these two shared
+     * executors as protected dispatch targets without ever exposing a live reference to either.
+     * A public getter returning the {@code ScheduledExecutorService} itself would let any caller
+     * -- including an OSGi plugin, which can reach public static methods across module boundaries
+     * -- call {@code shutdown()}/{@code shutdownNow()} on it, or downcast to
+     * {@code ScheduledThreadPoolExecutor} and shrink its pool, killing git cleanup/GC
+     * cluster-wide. This identity check gives the same recognition without that exposure.
+     * @param candidate the object to test
+     * @return true if candidate is exactly the shared git-temp-cleanup or git-gc executor
+     */
+    public static boolean isSharedGitExecutor(Object candidate) {
+        return candidate == gitTempCleanerExecutor || candidate == gitGcExecutor;
+    }
+
     static ThreadLocal<Boolean> importApp = new ThreadLocal<>();
     static ThreadLocal<Map<String, GitCommitHelper>> backgroundSync = new ThreadLocal<>();
 
@@ -2268,7 +2283,12 @@ public class AppDevUtil {
         String cacheKey = profile + "_dirLastModified_" + appDef.toString();
         Cache cache = AppUtil.getCache("org.joget.cache.APP_CACHE");
         if (cache != null) {
-            latestDate = (Date)cache.get(cacheKey);
+            try {
+                latestDate = (Date)cache.get(cacheKey);
+            } catch (SecurityException e) {
+                // a restricted caller whose key could not be scoped to its own profile: run uncached
+                cache = null;
+            }
         }
         if (latestDate == null && !AppDevUtil.isGitDisabled()) {
             File dir = AppDevUtil.fileGetFileObject(appDef, ".", false);
@@ -2293,7 +2313,11 @@ public class AppDevUtil {
                         .orElse(null);
                 }
                 if (cache != null && latestDate != null) {
-                    cache.put(cacheKey, latestDate);
+                    try {
+                        cache.put(cacheKey, latestDate);
+                    } catch (SecurityException e) {
+                        // not cached for this caller
+                    }
                 }
             }
         }

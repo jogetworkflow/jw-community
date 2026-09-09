@@ -10,8 +10,42 @@ public class LongTermCache {
     private Cache cache;
     private SetupManager setupManager;
     
+    // #2317: wrap in net.sf.ehcache.Cache (Joget's own JSR-107 shim, matching
+    // EhCacheFactoryBean.getObject()) so MultiTenantPluginAspect's guards -- which match by
+    // declaring type, not by name -- can see this cache at all; the raw JSR-107 provider object
+    // cacheManager.getCache(..) alone returns is a different class the aspect's pointcuts never
+    // match. Registered with UNDERSCORE_PREFIX_LONGEST_REAL_PROFILE_MATCH_SCOPE -- NOT the more
+    // widely-shared LEGACY_UNDERSCORE_PREFIX_SCOPE PlatformCacheRegistrar's own comment
+    // documents as its intended scope for this cache's dormant "longTermCacheObject" bean-based
+    // registration path (that path never fires on 9.1 today because no such bean exists here,
+    // so this class self-registers its own field instead of depending on it): independent
+    // review (Sol) found LEGACY_UNDERSCORE_PREFIX_SCOPE unconditionally denies the exemption
+    // whenever the CALLING tenant's own profile name contains "_", which is common in practice
+    // (a Joget Cloud profile is frequently exactly the tenant's underlying database name, e.g.
+    // "customer_eu" -- confirmed via SetupServlet, which writes the admin-typed "Database Name"
+    // field straight through with no character restriction beyond
+    // SecurityUtil.validateStringInput's permissive regex, which explicitly allows "_") -- this
+    // would have newly broken every such tenant's ResourceBundleMessageDao-driven message
+    // caching (profile+"_"+locale keys) and FormColumnCache-driven form-column caching
+    // (profile+"_FORM_COLUMNS_"/"_FORM_INDEXES_" keys), where before this session's fix (an
+    // unwrapped, unguarded raw cache) they always succeeded. See ManagedCacheRegistry
+    // .UNDERSCORE_PREFIX_LONGEST_REAL_PROFILE_MATCH_SCOPE's own javadoc for why it does not have
+    // this problem. Also registers the alias so AppUtil.getCache("org.joget.cache.RBM_CACHE") --
+    // the accessor plugin/BeanShell code actually uses -- returns this SAME governed instance
+    // instead of falling through to its own separate, ungoverned raw fetch.
+    // Independent review (Sol) finding: constructs into a LOCAL variable and registers it BEFORE
+    // assigning to the field, deliberately -- setCacheManager(..) is itself now guarded (see
+    // MultiTenantPluginAspect.appDefAndLongTermCacheSetterGuardCheck), but ManagedCacheRegistry.
+    // register(..) is ALSO independently guarded and can throw for a restricted caller who
+    // somehow still reaches this method; assigning the field only after registration succeeds
+    // means a thrown SecurityException here leaves the field completely untouched, never pointing
+    // at an attacker-supplied, unregistered CacheManager's cache.
     public void setCacheManager(CacheManager cacheManager) {
-        this.cache = cacheManager.getCache("org.joget.cache.RBM_CACHE");
+        net.sf.ehcache.Cache wrapped = new net.sf.ehcache.Cache(cacheManager.getCache("org.joget.cache.RBM_CACHE"));
+        org.joget.commons.util.ManagedCacheRegistry.register(wrapped,
+                org.joget.commons.util.ManagedCacheRegistry.UNDERSCORE_PREFIX_LONGEST_REAL_PROFILE_MATCH_SCOPE);
+        org.joget.commons.util.PlatformCacheRegistrar.registerAlias(wrapped);
+        this.cache = wrapped;
     }
     
     public void setSetupManager(SetupManager setupManager) {
@@ -98,7 +132,95 @@ public class LongTermCache {
         LogUtil.debug(LongTermCache.class.getName(), key + " is removed.");
     }
     
+    /**
+     * #2261: now a thin, backward-compatible alias for {@link
+     * #removeAllForCurrentProfile(String)} -- {@code prefix} is interpreted the SAME way that
+     * method's own {@code localPrefix} is (profile-relative, e.g. {@code "FORM_COLUMNS_"}), NOT
+     * as an already-profile-qualified full prefix the way this method used to require. The old
+     * implementation trusted {@code prefix} at face value and iterated the whole cache directly,
+     * which meant {@code MultiTenantPluginAspect.managedCacheBulkReadGuardCheck} had to block it
+     * outright for any restricted (non-admin) caller regardless of prefix -- there was no way for
+     * the guard to know a caller-supplied prefix would only ever match that caller's own tenant's
+     * entries. Delegating here closes that gap for every caller of this method, not only new ones
+     * written against {@link #removeAllForCurrentProfile(String)} directly: this method had no
+     * remaining production caller by the time of this change (its one real caller,
+     * {@code FormColumnCache.clear()}, already moved to calling
+     * {@link #removeAllForCurrentProfile(String)} directly), so there was no reason to keep a
+     * second, deliberately-unscoped implementation around as a standing foot-gun for a future
+     * caller to reach for by habit.
+     *
+     * <p>Tolerates an OLD-style caller that still passes an already-profile-qualified full prefix
+     * (i.e. one that already starts with {@code currentProfile + "_"}): that exact leading segment
+     * is stripped before delegating, so it is not prepended a second time and silently turned into
+     * a no-op match. Any prefix NOT already so qualified is passed through unchanged, as a local
+     * prefix.
+     *
+     * @param prefix the cache owner's own prefix content -- either already-profile-qualified (the
+     *               historical convention) or a bare, tenant-agnostic local prefix (see {@link
+     *               #removeAllForCurrentProfile(String)}'s {@code localPrefix} parameter)
+     */
     public void removeAll(String prefix) {
+        String currentProfile = DynamicDataSourceManager.getCurrentProfile();
+        String localPrefix = prefix;
+        if (currentProfile != null && !currentProfile.isEmpty() && prefix != null) {
+            String qualifiedMarker = currentProfile + "_";
+            if (prefix.startsWith(qualifiedMarker)) {
+                localPrefix = prefix.substring(qualifiedMarker.length());
+            }
+        }
+        removeAllForCurrentProfile(localPrefix);
+    }
+
+    /**
+     * The actual, self-validating implementation {@link #removeAll(String)} now delegates to --
+     * scoped to the CALLING code's own current tenant profile instead of trusting a prefix at
+     * face value.
+     *
+     * <p>Builds the full prefix as {@code currentProfile + "_" + localPrefix} -- this cache's own
+     * existing, unchanged, already-in-production key convention (see {@code
+     * setCacheManager(CacheManager)}'s own registration comment) -- then asks this cache's
+     * registered {@code ManagedCacheRegistry.KeyScope} whether THAT prefix is provably safe to
+     * bulk-remove by (see {@code UNDERSCORE_PREFIX_LONGEST_REAL_PROFILE_MATCH_SCOPE
+     * #isCurrentTenantKeyPrefix(String)}'s own javadoc) BEFORE ever reaching {@code
+     * cache.iterator()}. Only once that check passes does this method's own frame become eligible
+     * for {@code MultiTenantSecurityManager
+     * .isCalledDirectlyFromLongTermCacheRemoveAllForCurrentProfile()}'s identity-verified
+     * exemption -- the guard trusts that THIS method, and no other, only ever asks for the
+     * iterator after confirming it is safe; it does not itself re-derive that safety.
+     *
+     * <p>Silently does nothing (logs a warning, does not throw) when the current profile is unset,
+     * empty, or the prefix cannot be proven collision-safe against another real tenant profile --
+     * a cache is never authoritative, so refusing a bulk clear is exactly as safe as performing it
+     * would have been had the caller's intent genuinely been self-scoped; the caller simply gets a
+     * stale (not missing) cache, the ordinary failure mode this cache already tolerates elsewhere.
+     * Returns whether the removal actually proceeded, for a caller (e.g. {@code
+     * FormColumnCache.clear()}) that also maintains its own separate, node-local state derived
+     * from these same entries and must keep that state consistent with whether this cache was
+     * genuinely cleared, rather than clearing both unconditionally regardless of a refusal here.
+     *
+     * @param localPrefix the cache owner's own, tenant-agnostic prefix content (e.g.
+     *                    {@code "FORM_COLUMNS_"}) -- never itself containing tenant-identifying
+     *                    information, matching {@link ProfileScopedCacheKey#forCurrentProfile(String)}'s
+     *                    own {@code localKey} contract
+     * @return true if the prefix was proven self-scoped and the cache was actually searched (even
+     *         if zero entries happened to match); false if the removal was refused entirely
+     */
+    public boolean removeAllForCurrentProfile(String localPrefix) {
+        String currentProfile = DynamicDataSourceManager.getCurrentProfile();
+        if (currentProfile == null || currentProfile.isEmpty()) {
+            LogUtil.warn(LongTermCache.class.getName(),
+                    "removeAllForCurrentProfile skipped: no current tenant profile to scope to.");
+            return false;
+        }
+        String prefix = currentProfile + "_" + localPrefix;
+        if (!ManagedCacheRegistry.isCurrentTenantKeyPrefix(cache, prefix)) {
+            LogUtil.warn(LongTermCache.class.getName(),
+                    "removeAllForCurrentProfile refused for prefix `" + prefix + "` -- not provably "
+                            + "self-scoped to the current tenant profile alone (either this cache has "
+                            + "no registered prefix-aware KeyScope, or another real tenant profile "
+                            + "collides with it).");
+            return false;
+        }
         for (Iterator i=cache.iterator(); i.hasNext();) {
             Cache.Entry entry = (Cache.Entry)i.next();
             if (entry.getKey().toString().startsWith(prefix)) {
@@ -106,7 +228,8 @@ public class LongTermCache {
                 setupManager.updateSetting("CACHE_LAST_CLEAR_" + entry.getKey().toString(), Long.toString((new Date()).getTime()));
             }
         }
-        LogUtil.debug(LongTermCache.class.getName(), "All caches with `"+prefix+"` prefix are removed.");
+        LogUtil.debug(LongTermCache.class.getName(), "All caches with `"+prefix+"` prefix are removed for the current profile.");
+        return true;
     }
 
     public void putObject(String key, Object value) {

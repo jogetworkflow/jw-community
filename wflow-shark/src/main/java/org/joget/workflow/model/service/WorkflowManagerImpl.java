@@ -195,6 +195,30 @@ public class WorkflowManagerImpl implements SharkWorkflowManager {
 
         if (!initialized) {
             try {
+                // Set up the Shark id-allocator reflective handles once,
+                // here, on the clean context-refresh/startup stack (no bsh/OSGi frame), so per-id
+                // allocations never call setAccessible again -- which MultiTenantSecurityManager would
+                // refuse when a tenant BeanShell frame is on the stack. Guarded so a failure only logs
+                // and leaves the holder's own lazy fallback to retry; it must not abort Shark init.
+                try {
+                    org.enhydra.shark.SharkIdAllocatorReflection.init();
+                } catch (Throwable t) {
+                    LogUtil.error(getClass().getName(), t, "Unable to eagerly initialise Shark id-allocator reflective handles; will retry lazily");
+                }
+                try {
+                    sharkCurrentUsrIdField();
+                } catch (Throwable t) {
+                    LogUtil.error(getClass().getName(), t, "Unable to eagerly initialise the SharkUtilities.currentUsrId handle; will retry on first connect");
+                }
+                // The variable-batch aspect's reflective handles likewise, before anything below can
+                // throw and skip it: they only need the Shark DO classes to be loadable, not Shark
+                // itself to be initialised, and tenant-initiated set-variable/complete-activity ops
+                // must not hit a setAccessible refusal under a BeanShell frame.
+                try {
+                    org.joget.workflow.shark.VariableDataBatchAspect.init();
+                } catch (Throwable t) {
+                    LogUtil.error(getClass().getName(), t, "Unable to eagerly initialise VariableDataBatchAspect handles; will retry lazily");
+                }
                 JSPClientUtilities.initProperties(path);
                 InitialContext ic = null;
                 try {
@@ -250,7 +274,8 @@ public class WorkflowManagerImpl implements SharkWorkflowManager {
 
                 // init event stream manager
                 initEventStreamManager();
-                
+
+
                 initialized = true;
             } catch (Exception ex) {
                 LogUtil.error(getClass().getName(), ex, "");
@@ -5341,6 +5366,25 @@ public class WorkflowManagerImpl implements SharkWorkflowManager {
     }
 
     /*--- Internal methods to Shark ---*/
+    // The SharkUtilities.currentUsrId handle, made accessible
+    // once and cached, so connect()'s per-call reflection never re-enters SecurityManager.checkPermission.
+    private static volatile Field sharkCurrentUsrIdField;
+
+    private static Field sharkCurrentUsrIdField() throws NoSuchFieldException {
+        Field f = sharkCurrentUsrIdField;
+        if (f == null) {
+            synchronized (WorkflowManagerImpl.class) {
+                f = sharkCurrentUsrIdField;
+                if (f == null) {
+                    f = SharkUtilities.class.getDeclaredField("currentUsrId");
+                    f.setAccessible(true);
+                    sharkCurrentUsrIdField = f;
+                }
+            }
+        }
+        return f;
+    }
+
     /**
      * Connect to the Shark engine using the current username.
      * @return
@@ -5358,8 +5402,10 @@ public class WorkflowManagerImpl implements SharkWorkflowManager {
         
         //check if the connection key counter in shark engine are larger than max integer, then reset it
         try {
-            Field field = SharkUtilities.class.getDeclaredField("currentUsrId");
-            field.setAccessible(true);
+            // setAccessible done once and the handle cached, so
+            // this per-connect reflection is not refused when a non-admin tenant's BeanShell frame is on
+            // the stack (the platform's own connects at startup/admin populate it from a clean stack).
+            Field field = sharkCurrentUsrIdField();
 
             int counter = (int) field.get(null);
             

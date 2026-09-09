@@ -3,6 +3,7 @@ package org.joget.apps.app.dao;
 import java.lang.reflect.Field;
 import java.util.Date;
 import javax.cache.Cache;
+import javax.cache.CacheManager;
 import org.joget.apps.app.model.AppDefinition;
 import org.junit.Before;
 import org.junit.Test;
@@ -10,6 +11,8 @@ import org.mockito.ArgumentCaptor;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
@@ -79,5 +82,37 @@ public class AppDefCacheTest {
 
         assertEquals("An entry as new as the data must be served", "fresh", result);
         verify(cache, never()).remove("key");
+    }
+
+    /**
+     * #2317: setCacheManager(..) used to assign the raw JSR-107 provider object
+     * (cacheManager.getCache(..)) directly, which is NOT an instance of net.sf.ehcache.Cache --
+     * the type MultiTenantPluginAspect's cache guards match by declaring class. On 9.1 this
+     * silently left AppDefCache's FLU_CACHE entirely unguarded for every non-admin tenant.
+     * Confirms the fix: the field now holds a net.sf.ehcache.Cache wrapper, and is registered
+     * with ManagedCacheRegistry (which the guard's isSelfScopedPlatformCacheKeyMutation checks),
+     * so a caller with genuinely no tenant frame on the stack for this cache still resolves to
+     * "unmanaged" the same way it always did if the wrapper were ever bypassed -- but a real
+     * managed lookup now succeeds.
+     */
+    @Test
+    public void testSetCacheManager_wrapsRawProviderCacheAndRegistersIt() throws Exception {
+        CacheManager cacheManager = mock(CacheManager.class);
+        Cache<?, ?> rawProviderCache = mock(Cache.class);
+        when(cacheManager.getCache(anyString())).thenReturn((Cache) rawProviderCache);
+
+        AppDefCache freshAppDefCache = new AppDefCache();
+        freshAppDefCache.setCacheManager(cacheManager);
+
+        Field cacheField = AppDefCache.class.getDeclaredField("cache");
+        cacheField.setAccessible(true);
+        Object wired = cacheField.get(freshAppDefCache);
+
+        assertTrue("setCacheManager(..) must wrap the raw provider cache in net.sf.ehcache.Cache "
+                        + "so MultiTenantPluginAspect's guards can see it",
+                wired instanceof net.sf.ehcache.Cache);
+        assertTrue("the wrapped cache must be registered with ManagedCacheRegistry so the "
+                        + "self-scoped mutation exemption check recognizes it",
+                org.joget.commons.util.ManagedCacheRegistry.isManaged(wired));
     }
 }

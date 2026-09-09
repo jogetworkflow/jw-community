@@ -325,9 +325,8 @@ public class VariableDataBatchAspect {
             } else {
                 WMSessionHandle shandle = (WMSessionHandle) pjp.getArgs()[0];
                 if (shandle != null) {
-                    java.lang.reflect.Method getDefMethod = findDeclaredMethod(target.getClass(), "getProcessDefinition",
+                    java.lang.reflect.Method getDefMethod = accessibleMethod(target.getClass(), "getProcessDefinition",
                             org.enhydra.shark.api.client.wfmc.wapi.WMSessionHandle.class);
-                    getDefMethod.setAccessible(true);
                     Object wp = getDefMethod.invoke(target, shandle);
                     if (wp != null) {
                         @SuppressWarnings("unchecked")
@@ -529,6 +528,8 @@ public class VariableDataBatchAspect {
                 populateActivityInsertStatement(ps, doObj);
                 ps.addBatch();
             }
+            // resolve before inserting, so a failure falls back before any row is written
+            resolveSaveStateFields(buffer);
             ps.executeBatch();
             for (ActivityDataDO doObj : buffer) {
                 writeField(doObj, "persistent", true);
@@ -632,6 +633,8 @@ public class VariableDataBatchAspect {
                 populateProcessDataInsertStatement(ps, doObj);
                 ps.addBatch();
             }
+            // resolve before inserting, so a failure falls back before any row is written
+            resolveSaveStateFields(buffer);
             ps.executeBatch();
             for (ProcessDataDO doObj : buffer) {
                 writeField(doObj, "persistent", true);
@@ -786,16 +789,116 @@ public class VariableDataBatchAspect {
     // Reflection helpers
     // =========================================================================
 
+    // these advise Shark's own persistence on every activity/
+    // process variable persist, reflecting on private fields/methods of the Shark DO classes. The
+    // setAccessible is done ONCE per (class, member) and the accessible handle cached; later get/set/
+    // invoke never re-enter SecurityManager.checkPermission. The platform's own workflow activity at
+    // startup/background (and every admin request) populates the cache from a clean stack, so a
+    // non-admin tenant BeanShell reusing the cached handles is not refused -- without this, each
+    // setAccessible is refused when a bsh.*/OSGi frame is on the stack under a non-admin profile,
+    // breaking tenant-initiated set-variable / complete-activity / persist operations.
+    private static final java.util.concurrent.ConcurrentHashMap<String, Field> FIELD_CACHE =
+            new java.util.concurrent.ConcurrentHashMap<String, Field>();
+    private static final java.util.concurrent.ConcurrentHashMap<String, java.lang.reflect.Method> METHOD_CACHE =
+            new java.util.concurrent.ConcurrentHashMap<String, java.lang.reflect.Method>();
+
+    /**
+     * eagerly make the handles accessible, ONCE, on the clean
+     * context-refresh/startup stack (called at the start of WorkflowManagerImpl.setPath, so a later
+     * startup failure cannot skip it; only class loading is needed, not Shark initialisation). The
+     * cache is keyed by the field/method's DECLARING class, so every DODS subclass instance a tenant
+     * later persists reuses the same already-accessible handle and never re-enters setAccessible under
+     * its BeanShell/OSGi stack. A single try covers all lookups, so the first miss skips the rest; the
+     * lazy fallback in accessibleField/Method still resolves anything missed, so a miss here never
+     * breaks startup. Field names mirror the writeField/readField call sites above.
+     */
+    public static void init() {
+        try {
+            accessibleField(org.enhydra.shark.instancepersistence.data.ActivityDataDO.class, "persistent");
+            accessibleField(org.enhydra.shark.instancepersistence.data.ActivityDataDO.class, "dirty");
+            accessibleField(org.enhydra.shark.instancepersistence.data.ProcessDataDO.class, "persistent");
+            accessibleField(org.enhydra.shark.instancepersistence.data.ProcessDataDO.class, "dirty");
+            accessibleField(org.enhydra.shark.WfActivityImpl.class, "activitiesProcessContext");
+            accessibleField(org.enhydra.shark.WfActivityImpl.class, "key");
+            accessibleField(org.enhydra.shark.WfActivityImpl.class, "variableIdsToPersist");
+            accessibleMethod(org.enhydra.shark.WfActivityImpl.class, "getProcessDefinition",
+                    org.enhydra.shark.api.client.wfmc.wapi.WMSessionHandle.class);
+            LogUtil.info(LOG_CLASS, "VariableDataBatchAspect reflective handles initialised");
+        } catch (Throwable t) {
+            LogUtil.error(LOG_CLASS, t, "Unable to eagerly initialise VariableDataBatchAspect reflective handles; will retry lazily");
+        }
+    }
+
     private static Object readField(Object target, String fieldName) throws Exception {
-        Field field = findDeclaredField(target.getClass(), fieldName);
-        field.setAccessible(true);
-        return field.get(target);
+        return accessibleField(target.getClass(), fieldName).get(target);
     }
 
     private static void writeField(Object target, String fieldName, Object value) throws Exception {
-        Field field = findDeclaredField(target.getClass(), fieldName);
-        field.setAccessible(true);
-        field.set(target, value);
+        accessibleField(target.getClass(), fieldName).set(target, value);
+    }
+
+    /** Resolves the fields the insert flushes set on each saved row once the batch has run. */
+    private static void resolveSaveStateFields(List<?> buffer) throws NoSuchFieldException {
+        for (Object doObj : buffer) {
+            accessibleField(doObj.getClass(), "persistent");
+            accessibleField(doObj.getClass(), "dirty");
+        }
+    }
+
+    // Handles already resolved for a QUERIED (runtime) class, by class identity: the common case is
+    // one map hit with no class-hierarchy walk.
+    private static final ClassValue<java.util.concurrent.ConcurrentHashMap<String, Object>> QUERIED_HANDLES =
+            new ClassValue<java.util.concurrent.ConcurrentHashMap<String, Object>>() {
+                @Override
+                protected java.util.concurrent.ConcurrentHashMap<String, Object> computeValue(Class<?> type) {
+                    return new java.util.concurrent.ConcurrentHashMap<String, Object>();
+                }
+            };
+
+    // Looked up by the queried (runtime) class first. On a miss, the handle is resolved by its
+    // DECLARING class (walked up from the given class), so a subclass instance shares the one
+    // already-accessible handle an eager init (or any prior clean access) created, and then also
+    // cached under the queried class.
+    private static Field accessibleField(Class<?> clazz, String fieldName) throws NoSuchFieldException {
+        java.util.concurrent.ConcurrentHashMap<String, Object> queried = QUERIED_HANDLES.get(clazz);
+        Object hit = queried.get(fieldName);
+        if (hit instanceof Field) {
+            return (Field) hit;
+        }
+        Field found = findDeclaredField(clazz, fieldName);
+        String key = found.getDeclaringClass().getName() + '#' + fieldName;
+        Field f = FIELD_CACHE.get(key);
+        if (f == null) {
+            found.setAccessible(true); // once, ideally on a clean (eager-init/admin) stack
+            FIELD_CACHE.putIfAbsent(key, found);
+            f = FIELD_CACHE.get(key);
+        }
+        queried.putIfAbsent(fieldName, f);
+        return f;
+    }
+
+    private static java.lang.reflect.Method accessibleMethod(Class<?> clazz, String methodName, Class<?>... paramTypes)
+            throws NoSuchMethodException {
+        StringBuilder params = new StringBuilder();
+        for (Class<?> p : paramTypes) {
+            params.append(',').append(p.getName());
+        }
+        java.util.concurrent.ConcurrentHashMap<String, Object> queried = QUERIED_HANDLES.get(clazz);
+        String queriedKey = "#" + methodName + params;
+        Object hit = queried.get(queriedKey);
+        if (hit instanceof java.lang.reflect.Method) {
+            return (java.lang.reflect.Method) hit;
+        }
+        java.lang.reflect.Method found = findDeclaredMethod(clazz, methodName, paramTypes);
+        String key = found.getDeclaringClass().getName() + '#' + methodName + params;
+        java.lang.reflect.Method m = METHOD_CACHE.get(key);
+        if (m == null) {
+            found.setAccessible(true); // once, ideally on a clean (eager-init/admin) stack
+            METHOD_CACHE.putIfAbsent(key, found);
+            m = METHOD_CACHE.get(key);
+        }
+        queried.putIfAbsent(queriedKey, m);
+        return m;
     }
 
     private static Field findDeclaredField(Class<?> clazz, String fieldName) throws NoSuchFieldException {

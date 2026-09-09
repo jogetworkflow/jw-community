@@ -25,6 +25,7 @@ public class SetupManagerCache {
     private Cache<String, ConcurrentMap<String, Setting>> staleCache;
     private SetupDao setupDao;
     private SetupManagerHelper setupManagerHelper;
+    private static CacheManager cacheManager;
 
     /**
      * Method used by system to clear cache of a property of the current profile
@@ -283,6 +284,7 @@ public class SetupManagerCache {
      * @param cacheManager
      */
     public void setCacheManager(CacheManager cacheManager) {
+        SetupManagerCache.cacheManager = cacheManager;
         this.cache = cacheManager.getCache("org.joget.cache.LONG_TERM_SETUP_CACHE");
         if (cache != null) {
             LogUtil.info(getClass().getName(), "Initializing setup cache");
@@ -294,6 +296,25 @@ public class SetupManagerCache {
                 LogUtil.info(getClass().getName(), "Initializing setup stale cache");
             }
         }
+    }
+
+    /**
+     * Lets multi-tenant security code (in the Cloud/Enterprise edition) recognize the platform's
+     * own shared {@code CacheManager} without ever handing out a reference to it -- this bean is
+     * also reachable as an ordinary Spring bean ({@code cacheManager}), and exposes every other
+     * platform cache (including {@code LONG_TERM_SETUP_CACHE}'s live, mutable per-profile
+     * {@code Setting} objects -- master-login credentials among them) via {@code getCache}, plus
+     * lifecycle methods that never route through any single named {@code Cache}'s own identity
+     * check. An identity check that never leaves this class lets a guard recognize and block
+     * direct access to the manager itself without exposing it more broadly than it already is.
+     * On 9.1 this is a {@code javax.cache.CacheManager} (JSR-107) rather than 8.2's
+     * {@code net.sf.ehcache.CacheManager} -- the identity-check shape is unaffected, but
+     * {@code MultiTenantPluginAspect}'s pointcut must match the JSR-107 type on this line.
+     * @param candidate the object to test
+     * @return true if candidate is exactly the platform's own shared CacheManager
+     */
+    public static boolean isManagedCacheManager(Object candidate) {
+        return cacheManager != null && cacheManager == candidate;
     }
 
     public SetupManagerHelper getSetupManagerHelper() {
