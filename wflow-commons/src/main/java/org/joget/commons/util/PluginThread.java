@@ -48,6 +48,10 @@ import sun.misc.Unsafe;
  */
 public final class PluginThread extends Thread {
       
+    // captured once at registration time: this.getName() is mutable (callers such as
+    // getAsyncExecutorService() rename the thread after construction), so removal must
+    // use the same key that was registered, not a fresh call to getName()
+    private final String activeThreadKey;
     private final String profile;
     private final Locale currentLocale;
     private HttpServletRequest request;
@@ -118,7 +122,8 @@ public final class PluginThread extends Thread {
     
     public PluginThread(Runnable r) {
         super(r);
-        ACTIVE_THREADS.put(this.getName(), this);
+        activeThreadKey = this.getName();
+        ACTIVE_THREADS.put(activeThreadKey, this);
         currentLocale = LocaleContextHolder.getLocale();
         profile = DynamicDataSourceManager.getCurrentProfile();
         ServletRequestAttributes sra = null;
@@ -202,34 +207,34 @@ public final class PluginThread extends Thread {
     
     @Override
     public void run() {
-        setProfile();
-        // set locale for the current thread
-        LocaleContextHolder.setLocale(currentLocale);
-        if (request != null) {
-            RequestContextHolder.setRequestAttributes(new ServletRequestAttributes(request, response));
-            
-            ServletRequest wrappedRequest = getWrappedRequest(request);
-            if (websphereRequest != null && wrappedRequest.getClass().getName().contains("SRTServletRequest")) {
-                // for websphere liberty
-                try {
-                    // initialize request using initForNextRequest (https://github.com/OpenLiberty/open-liberty/blob/gm-24.0.0.10/dev/com.ibm.ws.webcontainer/src/com/ibm/ws/webcontainer/srt/SRTServletRequest.java#L320)
-                    MethodUtils.invokeMethod(wrappedRequest, true, "initForNextRequest", new Object[] { websphereRequest });
+        try {
+            setProfile();
+            // set locale for the current thread
+            LocaleContextHolder.setLocale(currentLocale);
+            if (request != null) {
+                RequestContextHolder.setRequestAttributes(new ServletRequestAttributes(request, response));
 
-                    // get reference to com.ibm.ws.webcontainer.srt.SRTServletRequest and set current _srtRequestHelper
-                    Class requestClass = wrappedRequest.getClass().getSuperclass().getSuperclass().getSuperclass();
-                    Field helperField = requestClass.getDeclaredField("_srtRequestHelper");
-                    helperField.setAccessible(true);
-                    helperField.set(wrappedRequest, websphereRequestHelper);
-                } catch (Exception ex) {
-                    LogUtil.warn(getClass().getName(), ex.toString());
+                ServletRequest wrappedRequest = getWrappedRequest(request);
+                if (websphereRequest != null && wrappedRequest.getClass().getName().contains("SRTServletRequest")) {
+                    // for websphere liberty
+                    try {
+                        // initialize request using initForNextRequest (https://github.com/OpenLiberty/open-liberty/blob/gm-24.0.0.10/dev/com.ibm.ws.webcontainer/src/com/ibm/ws/webcontainer/srt/SRTServletRequest.java#L320)
+                        MethodUtils.invokeMethod(wrappedRequest, true, "initForNextRequest", new Object[] { websphereRequest });
+
+                        // get reference to com.ibm.ws.webcontainer.srt.SRTServletRequest and set current _srtRequestHelper
+                        Class requestClass = wrappedRequest.getClass().getSuperclass().getSuperclass().getSuperclass();
+                        Field helperField = requestClass.getDeclaredField("_srtRequestHelper");
+                        helperField.setAccessible(true);
+                        helperField.set(wrappedRequest, websphereRequestHelper);
+                    } catch (Exception ex) {
+                        LogUtil.warn(getClass().getName(), ex.toString());
+                    }
                 }
             }
-        }
-        if (wildflyServletRequestContext != null) {
-            // for jboss eap and wildfly
-            ServletRequestContext.setCurrentRequestContext(wildflyServletRequestContext);
-        }
-        try {
+            if (wildflyServletRequestContext != null) {
+                // for jboss eap and wildfly
+                ServletRequestContext.setCurrentRequestContext(wildflyServletRequestContext);
+            }
             super.run();
         } finally {
             if (request != null) {
@@ -260,7 +265,15 @@ public final class PluginThread extends Thread {
                 LogUtil.warn(getClass().getName(), ex.toString());
             }    
             
-            ACTIVE_THREADS.remove(this.getName());
+            ACTIVE_THREADS.remove(activeThreadKey);
+
+            // super.run() executes arbitrary plugin code that can throw. Without this, an
+            // exception (or the ordinary non-exceptional path) leaves HostManager's
+            // previousProfileStack ThreadLocal leaked, recoverable via a bare HostManager.resetProfile()
+            // call (unguarded, no SecurityManager check applies to it) -- matches the same
+            // setProfile()/no-cleanup idiom this class is the origin of, copied into
+            // ReportTask/DeadlineChecker.
+            HostManager.resetProfile();
         }
     }
 
