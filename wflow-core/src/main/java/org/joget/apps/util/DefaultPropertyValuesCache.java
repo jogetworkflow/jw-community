@@ -7,7 +7,7 @@ import org.joget.apps.app.service.AppUtil;
 import org.joget.plugin.base.PluginManager;
 import org.joget.commons.util.LogUtil;
 import org.joget.plugin.property.service.PropertyUtil;
-import org.joget.commons.util.DynamicDataSourceManager;
+import org.joget.commons.util.ProfileScopedCacheKey;
 import org.joget.plugin.property.model.PropertyEditable;
 import org.joget.plugin.base.Plugin;
 
@@ -66,6 +66,12 @@ public class DefaultPropertyValuesCache {
             }
             clearCacheIfNeeded();
             String cacheKey = buildCacheKey(className, version);
+            if (cacheKey == null) {
+                // Current profile cannot be safely scoped into a key (see
+                // ProfileScopedCacheKey.forCurrentProfile(..)'s own javadoc) -- compute without
+                // caching rather than fall back to an unscoped key.
+                return PropertyUtil.getDefaultPropertyValues(propertyOptions);
+            }
             // Check cache first
             Element element = cache.get(cacheKey);
             if (element != null) {
@@ -84,35 +90,20 @@ public class DefaultPropertyValuesCache {
     }
 
     /**
-     * Builds a cache key that is unique for class, version, locale, and profile.
+     * Builds a cache key that is unique for class, version, locale, and profile -- profile-scoped
+     * via {@link ProfileScopedCacheKey} (not a trailing ":profile:<id>" segment built by hand
+     * here) so the multi-tenant cache-mutation guard (Cloud/Enterprise edition) can recognize a
+     * non-admin caller's own entry via the same {@link ProfileScopedCacheKey#SCOPE} registered
+     * for this cache in {@code PlatformCacheRegistrar}.
+     *
+     * @return the key, or {@code null} if the current profile cannot be safely scoped (see
+     *         {@link ProfileScopedCacheKey#forCurrentProfile(String)})
      */
     private static String buildCacheKey(String className, String version) {
-        StringBuilder keyBuilder = new StringBuilder();
-        keyBuilder.append(className)
-                  .append(":")
-                  .append(version != null ? version : "1.0")
-                  .append(":")
-                  .append(AppUtil.getAppLocale());
-        String profileId = getCurrentProfileId();
-        if (profileId != null) {
-            keyBuilder.append(":profile:").append(profileId);
-        }
-        return keyBuilder.toString();
-    }
-
-    /**
-     * Gets the current profile ID from {@link DynamicDataSourceManager}.
-     */
-    private static String getCurrentProfileId() {
-        try {
-            String profile = DynamicDataSourceManager.getCurrentProfile();
-            if (profile != null && !profile.trim().isEmpty()) {
-                return profile.trim();
-            }
-        } catch (Exception e) {
-            LogUtil.info(DefaultPropertyValuesCache.class.getName(), "Could not determine profile: " + e.getMessage());
-        }
-        return DynamicDataSourceManager.DEFAULT_PROFILE;
+        String localKey = className
+                + ":" + (version != null ? version : "1.0")
+                + ":" + AppUtil.getAppLocale();
+        return ProfileScopedCacheKey.forCurrentProfile(localKey);
     }
 
     /**
@@ -124,9 +115,22 @@ public class DefaultPropertyValuesCache {
             Date lastCleared = pluginManager.lastClearedCache();
             Date prev = lastClearCache.get();
 
-            if (lastCleared != null && (prev == null || prev.before(lastCleared)) && lastClearCache.compareAndSet(prev, lastCleared)) {
-                cache.removeAll();
-                LogUtil.info(DefaultPropertyValuesCache.class.getName(), "Cleared default property values cache");
+            if (lastCleared != null && (prev == null || prev.before(lastCleared))) {
+                // Advance the timestamp only after removeAll() actually succeeds: if it throws
+                // (a restricted caller blocked by the mutation guard), the timestamp must stay
+                // put so a later, privileged call still sees the invalidation as pending.
+                try {
+                    cache.removeAll();
+                    lastClearCache.compareAndSet(prev, lastCleared);
+                    LogUtil.info(DefaultPropertyValuesCache.class.getName(), "Cleared default property values cache");
+                } catch (SecurityException e) {
+                    // Expected, not an error: a restricted (non-admin) caller is correctly
+                    // blocked from bulk-clearing a cache shared by every tenant. This retries on
+                    // that caller's next request until a privileged call succeeds, so logging it
+                    // at ERROR every time would flood the logs for routine restricted traffic.
+                    LogUtil.debug(DefaultPropertyValuesCache.class.getName(),
+                            "Deferred default property values cache clear: restricted caller cannot bulk-clear a shared cache");
+                }
             }
         } catch (Exception e) {
             LogUtil.error(DefaultPropertyValuesCache.class.getName(), e, "Error checking cache clear status");

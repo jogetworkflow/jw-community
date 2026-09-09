@@ -183,5 +183,7 @@
         <property name="cacheManager" ref="cacheManager"/>
         <property name="cacheName" value="org.joget.cache.DEFAULT_PROPERTY_VALUES_CACHE"/>
     </bean>
-    
+
+    <bean id="platformCacheRegistrar" class="org.joget.commons.util.PlatformCacheRegistrar" />
+
 </beans>

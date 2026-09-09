@@ -131,6 +131,23 @@ public class AppDevUtil {
     // Tracks commit count per repo since last GC (for commit-threshold trigger)
     private static final ConcurrentHashMap<String, AtomicInteger> gcCommitCounters = new ConcurrentHashMap<>();
 
+    /**
+     * Lets multi-tenant security code (in the Cloud/Enterprise edition) recognize the two shared
+     * git-cleanup pools above as protected dispatch targets, without ever handing out a live
+     * reference to either one -- a public getter returning the {@code ScheduledExecutorService}
+     * itself would let any caller (including an OSGI plugin, which reaches public static methods
+     * across package/module boundaries without restriction) {@code shutdown()}/{@code shutdownNow()}
+     * it or downcast to {@code ScheduledThreadPoolExecutor} and reconfigure its core pool size,
+     * killing git temp cleanup and git GC cluster-wide with no restricted-reflection or executor
+     * dispatch check catching either operation. An identity check that never leaves this class
+     * closes the same recognition gap without opening that one.
+     * @param candidate the object to test
+     * @return true if candidate is exactly the shared git-temp-cleanup or git-gc executor
+     */
+    public static boolean isSharedGitExecutor(Object candidate) {
+        return candidate == gitTempCleanerExecutor || candidate == gitGcExecutor;
+    }
+
     static ThreadLocal<Boolean> importApp = new ThreadLocal<>();
     static ThreadLocal<Map<String, GitCommitHelper>> backgroundSync = new ThreadLocal<>();
 

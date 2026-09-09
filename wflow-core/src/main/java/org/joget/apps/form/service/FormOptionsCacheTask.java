@@ -31,13 +31,22 @@ public class FormOptionsCacheTask implements Runnable {
         try {
             if (FormOptionsCacheAspect.syncPaused(cacheKey)) {
                 scheduledFuture.cancel(true);
-                if (LogUtil.isDebugEnabled(FormOptionsCacheAspect.class.getName())) {    
+                if (LogUtil.isDebugEnabled(FormOptionsCacheAspect.class.getName())) {
                     LogUtil.debug(FormOptionsCacheAspect.class.getName(), "Stop syncOptionsCache: " + cacheKey);
                 }
             } else {
                 AppUtil.setCurrentAppDefinition(appDef);
-                HostManager.setCurrentProfile(profile);
-                FormOptionsCacheAspect.syncOptionsCache(cacheKey);
+                // This task is rescheduled on a ScheduledFuture/pooled scheduler thread. Without
+                // try/finally here, an exception from syncOptionsCache() leaves HostManager's
+                // previousProfileStack ThreadLocal leaked on that pooled thread, recoverable by a
+                // later, unrelated task via a bare HostManager.resetProfile() call (unguarded, no
+                // SecurityManager check applies to it).
+                try {
+                    HostManager.setCurrentProfile(profile);
+                    FormOptionsCacheAspect.syncOptionsCache(cacheKey);
+                } finally {
+                    HostManager.resetProfile();
+                }
             }
         } catch (Exception e) {
             LogUtil.error(FormOptionsCacheTask.class.getName(), e, "Profile : " + profile);

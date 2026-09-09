@@ -81,7 +81,13 @@
         <property name="formColumnCache" ref="formColumnCache" />
         <property name="formSessionFactoryCache" ref="formSessionFactoryCache" />
         <property name="joinFormSessionFactoryCache" ref="joinFormSessionFactoryCache" />
-        <property name="formPersistentClassCache" ref="formSessionFactoryCache" />
+        <!-- #2261: was ref="formSessionFactoryCache", a pre-existing copy/paste bug that pointed
+             this property at the SF_CACHE bean instead of its own dedicated formPersistentClassCache
+             bean, so formDataDao's own persistent-class cache field silently shared SF_CACHE's cache
+             region, and formPersistentClassCache's own bean/region was never registered by
+             FormDataDaoImpl#setFormPersistentClassCache's registerReadSensitive(..) side effect
+             (see PlatformCacheRegistrar's own javadoc on READ_SENSITIVE_BEAN_NAMES). -->
+        <property name="formPersistentClassCache" ref="formPersistentClassCache" />
     </bean>
     
     <bean id="formDataSessionFactory" class="org.springframework.orm.hibernate5.LocalSessionFactoryBean">

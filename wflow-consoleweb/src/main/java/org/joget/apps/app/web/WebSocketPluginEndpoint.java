@@ -78,7 +78,10 @@ public class WebSocketPluginEndpoint {
      */
     protected final void setSecurityContext(Session session) {
         try {
-            HostManager.setCurrentProfile(profile);
+            // No matching resetProfile() call for this connection's lifetime, so this must not
+            // claim HostManager's one-shot "value to restore" slot on this thread -- see
+            // setCurrentProfileWithoutTracking's javadoc.
+            HostManager.setCurrentProfileWithoutTracking(profile);
             
             HttpSession httpSession = (HttpSession) session.getUserProperties().get(HttpSession.class.getName());
 

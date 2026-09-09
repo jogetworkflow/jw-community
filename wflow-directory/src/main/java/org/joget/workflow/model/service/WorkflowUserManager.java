@@ -20,7 +20,7 @@ import org.springframework.security.core.userdetails.UserDetails;
  * Utility methods to deal with logged in user
  * 
  */
-public class WorkflowUserManager {
+public class WorkflowUserManager implements org.joget.commons.util.ThreadUserIdentitySource {
     
     public static final String ROLE_ANONYMOUS = "roleAnonymous";
     public static final String ROLE_SYSTEM = "roleSystem";
@@ -31,7 +31,24 @@ public class WorkflowUserManager {
     private ThreadLocal currentThreadUserRoles = new ThreadLocal();
     private ThreadLocal currentThreadUserData = new ThreadLocal();
     private ThreadLocal systemThreadUser = new ThreadLocal();
-    
+
+    /**
+     * GitLab #2261 (07 Sep 2026, independent review): pins THIS instance into {@code
+     * PluginThread.pinIdentitySourceIfAbsent(..)} (wflow-commons) the moment Spring constructs the
+     * real "workflowUserManager" bean -- strictly before any OSGi/tenant plugin code can possibly
+     * execute (Felix containers are only created after the core webapp Spring context finishes
+     * initializing) -- so {@code PluginThread}'s own identity-propagation lookup never needs to
+     * query a live (and therefore tenant-reachable-and-mutable) Spring {@code ApplicationContext} at
+     * request time. Write-once on the receiving end (see that method's own comment): even if some
+     * other object later also implements {@code ThreadUserIdentitySource} and is constructed, it
+     * cannot displace this genuine instance once pinned. Runs for every subclass too (e.g. this
+     * project's own enterprise {@code EnhancedWorkflowUserManager}), since a subclass's own
+     * (implicit or explicit) constructor always calls this one via {@code super()}.
+     */
+    public WorkflowUserManager() {
+        org.joget.commons.util.PluginThread.pinIdentitySourceIfAbsent(this);
+    }
+
     /**
      * Set the current processing is trigger by system
      * @param isSystemUser 
@@ -128,14 +145,14 @@ public class WorkflowUserManager {
                 return (User) threadUser;
             } else if (threadUser instanceof String) {
                 String username = threadUser.toString();
-                
+
                 if (ROLE_ANONYMOUS.equals(username)) {
                     return null;
                 } else {
                     DirectoryManager directoryManager = (DirectoryManager) DirectoryUtil.getApplicationContext().getBean("directoryManager");
                     User user = directoryManager.getUserByUsername(username);
-                
-                    setCurrentThreadUser(user);
+
+                    memoizeCurrentThreadUser(user);
 
                     if (user != null) {
                         Collection<String> results = new ArrayList<String>();
@@ -153,37 +170,66 @@ public class WorkflowUserManager {
                 }
             }
         }
-        
+
         SecurityContext context = SecurityContextHolder.getContext();
         Authentication auth = context.getAuthentication();
 
         if (auth == null) {
-            setCurrentThreadUser(ROLE_ANONYMOUS);
+            memoizeCurrentThreadUser(ROLE_ANONYMOUS);
             return null;
         }
-        
+
         Object userObj = auth.getDetails();
         if (userObj == null) {
             userObj = auth.getPrincipal();
         }
         if (userObj instanceof String) {
-            setCurrentThreadUser((String) userObj);
+            memoizeCurrentThreadUser((String) userObj);
             return getCurrentUser();
-        } else if (userObj instanceof ExtUserDetails && 
+        } else if (userObj instanceof ExtUserDetails &&
                 ((ExtUserDetails) userObj).getUser() != null) {
-            setCurrentThreadUser(((ExtUserDetails) userObj).getUser());
+            memoizeCurrentThreadUser(((ExtUserDetails) userObj).getUser());
             return getCurrentUser();
         } else if (userObj instanceof UserDetails) {
             UserDetails userDetails = (UserDetails) userObj;
             String username = userDetails.getUsername();
-            setCurrentThreadUser(username);
+            memoizeCurrentThreadUser(username);
             return getCurrentUser();
         } else if (userObj instanceof User) {
             User user = (User) userObj;
-            setCurrentThreadUser(user);
+            memoizeCurrentThreadUser(user);
             return user;
         }
         return null;
+    }
+
+    /**
+     * This is the only caller-frame MultiTenantSecurityManager's WHITELIST_RESTRICTED_CLASSES
+     * exempts for setCurrentThreadUser, deliberately narrower than whitelisting getCurrentUser()
+     * itself. getCurrentUser() calls several interface methods that a malicious collaborator could
+     * implement (Authentication.getDetails/getPrincipal, DirectoryManager.getUserByUsername,
+     * ExtUserDetails.getUser, UserDetails.getUsername); whitelisting getCurrentUser() itself would
+     * also exempt a reentrant setCurrentThreadUser(..) call triggered as a side effect of any of
+     * those, since the whitelist check matches the first whitelisted frame found walking outward
+     * from the innermost one and can't distinguish getCurrentUser()'s own call from a nested,
+     * attacker-triggered one. Calling this method only as the terminal step -- after every such
+     * interface call has already returned its result into a plain local variable -- means nothing
+     * is left on the stack beneath it for a malicious collaborator to reenter through. See
+     * MultiTenantSecurityManager's WHITELIST_RESTRICTED_CLASSES entry for the matching whitelist
+     * string and the legitimate use case (AI Agent Builder's orchestrator calling
+     * getCurrentUsername() on a fresh worker thread).
+     * @param username
+     */
+    private void memoizeCurrentThreadUser(String username) {
+        setCurrentThreadUser(username);
+    }
+
+    /**
+     * @see #memoizeCurrentThreadUser(String)
+     * @param user
+     */
+    private void memoizeCurrentThreadUser(User user) {
+        setCurrentThreadUser(user);
     }
 
     /**
@@ -202,8 +248,23 @@ public class WorkflowUserManager {
     }
 
     /**
-     * Retrieve the roles of current logged in user 
-     * @return 
+     * @see org.joget.commons.util.ThreadUserIdentitySource#captureUsernameForPluginThreadPropagation()
+     */
+    public String captureUsernameForPluginThreadPropagation() {
+        // System-scoped identity must never be inherited by an ordinary plugin-spawned worker
+        // through this general-purpose mechanism -- getCurrentUsername() would otherwise return
+        // the raw ROLE_SYSTEM sentinel string, which setCurrentThreadUser(String)/getCurrentUser()
+        // would then treat as a literal (non-existent) directory username, not as "system", breaking
+        // whatever legitimate system-scoped operation the spawned worker was meant to perform.
+        if (isSystemUser()) {
+            return null;
+        }
+        return getCurrentUsername();
+    }
+
+    /**
+     * Retrieve the roles of current logged in user
+     * @return
      */
     public Collection<String> getCurrentRoles() {
         Collection<String> results = (Collection<String>)currentThreadUserRoles.get();

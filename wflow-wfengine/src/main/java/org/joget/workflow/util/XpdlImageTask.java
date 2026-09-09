@@ -17,7 +17,10 @@ public class XpdlImageTask implements Runnable {
     @Override
     public void run() {
         try {
-            HostManager.setCurrentProfile(profile);
+            // No matching resetProfile() call in this task, so this must not claim
+            // HostManager's one-shot "value to restore" slot on this (possibly pooled) thread --
+            // see setCurrentProfileWithoutTracking's javadoc.
+            HostManager.setCurrentProfileWithoutTracking(profile);
             XpdlImageUtil.createXpdlImage(designerwebBaseUrl, processDefId);
         } catch (Exception e) {
             LogUtil.error(XpdlImageTask.class.getName(), e, "Profile : " + profile);

@@ -1,12 +1,15 @@
 package org.joget.apps.app.service;
 
 import java.io.IOException;
+import java.lang.StackWalker.Option;
+import java.lang.StackWalker.StackFrame;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import org.joget.apps.app.dao.AuditTrailDao;
 import org.joget.apps.app.model.AppDefinition;
 import org.joget.apps.app.model.AuditTrail;
@@ -51,13 +54,75 @@ public class AuditTrailManagerImpl implements AuditTrailManager {
             return new HashMap<String, List<Map>>();
         }
     };
-    
+
+    /**
+     * The one caller trusted to invoke {@link #withPluginDispatchSuppressed(Runnable)} --
+     * looked up reflectively (this module, wflow-core, must not compile-depend on the
+     * enterprise-only cloud-wfengine module that declares it). {@code Class.forName(String)}
+     * resolves via THIS class's own classloader (the shared platform/webapp classloader in any
+     * real deployment), never by searching every classloader for a same-named class, so a
+     * tenant's own OSGi bundle defining a class with this exact name cannot make this resolve to
+     * its forgery -- only {@code ==} identity against whatever this lookup actually returns is
+     * trusted, exactly as {@code MultiTenantSecurityManager.isCalledDirectlyFromAdminProfileWriter()}
+     * trusts {@code Class} identity over class-name strings for the same reason. Absent (a
+     * community-only, non-multitenant deployment, where the class does not exist at all) means no
+     * caller can ever be trusted -- correct, since nothing in that deployment mode calls this.
+     */
+    private static final String TRUSTED_SUPPRESSION_CALLER_CLASS_NAME = "org.joget.commons.util.AdminProfileWriter";
+
+    private static final StackWalker STACK_WALKER = StackWalker.getInstance(Option.RETAIN_CLASS_REFERENCE);
+
     /**
      * Used by system to clear audit trail plugin cache
      */
     public void clean() {
-        pluginList.remove();     
-        pluginPropertiesList.remove();    
+        pluginList.remove();
+        pluginPropertiesList.remove();
+    }
+
+    /**
+     * Forces {@link #executePlugin(AuditTrail)}'s own {@code executePluginInProgress.get() ==
+     * null} gate to fail for the duration of {@code task}, the same gate that already prevents a
+     * dispatched plugin's own actions from recursing back into audit-trail plugin execution. This
+     * is the actual chokepoint {@code executePlugin(..)} always checks, regardless of how {@code
+     * addAuditTrail(..)} resolved (or re-derived, e.g. via the request referer/saved-URL
+     * fallback) the {@code AuditTrail}'s app definition -- unlike suppressing dispatch by
+     * clearing the caller's ambient {@code AppDefinition}, which that fallback can defeat.
+     *
+     * <p>Restricted to {@link #TRUSTED_SUPPRESSION_CALLER_CLASS_NAME}'s direct caller (adversarial
+     * review -- Opus -- found the first version of this method callable, unguarded, by ANY OSGi/
+     * BeanShell caller able to reach {@code AppUtil.getApplicationContext().getBean(
+     * "auditTrailManager")}, letting ordinary tenant code silently defeat its own audit-trail
+     * plugin dispatch -- e.g. a compliance/SIEM-forwarding plugin -- for arbitrary work, a
+     * within-tenant integrity/monitoring bypass this method must not grant to anyone but the one
+     * caller this fix exists for).
+     */
+    public void withPluginDispatchSuppressed(Runnable task) {
+        if (!isCalledByTrustedSuppressionCaller()) {
+            throw new SecurityException("No permission to suppress audit trail plugin dispatch");
+        }
+        Object previouslyInProgress = executePluginInProgress.get();
+        executePluginInProgress.set(Boolean.TRUE);
+        try {
+            task.run();
+        } finally {
+            if (previouslyInProgress == null) {
+                executePluginInProgress.remove();
+            }
+        }
+    }
+
+    private static boolean isCalledByTrustedSuppressionCaller() {
+        final Class<?> trustedCallerClass;
+        try {
+            trustedCallerClass = Class.forName(TRUSTED_SUPPRESSION_CALLER_CLASS_NAME);
+        } catch (ClassNotFoundException e) {
+            return false;
+        }
+        Optional<StackFrame> nearestRealFrame = STACK_WALKER.walk(frames -> frames
+                .filter(f -> f.getDeclaringClass() != AuditTrailManagerImpl.class && f.getDeclaringClass() != Thread.class)
+                .findFirst());
+        return nearestRealFrame.isPresent() && nearestRealFrame.get().getDeclaringClass() == trustedCallerClass;
     }
 
     /**

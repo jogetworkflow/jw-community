@@ -157,6 +157,11 @@ public class DeadlineChecker extends Thread {
     }
 
     protected void runMe() {
+        // This checker's own thread loops indefinitely across profiles it's reused for. Without
+        // the outer finally below, an exception (or the early `return` when the datasource isn't
+        // available) leaves HostManager's previousProfileStack ThreadLocal leaked, recoverable by a
+        // later, unrelated task via a bare HostManager.resetProfile() call (unguarded, no
+        // SecurityManager check applies to it).
         try {
             setProfile();
 
@@ -258,6 +263,8 @@ public class DeadlineChecker extends Thread {
             }
         } catch (Exception e) {
             LogUtil.error(getClass().getName(), e, "");
+        } finally {
+            HostManager.resetProfile();
         }
     }
 

@@ -9,7 +9,6 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
-import org.apache.commons.lang3.reflect.FieldUtils;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
@@ -400,10 +399,11 @@ public class SharkUtilitiesAspect {
     public void standardObjectIdAllocatorUpdateCache(ProceedingJoinPoint pjp) throws Throwable {
         String profile = DynamicDataSourceManager.getCurrentProfile();
         Object thisObj = pjp.getThis();
-        
-        Map next = (Map) FieldUtils.readField(thisObj, "next", true);
-        Map max = (Map) FieldUtils.readField(thisObj, "max", true);
-        
+
+        // pre-accessible handles, no per-allocation setAccessible.
+        Map next = SharkIdAllocatorReflection.allocatorNext(thisObj);
+        Map max = SharkIdAllocatorReflection.allocatorMax(thisObj);
+
         ObjectId currentMaxObjectId = (ObjectId) max.get(profile);
         Long currentMax = null;
         if (currentMaxObjectId != null) {
@@ -441,12 +441,11 @@ public class SharkUtilitiesAspect {
     public void dodsUtilitiesUpdateCaches(ProceedingJoinPoint pjp) throws Throwable {
         String profile = DynamicDataSourceManager.getCurrentProfile();
         String objectName = (String) pjp.getArgs()[0];
-        
-        Class dodsUtilities = Class.forName("org.enhydra.shark.utilities.dods.DODSUtilities");
-        
-        Map counterCachesMax = (Map) FieldUtils.readStaticField(dodsUtilities, "counterCachesMax", true);
-        Map counterCachesNext = (Map) FieldUtils.readStaticField(dodsUtilities, "counterCachesNext", true);
-        
+
+        // pre-accessible handles, no per-allocation setAccessible.
+        Map counterCachesMax = SharkIdAllocatorReflection.counterCachesMax();
+        Map counterCachesNext = SharkIdAllocatorReflection.counterCachesNext();
+
         BigDecimal currentMaxCounter = (BigDecimal) counterCachesMax.get(profile + "::" + objectName);
         Long currentMax = null;
         if (currentMaxCounter != null) {

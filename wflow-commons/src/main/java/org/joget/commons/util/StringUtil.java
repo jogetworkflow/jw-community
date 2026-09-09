@@ -510,7 +510,15 @@ public class StringUtil {
      * risks a corrupted value rather than a reopened SQL injection.
      */
     protected static boolean backslashIsSqlEscapeChar() {
-        return backslashIsSqlEscapeChar(DynamicDataSourceManager.getProperty("workflowUrl"));
+        String workflowUrl = null;
+        try {
+            workflowUrl = DynamicDataSourceManager.getProperty("workflowUrl");
+        } catch (Throwable t) {
+            // Datasource layer not initialised yet (early boot, no tenant context, or a unit test):
+            // fall through to the documented fail-safe below, which treats an undeterminable engine
+            // as MySQL/MariaDB (true) rather than propagating the lookup failure to the caller.
+        }
+        return backslashIsSqlEscapeChar(workflowUrl);
     }
 
     /**

@@ -166,6 +166,7 @@ public class FormDataDaoImpl extends HibernateDaoSupport implements FormDataDao 
 
     public void setFormSessionFactoryCache(Cache formSessionFactoryCache) {
         this.formSessionFactoryCache = formSessionFactoryCache;
+        org.joget.commons.util.ManagedCacheRegistry.registerReadSensitive(formSessionFactoryCache);
     }
 
     public Cache getJoinFormSessionFactoryCache() {
@@ -174,6 +175,7 @@ public class FormDataDaoImpl extends HibernateDaoSupport implements FormDataDao 
 
     public void setJoinFormSessionFactoryCache(Cache joinFormSessionFactoryCache) {
         this.joinFormSessionFactoryCache = joinFormSessionFactoryCache;
+        org.joget.commons.util.ManagedCacheRegistry.registerReadSensitive(joinFormSessionFactoryCache);
     }
 
     public Cache getFormPersistentClassCache() {
@@ -182,6 +184,7 @@ public class FormDataDaoImpl extends HibernateDaoSupport implements FormDataDao 
 
     public void setFormPersistentClassCache(Cache formPersistentClassCache) {
         this.formPersistentClassCache = formPersistentClassCache;
+        org.joget.commons.util.ManagedCacheRegistry.registerReadSensitive(formPersistentClassCache);
     }
 
     /**

@@ -90,8 +90,13 @@ public class FormColumnCache {
         return cacheKey;
     }
     
+    // #2261: removeAllForCurrentProfile(..), not the old full-prefix removeAll(..) construction --
+    // this cache's own registered KeyScope now verifies the prefix cannot collide with another
+    // real tenant profile before reaching the underlying cache.getKeys() enumeration; see that
+    // method's own javadoc. removeAll(String) itself still works (it is now a delegating alias),
+    // but calling this directly avoids building a full prefix only to have it stripped again.
     public void clear() {
-        cache.removeAll(DynamicDataSourceManager.getCurrentProfile() + "_" + "FORM_COLUMNS_");
-        cache.removeAll(DynamicDataSourceManager.getCurrentProfile() + "_" + "FORM_INDEXES_");
+        cache.removeAllForCurrentProfile("FORM_COLUMNS_");
+        cache.removeAllForCurrentProfile("FORM_INDEXES_");
     }
 }

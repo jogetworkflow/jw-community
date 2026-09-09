@@ -2879,6 +2879,11 @@ public class AppServiceImpl implements AppService {
                     LogUtil.info(getClass().getName(), "Completed updating running processes for " + packageId + " from " + fromVersion + " to " + toVersion.toString());
                     removeUnusedXpdl(profile, packageId);
                 } finally {
+                    // Without this, an exception above leaves HostManager's
+                    // previousProfileStack ThreadLocal leaked -- this call site is itself
+                    // whitelisted (see MultiTenantSecurityManager.WHITELIST_RESTRICTED_CLASSES,
+                    // AppServiceImpl$2.run) so it can always run this resetProfile() call.
+                    HostManager.resetProfile();
                     tryReleaseProcessUpdate(appDef);
                 }
             }

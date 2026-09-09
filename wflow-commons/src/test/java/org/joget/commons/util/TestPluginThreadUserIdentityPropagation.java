@@ -1,0 +1,200 @@
+package org.joget.commons.util;
+
+import java.util.concurrent.atomic.AtomicReference;
+import org.junit.After;
+import org.junit.Assert;
+import org.junit.Before;
+import org.junit.Test;
+
+/**
+ * GitLab #2261: {@code PluginThread} now automatically propagates the spawning thread's already-
+ * established {@code WorkflowUserManager} identity into its own worker thread, instead of requiring
+ * each plugin (e.g. {@code process_enhancement}'s {@code AssignmentFormActions}) to call {@code
+ * setCurrentThreadUser} itself -- see {@code PluginThread.wrapWithCurrentUserIdentity}'s own
+ * comment for the full history and {@code MultiTenantSecurityManager}/{@code MultiTenantPluginAspect}
+ * /{@code BshReflectionGuardAspect} (joget-enterprise) for the security-guard side of this change,
+ * reviewed separately.
+ *
+ * <p>This module has no AspectJ weaving of its own (the guards live in joget-enterprise's
+ * cloud-wfengine), so these tests exercise {@code PluginThread}'s own functional correctness only --
+ * does it actually capture/restore/clear identity correctly and exclude system-scoped identity --
+ * using a hand-written {@code ThreadUserIdentitySource} test double registered via {@code
+ * PluginThread.TEST_IDENTITY_SOURCE_OVERRIDE} (the same test-only-seam pattern already established
+ * elsewhere in this codebase for a write-once production value, e.g. {@code MultiTenantSecurityManager
+ * .TEST_TRUSTED_PLUGIN_BUNDLE_LOCATOR_OVERRIDE}) rather than a real Spring context -- {@code
+ * PluginThread} no longer resolves this via a live {@code ApplicationContext} lookup at all (see
+ * {@code resolveIdentitySource()}'s own comment for why that was found insufficient).
+ *
+ * <p>Unlike the 9.1 line, this module's {@code PluginThread} has no {@code
+ * getAsyncExecutorService()} (a long-lived, reused-worker-thread executor helper) -- only the
+ * one-shot {@code new PluginThread(runnable); thread.start();} pattern exists here, so there is no
+ * corresponding reusable-executor per-task test on this line.
+ */
+public class TestPluginThreadUserIdentityPropagation {
+
+    /**
+     * Records the identity ever active on the CURRENT thread, so a test can assert exactly what a
+     * spawned worker thread saw without needing a real WorkflowUserManager or Spring Security
+     * context at all.
+     */
+    private static final class FakeIdentitySource implements ThreadUserIdentitySource {
+        private final ThreadLocal<String> current = new ThreadLocal<>();
+        private volatile String spawningThreadUsername;
+        private volatile boolean spawningThreadIsSystemUser;
+
+        void setSpawningThreadIdentity(String username, boolean isSystemUser) {
+            this.spawningThreadUsername = username;
+            this.spawningThreadIsSystemUser = isSystemUser;
+        }
+
+        String getOnCurrentThread() {
+            return current.get();
+        }
+
+        @Override
+        public String captureUsernameForPluginThreadPropagation() {
+            if (spawningThreadIsSystemUser) {
+                return null;
+            }
+            return spawningThreadUsername;
+        }
+
+        @Override
+        public void setCurrentThreadUser(String username) {
+            current.set(username);
+        }
+
+        @Override
+        public void clearCurrentThreadUser() {
+            current.remove();
+        }
+    }
+
+    private FakeIdentitySource fakeIdentitySource;
+
+    @Before
+    public void setUp() {
+        fakeIdentitySource = new FakeIdentitySource();
+        // Test-only seam -- see this class's own javadoc. Deliberately NOT
+        // PluginThread.pinIdentitySourceIfAbsent(..): that method is write-once by design (the
+        // whole point of the production fix this session), so a second test method in the same
+        // JUnit fork calling it again would silently do nothing, leaving every later test stuck
+        // with the FIRST test's fake. The override field has no such restriction.
+        PluginThread.TEST_IDENTITY_SOURCE_OVERRIDE = fakeIdentitySource;
+        HostManager.setCurrentProfile("somePluginThreadTestProfile-2261");
+    }
+
+    @After
+    public void tearDown() {
+        PluginThread.TEST_IDENTITY_SOURCE_OVERRIDE = null;
+        HostManager.setCurrentProfile(null);
+    }
+
+    /**
+     * The core fix: a one-shot {@code new PluginThread(runnable)} (matching {@code
+     * AssignmentFormActions}'s own usage) must run the wrapped {@code Runnable} with the SAME
+     * identity that was active on the spawning thread, with NO call from the wrapped Runnable's own
+     * code needed at all.
+     */
+    @Test
+    public void testOneShotPluginThreadInheritsSpawningThreadIdentity() throws Exception {
+        fakeIdentitySource.setSpawningThreadIdentity("someTenantUser", false);
+
+        final AtomicReference<String> seenInsideWorker = new AtomicReference<>();
+        Thread worker = new PluginThread(new Runnable() {
+            @Override
+            public void run() {
+                seenInsideWorker.set(fakeIdentitySource.getOnCurrentThread());
+            }
+        });
+        worker.start();
+        worker.join(10000);
+
+        Assert.assertEquals("a PluginThread-spawned worker must automatically inherit the SAME "
+                + "identity that was active on the thread that spawned it, with no explicit "
+                + "setCurrentThreadUser call from the wrapped Runnable's own code",
+                "someTenantUser", seenInsideWorker.get());
+    }
+
+    /**
+     * The identity set for one PluginThread's own task must not leak to whatever the SAME (or a
+     * different) thread does afterward -- clearCapturedIdentity() must actually run.
+     */
+    @Test
+    public void testIdentityIsClearedAfterOneShotPluginThreadCompletes() throws Exception {
+        fakeIdentitySource.setSpawningThreadIdentity("someTenantUser", false);
+
+        Thread worker = new PluginThread(new Runnable() {
+            @Override
+            public void run() {
+                // no-op; just needs to complete
+            }
+        });
+        worker.start();
+        worker.join(10000);
+
+        Assert.assertNull("identity must be cleared again once the PluginThread's own task "
+                + "completes, not left set on whatever thread the JVM happens to reuse next",
+                fakeIdentitySource.getOnCurrentThread());
+    }
+
+    /**
+     * GitLab #2261 regression (Sol P2, review round 1): a system-scoped spawning thread's identity
+     * must NEVER be propagated through this mechanism -- WorkflowUserManager.getCurrentUsername()
+     * would otherwise return the literal string "roleSystem", which a generic plugin-spawned worker
+     * would then treat as an ordinary (non-existent) username.
+     */
+    @Test
+    public void testSystemScopedSpawningThreadIdentityIsNotPropagated() throws Exception {
+        fakeIdentitySource.setSpawningThreadIdentity("roleSystem", true);
+
+        final AtomicReference<String> seenInsideWorker = new AtomicReference<>();
+        final AtomicReference<Boolean> sawNull = new AtomicReference<>(Boolean.FALSE);
+        Thread worker = new PluginThread(new Runnable() {
+            @Override
+            public void run() {
+                String v = fakeIdentitySource.getOnCurrentThread();
+                seenInsideWorker.set(v);
+                sawNull.set(v == null);
+            }
+        });
+        worker.start();
+        worker.join(10000);
+
+        Assert.assertTrue("a system-scoped spawning thread must NOT have any identity propagated "
+                + "into the worker thread at all (must stay unset, never the literal string "
+                + "\"roleSystem\"); saw: " + seenInsideWorker.get(),
+                sawNull.get());
+    }
+
+    /**
+     * GitLab #2261 regression (Sol P1, review round 2, joget-enterprise): pinIdentitySourceIfAbsent
+     * must be genuinely write-once in production -- a SECOND call (simulating some other object
+     * later also implementing ThreadUserIdentitySource and attempting to register itself) must not
+     * displace whichever instance was pinned first. This is the ONE test in this class that
+     * exercises the real production pinnedIdentitySource field directly (every other test uses
+     * TEST_IDENTITY_SOURCE_OVERRIDE, which is unaffected by this field) -- restores the field to
+     * whatever it was before via reflection, since it has no public reset and must not leak into
+     * unrelated tests running later in the same fork.
+     */
+    @Test
+    public void testPinIdentitySourceIfAbsentIsWriteOnce() throws Exception {
+        java.lang.reflect.Field pinnedField = PluginThread.class.getDeclaredField("pinnedIdentitySource");
+        pinnedField.setAccessible(true);
+        Object previous = pinnedField.get(null);
+        try {
+            pinnedField.set(null, null);
+            FakeIdentitySource first = new FakeIdentitySource();
+            FakeIdentitySource second = new FakeIdentitySource();
+            PluginThread.pinIdentitySourceIfAbsent(first);
+            PluginThread.pinIdentitySourceIfAbsent(second);
+
+            Assert.assertSame("a second pin attempt must never displace the already-pinned genuine "
+                    + "instance, whether the second caller is a legitimate duplicate call or a "
+                    + "malicious later registration attempt",
+                    first, pinnedField.get(null));
+        } finally {
+            pinnedField.set(null, previous);
+        }
+    }
+}

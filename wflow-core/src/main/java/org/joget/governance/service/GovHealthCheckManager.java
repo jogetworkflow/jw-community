@@ -81,13 +81,24 @@ public class GovHealthCheckManager {
                 if (profile.contains(",")) {
                     continue;
                 }
+                // `switched` guards the finally's own resetProfile() call: HostManager
+                // .setCurrentProfile only pushes a restore entry AFTER its own permission check
+                // succeeds, so a REFUSED setCurrentProfile leaves nothing on the stack for this
+                // iteration at all. Calling resetProfile() unconditionally in that case (the
+                // previous shape of this loop) would pop/restore whatever entry some OUTER,
+                // unrelated scope had already pushed -- corrupting that caller's own restore chain
+                // instead of doing nothing.
+                boolean switched = false;
                 try {
                     HostManager.setCurrentProfile(profile);
+                    switched = true;
                     initChecker();
                 } catch(Exception e) {
-                    LogUtil.error(getClass().getName(), e, "Error initializing GovHealthCheckManager for " + profile);                        
+                    LogUtil.error(getClass().getName(), e, "Error initializing GovHealthCheckManager for " + profile);
                 } finally {
-                    HostManager.resetProfile();
+                    if (switched) {
+                        HostManager.resetProfile();
+                    }
                 }
             }
         }

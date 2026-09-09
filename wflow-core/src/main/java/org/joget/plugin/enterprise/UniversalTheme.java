@@ -32,6 +32,7 @@ import org.joget.apps.userview.model.UserviewSetting;
 import org.joget.apps.userview.model.UserviewV5Theme;
 import org.joget.apps.userview.service.UserviewUtil;
 import org.joget.commons.util.LogUtil;
+import org.joget.commons.util.ProfileScopedCacheKey;
 import org.joget.commons.util.ResourceBundleUtil;
 import org.joget.commons.util.SecurityUtil;
 import org.joget.commons.util.StringUtil;
@@ -592,12 +593,25 @@ public class UniversalTheme extends UserviewV5Theme implements UserviewPwaTheme,
         }        
         
         less = lessVariables + "\n" + less;
+        // The raw LESS source is a deterministic function of the shipped theme resource plus the
+        // variables above, so using it as the cache key would let a caller predict another
+        // tenant's key and call cssCache.put(..) to poison that tenant's compiled CSS (a
+        // cross-tenant UI-injection vector, not just eviction). Scoping the key to the current
+        // tenant closes that, and matches the ManagedCacheRegistry.KeyScope registered for this
+        // cache in PlatformCacheRegistrar so the multi-tenant guard can recognize a caller's own entry.
+        String cacheKey = ProfileScopedCacheKey.forCurrentProfile(less);
         // read CSS from cache
-        Cache cache = (Cache) AppUtil.getApplicationContext().getBean("cssCache");
+        Cache cache = (cacheKey != null) ? (Cache) AppUtil.getApplicationContext().getBean("cssCache") : null;
         if (cache != null) {
-            Element element = cache.get(less);
-            if (element != null) {
-                css = (String) element.getObjectValue();
+            try {
+                Element element = cache.get(cacheKey);
+                if (element != null) {
+                    css = (String) element.getObjectValue();
+                }
+            } catch (RuntimeException e) {
+                // A cache is an optimization, not a requirement -- LESS still compiles below
+                // regardless of why the cache couldn't be read.
+                LogUtil.warn(getClass().getName(), "Unable to read compiled CSS cache: " + e.getMessage());
             }
         }
         if (css == null || css.isEmpty()) {
@@ -605,8 +619,11 @@ public class UniversalTheme extends UserviewV5Theme implements UserviewPwaTheme,
             css = compileLess(less);
             // store CSS in cache
             if (cache != null) {
-                Element element = new Element(less, css);
-                cache.put(element);
+                try {
+                    cache.put(new Element(cacheKey, css));
+                } catch (RuntimeException e) {
+                    LogUtil.warn(getClass().getName(), "Unable to update compiled CSS cache: " + e.getMessage());
+                }
             }
         }
         return css;

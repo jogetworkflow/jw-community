@@ -9,6 +9,7 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
 import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URL;
@@ -1073,6 +1074,16 @@ public class PluginManager implements ApplicationContextAware {
                 }
                 throw new PluginException(getPluginErrorMessage("console.setting.plugin.error.invalidPluginName", ERROR_INVALID_PLUGIN_NAME));
             }
+            // The ancestor-containment check below is check-then-act: NOFOLLOW_LINKS at write time
+            // only protects the leaf path component, never an ancestor directory. If an ancestor
+            // doesn't exist yet at check time (the normal case for a new subdirectory), the check
+            // passes trivially and a concurrent actor can plant a symlink there before the write
+            // runs -- a genuine TOCTOU window. No legitimate upload needs a subdirectory, so reject
+            // any path separator in the filename outright instead of trying to make the containment
+            // check atomic with the write.
+            if (filename.contains("/") || filename.contains("\\")) {
+                throw new PluginException(getPluginErrorMessage("console.setting.plugin.error.invalidPluginName", ERROR_INVALID_PLUGIN_NAME));
+            }
             if (!filename.endsWith(".jar")) {
                 filename += ".jar";
             }
@@ -1080,13 +1091,58 @@ public class PluginManager implements ApplicationContextAware {
             boolean isOverrideExisting = false;
 
             // write file
-            FileOutputStream out = null;
+            OutputStream out = null;
             try {
                 outputFile = new File(getUploadDir(), filename);
+
+                // The symlink checks below only guard outputFile's own leaf path component.
+                // SecurityUtil.normalizedFileName(..) rejects "../" traversal but not a plain
+                // subdirectory segment, so an ancestor directory under getUploadDir() planted as a
+                // symlink (by some other write reaching the same tenant profile directory tree)
+                // could resolve this write outside the intended upload directory even though the
+                // leaf itself is never a symlink. getCanonicalFile() resolves symlinks on every
+                // existing path segment (and safely normalizes whatever doesn't exist yet); if the
+                // result doesn't stay under getUploadDir()'s own canonical directory, refuse before
+                // outputDir.mkdirs()/the write below run -- the same containment-check shape
+                // MultiTenantPluginManager.isBaseSharedPluginLocation(..) uses for the analogous
+                // base-plugin-location check.
+                try {
+                    File canonicalOutputFile = outputFile.getCanonicalFile();
+                    File canonicalUploadDir = new File(getUploadDir()).getCanonicalFile();
+                    if (!canonicalOutputFile.toPath().startsWith(canonicalUploadDir.toPath())) {
+                        LogUtil.warn(PluginManager.class.getName(), "Refusing to upload " + filename
+                                + " -- its path resolves outside the intended upload directory "
+                                + "(an ancestor directory escapes " + canonicalUploadDir.getAbsolutePath() + ").");
+                        throw new PluginException(getPluginErrorMessage("console.setting.plugin.error.invalidPluginName", ERROR_INVALID_PLUGIN_NAME));
+                    }
+                } catch (IOException ex) {
+                    throw new PluginException(getPluginErrorMessage("console.setting.plugin.error.invalidPluginName", ERROR_INVALID_PLUGIN_NAME));
+                }
+
+                // Without this check, a write here would silently follow a pre-existing symlink at
+                // outputFile's path. In a multi-tenant Cloud deployment, getUploadDir() is a
+                // per-tenant profile directory (MultiTenantPluginManager.getUploadDir() ->
+                // getBaseProfileDirectory()) that the same tenant's own OSGi/BeanShell code can
+                // otherwise write inside of, including planting a symlink under a chosen filename
+                // that points outside that directory (the containment check only inspects a
+                // not-yet-existing path's nearest existing ancestor at creation time, so creating
+                // the link itself succeeds regardless of where it points). A later upload to that
+                // filename -- by anyone with upload access to this tenant's plugin directory, not
+                // necessarily the same caller -- would then silently write through the planted
+                // symlink instead of creating the plain regular file this call believes it is
+                // creating (e.g. escaping the tenant's own profile directory into the shared plugin
+                // directory). Refusing to write through a pre-existing symlink and removing it first
+                // closes this regardless of who planted it or why.
+                if (java.nio.file.Files.isSymbolicLink(outputFile.toPath())) {
+                    LogUtil.warn(PluginManager.class.getName(), "Refusing to upload through a "
+                            + "pre-existing symlink at " + outputFile.getAbsolutePath()
+                            + " -- removing it and writing a fresh regular file at the same path instead.");
+                    java.nio.file.Files.delete(outputFile.toPath());
+                }
                 if (outputFile.exists()) {
                     isOverrideExisting = true;
                 }
-                
+
                 File outputDir = outputFile.getParentFile();
                 if (!outputDir.exists()) {
                     outputDir.mkdirs();
@@ -1095,8 +1151,18 @@ public class PluginManager implements ApplicationContextAware {
                 fullFileName = outputFile.getAbsolutePath();
                 LogUtil.debug(PluginManager.class.getName(), "Plugin " + fullFileName + " installing in progress.");
                 filesInProgress.add(fullFileName);
-                
-                out = new FileOutputStream(outputFile);
+
+                // The symlink check/delete above and this open are not atomic -- the tenant, who
+                // owns this directory, could re-plant a symlink at the same path in between (e.g.
+                // while another thread/node is still working through outputDir.mkdirs()/
+                // filesInProgress bookkeeping above), and a plain FileOutputStream follows symlinks
+                // unconditionally. NOFOLLOW_LINKS makes this throw instead of silently writing
+                // through a re-planted link; CREATE + TRUNCATE_EXISTING preserves the same overwrite
+                // semantics a plain FileOutputStream had for an ordinary existing file.
+                out = java.nio.file.Files.newOutputStream(outputFile.toPath(),
+                        java.nio.file.StandardOpenOption.CREATE, java.nio.file.StandardOpenOption.WRITE,
+                        java.nio.file.StandardOpenOption.TRUNCATE_EXISTING,
+                        java.nio.file.LinkOption.NOFOLLOW_LINKS);
                 BufferedInputStream bin = new BufferedInputStream(in);
                 int len = 0;
                 byte[] buffer = new byte[4096];

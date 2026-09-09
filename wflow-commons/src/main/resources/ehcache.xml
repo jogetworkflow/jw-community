@@ -78,7 +78,20 @@
             overflowToDisk="false">
         <cacheEventListenerFactory class="org.joget.commons.util.SessionFactoryCacheListenerFactory" />
     </cache>
-    
+
+    <!-- #2261: formPersistentClassCache (appsApplicationContext.xml) has no explicit cache name,
+         so Spring's EhCacheFactoryBean falls back to its own bean name as the cache name; without
+         an explicit entry here it would auto-create via defaultCache above (120s TTL) instead of
+         staying eternal like SF_CACHE, its own former (misconfigured) home: a real performance
+         regression (repeated hbm.xml re-parsing every ~120s per form per profile) that an
+         independent review found in the fix that corrected formDataDao's own misdirected ref to
+         this bean (appsApplicationContext.xml). Explicit entry keeps the PREVIOUS eternal
+         lifetime, so only the identity/registration gap is closed, not the caching behaviour. -->
+    <cache name="formPersistentClassCache"
+            maxElementsInMemory="5000"
+            eternal="true"
+            overflowToDisk="false"/>
+
     <!-- Cache for form, list, userview -->
     <cache name="org.joget.cache.FLU_CACHE"
             maxElementsInMemory="10000"

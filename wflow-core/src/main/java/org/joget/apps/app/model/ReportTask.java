@@ -48,11 +48,19 @@ public final class ReportTask implements Runnable {
     @Transactional
     @Override
     public void run() {
-        setProfile();
-        if (wfActivity != null) {
-            updateActivityData(wfActivity, wfTrackActivity, wfProcess, wfTrackProcess, users, appId, appVersion);
-        } else {
-            updateProcessData(wfProcess, wfTrackProcess, appId, appVersion);
+        // This task runs on the shared reportExecutor pool. Without try/finally, an exception
+        // from update*Data() leaves HostManager's previousProfileStack ThreadLocal leaked on that
+        // pooled thread, recoverable by a later, unrelated task via a bare
+        // HostManager.resetProfile() call (unguarded, no SecurityManager check applies to it).
+        try {
+            setProfile();
+            if (wfActivity != null) {
+                updateActivityData(wfActivity, wfTrackActivity, wfProcess, wfTrackProcess, users, appId, appVersion);
+            } else {
+                updateProcessData(wfProcess, wfTrackProcess, appId, appVersion);
+            }
+        } finally {
+            HostManager.resetProfile();
         }
     }
 

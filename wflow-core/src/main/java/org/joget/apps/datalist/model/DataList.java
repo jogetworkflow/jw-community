@@ -793,7 +793,15 @@ public class DataList {
         if (binder instanceof StaleCacheDataListBinder && ((StaleCacheDataListBinder) binder).shouldCacheRowCount()) {
             Object[] binderHashParams = ((StaleCacheDataListBinder) binder).getAdditionalStaleCacheKeyParams();
             String binderHash = DataListUtil.getStaleCacheKey(appDef, binder, new Object[]{binderHashParams, filterQueryObjects});
-            final String cacheKey = "Profile::" + DynamicDataSourceManager.getCurrentProfile() + "(" + binderHash + ")";
+            // The cache key must start with the current tenant's profile name so a guard checking
+            // "does this key belong to the caller's own profile" can recognize it; ProfileScopedCacheKey
+            // builds that key and registers the matching KeyScope in PlatformCacheRegistrar. It
+            // returns null when the current profile can't be safely scoped, which is treated the
+            // same as "no binder cache available" below rather than falling back to an unscoped key.
+            final String cacheKey = ProfileScopedCacheKey.forCurrentProfile("(" + binderHash + ")");
+            if (cacheKey == null) {
+                return getCountLambda.get();
+            }
 
             final Cache cache = (Cache) AppUtil.getApplicationContext().getBean("rowCountCache");
             final int elemTtl = ((StaleCacheDataListBinder) binder).getCacheTtl();

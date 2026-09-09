@@ -23,6 +23,7 @@ import org.joget.apps.userview.model.UserviewCategory;
 import org.joget.apps.userview.model.UserviewMenu;
 import org.joget.apps.userview.service.UserviewUtil;
 import org.joget.commons.util.LogUtil;
+import org.joget.commons.util.ProfileScopedCacheKey;
 import org.joget.commons.util.ResourceBundleUtil;
 import org.joget.commons.util.SecurityUtil;
 import org.joget.commons.util.StringUtil;
@@ -204,10 +205,13 @@ public class XadminTheme extends UniversalTheme {
             // process LESS
             String less = AppUtil.readPluginResource(getClass().getName(), "resources/themes/" + getPathName() + "/theme.less");
             less = lessVariables + "\n" + less;
+            // Cache key is scoped to the current tenant (see UniversalTheme.getCss(..) for the
+            // full reasoning) instead of the raw, tenant-blind LESS source.
+            String cacheKey = ProfileScopedCacheKey.forCurrentProfile(less);
             // read CSS from cache
-            Cache cache = (Cache) AppUtil.getApplicationContext().getBean("cssCache");
+            Cache cache = (cacheKey != null) ? (Cache) AppUtil.getApplicationContext().getBean("cssCache") : null;
             if (cache != null) {
-                Element element = cache.get(less);
+                Element element = cache.get(cacheKey);
                 if (element != null) {
                     css = (String) element.getObjectValue();
                 }
@@ -217,7 +221,7 @@ public class XadminTheme extends UniversalTheme {
                 css = compileLess(less);
                 // store CSS in cache
                 if (cache != null) {
-                    Element element = new Element(less, css);
+                    Element element = new Element(cacheKey, css);
                     cache.put(element);
                 }
             }

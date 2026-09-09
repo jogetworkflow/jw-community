@@ -77,12 +77,35 @@ public class PluginWebFilterChain extends GenericFilterBean {
         HttpServletResponse firewallResponse = this.firewall.getFirewalledResponse((HttpServletResponse) response);
         List<Filter> filters = getFilters(firewallRequest);
         if (filters == null || filters.size() == 0) {
-            firewallRequest.reset();
-            chain.doFilter(firewallRequest, firewallResponse);
+            continueToOriginalChain(firewallRequest, chain, firewallRequest, firewallResponse);
             return;
         }
         VirtualFilterChain virtualFilterChain = new VirtualFilterChain(firewallRequest, chain, filters);
-        virtualFilterChain.doFilter(firewallRequest, firewallResponse);
+        // #2261 (08 Sep 2026, Sol review, round 3): a registered filter could RETAIN this
+        // VirtualFilterChain instead of calling it synchronously, return, and have separate, later
+        // code -- potentially during a completely different request's own filter-chain processing --
+        // invoke the retained chain. MultiTenantSecurityManager.isUntrustedCodeOnStack()'s
+        // stack-scan-based trust boundary cannot reliably distinguish that from a legitimate call,
+        // since an unrelated PluginWebFilterChain frame belonging to the OTHER, coincidentally-live
+        // invocation can satisfy its re-entry check. Invalidating the chain here, once this
+        // synchronous call returns, closes the exploit at its source instead: any later attempt to
+        // reuse it fails immediately, before ever reaching the stack-scan logic at all.
+        try {
+            virtualFilterChain.doFilter(firewallRequest, firewallResponse);
+        } finally {
+            virtualFilterChain.invalidate();
+        }
+    }
+
+    // Single, stable call site for handing off from plugin-filter-chain processing to the real
+    // chain, used by both exit paths below. MultiTenantSecurityManager.isUntrustedCodeOnStack()
+    // treats this exact frame as a trust boundary, since a plugin filter's own stack frame otherwise
+    // stays live for the whole downstream continuation.
+    private static void continueToOriginalChain(FirewalledRequest firewalledRequest, FilterChain originalChain,
+            ServletRequest request, ServletResponse response) throws IOException, ServletException {
+        // Deactivate path stripping as we exit the filter chain
+        firewalledRequest.reset();
+        originalChain.doFilter(request, response);
     }
 
     /**
@@ -228,6 +251,39 @@ public class PluginWebFilterChain extends GenericFilterBean {
 
         private int currentPosition = 0;
 
+        // #2261 (08 Sep 2026, Sol review, round 3): set once the top-level doFilterInternal(..)
+        // call that constructed this instance returns, so a filter that RETAINS this chain instead
+        // of calling it synchronously -- then invokes it later, possibly during a completely
+        // different, unrelated request's own filter-chain processing -- gets rejected outright,
+        // rather than relying on isUntrustedCodeOnStack()'s stack-scan to notice, which cannot
+        // reliably distinguish a genuinely unrelated PluginWebFilterChain frame (from that OTHER,
+        // coincidentally-live invocation) from this chain's own owning invocation.
+        private volatile boolean invalidated = false;
+
+        // #2261 (08 Sep 2026, Sol review, round 4): completion-only invalidation still permits a
+        // CONCURRENT replay while the owning invocation is still live (`invalidated` stays false
+        // for as long as the owning call has not yet returned) -- e.g. a filter publishes this
+        // chain through a static/shared field and blocks, while a second, unrelated request's own
+        // thread reads that field and invokes the chain concurrently, reaching
+        // continueToOriginalChain() legitimately from an entirely different call stack. This
+        // instance is only ever meant to be driven synchronously, entirely within the ONE thread
+        // that constructed it (matching Spring's own FilterChainProxy.VirtualFilterChain, which
+        // this class is explicitly modeled on) -- capturing that thread and rejecting any call from
+        // a different one closes this regardless of whether the owning invocation has completed
+        // yet, independent of the `invalidated` flag above.
+        private final Thread owningThread = Thread.currentThread();
+
+        // #2261 (08 Sep 2026, Sol review, round 5): thread confinement and the invalidated flag
+        // together stop a RETAINED/detached/concurrent replay, but do not stop a plugin filter
+        // calling THIS chain's own doFilter(..) TWICE, synchronously, on the SAME thread, before its
+        // own call returns -- currentPosition stays at size after the first such call reaches the
+        // terminal branch below, so a second, same-thread call before returning would reach
+        // continueToOriginalChain(..) (and the real downstream chain) again. Consuming the terminal
+        // transition here, once, closes that: this field is only ever read/written from
+        // owningThread (guaranteed by the check above), so no synchronization is needed, matching
+        // currentPosition's own existing non-volatile, single-thread-only assumption.
+        private boolean terminalReached = false;
+
         private VirtualFilterChain(FirewalledRequest firewalledRequest, FilterChain chain,
                 List<Filter> additionalFilters) {
             this.originalChain = chain;
@@ -236,12 +292,45 @@ public class PluginWebFilterChain extends GenericFilterBean {
             this.firewalledRequest = firewalledRequest;
         }
 
+        private void invalidate() {
+            this.invalidated = true;
+        }
+
         @Override
         public void doFilter(ServletRequest request, ServletResponse response) throws IOException, ServletException {
+            if (Thread.currentThread() != this.owningThread) {
+                throw new ServletException("This filter chain may only be invoked on the thread "
+                        + "that originally constructed it");
+            }
+            if (this.invalidated) {
+                throw new ServletException("This filter chain has already completed for its "
+                        + "original request and cannot be invoked again");
+            }
             if (this.currentPosition == this.size) {
-                // Deactivate path stripping as we exit the filter chain
-                this.firewalledRequest.reset();
-                this.originalChain.doFilter(request, response);
+                // #2261 (08 Sep 2026, colleague-reported regression against dx82-samples):
+                // THIS branch, not the empty-filters one in doFilterInternal, is the exit point an
+                // installed plugin filter (e.g. SampleHeaderFilter, matching Joget's own documented
+                // PluginWebFilterAbstract pattern) actually reaches -- any registered filter's own
+                // doFilter(..) calls filterChain.doFilter(request, response) on THIS VirtualFilterChain
+                // instance, and once every registered filter has run once, that recursive call lands
+                // here. An externally-supplied patch fixed the OTHER (empty-filters) exit point and
+                // added continueToOriginalChain(..) as a MultiTenantSecurityManager.isUntrustedCodeOnStack()
+                // trust-boundary marker, but never routed THIS actually-hit exit point through it --
+                // independently confirmed by tracing the call chain (not by trusting the patch's own
+                // "used by both exit paths" comment) that leaving this branch unpatched reproduces the
+                // reported regression exactly: MultiTenantPluginAspect.securityCheck()'s advice around
+                // the plugin filter's own doFilter(..) keeps `active` true for the ENTIRE nested
+                // downstream chain (JSP compilation, static resources) until pjp.proceed() returns --
+                // i.e. until this recursive call, and everything it does, completes -- so without the
+                // marker HERE too, isUntrustedCodeOnStack()'s walk still reaches the plugin's own
+                // OSGI-bundle-loaded doFilter frame further out on the SAME stack and wrongly flags the
+                // whole downstream continuation as untrusted, exactly as reported.
+                if (this.terminalReached) {
+                    throw new ServletException("This filter chain has already reached the end of "
+                            + "its chain and cannot be invoked again");
+                }
+                this.terminalReached = true;
+                continueToOriginalChain(this.firewalledRequest, this.originalChain, request, response);
                 return;
             }
             this.currentPosition++;
