@@ -239,11 +239,16 @@
                     $(file.previewElement).find("input").remove();
                     $(file.previewElement).find(".name").css("color" , "red");
                     $(file.previewElement).find("img").remove();
-                    if (typeof resp === "string") {
-                        $(file.previewElement).find(".error").text(resp);
-                    } else {
-                        $(file.previewElement).find(".error").text(resp.error.code + " " + resp.error.message);
+                    
+                    var errorMsg = resp;
+                    if (resp && resp.error) {
+                        if (typeof resp.error === "object") {
+                            errorMsg = (resp.error.code ? resp.error.code + " " : "") + (resp.error.message || "");
+                        } else {
+                            errorMsg = resp.error;
+                        }
                     }
+                    $(file.previewElement).find(".error").text(errorMsg);
                 });
                 
                 $(target).on("click", ".remove", function(){

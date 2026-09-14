@@ -2352,6 +2352,9 @@ div#content-container {
     #header-links {
         right: 0;
     }
+    #installApp {
+        right: 35px;
+    }
     #header-links a {
         padding: 1px;
         margin: 4px 2px;

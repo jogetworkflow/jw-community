@@ -3,6 +3,7 @@ package org.joget.apps.app.controller;
 import java.net.URLEncoder;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
 import org.apache.commons.lang.StringEscapeUtils;
 import static org.joget.apps.app.controller.UserviewWebController.isBackendLicense;
 import org.joget.apps.app.dao.UserviewDefinitionDao;
@@ -19,6 +20,10 @@ import org.joget.commons.util.StringUtil;
 import org.joget.workflow.model.service.WorkflowUserManager;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
+import org.springframework.security.authentication.AnonymousAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContext;
+import org.springframework.security.web.context.HttpSessionSecurityContextRepository;
 import org.springframework.security.web.savedrequest.HttpSessionRequestCache;
 import org.springframework.security.web.savedrequest.SavedRequest;
 import org.springframework.stereotype.Controller;
@@ -40,6 +45,16 @@ public class LoginWebController {
 
     @RequestMapping("/login")
     public String login(ModelMap map, HttpServletRequest request, HttpServletResponse response) throws Exception {
+
+        // /web/login bypasses Spring Security, so retrieve any existing authentication directly from the session.
+        HttpSession session = request.getSession(false);
+        Object context = session != null ? session.getAttribute(HttpSessionSecurityContextRepository.SPRING_SECURITY_CONTEXT_KEY) : null;
+        SecurityContext securityContext = context instanceof SecurityContext ? (SecurityContext) context : null;
+        Authentication authentication = securityContext != null ? securityContext.getAuthentication() : null;
+        if (authentication != null && authentication.isAuthenticated() && !(authentication instanceof AnonymousAuthenticationToken)) {
+            return "redirect:/web/index";
+        }
+
         if (isBackendLicense()) {
             return "login";
         }

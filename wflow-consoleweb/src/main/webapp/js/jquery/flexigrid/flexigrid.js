@@ -95,7 +95,10 @@
                                                 cdpos = cdpos + cdleft + cdpad;
                                             }
                                         }
-					$('div:eq('+n+')',g.cDrag).css({'left':cdpos+'px'}).show();
+					if ($('body').hasClass('rtl'))
+						$('div:eq('+n+')',g.cDrag).css({'right':cdpos+'px','left':'auto'}).show();
+					else
+						$('div:eq('+n+')',g.cDrag).css({'left':cdpos+'px','right':'auto'}).show();
 
 					cdleft = cdpos;
 					}
@@ -137,7 +140,8 @@
 						$(obj).addClass('dragging').siblings().hide();
 						$(obj).prev().addClass('dragging').show();
 
-						this.colresize = {startX: e.pageX, ol: parseInt(obj.style.left), ow: ow, n : n };
+						var isRtl = $('body').hasClass('rtl');
+						this.colresize = {startX: e.pageX, ol: parseInt(isRtl ? obj.style.right : obj.style.left), ow: ow, n : n, rtl: isRtl };
 						$('body').css('cursor','col-resize');
 					}
 				else if (dragtype=='vresize') //table resize
@@ -186,11 +190,12 @@
 					{
 						var n = this.colresize.n;
 						var diff = e.pageX-this.colresize.startX;
+						if (this.colresize.rtl) diff = -diff;
 						var nleft = this.colresize.ol + diff;
 						var nw = this.colresize.ow + diff;
 						if (nw > p.minwidth)
 							{
-								$('div:eq('+n+')',this.cDrag).css('left',nleft);
+								$('div:eq('+n+')',this.cDrag).css(this.colresize.rtl ? 'right' : 'left',nleft);
 								this.colresize.nw = nw;
 							}
 					}
@@ -1028,34 +1033,80 @@
 
 									} else if (!g.colresize) {
 
-									var nv = $('th:visible',g.hDiv).index(this);
-									var onl = parseInt($('div:eq('+nv+')',g.cDrag).css('left'));
-									var nw = parseInt($(g.nBtn).width()) + parseInt($(g.nBtn).css('borderLeftWidth'));
-									nl = onl - nw + Math.floor(p.cgwidth/2);
+                                                                        //find the scroll container - global container - flexigrid
+                                                                        var scrollContainer = $(g.gDiv);
+                                                                        var containerOffset = scrollContainer.offset();
+                                                                        var scrollLeft = scrollContainer.scrollLeft();
 
-									$(g.nDiv).hide();$(g.nBtn).hide();
-                                                                        if($('body').hasClass('rtl')){
-                                                                            $(g.nBtn).css({'right':nl,top:g.hDiv.offsetTop}).show();
+                                                                        //getBoundingClientRect() gives the exact pixel position/visual position on screen
+                                                                        //get the hovered column/th position
+                                                                        var thRect = this.getBoundingClientRect();
+
+                                                                        //width of nBtn
+                                                                        var btnWidth = $(g.nBtn).outerWidth();
+                                                                        var halfDivider = Math.floor(p.cgwidth / 2);
+
+                                                                        //nBtn left
+                                                                        var btnLeft;
+                                                                        
+									$(g.nDiv).hide();
+                                                                        $(g.nBtn).hide();
+                                                                        
+                                                                        //position relative to scroll container
+                                                                         if ($("body").hasClass("rtl")) {
+                                                                           //to align the left edge of nBtn at the left edge of the column
+                                                                           btnLeft =
+                                                                             thRect.left - containerOffset.left + halfDivider - scrollLeft - 1;
+                                                                         } else {
+                                                                           //to align the right edge of nBtn at the right edge of the column
+                                                                           btnLeft =
+                                                                             thRect.right -
+                                                                             containerOffset.left -
+                                                                             halfDivider -
+                                                                             btnWidth +
+                                                                             scrollLeft + 1;
+                                                                         }
+                                                                         
+                                                                        //position relative to scroll container
+                                                                        $(g.nBtn)
+                                                                          .css({
+                                                                            position: "absolute",
+                                                                            left: btnLeft + "px",
+                                                                            top: 0 // stick to top of the header inside container
+                                                                          })
+                                                                          .show();
+
+                                                                        //new nDiv top - top of nBtn + height of nBtn
+                                                                        var btnTop = parseInt($(g.nBtn).css("top"), 10);
+                                                                        var btnHeight = $(g.nBtn).outerHeight();
+                                                                        var newDivTop = btnTop + btnHeight;
+
+                                                                        $(g.nDiv).css({ top: newDivTop + "px" });
+
+                                                                        //check if left nDiv overflows left edge of table
+                                                                        if ($("body").hasClass("rtl")) {
+                                                                          $(g.nDiv).css({
+                                                                            position: "absolute", //match nBtn's position
+                                                                            left:
+                                                                              btnLeft - $(g.nDiv).outerWidth() + btnWidth <
+                                                                              containerOffset.left
+                                                                                ? //match nBtn left
+                                                                                  btnLeft + "px"
+                                                                                : //right edge of nDiv align with right edge of nbtn
+                                                                                  btnLeft - $(g.nDiv).outerWidth() + btnWidth + "px"
+                                                                          });
                                                                         } else {
-                                                                            $(g.nBtn).css({'left':nl,top:g.hDiv.offsetTop}).show();
+                                                                          var nDivRightEdge = btnLeft + $(g.nDiv).outerWidth();
+
+                                                                          //check if nDiv overflows right edge of table
+                                                                          $(g.nDiv).css({
+                                                                            position: "absolute",
+                                                                            left:
+                                                                              nDivRightEdge > scrollContainer.outerWidth()
+                                                                                ? btnLeft - $(g.nDiv).outerWidth() + btnWidth + "px"
+                                                                                : btnLeft + "px"
+                                                                          });
                                                                         }
-
-									var ndw = parseInt($(g.nDiv).width());
-
-									$(g.nDiv).css({top:g.bDiv.offsetTop});
-
-									if ((nl+ndw)>$(g.gDiv).width())
-                                                                            if($('body').hasClass('rtl')){
-                                                                                $(g.nDiv).css('right',onl-ndw+1);
-                                                                            } else {
-                                                                                $(g.nDiv).css('left',onl-ndw+1);
-                                                                            }
-									else
-                                                                            if($('body').hasClass('rtl')){
-                                                                                $(g.nDiv).css('right',nl);
-                                                                            } else {
-                                                                                $(g.nDiv).css('left',nl);
-                                                                            }
 
 									if ($(this).hasClass('sorted'))
 										$(g.nBtn).addClass('srtd');

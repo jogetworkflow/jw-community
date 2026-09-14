@@ -126,25 +126,23 @@ public class AppIconTemplate extends SimpleCardTemplate {
                     String selectedApps = request.getParameter("selectedApps");
                     if (selectedApps != null) {
                         selectedApps = StringUtil.stripAllHtmlTag(selectedApps);
-                        if (!selectedApps.isEmpty()) {
-                            UserMetaDataDao dao = (UserMetaDataDao) AppUtil.getApplicationContext().getBean("userMetaDataDao");
-                            WorkflowUserManager wum = (WorkflowUserManager) AppUtil.getApplicationContext().getBean("workflowUserManager");
-                            AppDefinition appDef = AppUtil.getCurrentAppDefinition();
+                        UserMetaDataDao dao = (UserMetaDataDao) AppUtil.getApplicationContext().getBean("userMetaDataDao");
+                        WorkflowUserManager wum = (WorkflowUserManager) AppUtil.getApplicationContext().getBean("workflowUserManager");
+                        AppDefinition appDef = AppUtil.getCurrentAppDefinition();
 
-                            UserMetaData data = dao.getUserMetaData(wum.getCurrentUsername(), "superapp_"+appDef.getAppId()+"_"+getDatalist().getId());
-                            if (data == null) {
-                                data = new UserMetaData();
-                                data.setUsername(wum.getCurrentUsername());
-                                data.setKey("superapp_"+appDef.getAppId()+"_"+getDatalist().getId());
-                                data.setValue(selectedApps);
-                                
-                                dao.addUserMetaData(data);
-                            } else {
-                                data.setValue(selectedApps);
-                                dao.updateUserMetaData(data);
-                            }
-                            userSettings = selectedApps;
+                        UserMetaData data = dao.getUserMetaData(wum.getCurrentUsername(), "superapp_"+appDef.getAppId()+"_"+getDatalist().getId());
+                        if (data == null) {
+                            data = new UserMetaData();
+                            data.setUsername(wum.getCurrentUsername());
+                            data.setKey("superapp_"+appDef.getAppId()+"_"+getDatalist().getId());
+                            data.setValue(selectedApps);
+
+                            dao.addUserMetaData(data);
+                        } else {
+                            data.setValue(selectedApps);
+                            dao.updateUserMetaData(data);
                         }
+                        userSettings = selectedApps;
                     }
                 }
 
@@ -185,11 +183,14 @@ public class AppIconTemplate extends SimpleCardTemplate {
         if (selectedApps == null) {
             if (rows != null && !rows.isEmpty()) {
                 String selection = getUserSettings();
+                boolean hasUserSettings = selection != null;
                 Map<String, Object> selectedAppIds = new LinkedHashMap<String, Object>();
-                if (selection != null && !selection.isEmpty()) {
-                    String[] temp = selection.split(";");
-                    for (String t : temp) {
-                        selectedAppIds.put(t, null);
+                if (hasUserSettings) {
+                    if (!selection.isEmpty()) {
+                        String[] temp = selection.split(";");
+                        for (String t : temp) {
+                            selectedAppIds.put(t, null);
+                        }
                     }
                 } else {
                     String mode = getPropertyString("defaultAppMode"); 
@@ -222,7 +223,7 @@ public class AppIconTemplate extends SimpleCardTemplate {
                     }
                 }
 
-                if (!selectedAppIds.isEmpty()) {
+                if (hasUserSettings || !selectedAppIds.isEmpty()) {
                     String idCol = getDatalist().getBinder().getPrimaryKeyColumnName();
                     Set<String> nonExistIds = new HashSet<String>();
                     nonExistIds.addAll(selectedAppIds.keySet());
@@ -327,7 +328,7 @@ public class AppIconTemplate extends SimpleCardTemplate {
             if (data != null) {
                 userSettings = data.getValue();
             } else {
-                userSettings = "";
+                userSettings = null;
             }
         }
         return userSettings;

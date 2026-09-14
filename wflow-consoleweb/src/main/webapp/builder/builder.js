@@ -6473,6 +6473,7 @@ window._CustomBuilder.Builder = {
                             var selement = self.getElementsOnPosition(x, y, "[data-cbuilder-"+parentContainerAttr+"]");
                             if (selement !== null && selement.length > 0) {
                                 var elementsContainer = $(selement);
+                                var elementsContainerGlobal = elementsContainer[0].getBoundingClientRect();
                                 if ($(selement).is('[data-cbuilder-alternative-drop]')) {
                                     target = $(selement).closest("[data-cbuilder-select]");
                                 } else {
@@ -6483,20 +6484,19 @@ window._CustomBuilder.Builder = {
                                     elementsContainer.append(self.dragElement);
                                 }
                                 
-                                var containerOffset = elementsContainer.offset();
-                                
                                 var cursorPos = self.dragElement.data("cursorPosition");
                                 if (!cursorPos) {
                                     var frameOffset = $(self.iframe).offset();
-                                    //need to consider the scroll position and the element center
+                                    
                                     cursorPos = {
-                                        x: - $(self.frameDoc).scrollLeft() + (self.dragElement.width()/2),  
-                                        y : - $(self.frameDoc).scrollTop() + (self.dragElement.height()/2)
+                                        x: (self.dragElement.width()/2),  
+                                        y: (self.dragElement.height()/2)
                                     };
                                 }
 
-                                var x_offset = (x - containerOffset.left - cursorPos.x) / self.zoom;
-                                var y_offset = (y - containerOffset.top - cursorPos.y) / self.zoom;
+                                var x_offset = (x - elementsContainerGlobal.left - cursorPos.x) / self.zoom;
+                                var y_offset = (y - elementsContainerGlobal.top - cursorPos.y) / self.zoom;
+
                                 self.dragElement.css({
                                    "top" : y_offset + "px",
                                    "left" : x_offset + "px",
@@ -6796,8 +6796,9 @@ window._CustomBuilder.Builder = {
 
                                 if (self.component.builderTemplate.isAbsolutePosition(self.data, self.component)) {
                                     var elementOffset = self.dragElement.offset();
-                                    var xDiff = x - elementOffset.left;
-                                    var yDiff = y - elementOffset.top;
+                                    var iframePos = self.documentFrame[0].contentDocument.documentElement.getBoundingClientRect();
+                                    var xDiff = x - elementOffset.left - iframePos.left;
+                                    var yDiff = y - elementOffset.top - iframePos.top;
                                     self.dragElement.data("cursorPosition", {"x" : xDiff, "y" : yDiff});
                                 }    
 
