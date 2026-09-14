@@ -23,6 +23,8 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
 import java.util.concurrent.locks.ReentrantLock;
+import java.nio.charset.StandardCharsets;
+import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import javax.cache.Cache;
@@ -1449,7 +1451,37 @@ public class FormDataDaoImpl implements FormDataDao {
         MetadataSources metadataSources = new MetadataSources(sr);
         return metadataSources;
     }
-        
+
+    private static final Set<String> TEMPLATE_INDEXED_ROWS = Set.of("dateCreated", "createdBy");
+
+    /**
+     * The maximum length of an index name. This is derived from the smallest length across
+     * MySQL/MariaDB, PostgreSQL, Microsoft SQL, and Oracle.
+     */
+    private static final int MAX_INDEX_NAME_LENGTH = 63;
+
+    /**
+     * Generates an index name for the specified table and column, ensuring the name adheres
+     * to the maximum allowed index name length.
+     * <p>
+     * If the index name is longer than {@link #MAX_INDEX_NAME_LENGTH}, a 12-character string
+     * based on UUIDv3 will replace the last 12 characters of the index name.
+     *
+     * @param tableName the name of the table for which the index is being created
+     * @param columnName the name of the column for which the index is being created
+     * @return a valid index name that is within the maximum allowed length
+     */
+    private static String getIndexName(String tableName, String columnName) {
+        String candidate = "idx_" + tableName + "_" + columnName;
+        if (candidate.length() <= MAX_INDEX_NAME_LENGTH) {
+               return candidate;
+           }
+        String hash = UUID.nameUUIDFromBytes(candidate.getBytes(StandardCharsets.UTF_8))
+                       .toString().replace("-", "").substring(0, 12);
+        int prefixLength = MAX_INDEX_NAME_LENGTH - hash.length() - 1;
+        return candidate.substring(0, prefixLength) + "_" + hash;
+    }
+
     protected SessionFactory createSessionFactory(String entityName, String tableName, FormRowSet rowSet, int actionType) throws HibernateException {
         MetadataSources metadataSources = createMetadataSources();
         
@@ -1492,15 +1524,26 @@ public class FormDataDaoImpl implements FormDataDao {
         NodeList componentTags = document.getElementsByTagName("dynamic-component");
         Node node = componentTags.item(0);
         XMLUtil.removeChildren(node);
+
+        // Add indexes for selected columns in FormRow.hbm.xml template
+        NodeList templateNodes = document.getElementsByTagName("property");
+        if (templateNodes != null) {
+            for (int i = 0; i < templateNodes.getLength(); i++) {
+                Element el = (Element) templateNodes.item(i);
+                if (el.hasAttribute("name") && TEMPLATE_INDEXED_ROWS.contains(el.getAttribute("name"))) {
+                    el.setAttribute("index", getIndexName(tableName, el.getAttribute("name")));
+                }
+            }
+        }
         
         Collection<String> indexesList = formColumnCache.getIndexes(tableName);
-        if (indexesList != null) {
+        if (indexesList != null && !indexesList.isEmpty()) {
             NodeList nodeList = document.getElementsByTagName("property");
             if (nodeList != null && nodeList.getLength() > 0) {
                 for (int j = 0; j < nodeList.getLength(); j++) {
                     Element el = (Element) nodeList.item(j);
                     if (el.hasAttribute("name") && indexesList.contains(el.getAttribute("name"))) {
-                        el.setAttribute("index", "idx_" + el.getAttribute("name"));
+                        el.setAttribute("index", getIndexName(tableName, el.getAttribute("name")));
                     }
                 }
             }
@@ -1522,7 +1565,7 @@ public class FormDataDaoImpl implements FormDataDao {
                 element.setAttribute("not-null", String.valueOf(false));
                 
                 if (indexesList != null && indexesList.contains(field)) {
-                    element.setAttribute("index", "idx_" + columnName);
+                    element.setAttribute("index", getIndexName(tableName, columnName));
                 }
                 
                 node.appendChild(element);

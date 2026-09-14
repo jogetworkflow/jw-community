@@ -202,7 +202,7 @@
                                            </c:choose>
                                        </c:if>
                                        <c:forEach items="${dataList.columns}" var="column">
-                                           <c:set var="columnLabel"><c:out value="${column.label}"/></c:set>
+                                           <c:set var="columnLabel"><ui:stripTag html="${column.label}" relaxed="true"/></c:set>
                                            <c:set var="columnHiddenCss" value=""/>
                                            <c:set var="columnMedia" value="all"/>
                                            <c:choose> 

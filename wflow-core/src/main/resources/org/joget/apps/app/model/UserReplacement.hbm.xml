@@ -7,10 +7,10 @@
             <generator class="uuid"/>
         </id>
         <property name="username" type="string"/>
-        <property name="replacementUser" type="string" index="idx_replacement_user"/>
+        <property name="replacementUser" type="string" index="idx_dir_user_replacement_replacement_user"/>
         <property name="appId" type="string"/>
         <property name="processIds" type="string"/>
-        <property name="startDate" type="timestamp" index="idx_start"/>
-        <property name="endDate" type="timestamp" index="idx_end"/>
+        <property name="startDate" type="timestamp" index="idx_dir_user_replacement_start"/>
+        <property name="endDate" type="timestamp" index="idx_dir_user_replacement_end"/>
     </class>
 </hibernate-mapping>

@@ -1047,6 +1047,9 @@ DatalistBuilder = {
         } else {
             //populate palette
             CustomBuilder.initPaletteElement(get_cbuilder_msg('dbuilder.columnsFilters'), column.name, column.displayLabel, '<i class="far fa-hdd"></i>', {}, {}, true, cssClass, meta);
+            $('.builder-palette-element').filter(function() {
+                return $(this).attr('element-class') === column.name;
+            }).children('a').html(column.displayLabel);
         }
     },
     
