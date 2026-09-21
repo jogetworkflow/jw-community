@@ -840,6 +840,28 @@ body.rtl #${elementParamName!}_multiPagedForm_${element.properties.elementUnique
     color: red;
 }
 
+@media (min-width: 768px) {
+    .multiPagedForm.wizard .page-nav-panel .nav_item button span,
+    .multiPagedForm.tab .page-nav-panel .nav_item button span {
+        display: block;
+        max-width: 250px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+
+    .multiPagedForm .page-nav-panel ul {
+        display: flex;
+        flex-wrap: nowrap;
+    }
+
+    .multiPagedForm.tab .page-nav-panel .nav_item,
+    .multiPagedForm.wizard .page-nav-panel .nav_item {
+        float: none;
+        flex: 0 0 auto;
+    }
+}
+
 @media (max-width: 767px) {
     .multiPagedForm .page-nav-panel.bottom{
         display:block;
@@ -914,6 +936,11 @@ body.rtl #${elementParamName!}_multiPagedForm_${element.properties.elementUnique
         -webkit-border-radius: 5px 5px 0px 0px;
         -khtml-border-radius: 5px 5px 0px 0px;
         border-radius: 5px 5px 0px 0px;
+    }
+
+    body .multiPagedForm .page-nav-panel .nav_item button > span {
+        white-space: normal;
+        word-break: break-word;
     }
     
     .multiPagedForm .page-container {

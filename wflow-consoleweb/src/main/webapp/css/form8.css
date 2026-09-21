@@ -1092,6 +1092,15 @@ body.rtl .calculationField_value {
         text-overflow: ellipsis;
         white-space: nowrap;
     }
+    .multiPagedForm.tab .page-nav-panel ul,
+    .multiPagedForm.wizard .page-nav-panel ul {
+        display: flex;
+        flex-wrap: nowrap;
+    }
+    .multiPagedForm.tab .page-nav-panel .nav_item {
+        float: none;
+        flex: 0 0 auto;
+    }
     .multiPagedForm.wizard .page-nav-panel {
         text-align: center;
         margin-bottom: 5px;
@@ -1103,7 +1112,8 @@ body.rtl .calculationField_value {
         padding: 1px 15px;
         padding-bottom: 8px;
         cursor: pointer;
-        float: left;
+        float: none;
+        flex: 0 0 auto;
     }
     .rtl .multiPagedForm.wizard .page-nav-panel .nav_item {
         padding-left: 15px;
