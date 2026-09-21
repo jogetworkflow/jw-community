@@ -1710,3 +1710,9 @@ body.rtl .chosen-container-multi.chosen-rtl .chosen-choices li.search-choice{
 body .chosen-container-multi .chosen-choices{
     overflow: auto;
 }
+.form-builder-truncation-note {
+    font-size: 11px;
+    font-style: italic;
+    color: #999;
+    padding-top: 5px;
+}

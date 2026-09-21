@@ -358,6 +358,11 @@
     display:block;
     width:100%;
 }
+body.rtl .dataList th.sortable a {
+    background-position-x: left;
+    padding-left: 20px;
+    padding-right: 0;
+}
 .dataList th.sorted a {
     color:white;
 }
@@ -386,6 +391,7 @@
     padding:2px 4px;
     text-align:right;
 }
+body.rtl .dataList .pagebanner,
 body.rtl .dataList .exportlinks {
     text-align:left;
 }
