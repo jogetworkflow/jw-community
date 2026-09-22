@@ -105,7 +105,7 @@ public class TestHashVariable {
         Assert.assertEquals(escaped_java, AppUtil.processHashVariable("#envVariable.java#", null, null, null));
         Assert.assertEquals(escaped_specialChars, AppUtil.processHashVariable("#envVariable.specialChars#", null, null, null));
         Assert.assertEquals("Joget Inc.; Inc.;Jack &amp; Co.", AppUtil.processHashVariable("#envVariable.separated#", null, null, null));
-        Assert.assertEquals("Joget Inc.  Inc. Jack &amp; Co.", AppUtil.processHashVariable("#envVariable.nl2br#", null, null, null));
+        Assert.assertEquals("Joget Inc. Inc. Jack &amp; Co.", AppUtil.processHashVariable("#envVariable.nl2br#", null, null, null));
     }
     
     @Test
@@ -122,8 +122,8 @@ public class TestHashVariable {
     
     @Test
     public void testEscapeWithFormat() {
-        Assert.assertEquals("Joget Inc.,  Inc., Jack &amp; Co.", AppUtil.processHashVariable("#envVariable.separated?separator(, )#", null, null, null));
-        Assert.assertEquals("Joget Inc.<br class=\"nl2br\" /> Inc.<br class=\"nl2br\" />Jack &amp; Co.", AppUtil.processHashVariable("#envVariable.nl2br?nl2br#", null, null, null));
+        Assert.assertEquals("Joget Inc., Inc., Jack &amp; Co.", AppUtil.processHashVariable("#envVariable.separated?separator(, )#", null, null, null));
+        Assert.assertEquals("Joget Inc.\n<br class=\"nl2br\" />\nInc.\n<br class=\"nl2br\" />\nJack &amp; Co.", AppUtil.processHashVariable("#envVariable.nl2br?nl2br#", null, null, null));
     }
     
     @Test

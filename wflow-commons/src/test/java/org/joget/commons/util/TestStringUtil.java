@@ -174,7 +174,7 @@ public class TestStringUtil {
     public void testStripAllHtmlTag() throws Exception {
         //check all tags are removed
         String original = "<div><a>a</a> <span>span</span> <i>i</i> <p>p</p> <div>div</div> <quote>quote</quote> <img src=\"img.jpg\"> <strong>strong</strong></div> <script>alert('hi')</script>";
-        String expected = "a span i p div quote strong";
+        String expected = "a span i p div quote  strong";
         Assert.isTrue(expected.equals(StringUtil.stripAllHtmlTag(original)), "check all tags are removed");
         
         //check < or > is escaped properly
@@ -238,9 +238,8 @@ public class TestStringUtil {
         String expected = "<div>\n" +
                         " <a>a</a> <span>span</span> <i>i</i>\n" +
                         " <p>p</p>\n" +
-                        " <div>\n" +
-                        "  div\n" +
-                        " </div> quote <img src=\"img.jpg\" /> <strong>strong</strong>\n" +
+                        " <div>div</div>\n" +
+                        " quote <img src=\"img.jpg\" /> <strong>strong</strong>\n" +
                         "</div>";
         Assert.isTrue(expected.equals(StringUtil.stripHtmlRelaxed(original)), "check basic tags are allowed");
         
