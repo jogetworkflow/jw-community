@@ -1,7 +1,5 @@
 $(document).ready(function(){ $(body).append(''); $(body).append('
-<div>
- this is just a test
-</div>'); $(body).append("
-<div>
- !@#$%^&amp;*()_+-={}|[]\\:\";',./&lt;&gt;?`~
-</div>"); });
+<div>this is just a test</div>
+'); $(body).append("
+<div>!@#$%^&amp;*()_+-={}|[]\\:\";',./&lt;&gt;?`~</div>
+"); });
