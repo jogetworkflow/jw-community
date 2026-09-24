@@ -2,6 +2,7 @@ package org.joget.apps.app.web;
 
 import java.util.Locale;
 import java.util.TimeZone;
+import java.util.regex.Pattern;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
@@ -49,6 +50,15 @@ public class LocalLocaleResolver extends SessionLocaleResolver implements Locale
     public final static String SYSTEM_TIMEZONE = "SYSTEM_TIMEZONE";
     public final static String SYSTEM_TIMEZONE_EXPIRY_KEY = "SYSTEM_TIMEZONE_EXPIRY_KEY";
     public final static Long CACHE_DURATION =  5000L; // 5 seconds
+
+    // A well-formed locale code as produced by Locale.toString(): an alphanumeric
+    // language subtag, then up to two more underscore-separated subtags. Those may
+    // be empty, since toString() leaves the country blank for script-only and
+    // country-less variant locales (e.g. "zh__#Hans", "be__TARASK"), and may
+    // contain '#' and '-' for JVM script/extension forms (e.g. "th_TH_#Thai").
+    // Every character that could break out of a JS string or HTML attribute
+    // (quotes, angle brackets, whitespace, backslash, slash, etc.) stays rejected.
+    private static final Pattern LOCALE_PATTERN = Pattern.compile("[A-Za-z0-9]{1,8}(_[A-Za-z0-9#-]{0,30}){0,2}");
 
     @Override
     public LocaleContext resolveLocaleContext(final HttpServletRequest request) {
@@ -223,15 +233,7 @@ public class LocalLocaleResolver extends SessionLocaleResolver implements Locale
                 }
 
                 if (localeCode != null && !localeCode.isEmpty()) {
-                    String[] temp = localeCode.split("_");
-
-                    if(temp.length == 1){
-                        locale = new Locale(temp[0]);
-                    }else if (temp.length == 2){
-                        locale = new Locale(temp[0], temp[1]);
-                    }else if (temp.length == 3){
-                        locale = new Locale(temp[0], temp[1], temp[2]);
-                    }
+                    locale = parseLocale(localeCode);
 
                     if (request != null) {
                         request.setAttribute(DEFAULT_LOCALE_KEY, locale);
@@ -280,17 +282,7 @@ public class LocalLocaleResolver extends SessionLocaleResolver implements Locale
             locale = (Locale) request.getAttribute(CURRENT_LOCALE_KEY);
             if (request.getParameter(PARAM_NAME) != null 
                     && (locale == null || !request.getParameter(PARAM_NAME).equals(locale.toString()))) {
-                locale = null;
-                String paramValue = StringUtil.stripAllHtmlTag(request.getParameter(PARAM_NAME));
-                String[] temp = paramValue.split("_");
-
-                if (temp.length == 1 && !temp[0].isEmpty()) {
-                    locale = new Locale(temp[0]);
-                } else if (temp.length == 2) {
-                    locale = new Locale(temp[0], temp[1]);
-                } else if (temp.length == 3) {
-                    locale = new Locale(temp[0], temp[1], temp[2]);
-                }
+                locale = parseLocale(request.getParameter(PARAM_NAME));
                 if (locale != null) {
                     setLocale(request, null, locale);
                 } else {
@@ -315,7 +307,39 @@ public class LocalLocaleResolver extends SessionLocaleResolver implements Locale
     public void setLocale(HttpServletRequest request, HttpServletResponse response, Locale locale){
         super.setLocale(request, response, locale);
     }
-    
+
+    /**
+     * Parse a locale code (e.g. "en", "en_US", "en_US_variant") into a Locale.
+     *
+     * Only well-formed locale codes are accepted (see LOCALE_PATTERN); any
+     * other character (quotes, spaces, angle brackets, etc.) causes the whole
+     * value to be rejected with a null return. This keeps user-supplied
+     * values such as the {@value #PARAM_NAME} request parameter from carrying
+     * a payload that could break out of the JavaScript string or HTML
+     * attribute the resolved locale is later rendered into.
+     *
+     * @param code the raw locale code, may be null
+     * @return the parsed Locale, or null when the code is empty or malformed
+     */
+    public static Locale parseLocale(String code) {
+        if (code == null) {
+            return null;
+        }
+        code = StringUtil.stripAllHtmlTag(code);
+        if (!LOCALE_PATTERN.matcher(code).matches()) {
+            return null;
+        }
+        String[] temp = code.split("_");
+        if (temp.length == 1) {
+            return new Locale(temp[0]);
+        } else if (temp.length == 2) {
+            return new Locale(temp[0], temp[1]);
+        } else if (temp.length == 3) {
+            return new Locale(temp[0], temp[1], temp[2]);
+        }
+        return null;
+    }
+
     public String getResource(String resourceKey, String defaultValue, Tag tag, PageContext pageContext) {
         return ResourceBundleUtil.getMessage(resourceKey, defaultValue);
     }

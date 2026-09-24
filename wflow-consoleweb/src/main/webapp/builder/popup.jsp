@@ -1,6 +1,7 @@
 <%@ include file="/WEB-INF/jsp/includes/taglibs.jsp" %>
 <%@ page import="org.joget.apps.app.service.AppUtil"%>
 <%@ page import="org.joget.commons.util.SecurityUtil"%>
+<%@ page import="org.apache.commons.lang.StringEscapeUtils"%>
 
 <c:set var="lang" value="<%= AppUtil.getAppLocale() %>"/>
 
@@ -38,7 +39,7 @@
             ConnectionManager.tokenValue = "<%= SecurityUtil.getCsrfTokenValue(request) %>";
             JPopup.tokenName = "<%= SecurityUtil.getCsrfTokenName() %>";
             JPopup.tokenValue = "<%= SecurityUtil.getCsrfTokenValue(request) %>";
-            UI.locale = "<%= AppUtil.getAppLocale()%>";
+            UI.locale = "<%= StringEscapeUtils.escapeJavaScript(AppUtil.getAppLocale())%>";
             UI.msg = {
                 "ok" : "<ui:msgEscJS key="general.method.label.ok"/>",
                 "cancel" : "<ui:msgEscJS key="general.method.label.cancel"/>",

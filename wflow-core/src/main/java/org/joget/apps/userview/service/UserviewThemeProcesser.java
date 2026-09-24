@@ -442,7 +442,7 @@ public class UserviewThemeProcesser {
         html += "UI.base = \"" + request.getContextPath() + "\";\n"
                 + "        UI.userview_app_id = '"+userview.getParamString("appId")+"';\n"
                 + "        UI.userview_id = '"+userview.getPropertyString("id")+"';\n"
-                + "        UI.locale = '"+AppUtil.getAppLocale()+"';\n"
+                + "        UI.locale = '"+StringEscapeUtils.escapeJavaScript(AppUtil.getAppLocale())+"';\n"
                 + "        UI.msg = {'ok': '"+ResourceBundleUtil.getMessage("general.method.label.ok")+"', \n"
                 + "                  'cancel' : '"+ResourceBundleUtil.getMessage("general.method.label.cancel")+"', \n"
                 + "                  'loading' : '"+ResourceBundleUtil.getMessage("console.blockUI.loading")+"'};\n"
