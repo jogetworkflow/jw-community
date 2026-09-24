@@ -228,6 +228,10 @@ body #form-canvas .form-message.form-errors{
     -webkit-text-stroke-width: 0.2px;
     -moz-osx-font-smoothing: grayscale;
 }
+body.rtl .print-button {
+    display: table;
+    margin-left: auto;
+}
 
 body select[size]:not([class^=ui]){
     height: auto;

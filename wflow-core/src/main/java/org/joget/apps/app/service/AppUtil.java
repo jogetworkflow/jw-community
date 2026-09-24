@@ -1814,52 +1814,54 @@ public class AppUtil implements ApplicationContextAware {
             formData.setPrimaryKeyValue(primaryKey);
             Form loadForm = appService.viewDataForm(appDef.getId(), appDef.getVersion().toString(), formDefId, null, null, null, formData, null, null);
 
-            Set<String> inlineImages = new HashSet<String>();
-            for (Object o : fields) {
-                Map mapping = (HashMap) o;
-                String fieldId = mapping.get("field").toString();
-                String embed = (String) mapping.get("embed");
+            if (loadForm != null) {
+                Set<String> inlineImages = new HashSet<String>();
+                for (Object o : fields) {
+                    Map mapping = (HashMap) o;
+                    String fieldId = mapping.get("field").toString();
+                    String embed = (String) mapping.get("embed");
 
-                try {
-                    Element el = FormUtil.findElement(fieldId, loadForm, formData);
-                    String value = FormUtil.getElementPropertyValue(el, formData);
-                    if (value.contains("/web/client/app/") && value.contains("/form/download/")) {
-                        value = retrieveFileNames(value, appDef.getAppId(), formDefId, primaryKey);
-                    }
-                    if (value != null && !value.isEmpty()) {
-                        String values[] = value.split(";");
-                        for (String v : values) {
-                            if (!v.isEmpty()) {
-                                File file = FileUtil.getFile(v, loadForm, primaryKey);
-                                if (file != null && file.exists()) {
-                                    FileDataSource fds = new FileDataSource(file);
-                                    String name = MimeUtility.encodeText(file.getName(), "UTF-8", null);
-                                    if (embed != null && "true".equalsIgnoreCase(embed)) {
-                                        email.embed(fds, name, name.replaceAll("[^a-zA-Z0-9_.]", ""));
-                                        inlineImages.add(file.getName());
-                                    } else {
-                                        email.attach(fds, name, "");
+                    try {
+                        Element el = FormUtil.findElement(fieldId, loadForm, formData);
+                        String value = FormUtil.getElementPropertyValue(el, formData);
+                        if (value.contains("/web/client/app/") && value.contains("/form/download/")) {
+                            value = retrieveFileNames(value, appDef.getAppId(), formDefId, primaryKey);
+                        }
+                        if (value != null && !value.isEmpty()) {
+                            String values[] = value.split(";");
+                            for (String v : values) {
+                                if (!v.isEmpty()) {
+                                    File file = FileUtil.getFile(v, loadForm, primaryKey);
+                                    if (file != null && file.exists()) {
+                                        FileDataSource fds = new FileDataSource(file);
+                                        String name = MimeUtility.encodeText(file.getName(), "UTF-8", null);
+                                        if (embed != null && "true".equalsIgnoreCase(embed)) {
+                                            email.embed(fds, name, name.replaceAll("[^a-zA-Z0-9_.]", ""));
+                                            inlineImages.add(file.getName());
+                                        } else {
+                                            email.attach(fds, name, "");
+                                        }
                                     }
                                 }
                             }
                         }
+                    } catch (Exception e) {
+                        LogUtil.info(EmailTool.class.getName(), "Attached file fail from field \"" + fieldId + "\" in form \"" + formDefId + "\"");
                     }
-                } catch(Exception e){
-                    LogUtil.info(EmailTool.class.getName(), "Attached file fail from field \"" + fieldId + "\" in form \"" + formDefId + "\"");
                 }
-            }
 
-            if (!inlineImages.isEmpty()) {
-                try {
-                    Field htmlField = HtmlEmail.class.getDeclaredField("html");
-                    htmlField.setAccessible(true);
-                    String html = (String) htmlField.get(email);
-                    if (html != null && !html.isEmpty()) {
-                        html = replaceInlineFormImageToCid(html, appDef.getAppId(), formDefId, primaryKey, inlineImages);
-                        email.setHtmlMsg(html);
+                if (!inlineImages.isEmpty()) {
+                    try {
+                        Field htmlField = HtmlEmail.class.getDeclaredField("html");
+                        htmlField.setAccessible(true);
+                        String html = (String) htmlField.get(email);
+                        if (html != null && !html.isEmpty()) {
+                            html = replaceInlineFormImageToCid(html, appDef.getAppId(), formDefId, primaryKey, inlineImages);
+                            email.setHtmlMsg(html);
+                        }
+                    } catch (Exception e) {
+                        LogUtil.warn(AppUtil.class.getName(), "Not able to replace image in HTML to embed attachment content id.");
                     }
-                } catch (Exception e) {
-                    LogUtil.warn(AppUtil.class.getName(), "Not able to replace image in HTML to embed attachment content id.");
                 }
             }
         }

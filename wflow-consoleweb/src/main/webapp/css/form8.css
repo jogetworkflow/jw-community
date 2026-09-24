@@ -762,7 +762,7 @@ body.rtl .selector_element .selector_items {
     overflow-x: auto;
     width: 100%;
 }
-.grid table {
+.grid:not(.adgrid) table {
     min-width: 100%;
 }
 .grid table td{

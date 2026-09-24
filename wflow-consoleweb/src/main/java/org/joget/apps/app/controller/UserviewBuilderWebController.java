@@ -154,7 +154,7 @@ public class UserviewBuilderWebController {
         
         String systemTheme = setupManager.getSettingValue("systemTheme");
         map.addAttribute("systemTheme", systemTheme);
-        
+
         response.addHeader("X-XSS-Protection", "0");
 
         return "ubuilder/builder";
@@ -232,14 +232,14 @@ public class UserviewBuilderWebController {
 
     @RequestMapping(value = "/console/app/(*:appId)/(~:appVersion)/userview/builderSave/(*:userviewId)", method = RequestMethod.POST)
     @Transactional
-    public String save(Writer writer, @RequestParam("appId") String appId, @RequestParam(value = "appVersion", required = false) String appVersion, @RequestParam("userviewId") String userviewId, @RequestParam(value = "json", required = false) String json) throws Exception {
+    public String save(Writer writer, HttpServletResponse response, @RequestParam("appId") String appId, @RequestParam(value = "appVersion", required = false) String appVersion, @RequestParam("userviewId") String userviewId, @RequestParam(value = "json", required = false) String json) throws Exception {
         // verify app version
         ConsoleWebPlugin consoleWebPlugin = (ConsoleWebPlugin)pluginManager.getPlugin(ConsoleWebPlugin.class.getName());
         String page = consoleWebPlugin.verifyAppVersion(appId, appVersion);
         if (page != null) {
             return page;
         }
-        
+
         //retrieve from request body if the json is send in file
         json = AppUtil.getSubmittedJsonDefinition(json);
 
@@ -248,6 +248,11 @@ public class UserviewBuilderWebController {
         AppDefinition appDef = appService.getAppDefinition(appId, appVersion);
         UserviewDefinition userview = userviewDefinitionDao.loadById(userviewId, appDef);
         
+        if (userview == null) {
+            response.setStatus(HttpServletResponse.SC_NOT_FOUND);
+            return null;
+        }
+
         userview.setName(userviewService.getUserviewName(json));
         userview.setDescription(userviewService.getUserviewDescription(json));
         

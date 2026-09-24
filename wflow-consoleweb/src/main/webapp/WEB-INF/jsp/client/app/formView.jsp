@@ -53,14 +53,16 @@
                     </c:if>
                     <c:if test="${!empty closeDialog && closeDialog}">
                     <script type="text/javascript">
-                        if (parent && parent.PopupDialog && parent.PopupDialog.closeDialog) {
-                            parent.PopupDialog.closeDialog();
-                        }else if (opener) {
-                            window.close();
+                        if (!(parent && parent.CustomBuilder && (parent.CustomBuilder.builderType === "process" || parent.CustomBuilder.builderType === "app"))) {
+                            if (parent && parent.PopupDialog && parent.PopupDialog.closeDialog) {
+                                parent.PopupDialog.closeDialog();
+                            } else if (opener) {
+                                window.close();
+                            }
+                            if (parent && parent.closeDialog) {
+                                parent.closeDialog();
+                            }
                         }
-                        if (parent && parent.closeDialog) {
-                            parent.closeDialog();
-                        } 
                     </script>
                     </c:if>
                 </c:if>

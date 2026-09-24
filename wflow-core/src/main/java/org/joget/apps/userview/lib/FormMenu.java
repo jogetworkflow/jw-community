@@ -233,7 +233,7 @@ public class FormMenu extends UserviewMenu implements PwaOfflineValidation {
         // determine redirect URL
         String redirectUrl = getPropertyString("redirectUrlAfterComplete");
 
-        if (redirectUrl != null && redirectUrl.trim().length() > 0 && getPropertyString("fieldPassover") != null && getPropertyString("fieldPassover").trim().length() > 0) {
+        if (form != null && redirectUrl != null && redirectUrl.trim().length() > 0 && getPropertyString("fieldPassover") != null && getPropertyString("fieldPassover").trim().length() > 0) {
             String passoverFieldName = getPropertyString("fieldPassover");
             String passoverValue = null;
             
@@ -422,22 +422,23 @@ public class FormMenu extends UserviewMenu implements PwaOfflineValidation {
         Boolean readonlyLabel = "true".equalsIgnoreCase(getPropertyString("readonlyLabel"));
 
         form = appService.viewDataForm(appDef.getId(), appDef.getVersion().toString(), formId, null, submitLabel, cancelLabel, getPropertyString("redirectTargetOnCancel"), formData, formUrl, cancelUrl);
-        if (form != null) {
+        if (form == null) {
+            return null;
+        }
 
-            // make primary key read-only
-            Element el = FormUtil.findElement(FormUtil.PROPERTY_ID, form, formData);
-            if (el != null) {
-                String idValue = FormUtil.getElementPropertyValue(el, formData);
-                if (idValue != null && !idValue.trim().isEmpty() && !"".equals(formData.getRequestParameter(FormUtil.FORM_META_ORIGINAL_ID))) {
-                    FormUtil.setReadOnlyProperty(el, true, readonlyLabel);
-                }
+        // make primary key read-only
+        Element el = FormUtil.findElement(FormUtil.PROPERTY_ID, form, formData);
+        if (el != null) {
+            String idValue = FormUtil.getElementPropertyValue(el, formData);
+            if (idValue != null && !idValue.trim().isEmpty() && !"".equals(formData.getRequestParameter(FormUtil.FORM_META_ORIGINAL_ID))) {
+                FormUtil.setReadOnlyProperty(el, true, readonlyLabel);
             }
+        }
 
-            if (getPropertyString("keyName") != null && getPropertyString("keyName").trim().length() > 0 && getKey() != null) {
-                el = FormUtil.findElement(getPropertyString("keyName"), form, formData);
-                if (el != null) {
-                    FormUtil.setReadOnlyProperty(el, true, readonlyLabel);
-                }
+        if (getPropertyString("keyName") != null && getPropertyString("keyName").trim().length() > 0 && getKey() != null) {
+            el = FormUtil.findElement(getPropertyString("keyName"), form, formData);
+            if (el != null) {
+                FormUtil.setReadOnlyProperty(el, true, readonlyLabel);
             }
         }
 
@@ -452,11 +453,11 @@ public class FormMenu extends UserviewMenu implements PwaOfflineValidation {
             readonly = false;
             form.setFormMeta("_enonce", new String[]{formData.getRequestParameter("_enonce")}); //passed the nonce again for submission
         }
-        
+
         if (readonly || readonlyLabel) {
             FormUtil.setReadOnlyProperty(form, readonly, readonlyLabel, readonlyVersion);
         }
-        
+
         //add edit button only when there is primary key
         if (readonly && "true".equalsIgnoreCase(getPropertyString("showEditButton")) && formData.getPrimaryKeyValue() != null) {
             String qs = WorkflowUtil.getHttpServletRequest().getQueryString();
@@ -469,12 +470,12 @@ public class FormMenu extends UserviewMenu implements PwaOfflineValidation {
             String nonce = SecurityUtil.generateNonce(new String[] {getUrl(), formData.getPrimaryKeyValue()}, 4);
             qs = StringUtil.addParamsToUrl(qs, "_enonce", nonce);
             setProperty("editLink", qs);
-            
+
             if (getPropertyString("editButtonLabel").isEmpty()) {
                 setProperty("editButtonLabel", "<i class=\"fas fa-edit\" title=\""+ResourceBundleUtil.getMessage("general.method.label.edit")+"\"></i>");
             }
         }
-        
+
         return form;
     }
 
@@ -486,6 +487,10 @@ public class FormMenu extends UserviewMenu implements PwaOfflineValidation {
      * @return
      */
     protected Form submitAssignmentForm(FormData formData, WorkflowAssignment assignment, PackageActivityForm activityForm) {
+        if (activityForm == null || activityForm.getForm() == null) {
+            return null;
+        }
+        
         ApplicationContext ac = AppUtil.getApplicationContext();
         AppService appService = (AppService) ac.getBean("appService");
         FormService formService = (FormService) ac.getBean("formService");
@@ -533,6 +538,10 @@ public class FormMenu extends UserviewMenu implements PwaOfflineValidation {
      * Handles data form submission.
      */
     protected Form submitDataForm(FormData formData, Form form) {
+        if (form == null) { //form is possible null
+            return null;
+        }
+        
         ApplicationContext ac = AppUtil.getApplicationContext();
         FormService formService = (FormService) ac.getBean("formService");
         formData = formService.retrieveFormDataFromRequestMap(formData, getRequestParameters());

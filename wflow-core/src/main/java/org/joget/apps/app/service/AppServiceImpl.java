@@ -1028,6 +1028,10 @@ public class AppServiceImpl implements AppService {
         if (formData == null) {
             formData = new FormData();
         }
+        
+        if (form == null) { //form is possible null
+            return null;
+        }
 
         // set action URL
         form.setProperty("url", formUrl);
@@ -1908,10 +1912,12 @@ public class AppServiceImpl implements AppService {
             
             AppDefinition appDef = getAppDefinition(appId, version);
             FormDefinition formDef = formDefinitionDao.loadById(formDefId, appDef);
-            
-            if (formDef != null && formDef.getJson() != null) {
+
+            if (formDef == null) {
+                LogUtil.warn(getClass().getName(), "form '" + formDefId + "' not found");
+            } else if (formDef.getJson() != null) {
                 String formJson = formDef.getJson();
-                form = (Form) formService.loadFormFromJson(formJson, formData);
+                form = formService.loadFormFromJson(formJson, formData);
             }
         } catch (Exception e) {
             LogUtil.error(getClass().getName(), e, e.getMessage());

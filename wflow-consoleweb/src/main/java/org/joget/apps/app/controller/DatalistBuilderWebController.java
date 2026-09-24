@@ -110,10 +110,15 @@ public class DatalistBuilderWebController {
                 listJson = "{}";
             }
         } else {
+            if (datalist == null) {
+                response.sendError(HttpServletResponse.SC_NOT_FOUND);
+                return null;
+            }
+
             // get JSON from form definition
             listJson = datalist.getJson();
         }
-        
+
         try {
             JSONObject obj = new JSONObject(listJson);
             JSONObject binder = obj.optJSONObject("binder");
@@ -140,7 +145,7 @@ public class DatalistBuilderWebController {
         
         String systemTheme = setupManager.getSettingValue("systemTheme");
         map.addAttribute("systemTheme", systemTheme);
-        
+
         response.addHeader("X-XSS-Protection", "0");
         
         return "dbuilder/builder";
@@ -148,19 +153,24 @@ public class DatalistBuilderWebController {
 
     @RequestMapping(value = "/console/app/(*:appId)/(~:version)/datalist/builderSave/(*:id)", method = RequestMethod.POST)
     @Transactional
-    public String save(Writer writer, @RequestParam("appId") String appId, @RequestParam(value = "version", required = false) String version, @RequestParam("id") String id, @RequestParam(value = "json", required = false) String json) throws Exception {
+    public String save(Writer writer, HttpServletResponse response, @RequestParam("appId") String appId, @RequestParam(value = "version", required = false) String version, @RequestParam("id") String id, @RequestParam(value = "json", required = false) String json) throws Exception {
         // verify app license
         ConsoleWebPlugin consoleWebPlugin = (ConsoleWebPlugin)pluginManager.getPlugin(ConsoleWebPlugin.class.getName());
         String page = consoleWebPlugin.verifyAppVersion(appId, version);
         if (page != null) {
             return page;
         }
-        
+
         //retrieve from request body if the json is send in file
         json = AppUtil.getSubmittedJsonDefinition(json);
 
         AppDefinition appDef = appService.getAppDefinition(appId, version);
         DatalistDefinition datalist = datalistDefinitionDao.loadById(id, appDef);
+        if (datalist == null) {
+            response.sendError(HttpServletResponse.SC_NOT_FOUND);
+            return null;
+        }
+
         DataList dlist = dataListService.fromJson(json);
         datalist.setName(dlist.getName());
         datalist.setDescription(dlist.getDescription());
