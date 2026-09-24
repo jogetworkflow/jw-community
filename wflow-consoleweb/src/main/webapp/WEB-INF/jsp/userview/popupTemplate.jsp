@@ -3,6 +3,7 @@
 <%@ page import="org.joget.apps.app.service.AppUtil"%>
 <%@ page import="org.joget.commons.util.SecurityUtil"%>
 <%@ page import="org.joget.workflow.util.WorkflowUtil"%>
+<%@ page import="org.apache.commons.lang.StringEscapeUtils"%>
 
 <c:set var="userviewThemeCss" value="<%= AppUtil.getUserviewThemeCss() %>"/>
 <c:set var="appLocale" value="<%= AppUtil.getAppLocale() %>"/>
@@ -28,7 +29,7 @@
             ConnectionManager.tokenValue = "<%= SecurityUtil.getCsrfTokenValue(request) %>";
             JPopup.tokenName = "<%= SecurityUtil.getCsrfTokenName() %>";
             JPopup.tokenValue = "<%= SecurityUtil.getCsrfTokenValue(request) %>";
-            UI.locale = "${appLocale}";
+            UI.locale = "<%= StringEscapeUtils.escapeJavaScript(AppUtil.getAppLocale()) %>";
             
             <c:if test="${rightToLeft == 'true' || fn:startsWith(appLocale, 'ar') == true}">
                 UI.rtl = true;

@@ -261,16 +261,13 @@ public class ConsoleWebController {
     public void consoleHelpGuide(Writer writer, @RequestParam("key") String key, @RequestParam(value = "locale", required = false) String localeCode) throws IOException {
         if (key != null && !key.trim().isEmpty()) {
             if (localeCode != null && !localeCode.isEmpty()) {
-                String[] temp = localeCode.split("_");
-                Locale locale = null;
-                if(temp.length == 1){
-                    locale = new Locale(temp[0]);
-                }else if (temp.length == 2){
-                    locale = new Locale(temp[0], temp[1]);
-                }else if (temp.length == 3){
-                    locale = new Locale(temp[0], temp[1], temp[2]);
+                // Validate the user-supplied locale the same way as the locale
+                // resolver so a malformed value cannot reach the locale-derived
+                // sinks; ignore it (keep the current locale) when it is invalid.
+                Locale locale = LocalLocaleResolver.parseLocale(localeCode);
+                if (locale != null) {
+                    LocaleContextHolder.setLocale(locale);
                 }
-                LocaleContextHolder.setLocale(locale);
             }
             String message = ResourceBundleUtil.getMessage(key);
             if (message != null && !message.trim().isEmpty()) {
