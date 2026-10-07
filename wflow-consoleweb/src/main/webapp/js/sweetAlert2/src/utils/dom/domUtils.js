@@ -42,13 +42,7 @@ export const hasClass = (elem, className) => {
   if (!className) {
     return false
   }
-  const classList = className.split(/\s+/)
-  for (let i = 0; i < classList.length; i++) {
-    if (!elem.classList.contains(classList[i])) {
-      return false
-    }
-  }
-  return true
+  return className.split(/\s+/).every((cls) => elem.classList.contains(cls))
 }
 
 /**
@@ -145,25 +139,16 @@ export const toggleClass = (target, classList, condition) => {
   if (!target || !classList) {
     return
   }
-  if (typeof classList === 'string') {
-    classList = classList.split(/\s+/).filter(Boolean)
-  }
-  classList.forEach((className) => {
-    if (Array.isArray(target)) {
-      target.forEach((elem) => {
-        if (condition) {
-          elem.classList.add(className)
-        } else {
-          elem.classList.remove(className)
-        }
-      })
-    } else {
+  const classes = typeof classList === 'string' ? classList.split(/\s+/).filter(Boolean) : classList
+  const targets = Array.isArray(target) ? target : [target]
+  targets.forEach((elem) => {
+    classes.forEach((className) => {
       if (condition) {
-        target.classList.add(className)
+        elem.classList.add(className)
       } else {
-        target.classList.remove(className)
+        elem.classList.remove(className)
       }
-    }
+    })
   })
 }
 
@@ -190,27 +175,22 @@ export const removeClass = (target, classList) => {
  * @param {string} className
  * @returns {HTMLElement | undefined}
  */
-export const getDirectChildByClass = (elem, className) => {
-  const children = Array.from(elem.children)
-  for (let i = 0; i < children.length; i++) {
-    const child = children[i]
-    if (child instanceof HTMLElement && hasClass(child, className)) {
-      return child
-    }
-  }
-}
+export const getDirectChildByClass = (elem, className) =>
+  /** @type {HTMLElement | undefined} */ (
+    Array.from(elem.children).find((child) => child instanceof HTMLElement && hasClass(child, className))
+  )
 
 /**
  * @param {HTMLElement} elem
  * @param {string} property
- * @param {*} value
+ * @param {string | number | null | undefined} value
  */
 export const applyNumericalStyle = (elem, property, value) => {
-  if (value === `${parseInt(value)}`) {
+  if (value === `${parseInt(`${value}`)}`) {
     value = parseInt(value)
   }
-  if (value || parseInt(value) === 0) {
-    elem.style.setProperty(property, typeof value === 'number' ? `${value}px` : value)
+  if (value || value === 0) {
+    elem.style.setProperty(property, typeof value === 'number' ? `${value}px` : /** @type {string} */ (value))
   } else {
     elem.style.removeProperty(property)
   }
@@ -268,7 +248,7 @@ export const setStyle = (parent, selector, property, value) => {
 
 /**
  * @param {HTMLElement} elem
- * @param {any} condition
+ * @param {boolean | string | null | undefined} condition
  * @param {string} display
  */
 export const toggle = (elem, condition, display = 'flex') => {
@@ -285,7 +265,8 @@ export const toggle = (elem, condition, display = 'flex') => {
  * @param {HTMLElement | null} elem
  * @returns {boolean}
  */
-export const isVisible = (elem) => !!(elem && (elem.offsetWidth || elem.offsetHeight || elem.getClientRects().length))
+export const isVisible = (elem) =>
+  Boolean(elem && (elem.offsetWidth || elem.offsetHeight || elem.getClientRects().length))
 
 /**
  * @returns {boolean}
@@ -297,7 +278,7 @@ export const allButtonsAreHidden = () =>
  * @param {HTMLElement} elem
  * @returns {boolean}
  */
-export const isScrollable = (elem) => !!(elem.scrollHeight > elem.clientHeight)
+export const isScrollable = (elem) => Boolean(elem.scrollHeight > elem.clientHeight)
 
 /**
  * @param {HTMLElement} element
@@ -305,7 +286,7 @@ export const isScrollable = (elem) => !!(elem.scrollHeight > elem.clientHeight)
  * @returns {boolean}
  */
 export const selfOrParentIsScrollable = (element, stopElement) => {
-  let parent = element
+  let parent = /** @type {HTMLElement | null} */ (element)
   while (parent && parent !== stopElement) {
     if (isScrollable(parent)) {
       return true

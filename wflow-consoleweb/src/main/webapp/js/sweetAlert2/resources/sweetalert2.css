@@ -2,7 +2,7 @@
   --swal2-outline: 0 0 0 3px rgba(100, 150, 200, 0.5);
   --swal2-container-padding: 0.625em;
   --swal2-backdrop: rgba(0, 0, 0, 0.4);
-  --swal2-backdrop-transition: background-color 0.1s;
+  --swal2-backdrop-transition: background-color 0.15s;
   --swal2-width: 32em;
   --swal2-padding: 0 0 1.25em;
   --swal2-border: none;
@@ -12,7 +12,6 @@
   --swal2-show-animation: swal2-show 0.3s;
   --swal2-hide-animation: swal2-hide 0.15s forwards;
   --swal2-icon-zoom: 1;
-  --swal2-icon-animations: true;
   --swal2-title-padding: 0.8em 1em 0;
   --swal2-html-container-padding: 1em 1.6em 0.3em;
   --swal2-input-border: 1px solid #d9d9d9;
@@ -22,13 +21,14 @@
   --swal2-input-transition: border-color 0.2s, box-shadow 0.2s;
   --swal2-input-hover-box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.06), 0 0 0 3px transparent;
   --swal2-input-focus-border: 1px solid #b4dbed;
-  --swal2-input-focus-box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.06), 0 0 0 3px $swal2-outline-color;
+  --swal2-input-focus-box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.06), 0 0 0 3px rgba(100, 150, 200, 0.5);
   --swal2-progress-step-background: #add8e6;
   --swal2-validation-message-background: #f0f0f0;
   --swal2-validation-message-color: #666;
   --swal2-footer-border-color: #eee;
   --swal2-footer-background: transparent;
   --swal2-footer-color: inherit;
+  --swal2-timer-progress-bar-background: rgba(0, 0, 0, 0.3);
   --swal2-close-button-position: initial;
   --swal2-close-button-inset: auto;
   --swal2-close-button-font-size: 2.5em;
@@ -80,6 +80,7 @@
     var(--swal2-dark-theme-white) 10%
   );
   --swal2-validation-message-color: var(--swal2-dark-theme-white);
+  --swal2-timer-progress-bar-background: rgba(255, 255, 255, 0.7);
 }
 
 @media (prefers-color-scheme: dark) {
@@ -96,6 +97,7 @@
       var(--swal2-dark-theme-white) 10%
     );
     --swal2-validation-message-color: var(--swal2-dark-theme-white);
+    --swal2-timer-progress-bar-background: rgba(255, 255, 255, 0.7);
   }
 }
 body.swal2-shown:not(.swal2-no-backdrop, .swal2-toast-shown) {
@@ -109,7 +111,7 @@ body.swal2-no-backdrop .swal2-container {
   pointer-events: none;
 }
 body.swal2-no-backdrop .swal2-container .swal2-popup {
-  pointer-events: all;
+  pointer-events: auto;
 }
 body.swal2-no-backdrop .swal2-container .swal2-modal {
   box-shadow: 0 0 10px var(--swal2-backdrop);
@@ -263,7 +265,6 @@ div:where(.swal2-container) div:where(.swal2-popup) {
   color: var(--swal2-color);
   font-family: inherit;
   font-size: 1rem;
-  container-name: swal2-popup;
 }
 div:where(.swal2-container) div:where(.swal2-popup):focus {
   outline: none;
@@ -293,7 +294,7 @@ div:where(.swal2-container) h2:where(.swal2-title) {
   font-weight: 600;
   text-align: center;
   text-transform: none;
-  word-wrap: break-word;
+  overflow-wrap: break-word;
   cursor: initial;
 }
 div:where(.swal2-container) div:where(.swal2-actions) {
@@ -408,7 +409,7 @@ div:where(.swal2-container) .swal2-timer-progress-bar-container {
 div:where(.swal2-container) div:where(.swal2-timer-progress-bar) {
   width: 100%;
   height: 0.25em;
-  background: rgba(0, 0, 0, 0.2);
+  background: var(--swal2-timer-progress-bar-background);
 }
 div:where(.swal2-container) img:where(.swal2-image) {
   max-width: 100%;
@@ -462,7 +463,7 @@ div:where(.swal2-container) div:where(.swal2-html-container) {
   font-weight: normal;
   line-height: normal;
   text-align: center;
-  word-wrap: break-word;
+  overflow-wrap: break-word;
   word-break: break-word;
   cursor: initial;
 }
@@ -689,49 +690,41 @@ div:where(.swal2-icon).swal2-error [class^=swal2-x-mark-line][class$=right] {
   right: 1em;
   transform: rotate(-45deg);
 }
-@container swal2-popup style(--swal2-icon-animations:true) {
-  div:where(.swal2-icon).swal2-error.swal2-icon-show {
-    animation: swal2-animate-error-icon 0.5s;
-  }
-  div:where(.swal2-icon).swal2-error.swal2-icon-show .swal2-x-mark {
-    animation: swal2-animate-error-x-mark 0.5s;
-  }
+div:where(.swal2-icon).swal2-error.swal2-icon-show {
+  animation: swal2-animate-error-icon 0.5s;
+}
+div:where(.swal2-icon).swal2-error.swal2-icon-show .swal2-x-mark {
+  animation: swal2-animate-error-x-mark 0.5s;
 }
 div:where(.swal2-icon).swal2-warning {
   border-color: #f8bb86;
   color: #f8bb86;
 }
-@container swal2-popup style(--swal2-icon-animations:true) {
-  div:where(.swal2-icon).swal2-warning.swal2-icon-show {
-    animation: swal2-animate-error-icon 0.5s;
-  }
-  div:where(.swal2-icon).swal2-warning.swal2-icon-show .swal2-icon-content {
-    animation: swal2-animate-i-mark 0.5s;
-  }
+div:where(.swal2-icon).swal2-warning.swal2-icon-show {
+  animation: swal2-animate-error-icon 0.5s;
+}
+div:where(.swal2-icon).swal2-warning.swal2-icon-show .swal2-icon-content {
+  animation: swal2-animate-i-mark 0.5s;
 }
 div:where(.swal2-icon).swal2-info {
   border-color: #3fc3ee;
   color: #3fc3ee;
 }
-@container swal2-popup style(--swal2-icon-animations:true) {
-  div:where(.swal2-icon).swal2-info.swal2-icon-show {
-    animation: swal2-animate-error-icon 0.5s;
-  }
-  div:where(.swal2-icon).swal2-info.swal2-icon-show .swal2-icon-content {
-    animation: swal2-animate-i-mark 0.8s;
-  }
+div:where(.swal2-icon).swal2-info.swal2-icon-show {
+  animation: swal2-animate-error-icon 0.5s;
+}
+div:where(.swal2-icon).swal2-info.swal2-icon-show .swal2-icon-content {
+  animation: swal2-animate-i-mark 0.8s;
 }
 div:where(.swal2-icon).swal2-question {
   border-color: #87adbd;
   color: #87adbd;
 }
-@container swal2-popup style(--swal2-icon-animations:true) {
-  div:where(.swal2-icon).swal2-question.swal2-icon-show {
-    animation: swal2-animate-error-icon 0.5s;
-  }
-  div:where(.swal2-icon).swal2-question.swal2-icon-show .swal2-icon-content {
-    animation: swal2-animate-question-mark 0.8s;
-  }
+div:where(.swal2-icon).swal2-question.swal2-icon-show {
+  animation: swal2-animate-error-icon 0.5s;
+}
+div:where(.swal2-icon).swal2-question.swal2-icon-show .swal2-icon-content {
+  animation: swal2-animate-question-mark 0.8s;
 }
 div:where(.swal2-icon).swal2-success {
   border-color: #a5dc86;
@@ -797,16 +790,14 @@ div:where(.swal2-icon).swal2-success [class^=swal2-success-line][class$=long] {
   width: 2.9375em;
   transform: rotate(-45deg);
 }
-@container swal2-popup style(--swal2-icon-animations:true) {
-  div:where(.swal2-icon).swal2-success.swal2-icon-show .swal2-success-line-tip {
-    animation: swal2-animate-success-line-tip 0.75s;
-  }
-  div:where(.swal2-icon).swal2-success.swal2-icon-show .swal2-success-line-long {
-    animation: swal2-animate-success-line-long 0.75s;
-  }
-  div:where(.swal2-icon).swal2-success.swal2-icon-show .swal2-success-circular-line-right {
-    animation: swal2-rotate-success-circular-line 4.25s ease-in;
-  }
+div:where(.swal2-icon).swal2-success.swal2-icon-show .swal2-success-line-tip {
+  animation: swal2-animate-success-line-tip 0.75s;
+}
+div:where(.swal2-icon).swal2-success.swal2-icon-show .swal2-success-line-long {
+  animation: swal2-animate-success-line-long 0.75s;
+}
+div:where(.swal2-icon).swal2-success.swal2-icon-show .swal2-success-circular-line-right {
+  animation: swal2-rotate-success-circular-line 4.25s ease-in;
 }
 
 [class^=swal2] {
@@ -852,7 +843,7 @@ div:where(.swal2-icon).swal2-success [class^=swal2-success-line][class$=long] {
   border: var(--swal2-toast-border);
   background: var(--swal2-background);
   box-shadow: var(--swal2-toast-box-shadow);
-  pointer-events: all;
+  pointer-events: auto;
 }
 .swal2-toast > * {
   grid-column: 2;
@@ -992,13 +983,11 @@ div:where(.swal2-icon).swal2-success [class^=swal2-success-line][class$=long] {
   right: 0.1875em;
   width: 1.375em;
 }
-@container swal2-popup style(--swal2-icon-animations:true) {
-  .swal2-toast .swal2-success.swal2-icon-show .swal2-success-line-tip {
-    animation: swal2-toast-animate-success-line-tip 0.75s;
-  }
-  .swal2-toast .swal2-success.swal2-icon-show .swal2-success-line-long {
-    animation: swal2-toast-animate-success-line-long 0.75s;
-  }
+.swal2-toast .swal2-success.swal2-icon-show .swal2-success-line-tip {
+  animation: swal2-toast-animate-success-line-tip 0.75s;
+}
+.swal2-toast .swal2-success.swal2-icon-show .swal2-success-line-long {
+  animation: swal2-toast-animate-success-line-long 0.75s;
 }
 .swal2-toast.swal2-show {
   animation: var(--swal2-toast-show-animation);
@@ -1009,25 +998,21 @@ div:where(.swal2-icon).swal2-success [class^=swal2-success-line][class$=long] {
 
 @keyframes swal2-show {
   0% {
-    transform: scale(0.7);
-  }
-  45% {
-    transform: scale(1.05);
-  }
-  80% {
-    transform: scale(0.95);
+    transform: translate3d(0, -50px, 0) scale(0.9);
+    opacity: 0;
   }
   100% {
-    transform: scale(1);
+    transform: translate3d(0, 0, 0) scale(1);
+    opacity: 1;
   }
 }
 @keyframes swal2-hide {
   0% {
-    transform: scale(1);
+    transform: translate3d(0, 0, 0) scale(1);
     opacity: 1;
   }
   100% {
-    transform: scale(0.5);
+    transform: translate3d(0, -50px, 0) scale(0.9);
     opacity: 0;
   }
 }

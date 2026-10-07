@@ -24,10 +24,12 @@ export class SweetAlert {
   /**
    * @type {Promise<SweetAlertResult>}
    */
-  #promise
+  #promise = /** @type {Promise<SweetAlertResult>} */ (
+    Promise.resolve({ isConfirmed: false, isDenied: false, isDismissed: true })
+  )
 
   /**
-   * @param {...any} args
+   * @param {...(SweetAlertOptions | string)} args
    * @this {SweetAlert}
    */
   constructor(...args) {
@@ -50,6 +52,10 @@ export class SweetAlert {
     this.#promise = this._main(currentInstance.params)
   }
 
+  /**
+   * @param {any} userParams
+   * @param {any} mixinParams
+   */
   _main(userParams, mixinParams = {}) {
     showWarningsForParams(Object.assign({}, mixinParams, userParams))
 
@@ -90,10 +96,17 @@ export class SweetAlert {
   }
 
   // `catch` cannot be the name of a module export, so we define our thenable methods here instead
+  /**
+   * @param {any} onFulfilled
+   */
+  // oxlint-disable-next-line unicorn/no-thenable
   then(onFulfilled) {
     return this.#promise.then(onFulfilled)
   }
 
+  /**
+   * @param {any} onFinally
+   */
   finally(onFinally) {
     return this.#promise.finally(onFinally)
   }
@@ -103,7 +116,7 @@ export class SweetAlert {
  * @param {SweetAlert} instance
  * @param {DomCache} domCache
  * @param {SweetAlertOptions} innerParams
- * @returns {Promise}
+ * @returns {Promise<SweetAlertResult>}
  */
 const swalPromise = (instance, domCache, innerParams) => {
   return new Promise((resolve, reject) => {
@@ -112,7 +125,7 @@ const swalPromise = (instance, domCache, innerParams) => {
      * @param {DismissReason} dismiss
      */
     const dismissWith = (dismiss) => {
-      instance.close({ isDismissed: true, dismiss })
+      instance.close({ isDismissed: true, dismiss, isConfirmed: false, isDenied: false })
     }
 
     privateMethods.swalPromiseResolve.set(instance, resolve)
@@ -177,18 +190,18 @@ const prepareParams = (userParams, mixinParams) => {
  * @returns {DomCache}
  */
 const populateDomCache = (instance) => {
-  const domCache = {
-    popup: dom.getPopup(),
-    container: dom.getContainer(),
-    actions: dom.getActions(),
-    confirmButton: dom.getConfirmButton(),
-    denyButton: dom.getDenyButton(),
-    cancelButton: dom.getCancelButton(),
-    loader: dom.getLoader(),
-    closeButton: dom.getCloseButton(),
-    validationMessage: dom.getValidationMessage(),
-    progressSteps: dom.getProgressSteps(),
-  }
+  const domCache = /** @type {DomCache} */ ({
+    popup: /** @type {HTMLElement} */ (dom.getPopup()),
+    container: /** @type {HTMLElement} */ (dom.getContainer()),
+    actions: /** @type {HTMLElement} */ (dom.getActions()),
+    confirmButton: /** @type {HTMLElement} */ (dom.getConfirmButton()),
+    denyButton: /** @type {HTMLElement} */ (dom.getDenyButton()),
+    cancelButton: /** @type {HTMLElement} */ (dom.getCancelButton()),
+    loader: /** @type {HTMLElement} */ (dom.getLoader()),
+    closeButton: /** @type {HTMLElement} */ (dom.getCloseButton()),
+    validationMessage: /** @type {HTMLElement} */ (dom.getValidationMessage()),
+    progressSteps: /** @type {HTMLElement} */ (dom.getProgressSteps()),
+  })
   privateProps.domCache.set(instance, domCache)
 
   return domCache
@@ -197,7 +210,7 @@ const populateDomCache = (instance) => {
 /**
  * @param {GlobalState} globalState
  * @param {SweetAlertOptions} innerParams
- * @param {Function} dismissWith
+ * @param {(dismiss: DismissReason) => void} dismissWith
  */
 const setupTimer = (globalState, innerParams, dismissWith) => {
   const timerProgressBar = dom.getTimerProgressBar()
@@ -207,13 +220,13 @@ const setupTimer = (globalState, innerParams, dismissWith) => {
       dismissWith('timer')
       delete globalState.timeout
     }, innerParams.timer)
-    if (innerParams.timerProgressBar) {
+    if (innerParams.timerProgressBar && timerProgressBar) {
       dom.show(timerProgressBar)
       dom.applyCustomClass(timerProgressBar, innerParams, 'timerProgressBar')
       setTimeout(() => {
         if (globalState.timeout && globalState.timeout.running) {
           // timer can be already stopped or unset at this point
-          dom.animateTimerProgressBar(innerParams.timer)
+          dom.animateTimerProgressBar(/** @type {number} */ (innerParams.timer))
         }
       })
     }
@@ -239,8 +252,8 @@ const initFocus = (domCache, innerParams) => {
   }
   // TODO: this is dumb, remove `allowEnterKey` param in the next major version
   if (!callIfFunction(innerParams.allowEnterKey)) {
-    warnAboutDeprecation('allowEnterKey')
-    blurActiveElement()
+    warnAboutDeprecation('allowEnterKey', 'preConfirm: () => false')
+    domCache.popup.focus()
     return
   }
 
@@ -294,38 +307,6 @@ const focusButton = (domCache, innerParams) => {
   return false
 }
 
-const blurActiveElement = () => {
-  if (document.activeElement instanceof HTMLElement && typeof document.activeElement.blur === 'function') {
-    document.activeElement.blur()
-  }
-}
-
-// Dear russian users visiting russian sites. Let's have fun.
-if (
-  typeof window !== 'undefined' &&
-  /^ru\b/.test(navigator.language) &&
-  location.host.match(/\.(ru|su|by|xn--p1ai)$/)
-) {
-  const now = new Date()
-  const initiationDate = localStorage.getItem('swal-initiation')
-  if (!initiationDate) {
-    localStorage.setItem('swal-initiation', `${now}`)
-  } else if ((now.getTime() - Date.parse(initiationDate)) / (1000 * 60 * 60 * 24) > 3) {
-    setTimeout(() => {
-      document.body.style.pointerEvents = 'none'
-      const ukrainianAnthem = document.createElement('audio')
-      ukrainianAnthem.src = 'https://flag-gimn.ru/wp-content/uploads/2021/09/Ukraina.mp3'
-      ukrainianAnthem.loop = true
-      document.body.appendChild(ukrainianAnthem)
-      setTimeout(() => {
-        ukrainianAnthem.play().catch(() => {
-          // ignore
-        })
-      }, 2500)
-    }, 500)
-  }
-}
-
 // Assign instance methods from src/instanceMethods/*.js to prototype
 SweetAlert.prototype.disableButtons = instanceMethods.disableButtons
 SweetAlert.prototype.enableButtons = instanceMethods.enableButtons
@@ -350,19 +331,22 @@ Object.assign(SweetAlert, staticMethods)
 // Proxy to instance methods to constructor, for now, for backwards compatibility
 Object.keys(instanceMethods).forEach((key) => {
   /**
-   * @param {...any} args
-   * @returns {any | undefined}
+   * @param {...(SweetAlertOptions | string | undefined)} args
+   * @returns {SweetAlertResult | Promise<SweetAlertResult> | undefined}
    */
+  // @ts-ignore: Dynamic property assignment for backwards compatibility
   SweetAlert[key] = function (...args) {
+    // @ts-ignore
     if (currentInstance && currentInstance[key]) {
+      // @ts-ignore
       return currentInstance[key](...args)
     }
-    return null
+    return undefined
   }
 })
 
 SweetAlert.DismissReason = DismissReason
 
-SweetAlert.version = '11.22.0'
+SweetAlert.version = '11.26.25'
 
 export default SweetAlert

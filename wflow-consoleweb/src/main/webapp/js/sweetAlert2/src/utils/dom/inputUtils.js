@@ -71,7 +71,7 @@ const handleInputOptions = (instance, params) => {
     return
   }
   /**
-   * @param {Record<string, any>} inputOptions
+   * @param {*} inputOptions
    */
   const processInputOptions = (inputOptions) => {
     if (params.input === 'select') {
@@ -200,33 +200,13 @@ function populateRadioOptions(popup, inputOptions, params) {
 /**
  * Converts `inputOptions` into an array of `[value, label]`s
  *
- * @param {Record<string, any>} inputOptions
+ * @param {*} inputOptions
  * @typedef {string[]} InputOptionFlattened
  * @returns {InputOptionFlattened[]}
  */
 const formatInputOptions = (inputOptions) => {
-  /** @type {InputOptionFlattened[]} */
-  const result = []
-  if (inputOptions instanceof Map) {
-    inputOptions.forEach((value, key) => {
-      let valueFormatted = value
-      if (typeof valueFormatted === 'object') {
-        // case of <optgroup>
-        valueFormatted = formatInputOptions(valueFormatted)
-      }
-      result.push([key, valueFormatted])
-    })
-  } else {
-    Object.keys(inputOptions).forEach((key) => {
-      let valueFormatted = inputOptions[key]
-      if (typeof valueFormatted === 'object') {
-        // case of <optgroup>
-        valueFormatted = formatInputOptions(valueFormatted)
-      }
-      result.push([key, valueFormatted])
-    })
-  }
-  return result
+  const entries = inputOptions instanceof Map ? Array.from(inputOptions) : Object.entries(inputOptions)
+  return entries.map(([key, value]) => [key, typeof value === 'object' ? formatInputOptions(value) : value]) // case of <optgroup>
 }
 
 /**
@@ -234,6 +214,5 @@ const formatInputOptions = (inputOptions) => {
  * @param {SweetAlertInputValue} inputValue
  * @returns {boolean}
  */
-const isSelected = (optionValue, inputValue) => {
-  return !!inputValue && inputValue.toString() === optionValue.toString()
-}
+const isSelected = (optionValue, inputValue) =>
+  Boolean(inputValue) && inputValue != null && inputValue.toString() === optionValue.toString()

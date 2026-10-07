@@ -1,3 +1,4 @@
+import globalState from '../globalState.js'
 import * as dom from './dom/index.js'
 
 let dragging = false
@@ -38,7 +39,12 @@ export const removeDraggableListeners = (popup) => {
 const down = (event) => {
   const popup = dom.getPopup()
 
-  if (event.target === popup || dom.getIcon().contains(/** @type {HTMLElement} */ (event.target))) {
+  if (!popup) {
+    return
+  }
+
+  const icon = dom.getIcon()
+  if (event.target === popup || (icon && icon.contains(/** @type {HTMLElement} */ (event.target)))) {
     dragging = true
     const clientXY = getClientXY(event)
     mousedownX = clientXY.clientX
@@ -55,9 +61,15 @@ const down = (event) => {
 const move = (event) => {
   const popup = dom.getPopup()
 
+  if (!popup) {
+    return
+  }
+
   if (dragging) {
     let { clientX, clientY } = getClientXY(event)
-    popup.style.insetInlineStart = `${initialX + (clientX - mousedownX)}px`
+    const deltaX = clientX - mousedownX
+    // In RTL mode, negate the horizontal delta since insetInlineStart refers to the right edge
+    popup.style.insetInlineStart = `${initialX + (globalState.isRTL ? -deltaX : deltaX)}px`
     popup.style.insetBlockStart = `${initialY + (clientY - mousedownY)}px`
   }
 }
@@ -74,14 +86,8 @@ const up = () => {
  * @returns {{ clientX: number, clientY: number }}
  */
 const getClientXY = (event) => {
-  let clientX = 0,
-    clientY = 0
-  if (event.type.startsWith('mouse')) {
-    clientX = /** @type {MouseEvent} */ (event).clientX
-    clientY = /** @type {MouseEvent} */ (event).clientY
-  } else if (event.type.startsWith('touch')) {
-    clientX = /** @type {TouchEvent} */ (event).touches[0].clientX
-    clientY = /** @type {TouchEvent} */ (event).touches[0].clientY
-  }
-  return { clientX, clientY }
+  const source = event.type.startsWith('touch')
+    ? /** @type {TouchEvent} */ (event).touches[0]
+    : /** @type {MouseEvent} */ (event)
+  return { clientX: source.clientX, clientY: source.clientY }
 }

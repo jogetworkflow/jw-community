@@ -26,9 +26,9 @@ function setInputDisabled(input, disabled) {
   if (input.type === 'radio') {
     /** @type {NodeListOf<HTMLInputElement>} */
     const radios = popup.querySelectorAll(`[name="${swalClasses.radio}"]`)
-    for (let i = 0; i < radios.length; i++) {
-      radios[i].disabled = disabled
-    }
+    radios.forEach((radio) => {
+      radio.disabled = disabled
+    })
   } else {
     input.disabled = disabled
   }
@@ -40,6 +40,12 @@ function setInputDisabled(input, disabled) {
  */
 export function enableButtons() {
   setButtonsDisabled(this, ['confirmButton', 'denyButton', 'cancelButton'], false)
+
+  const focusedElement = privateProps.focusedElement.get(this)
+  if (focusedElement instanceof HTMLElement && document.activeElement === document.body) {
+    focusedElement.focus()
+  }
+  privateProps.focusedElement.delete(this)
 }
 
 /**
@@ -47,6 +53,7 @@ export function enableButtons() {
  * @this {SweetAlert}
  */
 export function disableButtons() {
+  privateProps.focusedElement.set(this, document.activeElement)
   setButtonsDisabled(this, ['confirmButton', 'denyButton', 'cancelButton'], true)
 }
 

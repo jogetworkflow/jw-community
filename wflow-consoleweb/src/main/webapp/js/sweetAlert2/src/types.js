@@ -1,3 +1,5 @@
+/* oxlint-disable no-empty-file require-property-description */
+
 /**
  * @typedef { import('./SweetAlert').SweetAlert } SweetAlert
  * @typedef { import('sweetalert2').SweetAlertOptions } SweetAlertOptions
@@ -6,6 +8,7 @@
  * @typedef { import('sweetalert2').SweetAlertInput } SweetAlertInput
  * @typedef { import('sweetalert2').SweetAlertResult } SweetAlertResult
  * @typedef { import('sweetalert2').SweetAlertOptions['inputValue'] } SweetAlertInputValue
+ * @typedef { import('sweetalert2').DismissReason } DismissReason
  */
 
 /**
@@ -19,12 +22,13 @@
  * @property {Element | null} [previousActiveElement]
  * @property {Timer} [timeout]
  * @property {EventEmitter} [eventEmitter]
- * @property {NodeJS.Timeout} [restoreFocusTimeout]
- * @property {(this: HTMLElement, event: KeyboardEvent) => any} [keydownHandler]
+ * @property {ReturnType<typeof setTimeout>} [restoreFocusTimeout]
+ * @property {(this: HTMLElement, event: KeyboardEvent) => void} [keydownHandler]
  * @property {HTMLElement | (Window & typeof globalThis)} [keydownTarget]
  * @property {boolean} [keydownHandlerAdded]
  * @property {boolean} [keydownListenerCapture]
- * @property {Function} [swalCloseEventFinishedCallback]
+ * @property {() => void} [swalCloseEventFinishedCallback]
+ * @property {boolean} [isRTL]
  */
 
 /**

@@ -231,9 +231,26 @@ export const showWarningsForParams = (params) => {
 
   if (
     params.theme &&
-    !['light', 'dark', 'auto', 'minimal', 'borderless', 'embed-iframe', 'bulma', 'bulma-light', 'bulma-dark'].includes(
-      params.theme
-    )
+    ![
+      'light',
+      'dark',
+      'auto',
+      'minimal',
+      'borderless',
+      'bootstrap-4',
+      'bootstrap-4-light',
+      'bootstrap-4-dark',
+      'bootstrap-5',
+      'bootstrap-5-light',
+      'bootstrap-5-dark',
+      'material-ui',
+      'material-ui-light',
+      'material-ui-dark',
+      'embed-iframe',
+      'bulma',
+      'bulma-light',
+      'bulma-dark',
+    ].includes(params.theme)
   ) {
     warn(`Invalid theme "${params.theme}"`)
   }

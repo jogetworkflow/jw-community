@@ -2,7 +2,10 @@ import { swalClasses } from '../utils/classes.js'
 import * as dom from './dom/index.js'
 
 // @ts-ignore
-export const isSafariOrIOS = typeof window !== 'undefined' && !!window.GestureEvent // true for Safari desktop + all iOS browsers https://stackoverflow.com/a/70585394
+export const isSafariOrIOS = typeof window !== 'undefined' && Boolean(window.GestureEvent) // true for Safari desktop + all iOS browsers https://stackoverflow.com/a/70585394
+
+// @ts-ignore
+export const isIOS = isSafariOrIOS && /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream
 
 /**
  * Fix iOS scrolling
@@ -80,11 +83,16 @@ const shouldPreventTouchMove = (event) => {
 /**
  * https://github.com/sweetalert2/sweetalert2/issues/1786
  *
- * @param {*} event
+ * @param {TouchEvent} event
  * @returns {boolean}
  */
 const isStylus = (event) => {
-  return event.touches && event.touches.length && event.touches[0].touchType === 'stylus'
+  return Boolean(
+    event.touches &&
+    event.touches.length &&
+    // @ts-ignore - touchType is not a standard property
+    event.touches[0].touchType === 'stylus'
+  )
 }
 
 /**

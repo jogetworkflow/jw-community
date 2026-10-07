@@ -1,14 +1,17 @@
 import { clickConfirm } from './staticMethods/dom.js'
 import { DismissReason } from './utils/DismissReason.js'
 import * as dom from './utils/dom/index.js'
-import { callIfFunction } from './utils/utils.js'
+import { callIfFunction, isFirefox } from './utils/utils.js'
 
 /**
  * @param {GlobalState} globalState
  */
 export const removeKeydownHandler = (globalState) => {
-  if (globalState.keydownTarget && globalState.keydownHandlerAdded) {
-    globalState.keydownTarget.removeEventListener('keydown', globalState.keydownHandler, {
+  if (globalState.keydownTarget && globalState.keydownHandlerAdded && globalState.keydownHandler) {
+    const handler = /** @type {EventListenerOrEventListenerObject} */ (
+      /** @type {unknown} */ (globalState.keydownHandler)
+    )
+    globalState.keydownTarget.removeEventListener('keydown', handler, {
       capture: globalState.keydownListenerCapture,
     })
     globalState.keydownHandlerAdded = false
@@ -18,24 +21,31 @@ export const removeKeydownHandler = (globalState) => {
 /**
  * @param {GlobalState} globalState
  * @param {SweetAlertOptions} innerParams
- * @param {*} dismissWith
+ * @param {(dismiss: DismissReason) => void} dismissWith
  */
 export const addKeydownHandler = (globalState, innerParams, dismissWith) => {
   removeKeydownHandler(globalState)
   if (!innerParams.toast) {
-    globalState.keydownHandler = (e) => keydownHandler(innerParams, e, dismissWith)
-    globalState.keydownTarget = innerParams.keydownListenerCapture ? window : dom.getPopup()
-    globalState.keydownListenerCapture = innerParams.keydownListenerCapture
-    globalState.keydownTarget.addEventListener('keydown', globalState.keydownHandler, {
-      capture: globalState.keydownListenerCapture,
-    })
-    globalState.keydownHandlerAdded = true
+    /** @type {(this: HTMLElement, event: KeyboardEvent) => void} */
+    const handler = (e) => keydownHandler(innerParams, e, dismissWith)
+    globalState.keydownHandler = handler
+    const target = innerParams.keydownListenerCapture ? window : dom.getPopup()
+    if (target) {
+      globalState.keydownTarget = target
+      globalState.keydownListenerCapture = innerParams.keydownListenerCapture
+      const eventHandler = /** @type {EventListenerOrEventListenerObject} */ (/** @type {unknown} */ (handler))
+      globalState.keydownTarget.addEventListener('keydown', eventHandler, {
+        capture: globalState.keydownListenerCapture,
+      })
+      globalState.keydownHandlerAdded = true
+    }
   }
 }
 
 /**
  * @param {number} index
  * @param {number} increment
+ * @returns {boolean} shouldPreventDefault
  */
 export const setFocus = (index, increment) => {
   const focusableElements = dom.getFocusableElements()
@@ -58,10 +68,18 @@ export const setFocus = (index, increment) => {
     }
 
     focusableElements[index].focus()
-    return
+
+    // don't prevent default for iframes (Firefox fix)
+    // https://github.com/sweetalert2/sweetalert2/issues/2931
+    if (isFirefox() && focusableElements[index] instanceof HTMLIFrameElement) {
+      return false
+    }
+
+    return true
   }
   // no visible focusable elements, focus the popup
   dom.getPopup()?.focus()
+  return true
 }
 
 const arrowKeysNextButton = ['ArrowRight', 'ArrowDown']
@@ -71,7 +89,7 @@ const arrowKeysPreviousButton = ['ArrowLeft', 'ArrowUp']
 /**
  * @param {SweetAlertOptions} innerParams
  * @param {KeyboardEvent} event
- * @param {Function} dismissWith
+ * @param {(dismiss: DismissReason) => void} dismissWith
  */
 const keydownHandler = (innerParams, event, dismissWith) => {
   if (!innerParams) {
@@ -121,7 +139,12 @@ const handleEnter = (event, innerParams) => {
     return
   }
 
-  const input = dom.getInput(dom.getPopup(), innerParams.input)
+  const popup = dom.getPopup()
+  if (!popup || !innerParams.input) {
+    return
+  }
+
+  const input = dom.getInput(popup, innerParams.input)
 
   if (event.target && input && event.target instanceof HTMLElement && event.target.outerHTML === input.outerHTML) {
     if (['textarea', 'file'].includes(innerParams.input)) {
@@ -140,26 +163,27 @@ const handleTab = (event) => {
   const targetElement = event.target
 
   const focusableElements = dom.getFocusableElements()
-  let btnIndex = -1
-  for (let i = 0; i < focusableElements.length; i++) {
-    if (targetElement === focusableElements[i]) {
-      btnIndex = i
-      break
-    }
-  }
+  const btnIndex = focusableElements.findIndex((el) => el === targetElement)
+
+  // don't prevent default for iframes (Firefox fix)
+  // https://github.com/sweetalert2/sweetalert2/issues/2931
+  let shouldPreventDefault = true
 
   // Cycle to the next button
   if (!event.shiftKey) {
-    setFocus(btnIndex, 1)
+    shouldPreventDefault = setFocus(btnIndex, 1)
   }
 
   // Cycle to the prev button
   else {
-    setFocus(btnIndex, -1)
+    shouldPreventDefault = setFocus(btnIndex, -1)
   }
 
   event.stopPropagation()
-  event.preventDefault()
+
+  if (shouldPreventDefault) {
+    event.preventDefault()
+  }
 }
 
 /**
@@ -200,11 +224,11 @@ const handleArrows = (key) => {
 /**
  * @param {KeyboardEvent} event
  * @param {SweetAlertOptions} innerParams
- * @param {Function} dismissWith
+ * @param {(dismiss: DismissReason) => void} dismissWith
  */
 const handleEsc = (event, innerParams, dismissWith) => {
+  event.preventDefault()
   if (callIfFunction(innerParams.allowEscapeKey)) {
-    event.preventDefault()
     dismissWith(DismissReason.esc)
   }
 }

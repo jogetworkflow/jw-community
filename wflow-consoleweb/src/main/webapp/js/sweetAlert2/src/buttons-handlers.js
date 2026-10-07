@@ -35,7 +35,7 @@ export const handleDenyButtonClick = (instance) => {
 
 /**
  * @param {SweetAlert} instance
- * @param {Function} dismissWith
+ * @param {(dismiss: DismissReason) => void} dismissWith
  */
 export const handleCancelButtonClick = (instance, dismissWith) => {
   instance.disableButtons()
@@ -92,10 +92,10 @@ const handleInputValidator = (instance, inputValue, type) => {
 
 /**
  * @param {SweetAlert} instance
- * @param {any} value
+ * @param {*} value
  */
 const deny = (instance, value) => {
-  const innerParams = privateProps.innerParams.get(instance || this)
+  const innerParams = privateProps.innerParams.get(instance)
 
   if (innerParams.showLoaderOnDeny) {
     showLoading(getDenyButton())
@@ -112,21 +112,26 @@ const deny = (instance, value) => {
           instance.hideLoading()
           handleAwaitingPromise(instance)
         } else {
-          instance.close({ isDenied: true, value: typeof preDenyValue === 'undefined' ? value : preDenyValue })
+          instance.close(
+            /** @type SweetAlertResult */ ({
+              isDenied: true,
+              value: typeof preDenyValue === 'undefined' ? value : preDenyValue,
+            })
+          )
         }
       })
-      .catch((error) => rejectWith(instance || this, error))
+      .catch((error) => rejectWith(instance, error))
   } else {
-    instance.close({ isDenied: true, value })
+    instance.close(/** @type SweetAlertResult */ ({ isDenied: true, value }))
   }
 }
 
 /**
  * @param {SweetAlert} instance
- * @param {any} value
+ * @param {*} value
  */
 const succeedWith = (instance, value) => {
-  instance.close({ isConfirmed: true, value })
+  instance.close(/** @type SweetAlertResult */ ({ isConfirmed: true, value }))
 }
 
 /**
@@ -141,10 +146,10 @@ const rejectWith = (instance, error) => {
 /**
  *
  * @param {SweetAlert} instance
- * @param {any} value
+ * @param {*} value
  */
 const confirm = (instance, value) => {
-  const innerParams = privateProps.innerParams.get(instance || this)
+  const innerParams = privateProps.innerParams.get(instance)
 
   if (innerParams.showLoaderOnConfirm) {
     showLoading()
@@ -165,7 +170,7 @@ const confirm = (instance, value) => {
           succeedWith(instance, typeof preConfirmValue === 'undefined' ? value : preConfirmValue)
         }
       })
-      .catch((error) => rejectWith(instance || this, error))
+      .catch((error) => rejectWith(instance, error))
   } else {
     succeedWith(instance, value)
   }

@@ -1,9 +1,23 @@
 import { error } from '../utils/utils.js'
 
-const isJqueryElement = (elem) => typeof elem === 'object' && elem.jquery
+/**
+ * @param {unknown} elem
+ * @returns {boolean}
+ */
+const isJqueryElement = (elem) => typeof elem === 'object' && elem !== null && 'jquery' in elem
+
+/**
+ * @param {unknown} elem
+ * @returns {boolean}
+ */
 const isElement = (elem) => elem instanceof Element || isJqueryElement(elem)
 
+/**
+ * @param {ReadonlyArray<unknown>} args
+ * @returns {SweetAlertOptions}
+ */
 export const argsToParams = (args) => {
+  /** @type {Record<string, unknown>} */
   const params = {}
   if (typeof args[0] === 'object' && !isElement(args[0])) {
     Object.assign(params, args[0])
@@ -17,5 +31,5 @@ export const argsToParams = (args) => {
       }
     })
   }
-  return params
+  return /** @type {SweetAlertOptions} */ (params)
 }

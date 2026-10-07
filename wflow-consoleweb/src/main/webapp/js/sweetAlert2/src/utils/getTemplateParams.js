@@ -34,10 +34,10 @@ export const getTemplateParams = (params) => {
 
 /**
  * @param {DocumentFragment} templateContent
- * @returns {Record<string, any>}
+ * @returns {Record<string, string | boolean | number>}
  */
 const getSwalParams = (templateContent) => {
-  /** @type {Record<string, any>} */
+  /** @type {Record<string, string | boolean | number>} */
   const result = {}
   /** @type {HTMLElement[]} */
   const swalParams = Array.from(templateContent.querySelectorAll('swal-param'))
@@ -48,9 +48,15 @@ const getSwalParams = (templateContent) => {
     if (!paramName || !value) {
       return
     }
-    if (typeof defaultParams[paramName] === 'boolean') {
+    if (
+      paramName in defaultParams &&
+      typeof defaultParams[/** @type {keyof typeof defaultParams} */ (paramName)] === 'boolean'
+    ) {
       result[paramName] = value !== 'false'
-    } else if (typeof defaultParams[paramName] === 'object') {
+    } else if (
+      paramName in defaultParams &&
+      typeof defaultParams[/** @type {keyof typeof defaultParams} */ (paramName)] === 'object'
+    ) {
       result[paramName] = JSON.parse(value)
     } else {
       result[paramName] = value
@@ -61,10 +67,10 @@ const getSwalParams = (templateContent) => {
 
 /**
  * @param {DocumentFragment} templateContent
- * @returns {Record<string, any>}
+ * @returns {Record<string, () => void>}
  */
 const getSwalFunctionParams = (templateContent) => {
-  /** @type {Record<string, any>} */
+  /** @type {Record<string, () => void>} */
   const result = {}
   /** @type {HTMLElement[]} */
   const swalFunctions = Array.from(templateContent.querySelectorAll('swal-function-param'))
@@ -81,10 +87,10 @@ const getSwalFunctionParams = (templateContent) => {
 
 /**
  * @param {DocumentFragment} templateContent
- * @returns {Record<string, any>}
+ * @returns {Record<string, string | boolean>}
  */
 const getSwalButtons = (templateContent) => {
-  /** @type {Record<string, any>} */
+  /** @type {Record<string, string | boolean>} */
   const result = {}
   /** @type {HTMLElement[]} */
   const swalButtons = Array.from(templateContent.querySelectorAll('swal-button'))
@@ -96,11 +102,13 @@ const getSwalButtons = (templateContent) => {
     }
     result[`${type}ButtonText`] = button.innerHTML
     result[`show${capitalizeFirstLetter(type)}Button`] = true
-    if (button.hasAttribute('color')) {
-      result[`${type}ButtonColor`] = button.getAttribute('color')
+    const color = button.getAttribute('color')
+    if (color !== null) {
+      result[`${type}ButtonColor`] = color
     }
-    if (button.hasAttribute('aria-label')) {
-      result[`${type}ButtonAriaLabel`] = button.getAttribute('aria-label')
+    const ariaLabel = button.getAttribute('aria-label')
+    if (ariaLabel !== null) {
+      result[`${type}ButtonAriaLabel`] = ariaLabel
     }
   })
   return result
@@ -116,25 +124,22 @@ const getSwalImage = (templateContent) => {
   const image = templateContent.querySelector('swal-image')
   if (image) {
     showWarningsForAttributes(image, ['src', 'width', 'height', 'alt'])
-    if (image.hasAttribute('src')) {
-      result.imageUrl = image.getAttribute('src') || undefined
-    }
-    if (image.hasAttribute('width')) {
-      result.imageWidth = image.getAttribute('width') || undefined
-    }
-    if (image.hasAttribute('height')) {
-      result.imageHeight = image.getAttribute('height') || undefined
-    }
-    if (image.hasAttribute('alt')) {
-      result.imageAlt = image.getAttribute('alt') || undefined
-    }
+    // getAttribute returns null if attribute is absent; `|| undefined` converts empty string to undefined
+    const src = image.getAttribute('src')
+    if (src !== null) result.imageUrl = src || undefined
+    const width = image.getAttribute('width')
+    if (width !== null) result.imageWidth = width || undefined
+    const height = image.getAttribute('height')
+    if (height !== null) result.imageHeight = height || undefined
+    const alt = image.getAttribute('alt')
+    if (alt !== null) result.imageAlt = alt || undefined
   }
   return result
 }
 
 /**
  * @param {DocumentFragment} templateContent
- * @returns {Record<string, any>}
+ * @returns {object}
  */
 const getSwalIcon = (templateContent) => {
   const result = {}
@@ -155,7 +160,7 @@ const getSwalIcon = (templateContent) => {
 
 /**
  * @param {DocumentFragment} templateContent
- * @returns {Record<string, any>}
+ * @returns {object}
  */
 const getSwalInput = (templateContent) => {
   /** @type {Record<string, any>} */
@@ -195,10 +200,10 @@ const getSwalInput = (templateContent) => {
 /**
  * @param {DocumentFragment} templateContent
  * @param {string[]} paramNames
- * @returns {Record<string, any>}
+ * @returns {Record<string, string>}
  */
 const getSwalStringParams = (templateContent, paramNames) => {
-  /** @type {Record<string, any>} */
+  /** @type {Record<string, string>} */
   const result = {}
   for (const i in paramNames) {
     const paramName = paramNames[i]
