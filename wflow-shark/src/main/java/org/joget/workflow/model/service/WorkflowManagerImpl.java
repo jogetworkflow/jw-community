@@ -193,6 +193,14 @@ public class WorkflowManagerImpl implements SharkWorkflowManager {
      */
     private void setPath(String path) {
 
+        if (!initialized && !HostManager.isVirtualHostEnabled() && DynamicDataSourceManager.getCurrentProfile() == null) {
+            // no datasource profile configured yet (fresh install before /setup): Shark initialized
+            // without a database stays broken, so leave initialized false and let the context the
+            // setup wizard rebuilds initialize it
+            LogUtil.info(getClass().getName(), "No datasource profile configured, Shark not initialized");
+            return;
+        }
+
         if (!initialized) {
             try {
                 // Set up the Shark id-allocator reflective handles once,

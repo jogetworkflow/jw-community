@@ -45,10 +45,13 @@ public class CustomContextLoaderListener extends ContextLoaderListener {
                     }
                     
                     System.out.println("===== Error initializing WebApplicationContext =====");
-                    if (cause.getMessage().contains("hibernate.dialect")) {
+                    // getMessage() can be null (e.g. a bare NullPointerException); an exception
+                    // escaping this listener fails the whole /jw context and every URL returns 404
+                    String message = cause.getMessage();
+                    if (message != null && message.contains("hibernate.dialect")) {
                         System.out.println("ERROR : Fail to connect database");
                     } else {
-                        System.out.println("ERROR : " + cause.getMessage());
+                        System.out.println("ERROR : " + (message != null ? message : cause.toString()));
                     }
                 }
             }

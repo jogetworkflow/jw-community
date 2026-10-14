@@ -67,6 +67,12 @@ public class SharkDeadlineThreadManager extends DeadlineThreadManager{
                 }
             }
         }
+        else if (DynamicDataSourceManager.getCurrentProfile() == null) {
+            // no datasource profile configured yet (fresh install before /setup): touching the
+            // workflow engine now would initialize Shark without a database and leave it broken
+            // after the setup wizard rebuilds the application context
+            LogUtil.info(SharkDeadlineThreadManager.class.getName(), "No datasource profile configured, deadline checker not started");
+        }
         else {
             // start current profile
             workflowManager.internalRecoverStuckToolActivities();

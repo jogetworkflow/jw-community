@@ -122,6 +122,11 @@ public class GovHealthCheckManager {
                 }
             }
         }
+        else if (DynamicDataSourceManager.getCurrentProfile() == null) {
+            // no datasource profile configured yet (fresh install before /setup): there are no
+            // settings to read, and the setup wizard rebuilds the application context afterwards
+            LogUtil.info(getClass().getName(), "No datasource profile configured, governance health check not started");
+        }
         else {
             // start current profile
             initChecker();
