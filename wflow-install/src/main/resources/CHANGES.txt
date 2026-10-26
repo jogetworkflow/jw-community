@@ -2,6 +2,10 @@ Joget DX COMMUNITY
 ====================
 For more information, please refer to https://community.joget.org
 
+8.2.13.1
+========
+a075254dc9 Fixed: jw-community - Multi-Tenant Security - Hardened tenant isolation and sped up plugin loading. #2244 #2261 @8.2-SNAPSHOT
+
 8.2.13
 ======
 2513161a9a Fixed: wflow-commons, wflow-core - Security - Security hardening for multitenant deployment. #2261 @8.2-SNAPSHOT
