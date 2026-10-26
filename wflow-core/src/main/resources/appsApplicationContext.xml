@@ -23,7 +23,7 @@
         <property name="cache" ref="longTermCache"/>
     </bean>
     
-    <bean id="formOptionsCacheExecutor" class="org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler" lazy-init="true">
+    <bean id="formOptionsCacheExecutor" class="org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler">
         <property name="poolSize" value="10" />
         <property name="waitForTasksToCompleteOnShutdown" value="false" />
     </bean>
@@ -211,12 +211,12 @@
         <property name="sessionFactory" ref="reportSessionFactory"/>
     </bean>
     
-    <bean id="reportExecutor" class="org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor" lazy-init="true">
+    <bean id="reportExecutor" class="org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor">
         <property name="maxPoolSize" value="10" />
         <property name="waitForTasksToCompleteOnShutdown" value="true" />
     </bean>
     
-    <bean id="commonTaskScheduler" class="org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler" lazy-init="true">
+    <bean id="commonTaskScheduler" class="org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler">
         <property name="poolSize" value="10" />
         <property name="waitForTasksToCompleteOnShutdown" value="true" />
         <property name="removeOnCancelPolicy" value="true" />
@@ -268,7 +268,7 @@
     <bean id="setupManagerHelper" class="org.joget.apps.app.service.AppSetupManagerHelperImpl" lazy-init="true">
     </bean>
     
-    <bean id="govHealthCheckScheduler" class="org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler" lazy-init="true">
+    <bean id="govHealthCheckScheduler" class="org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler">
         <property name="poolSize" value="10" />
         <property name="waitForTasksToCompleteOnShutdown" value="false" />
     </bean>

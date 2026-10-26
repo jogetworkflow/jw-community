@@ -45,31 +45,47 @@ public class WebSocketPluginEndpoint {
         }
         
         plugin = (PluginWebSocket) p;
-        
+
         setSecurityContext(session);
-        plugin.onOpen(session);
+        try {
+            plugin.onOpen(session);
+        } finally {
+            clearSecurityContext();
+        }
     }
 
     @OnMessage
     public void onMessage(String message, Session session) throws IOException {
         setSecurityContext(session);
-        plugin.onMessage(message, session);
+        try {
+            plugin.onMessage(message, session);
+        } finally {
+            clearSecurityContext();
+        }
     }
 
     @OnClose
     public void onClose(Session session) throws IOException {
         setSecurityContext(session);
-        plugin.onClose(session);
-        plugin = null;
+        try {
+            plugin.onClose(session);
+        } finally {
+            clearSecurityContext();
+            plugin = null;
+        }
     }
 
     @OnError
     public void onError(Session session, Throwable throwable) {
-        
+
         setSecurityContext(session);
-        plugin.onError(session, throwable);
-        plugin = null;
-        
+        try {
+            plugin.onError(session, throwable);
+        } finally {
+            clearSecurityContext();
+            plugin = null;
+        }
+
         // Do error handling here
         LogUtil.error(getClass().getName(), throwable, "onError : session [" + session.getId() + "]");
     }
@@ -99,6 +115,20 @@ public class WebSocketPluginEndpoint {
             }
         } catch (Exception e) {
             LogUtil.debug(getClass().getName(), "HttpSession is already invalidated");
+        }
+    }
+
+    /**
+     * #2261: clears the identity this callback copied onto the pooled Tomcat worker so the next (possibly
+     * anonymous) request on it does not inherit this connection's user. Best-effort, idempotent.
+     */
+    protected final void clearSecurityContext() {
+        SecurityContextHolder.clearContext();
+        try {
+            WorkflowUserManager wum = (WorkflowUserManager) AppUtil.getApplicationContext().getBean("workflowUserManager");
+            wum.clearCurrentThreadUser();
+        } catch (Exception e) {
+            // best-effort: the thread user is also re-established by the next request's own filter
         }
     }
 }

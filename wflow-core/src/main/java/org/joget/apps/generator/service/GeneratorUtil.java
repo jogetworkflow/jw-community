@@ -270,16 +270,31 @@ public class GeneratorUtil {
      * @return
      * @throws RuntimeException 
      */
+    // The XML passed here comes from plugin/BeanShell callers and is untrusted. Disallow DOCTYPE
+    // declarations and external general/parameter entities outright (defeats XXE file-read / SSRF on
+    // the shared host), and fail closed if the parser cannot be hardened rather than parsing insecurely.
+    private static DocumentBuilderFactory newSecureDomFactory() {
+        DocumentBuilderFactory f = DocumentBuilderFactory.newInstance();
+        try {
+            f.setFeature("http://apache.org/xml/features/disallow-doctype-decl", true);
+            f.setFeature("http://xml.org/sax/features/external-general-entities", false);
+            f.setFeature("http://xml.org/sax/features/external-parameter-entities", false);
+            f.setXIncludeAware(false);
+            f.setExpandEntityReferences(false);
+        } catch (javax.xml.parsers.ParserConfigurationException e) {
+            throw new RuntimeException("Unable to configure a secure XML parser", e);
+        }
+        return f;
+    }
+
     public static String addParticipantsAndProcessXmlToXpdl(String participantsXml, String processXml, String xpdl) throws RuntimeException {
         try {
-            DocumentBuilderFactory domFactory = DocumentBuilderFactory.newInstance();
+            DocumentBuilderFactory domFactory = newSecureDomFactory();
             domFactory.setNamespaceAware(true);
-            domFactory.setExpandEntityReferences(false);
             DocumentBuilder builder = domFactory.newDocumentBuilder();
             Document xpdlDoc = builder.parse(new InputSource(new ByteArrayInputStream(xpdl.getBytes("UTF-8"))));
 
-            DocumentBuilderFactory domFactory2 = DocumentBuilderFactory.newInstance();
-            domFactory2.setExpandEntityReferences(false);
+            DocumentBuilderFactory domFactory2 = newSecureDomFactory();
             DocumentBuilder builder2 = domFactory2.newDocumentBuilder();
             Document processDoc = builder2.parse(new InputSource(new ByteArrayInputStream(processXml.getBytes("UTF-8"))));
 
@@ -307,8 +322,7 @@ public class GeneratorUtil {
             }
 
             if (participantsXml != null && !participantsXml.isEmpty()) {
-                DocumentBuilderFactory domFactory3 = DocumentBuilderFactory.newInstance();
-                domFactory3.setExpandEntityReferences(false);
+                DocumentBuilderFactory domFactory3 = newSecureDomFactory();
                 DocumentBuilder builder3 = domFactory3.newDocumentBuilder();
                 Document participantsDoc = builder3.parse(new InputSource(new ByteArrayInputStream(participantsXml.getBytes("UTF-8"))));
 

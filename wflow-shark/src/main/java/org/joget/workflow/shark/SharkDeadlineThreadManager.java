@@ -90,7 +90,9 @@ public class SharkDeadlineThreadManager extends DeadlineThreadManager{
             }
             DeadlineChecker thread = getThread(profile);
             if (thread == null) {
-                thread = new DeadlineChecker(profile,
+                // DeadlineChecker captures the ambient profile itself (we are on that profile's thread);
+                // the map is still keyed by the same captured value.
+                thread = new DeadlineChecker(
                     null,
                     interval,
                     10,

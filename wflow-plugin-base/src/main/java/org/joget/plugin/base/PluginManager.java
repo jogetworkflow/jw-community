@@ -260,7 +260,10 @@ public class PluginManager implements ApplicationContextAware {
         }
     }
     
-    protected static PluginManagerCache getCache() {
+    // Package-private: the cache holds the plugin maps that platform code invokes directly, so a
+    // tenant plugin subclassing PluginManager must not reach it to insert its own unwoven objects.
+    // A tenant class declared in this package is a different runtime package and cannot access it.
+    static PluginManagerCache getCache() {
         return pluginCache.getCache();
     }
     
@@ -999,7 +1002,7 @@ public class PluginManager implements ApplicationContextAware {
             Map<String, Plugin> pluginMap = new TreeMap<String, Plugin>();
 
             // find OSGI plugins
-            Collection<Plugin> pluginList = getAllOsgiPlugins().values();
+            Collection<Plugin> pluginList = getOsgiPlugins(clazz);
             for (Plugin plugin : pluginList) {
                 if (clazz == null || clazz.isAssignableFrom(plugin.getClass())) {
                     pluginMap.put(plugin.getName(), plugin);
@@ -1095,8 +1098,8 @@ public class PluginManager implements ApplicationContextAware {
             }
         }
 
-        // find OSGI plugins (woven once per profile, then filtered by type)
-        for (Plugin plugin : getAllOsgiPlugins().values()) {
+        // find OSGI plugins (only the plugins of the requested type are woven)
+        for (Plugin plugin : getOsgiPlugins(clazz)) {
             if (clazz == null || clazz.isAssignableFrom(ClassUtils.getUserClass(plugin))) {
                 if (blackList == null || !blackList.contains(ClassUtils.getUserClass(plugin).getName())) {
                     pluginMap.put(plugin.getName(), plugin);
@@ -1106,43 +1109,76 @@ public class PluginManager implements ApplicationContextAware {
 
         LogUtil.debug(PluginManager.class.getName(), " Loaded plugins from classpath and OSGI container");
 
-        // sort only once when return
-        return new TreeMap<String, Plugin>(pluginMap);
+        // sort only once when return; unmodifiable so a caller that reaches this cached per-type map
+        // (e.g. a tenant PluginManager subclass via the protected getPluginsByClass) cannot inject a
+        // raw, unwoven plugin into it that platform code would later invoke with the SM inactive.
+        return Collections.unmodifiableSortedMap(new TreeMap<String, Plugin>(pluginMap));
     }
 
     /**
      * Returns all OSGi plugins for the current profile, each woven with any
-     * required aspect. Built once per profile and cached in the per-profile
-     * {@link PluginManagerCache}; cleared together with the rest of the cache on
-     * {@link #clearCache()} (e.g. bundle install/uninstall/refresh).
-     *
-     * internalLoadPluginMap filters this map by type, so the expensive OSGi
-     * weave runs once per profile instead of once per (profile x type) cache miss.
+     * required aspect. Weaves every plugin of the profile, so prefer
+     * {@link #getOsgiPlugins(Class)} when only one type is needed.
      * @return A Map of name=pluginObject (unmodifiable)
      */
     protected Map<String, Plugin> getAllOsgiPlugins() {
-        PluginManagerCache cache = getCache();
-        Map<String, Plugin> osgiPlugins = cache.getAllOsgiPlugins();
-        if (osgiPlugins == null) {
-            ReentrantLock pluginListLock = cache.getPluginListLock();
-            pluginListLock.lock();
-            try {
-                osgiPlugins = cache.getAllOsgiPlugins();
-                if (osgiPlugins == null) {
-                    Map<String, Plugin> built = new HashMap<String, Plugin>();
-                    for (Plugin plugin : loadOsgiPlugins()) {
-                        built.put(plugin.getName(), plugin);
-                    }
-                    osgiPlugins = Collections.unmodifiableMap(built);
-                    cache.setAllOsgiPlugins(osgiPlugins);
-                }
-            } finally {
-                pluginListLock.unlock();
-            }
+        Map<String, Plugin> osgiPlugins = new HashMap<String, Plugin>();
+        for (Plugin plugin : getOsgiPlugins(null)) {
+            osgiPlugins.put(plugin.getName(), plugin);
         }
-        return osgiPlugins;
+        return Collections.unmodifiableMap(osgiPlugins);
     }
-    
+
+    /**
+     * Returns the woven OSGi plugins of the current profile that are assignable to
+     * clazz, in bundle/service order. The unwoven service objects are collected once
+     * per profile and cached in the per-profile {@link PluginManagerCache}; only the
+     * plugins matching clazz are woven, and each is woven at most once until
+     * {@link #clearCache()}. Weaving is the expensive step in a multi-tenant
+     * deployment, so listing one plugin type no longer weaves every plugin.
+     *
+     * The type check uses the service object's class only; no plugin method runs
+     * before the plugin is woven.
+     * @param clazz Optional filter for type of plugins to return, null will return all.
+     * @return the woven plugins, excluding any that failed to weave
+     */
+    protected List<Plugin> getOsgiPlugins(Class<?> clazz) {
+        PluginManagerCache cache = getCache();
+        ReentrantLock pluginListLock = cache.getPluginListLock();
+        pluginListLock.lock();
+        try {
+            PluginManagerCache.OsgiPluginIndex index = cache.getOsgiPluginIndex();
+            if (index == null) {
+                List<Plugin> services = loadOsgiPluginServices();
+                if (services == null) {
+                    // no OSGi container yet; don't cache, so the next call retries it
+                    return new ArrayList<Plugin>();
+                }
+                index = new PluginManagerCache.OsgiPluginIndex(services);
+                cache.setOsgiPluginIndex(index);
+            }
+            List<Plugin> plugins = new ArrayList<Plugin>();
+            for (Plugin service : index.getServices()) {
+                if (clazz != null && !clazz.isAssignableFrom(service.getClass())) {
+                    continue;
+                }
+                Plugin plugin;
+                if (index.isWoven(service)) {
+                    plugin = index.getWoven(service);
+                } else {
+                    plugin = weavePluginAspect(service); //plugin could be null if having error in multitenant
+                    index.putWoven(service, plugin);
+                }
+                if (plugin != null) {
+                    plugins.add(plugin);
+                }
+            }
+            return plugins;
+        } finally {
+            pluginListLock.unlock();
+        }
+    }
+
     // Scan all Plugin subclasses from the classpath once
     // internalLoadPluginMap filters this map by type rather than re-scanning.
     private void scanAllClasspathPlugins() {
@@ -1183,24 +1219,41 @@ public class PluginManager implements ApplicationContextAware {
      */
     protected Collection<Plugin> loadOsgiPlugins() {
         Collection<Plugin> list = new ArrayList<Plugin>();
+        List<Plugin> services = loadOsgiPluginServices();
+        if (services == null) {
+            return list;
+        }
+        for (Plugin service : services) {
+            Plugin plugin = weavePluginAspect(service); //plugin could be null if having error in multitenant
+            if (plugin != null) {
+                list.add(plugin);
+            }
+        }
+        return list;
+    }
+
+    /**
+     * Collect the unwoven plugin service objects from the OSGI container, in bundle/service order.
+     * @return the services, or null if the OSGI container is not available
+     */
+    protected List<Plugin> loadOsgiPluginServices() {
         Felix osgiContainer = getOsgiContainer();
-        if (osgiContainer != null) {
-            BundleContext context = osgiContainer.getBundleContext();
-            Bundle[] bundles = context.getBundles();
-            for (Bundle b : bundles) {
-                ServiceReference[] refs = b.getRegisteredServices();
-                if (refs != null) {
-                    for (ServiceReference sr : refs) {
-                        LogUtil.debug(PluginManager.class.getName(), " bundle service: " + sr);
-                        Object obj = context.getService(sr);
-                        if (obj instanceof Plugin) {
-                            Plugin plugin = weavePluginAspect((Plugin) obj); //plugin could be null if having error in multitenant
-                            if (plugin != null) {
-                                list.add(plugin);
-                            }
-                        }
-                        context.ungetService(sr);
+        if (osgiContainer == null) {
+            return null;
+        }
+        List<Plugin> list = new ArrayList<Plugin>();
+        BundleContext context = osgiContainer.getBundleContext();
+        Bundle[] bundles = context.getBundles();
+        for (Bundle b : bundles) {
+            ServiceReference[] refs = b.getRegisteredServices();
+            if (refs != null) {
+                for (ServiceReference sr : refs) {
+                    LogUtil.debug(PluginManager.class.getName(), " bundle service: " + sr);
+                    Object obj = context.getService(sr);
+                    if (obj instanceof Plugin) {
+                        list.add((Plugin) obj);
                     }
+                    context.ungetService(sr);
                 }
             }
         }
@@ -1222,6 +1275,9 @@ public class PluginManager implements ApplicationContextAware {
                     sr.getBundle().stop();
                     context.ungetService(sr);
                     result = true;
+                    // Invalidate the per-type caches (incl. the lazy OSGi plugin index) so the stopped
+                    // bundle's plugins are not kept served for newly-requested types after disable.
+                    clearCache();
                 } catch (Exception ex) {
                     LogUtil.error(PluginManager.class.getName(), ex, "");
                 }

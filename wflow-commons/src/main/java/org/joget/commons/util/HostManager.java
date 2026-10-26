@@ -56,6 +56,15 @@ public final class HostManager implements ApplicationContextAware {
     private static final Object NULL_PROFILE = new Object();
 
     /**
+     * Non-inheritable marker holding the profile resolved from a verified request host (set only
+     * while {@link #currentHost} is in effect). Pooled/spawned worker threads never inherit it, so
+     * MultiTenantSecurityManager.checkFilePermission can trust a thread's own-profile directory for
+     * an in-tenant file write through a nested trusted-core call (active=null) only when this equals
+     * the ambient profile -- keeping stale-worker and admin-unset cross-tenant writes denied.
+     */
+    protected static final ThreadLocal requestOwnerProfile = new HostThreadLocal();
+
+    /**
      * Sets the Host of current HTTP request.
      * This method is security protected in Cloud installation.
      * @param hostname 
@@ -93,6 +102,9 @@ public final class HostManager implements ApplicationContextAware {
             // operation, so an unauthorized caller is denied here before anything else runs.
             previousProfileStack.remove();
             currentHost.remove();
+            // Clear the request-owner marker on this baseline reset so a reused pool thread does not
+            // carry a prior request's owner into the next one.
+            requestOwnerProfile.remove();
             currentProfile.set(profile);
             return;
         }
@@ -149,8 +161,27 @@ public final class HostManager implements ApplicationContextAware {
      */
     public static void setCurrentProfileWithoutTracking(String profile) {
         profile = SecurityUtil.validateStringInput(profile);
+        // Bind the request-owner marker when this profile was resolved while a verified request host
+        // is still in effect (DynamicDataSourceManager's hostname->profile memoization). Done before
+        // currentHost.remove() so the host signal is still readable. The set is HostPermission-checked
+        // (HostThreadLocal), so only platform routing code -- never tenant script code -- can bind it.
+        if (currentHost.get() != null) {
+            requestOwnerProfile.set(profile);
+        }
         currentHost.remove();
         currentProfile.set(profile);
+    }
+
+    /**
+     * True when this thread's ambient profile equals the profile bound as the request owner from a
+     * verified request host. The file-permission guard uses this to allow a tenant's own upload
+     * through a nested trusted-core call (active=null) without trusting pooled worker threads, which
+     * never carry this non-inheritable marker.
+     * @return
+     */
+    public static boolean isCurrentProfileRequestOwner() {
+        Object owner = requestOwnerProfile.get();
+        return owner != null && owner.equals(currentProfile.get());
     }
 
     /**

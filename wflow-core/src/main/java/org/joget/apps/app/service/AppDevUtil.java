@@ -122,14 +122,32 @@ public class AppDevUtil {
     public static final long GIT_TEMP_CLEANER_INTERVAL_MS = 12 * 60 * 60 * 1000; // 12 hours
     public static final long GIT_TEMP_EXPIRES_MS = 24 * 60 * 60 * 1000; // 24 hours (safe for clustered shared storage)
 
-    protected static final ScheduledExecutorService gitTempCleanerExecutor = Executors.newScheduledThreadPool(1);
+    /**
+     * #2261: git-maintenance workers created with {@code inheritThreadLocals=false} so they do NOT
+     * inherit the multi-tenant security "active" flag (set during bundle-startup activate()), which otherwise
+     * made checkFilePermission deny the cleaner's own app_src reads. These workers compute each path explicitly.
+     */
+    private static final java.util.concurrent.ThreadFactory GIT_MAINTENANCE_THREAD_FACTORY =
+            new java.util.concurrent.ThreadFactory() {
+                private final AtomicInteger counter = new AtomicInteger(1);
+                @Override
+                public Thread newThread(Runnable r) {
+                    Thread t = new Thread(null, r, "git-maintenance-" + counter.getAndIncrement(), 0, false);
+                    t.setDaemon(true);
+                    return t;
+                }
+            };
+
+    protected static final ScheduledExecutorService gitTempCleanerExecutor =
+            Executors.newScheduledThreadPool(1, GIT_MAINTENANCE_THREAD_FACTORY);
 
     // Git GC configuration
     private static final boolean GIT_GC_DISABLED;
     private static final long GIT_GC_INTERVAL_MS;
     private static final int GIT_GC_EXPIRE_SECONDS;
     private static final int GIT_GC_COMMIT_THRESHOLD;
-    protected static final ScheduledExecutorService gitGcExecutor = Executors.newScheduledThreadPool(1);
+    protected static final ScheduledExecutorService gitGcExecutor =
+            Executors.newScheduledThreadPool(1, GIT_MAINTENANCE_THREAD_FACTORY);
     // Tracks commit count per repo since last GC (for commit-threshold trigger)
     private static final ConcurrentHashMap<String, AtomicInteger> gcCommitCounters = new ConcurrentHashMap<>();
 
