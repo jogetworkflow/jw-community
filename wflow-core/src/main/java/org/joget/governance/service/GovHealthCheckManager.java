@@ -400,7 +400,7 @@ public class GovHealthCheckManager {
                 stopChecker();
                 
                 if (task == null) {
-                    task = new GovHealthCheckTask(getProfile(), interval);
+                    task = new GovHealthCheckTask(interval);
                     setTask(task);
                 }
                 if (delay != null) {

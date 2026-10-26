@@ -2,16 +2,22 @@ package org.joget.governance.model;
 
 import java.util.concurrent.ScheduledFuture;
 import org.joget.apps.app.service.AppUtil;
+import org.joget.commons.util.DynamicDataSourceManager;
 import org.joget.commons.util.HostManager;
 import org.joget.governance.service.GovHealthCheckManager;
 
 public final class GovHealthCheckTask implements Runnable {
-    private String profile;
+    private final String profile;
     private long interval;
     private ScheduledFuture scheduledFuture;
-    
-    public GovHealthCheckTask(String profile, long interval) {
-        this.profile = profile;
+
+    // Profile captured from the ambient context at construction, never from the caller: run() restores
+    // it on a pooled scheduler thread and this class is exempted from the profile-mutation guard, so a
+    // caller-supplied profile would let untrusted code switch the ambient profile to one it does not own
+    // by running the task from this exempted frame. Capturing here pins the task to its constructor's
+    // tenant.
+    public GovHealthCheckTask(long interval) {
+        this.profile = DynamicDataSourceManager.getCurrentProfile();
         this.interval = interval;
     }
     

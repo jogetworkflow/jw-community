@@ -28,7 +28,7 @@ public class DeadlineChecker extends Thread {
     
     public static final String DEADLINE_PREFIX = "deadlinecheker_";
 
-    protected String profile;
+    private final String profile;
     protected long delay;
     protected int instancesPerTransaction;
     protected int failuresToIgnore;
@@ -37,13 +37,17 @@ public class DeadlineChecker extends Thread {
     protected boolean isInitialized = false;
     protected boolean deadlineReeval = false;
 
-    public DeadlineChecker(String profile,
+    public DeadlineChecker(
             List limitStructs,
             long delay,
             int instPerTrans,
             int failToIgnore,
             boolean startImmediatelly) {
-        this.profile = profile;
+        // Profile captured from the ambient context at construction, never from the caller: this thread
+        // restores it (setCurrentProfile) before running deadline checks and this class is exempted from
+        // the profile-mutation guard, so a caller-supplied profile would let untrusted code run the
+        // checker under a tenant it does not own. Pinned to the constructor's tenant.
+        this.profile = DynamicDataSourceManager.getCurrentProfile();
         this.limitStructs = limitStructs;
         this.delay = delay;
         this.setDaemon(true);
@@ -61,9 +65,6 @@ public class DeadlineChecker extends Thread {
         return profile;
     }
 
-    public void setProfile(String profile) {
-        this.profile = profile;
-    }
 
     public long getDelay() {
         return delay;

@@ -394,10 +394,21 @@ public class SecurityUtil implements ApplicationContextAware {
      */
     public static String normalizedFileName(String filename) {
         try {
-            // only decode if it is URL encoded (to prevent decoding filenames with only + into <space>)
-            if (URL_ENCODED_PATTERN.matcher(filename).find()) {
+            // Decode repeatedly until stable: a single decode leaves a double-encoded traversal
+            // (e.g. %252e%252e%252f -> %2e%2e%2f) still encoded, so the ../ check below passes, and a
+            // caller that decodes a second time (several import paths do) then re-materialises ../ and
+            // escapes the base directory. Looping until no %XX remains closes that, while the
+            // match-before-decode guard still avoids turning a filename that only contains '+' into
+            // spaces. Bounded to stop pathological input; if it still looks encoded at the cap, reject.
+            int guard = 0;
+            while (URL_ENCODED_PATTERN.matcher(filename).find()) {
+                if (++guard > 10) {
+                    throw new SecurityException("Invalid filename (excessive URL-encoding): " + filename);
+                }
                 filename = URLDecoder.decode(filename, "UTF-8");
             }
+        } catch (SecurityException se) {
+            throw se;
         } catch (Exception e) {
             // for security reasons, throw exception for caller to handle and prevent proceeding any further
             throw new RuntimeException(e);

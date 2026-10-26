@@ -45,29 +45,45 @@ public class WebSocketPluginEndpoint {
         plugin = (PluginWebSocket) p;
         
         setSecurityContext(session);
-        plugin.onOpen(session);
+        try {
+            plugin.onOpen(session);
+        } finally {
+            clearSecurityContext();
+        }
     }
 
     @OnMessage
     public void onMessage(String message, Session session) throws IOException {
         setSecurityContext(session);
-        plugin.onMessage(message, session);
+        try {
+            plugin.onMessage(message, session);
+        } finally {
+            clearSecurityContext();
+        }
     }
 
     @OnClose
     public void onClose(Session session) throws IOException {
         setSecurityContext(session);
-        plugin.onClose(session);
-        plugin = null;
+        try {
+            plugin.onClose(session);
+        } finally {
+            clearSecurityContext();
+            plugin = null;
+        }
     }
 
     @OnError
     public void onError(Session session, Throwable throwable) {
         
         setSecurityContext(session);
-        plugin.onError(session, throwable);
-        plugin = null;
-        
+        try {
+            plugin.onError(session, throwable);
+        } finally {
+            clearSecurityContext();
+            plugin = null;
+        }
+
         // Do error handling here
         LogUtil.error(getClass().getName(), throwable, "onError : session [" + session.getId() + "]");
     }
@@ -97,6 +113,23 @@ public class WebSocketPluginEndpoint {
             }
         } catch (Exception e) {
             LogUtil.debug(getClass().getName(), "HttpSession is already invalidated");
+        }
+    }
+
+    /**
+     * Clears the identity this callback copied onto the pooled Tomcat worker thread, so the NEXT
+     * (possibly anonymous) request landing on it does not inherit this connection's user. Each
+     * callback copies the session's SecurityContext onto the thread and never cleared it before, so
+     * the identity leaked to whatever ran next on that worker. Mirrors the HTTP request filter's own
+     * finally-clear. Best-effort and idempotent.
+     */
+    protected final void clearSecurityContext() {
+        SecurityContextHolder.clearContext();
+        try {
+            WorkflowUserManager wum = (WorkflowUserManager) AppUtil.getApplicationContext().getBean("workflowUserManager");
+            wum.clearCurrentThreadUser();
+        } catch (Exception e) {
+            // best-effort: the thread user is also re-established by the next request's own filter
         }
     }
 }

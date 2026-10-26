@@ -1,7 +1,10 @@
 package org.joget.plugin.base;
 
 import freemarker.template.Template;
+import java.util.Collections;
 import java.util.Date;
+import java.util.IdentityHashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.ResourceBundle;
 import java.util.Set;
@@ -27,10 +30,10 @@ public class PluginManagerCache {
     // profile, so loads for different tenants no longer serialize on a single
     // process-wide lock.
     private final ReentrantLock pluginListLock = new ReentrantLock();
-    // All woven OSGi plugins for this profile, built once and filtered by type
-    // by PluginManager.internalLoadPluginMap. Cleared together with the rest of
-    // the cache so bundle install/uninstall/refresh rebuilds it.
-    private volatile Map<String, Plugin> allOsgiPlugins = null;
+    // OSGi plugin services of this profile, woven lazily per requested type by
+    // PluginManager.getOsgiPlugins. Cleared together with the rest of the cache so
+    // bundle install/uninstall/refresh rebuilds it.
+    private volatile OsgiPluginIndex osgiPluginIndex = null;
     private volatile long refreshGeneration = 0;
     private final ReentrantLock[] resourceBundleLocks = createResourceBundleLocks();
 
@@ -76,12 +79,12 @@ public class PluginManagerCache {
         refreshGeneration++;
     }
 
-    public Map<String, Plugin> getAllOsgiPlugins() {
-        return allOsgiPlugins;
+    OsgiPluginIndex getOsgiPluginIndex() {
+        return osgiPluginIndex;
     }
 
-    public void setAllOsgiPlugins(Map<String, Plugin> allOsgiPlugins) {
-        this.allOsgiPlugins = allOsgiPlugins;
+    void setOsgiPluginIndex(OsgiPluginIndex osgiPluginIndex) {
+        this.osgiPluginIndex = osgiPluginIndex;
     }
 
     public Date getLastCleared() {
@@ -98,7 +101,7 @@ public class PluginManagerCache {
         noOsgiPluginClassCache.clear();
         templateCache.clear();
         resourceBundleCache.clear();
-        allOsgiPlugins = null;
+        osgiPluginIndex = null;
         lastCleared = new Date();
     }
 
@@ -116,5 +119,38 @@ public class PluginManagerCache {
             locks[i] = new ReentrantLock();
         }
         return locks;
+    }
+
+    /**
+     * Unwoven OSGi plugin service objects of one profile and the woven plugin of each
+     * service woven so far. A null woven value records a failed weave so it is not
+     * retried until the cache is cleared. Replaced as a whole by clearCache(), so a
+     * reader holding an old index never sees it partly cleared. The woven map is
+     * guarded by the profile's pluginListLock. Package-private so the unwoven
+     * service objects are not reachable through the public cache API.
+     */
+    static class OsgiPluginIndex {
+        private final List<Plugin> services;
+        private final Map<Plugin, Plugin> woven = new IdentityHashMap<>();
+
+        OsgiPluginIndex(List<Plugin> services) {
+            this.services = Collections.unmodifiableList(services);
+        }
+
+        List<Plugin> getServices() {
+            return services;
+        }
+
+        boolean isWoven(Plugin service) {
+            return woven.containsKey(service);
+        }
+
+        Plugin getWoven(Plugin service) {
+            return woven.get(service);
+        }
+
+        void putWoven(Plugin service, Plugin plugin) {
+            woven.put(service, plugin);
+        }
     }
 }

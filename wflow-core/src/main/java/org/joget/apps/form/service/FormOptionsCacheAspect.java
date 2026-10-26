@@ -176,8 +176,9 @@ public class FormOptionsCacheAspect {
                 updateLastActive(cacheKey, idleStr);
                 
                 ThreadPoolTaskScheduler scheduler = (ThreadPoolTaskScheduler) AppUtil.getApplicationContext().getBean("formOptionsCacheExecutor");
-                String profile = DynamicDataSourceManager.getCurrentProfile();
-                FormOptionsCacheTask task = new FormOptionsCacheTask(profile, cacheKey, appDef);
+                // Task captures the ambient profile itself at construction (we are on the correct
+                // profile's thread here); never pass a caller-chosen profile in.
+                FormOptionsCacheTask task = new FormOptionsCacheTask(cacheKey, appDef);
                 ScheduledFuture scheduledFuture = scheduler.scheduleAtFixedRate(task, duration * 1000);
                 task.setScheduledFuture(scheduledFuture);
             }   

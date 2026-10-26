@@ -3,17 +3,24 @@ package org.joget.apps.form.service;
 import java.util.concurrent.ScheduledFuture;
 import org.joget.apps.app.model.AppDefinition;
 import org.joget.apps.app.service.AppUtil;
+import org.joget.commons.util.DynamicDataSourceManager;
 import org.joget.commons.util.HostManager;
 import org.joget.commons.util.LogUtil;
 
 public class FormOptionsCacheTask implements Runnable {
-    private String profile;
+    private final String profile;
     private String cacheKey;
     private AppDefinition appDef;
     private ScheduledFuture scheduledFuture;
-    
-    public FormOptionsCacheTask(String profile, String cacheKey, AppDefinition appDef) {
-        this.profile = profile;
+
+    // The profile is captured from the ambient context at CONSTRUCTION, never accepted from the caller:
+    // the task later restores it on a pooled scheduler thread, and this class is exempted from the
+    // profile-mutation guard. A caller-supplied profile would let untrusted code (plugin/BeanShell)
+    // instantiate the task with another tenant's profile and, by running it from this exempted frame,
+    // switch the ambient profile to one it does not own. Capturing getCurrentProfile() here pins the
+    // task to the profile of whoever constructs it, so it can only ever run as that same tenant.
+    public FormOptionsCacheTask(String cacheKey, AppDefinition appDef) {
+        this.profile = DynamicDataSourceManager.getCurrentProfile();
         this.cacheKey = cacheKey;
         this.appDef = appDef;
     }

@@ -32,7 +32,17 @@ import org.springframework.context.event.ContextRefreshedEvent;
  * profile but equally reachable the same way; {@code setupManagerCache} in particular holds
  * profile-prefixed workflow replacement-user maps that {@code AppWorkflowHelper} trusts.
  */
-public class PlatformCacheRegistrar implements ApplicationListener<ContextRefreshedEvent> {
+public class PlatformCacheRegistrar implements ApplicationListener<ContextRefreshedEvent>, org.springframework.context.ApplicationContextAware {
+
+    // #2261: the context this registrar is registered in (the platform root). onApplicationEvent only acts on an
+    // event whose context IS this one, so a tenant forging a ContextRefreshedEvent with a malicious context (to
+    // make the registrar register an attacker-supplied cache under a platform alias) is ignored.
+    private transient ApplicationContext ownContext;
+
+    @Override
+    public void setApplicationContext(ApplicationContext applicationContext) {
+        this.ownContext = applicationContext;
+    }
 
     // Each cache's ManagedCacheRegistry.KeyScope, so a non-admin caller's own single-key
     // put/remove against a key it genuinely owns can be exempted from the outright mutation
@@ -201,6 +211,10 @@ public class PlatformCacheRegistrar implements ApplicationListener<ContextRefres
     @Override
     public void onApplicationEvent(ContextRefreshedEvent event) {
         ApplicationContext context = event.getApplicationContext();
+        // Only the genuine refresh of this registrar's own (platform root) context, never a forged/foreign one.
+        if (ownContext != null && context != ownContext) {
+            return;
+        }
         for (Map.Entry<String, ManagedCacheRegistry.KeyScope> entry : PLATFORM_CACHE_KEY_SCOPES.entrySet()) {
             String beanName = entry.getKey();
             try {

@@ -920,6 +920,11 @@ public class WorkflowManagerImpl implements WorkflowManager {
      * @throws Exception
      */
     public String processUploadWithoutUpdateMapping(String packageId, byte[] processDefinitionData) throws Exception {
+        // Shark's deploy parser (Xerces DOMParser, DOCTYPE allowed, only an EntityResolver set) resolves
+        // DTD entities -- file reads are gated by the SecurityManager on an untrusted stack, but network
+        // entity resolution (checkConnect) is not. Reject a DOCTYPE before the untrusted definition reaches
+        // that parser, the same way getPackageIdFromDefinition does.
+        rejectDoctypeDefinition(processDefinitionData);
         SharkConnection sc = null;
         String instanceId = null;
 
@@ -963,6 +968,9 @@ public class WorkflowManagerImpl implements WorkflowManager {
      * @throws Exception
      */
     public String processUpload(String packageId, byte[] processDefinitionData) throws Exception {
+        // See processUploadWithoutUpdateMapping: reject a DOCTYPE before the definition reaches Shark's
+        // entity-resolving deploy parser.
+        rejectDoctypeDefinition(processDefinitionData);
 
         SharkConnection sc = null;
         String instanceId = null;
@@ -1020,11 +1028,85 @@ public class WorkflowManagerImpl implements WorkflowManager {
      */
     public String getPackageIdFromDefinition(byte[] processDefinitionData) {
         try {
-            String packageId = XMLUtil.getIdFromFile(new String(processDefinitionData, "UTF-8"));
+            String xpdl = new String(processDefinitionData, "UTF-8");
+            // Shark's XMLUtil.getIdFromFile parses with a plain, entity-resolving Xerces parser. A
+            // legitimate XPDL package carries no DOCTYPE, so reject one here (in the prolog) to close
+            // XXE/SSRF/entity-expansion before the untrusted definition reaches that parser.
+            if (hasDoctypeInProlog(xpdl)) {
+                return "";
+            }
+            String packageId = XMLUtil.getIdFromFile(xpdl);
             return packageId;
         } catch (Exception e) {
             return "";
         }
+    }
+
+    // Rejects a process definition whose prolog carries a DOCTYPE before it reaches Shark's
+    // entity-resolving deploy parser. Shared by every untrusted upload entry point.
+    private static void rejectDoctypeDefinition(byte[] processDefinitionData) throws Exception {
+        if (processDefinitionData == null) {
+            return;
+        }
+        if (hasDoctypeInProlog(new String(processDefinitionData, "UTF-8"))) {
+            throw new UnsupportedOperationException("Process definition must not contain a DOCTYPE declaration");
+        }
+    }
+
+    // True if a <!DOCTYPE declaration appears in the document prolog (where a parser would act on it).
+    // Walks the prolog length-independently -- skipping an XML declaration, processing instructions and
+    // comments of ANY size -- and stops at the first element start tag. A fixed-size (e.g. 8 KB) window
+    // is bypassable: XML permits arbitrarily long comments/PIs before the doctypedecl, so a >window
+    // comment pushes <!DOCTYPE past the window yet still into the prolog the parser acts on. Scanning
+    // only up to the root element (rather than the whole string) also avoids a false positive from the
+    // literal "<!DOCTYPE" appearing inside element content/CDATA of a legitimate definition.
+    private static boolean hasDoctypeInProlog(String xml) {
+        if (xml == null) {
+            return false;
+        }
+        int i = 0;
+        int n = xml.length();
+        if (n > 0 && xml.charAt(0) == '﻿') {
+            i = 1;
+        }
+        while (i < n) {
+            char c = xml.charAt(i);
+            // U+0085 (NEL) and U+2028 (LS) are XML 1.1 line-end chars an XML 1.1 parser normalises to LF
+            // before parsing; Character.isWhitespace treats them as non-whitespace, so skip them here too,
+            // or a DOCTYPE placed after one would be missed yet still reach an XML 1.1-capable parser.
+            if (Character.isWhitespace(c) || c == '\u0085' || c == '\u2028') {
+                i++;
+                continue;
+            }
+            if (c != '<') {
+                return false;
+            }
+            if (xml.startsWith("<!--", i)) {
+                int end = xml.indexOf("-->", i + 4);
+                if (end < 0) {
+                    return false;
+                }
+                i = end + 3;
+                continue;
+            }
+            if (xml.startsWith("<?", i)) {
+                int end = xml.indexOf("?>", i + 2);
+                if (end < 0) {
+                    return false;
+                }
+                i = end + 2;
+                continue;
+            }
+            if (regionMatchesIgnoreCase(xml, i, "<!DOCTYPE")) {
+                return true;
+            }
+            return false;
+        }
+        return false;
+    }
+
+    private static boolean regionMatchesIgnoreCase(String s, int offset, String token) {
+        return s.regionMatches(true, offset, token, 0, token.length());
     }
     
     /**
