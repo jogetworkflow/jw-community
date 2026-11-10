@@ -725,11 +725,41 @@ public class StringUtil {
             return null;
         }
     }
-    
+
+    /**
+     * Computes the SHA-256 hex digest of the UTF-8 bytes of the content. Used to
+     * reduce a large payload (e.g. binder JSON) to a fixed-length, collision-resistant
+     * token when it only needs to be bound/compared rather than recovered.
+     * @param content
+     * @return the lowercase hex digest, or null on error / null input
+     */
+    public static String sha256Base16Utf8(String content) {
+        if (content == null) {
+            return null;
+        }
+        try {
+            MessageDigest md = MessageDigest.getInstance("SHA-256");
+            byte[] bytes = md.digest(content.getBytes("UTF-8"));
+            StringBuffer sb = new StringBuffer();
+            for (int i = 0; i < bytes.length; i++) {
+                byte b = bytes[i];
+                String hex = Integer.toHexString((int) 0x00FF & b);
+                if (hex.length() == 1) {
+                    sb.append("0");
+                }
+                sb.append(hex);
+            }
+            return sb.toString();
+        } catch (Exception e) {
+            LogUtil.error(StringUtil.class.getName(), e, "");
+            return null;
+        }
+    }
+
     /**
      * Remove all HTML tags from the content
      * @param content
-     * @return 
+     * @return
      */
     public static String stripAllHtmlTag(String content) {
         return stripAllHtmlTag(content, true);

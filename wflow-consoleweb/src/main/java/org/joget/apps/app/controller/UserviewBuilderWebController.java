@@ -203,6 +203,13 @@ public class UserviewBuilderWebController {
     public String preview(ModelMap map, HttpServletRequest request, HttpServletResponse response, @RequestParam("appId") String appId, @RequestParam(value = "appVersion", required = false) String appVersion, @RequestParam("userviewId") String userviewId, @RequestParam("json") String json, @RequestParam(value = "menuId", required = false) String menuId) throws Exception {
         // get app definition so that it's set in the current thread
         AppDefinition appDef = appService.getAppDefinition(appId, appVersion);
+
+        // Builder preview renders a userview (including script-capable elements) from request-supplied
+        // JSON. Restrict to users authorized to design the app so untrusted callers cannot run scripts.
+        if (appDef == null || !AppUtil.isAppEditableByCurrentUser(appDef)) {
+            response.setStatus(HttpServletResponse.SC_FORBIDDEN);
+            return null;
+        }
         map.addAttribute("appId", appId);
         map.addAttribute("appVersion", appDef.getVersion());
         
@@ -251,6 +258,13 @@ public class UserviewBuilderWebController {
     @RequestMapping("/ubuilder/app/(*:appId)/(~:appVersion)/(*:userviewId)/page/template")
     public void menuPageTemplate(Writer writer, HttpServletRequest request, HttpServletResponse response, @RequestParam("appId") String appId, @RequestParam(value = "appVersion", required = false) String appVersion, @RequestParam("userviewId") String userviewId, @RequestParam("json") String json) {
         AppDefinition appDef = appService.getAppDefinition(appId, appVersion);
+
+        // Builder template preview renders a userview plugin (which may run scripts) from request-supplied
+        // JSON. Restrict to users authorized to design the app so untrusted callers cannot run scripts.
+        if (appDef == null || !AppUtil.isAppEditableByCurrentUser(appDef)) {
+            response.setStatus(HttpServletResponse.SC_FORBIDDEN);
+            return;
+        }
 
         String tempJson = json;
         if (tempJson.contains(SecurityUtil.ENVELOPE) || tempJson.contains(PropertyUtil.PASSWORD_PROTECTED_VALUE)) {
@@ -309,6 +323,13 @@ public class UserviewBuilderWebController {
     public void menuTemplate(Writer writer, HttpServletRequest request, HttpServletResponse response, @RequestParam("appId") String appId, @RequestParam(value = "appVersion", required = false) String appVersion, @RequestParam("userviewId") String userviewId, @RequestParam("json") String json) {
         AppDefinition appDef = appService.getAppDefinition(appId, appVersion);
 
+        // Builder template preview renders a userview plugin (which may run scripts) from request-supplied
+        // JSON. Restrict to users authorized to design the app so untrusted callers cannot run scripts.
+        if (appDef == null || !AppUtil.isAppEditableByCurrentUser(appDef)) {
+            response.setStatus(HttpServletResponse.SC_FORBIDDEN);
+            return;
+        }
+
         String tempJson = json;
         if (tempJson.contains(SecurityUtil.ENVELOPE) || tempJson.contains(PropertyUtil.PASSWORD_PROTECTED_VALUE)) {
             UserviewDefinition userview = userviewDefinitionDao.loadById(userviewId, appDef);
@@ -354,6 +375,13 @@ public class UserviewBuilderWebController {
     @RequestMapping("/ubuilder/app/(*:appId)/(~:appVersion)/(*:userviewId)/component/template")
     public void componentTemplate(Writer writer, HttpServletRequest request, HttpServletResponse response, @RequestParam("appId") String appId, @RequestParam(value = "appVersion", required = false) String appVersion, @RequestParam("userviewId") String userviewId, @RequestParam("json") String json) {
         AppDefinition appDef = appService.getAppDefinition(appId, appVersion);
+
+        // Builder template preview renders a userview plugin (which may run scripts) from request-supplied
+        // JSON. Restrict to users authorized to design the app so untrusted callers cannot run scripts.
+        if (appDef == null || !AppUtil.isAppEditableByCurrentUser(appDef)) {
+            response.setStatus(HttpServletResponse.SC_FORBIDDEN);
+            return;
+        }
 
         String tempJson = json;
         if (tempJson.contains(SecurityUtil.ENVELOPE) || tempJson.contains(PropertyUtil.PASSWORD_PROTECTED_VALUE)) {
@@ -448,6 +476,13 @@ public class UserviewBuilderWebController {
     @RequestMapping("/ubuilder/app/(*:appId)/(~:appVersion)/(*:userviewId)/theme/css")
     public void themeCss(Writer writer, HttpServletRequest request, HttpServletResponse response, @RequestParam("appId") String appId, @RequestParam(value = "appVersion", required = false) String appVersion, @RequestParam("userviewId") String userviewId, @RequestParam("json") String json) {
         AppDefinition appDef = appService.getAppDefinition(appId, appVersion);
+
+        // Builder template preview renders a userview plugin (which may run scripts) from request-supplied
+        // JSON. Restrict to users authorized to design the app so untrusted callers cannot run scripts.
+        if (appDef == null || !AppUtil.isAppEditableByCurrentUser(appDef)) {
+            response.setStatus(HttpServletResponse.SC_FORBIDDEN);
+            return;
+        }
 
         String tempJson = json;
         

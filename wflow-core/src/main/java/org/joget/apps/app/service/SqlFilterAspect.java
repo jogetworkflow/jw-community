@@ -25,8 +25,10 @@ public class SqlFilterAspect implements MethodInterceptor {
             for (int i = 0; i < length; i++) {
                 if (args != null && args[i] != null && args[i] instanceof String) {
                     if (isInjection((String) args[i])) {
-                        HttpServletRequest request= WorkflowUtil.getHttpServletRequest();
-                        Exception e = new SQLException("Possible SQLi from IP:" + AppUtil.getClientIp(request) + ". Query string is " + request.getQueryString());
+                        HttpServletRequest request = WorkflowUtil.getHttpServletRequest();
+                        // Security (C4 DiD): null-guard the off-request path so logging the block never NPEs.
+                        String qs = (request != null) ? request.getQueryString() : "(no http request)";
+                        Exception e = new SQLException("Possible SQLi from IP:" + AppUtil.getClientIp(request) + ". Query string is " + qs);
                         LogUtil.error(SqlFilterAspect.class.getName(), e, e.getMessage());
                         
                         throw e;

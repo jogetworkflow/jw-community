@@ -91,11 +91,13 @@ public abstract class AbstractVersionedObjectDao<T extends AbstractVersionedObje
         query += "(SELECT version FROM " + getEntityName() + " e2 WHERE e.id=e2.id)";
 
         if (sort != null && !sort.equals("")) {
-            String filteredSort = filterSpace(sort);
-            query += " ORDER BY " + filteredSort;
+            String filteredSort = safeOrderByColumn(sort);
+            if (filteredSort != null) {
+                query += " ORDER BY " + filteredSort;
 
-            if (desc) {
-                query += " DESC";
+                if (desc) {
+                    query += " DESC";
+                }
             }
         }
         Query q = findSession().createQuery(query);

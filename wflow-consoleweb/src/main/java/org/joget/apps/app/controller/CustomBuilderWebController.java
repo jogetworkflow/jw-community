@@ -428,7 +428,14 @@ public class CustomBuilderWebController {
         
         // get app definition so that it's set in the current thread
         AppDefinition appDef = appService.getAppDefinition(appId, appVersion);
-        
+
+        // Builder preview renders a custom element (including script-capable config) from request-supplied
+        // JSON. Restrict to users authorized to design the app so untrusted callers cannot run scripts.
+        if (appDef == null || !AppUtil.isAppEditableByCurrentUser(appDef)) {
+            response.sendError(HttpServletResponse.SC_FORBIDDEN);
+            return;
+        }
+
         String tempJson = json;
         if (tempJson.contains(SecurityUtil.ENVELOPE) || tempJson.contains(PropertyUtil.PASSWORD_PROTECTED_VALUE)) {
             BuilderDefinition def = builderDefinitionDao.loadById(id, appDef);

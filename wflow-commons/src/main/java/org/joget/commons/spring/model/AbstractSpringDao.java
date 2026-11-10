@@ -68,11 +68,13 @@ public abstract class AbstractSpringDao extends HibernateDaoSupport {
         String query = "SELECT e FROM " + entityName + " e " + newCondition;
 
         if (sort != null && !sort.equals("")) {
-            String filteredSort = filterSpace(sort);
-            query += " ORDER BY " + filteredSort;
+            String filteredSort = safeOrderByColumn(sort);
+            if (filteredSort != null) {
+                query += " ORDER BY " + filteredSort;
 
-            if (desc) {
-                query += " DESC";
+                if (desc) {
+                    query += " DESC";
+                }
             }
         }
         Query q = session.createQuery(query);
@@ -129,6 +131,28 @@ public abstract class AbstractSpringDao extends HibernateDaoSupport {
             }
         }
         return str;
+    }
+
+    // Security (R4): an ORDER BY column cannot be a bound parameter, so a caller-supplied sort must be
+    // validated. filterSpace only truncates at the first space, which does not stop space-free injection.
+    // This restricts the value to a bare property reference (identifier(.identifier)*); anything else
+    // returns null and the caller omits the ORDER BY. Shared by all DAOs.
+    private static final java.util.regex.Pattern SAFE_ORDER_BY =
+            java.util.regex.Pattern.compile("^[A-Za-z_][A-Za-z0-9_]*(\\.[A-Za-z_][A-Za-z0-9_]*)*$");
+
+    public static String safeOrderByColumn(String sort) {
+        if (sort == null) {
+            return null;
+        }
+        String col = Normalizer.normalize(sort, Normalizer.Form.NFKC);
+        int sp = col.indexOf(' ');
+        if (sp >= 0) {
+            col = col.substring(0, sp);
+        }
+        if (!col.isEmpty() && SAFE_ORDER_BY.matcher(col).matches()) {
+            return col;
+        }
+        return null;
     }    
 }
 

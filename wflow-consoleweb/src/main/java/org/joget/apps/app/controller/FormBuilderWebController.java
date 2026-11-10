@@ -94,6 +94,12 @@ public class FormBuilderWebController {
         if (formDef != null) {
             String formJson = null;
             if (json != null && !json.trim().isEmpty()) {
+                // Previewing request-supplied form JSON (which may contain script-capable elements)
+                // requires authorization to design the app so untrusted callers cannot run scripts.
+                if (appDef == null || !AppUtil.isAppEditableByCurrentUser(appDef)) {
+                    response.setStatus(HttpServletResponse.SC_FORBIDDEN);
+                    return null;
+                }
                 try {
                     // validate JSON
                     new JSONObject(json);
@@ -160,6 +166,13 @@ public class FormBuilderWebController {
         json = AppUtil.getSubmittedJsonDefinition(json);
 
         AppDefinition appDef = appService.getAppDefinition(appId, version);
+
+        // Saving a form definition (which may contain script-capable elements) that is later executed
+        // requires authorization to design the app so untrusted callers cannot persist/run scripts.
+        if (appDef == null || !AppUtil.isAppEditableByCurrentUser(appDef)) {
+            response.setStatus(HttpServletResponse.SC_FORBIDDEN);
+            return null;
+        }
         // load existing form definition and update fields
         FormDefinition formDef = formDefinitionDao.loadById(formId, appDef);
 
@@ -196,6 +209,13 @@ public class FormBuilderWebController {
             model.addAttribute("appVersion", appVersion);
             AppDefinition appDef = appService.getAppDefinition(appId, appVersion);
 
+            // Builder preview renders a form (including script-capable elements) from request-supplied
+            // JSON. Restrict to users authorized to design the app so untrusted callers cannot run scripts.
+            if (appDef == null || !AppUtil.isAppEditableByCurrentUser(appDef)) {
+                response.setStatus(HttpServletResponse.SC_FORBIDDEN);
+                return null;
+            }
+
             String tempJson = json;
             if (tempJson.contains(SecurityUtil.ENVELOPE) || tempJson.contains(PropertyUtil.PASSWORD_PROTECTED_VALUE)) {
                 FormDefinition formDef = formDefinitionDao.loadById(formId, appDef);
@@ -229,6 +249,13 @@ public class FormBuilderWebController {
             model.addAttribute("appId", appId);
             model.addAttribute("appVersion", appVersion);
             AppDefinition appDef = appService.getAppDefinition(appId, appVersion);
+
+            // Builder preview renders a form (including script-capable elements) from request-supplied
+            // JSON. Restrict to users authorized to design the app so untrusted callers cannot run scripts.
+            if (appDef == null || !AppUtil.isAppEditableByCurrentUser(appDef)) {
+                response.setStatus(HttpServletResponse.SC_FORBIDDEN);
+                return null;
+            }
 
             String tempJson = json;
             if (tempJson.contains(SecurityUtil.ENVELOPE) || tempJson.contains(PropertyUtil.PASSWORD_PROTECTED_VALUE)) {

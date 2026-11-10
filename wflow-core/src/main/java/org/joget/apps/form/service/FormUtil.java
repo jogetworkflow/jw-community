@@ -2074,7 +2074,12 @@ public class FormUtil implements ApplicationContextAware {
                 element.setProperty("appId", appDef.getAppId());
                 element.setProperty("appVersion", appDef.getVersion());
                 
-                String nonce = SecurityUtil.generateNonce(new String[]{"AjaxOptions", appDef.getAppId(), s.substring(s.length() - 20)}, 1);
+                // Bind the SHA-256 digest of the binder JSON rather than the raw JSON itself.
+                // For session-based nonce generators (Enterprise/clustered) the bound attributes
+                // are retained in the HTTP session, so binding the full JSON cost session memory
+                // and replication bandwidth; the digest is a fixed 64-byte token with identical
+                // tamper-detection. Verify side digests the decrypted binderData the same way.
+                String nonce = SecurityUtil.generateNonce(new String[]{"AjaxOptions", appDef.getAppId(), StringUtil.sha256Base16Utf8(s)}, 1);
                 element.setProperty("nonce", nonce);
                 
                 try {
@@ -2126,7 +2131,7 @@ public class FormUtil implements ApplicationContextAware {
                 binderData = URLDecoder.decode(binderData, "UTF-8");
                 binderData = SecurityUtil.decrypt(binderData);
                 
-                if (SecurityUtil.verifyNonce(nonce, new String[] {"AjaxOptions", appDef.getAppId(), binderData.substring(binderData.length() - 20)})) {
+                if (SecurityUtil.verifyNonce(nonce, new String[] {"AjaxOptions", appDef.getAppId(), StringUtil.sha256Base16Utf8(binderData)})) {
                     FormBinder binder = null;
                     
                     JSONObject jo = new JSONObject(binderData);
