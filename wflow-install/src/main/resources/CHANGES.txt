@@ -4,6 +4,7 @@ For more information, please refer to https://community.joget.org
 
 8.2.13.1
 ========
+6c6a9a039a Fixed: wflow-commons, wflow-core, wflow-consoleweb, wflow-directory, wflow-wfengine - Security - Closed anonymous RCE via /setup bypass, builder previews and fail-open nonce, plus workflow ID and sort SQL injection. #2470 T8591 @8.2-SNAPSHOT
 a075254dc9 Fixed: jw-community - Multi-Tenant Security - Hardened tenant isolation and sped up plugin loading. #2244 #2261 @8.2-SNAPSHOT
 
 8.2.13
