@@ -458,16 +458,20 @@ public class FormDataDaoImpl implements FormDataDao {
             }
 
             if ((sort != null && !sort.trim().isEmpty()) && !query.toLowerCase().contains("order by")) {
-                String sortProperty = sort;
-                if (!FormUtil.PROPERTY_ID.equals(sortProperty) && !FormUtil.PROPERTY_DATE_CREATED.equals(sortProperty) && !FormUtil.PROPERTY_DATE_MODIFIED.equals(sortProperty)
-                         && !FormUtil.PROPERTY_CREATED_BY.equals(sortProperty)  && !FormUtil.PROPERTY_CREATED_BY_NAME.equals(sortProperty)
-                         && !FormUtil.PROPERTY_MODIFIED_BY.equals(sortProperty)  && !FormUtil.PROPERTY_MODIFIED_BY_NAME.equals(sortProperty)) {
-                    sortProperty = FormUtil.PROPERTY_CUSTOM_PROPERTIES + "." + sort;
-                }
-                query += " ORDER BY e." + sortProperty;
+                // Security: a caller-supplied sort is concatenated into the HQL ORDER BY, so validate it
+                // to a bare property reference; anything else -> omit the ORDER BY (unsorted, no error).
+                String sortProperty = (sort != null && sort.matches("[a-zA-Z0-9_]+")) ? sort : null; // Security (R4): form field id (digit-leading allowed) mapped to a customProperties column
+                if (sortProperty != null) {
+                    if (!FormUtil.PROPERTY_ID.equals(sortProperty) && !FormUtil.PROPERTY_DATE_CREATED.equals(sortProperty) && !FormUtil.PROPERTY_DATE_MODIFIED.equals(sortProperty)
+                             && !FormUtil.PROPERTY_CREATED_BY.equals(sortProperty)  && !FormUtil.PROPERTY_CREATED_BY_NAME.equals(sortProperty)
+                             && !FormUtil.PROPERTY_MODIFIED_BY.equals(sortProperty)  && !FormUtil.PROPERTY_MODIFIED_BY_NAME.equals(sortProperty)) {
+                        sortProperty = FormUtil.PROPERTY_CUSTOM_PROPERTIES + "." + sortProperty;
+                    }
+                    query += " ORDER BY e." + sortProperty;
 
-                if (desc) {
-                    query += " DESC";
+                    if (desc != null && desc) {
+                        query += " DESC";
+                    }
                 }
             }
             Query q = session.createQuery(processQuery(query));

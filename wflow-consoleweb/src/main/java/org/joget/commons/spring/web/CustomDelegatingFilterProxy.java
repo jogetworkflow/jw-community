@@ -27,11 +27,16 @@ public class CustomDelegatingFilterProxy extends DelegatingFilterProxy {
         HttpServletRequest req = ((HttpServletRequest)request);
         String url = req.getContextPath() + "/setup";
         try {
-            if (!req.getRequestURI().startsWith(url)) {
-                super.doFilter(request, response, filterChain);
-            } else {
-                filterChain.doFilter(request, response);
-            }
+            // Always run the Spring Security filter chain. This filter is only mapped
+            // to /web/*, /api/* and the security check/logout endpoints (never /setup/*),
+            // so skipping security when the RAW request URI starts with contextPath +
+            // "/setup" was unreachable for any legitimate request and allowed an
+            // authentication bypass: a URI such as "/setup/..;/web/console/..." has a
+            // raw getRequestURI() starting with "/setup" (security skipped) while the
+            // container normalises it and dispatches to the privileged controller.
+            // The "url" value below is retained only as the redirect target for the
+            // context-initialisation failure handling in the catch blocks.
+            super.doFilter(request, response, filterChain);
         } catch(IllegalStateException ise) {
             if (ise.getMessage().startsWith("No WebApplicationContext found")) {
                 LogUtil.info(getClass().getName(), "No WebApplicationContext found, redirecting to error page");

@@ -217,9 +217,9 @@ public class SecurityUtil implements ApplicationContextAware {
             } catch (Exception e) {
                 //Ignore
             }
-        } else if (getNonceGenerator() == null) { //when nonce is not in use
-            return true;
         }
+        // Security (R3): fail closed. A missing nonceGenerator must NOT accept every nonce;
+        // all editions ship a nonceGenerator bean (Community via webApplicationContext.xml).
         return false;
     }
 

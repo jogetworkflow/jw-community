@@ -1677,6 +1677,11 @@ public class WorkflowManagerImpl implements SharkWorkflowManager {
      * @return
      */
     public WorkflowActivity getActivityById(String activityId) {
+        // Security (C4): reject SQL string-literal breakout chars in the activity id before it is
+        // concatenated into the Shark filter via addIdEquals; covers all callers (e.g. getAppDefinitionForWorkflowActivity).
+        if (isUnsafeWorkflowId(activityId)) {
+            return null;
+        }
 
         SharkConnection sc = null;
         WorkflowActivity workflowActivity = new WorkflowActivity();
@@ -1928,6 +1933,10 @@ public class WorkflowManagerImpl implements SharkWorkflowManager {
      * @return
      */
     public Collection<WorkflowVariable> getActivityVariableList(String activityId) {
+        // Security (C4): reject SQL breakout chars in the activity id (concatenated into the Shark filter).
+        if (isUnsafeWorkflowId(activityId)) {
+            return new ArrayList<WorkflowVariable>();
+        }
         Collection<WorkflowVariable> variableList = new ArrayList<WorkflowVariable>();
 
         SharkConnection sc = null;
@@ -3732,6 +3741,10 @@ public class WorkflowManagerImpl implements SharkWorkflowManager {
      * @return null if the assignment does not exist.
      */
     public WorkflowAssignment getAssignment(String activityId) {
+        // Security (C4): reject SQL breakout chars in the activity id (concatenated into the Shark filter).
+        if (isUnsafeWorkflowId(activityId)) {
+            return null;
+        }
 
         SharkConnection sc = null;
         WorkflowAssignment ass = null;
@@ -3847,6 +3860,10 @@ public class WorkflowManagerImpl implements SharkWorkflowManager {
      * @return null if the assignment does not exist.
      */
     public WorkflowAssignment getAssignmentByProcess(String processId) {
+        // Security (C4): reject SQL breakout chars in the process id before the Shark lookup.
+        if (isUnsafeWorkflowId(processId)) {
+            return null;
+        }
 
         SharkConnection sc = null;
         WorkflowAssignment ass = null;
@@ -3893,6 +3910,9 @@ public class WorkflowManagerImpl implements SharkWorkflowManager {
      * @return
      */
     public Collection<WorkflowAssignment> getAssignmentList(Boolean accepted, String processDefId, String sort, Boolean desc, Integer start, Integer rows) {
+        if (isUnsafeWorkflowId(processDefId)) {
+            return new ArrayList<WorkflowAssignment>();
+        }
         if (processDefId != null) {
             processDefId = getConvertedLatestProcessDefId(processDefId);
         }
@@ -4033,7 +4053,26 @@ public class WorkflowManagerImpl implements SharkWorkflowManager {
      * @param rows
      * @return
      */
+    /**
+     * Identifier parameters (package/process/activity ids) are concatenated into the Shark
+     * query expression, so a value carrying a SQL string delimiter or escape could break out
+     * of the quoted literal and inject SQL on anonymous endpoints (e.g. the assignment list).
+     * These identifiers never legitimately contain such characters; free-text parameters
+     * (names, usernames which may contain a quote or a DOMAIN\\user backslash) are intentionally
+     * NOT restricted here. Returns true when the value must be rejected.
+     */
+    private static boolean isUnsafeWorkflowId(String id) {
+        if (id == null) {
+            return false;
+        }
+        return id.indexOf('\'') >= 0 || id.indexOf('"') >= 0
+                || id.indexOf('`') >= 0 || id.indexOf('\\') >= 0;
+    }
+
     public Collection<WorkflowAssignment> getAssignmentList(String packageId, String processDefId, String processId, String activityDefId, String sort, Boolean desc, Integer start, Integer rows) {
+        if (isUnsafeWorkflowId(packageId) || isUnsafeWorkflowId(processDefId) || isUnsafeWorkflowId(processId) || isUnsafeWorkflowId(activityDefId)) {
+            return new ArrayList<WorkflowAssignment>();
+        }
         if (processDefId != null) {
             processDefId = getConvertedLatestProcessDefId(processDefId);
         }
@@ -4233,6 +4272,16 @@ public class WorkflowManagerImpl implements SharkWorkflowManager {
         SharkConnection sc = null;
         Collection<WorkflowAssignment> assignmentList = new ArrayList<WorkflowAssignment>();
 
+        // Security (C4 DiD): reject SQL string-literal breakout chars in the processDefIds array
+        // elements (concatenated into the Shark filter); IDs never legitimately contain these.
+        if (processDefIds != null) {
+            for (String pdi : processDefIds) {
+                if (isUnsafeWorkflowId(pdi)) {
+                    return new ArrayList<WorkflowAssignment>();
+                }
+            }
+        }
+
         try {
 
             sc = connect();
@@ -4357,6 +4406,15 @@ public class WorkflowManagerImpl implements SharkWorkflowManager {
     public int getAssignmentListFilterByProccessDefIdsSize(String[] processDefIds) {
         SharkConnection sc = null;
         int size = 0;
+
+        // Security (C4 DiD): reject SQL string-literal breakout chars in the processDefIds array elements.
+        if (processDefIds != null) {
+            for (String pdi : processDefIds) {
+                if (isUnsafeWorkflowId(pdi)) {
+                    return 0;
+                }
+            }
+        }
 
         try {
 
@@ -4530,6 +4588,9 @@ public class WorkflowManagerImpl implements SharkWorkflowManager {
      * @return
      */
     public int getAssignmentSize(String packageId, String processDefId, String processId, String activityDefId) {
+        if (isUnsafeWorkflowId(packageId) || isUnsafeWorkflowId(processDefId) || isUnsafeWorkflowId(processId) || isUnsafeWorkflowId(activityDefId)) {
+            return 0;
+        }
         if (processDefId != null) {
             processDefId = getConvertedLatestProcessDefId(processDefId);
         }
@@ -5610,6 +5671,12 @@ public class WorkflowManagerImpl implements SharkWorkflowManager {
      * @throws Exception
      */
     protected WfAssignment getSharkAssignment(SharkConnection sc, String activityId) throws Exception {
+        // Security (C4): choke point for all ~13 single-assignment callers (view/accept/withdraw/complete/
+        // variable/etc.). Reject SQL string-literal breakout chars in the activity id before it is
+        // concatenated into the Shark filter (addActivityIdEquals). Same as "assignment not found".
+        if (isUnsafeWorkflowId(activityId)) {
+            return null;
+        }
 
         Shark shark = Shark.getInstance();
         AssignmentFilterBuilder aieb = shark.getAssignmentFilterBuilder();

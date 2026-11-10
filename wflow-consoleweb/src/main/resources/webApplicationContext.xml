@@ -72,7 +72,13 @@
         <property name="resourceBundleMessageDao" ref="resourceBundleMessageDao"/>
     </bean>
     <!-- END web relevant bean-->
-    
+
+    <!-- Stateless nonce generator for single-node (Community) deployments. Without a
+         nonceGenerator bean SecurityUtil.verifyNonce fails open, which leaves nonce-protected
+         endpoints (e.g. form/options, form/embed) effectively unauthenticated. Enterprise and
+         clustered deployments override this via their own webApplicationContext.xml. -->
+    <bean id="nonceGenerator" class="org.joget.commons.util.SignedNonceGenerator"/>
+
     <import resource="classpath:customApplicationContext.xml" />    
     
 </beans>

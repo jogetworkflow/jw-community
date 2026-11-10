@@ -187,12 +187,19 @@ public class DatalistBuilderWebController {
         return null;
     }
 
-    @RequestMapping(value = {"/console/app/(*:appId)/(~:appVersion)/datalist/builderPreview/(*:id)", "/client/app/(*:appId)/(*:appVersion)/datalist/(*:id)"})
+    @RequestMapping(value = {"/console/app/(*:appId)/(~:appVersion)/datalist/builderPreview/(*:id)"})
     public String preview(ModelMap map, HttpServletRequest request, HttpServletResponse response, @RequestParam("appId") String appId, @RequestParam(value = "appVersion", required = false) String appVersion, @RequestParam("id") String id, @RequestParam(required = false) String json) throws Exception {
         String view = "dbuilder/view";
 
         // get current app to set into thread
         AppDefinition appDef = appService.getAppDefinition(appId, appVersion);
+
+        // Builder preview renders a datalist (including script-capable binders) from request-supplied
+        // JSON. Restrict to users authorized to design the app so untrusted callers cannot run scripts.
+        if (appDef == null || !AppUtil.isAppEditableByCurrentUser(appDef)) {
+            response.setStatus(HttpServletResponse.SC_FORBIDDEN);
+            return null;
+        }
 
         try {
             // get data list
@@ -293,8 +300,16 @@ public class DatalistBuilderWebController {
     }
 
     @RequestMapping(value = "/json/console/app/(*:appId)/(~:appVersion)/builder/binder/columns", method = RequestMethod.POST)
-    public void getBuilderDataColumnList(ModelMap map, Writer writer, @RequestParam("appId") String appId, @RequestParam(required = false) String appVersion, @RequestParam String id, @RequestParam String binderId, @RequestParam String binderJson, HttpServletRequest request, @RequestParam(required = false) Boolean retrieveSample) throws Exception {
+    public void getBuilderDataColumnList(ModelMap map, Writer writer, @RequestParam("appId") String appId, @RequestParam(required = false) String appVersion, @RequestParam String id, @RequestParam String binderId, @RequestParam String binderJson, HttpServletRequest request, @RequestParam(required = false) Boolean retrieveSample, HttpServletResponse response) throws Exception {
         AppDefinition appDef = appService.getAppDefinition(appId, appVersion);
+
+        // Building a binder from request JSON evaluates its column/data scripts; restrict to users
+        // authorized to design the app so untrusted callers cannot run scripts.
+        if (appDef == null || !AppUtil.isAppEditableByCurrentUser(appDef)) {
+            response.sendError(HttpServletResponse.SC_FORBIDDEN);
+            return;
+        }
+
         JSONObject jsonObject = new JSONObject();
 
         // get data list
@@ -418,8 +433,15 @@ public class DatalistBuilderWebController {
     }
     
     @RequestMapping(value = "/dbuilder/getFormatterTemplate", method = RequestMethod.POST)
-    public void getColumnFormatterTemplate(ModelMap map, Writer writer, @RequestParam("appId") String appId, @RequestParam(required = false) String appVersion, @RequestParam String listId, @RequestParam String value, @RequestParam String row, @RequestParam String column, @RequestParam String binderId, @RequestParam String binderJson, HttpServletRequest request) throws Exception {
+    public void getColumnFormatterTemplate(ModelMap map, Writer writer, @RequestParam("appId") String appId, @RequestParam(required = false) String appVersion, @RequestParam String listId, @RequestParam String value, @RequestParam String row, @RequestParam String column, @RequestParam String binderId, @RequestParam String binderJson, HttpServletRequest request, HttpServletResponse response) throws Exception {
         AppDefinition appDef = appService.getAppDefinition(appId, appVersion);
+
+        // Formatting a column from request JSON evaluates its formatter/column scripts; restrict to
+        // users authorized to design the app so untrusted callers cannot run scripts.
+        if (appDef == null || !AppUtil.isAppEditableByCurrentUser(appDef)) {
+            response.sendError(HttpServletResponse.SC_FORBIDDEN);
+            return;
+        }
         try {
             // get data list
             DataList dataList = new DataList();

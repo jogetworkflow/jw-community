@@ -913,6 +913,7 @@ public class WorkflowJsonController {
         WorkflowAssignment assignment = workflowManager.getAssignment(activityId);
         if (assignment == null) {
             response.sendError(HttpServletResponse.SC_NOT_FOUND, "Assignment does not exist.");
+            return; // Security: stop before the tainted activityId reaches getActivityById/assignmentVariable
         }
         
         appService.getAppDefinitionForWorkflowActivity(activityId);

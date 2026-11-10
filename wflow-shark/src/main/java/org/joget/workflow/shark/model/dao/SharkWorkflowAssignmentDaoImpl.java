@@ -432,11 +432,13 @@ public class SharkWorkflowAssignmentDaoImpl extends AbstractSpringDao implements
         String query = "SELECT p.processId FROM " + ENTITY_NAME + " e " + newCondition;
 
         if (sort != null && !sort.equals("")) {
-            String filteredSort = filterSpace(sort);
-            query += " ORDER BY " + filteredSort;
+            String filteredSort = safeOrderByColumn(sort);
+            if (filteredSort != null) {
+                query += " ORDER BY " + filteredSort;
 
-            if (desc) {
-                query += " DESC";
+                if (desc) {
+                    query += " DESC";
+                }
             }
         }
         Query q = session.createQuery(query);
@@ -973,11 +975,13 @@ public class SharkWorkflowAssignmentDaoImpl extends AbstractSpringDao implements
         query += customField + " FROM " + entityName + " e " + newCondition;
 
         if (sort != null && !sort.equals("")) {
-            String filteredSort = filterSpace(sort);
-            query += " ORDER BY " + filteredSort;
+            String filteredSort = safeOrderByColumn(sort);
+            if (filteredSort != null) {
+                query += " ORDER BY " + filteredSort;
 
-            if (desc) {
-                query += " DESC";
+                if (desc) {
+                    query += " DESC";
+                }
             }
         }
         Query q = session.createQuery(query);
